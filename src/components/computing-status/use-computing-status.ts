@@ -10,26 +10,14 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ComputingType } from './computing-type';
+import { useParams } from 'react-router-dom';
 import { ReduxState, StudyUpdated } from 'redux/reducer.type';
-import { OptionalServicesStatus } from '../utils/optional-services';
 import {
     setComputingStatus,
     setLastCompletedComputation,
 } from '../../redux/actions';
-
-interface UseComputingStatusProps {
-    (
-        studyUuid: UUID,
-        nodeUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
-        invalidations: string[],
-        completions: string[],
-        resultConversion: (x: string) => RunningStatus,
-        computingType: ComputingType,
-        optionalServiceAvailabilityStatus?: OptionalServicesStatus
-    ): void;
-}
+import { OptionalServicesStatus } from '../utils/optional-services';
+import { ComputingType } from './computing-type';
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
@@ -76,10 +64,52 @@ function isWorthUpdate(
     return false;
 }
 
+const genetateStatusFromComputingType = (base: string) => ({
+    invalidations: [`${base}_status`, `${base}_failed`],
+    completions: [`${base}Result`, `${base}_failed`],
+});
+
+type AnalysisStatusType = {
+    invalidations: string[];
+    completions: string[];
+};
+type ComputingTypeToStatusMapperType = Record<
+    ComputingType,
+    AnalysisStatusType
+>;
+const computingTypeToStatusMapper: ComputingTypeToStatusMapperType = {
+    [ComputingType.LOAD_FLOW]: genetateStatusFromComputingType('loadflow'),
+    [ComputingType.SECURITY_ANALYSIS]:
+        genetateStatusFromComputingType('securityAnalysis'),
+    [ComputingType.SENSITIVITY_ANALYSIS]: genetateStatusFromComputingType(
+        'sensitivityAnalysis'
+    ),
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]:
+        genetateStatusFromComputingType('nonEvacuatedEnergy'),
+    [ComputingType.SHORT_CIRCUIT]: genetateStatusFromComputingType(
+        'shortCircuitAnalysis'
+    ),
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: genetateStatusFromComputingType(
+        'oneBusShortCircuitAnalysis'
+    ),
+    [ComputingType.DYNAMIC_SIMULATION]:
+        genetateStatusFromComputingType('dynamicSimulation'),
+    [ComputingType.VOLTAGE_INITIALIZATION]:
+        genetateStatusFromComputingType('voltageInit'),
+    [ComputingType.STATE_ESTIMATION]:
+        genetateStatusFromComputingType('stateEstimation'),
+};
+
+interface UseComputingStatusProps {
+    (
+        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+        resultConversion: (x: string) => RunningStatus,
+        computingType: ComputingType,
+        optionalServiceAvailabilityStatus?: OptionalServicesStatus
+    ): void;
+}
 /**
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
- * @param studyUuid current study uuid
- * @param nodeUuid current node uuid
  * @param fetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
@@ -87,32 +117,35 @@ function isWorthUpdate(
  * @param optionalServiceAvailabilityStatus status of an optional service
  */
 export const useComputingStatus: UseComputingStatusProps = (
-    studyUuid,
-    nodeUuid,
     fetcher,
-    invalidations,
-    completions,
     resultConversion,
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
+    const nodeUuid = useSelector(
+        (state: ReduxState) => state.currentTreeNode?.id
+    );
+    const studyUuid = decodeURIComponent(useParams().studyUuid ?? '') as UUID;
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector(
         (state: ReduxState) => state.studyUpdated
     );
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
+    const status = computingTypeToStatusMapper[computingType];
 
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
-        (status: RunningStatus) =>
-            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
-            completions.includes(
+        (runningStatus: RunningStatus) =>
+            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(
+                runningStatus
+            ) &&
+            status.completions.includes(
                 lastUpdateRef.current?.studyUpdatedForce.eventData?.headers
                     ?.updateType ?? ''
             ),
-        [completions]
+        [status.completions]
     );
 
     const update = useCallback(() => {
@@ -171,7 +204,7 @@ export const useComputingStatus: UseComputingStatusProps = (
             lastUpdateRef,
             nodeUuidRef,
             nodeUuid,
-            invalidations
+            status.invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {
@@ -181,7 +214,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         update,
         fetcher,
         nodeUuid,
-        invalidations,
+        status.invalidations,
         studyUpdatedForce,
         studyUuid,
         optionalServiceAvailabilityStatus,
