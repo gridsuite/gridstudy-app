@@ -5,29 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    EquipmentInfos,
+    FunctionComponent,
+    MouseEvent as ReactMouseEvent,
+    useCallback,
+} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+    equipmentStyles,
     TagRenderer,
     TagRendererProps,
-    equipmentStyles,
 } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
-import {
-    DiagramType,
-    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
-} from 'components/diagrams/diagram-common';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
-import { FunctionComponent, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { centerOnSubstation, openDiagram } from 'redux/actions';
-import { fetchNetworkElementInfos } from 'services/study/network';
 import {
     GpsFixed as GpsFixedIcon,
     Timeline as TimelineIcon,
 } from '@mui/icons-material';
-import { ReduxState } from 'redux/reducer.type';
+import {
+    DiagramType,
+    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
+} from '../diagrams/diagram-common';
+import {
+    EQUIPMENT_INFOS_TYPES,
+    EQUIPMENT_TYPES,
+} from '../utils/equipment-types';
+import { centerOnSubstation, openDiagram } from '../../redux/actions';
+import { fetchNetworkElementInfos } from '../../services/study/network';
+import { ReduxState } from '../../redux/reducer.type';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -35,7 +38,7 @@ interface CustomSuffixRendererProps extends TagRendererProps {
 
 export const CustomSuffixRenderer: FunctionComponent<
     CustomSuffixRendererProps
-> = ({ props, element, onClose }) => {
+> = ({ element, onClose, ...tagRendererProps }) => {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const currentNode = useSelector(
@@ -49,10 +52,7 @@ export const CustomSuffixRenderer: FunctionComponent<
     );
 
     const centerOnSubstationCB = useCallback(
-        (
-            e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-            element: EquipmentInfos
-        ) => {
+        (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             if (!studyUuid || !currentNode) {
                 return;
@@ -76,19 +76,16 @@ export const CustomSuffixRenderer: FunctionComponent<
                 e.stopPropagation();
             });
         },
-        [dispatch, onClose, studyUuid, currentNode]
+        [studyUuid, currentNode, element.type, element.id, dispatch, onClose]
     );
 
     const openNetworkAreaDiagramCB = useCallback(
-        (
-            e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-            element: EquipmentInfos
-        ) => {
+        (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
             onClose?.();
             e.stopPropagation();
         },
-        [dispatch, onClose]
+        [dispatch, element.id, onClose]
     );
 
     if (
@@ -104,10 +101,10 @@ export const CustomSuffixRenderer: FunctionComponent<
                                 NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
                             networkAreaDiagramDepth !== 0
                         }
-                        onClick={(e) => openNetworkAreaDiagramCB(e, element)}
-                        size={'small'}
+                        onClick={openNetworkAreaDiagramCB}
+                        size="small"
                     >
-                        <TimelineIcon fontSize={'small'} />
+                        <TimelineIcon fontSize="small" />
                     </IconButton>
                 )}
                 <IconButton
@@ -115,18 +112,19 @@ export const CustomSuffixRenderer: FunctionComponent<
                         (!studyUuid || !currentNode) &&
                         element.type !== EQUIPMENT_TYPES.SUBSTATION
                     }
-                    onClick={(e) => centerOnSubstationCB(e, element)}
-                    size={'small'}
+                    onClick={centerOnSubstationCB}
+                    size="small"
                 >
-                    <GpsFixedIcon fontSize={'small'} />
+                    <GpsFixedIcon fontSize="small" />
                 </IconButton>
             </>
         );
     } else {
         return (
             <TagRenderer
-                props={{ ...props, styles: equipmentStyles }}
+                {...tagRendererProps}
                 element={element}
+                styles={equipmentStyles}
             />
         );
     }
