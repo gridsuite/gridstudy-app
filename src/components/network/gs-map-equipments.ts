@@ -20,8 +20,9 @@ import {
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
 } from '../../services/study/network';
+import { MapEquipments } from '@powsybl/diagram-viewer';
 
-export default class GSMapEquipments {
+export default class GSMapEquipments extends MapEquipments {
     dispatch: Dispatch;
     errHandler?: UseSnackMessageReturn['snackError'];
     intlRef: RefObject<IntlShape>;
@@ -159,6 +160,7 @@ export default class GSMapEquipments {
         dispatch: Dispatch,
         intlRef: RefObject<IntlShape>
     ) {
+        super();
         this.dispatch = dispatch;
         this.errHandler = errHandler;
         this.intlRef = intlRef;
