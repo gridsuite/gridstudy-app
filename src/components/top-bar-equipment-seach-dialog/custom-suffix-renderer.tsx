@@ -4,7 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, MouseEventHandler, useCallback } from 'react';
+import {
+    FunctionComponent,
+    MouseEvent as ReactMouseEvent,
+    useCallback,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     equipmentStyles,
@@ -47,10 +51,8 @@ export const CustomSuffixRenderer: FunctionComponent<
         (state: ReduxState) => state.networkAreaDiagramDepth
     );
 
-    const centerOnSubstationCB = useCallback<
-        MouseEventHandler<HTMLButtonElement>
-    >(
-        (e) => {
+    const centerOnSubstationCB = useCallback(
+        (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             e.stopPropagation();
             if (!studyUuid || !currentNode) {
                 return;
@@ -77,10 +79,8 @@ export const CustomSuffixRenderer: FunctionComponent<
         [studyUuid, currentNode, element.type, element.id, dispatch, onClose]
     );
 
-    const openNetworkAreaDiagramCB = useCallback<
-        MouseEventHandler<HTMLButtonElement>
-    >(
-        (e) => {
+    const openNetworkAreaDiagramCB = useCallback(
+        (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
             dispatch(openDiagram(element.id, DiagramType.NETWORK_AREA_DIAGRAM));
             onClose?.();
             e.stopPropagation();
