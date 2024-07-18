@@ -170,7 +170,7 @@ export default class GSMapEquipments extends MapEquipments {
     reloadImpactedSubstationsEquipments(
         studyUuid: UUID,
         currentNode: any,
-        substationsIds: string
+        substationsIds: string[]
     ) {
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
