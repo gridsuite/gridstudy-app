@@ -90,7 +90,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             distDir,
                             studyUuid,
                             currentNodeUuid,
-                            equipments
+                            equipments,
+                            nominalVoltages
                         );
                         snackInfo({
                             messageTxt: intl.formatMessage({

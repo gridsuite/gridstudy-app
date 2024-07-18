@@ -256,9 +256,11 @@ const BatteryModificationDialog = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setBatteryToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        reset(emptyFormData);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setBatteryToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setValuesAndEmptyOthers();
@@ -272,6 +274,7 @@ const BatteryModificationDialog = ({
             setValue,
             setValuesAndEmptyOthers,
             reset,
+            editData,
         ]
     );
 
