@@ -44,9 +44,17 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_TYPES.TIE_LINE,
         ]);
-        return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-        );
+        return Object.values(EQUIPMENT_TYPES)
+            .filter(
+                (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+            )
+            .map((element) => {
+                if (element === EQUIPMENT_TYPES.HVDC_LINE) {
+                    return 'Hvdc';
+                } else {
+                    return element;
+                }
+            });
     }, []);
 
     const handleEquipmentTypeChange = useCallback(() => {
