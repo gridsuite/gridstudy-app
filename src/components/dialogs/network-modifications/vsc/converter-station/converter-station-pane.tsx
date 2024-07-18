@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
@@ -24,7 +24,6 @@ import {
     ReactivePowerAdornment,
     VoltageAdornment,
 } from '../../../dialogUtils';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import { CurrentTreeNode } from '../../../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
@@ -37,6 +36,7 @@ import {
     UpdateReactiveCapabilityCurveTable,
 } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -57,9 +57,6 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     previousValues,
     updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const currentNodeUuid = currentNode?.id;
-
     const { trigger } = useFormContext();
 
     const voltageRegulationOnWatch = useWatch({
@@ -72,19 +69,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     });
 
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a: { id: string }, b: { id: string }) =>
-                            a.id.localeCompare(b.id)
-                        )
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(
+        studyUuid,
+        currentNode?.id
+    );
 
     const generatorIdField = isModification ? (
         <TextField

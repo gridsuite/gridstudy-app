@@ -7,7 +7,7 @@
 
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton, TextField, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -20,7 +20,7 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
@@ -42,6 +42,7 @@ import {
     fetchBusesForVoltageLevel,
 } from '../../../services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
+import { filledTextField } from '../dialogUtils.jsx';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -55,8 +56,8 @@ import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input
  * @param studyUuid the study we are currently working on
  * @param currentNode the currently selected tree node
  * @param onVoltageLevelChangeCallback callback to be called when the voltage level changes
- * @param isEquipmentModification
- * @param previousValues
+ * @param isEquipmentModification connectivity form is used in a modification form or not
+ * @param previousValues previous values of connectivity form's fields
  * @returns JSX.Element
  */
 export const ConnectivityForm = ({
@@ -179,22 +180,27 @@ export const ConnectivityForm = ({
         />
     );
 
-    const previousConnected = useMemo(() => {
-        if (previousValues?.terminalConnected) {
-            return intl.formatMessage({ id: 'On' });
-        } else if (
-            previousValues?.terminalConnected === false ||
-            (previousValues && previousValues?.terminalConnected === undefined)
-        ) {
-            return intl.formatMessage({ id: 'Off' });
-        }
-    }, [intl, previousValues]);
+    const readyOnlyVoltageLevelField = (
+        <TextField
+            value={previousValues?.voltageLevelId}
+            InputProps={{
+                readOnly: true,
+                ...filledTextField,
+            }}
+            disabled
+            size={'small'}
+        />
+    );
 
     const connectedField = isEquipmentModification ? (
         <CheckboxNullableInput
             name={`${id}.${CONNECTED}`}
             label="Connected"
-            previousValue={previousConnected}
+            previousValue={
+                previousValues?.terminalConnected
+                    ? intl.formatMessage({ id: 'Connected' })
+                    : intl.formatMessage({ id: 'Disconnected' })
+            }
         />
     ) : (
         <SwitchInput name={`${id}.${CONNECTED}`} label="Connected" />
@@ -224,6 +230,18 @@ export const ConnectivityForm = ({
                       })
                     : value
             }
+            size={'small'}
+        />
+    );
+
+    const readyOnlyBusOrBusbarSectionField = (
+        <TextField
+            value={previousValues?.busOrBusbarSectionId}
+            InputProps={{
+                readOnly: true,
+                ...filledTextField,
+            }}
+            disabled
             size={'small'}
         />
     );
@@ -315,10 +333,14 @@ export const ConnectivityForm = ({
                 columns={24}
             >
                 <Grid item xs={conditionalSize} align="start">
-                    {newVoltageLevelField}
+                    {!isEquipmentModification
+                        ? newVoltageLevelField
+                        : readyOnlyVoltageLevelField}
                 </Grid>
                 <Grid item xs={conditionalSize} align="start">
-                    {newBusOrBusbarSectionField}
+                    {!isEquipmentModification
+                        ? newBusOrBusbarSectionField
+                        : readyOnlyBusOrBusbarSectionField}
                 </Grid>
 
                 {withDirectionsInfos && (

@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import {
+    ACTIVE_POWER_SET_POINT,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     MAXIMUM_ACTIVE_POWER,
     MINIMUM_ACTIVE_POWER,
-    ACTIVE_POWER_SET_POINT,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
 import {
@@ -22,28 +22,18 @@ import {
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
-const BatteryCreationForm = ({ studyUuid, currentNode }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    const currentNodeUuid = currentNode?.id;
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
+const BatteryCreationForm = ({ studyUuid, currentNode }) => {
+    const voltageLevelOptions = useVoltageLevelsListInfos(
+        studyUuid,
+        currentNode.id
+    );
 
     const batteryIdField = (
         <TextInput

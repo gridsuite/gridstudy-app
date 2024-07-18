@@ -17,9 +17,9 @@ import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pan
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-creation-dialog';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import LimitsPane from '../../../../limits/limits-pane';
-import { fetchVoltageLevelsListInfos } from '../../../../../../services/study/network';
+import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 
 const styles = {
     h3: {
@@ -35,20 +35,10 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     currentNode,
     tabIndex,
 }) => {
-    const currentNodeUuid = currentNode.id;
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(
+        studyUuid,
+        currentNode?.id
+    );
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}
