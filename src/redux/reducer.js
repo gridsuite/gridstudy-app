@@ -93,7 +93,6 @@ import {
     UPDATE_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     DELETE_EQUIPMENTS,
-    SET_DRAWING_MODE,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -272,7 +271,6 @@ const initialState = {
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
-    isDrawingMode: false,
     diagramStates: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
@@ -1205,10 +1203,6 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SPREADSHEET_FILTER, (state, action) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] =
             action[SPREADSHEET_STORE_FIELD];
-    });
-
-    builder.addCase(SET_DRAWING_MODE, (state, action) => {
-        state.isDrawingMode = action.isDrawingMode;
     });
 });
 

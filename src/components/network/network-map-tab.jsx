@@ -361,15 +361,19 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
-        showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+        if (!isInDrawingMode) {
+            showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
+        }
     };
 
     const chooseVoltageLevelForSubstation = useCallback(
         (idSubstation, x, y) => {
-            setChoiceVoltageLevelsSubstationId(idSubstation);
-            setPosition([x, y]);
+            if (!isInDrawingMode) {
+                setChoiceVoltageLevelsSubstationId(idSubstation);
+                setPosition([x, y]);
+            }
         },
-        []
+        [isInDrawingMode]
     );
 
     const getEquipmentsNotFoundIds = useCallback(
@@ -963,6 +967,17 @@ export const NetworkMapTab = ({
         );
     }
 
+    const displayEquipmentMenu = (
+        equipment,
+        x,
+        y,
+        equipmentType,
+        isInDrawingMode
+    ) => {
+        if (!isInDrawingMode) {
+            showEquipmentMenu(equipment, x, y, equipmentType);
+        }
+    };
     const renderEquipmentMenu = () => {
         if (
             disabled ||
@@ -1040,13 +1055,31 @@ export const NetworkMapTab = ({
                 chooseVoltageLevelForSubstation
             }
             onSubstationMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.SUBSTATION)
+                displayEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.SUBSTATION,
+                    isInDrawingMode
+                )
             }
             onLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.LINE)
+                displayEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.LINE,
+                    isInDrawingMode
+                )
             }
             onHvdcLineMenuClick={(equipment, x, y) =>
-                showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.HVDC_LINE)
+                displayEquipmentMenu(
+                    equipment,
+                    x,
+                    y,
+                    EQUIPMENT_TYPES.HVDC_LINE,
+                    isInDrawingMode
+                )
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
