@@ -361,6 +361,7 @@ export const NetworkMapTab = ({
     }
 
     const voltageLevelMenuClick = (equipment, x, y) => {
+        // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
             showEquipmentMenu(equipment, x, y, EQUIPMENT_TYPES.VOLTAGE_LEVEL);
         }
@@ -974,6 +975,7 @@ export const NetworkMapTab = ({
         equipmentType,
         isInDrawingMode
     ) => {
+        // don't display the equipment menu in drawing mode.
         if (!isInDrawingMode) {
             showEquipmentMenu(equipment, x, y, equipmentType);
         }
