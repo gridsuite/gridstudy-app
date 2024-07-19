@@ -1115,11 +1115,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openImportModificationsDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={
-                                isAnyNodeBuilding ||
-                                mapDataLoading ||
-                                deleteInProgress
-                            }
+                            disabled={isAnyNodeBuilding || deleteInProgress}
                         >
                             <CreateNewFolderIcon />
                         </IconButton>
@@ -1148,7 +1144,6 @@ const NetworkModificationNodeEditor = () => {
                         selectedItems.length === 0 ||
                         isAnyNodeBuilding ||
                         mapDataLoading ||
-                        deleteInProgress ||
                         !currentNode
                     }
                 >
