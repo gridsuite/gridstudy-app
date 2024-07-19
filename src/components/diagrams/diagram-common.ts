@@ -225,35 +225,35 @@ export const useDiagram = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const openDiagramView = useCallback(
-        (id: unknown, type: unknown) => {
+        (id: string, type: DiagramType) => {
             dispatch(openDiagram(id, type));
         },
         [dispatch]
     );
 
     const togglePinDiagramView = useCallback(
-        (id: unknown, type: unknown) => {
+        (id: string, type: DiagramType) => {
             dispatch(togglePinDiagram(id, type));
         },
         [dispatch]
     );
 
     const minimizeDiagramView = useCallback(
-        (id: unknown, type: unknown) => {
+        (id: string, type: DiagramType) => {
             dispatch(minimizeDiagram(id, type));
         },
         [dispatch]
     );
 
     const closeDiagramView = useCallback(
-        (id: unknown, type: unknown) => {
+        (id: string, type: DiagramType) => {
             dispatch(closeDiagram(id, type));
         },
         [dispatch]
     );
 
     const closeDiagramViews = useCallback(
-        (idsToRemove: UnknownArray) => {
+        (idsToRemove: string[]) => {
             dispatch(closeDiagrams(idsToRemove));
         },
         [dispatch]

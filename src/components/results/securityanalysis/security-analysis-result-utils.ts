@@ -51,7 +51,7 @@ import computingType, {
     ComputingType,
 } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 
@@ -622,12 +622,10 @@ export const useFetchFiltersEnums = () => {
             side: null,
         },
     });
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
@@ -647,7 +645,7 @@ export const useFetchFiltersEnums = () => {
         const promises = filterTypes.map((filterType) =>
             fetchAvailableFilterEnumValues(
                 studyUuid,
-                currentNode.id,
+                currentNode?.id,
                 computingType.SECURITY_ANALYSIS,
                 filterType
             )
@@ -682,7 +680,7 @@ export const useFetchFiltersEnums = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, [securityAnalysisStatus, studyUuid, currentNode.id]);
+    }, [securityAnalysisStatus, studyUuid, currentNode?.id]);
 
     return { loading, result, error };
 };

@@ -23,7 +23,7 @@ import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { StudyDisplayMode } from 'redux/reducer.type';
+import { StudyDisplayMode } from 'redux/reducer';
 
 const styles = {
     selected: (theme) => ({

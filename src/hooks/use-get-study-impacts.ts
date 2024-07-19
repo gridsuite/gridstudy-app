@@ -9,9 +9,9 @@ import { useSelector } from 'react-redux';
 import {
     DeletedEquipment,
     NetworkImpactsInfos,
-    ReduxState,
-    UpdateTypes,
-} from '../redux/reducer.type';
+    AppState,
+    NotificationType,
+} from '../redux/reducer';
 import { UUID } from 'crypto';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
@@ -25,7 +25,7 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: AppState) => state.studyUpdated
     );
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<
@@ -51,7 +51,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     }, []);
 
     useEffect(() => {
-        if (studyUpdatedForce.type === UpdateTypes.STUDY) {
+        if (studyUpdatedForce.type === NotificationType.STUDY) {
             const {
                 impactedSubstationsIds: substationsIds,
                 deletedEquipments,

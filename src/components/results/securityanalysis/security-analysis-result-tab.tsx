@@ -15,7 +15,7 @@ import React, {
 } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
@@ -124,7 +124,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [enableDeveloperMode, tabIndex, previousEnableDeveloperMode]);
     const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
@@ -151,6 +151,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         {
             filterType: SECURITY_ANALYSIS_RESULT_STORE_FIELD,
             filterTab: getStoreFields(tabIndex),
+            // @ts-expect-error TODO: found how to have Action type in props type
             filterStoreAction: setSecurityAnalysisResultFilter,
         },
         memoizedSetPageCallback

@@ -8,22 +8,20 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import {
-    ReduxState,
+    AppState,
     StudyDisplayMode,
     StudyIndexationStatus,
-} from 'redux/reducer.type';
+} from 'redux/reducer';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();
     const studyDisplayMode = useSelector(
-        (state: ReduxState) => state.studyDisplayMode
+        (state: AppState) => state.studyDisplayMode
     );
     const studyIndexationStatus = useSelector(
-        (state: ReduxState) => state.studyIndexationStatus
+        (state: AppState) => state.studyIndexationStatus
     );
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     if (studyDisplayMode === StudyDisplayMode.TREE) {
         return intl.formatMessage({

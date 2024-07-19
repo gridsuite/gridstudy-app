@@ -30,8 +30,7 @@ import {
     EVENT_CRUD_FINISHED,
     EventCrudType,
 } from 'components/network/constants.type';
-import { ReduxState, StudyUpdated } from '../../../../redux/reducer.type';
-import { UUID } from 'crypto';
+import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import {
     Event,
     EventType,
@@ -50,11 +49,12 @@ import {
 } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import { areUuidsEqual } from 'components/utils/utils';
+import { AppDispatch } from '../../../../redux/store';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
     const notificationIdList = useSelector(
-        (state: ReduxState) => state.notificationIdList
+        (state: AppState) => state.notificationIdList
     );
     const params = useParams();
     const studyUuid = params?.studyUuid
@@ -62,11 +62,9 @@ const EventModificationScenarioEditor = () => {
         : undefined;
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<string>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<Event[]>([]);
@@ -75,14 +73,14 @@ const EventModificationScenarioEditor = () => {
         | {
               eventType?: EventType;
               equipmentId: string;
-              equipmentType: string;
+              equipmentType: keyof typeof EQUIPMENT_TYPE_LABEL_KEYS;
           }
         | undefined
     >();
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: AppState) => state.studyUpdated
     );
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
@@ -168,7 +166,7 @@ const EventModificationScenarioEditor = () => {
             });
     }, [
         currentNode?.type,
-        currentNode.id,
+        currentNode?.id,
         studyUuid,
         updateSelectedItems,
         snackError,
@@ -235,7 +233,8 @@ const EventModificationScenarioEditor = () => {
         const selectedEvents = [...selectedItems];
         deleteDynamicSimulationEvents(
             studyUuid ?? '',
-            currentNode.id,
+            // @ts-expect-error TODO: manage null case
+            currentNode?.id,
             selectedEvents
         ).catch((errMsg) => {
             snackError({
@@ -249,6 +248,7 @@ const EventModificationScenarioEditor = () => {
         setEditDialogOpen({
             eventType: event.eventType,
             equipmentId: event.equipmentId,
+            // @ts-expect-error TODO: sub range of equipments types
             equipmentType: event.equipmentType,
         });
     };
@@ -392,6 +392,7 @@ const EventModificationScenarioEditor = () => {
             {editDialogOpen && (
                 <DynamicSimulationEventDialog
                     studyUuid={studyUuid ?? ''}
+                    // @ts-expect-error TODO: manage null case
                     currentNodeId={currentNode?.id}
                     equipmentId={editDialogOpen.equipmentId}
                     equipmentType={editDialogOpen.equipmentType}

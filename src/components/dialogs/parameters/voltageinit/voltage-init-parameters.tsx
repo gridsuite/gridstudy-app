@@ -51,7 +51,7 @@ import {
     VoltageInitParametersForm,
     voltageInitParametersFormSchema,
 } from './voltage-init-parameters-form';
-import { ReduxState } from '../../../../redux/reducer.type';
+import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
 
@@ -75,7 +75,7 @@ export const VoltageInitParameters = ({
     });
     const { reset, handleSubmit, getValues, trigger, formState } = formMethods;
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [voltageInitParams, setVoltageInitParams] =
         useGetVoltageInitParameters();

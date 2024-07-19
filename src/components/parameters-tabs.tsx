@@ -35,7 +35,7 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import {
     getLoadFlowProviders,
     getLoadFlowSpecificParametersDescription,
@@ -170,7 +170,7 @@ type OwnProps = {
 };
 
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
-    const user = useSelector((state: ReduxState) => state.user);
+    const user = useSelector((state: AppState) => state.user);
 
     const [tabValue, setTabValue] = useState<string>(
         TAB_VALUES.sldParamsTabValue

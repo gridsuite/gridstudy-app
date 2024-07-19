@@ -44,7 +44,9 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
 
     const intl = useIntl();
 
-    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+    const equipmentFields: { id: string; label: string }[] =
+        // @ts-expect-error TODO: conflicts types
+        EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
 
     const filtersField = (
         <DirectoryItemsInput

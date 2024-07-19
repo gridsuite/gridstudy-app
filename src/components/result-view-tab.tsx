@@ -34,7 +34,7 @@ import {
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { CurrentTreeNode, ReduxState } from '../redux/reducer.type';
+import { CurrentTreeNode, AppState } from '../redux/reducer';
 import { UUID } from 'crypto';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
@@ -95,7 +95,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const lastCompletedComputation = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation
+        (state: AppState) => state.lastCompletedComputation
     );
 
     const securityAnalysisAvailability = useOptionalServiceStatus(

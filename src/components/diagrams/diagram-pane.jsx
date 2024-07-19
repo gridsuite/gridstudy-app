@@ -60,7 +60,6 @@ import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { UpdateTypes } from '../../redux/reducer.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -837,10 +836,9 @@ export function DiagramPane({
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
             } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                UpdateTypes.STUDY
+                studyUpdatedForce.eventData.headers['updateType'] === 'study'
             ) {
-                // FM if we want to reload data more precisely we need more information from notifications
+                // FM if we want to reload data more precisely, we need more information from notifications
                 updateDiagramsByCurrentNode();
             } else if (
                 studyUpdatedForce.eventData.headers['updateType'] ===

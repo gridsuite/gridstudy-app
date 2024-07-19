@@ -16,7 +16,7 @@ import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
@@ -26,7 +26,7 @@ export const SecurityAnalysisTable: FunctionComponent<
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);

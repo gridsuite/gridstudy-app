@@ -98,7 +98,8 @@ function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
     const parent = context.from?.[context.from.length - 1];
     const equipmentType = parent?.value?.[EQUIPMENT_TYPE_FIELD];
     return parent
-        ? EQUIPMENTS_FIELDS[equipmentType]?.some(
+        ? // @ts-expect-error TODO: conflicts types
+          EQUIPMENTS_FIELDS[equipmentType]?.some(
               (field: { id: string; label: string }) => field.id === value
           )
         : false;
