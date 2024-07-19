@@ -5,11 +5,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import {
-    DirectoryItemsInput,
-    ElementType,
-    EquipmentType,
-} from '@gridsuite/commons-ui';
+import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { styles } from '../parameters';
@@ -17,8 +13,8 @@ import { styles } from '../parameters';
 type DirectoryItemsInputLineProps = {
     label: string;
     name: string;
-    equipmentTypes: EquipmentType[];
-    elementType: ElementType;
+    equipmentTypes: string[];
+    elementType: string;
     hideErrorMessage: boolean;
 };
 

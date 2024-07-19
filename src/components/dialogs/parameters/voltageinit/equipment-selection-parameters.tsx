@@ -5,8 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ElementType, EquipmentType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { DialogContent } from '@mui/material';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     FIXED_GENERATORS,
     VARIABLE_SHUNT_COMPENSATORS,
@@ -18,21 +19,21 @@ const EquipmentSelectionParameters = () => {
         <DialogContent>
             <ParameterLineDirectoryItemsInput
                 name={FIXED_GENERATORS}
-                equipmentTypes={[EquipmentType.GENERATOR]}
+                equipmentTypes={[EQUIPMENT_TYPES.GENERATOR]}
                 elementType={ElementType.FILTER}
                 label={'FixedGenerators'}
                 hideErrorMessage
             />
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_TRANSFORMERS}
-                equipmentTypes={[EquipmentType.TWO_WINDINGS_TRANSFORMER]}
+                equipmentTypes={[EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]}
                 elementType={ElementType.FILTER}
                 label={'VariableTransformers'}
                 hideErrorMessage
             />
             <ParameterLineDirectoryItemsInput
                 name={VARIABLE_SHUNT_COMPENSATORS}
-                equipmentTypes={[EquipmentType.SHUNT_COMPENSATOR]}
+                equipmentTypes={[EQUIPMENT_TYPES.SHUNT_COMPENSATOR]}
                 elementType={ElementType.FILTER}
                 label={'VariableShuntCompensators'}
                 hideErrorMessage
