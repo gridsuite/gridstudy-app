@@ -10,6 +10,7 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { IOptionalService } from '../components/utils/optional-services';
+import { MapEquipments } from '@powsybl/diagram-viewer';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -43,7 +44,7 @@ export interface ReduxState {
     theme: string;
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
-    mapEquipments: any;
+    mapEquipments: MapEquipments | null;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
