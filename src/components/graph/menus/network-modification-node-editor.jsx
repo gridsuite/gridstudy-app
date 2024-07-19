@@ -969,6 +969,7 @@ const NetworkModificationNodeEditor = () => {
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
                                         isOneNodeBuilding={isAnyNodeBuilding}
+                                        deleteInProgress={deleteInProgress}
                                         disabled={isLoading()}
                                         listSize={modifications.length}
                                         {...props}

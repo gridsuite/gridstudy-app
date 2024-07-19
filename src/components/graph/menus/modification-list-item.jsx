@@ -62,6 +62,7 @@ export const ModificationListItem = ({
     isDragging,
     isOneNodeBuilding,
     listSize,
+    deleteInProgress,
     ...props
 }) => {
     const intl = useIntl();
@@ -92,7 +93,10 @@ export const ModificationListItem = ({
             draggableId={modif.uuid}
             index={index}
             isDragDisabled={
-                isOneNodeBuilding || isRestorationDialog || mapDataLoading
+                isOneNodeBuilding ||
+                isRestorationDialog ||
+                mapDataLoading ||
+                deleteInProgress
             }
         >
             {(provided) => (
@@ -113,7 +117,8 @@ export const ModificationListItem = ({
                                     !isDragging &&
                                     !isOneNodeBuilding &&
                                     !isRestorationDialog &&
-                                    !mapDataLoading
+                                    !mapDataLoading &&
+                                    !deleteInProgress
                                         ? '1'
                                         : '0',
                             }}
