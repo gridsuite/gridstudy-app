@@ -7,7 +7,7 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { NAME } from '../../components/utils/field-constants.js';
+import { NAME } from '../../components/utils/field-constants';
 import {
     EQUIPMENT_INFOS_TYPES,
     EQUIPMENT_TYPES,

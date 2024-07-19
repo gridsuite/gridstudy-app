@@ -13,25 +13,25 @@ import {
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-} from '../utils/config-params.js';
-import { setStudyDisplayMode } from '../redux/actions.js';
+} from '../utils/config-params';
+import { setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
-import { DiagramType } from './diagrams/diagram-common.js';
+import { DiagramType } from './diagrams/diagram-common';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { Box } from '@mui/system';
-import HorizontalToolbar from './horizontal-toolbar.jsx';
-import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
-import NetworkMapTab from './network/network-map-tab.jsx';
-import { DiagramPane } from './diagrams/diagram-pane.jsx';
-import { StudyView } from './study-pane.jsx';
+import HorizontalToolbar from './horizontal-toolbar';
+import NetworkModificationTreePane from './network-modification-tree-pane';
+import NetworkMapTab from './network/network-map-tab';
+import { DiagramPane } from './diagrams/diagram-pane';
+import { StudyView } from './study-pane';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { StudyDisplayMode } from 'redux/reducer.type.ts';
+import { StudyDisplayMode } from 'redux/reducer.type';
 
 import { Global, css } from '@emotion/react';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import SelectionCreationPanel from './network/selection-creation-panel';
 const styles = {
     map: {

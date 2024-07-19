@@ -50,7 +50,7 @@ import {
     TabValue,
     VoltageInitParametersForm,
     voltageInitParametersFormSchema,
-} from './voltage-init-parameters-form.js';
+} from './voltage-init-parameters-form';
 import { ReduxState } from '../../../../redux/reducer.type';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
