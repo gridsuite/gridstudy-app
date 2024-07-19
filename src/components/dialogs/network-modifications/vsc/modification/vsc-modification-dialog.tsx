@@ -257,7 +257,14 @@ const VscModificationDialog: React.FC<any> = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, setValue, reset, getValues, editData.equipmentId]
+        [
+            studyUuid,
+            currentNodeUuid,
+            setValue,
+            reset,
+            getValues,
+            editData?.equipmentId,
+        ]
     );
 
     useEffect(() => {
