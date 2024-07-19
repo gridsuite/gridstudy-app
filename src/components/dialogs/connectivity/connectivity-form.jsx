@@ -7,7 +7,7 @@
 
 import ExploreOffOutlinedIcon from '@mui/icons-material/ExploreOffOutlined';
 import ExploreOutlinedIcon from '@mui/icons-material/ExploreOutlined';
-import { IconButton, TextField, Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -42,7 +42,7 @@ import {
     fetchBusesForVoltageLevel,
 } from '../../../services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
-import { filledTextField } from '../dialogUtils.jsx';
+import { italicFontTextField } from '../dialogUtils.jsx';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -181,14 +181,10 @@ export const ConnectivityForm = ({
     );
 
     const readyOnlyVoltageLevelField = (
-        <TextField
-            value={previousValues?.voltageLevelId}
-            InputProps={{
-                readOnly: true,
-                ...filledTextField,
-            }}
-            disabled
-            size={'small'}
+        <TextInput
+            name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
+            label={voltageLevelSelectLabel}
+            formProps={{ disabled: true, ...italicFontTextField }}
         />
     );
 
@@ -198,8 +194,8 @@ export const ConnectivityForm = ({
             label="Connected"
             previousValue={
                 previousValues?.terminalConnected
-                    ? intl.formatMessage({ id: 'Connected' })
-                    : intl.formatMessage({ id: 'Disconnected' })
+                    ? intl.formatMessage({ id: 'connected' })
+                    : intl.formatMessage({ id: 'disconnected' })
             }
         />
     ) : (
@@ -235,14 +231,10 @@ export const ConnectivityForm = ({
     );
 
     const readyOnlyBusOrBusbarSectionField = (
-        <TextField
-            value={previousValues?.busOrBusbarSectionId}
-            InputProps={{
-                readOnly: true,
-                ...filledTextField,
-            }}
-            disabled
-            size={'small'}
+        <TextInput
+            name={`${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`}
+            label="BusBarBus"
+            formProps={{ disabled: true, ...italicFontTextField }}
         />
     );
 
