@@ -1091,7 +1091,6 @@ export function DiagramPane({
         },
         [currentNode]
     );
-
     return (
         <AutoSizer>
             {({ width, height }) => (
