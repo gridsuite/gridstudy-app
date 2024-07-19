@@ -46,7 +46,7 @@ import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
+import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
