@@ -5,39 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import StudyPane from './study-pane';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import * as PropTypes from 'prop-types';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import { invalidateLoadFlowStatus } from 'services/study/loadflow';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { useDispatch, useSelector } from 'react-redux';
+import { PARAMS_LOADED } from '../utils/config-params';
 import {
     closeStudy,
-    limitReductionModified,
     loadNetworkModificationTreeSuccess,
     openStudy,
+    studyUpdated,
+    setCurrentTreeNode,
     resetEquipments,
     resetEquipmentsPostLoadflow,
-    setCurrentTreeNode,
     setStudyIndexationStatus,
-    studyUpdated,
+    limitReductionModified,
 } from '../redux/actions';
-import {
-    connectDeletedStudyNotificationsWebsocket,
-    connectNotificationsWsUpdateDirectories,
-} from '../services/directory-notification';
-import { fetchCaseName, fetchStudyExists } from '../services/study';
-import { connectNotificationsWebsocket } from '../services/study-notification';
-import {
-    fetchNetworkExistence,
-    fetchStudyIndexationStatus,
-} from '../services/study/network';
-import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
-import { computeFullPath, computePageTitle } from '../utils/compute-title';
-import { PARAMS_LOADED } from '../utils/config-params';
-import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import WaitingLoader from './utils/waiting-loader';
+import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
 import {
     getFirstNodeOfType,
@@ -45,15 +31,29 @@ import {
     isNodeRenamed,
     isSameNode,
 } from './graph/util/model-functions';
-import { BUILD_STATUS } from './network/constants';
-import StudyPane from './study-pane';
 import { RunningStatus } from './utils/running-status';
-import WaitingLoader from './utils/waiting-loader';
+import { computePageTitle, computeFullPath } from '../utils/compute-title';
+import { directoriesNotificationType } from '../utils/directories-notification-type';
+import { BUILD_STATUS } from './network/constants';
+import { connectNotificationsWebsocket } from '../services/study-notification';
+import {
+    connectDeletedStudyNotificationsWebsocket,
+    connectNotificationsWsUpdateDirectories,
+} from '../services/directory-notification';
+import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import { fetchCaseName, fetchStudyExists } from '../services/study';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import {
+    fetchNetworkExistence,
+    fetchStudyIndexationStatus,
+} from '../services/study/network';
+import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
+import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
-import { StudyIndexationStatus } from 'redux/reducer.type';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
+import { StudyIndexationStatus } from 'redux/reducer.type';
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 function isWorthUpdate(
     studyUpdatedForce,

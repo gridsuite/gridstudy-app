@@ -8,8 +8,8 @@
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
-import { Filter } from '../components/results/common/results-global-filter';
 import { IOptionalService } from '../components/utils/optional-services';
+import { Filter } from '../components/results/common/results-global-filter';
 import { MapEquipments } from '@powsybl/diagram-viewer';
 
 export enum UpdateTypes {
