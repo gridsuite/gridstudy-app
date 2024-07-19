@@ -76,7 +76,7 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils.js';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants.js';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
