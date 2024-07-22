@@ -9,7 +9,7 @@ import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
-    SelectInput,
+    MuiSelectInput,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -72,8 +72,6 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
 
 const formSchema = yup
     .object()
@@ -102,7 +100,7 @@ export const SensitivityAnalysisParameters = ({
     const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] =
         useState(0);
-    const [providers, , , , params, ,] = parametersBackend;
+    const [providers, , , , params, updateParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] =
         useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] =
@@ -134,6 +132,7 @@ export const SensitivityAnalysisParameters = ({
 
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
         useState(params);
 
@@ -141,7 +140,10 @@ export const SensitivityAnalysisParameters = ({
         setSensitivityAnalysisParameters(studyUuid, null)
             .then(() => {
                 return getSensitivityAnalysisParameters(studyUuid)
-                    .then((params) => setSensitivityAnalysisParams(params))
+                    .then((params) => {
+                        setSensitivityAnalysisParams(params);
+                        updateParameters(params);
+                    })
                     .catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -155,7 +157,7 @@ export const SensitivityAnalysisParameters = ({
                     headerId: 'paramsChangingError',
                 });
             });
-    }, [studyUuid, setSensitivityAnalysisParams, snackError]);
+    }, [studyUuid, setSensitivityAnalysisParams, snackError, updateParameters]);
 
     const formatNewParams = useCallback((newParams) => {
         return {
@@ -224,6 +226,7 @@ export const SensitivityAnalysisParameters = ({
             setLaunchLoader(true);
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
+                currentNode.id,
                 arrayFormName === SENSI_INJECTIONS_SET,
                 formatFilteredParams(row)
             )
@@ -245,7 +248,14 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
+        [
+            snackError,
+            studyUuid,
+            formatFilteredParams,
+            setValue,
+            getResultCount,
+            currentNode,
+        ]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
@@ -426,9 +436,9 @@ export const SensitivityAnalysisParameters = ({
                         };
                     }) ?? [],
             };
-            reset(values);
+            return values;
         },
-        [reset]
+        []
     );
 
     const initRowsCount = useCallback(() => {
@@ -473,7 +483,9 @@ export const SensitivityAnalysisParameters = ({
                 formatNewParams(newParams)
             )
                 .then(() => {
-                    setSensitivityAnalysisParams(formatNewParams(newParams));
+                    let formattedParams = formatNewParams(newParams);
+                    setSensitivityAnalysisParams(formattedParams);
+                    updateParameters(formattedParams);
                     initRowsCount();
                 })
                 .catch((error) => {
@@ -489,6 +501,7 @@ export const SensitivityAnalysisParameters = ({
             studyUuid,
             formatNewParams,
             initRowsCount,
+            updateParameters,
         ]
     );
 
@@ -499,7 +512,7 @@ export const SensitivityAnalysisParameters = ({
                 fetchSensitivityAnalysisParameters(newParams[0].id)
                     .then((parameters) => {
                         console.info(
-                            'loading the following loadflow parameters : ' +
+                            'loading the following sensi parameters : ' +
                                 parameters.uuid
                         );
                         reset(
@@ -510,6 +523,7 @@ export const SensitivityAnalysisParameters = ({
                                 keepDefaultValues: true,
                             }
                         );
+                        initRowsCount();
                     })
                     .catch((error) => {
                         console.error(error);
@@ -521,13 +535,20 @@ export const SensitivityAnalysisParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, fromSensitivityAnalysisParamsDataToFormValues, reset]
+        [
+            snackError,
+            fromSensitivityAnalysisParamsDataToFormValues,
+            reset,
+            initRowsCount,
+        ]
     );
 
     useEffect(() => {
         if (sensitivityAnalysisParams) {
-            fromSensitivityAnalysisParamsDataToFormValues(
-                sensitivityAnalysisParams
+            reset(
+                fromSensitivityAnalysisParamsDataToFormValues(
+                    sensitivityAnalysisParams
+                )
             );
             !isSubmitAction && initRowsCount();
         }
@@ -536,6 +557,7 @@ export const SensitivityAnalysisParameters = ({
         sensitivityAnalysisParams,
         initRowsCount,
         isSubmitAction,
+        reset,
     ]);
 
     const clear = useCallback(() => {
@@ -566,9 +588,8 @@ export const SensitivityAnalysisParameters = ({
                             <FormattedMessage id="Provider" />
                         </Grid>
                         <Grid item xs={4} xl={2} sx={styles.controlItem}>
-                            <SelectInput
+                            <MuiSelectInput
                                 name={PROVIDER}
-                                disableClearable
                                 size="small"
                                 options={Object.values(formattedProviders)}
                             />
@@ -661,9 +682,6 @@ export const SensitivityAnalysisParameters = ({
                     validationButtonText={intl.formatMessage({
                         id: 'validate',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             )}
         </>

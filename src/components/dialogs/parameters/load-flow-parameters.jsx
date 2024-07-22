@@ -5,35 +5,34 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Autocomplete, Chip, Grid, TextField, Box } from '@mui/material';
 import {
-    DropDown,
-    LabelledButton,
-    SwitchWithLabel,
-    useParameterState,
-    styles,
-} from './parameters';
-import { LineSeparator } from '../dialogUtils';
-import {
+    DirectoryItemSelector,
     ElementType,
     FlatParameters,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useLocalizedCountries } from '../../utils/localized-countries-hook';
-import { replaceAllDefaultValues } from '../../utils/utils';
+import { Autocomplete, Box, Chip, Grid, TextField } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { fetchLoadFlowParameters } from '../../../services/loadflow';
 import {
     PARAM_DEVELOPER_MODE,
     PARAM_LIMIT_REDUCTION,
 } from '../../../utils/config-params';
-import { ParameterType, ParamLine, ParameterGroup } from './widget';
 import { mergeSx } from '../../utils/functions';
+import { useLocalizedCountries } from '../../utils/localized-countries-hook';
+import { replaceAllDefaultValues } from '../../utils/utils';
+import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
-import { fetchLoadFlowParameters } from '../../../services/loadflow';
-import { fetchDirectoryContent, fetchRootFolders } from 'services/directory';
-import { fetchElementsMetadata } from 'services/explore';
+import {
+    DropDown,
+    LabelledButton,
+    SwitchWithLabel,
+    styles,
+    useParameterState,
+} from './parameters';
+import { ParameterGroup } from './widget';
+import ParameterLineSlider from './widget/parameter-line-slider';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -47,7 +46,7 @@ const CountrySelector = ({ value, label, callback }) => {
                 <Autocomplete
                     size="small"
                     value={value}
-                    multiple={true}
+                    multiple
                     onChange={(event, newValues) => callback(newValues)}
                     options={countryCodes}
                     getOptionLabel={(countryCode) => translate(countryCode)}
@@ -640,9 +639,8 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     >
                         <LineSeparator />
                         <Grid container spacing={1} paddingTop={1}>
-                            <ParamLine
-                                type={ParameterType.Slider}
-                                param_name_id={PARAM_LIMIT_REDUCTION}
+                            <ParameterLineSlider
+                                paramNameId={PARAM_LIMIT_REDUCTION}
                                 label="LimitReduction"
                                 marks={alertThresholdMarks}
                                 minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
@@ -720,9 +718,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         validationButtonText={intl.formatMessage({
                             id: 'validate',
                         })}
-                        fetchDirectoryContent={fetchDirectoryContent}
-                        fetchRootFolders={fetchRootFolders}
-                        fetchElementsInfos={fetchElementsMetadata}
                     />
                 )}
             </Box>

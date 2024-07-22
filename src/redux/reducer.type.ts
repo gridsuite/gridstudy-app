@@ -10,9 +10,23 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { IOptionalService } from '../components/utils/optional-services';
 import { Filter } from '../components/results/common/results-global-filter';
+import { MapEquipments } from '@powsybl/diagram-viewer';
 
 export enum UpdateTypes {
     STUDY = 'study',
+}
+
+export enum StudyIndexationStatus {
+    NOT_INDEXED = 'NOT_INDEXED',
+    INDEXING_ONGOING = 'INDEXING_ONGOING',
+    INDEXED = 'INDEXED',
+}
+
+export enum StudyDisplayMode {
+    MAP = 'Map',
+    TREE = 'Tree',
+    HYBRID = 'Hybrid',
+    DRAW = 'Draw',
 }
 
 export interface ReduxState {
@@ -30,7 +44,11 @@ export interface ReduxState {
     theme: string;
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
-    mapEquipments: any;
+    mapEquipments: MapEquipments | null;
+    networkAreaDiagramNbVoltageLevels: number;
+    networkAreaDiagramDepth: number;
+    studyDisplayMode: StudyDisplayMode;
+    studyIndexationStatus: StudyIndexationStatus;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {
@@ -114,6 +132,7 @@ export interface ComputingStatus {
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
+    [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
 export interface User {

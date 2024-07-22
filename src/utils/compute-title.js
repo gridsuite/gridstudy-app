@@ -24,7 +24,7 @@ const computePath = (parents, maxAllowedPathSize) => {
     let path = '';
 
     for (let i = 0; i < parents.length; i++) {
-        testedPath = '/' + parents[i] + testedPath;
+        testedPath += '/' + parents[i];
         if (testedPath.length > maxAllowedPathSize) {
             return '...' + path;
         }

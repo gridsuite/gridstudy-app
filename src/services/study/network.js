@@ -14,7 +14,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
-    getRequestParamFromList,
+    getQueryParamsList,
     getUrlWithToken,
 } from '../utils';
 
@@ -139,36 +139,49 @@ export function fetchNetworkElementsInfos(
     substationsIds,
     elementType,
     infoType,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    nominalVoltages = undefined
 ) {
+    const substationsCount = substationsIds ? substationsIds.length : 0;
+    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
+
     console.info(
-        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
     );
 
-    const substationsIdsParams = getRequestParamFromList(
-        substationsIds,
-        'substationsIds'
+    const nominalVoltagesParams = getQueryParamsList(
+        nominalVoltages,
+        'nominalVoltages'
     );
 
-    const urlSearchParams = new URLSearchParams(substationsIdsParams);
+    const nominalVoltagesParamsList =
+        nominalVoltages && nominalVoltages?.length > 0
+            ? '&' + nominalVoltagesParams
+            : '';
+
+    const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
         urlSearchParams.append(
             'inUpstreamBuiltParentNode',
             inUpstreamBuiltParentNode
         );
     }
-
-    urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
+    urlSearchParams.append('elementType', elementType);
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements' +
         '?' +
-        urlSearchParams;
+        urlSearchParams +
+        nominalVoltagesParamsList;
     console.debug(fetchElementsUrl);
 
-    return backendFetchJson(fetchElementsUrl);
+    return backendFetchJson(fetchElementsUrl, {
+        method: 'post',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(substationsIds ?? null),
+    });
 }
 
 export function fetchNetworkElementInfos(

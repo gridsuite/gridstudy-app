@@ -14,6 +14,8 @@ export interface ParameterFloatProps {
     label: string;
     style: any;
     adornment: any;
+    labelSize: number;
+    inputSize: number;
 }
 
 export const ParameterFloat = ({
@@ -21,14 +23,16 @@ export const ParameterFloat = ({
     label,
     style,
     adornment,
+    labelSize,
+    inputSize,
 }: ParameterFloatProps) => {
     return (
         <>
             <Grid item container direction={'row'} spacing={1} paddingTop={3}>
-                <Grid item xs={10} sx={style}>
+                <Grid item xs={labelSize} sx={style}>
                     <FormattedMessage id={label} />
                 </Grid>
-                <Grid item xs={2}>
+                <Grid item xs={inputSize}>
                     <FloatInput name={name} adornment={adornment} />
                 </Grid>
             </Grid>

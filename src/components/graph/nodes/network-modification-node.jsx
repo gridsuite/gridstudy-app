@@ -13,7 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import { OverflowableText } from '@gridsuite/commons-ui';
 import { CopyType } from '../../network-modification-tree-pane';
-import { getLocalStorageTheme } from '../../../redux/local-storage';
+import { getLocalStorageTheme } from '../../../redux/local-storage/local-storage';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { BUILD_STATUS } from '../../network/constants';
 import { Box } from '@mui/system';
@@ -230,6 +230,7 @@ const NetworkModificationNode = (props) => {
                             text={props.data.label}
                             sx={{ width: '100%' }}
                             tooltipSx={styles.tooltip}
+                            maxLineCount={3}
                         />
                     </span>
                 </Box>

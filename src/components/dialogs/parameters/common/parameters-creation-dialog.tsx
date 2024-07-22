@@ -14,18 +14,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
-    fetchDirectoryContent,
-    fetchPath,
-    fetchRootFolders,
-} from 'services/directory';
-import {
     CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
-import { createParameter, fetchElementsMetadata } from 'services/explore';
+import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { ReduxState } from 'redux/reducer.type';
 import { UUID } from 'crypto';
@@ -78,11 +74,13 @@ const CreateParameterDialog = <T extends FieldValues>({
     const nameError = errors[NAME];
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchPath(studyUuid).then((res) => {
-            if (res) {
+        fetchDirectoryElementPath(studyUuid).then((studyPath) => {
+            if (studyPath && studyPath.length >= 2) {
+                // studyPath contains [RootDirectoryElement, directoryElement, ...,  directoryElement, studyElement]
+                const parentDirectoryIndex = studyPath.length - 2; // Should always be the second to last element
                 setDefaultFolder({
-                    id: res[1].elementUuid,
-                    name: res[1].elementName,
+                    id: studyPath[parentDirectoryIndex].elementUuid,
+                    name: studyPath[parentDirectoryIndex].elementName,
                 });
             }
         });
@@ -131,7 +129,11 @@ const CreateParameterDialog = <T extends FieldValues>({
     const folderChooser = (
         <Grid container item>
             <Grid item>
-                <Button onClick={handleChangeFolder} variant="contained">
+                <Button
+                    onClick={handleChangeFolder}
+                    variant="contained"
+                    size={'small'}
+                >
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
                 </Button>
             </Grid>
@@ -180,9 +182,6 @@ const CreateParameterDialog = <T extends FieldValues>({
                     title={intl.formatMessage({
                         id: 'showSelectDirectoryDialog',
                     })}
-                    fetchDirectoryContent={fetchDirectoryContent}
-                    fetchRootFolders={fetchRootFolders}
-                    fetchElementsInfos={fetchElementsMetadata}
                 />
             </ModificationDialog>
         </CustomFormProvider>

@@ -186,7 +186,7 @@ const VoltageLevelCreationDialog = ({
                         return intl.formatMessage({ id: switchKind });
                     })
                     .join(' / '),
-                [COUPLING_OMNIBUS]: voltageLevel.couplingDevices,
+                [COUPLING_OMNIBUS]: voltageLevel.couplingDevices ?? [],
                 [SWITCH_KINDS]:
                     voltageLevel.switchKinds != null
                         ? voltageLevel.switchKinds?.map((switchKind) => ({

@@ -80,8 +80,6 @@ import {
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
     STOP_DIAGRAM_BLINK,
-    STUDY_DISPLAY_MODE,
-    STUDY_INDEXATION_STATUS,
     LOADFLOW_RESULT_FILTER,
     SECURITY_ANALYSIS_RESULT_FILTER,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
@@ -102,7 +100,7 @@ import {
     getLocalStorageTheme,
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
-} from './local-storage';
+} from './local-storage/local-storage';
 import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_MAPBOX,
@@ -162,6 +160,7 @@ import {
     SPREADSHEET_STORE_FIELD,
     ONE_BUS,
 } from 'utils/store-filter-fields';
+import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
 const paramsInitialState = {
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -194,6 +193,7 @@ const initialComputingStatus = {
     [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
     [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
     [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
+    [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
 };
 
 const initialSpreadsheetNetworkState = {
@@ -206,11 +206,13 @@ const initialSpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.LOAD]: null,
     [EQUIPMENT_TYPES.BATTERY]: null,
     [EQUIPMENT_TYPES.DANGLING_LINE]: null,
+    [EQUIPMENT_TYPES.TIE_LINE]: null,
     [EQUIPMENT_TYPES.HVDC_LINE]: null,
     [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: null,
     [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: null,
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
+    [EQUIPMENT_TYPES.BUS]: null,
 };
 
 const initialSpreadsheetFilter = {
@@ -268,7 +270,7 @@ const initialState = {
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
-    studyDisplayMode: STUDY_DISPLAY_MODE.HYBRID,
+    studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
@@ -279,7 +281,7 @@ const initialState = {
     computationStarting: false,
     optionalServices: defaultOptionalServicesState,
     oneBusShortCircuitAnalysisDiagram: null,
-    studyIndexationStatus: STUDY_INDEXATION_STATUS.NOT_INDEXED,
+    studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     ...paramsInitialState,
     limitReductionModified: false,
     recentGlobalFilters: [],
@@ -739,13 +741,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SET_STUDY_DISPLAY_MODE, (state, action) => {
-        if (
-            Object.values(STUDY_DISPLAY_MODE).includes(action.studyDisplayMode)
-        ) {
+        if (Object.values(StudyDisplayMode).includes(action.studyDisplayMode)) {
             // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
             // Some actions in the TREE display mode could change this value after that
             // ex: change current Node, current Node updated ...
-            if (action.studyDisplayMode === STUDY_DISPLAY_MODE.TREE) {
+            if (action.studyDisplayMode === StudyDisplayMode.TREE) {
                 state.reloadMap = false;
             }
 
@@ -1252,6 +1252,8 @@ function getEquipmentTypeFromUpdateType(updateType) {
             return EQUIPMENT_TYPES.VOLTAGE_LEVEL;
         case 'substations':
             return EQUIPMENT_TYPES.SUBSTATION;
+        case 'buses':
+            return EQUIPMENT_TYPES.BUS;
         default:
             return;
     }

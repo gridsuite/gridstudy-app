@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -25,8 +19,8 @@ import {
 import {
     CheckboxInput,
     FieldLabel,
+    MuiSelectInput,
     RadioInput,
-    SelectInput,
     SwitchInput,
 } from '@gridsuite/commons-ui';
 
@@ -50,7 +44,6 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
     resetAll,
 }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);
-    const [isChanged, setIsChanged] = useState(false);
 
     const watchInitialVoltageProfileMode = useWatch({
         name: SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -71,7 +64,16 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         name: SHORT_CIRCUIT_WITH_NEUTRAL_POSITION,
     });
 
-    const isFeaturesDefaultConfiguration = useMemo(() => {
+    const isIccMinFeaturesDefaultConfiguration = useMemo(() => {
+        return (
+            !watchLoads &&
+            !watchShuntCompensators &&
+            !watchVSC &&
+            !watchNeutralPosition
+        );
+    }, [watchLoads, watchShuntCompensators, watchVSC, watchNeutralPosition]);
+
+    const isIccMaxFeaturesDefaultConfiguration = useMemo(() => {
         return (
             !watchLoads &&
             !watchShuntCompensators &&
@@ -100,9 +102,14 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         return getStatus(status, styles);
     }, [status]);
 
-    const onChangeCallback = useCallback(() => {
-        setIsChanged(true);
-    }, [setIsChanged]);
+    const onPredefinedParametersManualChange = (event: any) => {
+        const newPredefinedParameters = event.target.value;
+        console.debug(
+            'onPredefinedParametersManualChange new:',
+            newPredefinedParameters
+        );
+        resetAll(newPredefinedParameters);
+    };
 
     // fields definition
     const feederResult = (
@@ -116,11 +123,11 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
         </Grid>
     );
     const predefinedParameters = (
-        <SelectInput
+        <MuiSelectInput
             name={SHORT_CIRCUIT_PREDEFINED_PARAMS}
             options={predefinedParamsOptions}
-            onChangeCallback={onChangeCallback}
-            disableClearable
+            onChange={onPredefinedParametersManualChange}
+            fullWidth
         />
     );
 
@@ -157,38 +164,48 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({
 
     useEffect(() => {
         // in order to show the right status we need to check the predefinedParams and initial voltage profile mode values
-        // show success only when ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CEI909
-        const isNominalDefaultConfiguration =
+        // show success only if ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL or ICC_MAX_WITH_CEI909 to CEI909 or ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP is associated to NOMINAL
+        const isIccMaxWithNominalVoltageMap =
             watchPredefinedParams ===
-                PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP &&
+            PREDEFINED_PARAMETERS.ICC_MAX_WITH_NOMINAL_VOLTAGE_MAP;
+
+        const isIccMinWithNominal =
+            watchPredefinedParams ===
+            PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP;
+
+        const isInitialVoltageNominal =
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.NOMINAL;
+
+        const isIccMaxNominalDefaultConfiguration =
+            isIccMaxWithNominalVoltageMap && isInitialVoltageNominal;
+        const isIccMinNominalDefaultConfiguration =
+            isIccMinWithNominal && isInitialVoltageNominal;
 
         const isCEI909DefaultConfiguration =
             watchPredefinedParams ===
                 PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909 &&
             watchInitialVoltageProfileMode === INITIAL_VOLTAGE.CEI909;
 
-        if (
-            (isNominalDefaultConfiguration || isCEI909DefaultConfiguration) &&
-            isFeaturesDefaultConfiguration
-        ) {
-            setStatus(STATUS.SUCCESS);
-        } else {
-            setStatus(STATUS.ERROR);
-        }
+        const isIccMaxDefaultConfiguration =
+            (isIccMaxNominalDefaultConfiguration ||
+                isCEI909DefaultConfiguration) &&
+            isIccMaxFeaturesDefaultConfiguration;
+
+        const isIccMinDefaultConfiguration =
+            isIccMinNominalDefaultConfiguration &&
+            isIccMinFeaturesDefaultConfiguration;
+
+        setStatus(
+            isIccMaxDefaultConfiguration || isIccMinDefaultConfiguration
+                ? STATUS.SUCCESS
+                : STATUS.ERROR
+        );
     }, [
         watchInitialVoltageProfileMode,
         watchPredefinedParams,
-        isFeaturesDefaultConfiguration,
+        isIccMaxFeaturesDefaultConfiguration,
+        isIccMinFeaturesDefaultConfiguration,
     ]);
-
-    // reset all fields when predefined parameters changes
-    useEffect(() => {
-        if (isChanged) {
-            resetAll(watchPredefinedParams);
-            setIsChanged(false);
-        }
-    }, [watchPredefinedParams, resetAll, isChanged]);
 
     return (
         <Grid container spacing={2} paddingLeft={2}>

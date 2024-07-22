@@ -12,7 +12,9 @@ const filter_locale_fr = {
     'filter.notEqual': "N'est pas égal à",
     'filter.equals': 'Égal à',
     'filter.lessThanOrEqual': 'Inférieur ou égal',
+    'filter.lessThan': 'Inférieur',
     'filter.greaterThanOrEqual': 'Supérieur ou égal',
+    'filter.greaterThan': 'Supérieur',
     'filter.filterOoo': 'Filtrer...',
 };
 

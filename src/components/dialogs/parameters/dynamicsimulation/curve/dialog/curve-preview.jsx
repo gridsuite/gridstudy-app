@@ -16,7 +16,7 @@ import React, {
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { CustomAGGrid } from '../../../../../custom-aggrid/custom-aggrid';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
     grid: {

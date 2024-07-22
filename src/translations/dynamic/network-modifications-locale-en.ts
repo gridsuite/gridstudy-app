@@ -54,14 +54,17 @@ const network_modifications_locale_en = {
         'Modifying shunt compensator {computedLabel}',
     'network_modifications.GENERATOR_SCALING':
         'Generator scaling {computedLabel}',
-    'network_modifications.VSC_CREATION': 'Creating vsc {computedLabel}',
-    'network_modifications.VSC_MODIFICATION': 'Modifing vsc {computedLabel}',
+    'network_modifications.VSC_CREATION': 'Creating HVDC (VSC) {computedLabel}',
+    'network_modifications.VSC_MODIFICATION':
+        'Modifing HVDC (VSC) {computedLabel}',
     'network_modifications.GROOVY_SCRIPT': 'Modification by script',
     'network_modifications.EQUIPMENT_ATTRIBUTE_MODIFICATION':
         '{equipmentAttributeName, select, open {{equipmentAttributeValue, select, true {Open {computedLabel}} other {Close {computedLabel}}}} other {Equipment modification {computedLabel}}}',
     'network_modifications.creatingModification': 'Creating modification ...',
     'network_modifications.deletingModification': 'Deleting modification ...',
     'network_modifications.updatingModification': 'Updating modification ...',
+    'network_modifications.stashingModification': 'Stashing modification ...',
+    'network_modifications.restoringModification': 'Restoring modification ...',
     'network_modifications.modifications': 'Updating modification list ...',
     'network_modifications.GENERATION_DISPATCH':
         'Generation dispatch {computedLabel}',
