@@ -19,10 +19,10 @@ import { LabelledButton, styles, useParameterState } from './parameters';
 import ParameterLineDropdown from './widget/parameter-line-dropdown';
 import ParameterLineSwitch from './widget/parameter-line-switch';
 
-export const FluxConventions = {
-    IIDM: 'iidm',
-    TARGET: 'target',
-};
+export enum FluxConventions {
+    IIDM = 'iidm',
+    TARGET = 'target',
+}
 
 export const NetworkParameters = () => {
     const [, handleChangeFluxConvention] = useParameterState(

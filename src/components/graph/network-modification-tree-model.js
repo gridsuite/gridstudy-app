@@ -7,7 +7,7 @@
 
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
-import { NodeInsertModes } from '../utils/node-insert-modes';
+import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes

@@ -29,7 +29,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import {
-    equipementTypeToLabel,
+    equipmentTypeToLabel,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
@@ -147,7 +147,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 .map((value) => {
                     return {
                         id: value,
-                        label: equipementTypeToLabel(value),
+                        label: equipmentTypeToLabel(value),
                     };
                 });
         }

@@ -13,9 +13,10 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
 import ChildMenuItem from './create-child-menu-item';
-import { NodeInsertModes } from '../../utils/node-insert-modes';
+import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
+import { BUILD_STATUS } from '../../network/constants';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -226,7 +227,7 @@ const CreateNodeMenu = ({
             id: 'buildNode',
             disabled:
                 activeNode?.data?.globalBuildStatus?.startsWith('BUILT') ||
-                activeNode?.data?.globalBuildStatus === 'BUILDING' ||
+                activeNode?.data?.globalBuildStatus === BUILD_STATUS.BUILDING ||
                 isModificationsInProgress,
         },
         CREATE_MODIFICATION_NODE: {
