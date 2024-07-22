@@ -7,49 +7,4 @@
 
 export enum TAB_VALUES {
     'General' = 0,
-    'LimitReductions' = 1,
 }
-
-export interface IColumnsDef {
-    label: string;
-    dataKey: string;
-    width?: string;
-}
-
-export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
-    {
-        label: 'VoltageLevels',
-        dataKey: 'voltageLevels',
-        width: '40%',
-    },
-    {
-        label: 'IST',
-        dataKey: 'ist',
-        width: '20%',
-    },
-    {
-        label: 'LimitDuration10',
-        dataKey: 'limitDuration10',
-        width: '20%',
-    },
-    {
-        label: 'LimitDuration5',
-        dataKey: 'limitDuration5',
-        width: '20%',
-    },
-    {
-        label: 'LimitDuration0',
-        dataKey: 'limitDuration0',
-        width: '20%',
-    },
-];
-
-export interface ILimitReductionsParameters {
-    columnsDef: IColumnsDef[];
-    name: string;
-}
-
-export const LimitReductionsParameters: ILimitReductionsParameters = {
-    columnsDef: COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS,
-    name: 'limitReductions',
-};
