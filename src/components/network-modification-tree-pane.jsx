@@ -81,6 +81,9 @@ const noSelectionForCopy = {
     copyType: null,
     allChilddrenIds: null,
 };
+
+const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
+
 export const NetworkModificationTreePane = ({
     studyUuid,
     studyMapTreeDisplay,
@@ -498,10 +501,24 @@ export const NetworkModificationTreePane = ({
     const handleBuildNode = useCallback(
         (element) => {
             buildNode(studyUuid, element.id).catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeBuildingError',
-                });
+                if (
+                    error.status === 403 &&
+                    error.message.includes(
+                        HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE
+                    )
+                ) {
+                    // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
+                    let limit = error.message.split(/[: ]+/).pop();
+                    snackError({
+                        messageId: 'maxBuiltNodeExceededError',
+                        messageValues: { limit: limit },
+                    });
+                } else {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'NodeBuildingError',
+                    });
+                }
             });
         },
         [studyUuid, snackError]
