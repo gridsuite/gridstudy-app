@@ -80,7 +80,7 @@ export const CONNECTION_DIRECTIONS = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
-export function getEnergySourceLabel(energySourceId) {
+export function getEnergySourceLabel(energySourceId: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
@@ -117,7 +117,7 @@ export const REACTIVE_VARIATION_MODES = {
     TAN_PHI_FIXED: { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
 };
 
-export function getLoadTypeLabel(loadTypeId) {
+export function getLoadTypeLabel(loadTypeId: string) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
 

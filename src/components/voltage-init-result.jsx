@@ -4,7 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState, useMemo, useRef } from 'react';
+import React, {
+    useCallback,
+    useState,
+    useMemo,
+    useRef,
+    useEffect,
+} from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -18,6 +24,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
+    getVoltageInitStudyParameters,
 } from '../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
@@ -165,6 +172,18 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         setPreviewModificationsDialogOpen,
     ]);
 
+    const [autoApplyModifications, setAutoApplyModifications] = useState(false);
+
+    useEffect(() => {
+        getVoltageInitStudyParameters(studyUuid).then(
+            (voltageInitParameters) => {
+                setAutoApplyModifications(
+                    voltageInitParameters?.applyModifications ?? false
+                );
+            }
+        );
+    }, [studyUuid]);
+
     const renderPreviewModificationsDialog = () => {
         return (
             <VoltageInitModificationDialog
@@ -175,6 +194,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 onPreviewModeSubmit={applyModifications}
                 editDataFetchStatus={FetchStatus.IDLE}
                 dialogProps={undefined}
+                disabledSave={autoApplyModifications}
             />
         );
     };
