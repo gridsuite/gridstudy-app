@@ -19,9 +19,9 @@ import { TopBarEquipmentSearchPopover } from './top-bar-equipment-search-popover
 interface TopBarEquipmentSearchInputProps {
     displayedValue: string;
     params: AutocompleteRenderInputParams;
-    isSearchDisabled: boolean;
     equipmentType: EquipmentType | null;
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
+    disabledSearchReason: string;
 }
 
 const styles = {
@@ -39,22 +39,26 @@ export const TopBarEquipmentSearchInput = (
 ) => {
     const {
         displayedValue,
-        isSearchDisabled,
         params,
         equipmentType,
         setEquipmentType,
+        disabledSearchReason,
     } = props;
     const intl = useIntl();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const inputRef = useRef<HTMLDivElement>(null);
-
+    const isSearchDisabled = disabledSearchReason !== '';
     return (
         <>
             <TextField
                 ref={inputRef}
-                placeholder={intl.formatMessage({
-                    id: 'EquipmentSearchPlaceholder',
-                })}
+                placeholder={
+                    isSearchDisabled
+                        ? disabledSearchReason
+                        : intl.formatMessage({
+                              id: 'EquipmentSearchPlaceholder',
+                          })
+                }
                 autoFocus={true}
                 {...params}
                 label={intl.formatMessage({
@@ -74,7 +78,7 @@ export const TopBarEquipmentSearchInput = (
                     ),
                     endAdornment: (
                         <>
-                            {equipmentType && (
+                            {!isSearchDisabled && equipmentType && (
                                 <Chip
                                     onDelete={() => setEquipmentType(null)}
                                     label={
@@ -92,7 +96,10 @@ export const TopBarEquipmentSearchInput = (
                                     sx={styles.chip}
                                 />
                             )}
-                            <IconButton onClick={() => setIsPopoverOpen(true)}>
+                            <IconButton
+                                onClick={() => setIsPopoverOpen(true)}
+                                disabled={isSearchDisabled}
+                            >
                                 <Tune />
                             </IconButton>
                         </>
