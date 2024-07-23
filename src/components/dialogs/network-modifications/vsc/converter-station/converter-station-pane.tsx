@@ -92,10 +92,10 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             fullWidth
             label={'ID'}
             value={previousValues?.id}
-            // InputProps={{
-            //     readOnly: true,
-            // }}
-            // disabled
+            InputProps={{
+                readOnly: true,
+            }}
+            disabled
         />
     ) : (
         <TextInput
