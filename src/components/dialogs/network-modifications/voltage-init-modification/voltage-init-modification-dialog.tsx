@@ -159,6 +159,7 @@ interface VoltageInitModificationProps {
     onClose: CloseFunction;
     onPreviewModeSubmit?: PreviewModeSubmitFunction;
     editDataFetchStatus: FetchStatus;
+    disabledSave: boolean;
     dialogProps: any;
 }
 
@@ -184,6 +185,7 @@ const VoltageInitModificationDialog: FunctionComponent<
     onClose,
     onPreviewModeSubmit,
     editDataFetchStatus,
+    disabledSave,
     dialogProps,
 }) => {
     const intl = useIntl();
@@ -621,7 +623,9 @@ const VoltageInitModificationDialog: FunctionComponent<
             onClear={handleClear}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             disabledSave={
-                onPreviewModeSubmit === undefined || editData === undefined
+                disabledSave ||
+                onPreviewModeSubmit === undefined ||
+                editData === undefined
             }
             aria-labelledby="dialog-voltage-init-modification"
             subtitle={equipmentTabs}
