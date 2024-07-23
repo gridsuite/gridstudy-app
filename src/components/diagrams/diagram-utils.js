@@ -60,7 +60,7 @@ export const makeDiagramSorter = (diagramStates) => {
 // to avoid increasing the depth too much.
 // we want this estimation to be slightly pessimistic to avoid bad UX of going to far
 // and not being able to do the same thing step by step.
-const VL_DEPTH_GROWTH_RATE = 3;
+const VL_DEPTH_GROWTH_RATE = 2;
 export function getEstimatedNbVoltageLevels(
     currentDepth,
     requestedDepth,

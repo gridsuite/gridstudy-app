@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -672,18 +666,22 @@ export function DiagramPane({
     // To allow a small number of fast clicks
     // and then stop before we get too close to
     // NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
-    const shouldDebounceUpdateNAD = useMemo(() => {
-        const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
-            previousNetworkAreaDiagramDepth.current,
-            networkAreaDiagramDepth,
-            networkAreaDiagramNbVoltageLevels
-        );
-        return (
-            estimatedNbVoltageLevels <
-                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
-            previousNetworkAreaDiagramDepth.current > networkAreaDiagramDepth
-        );
-    }, [networkAreaDiagramDepth, networkAreaDiagramNbVoltageLevels]);
+    const shouldDebounceUpdateNAD = useCallback(
+        (networkAreaDiagramDepth) => {
+            const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
+                previousNetworkAreaDiagramDepth.current,
+                networkAreaDiagramDepth,
+                networkAreaDiagramNbVoltageLevels
+            );
+            return (
+                estimatedNbVoltageLevels <
+                    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
+                previousNetworkAreaDiagramDepth.current >
+                    networkAreaDiagramDepth
+            );
+        },
+        [networkAreaDiagramNbVoltageLevels]
+    );
 
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
@@ -704,7 +702,7 @@ export function DiagramPane({
         // it's ok to do this and doesn't cause two fetches at the end
         // beacause the debounced function is recreated after each networkAreaDiagramDepth
         // change so the debounce hook clears the debounce timer
-        if (shouldDebounceUpdateNAD) {
+        if (shouldDebounceUpdateNAD(networkAreaDiagramDepth)) {
             debounceUpdateNAD(diagramStates);
         } else {
             updateNAD(diagramStates);
@@ -717,8 +715,9 @@ export function DiagramPane({
         updateDiagramStates,
         updateSLDs,
         updateNAD,
-        shouldDebounceUpdateNAD,
         debounceUpdateNAD,
+        networkAreaDiagramDepth,
+        shouldDebounceUpdateNAD,
     ]);
 
     const displayedDiagrams = views
