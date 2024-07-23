@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     EQUIPMENT_TYPE_FIELD,
@@ -15,9 +15,13 @@ import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import ModificationLineForm from './modification-line/modification-line-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
-import { getModificationLineInitialValue } from './modification-line/modification-line-utils';
-import { useFormContext } from 'react-hook-form';
+import {
+    EQUIPMENTS_FIELDS,
+    getModificationLineInitialValue,
+} from './modification-line/modification-line-utils';
+import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
+import { usePredefinedProperties } from '@gridsuite/commons-ui';
 
 interface ByFormulaFormProps {}
 
@@ -32,6 +36,17 @@ const EQUIPMENT_TYPE_OPTIONS = [
 
 const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
     const { setValue, getValues } = useFormContext();
+    const equipmentType = useWatch({
+        name: EQUIPMENT_TYPE_FIELD,
+    });
+    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentType] ?? [];
+
+    // get predefined properties
+    const [predefinedProperties, setEquipmentType] =
+        usePredefinedProperties(equipmentType);
+    useEffect(() => {
+        setEquipmentType(equipmentType);
+    }, [equipmentType, setEquipmentType]);
 
     const equipmentTypeField = (
         <SelectWithConfirmationInput
@@ -53,6 +68,11 @@ const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
         <ExpandableInput
             name={MODIFICATION_LINE}
             Field={ModificationLineForm}
+            fieldProps={{
+                predefinedProperties,
+                equipmentFields,
+                equipmentType,
+            }}
             addButtonLabel={'addNewModificationLine'}
             initialValue={getModificationLineInitialValue()}
         />

@@ -13,14 +13,13 @@ import {
 } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
-    EQUIPMENT_TYPE_FIELD,
     FILTERS,
     PROPERTY_NAME_FIELD,
     VALUE_FIELD,
 } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
-import { EQUIPMENTS_FIELDS } from './modification-line-utils';
+import { DataType, FieldOptionType } from './modification-line-utils';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
@@ -30,20 +29,28 @@ interface ModificationLineFormProps {
     name: String;
     index: number;
     predefinedProperties: any;
+    equipmentFields: FieldOptionType[];
+    equipmentType: string;
 }
 
 const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
     name,
     index,
     predefinedProperties,
+    equipmentFields,
+    equipmentType,
 }) => {
-    const equipmentTypeWatch = useWatch({
-        name: EQUIPMENT_TYPE_FIELD,
-    });
-
     const intl = useIntl();
 
-    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+    const watchEditedField = useWatch({
+        name: `${name}.${index}.${EDITED_FIELD}`,
+    });
+
+    const dataType = useMemo(() => {
+        return equipmentFields?.find(
+            (fieldOption) => fieldOption?.id === watchEditedField
+        )?.dataType;
+    }, [watchEditedField, equipmentFields]);
 
     const watchPropertyName = useWatch({
         name: `${name}.${index}.${PROPERTY_NAME_FIELD}`,
@@ -57,14 +64,18 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         return predefinedProperties?.[watchPropertyName]?.sort() ?? [];
     }, [watchPropertyName, predefinedProperties]);
 
+    const valueLabel = useMemo(() => {
+        return dataType === DataType.PROPERTY ? 'PropertyValue' : 'Value';
+    }, [dataType]);
+
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
-            equipmentTypes={[equipmentTypeWatch]}
+            equipmentTypes={[equipmentType]}
             elementType={ElementType.FILTER}
             label={'filter'}
             titleId={'FiltersListsSelection'}
-            disable={!equipmentTypeWatch}
+            disable={!equipmentType}
         />
     );
 
@@ -97,7 +108,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
     const valueField = (
         <AutocompleteInput
             name={`${name}.${index}.${VALUE_FIELD}`}
-            label={'PropertyValue'}
+            label={valueLabel}
             options={predefinedValues}
             size={'small'}
             allowNewValue
@@ -108,7 +119,8 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         <>
             {gridItem(filtersField, 2.25)}
             {gridItem(editedField, 3)}
-            {gridItem(propertyNameField, 2.25)}
+            {dataType === DataType.PROPERTY &&
+                gridItem(propertyNameField, 2.25)}
             <Grid item xs={0.25} sx={{ marginTop: 0.75 }}>
                 <DragHandleIcon />
             </Grid>
