@@ -176,7 +176,7 @@ export function getVscConverterStationSchema(id: string) {
 export function getVscConverterStationModificationSchema(id: string) {
     return {
         [id]: yup.object().shape({
-            [CONVERTER_STATION_ID]: yup.string(),//.nullable(),
+            [CONVERTER_STATION_ID]: yup.string(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
             [LOSS_FACTOR]: yup.number().nullable(),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
