@@ -5,7 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, {
+    ChangeEvent,
+    FunctionComponent,
+    useCallback,
+    useState,
+} from 'react';
 import { Grid } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters.jsx';
 import { LineSeparator } from '../../dialogUtils.jsx';
@@ -17,10 +22,12 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis.js';
-import CreateParameterDialog from '../common/parameters-creation-dialog.tsx';
-import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector.jsx';
+import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
+import CreateParameterDialog from '../common/parameters-creation-dialog';
 
-export const SecurityAnalysisParameters = ({ parametersBackend }) => {
+export const SecurityAnalysisParameters: FunctionComponent<
+    Record<string, any>
+> = ({ parametersBackend }) => {
     const [
         providers,
         provider,
@@ -31,7 +38,9 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
         resetParameters,
     ] = parametersBackend;
 
-    const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
+    const handleUpdateProvider = (
+        evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => updateProvider(evt.target.value);
 
     const updateProviderCallback = useCallback(handleUpdateProvider, [
         updateProvider,
@@ -59,7 +68,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
     }, [resetParameters]);
 
     const handleLoadParameter = useCallback(
-        (newParams) => {
+        (newParams: Record<string, any>) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 fetchSecurityAnalysisParameters(newParams[0].id)

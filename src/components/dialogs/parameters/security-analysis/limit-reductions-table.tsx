@@ -15,18 +15,15 @@ import {
 } from '@mui/material';
 import React, { FunctionComponent } from 'react';
 import { IColumnsDef } from './columns-definitions';
-import { UseFieldArrayReturn } from 'react-hook-form';
 
 interface LimitReductionsTableProps {
     arrayFormName: string;
-    useFieldArrayOutput: UseFieldArrayReturn;
     columnsDefinition: IColumnsDef[];
     tableHeight: number;
 }
 
 const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
     arrayFormName,
-    useFieldArrayOutput,
     columnsDefinition,
     tableHeight,
 }) => {
