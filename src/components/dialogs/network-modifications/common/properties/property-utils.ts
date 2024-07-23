@@ -46,12 +46,6 @@ export const fetchPredefinedProperties = (
     });
 };
 
-export const fetchDefaultCountry = (): Promise<string | undefined> => {
-    return fetchStudyMetadata().then((studyMetadata) => {
-        return studyMetadata.defaultCountry;
-    });
-};
-
 export const emptyProperties: Properties = {
     [ADDITIONAL_PROPERTIES]: [],
 };

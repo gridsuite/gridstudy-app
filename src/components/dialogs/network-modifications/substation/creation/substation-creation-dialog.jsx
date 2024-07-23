@@ -29,10 +29,10 @@ import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
-    fetchDefaultCountry,
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { fetchDefaultCountry } from '@gridsuite/commons-ui';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
