@@ -93,12 +93,6 @@ import {
     UPDATE_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     DELETE_EQUIPMENTS,
-    LOADFLOW_RESULT_SORT,
-    SECURITY_ANALYSIS_RESULT_SORT,
-    SENSITIVITY_ANALYSIS_RESULT_SORT,
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT,
-    DYNAMIC_SIMULATION_RESULT_SORT,
-    SPREADSHEET_SORT,
     TABLE_SORT,
 } from './actions';
 import {
@@ -1301,33 +1295,6 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SPREADSHEET_FILTER, (state, action) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] =
             action[SPREADSHEET_STORE_FIELD];
-    });
-
-    builder.addCase(LOADFLOW_RESULT_SORT, (state, action) => {
-        state.loadflowResultSort[action.tab] = action.loadflowResultSort;
-    });
-
-    builder.addCase(SECURITY_ANALYSIS_RESULT_SORT, (state, action) => {
-        state.securityAnalysisResultSort[action.tab] =
-            action.securityAnalysisResultSort;
-    });
-
-    builder.addCase(SENSITIVITY_ANALYSIS_RESULT_SORT, (state, action) => {
-        state.sensitivityAnalysisResultSort[action.tab] =
-            action.sensitivityAnalysisResultSort;
-    });
-
-    builder.addCase(SHORTCIRCUIT_ANALYSIS_RESULT_SORT, (state, action) => {
-        state.shortcircuitAnalysisResultSort[action.tab] =
-            action.shortcircuitAnalysisResultSort;
-    });
-    builder.addCase(DYNAMIC_SIMULATION_RESULT_SORT, (state, action) => {
-        state.dynamicSimulationResultSort[action.tab] =
-            action.dynamicSimulationResultSort;
-    });
-
-    builder.addCase(SPREADSHEET_SORT, (state, action) => {
-        state.spreadsheetSort[action.tab] = action.spreadsheetSort;
     });
 
     builder.addCase(TABLE_SORT, (state, action) => {
