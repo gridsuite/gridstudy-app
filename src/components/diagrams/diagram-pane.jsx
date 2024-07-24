@@ -49,7 +49,11 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    useDebounce,
+    useLocalizedCountries,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import {
@@ -59,7 +63,6 @@ import {
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {

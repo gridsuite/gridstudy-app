@@ -25,7 +25,7 @@ import {
     TABLES_DEFINITION_TYPES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useLocalizedCountries, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
@@ -89,7 +89,6 @@ import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-ag
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
 
 const useEditBuffer = () => {

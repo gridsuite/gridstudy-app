@@ -7,7 +7,12 @@
 
 // Because of a circular import issue, we have to import the store to run the
 // unit tests, even if your IDE is showing that the import is unused.
-import { Actions, AppState, reducer as appReducer } from './reducer';
+import {
+    Actions,
+    AppState,
+    reducer as appReducer,
+    initialState,
+} from './reducer';
 import {
     resetNetworkAreaDiagramDepth,
     incrementNetworkAreaDiagramDepth,
@@ -21,9 +26,14 @@ import {
     stopDiagramBlink,
 } from './actions';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
-import { Reducer } from 'redux';
+import { UnknownAction } from 'redux';
 
-const reducer = appReducer as Reducer<Partial<AppState>, Actions>;
+function reducer(statePatch: Partial<AppState>, action: Actions) {
+    return appReducer(
+        { ...initialState, ...statePatch },
+        action as UnknownAction
+    );
+}
 
 test('reducer.RESET_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const initialState = { networkAreaDiagramDepth: 12 };

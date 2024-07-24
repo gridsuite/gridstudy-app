@@ -508,7 +508,8 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUS]: null,
 };
 
-const initialState: AppState = {
+// exported only for reducer's tests
+export const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
     selectionForCopy: {

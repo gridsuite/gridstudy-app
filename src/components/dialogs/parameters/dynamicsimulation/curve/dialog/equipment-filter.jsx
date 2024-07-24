@@ -17,13 +17,16 @@ import {
     useState,
 } from 'react';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CustomAGGrid,
+    useLocalizedCountries,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { Box } from '@mui/system';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
 import { evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
-import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import {
     buildExpertFilter,
     CURVE_EQUIPMENT_TYPES,

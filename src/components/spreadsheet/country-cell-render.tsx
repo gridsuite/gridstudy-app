@@ -4,14 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import React from 'react';
+import { FunctionComponent } from 'react';
+import { useLocalizedCountries } from '@gridsuite/commons-ui';
 
 interface CountryCellRendererProps {
     value: string;
 }
 
-const CountryCellRenderer: React.FC<CountryCellRendererProps> = ({ value }) => {
+const CountryCellRenderer: FunctionComponent<CountryCellRendererProps> = ({
+    value,
+}) => {
+    // @ts-expect-error: will be fixed in the next version of commons-ui
     const { translate } = useLocalizedCountries();
     const countryName = translate(value);
     return <span>{countryName}</span>;
