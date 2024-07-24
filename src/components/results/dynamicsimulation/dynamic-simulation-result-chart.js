@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { useRef } from 'react';
 import './plot/react-grid-layout.main.css';
 import './plot/react-grid-layout.custom.css';
 import {
@@ -71,8 +72,6 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
 
     // button options synchronization
     const [sync, setSync] = useState(true);
-    // event to synchronize
-    const [syncEvent, setSyncEvent] = useState({});
 
     // tab id is auto increase and reset to zero when there is any tab
     const [plotIncId, setPlotIncId] = useState(1);
@@ -134,8 +133,6 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
     );
 
     const handleSync = useCallback(() => {
-        // clear cached sync event
-        setSyncEvent({});
         setSync((prev) => !prev);
     }, []);
 
@@ -206,8 +203,16 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
         }));
     };
 
+    const childrenRef = useRef({});
+
+    const syncChildRef = (cur, key) => {
+        childrenRef.current = {
+            ...childrenRef.current,
+            ...(cur && { [key]: cur }),
+        };
+    };
     const handlePlotSyncEvent = (syncEvent) => {
-        setSyncEvent(syncEvent);
+        Object.values(childrenRef.current).forEach((c) => c.syncOnRelayout(syncEvent));
     };
 
     return (
@@ -313,6 +318,9 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                     */}
                                     <DynamicSimulationResultSeriesChart
                                         key={`${plot.id}`}
+                                        ref={(cur) =>
+                                            syncChildRef(cur, `${plot.id}`)
+                                        }
                                         id={`${plot.id}`}
                                         index={index}
                                         selected={selectedIndex === index}
@@ -322,7 +330,6 @@ const DynamicSimulationResultChart = ({ series, selected }) => {
                                         onClose={handleClose}
                                         sync={sync}
                                         onSyncEvent={handlePlotSyncEvent}
-                                        syncEvent={syncEvent}
                                     />
                                 </div>
                             ))}
