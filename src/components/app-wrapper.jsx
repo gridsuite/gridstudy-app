@@ -78,6 +78,7 @@ import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
 } from '../utils/config-params';
+import 'handsontable/dist/handsontable.full.min.css';
 
 let lightTheme = createTheme({
     components: {

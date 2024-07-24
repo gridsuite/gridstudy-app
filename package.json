@@ -24,6 +24,7 @@
         "core-js": "^3.36.1",
         "dagre": "^0.8.5",
         "eventemitter3": "^5.0.1",
+        "handsontable": "^14.4.0",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
         "mjolnir.js": "^2.7.1",
