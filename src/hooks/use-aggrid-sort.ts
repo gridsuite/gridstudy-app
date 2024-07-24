@@ -8,7 +8,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTableSort } from '../redux/actions';
-import { ReduxState } from '../redux/reducer.type';
+import { ReduxState, TableSortKeysType } from '../redux/reducer.type';
 
 export type SortConfigType = {
     colId: string;
@@ -30,7 +30,7 @@ export enum SortWay {
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType[],
-    table: string,
+    table: (typeof TableSortKeysType)[string],
     tab: string
 ): SortPropsType => {
     const sortConfig = useSelector(

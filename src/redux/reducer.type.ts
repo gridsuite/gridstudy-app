@@ -55,6 +55,15 @@ interface TableSort {
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: AnalysisResultSort;
 }
 
+export const TableSortKeysType = [
+    SPREADSHEET_SORT_STORE,
+    LOADFLOW_RESULT_SORT_STORE,
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+] as const;
+
 export interface ReduxState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID;
