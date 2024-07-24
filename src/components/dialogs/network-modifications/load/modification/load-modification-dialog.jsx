@@ -105,7 +105,7 @@ const LoadModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
@@ -147,6 +147,18 @@ const LoadModificationDialog = ({
                 )
                     .then((load) => {
                         if (load) {
+                            setValue(
+                                `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
+                                load?.voltageLevelId
+                            );
+                            setValue(
+                                `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
+                                load?.busOrBusbarSectionId
+                            );
+                            setValue(
+                                `${CONNECTIVITY}.${CONNECTED}`,
+                                load?.terminalConnected
+                            );
                             setLoadToModify(load);
                             reset((formValues) => ({
                                 ...formValues,
@@ -165,7 +177,7 @@ const LoadModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, editData]
+        [studyUuid, currentNodeUuid, reset, getValues, setValue, editData]
     );
 
     useEffect(() => {

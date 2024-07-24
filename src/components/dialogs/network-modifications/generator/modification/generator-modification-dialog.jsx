@@ -325,6 +325,18 @@ const GeneratorModificationDialog = ({
                                     }
                                 }
                             }
+                            setValue(
+                                `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
+                                value?.voltageLevelId
+                            );
+                            setValue(
+                                `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
+                                value?.busOrBusbarSectionId
+                            );
+                            setValue(
+                                `${CONNECTIVITY}.${CONNECTED}`,
+                                value?.terminalConnected
+                            );
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:

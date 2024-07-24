@@ -26,7 +26,6 @@ import { useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const LoadModificationForm = ({
     studyUuid,
@@ -35,10 +34,6 @@ const LoadModificationForm = ({
     equipmentId,
 }) => {
     const intl = useIntl();
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNode?.id
-    );
 
     const loadIdField = (
         <TextField
@@ -104,7 +99,6 @@ const LoadModificationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}

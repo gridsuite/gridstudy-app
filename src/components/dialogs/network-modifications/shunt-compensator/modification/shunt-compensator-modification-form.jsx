@@ -14,7 +14,6 @@ import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const ShuntCompensatorModificationForm = ({
     studyUuid,
@@ -22,10 +21,6 @@ const ShuntCompensatorModificationForm = ({
     shuntCompensatorInfos,
     equipmentId,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNode?.id
-    );
     const shuntCompensatorIdField = (
         <TextField
             size="small"
@@ -58,7 +53,6 @@ const ShuntCompensatorModificationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
