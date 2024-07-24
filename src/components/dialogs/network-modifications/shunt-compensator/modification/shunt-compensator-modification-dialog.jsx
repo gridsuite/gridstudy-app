@@ -65,7 +65,7 @@ import {
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
-    ...getConnectivityWithPositionEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(true),
     ...getCharacteristicsEmptyFormData(),
     ...emptyProperties,
 };
@@ -74,7 +74,7 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_NAME]: yup.string(),
-        ...getConnectivityWithPositionValidationSchema(),
+        ...getConnectivityWithPositionValidationSchema(true),
         ...getCharacteristicsFormValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)

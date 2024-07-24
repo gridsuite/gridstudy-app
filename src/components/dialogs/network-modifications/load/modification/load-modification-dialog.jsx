@@ -70,7 +70,7 @@ const formSchema = yup
         [LOAD_TYPE]: yup.string().nullable(),
         [P0]: yup.number().nullable(),
         [Q0]: yup.number().nullable(),
-        ...getConnectivityWithPositionValidationSchema(),
+        ...getConnectivityWithPositionValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -117,7 +117,7 @@ const LoadModificationDialog = ({
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [P0]: load.p0?.value ?? null,
                 [Q0]: load.q0?.value ?? null,
-                ...getConnectivityWithPositionEmptyFormData(),
+                ...getConnectivityWithPositionEmptyFormData(true),
                 ...getPropertiesFromModification(load.properties),
             });
         },

@@ -28,7 +28,6 @@ import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const BatteryModificationForm = ({
     studyUuid,
@@ -37,11 +36,6 @@ const BatteryModificationForm = ({
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNode?.id
-    );
-
     const batteryIdField = (
         <TextField
             size="small"
@@ -108,7 +102,6 @@ const BatteryModificationForm = ({
 
     const connectivityForm = (
         <ConnectivityForm
-            voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
@@ -166,7 +159,7 @@ const BatteryModificationForm = ({
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation
-                    isEquipmentModification={batteryToModify}
+                    isEquipmentModification={true}
                     previousValues={batteryToModify}
                 />
             </Grid>

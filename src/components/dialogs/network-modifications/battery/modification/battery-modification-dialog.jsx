@@ -84,7 +84,7 @@ const emptyFormData = {
     [MINIMUM_ACTIVE_POWER]: null,
     [ACTIVE_POWER_SET_POINT]: null,
     [REACTIVE_POWER_SET_POINT]: null,
-    ...getConnectivityWithPositionEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...getFrequencyRegulationEmptyFormData(true),
     ...emptyProperties,
@@ -159,8 +159,8 @@ const BatteryModificationDialog = ({
                         editData?.connectionDirection?.value ?? null,
                     connectionPosition:
                         editData?.connectionPosition?.value ?? null,
-                    terminalConnected:
-                        editData?.terminalConnected?.value ?? false,
+                    [CONNECTED]: editData?.terminalConnected?.value ?? null,
+                    isEquipmentModification: true,
                 }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData
@@ -218,7 +218,7 @@ const BatteryModificationDialog = ({
             };
         });
     };
-
+    //const [keyState, setKeyState] = useState(0);
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -273,6 +273,18 @@ const BatteryModificationDialog = ({
                                 `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
                                 value?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE'
                             );
+                            setValue(
+                                `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`,
+                                value?.voltageLevelId
+                            );
+                            setValue(
+                                `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
+                                value?.busOrBusbarSectionId
+                            );
+                            setValue(
+                                `${CONNECTIVITY}.${CONNECTED}`,
+                                value?.terminalConnected
+                            );
                             setBatteryToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:
@@ -285,6 +297,7 @@ const BatteryModificationDialog = ({
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
+                        //setKeyState((prevState) => prevState + 1);
                     })
                     .catch(() => {
                         setDataFetchStatus(FetchStatus.FAILED);

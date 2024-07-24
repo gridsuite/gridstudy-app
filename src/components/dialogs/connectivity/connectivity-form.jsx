@@ -19,8 +19,7 @@ import {
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { areIdsEqual, getObjectId } from 'components/utils/utils';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
@@ -34,15 +33,15 @@ import {
     TextInput,
 } from '@gridsuite/commons-ui';
 import {
-    getConnectivityBusBarSectionData,
-    getConnectivityVoltageLevelData,
-} from './connectivity-form-utils';
-import {
     fetchBusbarSectionsForVoltageLevel,
     fetchBusesForVoltageLevel,
 } from '../../../services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
-import { italicFontTextField } from '../dialogUtils.jsx';
+import { areIdsEqual, getObjectId } from '../../utils/utils.js';
+import {
+    getConnectivityBusBarSectionData,
+    getConnectivityVoltageLevelData,
+} from './connectivity-form-utils.js';
 
 /**
  * Hook to handle a 'connectivity value' (voltage level, bus or bus bar section)
@@ -158,7 +157,15 @@ export const ConnectivityForm = ({
         }
     }, [busOrBusbarSectionOptions, setValue, id, getValues]);
 
-    const newVoltageLevelField = (
+    const newVoltageLevelField = isEquipmentModification ? (
+        <AutocompleteInput
+            name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
+            label={voltageLevelSelectLabel}
+            options={voltageLevelOptions}
+            disabled={isEquipmentModification}
+            size={'small'}
+        />
+    ) : (
         <AutocompleteInput
             isOptionEqualToValue={areIdsEqual}
             outputTransform={(value) =>
@@ -180,29 +187,36 @@ export const ConnectivityForm = ({
         />
     );
 
-    const readyOnlyVoltageLevelField = (
-        <TextInput
-            name={`${id}.${VOLTAGE_LEVEL}.${ID}`}
-            label={voltageLevelSelectLabel}
-            formProps={{ disabled: true, ...italicFontTextField }}
-        />
-    );
+    const previousConnectedField = useMemo(() => {
+        if (previousValues?.terminalConnected) {
+            return intl.formatMessage({ id: 'connected' });
+        } else if (
+            previousValues?.terminalConnected === false ||
+            (previousValues && previousValues?.terminalConnected === undefined)
+        ) {
+            return intl.formatMessage({ id: 'disconnected' });
+        }
+    }, [intl, previousValues]);
 
     const connectedField = isEquipmentModification ? (
         <CheckboxNullableInput
             name={`${id}.${CONNECTED}`}
-            label="Connected"
-            previousValue={
-                previousValues?.terminalConnected
-                    ? intl.formatMessage({ id: 'connected' })
-                    : intl.formatMessage({ id: 'disconnected' })
-            }
+            label="connected"
+            previousValue={previousConnectedField}
         />
     ) : (
-        <SwitchInput name={`${id}.${CONNECTED}`} label="Connected" />
+        <SwitchInput name={`${id}.${CONNECTED}`} label="connected" />
     );
 
-    const newBusOrBusbarSectionField = (
+    const newBusOrBusbarSectionField = isEquipmentModification ? (
+        <AutocompleteInput
+            name={`${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`}
+            label="BusBarBus"
+            options={busOrBusbarSectionOptions}
+            disabled={isEquipmentModification}
+            size={'small'}
+        />
+    ) : (
         <AutocompleteInput
             allowNewValue
             forcePopupIcon
@@ -227,14 +241,6 @@ export const ConnectivityForm = ({
                     : value
             }
             size={'small'}
-        />
-    );
-
-    const readyOnlyBusOrBusbarSectionField = (
-        <TextInput
-            name={`${id}.${BUS_OR_BUSBAR_SECTION}.${ID}`}
-            label="BusBarBus"
-            formProps={{ disabled: true, ...italicFontTextField }}
         />
     );
 
@@ -325,14 +331,10 @@ export const ConnectivityForm = ({
                 columns={24}
             >
                 <Grid item xs={conditionalSize} align="start">
-                    {!isEquipmentModification
-                        ? newVoltageLevelField
-                        : readyOnlyVoltageLevelField}
+                    {newVoltageLevelField}
                 </Grid>
                 <Grid item xs={conditionalSize} align="start">
-                    {!isEquipmentModification
-                        ? newBusOrBusbarSectionField
-                        : readyOnlyBusOrBusbarSectionField}
+                    {newBusOrBusbarSectionField}
                 </Grid>
 
                 {withDirectionsInfos && (

@@ -39,15 +39,20 @@ export const getConnectivityPropertiesValidationSchema = () => {
 };
 
 export const getConnectivityWithPositionValidationSchema = (
-    isEquipmentModification = false
+    isEquipmentModification = false,
+    id = CONNECTIVITY
 ) => ({
-    [CONNECTIVITY]: yup.object().shape({
+    [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
-        [CONNECTED]: isEquipmentModification
-            ? yup.bool().nullable()
-            : yup.bool().required(),
+        [CONNECTED]: yup
+            .bool()
+            .nullable()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            }),
         ...getConnectivityPropertiesValidationSchema(),
     }),
 });
@@ -60,23 +65,25 @@ export const getConnectivityWithoutPositionValidationSchema = (
     };
 };
 
-export const getConnectivityPropertiesEmptyFormData = () => {
+export const getConnectivityPropertiesEmptyFormData = (
+    isEquipmentModification = false
+) => {
     return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
-        [CONNECTED]: true,
+        [CONNECTED]: isEquipmentModification ? null : true,
     };
 };
 
 export const getConnectivityWithPositionEmptyFormData = (
+    isEquipmentModification = false,
     id = CONNECTIVITY
 ) => ({
     [id]: {
-        ...getConnectivityPropertiesEmptyFormData(),
+        ...getConnectivityPropertiesEmptyFormData(isEquipmentModification),
         [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
         [CONNECTION_POSITION]: null,
-        [CONNECTED]: true,
     },
 });
 
@@ -155,6 +162,7 @@ export const getConnectivityFormData = (
         connectionName,
         connectionPosition,
         terminalConnected,
+        isEquipmentModification = false,
     },
     id = CONNECTIVITY
 ) => {
@@ -168,7 +176,7 @@ export const getConnectivityFormData = (
             [CONNECTION_DIRECTION]: connectionDirection ?? null,
             [CONNECTION_NAME]: connectionName ?? '',
             [CONNECTION_POSITION]: connectionPosition ?? null,
-            [CONNECTED]: terminalConnected ?? true,
+            [CONNECTED]: isEquipmentModification ? null : true,
         },
     };
 };
