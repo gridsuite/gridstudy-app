@@ -9,11 +9,7 @@ import { TableCell } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import React from 'react';
 
-function LimitReductionTableCell(
-    arrayFormName: string,
-    rowIndex: number,
-    column: any
-) {
+function LimitReductionTableCell(rowIndex: number, column: any) {
     return (
         <TableCell
             key={column.dataKey}
@@ -21,12 +17,12 @@ function LimitReductionTableCell(
                 width: column.width,
             }}
         >
-            {column.floatItems && (
-                <FloatInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    previousValue={1}
-                />
-            )}
+            {/*{column.floatItems && (*/}
+            <FloatInput
+                name={`limitReduction[${rowIndex}].${column.dataKey}`}
+                previousValue={1}
+            />
+            {/*)}*/}
         </TableCell>
     );
 }

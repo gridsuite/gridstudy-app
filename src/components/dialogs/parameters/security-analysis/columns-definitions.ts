@@ -5,6 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
+export const VOLTAGE_LEVELS_FORM = 'voltageLevelsForm';
+export const IST_FORM = 'istForm';
+export const LIMIT_DURATION1_FORM = 'limitReduction1Form';
+export const LIMIT_DURATION2_FORM = 'limitReduction2Form';
+export const LIMIT_DURATION3_FORM = 'limitReduction3Form';
+
 export enum TAB_VALUES {
     'General' = 0,
     'LimitReductions' = 1,

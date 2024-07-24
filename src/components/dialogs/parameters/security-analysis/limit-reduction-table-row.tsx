@@ -11,14 +11,12 @@ import LimitReductionTableCell from './limit-reduction-table-cell';
 import { IColumnsDef } from './columns-definitions';
 
 interface TableRowComponentProps {
-    arrayFormName: string;
     columnsDefinition: IColumnsDef[];
     row: Record<'id', string>;
     index: number;
 }
 
 const LimitReductionTableRow: FunctionComponent<TableRowComponentProps> = ({
-    arrayFormName,
     columnsDefinition,
     row,
     index,
@@ -26,7 +24,7 @@ const LimitReductionTableRow: FunctionComponent<TableRowComponentProps> = ({
     return (
         <TableRow key={row.id}>
             {columnsDefinition.map((column: IColumnsDef) =>
-                LimitReductionTableCell(arrayFormName, index, column)
+                LimitReductionTableCell(index, column)
             )}
         </TableRow>
     );

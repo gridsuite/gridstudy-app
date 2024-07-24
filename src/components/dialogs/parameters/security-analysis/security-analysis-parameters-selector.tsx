@@ -12,19 +12,14 @@ import React, {
     useState,
 } from 'react';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
-import {
-    COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS,
-    IColumnsDef,
-    LimitReductionsParameters,
-    TAB_VALUES,
-} from './columns-definitions';
-import ViolationsHidingParameters from './security-analysis-violations-hiding.js';
-import LimitReductionsTable from './limit-reductions-table';
+import { TAB_VALUES } from './columns-definitions';
+import ViolationsHidingParameters from './security-analysis-violations-hiding';
+import LimitReductionsTableForm from './limit-reductions-table-form';
 
 const TAB_INFO = [
     { label: TAB_VALUES[TAB_VALUES.General] },
@@ -35,27 +30,12 @@ const SecurityAnalysisParametersSelector: FunctionComponent<any> = ({
     params,
     updateParameters,
 }) => {
-    const intl = useIntl();
-
     const [tabValue, setTabValue] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback(
         (event: SyntheticEvent, newValue: number) => {
             setTabValue(newValue);
         },
         []
-    );
-
-    const getColumnsDefinition = useCallback(
-        (columns: IColumnsDef[]) => {
-            if (columns) {
-                return columns.map((column) => ({
-                    ...column,
-                    label: intl.formatMessage({ id: column.label }),
-                }));
-            }
-            return [];
-        },
-        [intl]
     );
 
     return (
@@ -85,14 +65,7 @@ const SecurityAnalysisParametersSelector: FunctionComponent<any> = ({
                             />
                         )}
                         {tabValue === TAB_VALUES.LimitReductions && (
-                            <LimitReductionsTable
-                                arrayFormName={`${LimitReductionsParameters.name}`}
-                                // useFieldArrayOutput={useFieldArrayOutput}
-                                columnsDefinition={getColumnsDefinition(
-                                    COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS
-                                )}
-                                tableHeight={367}
-                            />
+                            <LimitReductionsTableForm />
                         )}
                     </TabPanel>
                 ))}

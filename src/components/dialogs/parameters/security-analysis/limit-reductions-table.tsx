@@ -14,20 +14,22 @@ import {
     TableRow,
 } from '@mui/material';
 import React, { FunctionComponent } from 'react';
-import { IColumnsDef } from './columns-definitions';
+import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
+import { useFieldArray } from 'react-hook-form';
+import LimitReductionTableRow from './limit-reduction-table-row';
 
 interface LimitReductionsTableProps {
-    arrayFormName: string;
     columnsDefinition: IColumnsDef[];
     tableHeight: number;
 }
 
 const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
-    arrayFormName,
     columnsDefinition,
     tableHeight,
 }) => {
-    //const { fields: currentRows, append, remove } = useFieldArrayOutput;
+    const { fields: rows } = useFieldArray({
+        name: LIMIT_REDUCTIONS_FORM,
+    });
 
     return (
         <TableContainer
@@ -53,16 +55,13 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {/*{currentRows.map(*/}
-                    {/*    (row: Record<'id', string>, index: number) => (*/}
-                    {/*        <LimitReductionTableRow*/}
-                    {/*            arrayFormName={arrayFormName}*/}
-                    {/*            columnsDefinition={columnsDefinition}*/}
-                    {/*            row={row}*/}
-                    {/*            index={index}*/}
-                    {/*        />*/}
-                    {/*    )*/}
-                    {/*)}*/}
+                    {rows.map((row: Record<'id', string>, index: number) => (
+                        <LimitReductionTableRow
+                            columnsDefinition={columnsDefinition}
+                            row={row}
+                            index={index}
+                        />
+                    ))}
                 </TableBody>
             </Table>
         </TableContainer>
