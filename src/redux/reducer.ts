@@ -508,8 +508,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUS]: null,
 };
 
-// exported only for reducer's tests
-export const initialState: AppState = {
+const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
     selectionForCopy: {
@@ -578,8 +577,9 @@ export const initialState: AppState = {
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: 100,
     [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
-    [PARAM_LINE_FLOW_MODE]: LineFlowMode.FEEDERS,
-    [PARAM_LINE_FLOW_COLOR_MODE]: LineFlowColorMode.NOMINAL_VOLTAGE,
+    [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
+    [PARAM_LINE_FLOW_COLOR_MODE]:
+        'nominalVoltage' as LineFlowColorMode.NOMINAL_VOLTAGE, // because jest not support enum
     [PARAM_CENTER_LABEL]: false,
     [PARAM_DIAGONAL_LABEL]: false,
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,

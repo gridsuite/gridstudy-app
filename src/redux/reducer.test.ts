@@ -10,30 +10,25 @@
 import {
     Actions,
     AppState,
-    reducer as appReducer,
     initialState,
+    reducer as appReducer,
 } from './reducer';
 import {
-    resetNetworkAreaDiagramDepth,
-    incrementNetworkAreaDiagramDepth,
-    decrementNetworkAreaDiagramDepth,
-    setFullScreenDiagram,
-    openDiagram,
-    minimizeDiagram,
-    togglePinDiagram,
     closeDiagram,
     closeDiagrams,
+    decrementNetworkAreaDiagramDepth,
+    incrementNetworkAreaDiagramDepth,
+    minimizeDiagram,
+    openDiagram,
+    resetNetworkAreaDiagramDepth,
+    setFullScreenDiagram,
     stopDiagramBlink,
+    togglePinDiagram,
 } from './actions';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
-import { UnknownAction } from 'redux';
+import { Reducer } from 'redux';
 
-function reducer(statePatch: Partial<AppState>, action: Actions) {
-    return appReducer(
-        { ...initialState, ...statePatch },
-        action as UnknownAction
-    );
-}
+const reducer = appReducer as Reducer<Partial<AppState>, Actions>;
 
 test('reducer.RESET_NETWORK_AREA_DIAGRAM_DEPTH', () => {
     const initialState = { networkAreaDiagramDepth: 12 };
@@ -110,7 +105,7 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
-    const expectedState3 = { fullScreenDiagram: { id: null } };
+    const expectedState3 = { fullScreenDiagram: null };
 
     expect(reducer(initialState3, setFullScreenDiagram(null))).toEqual(
         expectedState3
