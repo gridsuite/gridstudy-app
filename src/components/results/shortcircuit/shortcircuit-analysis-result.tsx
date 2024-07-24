@@ -42,12 +42,12 @@ import {
     useAggridRowFilter,
 } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
-import {
-    setShortcircuitAnalysisResultFilter,
-    setShortcircuitAnalysisResultSort,
-} from 'redux/actions';
+import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
 
@@ -96,13 +96,15 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         : FROM_COLUMN_TO_FIELD;
 
     const sortConfigType = useSelector(
-        (state: any) =>
-            state.shortcircuitAnalysisResultSort[mappingTabs(analysisType)]
+        (state: ReduxState) =>
+            state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][
+                mappingTabs(analysisType)
+            ]
     );
 
     const { onSortChanged } = useAgGridSort(
         sortConfigType,
-        setShortcircuitAnalysisResultSort,
+        SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
         mappingTabs(analysisType)
     );
     const memoizedSetPageCallback = useCallback(() => {

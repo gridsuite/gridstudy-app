@@ -49,7 +49,7 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setLoadflowResultFilter, setLoadflowResultSort } from 'redux/actions';
+import { setLoadflowResultFilter } from 'redux/actions';
 import {
     NumberCellRenderer,
     StatusCellRender,
@@ -63,7 +63,10 @@ import {
     fetchAllCountries,
     fetchAllNominalVoltages,
 } from '../../../services/study/network-map';
-import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    LOADFLOW_RESULT_SORT_STORE,
+    LOADFLOW_RESULT_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
 
@@ -105,12 +108,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     );
 
     const sortConfigType = useSelector(
-        (state: any) => state.loadflowResultSort[mappingTabs(tabIndex)]
+        (state: ReduxState) =>
+            state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
     );
 
     const { onSortChanged, initSort } = useAgGridSort(
         sortConfigType,
-        setLoadflowResultSort,
+        LOADFLOW_RESULT_SORT_STORE,
         mappingTabs(tabIndex)
     );
 

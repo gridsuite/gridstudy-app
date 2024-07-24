@@ -12,18 +12,23 @@ import {
     SortPropsType,
     useAgGridSort,
 } from './use-aggrid-sort';
-import { AnyAction } from 'redux';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../redux/reducer.type';
 
 export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     initSortConfig: SortConfigType[],
-    sortAction?: (tab: string, sortConfig: SortConfigType[]) => AnyAction,
+    table?: string,
     tab?: string
 ): SortPropsType => {
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort(
+    const { onSortChanged, initSort } = useAgGridSort(
         initSortConfig,
-        sortAction,
+        table,
         tab
+    );
+
+    const sortConfig = useSelector(
+        (state: ReduxState) => state.tableSort[table][tab]
     );
 
     const setSortInAgGrid = useCallback(

@@ -11,6 +11,15 @@ import { UUID } from 'crypto';
 import { IOptionalService } from '../components/utils/optional-services';
 import { Filter } from '../components/results/common/results-global-filter';
 import { MapEquipments } from '@powsybl/diagram-viewer';
+import {
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+    LOADFLOW_RESULT_SORT_STORE,
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+    SPREADSHEET_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
+import { SortConfigType } from '../hooks/use-aggrid-sort';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -27,6 +36,23 @@ export enum StudyDisplayMode {
     TREE = 'Tree',
     HYBRID = 'Hybrid',
     DRAW = 'Draw',
+}
+
+interface AnalysisResultSort {
+    [key: string]: SortConfigType[];
+}
+
+interface SpreadsheetSort {
+    [key: string]: SortConfigType[];
+}
+
+interface TableSort {
+    [SPREADSHEET_SORT_STORE]: SpreadsheetSort;
+    [LOADFLOW_RESULT_SORT_STORE]: AnalysisResultSort;
+    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: AnalysisResultSort;
+    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: AnalysisResultSort;
+    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: AnalysisResultSort;
+    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: AnalysisResultSort;
 }
 
 export interface ReduxState {
@@ -49,6 +75,7 @@ export interface ReduxState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
+    tableSort: TableSort;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {

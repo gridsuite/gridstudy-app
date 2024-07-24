@@ -48,11 +48,11 @@ import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { setSecurityAnalysisResultFilter } from 'redux/actions';
 import {
-    setSecurityAnalysisResultFilter,
-    setSecurityAnalysisResultSort,
-} from 'redux/actions';
-import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -141,13 +141,15 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     }, [tabIndex, nmkType, enableDeveloperMode]);
 
     const sortConfigType = useSelector(
-        (state: any) =>
-            state.securityAnalysisResultSort[getStoreFields(tabIndex)]
+        (state: ReduxState) =>
+            state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][
+                getStoreFields(tabIndex)
+            ]
     );
 
     const { onSortChanged, initSort } = useAgGridSort(
         sortConfigType,
-        setSecurityAnalysisResultSort,
+        SECURITY_ANALYSIS_RESULT_SORT_STORE,
         getStoreFields(tabIndex)
     );
 

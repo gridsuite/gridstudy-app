@@ -89,8 +89,10 @@ import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
-import { setSpreadSheetSort } from '../../redux/actions.js';
+import {
+    SPREADSHEET_STORE_FIELD,
+    SPREADSHEET_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -220,13 +222,15 @@ const TableWrapper = (props) => {
 
     const sortConfigType = useSelector(
         (state) =>
-            state.spreadsheetSort[TABLES_DEFINITION_INDEXES.get(tabIndex).type]
+            state.tableSort[SPREADSHEET_SORT_STORE][
+                TABLES_DEFINITION_INDEXES.get(tabIndex).type
+            ]
     );
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
+    const { onSortChanged, initSort } = useAgGridLocalSort(
         gridRef,
         sortConfigType,
-        setSpreadSheetSort,
+        SPREADSHEET_SORT_STORE,
         TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
 
@@ -385,13 +389,12 @@ const TableWrapper = (props) => {
                 };
             }
 
-            console.log('test useCallback sortConfig', sortConfig);
             return makeAgGridCustomHeaderColumn({
                 headerName: column.headerName,
                 field: column.field,
                 sortProps: {
                     onSortChanged,
-                    sortConfig,
+                    sortConfig: sortConfigType,
                 },
                 filterProps: {
                     updateFilter,
@@ -408,7 +411,7 @@ const TableWrapper = (props) => {
             intl,
             lockedColumnsNames,
             onSortChanged,
-            sortConfig,
+            sortConfigType,
             updateFilter,
             filterSelector,
             loadFlowStatus,

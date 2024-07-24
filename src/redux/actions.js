@@ -824,3 +824,12 @@ export function setSpreadSheetSort(tab, spreadsheetSort) {
         spreadsheetSort: spreadsheetSort,
     };
 }
+
+export const TABLE_SORT = 'TABLE_SORT';
+
+export function setTableSort(tableSort) {
+    return {
+        type: TABLE_SORT,
+        tableSort: tableSort,
+    };
+}

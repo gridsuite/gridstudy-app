@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { AnyAction } from 'redux';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTableSort } from '../redux/actions';
+import { ReduxState } from '../redux/reducer.type';
 
 export type SortConfigType = {
     colId: string;
@@ -29,11 +30,13 @@ export enum SortWay {
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType[],
-    sortAction?: (tab: string, sortConfig: SortConfigType[]) => AnyAction,
+    table?: string,
     tab?: string
 ): SortPropsType => {
-    const [sortConfig, setSortConfig] =
-        useState<SortConfigType[]>(initSortConfig);
+    const sortConfig = useSelector(
+        (state: ReduxState) => state.tableSort[table][tab]
+    );
+
     const dispatch = useDispatch();
 
     const onSortChanged = useCallback(
@@ -46,16 +49,32 @@ export const useAgGridSort = (
                 )
                 .concat(newSortConfig);
 
-            setSortConfig(updatedSortConfig);
-            sortAction && tab && dispatch(sortAction(tab, updatedSortConfig));
+            table &&
+                tab &&
+                dispatch(
+                    setTableSort({
+                        table: table,
+                        tab: tab,
+                        sort: updatedSortConfig,
+                    })
+                );
         },
-        [dispatch, sortAction, tab, sortConfig]
+        [dispatch, table, tab, sortConfig]
     );
 
     const initSort = useCallback(
-        (config: SortConfigType[]) => setSortConfig(config),
-        []
+        (config: SortConfigType[]) =>
+            table &&
+            tab &&
+            dispatch(
+                setTableSort({
+                    table: table,
+                    tab: tab,
+                    sort: config,
+                })
+            ),
+        [dispatch, table, tab]
     );
 
-    return { onSortChanged, sortConfig, initSort };
+    return { onSortChanged, initSort };
 };

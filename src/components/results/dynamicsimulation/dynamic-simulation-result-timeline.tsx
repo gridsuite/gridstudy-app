@@ -35,14 +35,12 @@ import {
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
-import {
-    setDynamicSimulationResultFilter,
-    setDynamicSimulationResultSort,
-} from 'redux/actions';
+import { setDynamicSimulationResultFilter } from 'redux/actions';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
     TIMELINE,
-} from 'utils/store-filter-fields';
+} from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -84,13 +82,14 @@ const DynamicSimulationResultTimeline = memo(
         );
 
         const sortConfigType = useSelector(
-            (state: any) => state.dynamicSimulationResultSort[TIMELINE]
+            (state: ReduxState) =>
+                state.tableSort[DYNAMIC_SIMULATION_RESULT_SORT_STORE][TIMELINE]
         );
 
         const { onSortChanged, sortConfig } = useAgGridLocalSort(
             gridRef,
             sortConfigType,
-            setDynamicSimulationResultSort,
+            DYNAMIC_SIMULATION_RESULT_SORT_STORE,
             TIMELINE
         );
 

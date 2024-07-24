@@ -34,8 +34,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
-import { SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
-import { setSensitivityAnalysisResultSort } from '../../../redux/actions.js';
+import {
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -68,15 +70,15 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
 
     const sortConfigType = useSelector(
         (state) =>
-            state.sensitivityAnalysisResultSort[
-                SensitivityResultTabs[nOrNkIndex].id
+            state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][
+                mappingTabs(sensiKind, nOrNkIndex)
             ]
     );
 
     const { onSortChanged, initSort } = useAgGridSort(
         sortConfigType,
-        setSensitivityAnalysisResultSort,
-        SensitivityResultTabs[nOrNkIndex].id
+        SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+        mappingTabs(sensiKind, nOrNkIndex)
     );
 
     const initTable = () => {

@@ -99,6 +99,7 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT,
     DYNAMIC_SIMULATION_RESULT_SORT,
     SPREADSHEET_SORT,
+    TABLE_SORT,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -107,7 +108,10 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './local-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_MAPBOX,
     PARAM_CENTER_LABEL,
@@ -165,7 +169,14 @@ import {
     TIMELINE,
     SPREADSHEET_STORE_FIELD,
     ONE_BUS,
-} from 'utils/store-filter-fields';
+    LOADFLOW_RESULT_SORT_STORE,
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+    SPREADSHEET_SORT_STORE,
+    TABLE_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
 const paramsInitialState = {
@@ -240,29 +251,20 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.TIE_LINE]: [],
 };
 
-const defaultSpreadsheetSort = {
-    colId: 'id',
-    sortWay: 'asc',
-};
+const defaultSpreadsheetSort = [
+    {
+        colId: 'id',
+        sortWay: 'asc',
+    },
+];
 
-const initialSpreadsheetSort = {
-    [EQUIPMENT_TYPES.SUBSTATION]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.LINE]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.GENERATOR]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.LOAD]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.BATTERY]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.HVDC_LINE]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.DANGLING_LINE]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.BUS]: [defaultSpreadsheetSort],
-    [EQUIPMENT_TYPES.TIE_LINE]: [defaultSpreadsheetSort],
-};
+const initialSpreadsheetSort = Object.values(TABLES_DEFINITIONS).reduce(
+    (acc, current) => {
+        acc[current.type] = defaultSpreadsheetSort;
+        return acc;
+    },
+    {}
+);
 
 export const defaultOptionalServicesState = Object.keys(
     OptionalServicesNames
@@ -270,6 +272,62 @@ export const defaultOptionalServicesState = Object.keys(
     name: key,
     status: OptionalServicesStatus.Pending,
 }));
+
+const loadflowResultSort = {
+    [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
+        {
+            colId: 'overload',
+            sortWay: 'desc',
+        },
+    ],
+    [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
+        {
+            colId: 'subjectId',
+            sortWay: 'desc',
+        },
+    ],
+    [LOADFLOW_RESULT]: [
+        {
+            colId: 'connectedComponentNum',
+            sortWay: 'desc',
+        },
+    ],
+};
+
+const securityAnalysisResultSort = {
+    [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sortWay: 'asc' }],
+    [SECURITY_ANALYSIS_RESULT_N_K]: [
+        {
+            colId: 'contingencyId',
+            sortWay: 'asc',
+        },
+    ],
+};
+
+const sensitivityAnalysisResultSort = {
+    [SENSITIVITY_IN_DELTA_MW_N]: [{ colId: 'value', sortWay: 'asc' }],
+    [SENSITIVITY_IN_DELTA_MW_N_K]: [{ colId: 'valueAfter', sortWay: 'asc' }],
+    [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sortWay: 'asc' }],
+    [SENSITIVITY_IN_DELTA_A_N_K]: [{ colId: 'valueAfter', sortWay: 'asc' }],
+    [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sortWay: 'asc' }],
+    [SENSITIVITY_AT_NODE_N_K]: [{ colId: 'valueAfter', sortWay: 'asc' }],
+};
+
+const shortcircuitAnalysisResultSort = {
+    [ONE_BUS]: [{ colId: 'current', sortWay: 'desc' }],
+    [ALL_BUSES]: [{ colId: 'elementId', sortWay: 'asc' }],
+};
+
+const dynamicSimulationResultSort = {
+    [TIMELINE]: [
+        {
+            colId: 'time',
+            sort: 'asc',
+        },
+    ],
+};
+
+const spreadsheetSort = { ...initialSpreadsheetSort };
 
 const initialState = {
     studyUuid: null,
@@ -345,49 +403,15 @@ const initialState = {
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: { ...initialSpreadsheetFilter },
 
-    loadflowResultSort: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
-            {
-                colId: 'overload',
-                sortWay: 'desc',
-            },
-        ],
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
-            {
-                colId: 'subjectId',
-                sortWay: 'desc',
-            },
-        ],
-        [LOADFLOW_RESULT]: [
-            { colId: 'connectedComponentNum', sortWay: 'desc' },
-        ],
+    [TABLE_SORT_STORE]: {
+        [SPREADSHEET_SORT_STORE]: spreadsheetSort,
+        [LOADFLOW_RESULT_SORT_STORE]: loadflowResultSort,
+        [SECURITY_ANALYSIS_RESULT_SORT_STORE]: securityAnalysisResultSort,
+        [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: sensitivityAnalysisResultSort,
+        [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: dynamicSimulationResultSort,
+        [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]:
+            shortcircuitAnalysisResultSort,
     },
-    securityAnalysisResultSort: {
-        [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sortWay: 'asc' }],
-        [SECURITY_ANALYSIS_RESULT_N_K]: [
-            {
-                colId: 'contingencyId',
-                sortWay: 'asc',
-            },
-        ],
-    },
-    sensitivityAnalysisResultSort: {
-        N: [{ colId: 'value', sortWay: 'asc' }],
-        N_K: [{ colId: 'valueAfter', sortWay: 'asc' }],
-    },
-    shortcircuitAnalysisResultSort: {
-        [ONE_BUS]: [{ colId: 'current', sortWay: 'desc' }],
-        [ALL_BUSES]: [{ colId: 'elementId', sortWay: 'asc' }],
-    },
-    dynamicSimulationResultSort: {
-        [TIMELINE]: [
-            {
-                colId: 'time',
-                sort: 'asc',
-            },
-        ],
-    },
-    spreadsheetSort: { ...initialSpreadsheetSort },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1304,6 +1328,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SPREADSHEET_SORT, (state, action) => {
         state.spreadsheetSort[action.tab] = action.spreadsheetSort;
+    });
+
+    builder.addCase(TABLE_SORT, (state, action) => {
+        state.tableSort[action.tableSort.table][action.tableSort.tab] =
+            action.tableSort.sort;
     });
 });
 
