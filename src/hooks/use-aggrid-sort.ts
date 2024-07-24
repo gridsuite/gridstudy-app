@@ -18,7 +18,6 @@ export type SortConfigType = {
 
 export type SortPropsType = {
     onSortChanged: (sortConfig: SortConfigType) => void;
-    sortConfig: SortConfigType[];
     initSort?: (sortConfig: SortConfigType[]) => void;
     children?: boolean;
 };
@@ -30,8 +29,8 @@ export enum SortWay {
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType[],
-    table?: string,
-    tab?: string
+    table: string,
+    tab: string
 ): SortPropsType => {
     const sortConfig = useSelector(
         (state: ReduxState) => state.tableSort[table][tab]
@@ -43,29 +42,25 @@ export const useAgGridSort = (
         (newSortConfig: SortConfigType) => {
             const updatedSortConfig = sortConfig
                 .filter(
-                    (sort) =>
+                    (sort: SortConfigType) =>
                         (sort.children ?? false) !==
                         (newSortConfig.children ?? false)
                 )
                 .concat(newSortConfig);
 
-            table &&
-                tab &&
-                dispatch(
-                    setTableSort({
-                        table: table,
-                        tab: tab,
-                        sort: updatedSortConfig,
-                    })
-                );
+            dispatch(
+                setTableSort({
+                    table: table,
+                    tab: tab,
+                    sort: updatedSortConfig,
+                })
+            );
         },
         [dispatch, table, tab, sortConfig]
     );
 
     const initSort = useCallback(
         (config: SortConfigType[]) =>
-            table &&
-            tab &&
             dispatch(
                 setTableSort({
                     table: table,

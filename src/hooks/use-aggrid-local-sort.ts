@@ -18,8 +18,8 @@ import { ReduxState } from '../redux/reducer.type';
 export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     initSortConfig: SortConfigType[],
-    table?: string,
-    tab?: string
+    table: string,
+    tab: string
 ): SortPropsType => {
     const { onSortChanged, initSort } = useAgGridSort(
         initSortConfig,
