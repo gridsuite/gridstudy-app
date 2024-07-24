@@ -18,6 +18,7 @@ export type SortConfigType = {
 
 export type SortPropsType = {
     onSortChanged: (sortConfig: SortConfigType) => void;
+    sortConfig?: SortConfigType[];
     initSort?: (sortConfig: SortConfigType[]) => void;
     children?: boolean;
 };
