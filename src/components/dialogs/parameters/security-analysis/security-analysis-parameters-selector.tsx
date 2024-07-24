@@ -26,10 +26,10 @@ const TAB_INFO = [
     { label: TAB_VALUES[TAB_VALUES.LimitReductions] },
 ];
 
-const SecurityAnalysisParametersSelector: FunctionComponent<any> = ({
-    params,
-    updateParameters,
-}) => {
+const SecurityAnalysisParametersSelector: FunctionComponent<{
+    params: Record<string, any>;
+    updateParameters: (value: Record<string, any>) => void;
+}> = ({ params, updateParameters }) => {
     const [tabValue, setTabValue] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback(
         (event: SyntheticEvent, newValue: number) => {

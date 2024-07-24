@@ -8,8 +8,9 @@
 import { TableCell } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import React from 'react';
+import { IColumnsDef } from './columns-definitions';
 
-function LimitReductionTableCell(rowIndex: number, column: any) {
+function LimitReductionTableCell(rowIndex: number, column: IColumnsDef) {
     return (
         <TableCell
             key={column.dataKey}

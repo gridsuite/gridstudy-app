@@ -29,7 +29,7 @@ import {
 import { inputAdornment } from '../util/make-component-utils.jsx';
 import { roundToDefaultPrecision } from '../../../../utils/rounding.js';
 
-const formatValues = (values: Object, isDivision: boolean) => {
+const formatValues = (values: Record<string, any>, isDivision: boolean) => {
     let result = {};
     if (!values) {
         return result;
@@ -53,7 +53,7 @@ interface FieldToShow {
     secondField?: { name: string; label: string };
     tooltipInfoId: string;
     initValue: Record<string, any>;
-    callback: (param: Object) => void;
+    callback: (param: Record<string, any>) => void;
     isSingleField?: boolean;
 }
 
@@ -110,7 +110,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
     );
 
     const formatedValues = useCallback(
-        (values: Object) => formatValues(values, true),
+        (values: Record<string, any>) => formatValues(values, true),
         []
     );
 
@@ -185,12 +185,12 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
 };
 
 const ViolationsHidingParameters: FunctionComponent<{
-    params: Object;
-    updateParameters: (value: Object) => void;
+    params: Record<string, any>;
+    updateParameters: (value: Record<string, any>) => void;
 }> = ({ params, updateParameters }) => {
     const intl = useIntl();
 
-    const callBack = (data: Object) => {
+    const callBack = (data: Record<string, any>) => {
         updateParameters({ ...data });
     };
 

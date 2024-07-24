@@ -50,13 +50,3 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
         width: '20%',
     },
 ];
-
-export interface ILimitReductionsParameters {
-    columnsDef: IColumnsDef[];
-    name: string;
-}
-
-export const LimitReductionsParameters: ILimitReductionsParameters = {
-    columnsDef: COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS,
-    name: 'limitReductions',
-};
