@@ -18,7 +18,7 @@ import { ReduxState, TableSortKeysType } from '../redux/reducer.type';
 export const useAgGridLocalSort = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
     initSortConfig: SortConfigType[],
-    table: (typeof TableSortKeysType)[keyof typeof TableSortKeysType],
+    table: TableSortKeysType,
     tab: string
 ): SortPropsType => {
     const { onSortChanged, initSort } = useAgGridSort(

@@ -30,7 +30,7 @@ export enum SortWay {
 
 export const useAgGridSort = (
     initSortConfig: SortConfigType[],
-    table: (typeof TableSortKeysType)[keyof typeof TableSortKeysType],
+    table: TableSortKeysType,
     tab: string
 ): SortPropsType => {
     const sortConfig = useSelector(
