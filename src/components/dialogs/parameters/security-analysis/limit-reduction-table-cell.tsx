@@ -5,25 +5,36 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TableCell } from '@mui/material';
+import { TableCell, TextField } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import React from 'react';
-import { IColumnsDef } from './columns-definitions';
+import {
+    IColumnsDef,
+    LIMIT_REDUCTIONS_FORM,
+    VOLTAGE_LEVELS_FORM,
+} from './columns-definitions';
 
 function LimitReductionTableCell(rowIndex: number, column: IColumnsDef) {
     return (
         <TableCell
-            key={column.dataKey}
+            key={`LimitReductionTableCell[${rowIndex}].${column.dataKey}`}
             sx={{
                 width: column.width,
             }}
         >
-            {/*{column.floatItems && (*/}
-            <FloatInput
-                name={`limitReduction[${rowIndex}].${column.dataKey}`}
-                previousValue={1}
-            />
-            {/*)}*/}
+            {column.dataKey === VOLTAGE_LEVELS_FORM ? (
+                <TextField
+                    name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`}
+                    fullWidth
+                    InputProps={{
+                        readOnly: true,
+                    }}
+                />
+            ) : (
+                <FloatInput
+                    name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`}
+                />
+            )}
         </TableCell>
     );
 }

@@ -26,27 +26,27 @@ export interface IColumnsDef {
 export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
     {
         label: 'VoltageLevels',
-        dataKey: 'voltageLevels',
+        dataKey: VOLTAGE_LEVELS_FORM,
         width: '40%',
     },
     {
         label: 'IST',
-        dataKey: 'ist',
+        dataKey: IST_FORM,
         width: '20%',
     },
     {
         label: 'LimitDuration10',
-        dataKey: 'limitDuration10',
+        dataKey: LIMIT_DURATION1_FORM,
         width: '20%',
     },
     {
         label: 'LimitDuration5',
-        dataKey: 'limitDuration5',
+        dataKey: LIMIT_DURATION2_FORM,
         width: '20%',
     },
     {
         label: 'LimitDuration0',
-        dataKey: 'limitDuration0',
+        dataKey: LIMIT_DURATION3_FORM,
         width: '20%',
     },
 ];

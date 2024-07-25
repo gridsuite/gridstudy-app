@@ -22,7 +22,7 @@ const LimitReductionTableRow: FunctionComponent<TableRowComponentProps> = ({
     index,
 }) => {
     return (
-        <TableRow key={row.id}>
+        <TableRow key={`${row.id}.${index}`}>
             {columnsDefinition.map((column: IColumnsDef) =>
                 LimitReductionTableCell(index, column)
             )}

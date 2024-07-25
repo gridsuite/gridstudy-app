@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import {
     COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS,
     IColumnsDef,
@@ -40,24 +40,33 @@ const LimitReductionsTableForm: FunctionComponent = () => {
         })
         .required();
 
-    const emptyFormData = {
-        [LIMIT_REDUCTIONS_FORM]: [
-            {
-                voltageLevelsForm: '20',
-                istForm: 1,
-                limitReduction1Form: 1,
-                limitReduction2Form: 1,
-                limitReduction3Form: 1,
-            },
-        ],
-    };
+    const emptyFormData = useMemo(() => {
+        return {
+            [LIMIT_REDUCTIONS_FORM]: [
+                {
+                    [VOLTAGE_LEVELS_FORM]: '20',
+                    [IST_FORM]: 0.5,
+                    [LIMIT_DURATION1_FORM]: 1,
+                    [LIMIT_DURATION2_FORM]: 1,
+                    [LIMIT_DURATION3_FORM]: 1,
+                },
+                {
+                    [VOLTAGE_LEVELS_FORM]: '125',
+                    [IST_FORM]: 0.5,
+                    [LIMIT_DURATION1_FORM]: 1,
+                    [LIMIT_DURATION2_FORM]: 0.5,
+                    [LIMIT_DURATION3_FORM]: 1,
+                },
+            ],
+        };
+    }, []);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
-    //const { reset } = formMethods;
+    const { reset } = formMethods;
 
     const getColumnsDefinition = useCallback(
         (columns: IColumnsDef[]) => {
@@ -71,6 +80,8 @@ const LimitReductionsTableForm: FunctionComponent = () => {
         },
         [intl]
     );
+
+    reset(emptyFormData);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
