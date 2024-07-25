@@ -21,7 +21,6 @@ interface TopBarEquipmentSearchInputProps {
     params: AutocompleteRenderInputParams;
     equipmentType: EquipmentType | null;
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
-    disabledSearchReason: string;
 }
 
 const styles = {
@@ -37,24 +36,17 @@ const styles = {
 export const TopBarEquipmentSearchInput = (
     props: TopBarEquipmentSearchInputProps
 ) => {
-    const {
-        displayedValue,
-        params,
-        equipmentType,
-        setEquipmentType,
-        disabledSearchReason,
-    } = props;
+    const { displayedValue, params, equipmentType, setEquipmentType } = props;
     const intl = useIntl();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const inputRef = useRef<HTMLDivElement>(null);
-    const isSearchDisabled = disabledSearchReason !== '';
     return (
         <>
             <TextField
                 ref={inputRef}
                 placeholder={
-                    isSearchDisabled
-                        ? disabledSearchReason
+                    params.disabled
+                        ? displayedValue
                         : intl.formatMessage({
                               id: 'EquipmentSearchPlaceholder',
                           })
@@ -68,7 +60,7 @@ export const TopBarEquipmentSearchInput = (
                     ...params.InputProps,
                     startAdornment: (
                         <>
-                            {isSearchDisabled ? (
+                            {params.disabled ? (
                                 <SearchOff color="disabled" />
                             ) : (
                                 <Search color="disabled" />
@@ -78,7 +70,7 @@ export const TopBarEquipmentSearchInput = (
                     ),
                     endAdornment: (
                         <>
-                            {!isSearchDisabled && equipmentType && (
+                            {!params.disabled && equipmentType && (
                                 <Chip
                                     onDelete={() => setEquipmentType(null)}
                                     label={
@@ -98,7 +90,7 @@ export const TopBarEquipmentSearchInput = (
                             )}
                             <IconButton
                                 onClick={() => setIsPopoverOpen(true)}
-                                disabled={isSearchDisabled}
+                                disabled={params.disabled}
                             >
                                 <Tune />
                             </IconButton>

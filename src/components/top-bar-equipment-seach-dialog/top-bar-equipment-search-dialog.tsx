@@ -153,7 +153,6 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     params={params}
                     setEquipmentType={setEquipmentTypeFilter}
                     equipmentType={equipmentTypeFilter}
-                    disabledSearchReason={disabledSearchReason}
                 />
             )}
         />
