@@ -176,7 +176,7 @@ export const getConnectivityFormData = (
             [CONNECTION_DIRECTION]: connectionDirection ?? null,
             [CONNECTION_NAME]: connectionName ?? '',
             [CONNECTION_POSITION]: connectionPosition ?? null,
-            [CONNECTED]: isEquipmentModification ? null : true,
+            [CONNECTED]: isEquipmentModification ? terminalConnected : true,
         },
     };
 };

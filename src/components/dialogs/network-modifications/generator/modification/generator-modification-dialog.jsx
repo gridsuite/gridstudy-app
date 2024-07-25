@@ -333,10 +333,6 @@ const GeneratorModificationDialog = ({
                                 `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
                                 value?.busOrBusbarSectionId
                             );
-                            setValue(
-                                `${CONNECTIVITY}.${CONNECTED}`,
-                                value?.terminalConnected
-                            );
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable:

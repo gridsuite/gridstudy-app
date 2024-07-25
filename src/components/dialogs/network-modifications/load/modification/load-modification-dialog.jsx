@@ -155,10 +155,6 @@ const LoadModificationDialog = ({
                                 `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
                                 load?.busOrBusbarSectionId
                             );
-                            setValue(
-                                `${CONNECTIVITY}.${CONNECTED}`,
-                                load?.terminalConnected
-                            );
                             setLoadToModify(load);
                             reset((formValues) => ({
                                 ...formValues,

@@ -206,10 +206,6 @@ const ShuntCompensatorModificationDialog = ({
                                     `${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`,
                                     shuntCompensator?.busOrBusbarSectionId
                                 );
-                                setValue(
-                                    `${CONNECTIVITY}.${CONNECTED}`,
-                                    shuntCompensator?.terminalConnected
-                                );
                                 setShuntCompensatorInfos(shuntCompensator);
                                 setDataFetchStatus(FetchStatus.SUCCEED);
                                 reset((formValues) => ({
