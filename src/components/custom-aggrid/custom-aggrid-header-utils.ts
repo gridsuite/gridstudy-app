@@ -42,6 +42,8 @@ export const makeAgGridCustomHeaderColumn = ({
         minWidth += 30;
     }
 
+    console.log('test isCurrentColumnSorted', field, isCurrentColumnSorted);
+    console.log('test sortConfig', sortConfig);
     return {
         headerTooltip: headerName,
         minWidth,

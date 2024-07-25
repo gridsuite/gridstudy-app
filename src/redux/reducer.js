@@ -248,7 +248,7 @@ const initialSpreadsheetFilter = {
 const defaultSpreadsheetSort = [
     {
         colId: 'id',
-        sortWay: 'asc',
+        sort: 'asc',
     },
 ];
 
@@ -271,45 +271,45 @@ const loadflowResultSort = {
     [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
         {
             colId: 'overload',
-            sortWay: 'desc',
+            sort: 'desc',
         },
     ],
     [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
         {
             colId: 'subjectId',
-            sortWay: 'desc',
+            sort: 'desc',
         },
     ],
     [LOADFLOW_RESULT]: [
         {
             colId: 'connectedComponentNum',
-            sortWay: 'desc',
+            sort: 'desc',
         },
     ],
 };
 
 const securityAnalysisResultSort = {
-    [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sortWay: 'asc' }],
+    [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sort: 'asc' }],
     [SECURITY_ANALYSIS_RESULT_N_K]: [
         {
             colId: 'contingencyId',
-            sortWay: 'asc',
+            sort: 'asc',
         },
     ],
 };
 
 const sensitivityAnalysisResultSort = {
-    [SENSITIVITY_IN_DELTA_MW_N]: [{ colId: 'value', sortWay: 'asc' }],
-    [SENSITIVITY_IN_DELTA_MW_N_K]: [{ colId: 'valueAfter', sortWay: 'asc' }],
-    [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sortWay: 'asc' }],
-    [SENSITIVITY_IN_DELTA_A_N_K]: [{ colId: 'valueAfter', sortWay: 'asc' }],
-    [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sortWay: 'asc' }],
-    [SENSITIVITY_AT_NODE_N_K]: [{ colId: 'valueAfter', sortWay: 'asc' }],
+    [SENSITIVITY_IN_DELTA_MW_N]: [{ colId: 'value', sort: 'asc' }],
+    [SENSITIVITY_IN_DELTA_MW_N_K]: [{ colId: 'valueAfter', sort: 'asc' }],
+    [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sort: 'asc' }],
+    [SENSITIVITY_IN_DELTA_A_N_K]: [{ colId: 'valueAfter', sort: 'asc' }],
+    [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sort: 'asc' }],
+    [SENSITIVITY_AT_NODE_N_K]: [{ colId: 'valueAfter', sort: 'asc' }],
 };
 
 const shortcircuitAnalysisResultSort = {
-    [ONE_BUS]: [{ colId: 'current', sortWay: 'desc' }],
-    [ALL_BUSES]: [{ colId: 'elementId', sortWay: 'asc' }],
+    [ONE_BUS]: [{ colId: 'current', sort: 'desc' }],
+    [ALL_BUSES]: [{ colId: 'elementId', sort: 'asc' }],
 };
 
 const dynamicSimulationResultSort = {
