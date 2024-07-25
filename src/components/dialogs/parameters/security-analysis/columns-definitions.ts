@@ -8,9 +8,31 @@
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
 export const VOLTAGE_LEVELS_FORM = 'voltageLevelsForm';
 export const IST_FORM = 'istForm';
-export const LIMIT_DURATION1_FORM = 'limitReduction1Form';
-export const LIMIT_DURATION2_FORM = 'limitReduction2Form';
-export const LIMIT_DURATION3_FORM = 'limitReduction3Form';
+export const LIMIT_DURATION_FORM = 'limitReductionForm';
+
+export interface IVoltageLevel {
+    nominalV: number;
+    lowBound: number;
+    highBound: number;
+}
+
+export interface ILimitDuration {
+    lowBound: number;
+    lowClosed: number;
+    highBound: number;
+    highClosed: number;
+}
+
+export interface ITemporaryLimitReduction {
+    reduction: number;
+    limitDuration: ILimitDuration;
+}
+
+export interface ILimitReductionsByVoltageLevel {
+    voltageLevel: IVoltageLevel;
+    permanentLimitReduction: number;
+    temporaryLimitReductions: ITemporaryLimitReduction[];
+}
 
 export enum TAB_VALUES {
     'General' = 0,
@@ -32,21 +54,6 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
     {
         label: 'IST',
         dataKey: IST_FORM,
-        width: '20%',
-    },
-    {
-        label: 'LimitDuration10',
-        dataKey: LIMIT_DURATION1_FORM,
-        width: '20%',
-    },
-    {
-        label: 'LimitDuration5',
-        dataKey: LIMIT_DURATION2_FORM,
-        width: '20%',
-    },
-    {
-        label: 'LimitDuration0',
-        dataKey: LIMIT_DURATION3_FORM,
         width: '20%',
     },
 ];

@@ -65,7 +65,9 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                             />
                         )}
                         {tabValue === TAB_VALUES.LimitReductions && (
-                            <LimitReductionsTableForm />
+                            <LimitReductionsTableForm
+                                limits={params.limitReductions}
+                            />
                         )}
                     </TabPanel>
                 ))}

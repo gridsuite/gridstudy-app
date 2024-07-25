@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TableCell, TextField } from '@mui/material';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { TableCell } from '@mui/material';
+import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import React from 'react';
 import {
     IColumnsDef,
@@ -17,18 +17,15 @@ import {
 function LimitReductionTableCell(rowIndex: number, column: IColumnsDef) {
     return (
         <TableCell
-            key={`LimitReductionTableCell[${rowIndex}].${column.dataKey}`}
+            key={`${rowIndex}].${column.dataKey}`}
             sx={{
                 width: column.width,
             }}
         >
             {column.dataKey === VOLTAGE_LEVELS_FORM ? (
-                <TextField
+                <TextInput
                     name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`}
-                    fullWidth
-                    InputProps={{
-                        readOnly: true,
-                    }}
+                    formProps={{ disabled: true }}
                 />
             ) : (
                 <FloatInput
