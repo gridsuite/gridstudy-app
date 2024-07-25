@@ -62,7 +62,6 @@ export const useAgGridSort = (
 
     const initSort = useCallback(
         (config: SortConfigType[]) => {
-            console.log('test sort infos : ', tab, table, config);
             dispatch(
                 setTableSort({
                     table: table,

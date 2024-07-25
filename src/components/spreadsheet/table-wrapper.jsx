@@ -431,6 +431,10 @@ const TableWrapper = (props) => {
     }, [errorMessage, snackError]);
 
     useEffect(() => {
+        /*gridRef.current?.columnApi?.applyColumnState({
+            state: sortConfigType,
+            defaultState: { sort: null },
+        });*/
         initSort(sortConfigType);
     }, [tabIndex, sortConfigType, initSort]);
 
