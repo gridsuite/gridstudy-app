@@ -47,6 +47,8 @@ import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 
+import GuidancePopup from './guidance-popup';
+
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
@@ -1147,6 +1149,8 @@ export const NetworkMapTab = ({
             )}
             {mapEquipments?.substations?.length > 0 &&
                 renderNominalVoltageFilter()}
+
+            {isInDrawingMode && <GuidancePopup />}
         </>
     );
 };
