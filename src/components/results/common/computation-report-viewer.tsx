@@ -36,6 +36,7 @@ export const ComputationReportViewer: FunctionComponent<
 
     const makeReport = useCallback(
         (reportData: any) => {
+            console.log('DBR makeReport computa', reportData);
             const nodeName = currentNode?.data.label;
             // an array with a single reporter is expected (corresponding to the current Node)
             let singleReport: any =
@@ -43,7 +44,7 @@ export const ComputationReportViewer: FunctionComponent<
                     ? reportData[0]
                     : undefined;
             if (nodeName && singleReport) {
-                singleReport.messageTemplate = nodeName;
+                singleReport.title = nodeName;
             }
             return singleReport;
         },
