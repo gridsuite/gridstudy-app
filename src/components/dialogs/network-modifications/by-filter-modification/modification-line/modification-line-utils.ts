@@ -17,8 +17,8 @@ import {
     VALUE_FIELD,
 } from '../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { AnyObject, TestFunction } from 'yup';
 import { searchTree } from '@gridsuite/commons-ui';
+import { Schema } from 'yup';
 
 export type FieldOptionType = {
     id: string;
@@ -28,7 +28,8 @@ export type FieldOptionType = {
 export enum DataType {
     STRING = 'STRING',
     ENUM = 'ENUM',
-    NUMBER = 'NUMBER',
+    FLOAT = 'FLOAT',
+    INTEGER = 'INTEGER',
     BOOLEAN = 'BOOLEAN',
     PROPERTY = 'PROPERTIES',
 }
@@ -87,194 +88,194 @@ export const FIELD_OPTIONS: {
     RATED_NOMINAL_POWER: {
         id: FieldType.RATED_NOMINAL_POWER,
         label: 'RatedNominalPowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     MINIMUM_ACTIVE_POWER: {
         id: FieldType.MINIMUM_ACTIVE_POWER,
         label: 'MinimumActivePowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     MAXIMUM_ACTIVE_POWER: {
         id: FieldType.MAXIMUM_ACTIVE_POWER,
         label: 'MaximumActivePowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     ACTIVE_POWER_SET_POINT: {
         id: FieldType.ACTIVE_POWER_SET_POINT,
         label: 'ActivePowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     REACTIVE_POWER_SET_POINT: {
         id: FieldType.REACTIVE_POWER_SET_POINT,
         label: 'ReactivePowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     VOLTAGE_SET_POINT: {
         id: FieldType.VOLTAGE_SET_POINT,
         label: 'GeneratorTargetV',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     PLANNED_ACTIVE_POWER_SET_POINT: {
         id: FieldType.PLANNED_ACTIVE_POWER_SET_POINT,
         label: 'PlannedActivePowerSetPointForm',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     MARGINAL_COST: {
         id: FieldType.MARGINAL_COST,
         label: 'marginalCost',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     PLANNED_OUTAGE_RATE: {
         id: FieldType.PLANNED_OUTAGE_RATE,
         label: 'plannedOutageRate',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     FORCED_OUTAGE_RATE: {
         id: FieldType.FORCED_OUTAGE_RATE,
         label: 'forcedOutageRate',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     DROOP: {
         id: FieldType.DROOP,
         label: 'ActivePowerRegulationDroop',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     TRANSIENT_REACTANCE: {
         id: FieldType.TRANSIENT_REACTANCE,
         label: 'TransientReactanceForm',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     STEP_UP_TRANSFORMER_REACTANCE: {
         id: FieldType.STEP_UP_TRANSFORMER_REACTANCE,
         label: 'TransformerReactanceForm',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     Q_PERCENT: {
         id: FieldType.Q_PERCENT,
         label: 'ReactivePercentageVoltageRegulation',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     MAXIMUM_SECTION_COUNT: {
         id: FieldType.MAXIMUM_SECTION_COUNT,
         label: 'maximumSectionCount',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     SECTION_COUNT: {
         id: FieldType.SECTION_COUNT,
         label: 'sectionCount',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     MAXIMUM_SUSCEPTANCE: {
         id: FieldType.MAXIMUM_SUSCEPTANCE,
         label: 'maxSusceptance',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     MAXIMUM_Q_AT_NOMINAL_VOLTAGE: {
         id: FieldType.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
         label: 'maxQAtNominalV',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     NOMINAL_VOLTAGE: {
         id: FieldType.NOMINAL_VOLTAGE,
         label: 'NominalVoltage',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     LOW_VOLTAGE_LIMIT: {
         id: FieldType.LOW_VOLTAGE_LIMIT,
         label: 'LowVoltageLimit',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     HIGH_VOLTAGE_LIMIT: {
         id: FieldType.HIGH_VOLTAGE_LIMIT,
         label: 'HighVoltageLimit',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     ACTIVE_POWER: {
         id: FieldType.ACTIVE_POWER,
         label: 'ActivePowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     REACTIVE_POWER: {
         id: FieldType.REACTIVE_POWER,
         label: 'ReactivePowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     R: {
         id: FieldType.R,
         label: 'SeriesResistanceText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     X: {
         id: FieldType.X,
         label: 'SeriesReactanceText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
-    G: { id: FieldType.G, label: 'G', dataType: DataType.NUMBER },
-    B: { id: FieldType.B, label: 'B', dataType: DataType.NUMBER },
+    G: { id: FieldType.G, label: 'G', dataType: DataType.FLOAT },
+    B: { id: FieldType.B, label: 'B', dataType: DataType.FLOAT },
     RATED_U1: {
         id: FieldType.RATED_U1,
         label: 'RatedU1',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     RATED_U2: {
         id: FieldType.RATED_U2,
         label: 'RatedU2',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     RATED_S: {
         id: FieldType.RATED_S,
         label: 'RatedNominalPowerText',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     TARGET_V: {
         id: FieldType.TARGET_V,
         label: 'RatioTargetV',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     RATIO_LOW_TAP_POSITION: {
         id: FieldType.RATIO_LOW_TAP_POSITION,
         label: 'RatioLowTapPosition',
-        dataType: DataType.NUMBER,
+        dataType: DataType.INTEGER,
     },
     RATIO_TAP_POSITION: {
         id: FieldType.RATIO_TAP_POSITION,
         label: 'RatioTapPosition',
-        dataType: DataType.NUMBER,
+        dataType: DataType.INTEGER,
     },
     RATIO_TARGET_DEADBAND: {
         id: FieldType.RATIO_TARGET_DEADBAND,
         label: 'RatioDeadBand',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     REGULATION_VALUE: {
         id: FieldType.REGULATION_VALUE,
         label: 'PhaseRegulatingValue',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
     PHASE_LOW_TAP_POSITION: {
         id: FieldType.PHASE_LOW_TAP_POSITION,
         label: 'PhaseLowTapPosition',
-        dataType: DataType.NUMBER,
+        dataType: DataType.INTEGER,
     },
     PHASE_TAP_POSITION: {
         id: FieldType.PHASE_TAP_POSITION,
         label: 'PhaseTapPosition',
-        dataType: DataType.NUMBER,
+        dataType: DataType.INTEGER,
     },
     PHASE_TARGET_DEADBAND: {
         id: FieldType.PHASE_TARGET_DEADBAND,
         label: 'PhaseDeadBand',
-        dataType: DataType.NUMBER,
+        dataType: DataType.FLOAT,
     },
 };
 
@@ -344,14 +345,6 @@ export const EQUIPMENTS_FIELDS = {
     ],
 };
 
-const checkNumericValue: TestFunction<any, AnyObject> = (value, _) => {
-    const newValue = value.replace(',', '.');
-    if (!isNaN(parseFloat(newValue))) {
-        return true;
-    }
-    return false;
-};
-
 const getDataType = (fieldName: string) => {
     return (searchTree(FIELD_OPTIONS, 'id', fieldName) as FieldOptionType)
         ?.dataType;
@@ -364,7 +357,7 @@ export const getModificationLineInitialValue = () => ({
     [VALUE_FIELD]: null,
 });
 
-export function getFormulaSchema(id: string) {
+export function getModificationLinesSchema(id: string) {
     return {
         [id]: yup.array().of(
             yup.object().shape({
@@ -393,19 +386,39 @@ export function getFormulaSchema(id: string) {
                     }),
                 [VALUE_FIELD]: yup
                     .mixed()
-                    .required()
                     .when([EDITED_FIELD], ([editedField], schema) => {
                         const dataType = getDataType(editedField);
-                        if (dataType === DataType.NUMBER) {
-                            return schema.test(
-                                'checkNumericValue',
-                                'WrongNumericValueError',
-                                checkNumericValue
-                            );
-                        }
-                        return schema;
+                        return getValueSchema(dataType);
                     }),
             })
         ),
     };
+}
+
+function getValueSchema(dataType: DataType) {
+    let schema: Schema;
+    // set type
+    switch (dataType) {
+        case DataType.FLOAT:
+            schema = yup.number();
+            break;
+        case DataType.INTEGER:
+            schema = yup.number().integer();
+            break;
+        case DataType.ENUM:
+        case DataType.STRING:
+        case DataType.PROPERTY:
+            schema = yup.string();
+            break;
+        case DataType.BOOLEAN:
+            schema = yup.boolean();
+            break;
+        default:
+            schema = yup.number();
+    }
+
+    // set required
+    schema = schema.required();
+
+    return schema;
 }

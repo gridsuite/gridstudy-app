@@ -10,6 +10,8 @@ import {
     AutocompleteInput,
     DirectoryItemsInput,
     ElementType,
+    FloatInput,
+    IntegerInput,
 } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
@@ -20,10 +22,8 @@ import {
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
 import { DataType, FieldOptionType } from './modification-line-utils';
-import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
-import Grid from '@mui/material/Grid';
 
 interface ModificationLineFormProps {
     name: String;
@@ -64,10 +64,6 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         return predefinedProperties?.[watchPropertyName]?.sort() ?? [];
     }, [watchPropertyName, predefinedProperties]);
 
-    const valueLabel = useMemo(() => {
-        return dataType === DataType.PROPERTY ? 'PropertyValue' : 'Value';
-    }, [dataType]);
-
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
@@ -105,15 +101,36 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         />
     );
 
-    const valueField = (
-        <AutocompleteInput
-            name={`${name}.${index}.${VALUE_FIELD}`}
-            label={valueLabel}
-            options={predefinedValues}
-            size={'small'}
-            allowNewValue
-        />
-    );
+    const valueField = useMemo(() => {
+        if (dataType === DataType.PROPERTY) {
+            return (
+                <AutocompleteInput
+                    name={`${name}.${index}.${VALUE_FIELD}`}
+                    label={'PropertyValue'}
+                    options={predefinedValues}
+                    size={'small'}
+                    allowNewValue
+                />
+            );
+        }
+
+        if (dataType === DataType.INTEGER) {
+            return (
+                <IntegerInput
+                    name={`${name}.${index}.${VALUE_FIELD}`}
+                    label={'Value'}
+                />
+            );
+        }
+
+        // by default is a numeric type
+        return (
+            <FloatInput
+                name={`${name}.${index}.${VALUE_FIELD}`}
+                label={'Value'}
+            />
+        );
+    }, [dataType, name, index, predefinedValues]);
 
     return (
         <>
@@ -121,10 +138,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
             {gridItem(editedField, 3)}
             {dataType === DataType.PROPERTY &&
                 gridItem(propertyNameField, 2.25)}
-            <Grid item xs={0.25} sx={{ marginTop: 0.75 }}>
-                <DragHandleIcon />
-            </Grid>
-            {gridItem(valueField, 3.25)}
+            {gridItem(valueField, dataType === DataType.PROPERTY ? 3.25 : 5.5)}
         </>
     );
 };

@@ -25,21 +25,15 @@ import {
 } from '../../../utils/field-constants';
 import { modifyByFilter } from '../../../../services/study/network-modifications';
 import {
-    getFormulaSchema,
     getModificationLineInitialValue,
+    getModificationLinesSchema,
 } from './modification-line/modification-line-utils.ts';
-
-function getValue(input) {
-    const value = input.replace(',', '.');
-    const isNumber = !isNaN(parseFloat(value));
-    return isNumber ? value : null;
-}
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        ...getFormulaSchema(MODIFICATION_LINE),
+        ...getModificationLinesSchema(MODIFICATION_LINE),
     })
     .required();
 
@@ -99,8 +93,8 @@ const ByFilterModificationDialog = ({
         (data) => {
             const byFilterModifications = data[MODIFICATION_LINE].map(
                 (formula) => {
-                    const propertyName = getValue(formula[PROPERTY_NAME_FIELD]);
-                    const value = getValue(formula[VALUE_FIELD]);
+                    const propertyName = formula[PROPERTY_NAME_FIELD];
+                    const value = formula[VALUE_FIELD];
                     return {
                         propertyName,
                         value,

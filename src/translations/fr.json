@@ -1274,7 +1274,6 @@
     "ModifyByFilter": "Modification par filtre",
     "UseDashToSelectField": "Utiliser # pour sélectionner un champ",
     "WrongRefOrValueError": "Veuillez saisir une valeur numérique valide ou une référence de champ valide. Utiliser # pour sélectionner un champ",
-    "WrongNumericValueError": "Veuillez saisir une valeur numérique valide",
     "ValueMustBeNumericWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une valeur numérique positive valide",
     "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
     "addNewFormula": "Ajouter une nouvelle formule",
