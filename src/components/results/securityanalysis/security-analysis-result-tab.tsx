@@ -140,15 +140,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         }
     }, [tabIndex, nmkType, enableDeveloperMode]);
 
-    const sortConfigType = useSelector(
-        (state: ReduxState) =>
-            state.tableSort[SECURITY_ANALYSIS_RESULT_SORT_STORE][
-                getStoreFields(tabIndex)
-            ]
-    );
-
-    const { onSortChanged, initSort } = useAgGridSort(
-        sortConfigType,
+    const { onSortChanged, sortConfig } = useAgGridSort(
         SECURITY_ANALYSIS_RESULT_SORT_STORE,
         getStoreFields(tabIndex)
     );
@@ -184,9 +176,9 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 queryParams['size'] = rowsPerPage;
             }
 
-            if (sortConfigType?.length) {
+            if (sortConfig?.length) {
                 const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['sort'] = sortConfigType.map(
+                queryParams['sort'] = sortConfig.map(
                     (sort: SortConfigType) => ({
                         ...sort,
                         colId: columnToFieldMapping[sort.colId],
@@ -216,7 +208,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             page,
             tabIndex,
             rowsPerPage,
-            sortConfigType,
+            sortConfig,
             filterSelector,
             resultType,
             intl,
@@ -236,10 +228,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         setResult(null);
         setCount(0);
         setPage(0);
-        if (initSort) {
-            initSort(sortConfigType);
-        }
-    }, [initSort, setResult, sortConfigType]);
+    }, [setResult]);
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {
         resetResultStates();
@@ -300,7 +289,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const columnDefs = useSecurityAnalysisColumnsDefs(
         {
             onSortChanged,
-            sortConfig: sortConfigType,
+            sortConfig,
         },
         {
             updateFilter,

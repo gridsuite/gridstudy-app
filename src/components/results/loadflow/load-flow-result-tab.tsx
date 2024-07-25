@@ -107,13 +107,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
-    const sortConfigType = useSelector(
-        (state: ReduxState) =>
-            state.tableSort[LOADFLOW_RESULT_SORT_STORE][mappingTabs(tabIndex)]
-    );
-
-    const { onSortChanged, initSort } = useAgGridSort(
-        sortConfigType,
+    const { onSortChanged, sortConfig } = useAgGridSort(
         LOADFLOW_RESULT_SORT_STORE,
         mappingTabs(tabIndex)
     );
@@ -220,7 +214,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             });
         }
         return fetchLimitViolations(studyUuid, nodeUuid, {
-            sort: sortConfigType.map((sort: SortConfigType) => ({
+            sort: sortConfig.map((sort: SortConfigType) => ({
                 ...sort,
                 colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
             })),
@@ -233,7 +227,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     }, [
         studyUuid,
         nodeUuid,
-        sortConfigType,
+        sortConfig,
         filterSelector,
         tabIndex,
         globalFilter,
@@ -243,10 +237,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const fetchloadflowResultWithParameters = useCallback(() => {
         return fetchLoadFlowResult(studyUuid, nodeUuid, {
-            sort: sortConfigType,
+            sort: sortConfig,
             filters: filterSelector,
         });
-    }, [studyUuid, nodeUuid, sortConfigType, filterSelector]);
+    }, [studyUuid, nodeUuid, sortConfig, filterSelector]);
 
     const fetchResult = useMemo(() => {
         if (tabIndex === 0 || tabIndex === 1) {
@@ -272,21 +266,21 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             case 0:
                 return loadFlowCurrentViolationsColumnsDefinition(
                     intl,
-                    { onSortChanged, sortConfig: sortConfigType },
+                    { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
                     filterEnums
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
                     intl,
-                    { onSortChanged, sortConfig: sortConfigType },
+                    { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
                     filterEnums
                 );
             case 2:
                 return loadFlowResultColumnsDefinition(
                     intl,
-                    { onSortChanged, sortConfig: sortConfigType },
+                    { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
                     filterEnums,
                     StatusCellRender,
@@ -301,17 +295,14 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         filterSelector,
         intl,
         onSortChanged,
-        sortConfigType,
+        sortConfig,
         updateFilter,
         tabIndex,
     ]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);
-        if (initSort) {
-            initSort(sortConfigType);
-        }
-    }, [initSort, setResult, sortConfigType]);
+    }, [setResult]);
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         resetResultStates();

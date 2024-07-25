@@ -19,7 +19,6 @@ export type SortConfigType = {
 export type SortPropsType = {
     onSortChanged: (sortConfig: SortConfigType) => void;
     sortConfig?: SortConfigType[];
-    initSort?: (sortConfig: SortConfigType[]) => void;
     children?: boolean;
 };
 
@@ -29,7 +28,6 @@ export enum SortWay {
 }
 
 export const useAgGridSort = (
-    initSortConfig: SortConfigType[],
     table: TableSortKeysType,
     tab: string
 ): SortPropsType => {
@@ -60,18 +58,5 @@ export const useAgGridSort = (
         [dispatch, table, tab, sortConfig]
     );
 
-    const initSort = useCallback(
-        (config: SortConfigType[]) => {
-            dispatch(
-                setTableSort({
-                    table: table,
-                    tab: tab,
-                    sort: config,
-                })
-            );
-        },
-        [dispatch, table, tab]
-    );
-
-    return { onSortChanged, initSort };
+    return { onSortChanged, sortConfig };
 };

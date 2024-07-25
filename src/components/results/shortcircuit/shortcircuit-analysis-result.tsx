@@ -95,15 +95,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
 
-    const sortConfigType = useSelector(
-        (state: ReduxState) =>
-            state.tableSort[SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE][
-                mappingTabs(analysisType)
-            ]
-    );
-
-    const { onSortChanged } = useAgGridSort(
-        sortConfigType,
+    const { onSortChanged, sortConfig } = useAgGridSort(
         SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
         mappingTabs(analysisType)
     );
@@ -145,7 +137,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         setIsFetching(true);
         updateResult(null);
 
-        const backSortConfig = sortConfigType?.map((sort: SortConfigType) => ({
+        const backSortConfig = sortConfig?.map((sort: SortConfigType) => ({
             ...sort,
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
@@ -205,7 +197,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         currentNode?.id,
         intl,
         filterSelector,
-        sortConfigType,
+        sortConfig,
         fromFrontColumnToBackKeys,
     ]);
 
@@ -254,7 +246,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                 isFetching={isFetching}
                 sortProps={{
                     onSortChanged,
-                    sortConfig: sortConfigType,
+                    sortConfig,
                 }}
                 filterProps={{
                     updateFilter,

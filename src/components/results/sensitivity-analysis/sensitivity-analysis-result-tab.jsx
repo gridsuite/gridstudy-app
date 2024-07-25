@@ -68,22 +68,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         filterStoreAction: setSensitivityAnalysisResultFilter,
     });
 
-    const sortConfigType = useSelector(
-        (state) =>
-            state.tableSort[SENSITIVITY_ANALYSIS_RESULT_SORT_STORE][
-                mappingTabs(sensiKind, nOrNkIndex)
-            ]
-    );
-
-    const { onSortChanged, initSort } = useAgGridSort(
-        sortConfigType,
+    const { onSortChanged, sortConfig } = useAgGridSort(
         SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
         mappingTabs(sensiKind, nOrNkIndex)
     );
 
     const initTable = () => {
-        initSort(sortConfigType);
-
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
            for the page prop of MUI TablePagination if was not on the first page
            for the prev sensiKind */
@@ -201,7 +191,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                         setPage={setPage}
                         sortProps={{
                             onSortChanged,
-                            sortConfig: sortConfigType,
+                            sortConfig,
                         }}
                         filterProps={{
                             updateFilter,

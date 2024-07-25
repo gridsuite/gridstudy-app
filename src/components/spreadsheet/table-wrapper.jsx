@@ -86,7 +86,7 @@ import {
 import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
-import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import {
@@ -220,16 +220,7 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    const sortConfigType = useSelector(
-        (state) =>
-            state.tableSort[SPREADSHEET_SORT_STORE][
-                TABLES_DEFINITION_INDEXES.get(tabIndex).type
-            ]
-    );
-
-    const { onSortChanged, initSort } = useAgGridLocalSort(
-        gridRef,
-        sortConfigType,
+    const { onSortChanged, sortConfig } = useAgGridSort(
         SPREADSHEET_SORT_STORE,
         TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
@@ -394,7 +385,7 @@ const TableWrapper = (props) => {
                 field: column.field,
                 sortProps: {
                     onSortChanged,
-                    sortConfig: sortConfigType,
+                    sortConfig,
                 },
                 filterProps: {
                     updateFilter,
@@ -411,7 +402,7 @@ const TableWrapper = (props) => {
             intl,
             lockedColumnsNames,
             onSortChanged,
-            sortConfigType,
+            sortConfig,
             updateFilter,
             filterSelector,
             loadFlowStatus,
@@ -431,12 +422,11 @@ const TableWrapper = (props) => {
     }, [errorMessage, snackError]);
 
     useEffect(() => {
-        /*gridRef.current?.columnApi?.applyColumnState({
-            state: sortConfigType,
+        gridRef.current?.api?.applyColumnState({
+            state: sortConfig,
             defaultState: { sort: null },
-        });*/
-        initSort(sortConfigType);
-    }, [tabIndex, sortConfigType, initSort]);
+        });
+    }, [sortConfig, columnData]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {
