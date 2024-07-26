@@ -84,13 +84,15 @@ import {
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
-import { SortWay } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
-import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SPREADSHEET_STORE_FIELD,
+    SPREADSHEET_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -218,19 +220,9 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    const defaultSortColKey = useMemo(() => {
-        const defaultSortCol = columnData.find(
-            (column) => column.isDefaultSort
-        );
-        return defaultSortCol?.field;
-    }, [columnData]);
-
-    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
-        gridRef,
-        {
-            colId: defaultSortColKey,
-            sort: SortWay.ASC,
-        }
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SPREADSHEET_SORT_STORE,
+        TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
@@ -429,9 +421,13 @@ const TableWrapper = (props) => {
         }
     }, [errorMessage, snackError]);
 
+    // Ensure initial sort is applied by including columnData in dependencies
     useEffect(() => {
-        initSort(defaultSortColKey);
-    }, [tabIndex, defaultSortColKey, initSort]);
+        gridRef.current?.api?.applyColumnState({
+            state: sortConfig,
+            defaultState: { sort: null },
+        });
+    }, [sortConfig, columnData]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {
