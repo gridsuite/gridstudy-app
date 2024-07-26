@@ -10,8 +10,9 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import { Box } from '@mui/system';
-import { LineSeparator } from '../dialogs/dialogUtils';
+import { italicFontTextField, LineSeparator } from '../dialogs/dialogUtils';
+import { CardActions, CardHeader } from '@mui/material';
+import { red } from '@mui/material/colors';
 
 const styles = {
     card: {
@@ -20,34 +21,46 @@ const styles = {
         bottom: '150px',
         maxWidth: '200px',
     },
+    title: {
+        backgroundColor: red,
+        fontFamily: italicFontTextField,
+    },
+    content: {
+        fontSize: 16,
+    },
+    actionsContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
 };
 
 const GuidancePopup: React.FC = () => {
     return (
-        <Box sx={styles.card}>
-            <Card>
-                <CardContent>
-                    <Typography
-                        variant="h6"
-                        component="div"
-                        style={{ marginBottom: '10px' }}
-                    >
+        <Card sx={styles.card}>
+            <CardHeader
+                sx={styles.title}
+                title={
+                    <Typography variant="h6" component="span">
                         Sélection sur la carte
                     </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Cliquez sur la carte pour commencer à dessiner un
-                        polygone.
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                        Appuyez sur Entrée pour enregistrer la sélection ou
-                        Échap pour annuler.
-                    </Typography>
-                    <LineSeparator />
+                }
+            />
 
-                    <Button size="small">fermer l'éditeur</Button>
-                </CardContent>
-            </Card>
-        </Box>
+            <CardContent>
+                <Typography variant="body2" sx={styles.content}>
+                    Cliquez sur la carte pour commencer à dessiner un polygone.
+                </Typography>
+                <Typography variant="body2" sx={styles.content}>
+                    Appuyez sur Entrée pour enregistrer la sélection ou Échap
+                    pour annuler.
+                </Typography>
+            </CardContent>
+            <LineSeparator />
+
+            <CardActions sx={styles.actionsContainer}>
+                <Button size="small">Fermer l'éditeur</Button>
+            </CardActions>
+        </Card>
     );
 };
 export default GuidancePopup;
