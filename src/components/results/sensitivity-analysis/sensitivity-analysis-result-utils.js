@@ -12,7 +12,7 @@ import {
     SENSITIVITY_IN_DELTA_A_N_K,
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
-} from 'utils/store-filter-fields';
+} from 'utils/store-sort-filter-fields';
 
 export const SENSITIVITY_IN_DELTA_MW = 'SensitivityInDeltaMW';
 export const SENSITIVITY_IN_DELTA_A = 'SensitivityInDeltaA';
