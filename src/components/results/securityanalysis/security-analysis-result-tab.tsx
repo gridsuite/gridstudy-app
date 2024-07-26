@@ -41,7 +41,7 @@ import {
     convertFilterValues,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { SortConfigType, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
@@ -178,12 +178,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
             if (sortConfig?.length) {
                 const columnToFieldMapping = mappingColumnToField(resultType);
-                queryParams['sort'] = sortConfig.map(
-                    (sort) => ({
-                        ...sort,
-                        colId: columnToFieldMapping[sort.colId],
-                    })
-                );
+                queryParams['sort'] = sortConfig.map((sort) => ({
+                    ...sort,
+                    colId: columnToFieldMapping[sort.colId],
+                }));
             }
 
             if (filterSelector) {

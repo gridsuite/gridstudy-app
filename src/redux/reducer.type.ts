@@ -42,7 +42,6 @@ interface TableSortConfig {
     [key: string]: SortConfigType[];
 }
 
-
 interface TableSort {
     [SPREADSHEET_SORT_STORE]: TableSortConfig;
     [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
