@@ -14,6 +14,7 @@ import {
     backendFetch,
     backendFetchJson,
     backendFetchText,
+    getQueryParamsList,
     getUrlWithToken,
 } from '../utils';
 
@@ -138,16 +139,25 @@ export function fetchNetworkElementsInfos(
     substationsIds,
     elementType,
     infoType,
-    inUpstreamBuiltParentNode
+    inUpstreamBuiltParentNode,
+    nominalVoltages = undefined
 ) {
+    const substationsCount = substationsIds ? substationsIds.length : 0;
+    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
+
     console.info(
-        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with substations ids '${substationsIds}'...`
+        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
     );
 
-    const elementInfos = {
-        elementType: elementType,
-        substationsIds: substationsIds ?? null,
-    };
+    const nominalVoltagesParams = getQueryParamsList(
+        nominalVoltages,
+        'nominalVoltages'
+    );
+
+    const nominalVoltagesParamsList =
+        nominalVoltages && nominalVoltages?.length > 0
+            ? '&' + nominalVoltagesParams
+            : '';
 
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -157,18 +167,20 @@ export function fetchNetworkElementsInfos(
         );
     }
     urlSearchParams.append('infoType', infoType);
+    urlSearchParams.append('elementType', elementType);
 
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements' +
         '?' +
-        urlSearchParams;
+        urlSearchParams +
+        nominalVoltagesParamsList;
     console.debug(fetchElementsUrl);
 
     return backendFetchJson(fetchElementsUrl, {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(elementInfos),
+        body: JSON.stringify(substationsIds ?? null),
     });
 }
 

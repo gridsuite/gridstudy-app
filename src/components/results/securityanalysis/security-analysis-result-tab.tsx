@@ -36,13 +36,12 @@ import {
     RESULT_TYPE,
     useFetchFiltersEnums,
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
-    getIdType,
     mappingColumnToField,
     getStoreFields,
     convertFilterValues,
 } from './security-analysis-result-utils';
 import { useNodeData } from '../../study-container';
-import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { REPORT_TYPES } from '../../utils/report-type';
@@ -50,8 +49,14 @@ import { SecurityAnalysisExportButton } from './security-analysis-export-button'
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { setSecurityAnalysisResultFilter } from 'redux/actions';
-import { SECURITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
+import { useParameterState } from 'components/dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { usePrevious } from 'components/utils/utils';
 
 const styles = {
     tabsAndToolboxContainer: {
@@ -97,26 +102,48 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     const N_RESULTS_TAB_INDEX = 0;
     const NMK_RESULTS_TAB_INDEX = 1;
     const LOGS_TAB_INDEX = 2;
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const previousEnableDeveloperMode = usePrevious(enableDeveloperMode);
 
+    useEffect(() => {
+        if (previousEnableDeveloperMode !== undefined) {
+            if (
+                !enableDeveloperMode &&
+                previousEnableDeveloperMode !== enableDeveloperMode &&
+                tabIndex !== 0
+            ) {
+                // handle tabIndex when dev mode is disabled
+                setTabIndex(tabIndex - 1);
+            }
+
+            if (
+                enableDeveloperMode &&
+                previousEnableDeveloperMode !== enableDeveloperMode
+            ) {
+                // handle tabIndex when dev mode is enabled
+                setTabIndex(tabIndex + 1);
+            }
+        }
+    }, [enableDeveloperMode, tabIndex, previousEnableDeveloperMode]);
     const securityAnalysisStatus = useSelector(
         (state: ReduxState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colId: getIdType(tabIndex, nmkType),
-        sort: SortWay.ASC,
-    });
-
     const resultType = useMemo(() => {
-        if (tabIndex === N_RESULTS_TAB_INDEX) {
+        if (enableDeveloperMode && tabIndex === N_RESULTS_TAB_INDEX) {
             return RESULT_TYPE.N;
         } else if (nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES) {
             return RESULT_TYPE.NMK_CONTINGENCIES;
         } else {
             return RESULT_TYPE.NMK_LIMIT_VIOLATIONS;
         }
-    }, [tabIndex, nmkType]);
+    }, [tabIndex, nmkType, enableDeveloperMode]);
+
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SECURITY_ANALYSIS_RESULT_SORT_STORE,
+        getStoreFields(tabIndex)
+    );
 
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
@@ -133,7 +160,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
 
     const fetchSecurityAnalysisResultWithQueryParams = useCallback(
         (studyUuid: string, nodeUuid: string) => {
-            if (tabIndex === LOGS_TAB_INDEX) {
+            if (
+                tabIndex ===
+                (enableDeveloperMode ? LOGS_TAB_INDEX : LOGS_TAB_INDEX - 1)
+            ) {
                 return Promise.resolve();
             }
 
@@ -180,6 +210,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             filterSelector,
             resultType,
             intl,
+            enableDeveloperMode,
         ]
     );
 
@@ -191,25 +222,14 @@ export const SecurityAnalysisResultTab: FunctionComponent<
         null
     );
 
-    const resetResultStates = useCallback(
-        (defaultSortColKey: string) => {
-            setResult(null);
-            setCount(0);
-            setPage(0);
-            if (initSort) {
-                initSort(defaultSortColKey);
-            }
-        },
-        [initSort, setResult]
-    );
+    const resetResultStates = useCallback(() => {
+        setResult(null);
+        setCount(0);
+        setPage(0);
+    }, [setResult]);
 
     const handleChangeNmkType = (event: SelectChangeEvent) => {
-        const newNmkType = event.target.value;
-        resetResultStates(
-            newNmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
-                ? 'contingencyId'
-                : 'subjectId'
-        );
+        resetResultStates();
         setNmkType(
             nmkType === NMK_TYPE.CONSTRAINTS_FROM_CONTINGENCIES
                 ? NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS
@@ -218,7 +238,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
     };
 
     const handleTabChange = (event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates(getIdType(newTabIndex, nmkType));
+        resetResultStates();
         setTabIndex(newTabIndex);
     };
 
@@ -299,7 +319,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             <Box sx={styles.tabsAndToolboxContainer}>
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        <Tab label="N" />
+                        {enableDeveloperMode && <Tab label="N" />}
                         <Tab label="N-K" />
                         <Tab
                             label={
@@ -312,7 +332,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 </Box>
 
                 <Box sx={styles.toolboxContainer}>
-                    {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                    {tabIndex ===
+                        (enableDeveloperMode
+                            ? NMK_RESULTS_TAB_INDEX
+                            : NMK_RESULTS_TAB_INDEX - 1) && (
                         <Select
                             labelId="nmk-type-label"
                             value={nmkType}
@@ -332,8 +355,12 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                             </MenuItem>
                         </Select>
                     )}
-                    {(tabIndex === NMK_RESULTS_TAB_INDEX ||
-                        tabIndex === N_RESULTS_TAB_INDEX) && (
+                    {(tabIndex ===
+                        (enableDeveloperMode
+                            ? NMK_RESULTS_TAB_INDEX
+                            : NMK_RESULTS_TAB_INDEX - 1) ||
+                        (tabIndex === N_RESULTS_TAB_INDEX &&
+                            enableDeveloperMode)) && (
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -348,14 +375,17 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                 {shouldOpenLoader && <LinearProgress />}
             </Box>
             <Box sx={styles.resultContainer}>
-                {tabIndex === N_RESULTS_TAB_INDEX && (
+                {tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode && (
                     <SecurityAnalysisResultN
                         result={result}
                         isLoadingResult={isLoadingResult}
                         columnDefs={columnDefs}
                     />
                 )}
-                {tabIndex === NMK_RESULTS_TAB_INDEX && (
+                {tabIndex ===
+                    (enableDeveloperMode
+                        ? NMK_RESULTS_TAB_INDEX
+                        : NMK_RESULTS_TAB_INDEX - 1) && (
                     <SecurityAnalysisResultNmk
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
@@ -372,7 +402,10 @@ export const SecurityAnalysisResultTab: FunctionComponent<
                         columnDefs={columnDefs}
                     />
                 )}
-                {tabIndex === LOGS_TAB_INDEX &&
+                {tabIndex ===
+                    (enableDeveloperMode
+                        ? LOGS_TAB_INDEX
+                        : LOGS_TAB_INDEX - 1) &&
                     (securityAnalysisStatus === RunningStatus.SUCCEED ||
                         securityAnalysisStatus === RunningStatus.FAILED) && (
                         <ComputationReportViewer

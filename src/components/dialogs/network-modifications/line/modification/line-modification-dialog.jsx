@@ -328,9 +328,11 @@ const LineModificationDialog = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setLineToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
-                        reset(emptyFormData);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setLineToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setLineToModify(null);

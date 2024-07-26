@@ -760,8 +760,11 @@ const TwoWindingsTransformerModificationDialog = ({
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
-                        setTwtToModify(null);
                         setDataFetchStatus(FetchStatus.FAILED);
+                        if (editData?.equipmentId !== equipmentId) {
+                            setTwtToModify(null);
+                            reset(emptyFormData);
+                        }
                     });
             } else {
                 setTwtToModify(null);

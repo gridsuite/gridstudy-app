@@ -4,25 +4,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-
 import { Grid } from '@mui/material';
-import { LineFlowMode, LineFlowColorMode } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
+import { useState } from 'react';
 import {
+    MAP_BASEMAP_CARTO,
+    MAP_BASEMAP_CARTO_NOLABEL,
+    MAP_BASEMAP_MAPBOX,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_MANUAL_REFRESH,
     PARAM_MAP_BASEMAP,
-    MAP_BASEMAP_MAPBOX,
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
+    PARAM_MAP_MANUAL_REFRESH,
 } from '../../../utils/config-params';
-import { useParameterState, styles } from './parameters';
 import { LineSeparator } from '../dialogUtils';
-import { ParamLine, ParameterType } from './widget';
-import { useState } from 'react';
+import { styles, useParameterState } from './parameters';
+import ParameterLineDropdown from './widget/parameter-line-dropdown';
+import ParameterLineSlider from './widget/parameter-line-slider';
+import ParameterLineSwitch from './widget/parameter-line-switch';
 
 export const MapParameters = () => {
     const alertThresholdMarks = [
@@ -55,21 +56,18 @@ export const MapParameters = () => {
                 marginTop={-3}
                 justifyContent={'space-between'}
             >
-                <ParamLine
-                    type={ParameterType.Switch}
-                    param_name_id={PARAM_LINE_FULL_PATH}
+                <ParameterLineSwitch
+                    paramNameId={PARAM_LINE_FULL_PATH}
                     label="lineFullPath"
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.Switch}
-                    param_name_id={PARAM_LINE_PARALLEL_PATH}
+                <ParameterLineSwitch
+                    paramNameId={PARAM_LINE_PARALLEL_PATH}
                     label="lineParallelPath"
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_LINE_FLOW_MODE}
+                <ParameterLineDropdown
+                    paramNameId={PARAM_LINE_FLOW_MODE}
                     labelTitle="LineFlowMode"
                     labelValue="line-flow-mode-select-label"
                     values={{
@@ -79,9 +77,8 @@ export const MapParameters = () => {
                     }}
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_LINE_FLOW_COLOR_MODE}
+                <ParameterLineDropdown
+                    paramNameId={PARAM_LINE_FLOW_COLOR_MODE}
                     labelTitle="LineFlowColorMode"
                     labelValue="line-flow-color-mode-select-label"
                     values={{
@@ -96,24 +93,20 @@ export const MapParameters = () => {
                     }}
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.Slider}
-                    param_name_id={PARAM_LINE_FLOW_ALERT_THRESHOLD}
+                <ParameterLineSlider
+                    paramNameId={PARAM_LINE_FLOW_ALERT_THRESHOLD}
                     label="AlertThresholdLabel"
                     disabled={isLineFlowNominal}
                     marks={alertThresholdMarks}
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.Switch}
-                    param_name_id={PARAM_MAP_MANUAL_REFRESH}
+                <ParameterLineSwitch
+                    paramNameId={PARAM_MAP_MANUAL_REFRESH}
                     label="MapManualRefresh"
-                    marks={alertThresholdMarks}
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_MAP_BASEMAP}
+                <ParameterLineDropdown
+                    paramNameId={PARAM_MAP_BASEMAP}
                     labelTitle="MapBaseMap"
                     labelValue="map-base-map-select-label"
                     values={{

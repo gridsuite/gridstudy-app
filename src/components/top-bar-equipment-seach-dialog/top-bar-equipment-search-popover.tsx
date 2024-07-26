@@ -90,23 +90,17 @@ export const TopBarEquipmentSearchPopover = (
                             <HorizontalRule />
                             <FormattedMessage id="NoFilter" />
                         </Box>
-                        {Object.values(FILTER_EQUIPMENTS)
-                            .map((type) => type.id)
-                            .map((type) => {
-                                return (
-                                    <FormControlLabel
-                                        key={type.toString()}
-                                        value={type.toString()}
-                                        control={<Radio />}
-                                        sx={styles.radioButtonColor}
-                                        label={
-                                            <FormattedMessage
-                                                id={type.toString()}
-                                            />
-                                        }
-                                    />
-                                );
-                            })}
+                        {Object.values(FILTER_EQUIPMENTS).map((type) => {
+                            return (
+                                <FormControlLabel
+                                    key={type.id}
+                                    value={type.id}
+                                    control={<Radio />}
+                                    sx={styles.radioButtonColor}
+                                    label={<FormattedMessage id={type.label} />}
+                                />
+                            );
+                        })}
                     </RadioGroup>
                 </FormControl>
             </Box>

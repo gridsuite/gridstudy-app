@@ -243,7 +243,8 @@ export async function createMapContingencyList(
     distDir,
     studyUuid,
     currentNodeUuid,
-    selectedEquipments
+    selectedEquipments,
+    nominalVoltages
 ) {
     let equipmentContingencyList = [];
     switch (contingencyList.equipmentType) {
@@ -270,7 +271,8 @@ export async function createMapContingencyList(
                 selectedEquipmentsIds,
                 contingencyList.equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
-                false
+                false,
+                nominalVoltages
             );
 
             if (elementsIds?.length === 0) {

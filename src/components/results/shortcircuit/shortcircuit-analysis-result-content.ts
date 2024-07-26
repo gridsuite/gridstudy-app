@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ALL_BUSES, ONE_BUS } from 'utils/store-filter-fields';
+import { ALL_BUSES, ONE_BUS } from 'utils/store-sort-filter-fields';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { kiloUnitToUnit } from '../../../utils/unit-converter';
