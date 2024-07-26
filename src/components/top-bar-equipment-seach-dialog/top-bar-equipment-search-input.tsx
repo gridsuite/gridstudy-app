@@ -44,6 +44,8 @@ export const TopBarEquipmentSearchInput = (
         <>
             <TextField
                 ref={inputRef}
+                // When the field is deactivated, passing displayedValue as value displays an empty input.
+                // So we use the placeholder to clearly display the reason for deactivation
                 placeholder={
                     params.disabled
                         ? displayedValue
