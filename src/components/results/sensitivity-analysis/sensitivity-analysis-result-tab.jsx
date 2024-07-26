@@ -19,7 +19,7 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result-utils';
-import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -34,7 +34,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
-import { SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -65,16 +68,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         filterStoreAction: setSensitivityAnalysisResultFilter,
     });
 
-    // Add default sort on sensitivity col
-    const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
-    const defaultSortOrder = SortWay.ASC;
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colId: defaultSortColumn,
-        sort: defaultSortOrder,
-    });
-    const initTable = (nOrNkIndex) => {
-        initSort(nOrNkIndex ? 'valueAfter' : 'value');
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
 
+    const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
            for the page prop of MUI TablePagination if was not on the first page
            for the prev sensiKind */
@@ -84,12 +83,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     };
 
     const handleSensiKindChange = (newSensiKind) => {
-        initTable(nOrNkIndex);
+        initTable();
         setSensiKind(newSensiKind);
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
-        initTable(newNOrNKIndex);
+        initTable();
         setNOrNkIndex(newNOrNKIndex);
     };
 
