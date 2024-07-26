@@ -179,7 +179,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<
             if (sortConfig?.length) {
                 const columnToFieldMapping = mappingColumnToField(resultType);
                 queryParams['sort'] = sortConfig.map(
-                    (sort: SortConfigType) => ({
+                    (sort) => ({
                         ...sort,
                         colId: columnToFieldMapping[sort.colId],
                     })

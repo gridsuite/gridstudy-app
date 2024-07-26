@@ -41,7 +41,7 @@ export const useAgGridSort = (
         (newSortConfig: SortConfigType) => {
             const updatedSortConfig = sortConfig
                 .filter(
-                    (sort: SortConfigType) =>
+                    (sort) =>
                         (sort.children ?? false) !==
                         (newSortConfig.children ?? false)
                 )

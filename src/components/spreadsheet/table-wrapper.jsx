@@ -421,6 +421,7 @@ const TableWrapper = (props) => {
         }
     }, [errorMessage, snackError]);
 
+    // Ensure initial sort is applied by including columnData in dependencies
     useEffect(() => {
         gridRef.current?.api?.applyColumnState({
             state: sortConfig,

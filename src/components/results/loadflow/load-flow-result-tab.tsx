@@ -214,7 +214,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             });
         }
         return fetchLimitViolations(studyUuid, nodeUuid, {
-            sort: sortConfig.map((sort: SortConfigType) => ({
+            sort: sortConfig.map((sort) => ({
                 ...sort,
                 colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
             })),
