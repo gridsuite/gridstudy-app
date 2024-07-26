@@ -24,7 +24,6 @@ export const LogReportType = {
 
 export default class LogReport {
     constructor(reportType, jsonReporter, parentReportId) {
-        console.log('DBR ctor', reportType, jsonReporter, parentReportId);
         this.type = reportType;
         // id : An ID provided by the back to be used to fetch reports from the back
         // uniqueId : A unique ID to identify a node in the tree view
@@ -51,7 +50,6 @@ export default class LogReport {
         // Represent all the different severities of this report and it's subreports
         this.allSeverityList = [];
         this.init(reportType, jsonReporter);
-        console.log('DBR ctor end', this);
     }
 
     getUniqueId() {
@@ -106,16 +104,8 @@ export default class LogReport {
                 this.logs.push(new LogReportItem(value, this.uniqueId));
             }
         });
-        this.severityList = jsonReporter.subReportsSeverities ?? [];
-
-        // Convert for instance "[INFO, TRACE]" into ["INFO", "TRACE"]
-        /*jsonReporter.values?.severityList?.value
-            .split(/[[,\]]/)
-            .filter((e) => e.length)
-            .map((es) => es.trim())
-            .forEach((el) => this.severityList.push(el));*/
-
-        this.initAllSeverityList().map((e) => this.allSeverityList.push(e));
+        this.severityList = jsonReporter.subReportsSeverities ?? []; // local value
+        this.initAllSeverityList().map((e) => this.allSeverityList.push(e)); // computed tree value
     }
 
     getHighestSeverity() {

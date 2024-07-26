@@ -110,7 +110,7 @@ export default class LogReportItem {
         if (!jsonSeverity) {
             return severity;
         }
-
+        // check jsonSeverity string is a valid SEVERITY value
         Object.values(LogReportItem.SEVERITY).some((value) => {
             let severityFound = jsonSeverity === value.name;
             if (severityFound) {
@@ -118,7 +118,6 @@ export default class LogReportItem {
             }
             return severityFound;
         });
-
         return severity;
     }
 }
