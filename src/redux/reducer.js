@@ -93,6 +93,7 @@ import {
     UPDATE_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     DELETE_EQUIPMENTS,
+    TABLE_SORT,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -101,7 +102,10 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './local-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_MAPBOX,
     PARAM_CENTER_LABEL,
@@ -159,7 +163,14 @@ import {
     TIMELINE,
     SPREADSHEET_STORE_FIELD,
     ONE_BUS,
-} from 'utils/store-filter-fields';
+    LOADFLOW_RESULT_SORT_STORE,
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
+    SPREADSHEET_SORT_STORE,
+    TABLE_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 import { StudyIndexationStatus, StudyDisplayMode } from './reducer.type';
 
 const paramsInitialState = {
@@ -234,12 +245,83 @@ const initialSpreadsheetFilter = {
     [EQUIPMENT_TYPES.TIE_LINE]: [],
 };
 
+const defaultSpreadsheetSort = [
+    {
+        colId: 'id',
+        sort: 'asc',
+    },
+];
+
+const initialSpreadsheetSort = Object.values(TABLES_DEFINITIONS).reduce(
+    (acc, current) => {
+        acc[current.type] = defaultSpreadsheetSort;
+        return acc;
+    },
+    {}
+);
+
 export const defaultOptionalServicesState = Object.keys(
     OptionalServicesNames
 ).map((key) => ({
     name: key,
     status: OptionalServicesStatus.Pending,
 }));
+
+const loadflowResultSort = {
+    [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
+        {
+            colId: 'overload',
+            sort: 'desc',
+        },
+    ],
+    [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
+        {
+            colId: 'subjectId',
+            sort: 'desc',
+        },
+    ],
+    [LOADFLOW_RESULT]: [
+        {
+            colId: 'connectedComponentNum',
+            sort: 'desc',
+        },
+    ],
+};
+
+const securityAnalysisResultSort = {
+    [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sort: 'asc' }],
+    [SECURITY_ANALYSIS_RESULT_N_K]: [
+        {
+            colId: 'contingencyId',
+            sort: 'asc',
+        },
+    ],
+};
+
+const sensitivityAnalysisResultSort = {
+    [SENSITIVITY_IN_DELTA_MW_N]: [{ colId: 'value', sort: 'asc' }],
+    [SENSITIVITY_IN_DELTA_MW_N_K]: [{ colId: 'valueAfter', sort: 'asc' }],
+    [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sort: 'asc' }],
+    [SENSITIVITY_IN_DELTA_A_N_K]: [{ colId: 'valueAfter', sort: 'asc' }],
+    [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sort: 'asc' }],
+    [SENSITIVITY_AT_NODE_N_K]: [{ colId: 'valueAfter', sort: 'asc' }],
+};
+
+const shortcircuitAnalysisResultSort = {
+    [ONE_BUS]: [{ colId: 'current', sort: 'desc' }],
+    [ALL_BUSES]: [{ colId: 'elementId', sort: 'asc' }],
+};
+
+const dynamicSimulationResultSort = {
+    [TIMELINE]: [
+        {
+            colId: 'time',
+            sort: 'asc',
+        },
+    ],
+};
+
+const spreadsheetSort = { ...initialSpreadsheetSort };
 
 const initialState = {
     studyUuid: null,
@@ -314,6 +396,16 @@ const initialState = {
 
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: { ...initialSpreadsheetFilter },
+
+    [TABLE_SORT_STORE]: {
+        [SPREADSHEET_SORT_STORE]: spreadsheetSort,
+        [LOADFLOW_RESULT_SORT_STORE]: loadflowResultSort,
+        [SECURITY_ANALYSIS_RESULT_SORT_STORE]: securityAnalysisResultSort,
+        [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: sensitivityAnalysisResultSort,
+        [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: dynamicSimulationResultSort,
+        [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]:
+            shortcircuitAnalysisResultSort,
+    },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1203,6 +1295,11 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(SPREADSHEET_FILTER, (state, action) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] =
             action[SPREADSHEET_STORE_FIELD];
+    });
+
+    builder.addCase(TABLE_SORT, (state, action) => {
+        state.tableSort[action.tableSort.table][action.tableSort.tab] =
+            action.tableSort.sort;
     });
 });
 
