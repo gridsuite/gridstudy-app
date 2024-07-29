@@ -24,8 +24,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../../../utils/yup-config';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import LimitReductionsTable from './limit-reductions-table';
 import { NumberSchema } from 'yup';
+import LimitReductionsTable from './limit-reductions-table';
 
 const LimitReductionsTableForm: FunctionComponent<{
     limits: ILimitReductionsByVoltageLevel[];

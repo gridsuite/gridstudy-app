@@ -13,7 +13,7 @@ import {
     TableHead,
     TableRow,
 } from '@mui/material';
-import React, { FunctionComponent, useCallback } from 'react';
+import React, { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
 import { useFieldArray } from 'react-hook-form';
 import LimitReductionTableRow from './limit-reduction-table-row';
@@ -30,10 +30,6 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
     const { fields: rows } = useFieldArray({
         name: LIMIT_REDUCTIONS_FORM,
     });
-
-    const getColumnLabel = useCallback((column: IColumnsDef) => {
-        return column.label;
-    }, []);
 
     return (
         <TableContainer
