@@ -753,3 +753,12 @@ export function setSpreadsheetFilter(filterTab, spreadsheetFilter) {
         spreadsheetFilter: spreadsheetFilter,
     };
 }
+
+export const TABLE_SORT = 'TABLE_SORT';
+
+export function setTableSort(tableSort) {
+    return {
+        type: TABLE_SORT,
+        tableSort: tableSort,
+    };
+}
