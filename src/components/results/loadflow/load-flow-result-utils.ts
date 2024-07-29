@@ -42,7 +42,7 @@ import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
-} from 'utils/store-filter-fields';
+} from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType, {
     ComputingType,
