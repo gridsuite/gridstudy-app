@@ -9,13 +9,16 @@ import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    DirectoryItemsInput,
+    ElementType,
+    Option,
+} from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { getIdOrValue } from '../../commons/utils';
 
 const ByFilterDeletionForm = () => {
@@ -27,10 +30,8 @@ const ByFilterDeletionForm = () => {
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = useMemo(
-        () => (rt: { id: string; label: string } | string) => {
-            return intl.formatMessage({ id: getIdOrValue(rt) });
-        },
+    const richTypeLabel = useCallback(
+        (rt: Option) => intl.formatMessage({ id: getIdOrValue(rt) }),
         [intl]
     );
 
@@ -59,8 +60,8 @@ const ByFilterDeletionForm = () => {
                 key={equipmentTypeWatch} // force refresh on equipment type change
                 name={FILTERS}
                 elementType={ElementType.FILTER}
-                titleId={'FiltersListsSelection'}
-                label={'filter'}
+                titleId="FiltersListsSelection"
+                label="filter"
                 equipmentTypes={[equipmentTypeWatch]}
                 disable={!equipmentTypeWatch}
             />
@@ -76,19 +77,17 @@ const ByFilterDeletionForm = () => {
                 options={typesOptions}
                 onChangeCallback={handleEquipmentTypeChange}
                 getOptionLabel={richTypeLabel}
-                size={'small'}
+                size="small"
                 formProps={{ variant: 'filled' }}
             />
         );
     }, [handleEquipmentTypeChange, richTypeLabel, typesOptions]);
 
     return (
-        <>
-            <Grid container spacing={2}>
-                {gridItem(equipmentTypeField, 6)}
-                {gridItem(filtersField, 6)}
-            </Grid>
-        </>
+        <Grid container spacing={2}>
+            {gridItem(equipmentTypeField, 6)}
+            {gridItem(filtersField, 6)}
+        </Grid>
     );
 };
 
