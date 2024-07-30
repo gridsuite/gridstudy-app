@@ -29,7 +29,11 @@ const ByFilterDeletionForm = () => {
 
     const richTypeLabel = useMemo(
         () => (rt: { id: string; label: string } | string) => {
-            return intl.formatMessage({ id: getIdOrValue(rt) });
+            if (rt === EQUIPMENT_TYPES.HVDC_LINE) {
+                return intl.formatMessage({ id: 'Hvdc' });
+            } else {
+                return intl.formatMessage({ id: getIdOrValue(rt) });
+            }
         },
         [intl]
     );
@@ -44,15 +48,9 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_TYPES.TIE_LINE,
         ]);
-        return Object.values(EQUIPMENT_TYPES)
-            .filter(
-                (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-            )
-            .map((equipmentType) =>
-                equipmentType === EQUIPMENT_TYPES.HVDC_LINE
-                    ? 'Hvdc'
-                    : equipmentType
-            );
+        return Object.values(EQUIPMENT_TYPES).filter(
+            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
+        );
     }, []);
 
     const handleEquipmentTypeChange = useCallback(() => {
