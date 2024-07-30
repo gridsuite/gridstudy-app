@@ -19,53 +19,15 @@ import {
     LIMIT_REDUCTIONS_FORM,
     VOLTAGE_LEVELS_FORM,
 } from './columns-definitions';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import yup from '../../../utils/yup-config';
-import { CustomFormProvider } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
-import { NumberSchema } from 'yup';
 import LimitReductionsTable from './limit-reductions-table';
+import { UseFormReturn } from 'react-hook-form';
 
 const LimitReductionsTableForm: FunctionComponent<{
+    formMethods: UseFormReturn;
     limits: ILimitReductionsByVoltageLevel[];
-}> = ({ limits }) => {
+}> = ({ formMethods, limits }) => {
     const intl = useIntl();
-
-    const getLimitDurationsFormSchema = () => {
-        let limitDurationsFormSchema: Record<string, NumberSchema> = {};
-        if (limits) {
-            for (
-                let i = 0;
-                i < limits[0].temporaryLimitReductions.length;
-                i++
-            ) {
-                limitDurationsFormSchema[LIMIT_DURATION_FORM + i] =
-                    yup.number();
-            }
-        }
-        return limitDurationsFormSchema;
-    };
-
-    const formSchema = yup
-        .object()
-        .shape({
-            [LIMIT_REDUCTIONS_FORM]: yup.array().of(
-                yup.object().shape({
-                    [VOLTAGE_LEVELS_FORM]: yup.string(),
-                    [IST_FORM]: yup.number(),
-                    ...getLimitDurationsFormSchema(),
-                })
-            ),
-        })
-        .required();
-
-    const emptyFormData = { [LIMIT_REDUCTIONS_FORM]: [] };
-
-    const formMethods = useForm({
-        defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
-    });
 
     const { reset } = formMethods;
 
@@ -135,12 +97,10 @@ const LimitReductionsTableForm: FunctionComponent<{
     }, [reset, toFormValues]);
 
     return (
-        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <LimitReductionsTable
-                columnsDefinition={columnsDefinition}
-                tableHeight={367}
-            />
-        </CustomFormProvider>
+        <LimitReductionsTable
+            columnsDefinition={columnsDefinition}
+            tableHeight={367}
+        />
     );
 };
 

@@ -14,16 +14,24 @@ import React, {
 import { Grid } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters.jsx';
 import { LineSeparator } from '../../dialogUtils.jsx';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions.js';
 import {
+    CustomFormProvider,
     DirectoryItemSelector,
     ElementType,
+    SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis.js';
 import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import {
+    getLimitReductionsFormSchema,
+    LIMIT_REDUCTIONS_FORM,
+} from './columns-definitions';
 
 export const SecurityAnalysisParameters: FunctionComponent<
     Record<string, any>
@@ -92,8 +100,20 @@ export const SecurityAnalysisParameters: FunctionComponent<
         [snackError, updateParameters]
     );
 
+    const formSchema = getLimitReductionsFormSchema(params.limitReductions);
+    const formMethods = useForm({
+        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        resolver: yupResolver(formSchema),
+    });
+
+    const { getValues } = formMethods;
+
+    const updateLimitReductions = useCallback(() => {
+        console.info('VALUES =', getValues());
+    }, [getValues]);
+
     return (
-        <>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <Grid sx={{ height: '100%' }}>
                 <Grid container spacing={1} padding={1}>
                     <Grid
@@ -117,6 +137,7 @@ export const SecurityAnalysisParameters: FunctionComponent<
                         <LineSeparator />
                     </Grid>
                     <SecurityAnalysisParametersSelector
+                        formMethods={formMethods}
                         params={params}
                         updateParameters={updateParameters}
                     />
@@ -152,6 +173,12 @@ export const SecurityAnalysisParameters: FunctionComponent<
                     label="resetProviderValuesToDefault"
                     callback={resetSAParameters}
                 />
+                <SubmitButton
+                    onClick={updateLimitReductions}
+                    variant="outlined"
+                >
+                    <FormattedMessage id="validate" />
+                </SubmitButton>
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
@@ -180,6 +207,6 @@ export const SecurityAnalysisParameters: FunctionComponent<
                     })}
                 />
             )}
-        </>
+        </CustomFormProvider>
     );
 };

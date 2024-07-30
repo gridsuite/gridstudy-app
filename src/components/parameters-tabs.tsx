@@ -70,7 +70,6 @@ import {
 } from './dialogs/parameters/single-line-diagram-parameters';
 import { MapParameters } from './dialogs/parameters/map-parameters';
 import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
-import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -83,6 +82,7 @@ import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
