@@ -7,12 +7,7 @@
 
 // Because of a circular import issue, we have to import the store to run the
 // unit tests, even if your IDE is showing that the import is unused.
-import {
-    Actions,
-    AppState,
-    initialState,
-    reducer as appReducer,
-} from './reducer';
+import { Actions, AppState, reducer as appReducer } from './reducer';
 import {
     closeDiagram,
     closeDiagrams,

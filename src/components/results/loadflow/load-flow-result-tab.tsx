@@ -30,11 +30,10 @@ import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { SortWay, useAgGridSort } from 'hooks/use-aggrid-sort';
+import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
-    getIdType,
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
     loadFlowVoltageViolationsColumnsDefinition,
@@ -64,7 +63,10 @@ import {
     fetchAllCountries,
     fetchAllNominalVoltages,
 } from '../../../services/study/network-map';
-import { LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    LOADFLOW_RESULT_SORT_STORE,
+    LOADFLOW_RESULT_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
 
@@ -105,10 +107,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colId: getIdType(tabIndex),
-        sort: SortWay.DESC,
-    });
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        LOADFLOW_RESULT_SORT_STORE,
+        mappingTabs(tabIndex)
+    );
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOADFLOW_RESULT_STORE_FIELD,
@@ -299,18 +301,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         tabIndex,
     ]);
 
-    const resetResultStates = useCallback(
-        (defaultSortColKey: string) => {
-            setResult(null);
-            if (initSort) {
-                initSort(defaultSortColKey);
-            }
-        },
-        [initSort, setResult]
-    );
+    const resetResultStates = useCallback(() => {
+        setResult(null);
+    }, [setResult]);
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
-        resetResultStates(getIdType(newTabIndex));
+        resetResultStates();
         setTabIndex(newTabIndex);
     };
 

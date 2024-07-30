@@ -175,6 +175,8 @@ import {
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
+    TABLE_SORT,
+    TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_EQUIPMENTS,
@@ -189,7 +191,10 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -236,15 +241,19 @@ import {
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
+    LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
     ONE_BUS,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
+    SECURITY_ANALYSIS_RESULT_SORT_STORE,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_AT_NODE_N,
     SENSITIVITY_AT_NODE_N_K,
@@ -252,10 +261,13 @@ import {
     SENSITIVITY_IN_DELTA_A_N_K,
     SENSITIVITY_IN_DELTA_MW_N,
     SENSITIVITY_IN_DELTA_MW_N_K,
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+    SPREADSHEET_SORT_STORE,
     SPREADSHEET_STORE_FIELD,
+    TABLE_SORT_STORE,
     TIMELINE,
-} from 'utils/store-filter-fields';
+} from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
@@ -267,6 +279,7 @@ import { UnknownArray, ValueOf } from 'type-fest';
 import { IEquipment } from '../services/study/contingency-list';
 import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
+import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -362,6 +375,17 @@ export interface ComputingStatus {
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
+export type TableSortConfig = Record<string, SortConfigType[]>;
+export type TableSort = {
+    [SPREADSHEET_SORT_STORE]: TableSortConfig;
+    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
+    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
+    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+};
+export type TableSortKeysType = keyof TableSort;
+
 export type SpreadsheetEquipmentType = Exclude<
     EQUIPMENT_TYPES,
     'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'
@@ -408,6 +432,7 @@ export interface AppState extends CommonStoreState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
+    tableSort: TableSort;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -636,6 +661,80 @@ const initialState: AppState = {
         [EQUIPMENT_TYPES.DANGLING_LINE]: [],
         [EQUIPMENT_TYPES.BUS]: [],
         [EQUIPMENT_TYPES.TIE_LINE]: [],
+    },
+
+    [TABLE_SORT_STORE]: {
+        [SPREADSHEET_SORT_STORE]: Object.values(TABLES_DEFINITIONS).reduce(
+            (acc, current) => {
+                acc[current.type] = [
+                    {
+                        colId: 'id',
+                        sort: SortWay.ASC,
+                    },
+                ];
+                return acc;
+            },
+            {} as TableSortConfig
+        ),
+        [LOADFLOW_RESULT_SORT_STORE]: {
+            [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
+                {
+                    colId: 'overload',
+                    sort: SortWay.DESC,
+                },
+            ],
+            [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
+                {
+                    colId: 'subjectId',
+                    sort: SortWay.DESC,
+                },
+            ],
+            [LOADFLOW_RESULT]: [
+                {
+                    colId: 'connectedComponentNum',
+                    sort: SortWay.DESC,
+                },
+            ],
+        },
+        [SECURITY_ANALYSIS_RESULT_SORT_STORE]: {
+            [SECURITY_ANALYSIS_RESULT_N]: [
+                { colId: 'subjectId', sort: SortWay.ASC },
+            ],
+            [SECURITY_ANALYSIS_RESULT_N_K]: [
+                {
+                    colId: 'contingencyId',
+                    sort: SortWay.ASC,
+                },
+            ],
+        },
+        [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: {
+            [SENSITIVITY_IN_DELTA_MW_N]: [
+                { colId: 'value', sort: SortWay.ASC },
+            ],
+            [SENSITIVITY_IN_DELTA_MW_N_K]: [
+                { colId: 'valueAfter', sort: SortWay.ASC },
+            ],
+            [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sort: SortWay.ASC }],
+            [SENSITIVITY_IN_DELTA_A_N_K]: [
+                { colId: 'valueAfter', sort: SortWay.ASC },
+            ],
+            [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sort: SortWay.ASC }],
+            [SENSITIVITY_AT_NODE_N_K]: [
+                { colId: 'valueAfter', sort: SortWay.ASC },
+            ],
+        },
+        [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: {
+            [TIMELINE]: [
+                {
+                    colId: 'time',
+                    sort: SortWay.ASC,
+                },
+            ],
+        },
+        [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: {
+            [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
+            [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
+        },
     },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -1755,6 +1854,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 action[SPREADSHEET_STORE_FIELD];
         }
     );
+
+    builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
+        state.tableSort[action.table][action.tab] = action.sort;
+    });
 });
 
 function updateSubstationAfterVLDeletion(

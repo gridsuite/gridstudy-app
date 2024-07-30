@@ -5,33 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useMemo,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Alert } from '@mui/material';
+import { Box } from '@mui/system';
+import { Alert, Grid } from '@mui/material';
 import {
+    EDIT_COLUMN,
+    MIN_COLUMN_WIDTH,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_DEFINITION_INDEXES,
-    TABLES_NAMES,
-    MIN_COLUMN_WIDTH,
-    EDIT_COLUMN,
     TABLES_DEFINITION_TYPES,
+    TABLES_NAMES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import { useLocalizedCountries, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
+    DefaultCellRenderer,
     EditableCellRenderer,
     EditingCellRenderer,
-    DefaultCellRenderer,
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
@@ -45,17 +40,16 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
-    modifySubstation,
+    formatPropertiesForBackend,
     modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyShuntCompensator,
+    modifySubstation,
     modifyTwoWindingsTransformer,
     modifyVoltageLevel,
     requestNetworkChange,
-    formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
-import { Box } from '@mui/system';
 import {
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
@@ -84,12 +78,14 @@ import {
     SHUNT_COMPENSATOR_TYPES,
 } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
-import { SortWay } from 'hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
-import { useAgGridLocalSort } from 'hooks/use-aggrid-local-sort';
+import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
-import { SPREADSHEET_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SPREADSHEET_SORT_STORE,
+    SPREADSHEET_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -217,19 +213,9 @@ const TableWrapper = (props) => {
         );
     }, [props.disabled, selectedColumnsNames, tabIndex]);
 
-    const defaultSortColKey = useMemo(() => {
-        const defaultSortCol = columnData.find(
-            (column) => column.isDefaultSort
-        );
-        return defaultSortCol?.field;
-    }, [columnData]);
-
-    const { onSortChanged, sortConfig, initSort } = useAgGridLocalSort(
-        gridRef,
-        {
-            colId: defaultSortColKey,
-            sort: SortWay.ASC,
-        }
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SPREADSHEET_SORT_STORE,
+        TABLES_DEFINITION_INDEXES.get(tabIndex).type
     );
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
@@ -429,9 +415,13 @@ const TableWrapper = (props) => {
         }
     }, [errorMessage, snackError]);
 
+    // Ensure initial sort is applied by including columnData in dependencies
     useEffect(() => {
-        initSort(defaultSortColKey);
-    }, [tabIndex, defaultSortColKey, initSort]);
+        gridRef.current?.api?.applyColumnState({
+            state: sortConfig,
+            defaultState: { sort: null },
+        });
+    }, [sortConfig, columnData]);
 
     const getRows = useCallback(() => {
         if (props.disabled || !equipments) {

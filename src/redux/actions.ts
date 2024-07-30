@@ -36,7 +36,11 @@ import { UnknownArray } from 'type-fest';
 import { IEquipment } from '../services/study/contingency-list';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, MapEquipments } from '@powsybl/diagram-viewer';
+import {
+    LineFlowColorMode,
+    LineFlowMode,
+    MapEquipments,
+} from '@powsybl/diagram-viewer';
 import {
     AppState,
     CurrentTreeNode,
@@ -47,12 +51,12 @@ import {
     StudyDisplayMode,
     StudyIndexationStatus,
     StudyUpdatedEventData,
+    TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
-import { LineFlowMode } from '@powsybl/diagram-viewer';
 import {
     DiagramType,
     SubstationLayout,
@@ -65,7 +69,8 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
-} from '../utils/store-filter-fields';
+} from '../utils/store-sort-filter-fields';
+import { SortConfigType } from '../hooks/use-aggrid-sort';
 
 type MutableUnknownArray = unknown[];
 
@@ -1303,5 +1308,24 @@ export function setSpreadsheetFilter(
         type: SPREADSHEET_FILTER,
         filterTab: filterTab,
         [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
+    };
+}
+
+export const TABLE_SORT = 'TABLE_SORT';
+export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
+    table: TableSortKeysType;
+    tab: string; //AppState['tableSort'][T];
+    sort: SortConfigType[];
+};
+export function setTableSort(
+    table: TableSortKeysType,
+    tab: string,
+    sort: SortConfigType[]
+): TableSortAction {
+    return {
+        type: TABLE_SORT,
+        table,
+        tab,
+        sort,
     };
 }

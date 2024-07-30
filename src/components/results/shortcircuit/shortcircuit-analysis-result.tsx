@@ -36,7 +36,7 @@ import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import {
     FilterEnumsType,
     useAggridRowFilter,
@@ -44,7 +44,10 @@ import {
 import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+} from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
 
@@ -90,16 +93,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
         : FROM_COLUMN_TO_FIELD;
 
-    const defaultSortKey = isOneBusShortCircuitAnalysisType
-        ? 'current'
-        : 'elementId';
-    const defaultSortWay = isOneBusShortCircuitAnalysisType
-        ? SortWay.DESC
-        : SortWay.ASC;
-    const { onSortChanged, sortConfig } = useAgGridSort({
-        colId: defaultSortKey,
-        sort: defaultSortWay,
-    });
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+        mappingTabs(analysisType)
+    );
     const memoizedSetPageCallback = useCallback(() => {
         setPage(0);
     }, []);
