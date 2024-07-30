@@ -20,6 +20,7 @@ import {
     SPREADSHEET_SORT_STORE,
 } from 'utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
+import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
 
 export enum UpdateTypes {
     STUDY = 'study',
@@ -80,6 +81,10 @@ export interface ReduxState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
+    allCustomColumnsDefinitions: Record<
+        /*typeof TABLES_NAMES*/ string,
+        ColumnWithFormula[]
+    >;
 }
 
 export interface oneBusShortCircuitAnalysisDiagram {

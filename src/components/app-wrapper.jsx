@@ -69,6 +69,7 @@ import errors_locale_en from '../translations/dynamic/errors-locale-en';
 import errors_locale_fr from '../translations/dynamic/errors-locale-fr';
 import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
+import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
@@ -276,6 +277,7 @@ const messages = {
     },
     fr: {
         ...treeview_finder_fr,
+        ...spreadsheet_locale_fr,
         ...messages_fr,
         ...network_modifications_locale_fr,
         ...exportParameters_fr,

@@ -105,6 +105,7 @@ import {
 import {
     TABLES_COLUMNS_NAMES_JSON,
     TABLES_DEFINITIONS,
+    TABLES_NAMES,
 } from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_MAPBOX,
@@ -346,6 +347,10 @@ const initialState = {
     allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     allReorderedTableDefinitionIndexes: [],
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }),
+        {}
+    ),
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
