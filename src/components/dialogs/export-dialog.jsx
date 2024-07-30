@@ -35,6 +35,8 @@ import {
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import TextField from '@mui/material/TextField';
+import { fetchNetworkModificationTreeNode } from '../../services/study/tree-subtree.js';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -62,6 +64,7 @@ const ExportDialog = ({
     const [exportStudyErr, setExportStudyErr] = React.useState('');
     const [studyName, setStudyName] = useState(null);
     const { snackError } = useSnackMessage();
+    const [fileName, setFileName] = useState();
 
     const [unfolded, setUnfolded] = React.useState(false);
 
@@ -78,6 +81,27 @@ const ExportDialog = ({
                 });
             });
     }, [studyUuid, snackError]);
+
+    const fetchNodeName = useCallback(
+        (studyUuid, nodeUuid) => {
+            fetchNetworkModificationTreeNode(studyUuid, nodeUuid).then(
+                (response) => {
+                    console.log(
+                        'Mathieu response : ' +
+                            JSON.stringify(response, null, 4)
+                    );
+                    setFileName(`${studyName}_${response.name}`);
+                }
+            );
+        },
+        [studyName]
+    );
+
+    useEffect(() => {
+        if (studyUuid && nodeUuid) {
+            fetchNodeName(studyUuid, nodeUuid);
+        }
+    }, [fetchNodeName, studyUuid, nodeUuid]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -180,6 +204,16 @@ const ExportDialog = ({
             <DialogTitle>
                 {title}
                 <div style={{ marginTop: '0.8em' }} />
+                <TextField
+                    key="fileName"
+                    margin="dense"
+                    label={<FormattedMessage id="download.fileName" />}
+                    variant="filled"
+                    id="fileName"
+                    value={fileName}
+                    style={{ width: '100%' }}
+                    onChange={(event) => setFileName(event.target.value)}
+                />
                 <FormControl fullWidth size="small">
                     <InputLabel
                         id="select-format-label"
