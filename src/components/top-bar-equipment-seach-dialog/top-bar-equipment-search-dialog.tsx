@@ -121,7 +121,10 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
-            showResults={equipmentsFound.length > 0 || isLoading}
+            showResults={
+                disabledSearchReason === '' &&
+                (equipmentsFound.length > 0 || isLoading)
+            }
             onClose={closeDialog}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
@@ -146,7 +149,6 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             }
             renderInput={(displayedValue, params) => (
                 <TopBarEquipmentSearchInput
-                    isSearchDisabled={disabledSearchReason !== ''}
                     displayedValue={displayedValue}
                     params={params}
                     setEquipmentType={setEquipmentTypeFilter}

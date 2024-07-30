@@ -96,6 +96,15 @@ code {
     stroke: var(--sld-vl-color, #c80000);
     fill: none;
 }
+.sld-wire.sld-dangling-line {
+    stroke-width: 2px
+}
+.sld-wire.sld-tie-line {
+    stroke-width: 2px
+}
+.sld-busbar-section.sld-bus-disconnected {
+    stroke-dasharray: 3,3
+}
 .sld-load-break-switch {
     stroke: blue;
     fill: white
