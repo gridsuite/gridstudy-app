@@ -19,7 +19,6 @@ import { TopBarEquipmentSearchPopover } from './top-bar-equipment-search-popover
 interface TopBarEquipmentSearchInputProps {
     displayedValue: string;
     params: AutocompleteRenderInputParams;
-    isSearchDisabled: boolean;
     equipmentType: EquipmentType | null;
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
 }
@@ -37,24 +36,23 @@ const styles = {
 export const TopBarEquipmentSearchInput = (
     props: TopBarEquipmentSearchInputProps
 ) => {
-    const {
-        displayedValue,
-        isSearchDisabled,
-        params,
-        equipmentType,
-        setEquipmentType,
-    } = props;
+    const { displayedValue, params, equipmentType, setEquipmentType } = props;
     const intl = useIntl();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const inputRef = useRef<HTMLDivElement>(null);
-
     return (
         <>
             <TextField
                 ref={inputRef}
-                placeholder={intl.formatMessage({
-                    id: 'EquipmentSearchPlaceholder',
-                })}
+                // When the field is deactivated, passing displayedValue as value displays an empty input.
+                // So we use the placeholder to clearly display the reason for deactivation
+                placeholder={
+                    params.disabled
+                        ? displayedValue
+                        : intl.formatMessage({
+                              id: 'EquipmentSearchPlaceholder',
+                          })
+                }
                 autoFocus={true}
                 {...params}
                 label={intl.formatMessage({
@@ -64,7 +62,7 @@ export const TopBarEquipmentSearchInput = (
                     ...params.InputProps,
                     startAdornment: (
                         <>
-                            {isSearchDisabled ? (
+                            {params.disabled ? (
                                 <SearchOff color="disabled" />
                             ) : (
                                 <Search color="disabled" />
@@ -74,7 +72,7 @@ export const TopBarEquipmentSearchInput = (
                     ),
                     endAdornment: (
                         <>
-                            {equipmentType && (
+                            {!params.disabled && equipmentType && (
                                 <Chip
                                     onDelete={() => setEquipmentType(null)}
                                     label={
@@ -92,7 +90,10 @@ export const TopBarEquipmentSearchInput = (
                                     sx={styles.chip}
                                 />
                             )}
-                            <IconButton onClick={() => setIsPopoverOpen(true)}>
+                            <IconButton
+                                onClick={() => setIsPopoverOpen(true)}
+                                disabled={params.disabled}
+                            >
                                 <Tune />
                             </IconButton>
                         </>
