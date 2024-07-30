@@ -48,13 +48,11 @@ const ByFilterDeletionForm = () => {
             .filter(
                 (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
             )
-            .map((element) => {
-                if (element === EQUIPMENT_TYPES.HVDC_LINE) {
-                    return 'Hvdc';
-                } else {
-                    return element;
-                }
-            });
+            .map((equipmentType) =>
+                equipmentType === EQUIPMENT_TYPES.HVDC_LINE
+                    ? 'Hvdc'
+                    : equipmentType
+            );
     }, []);
 
     const handleEquipmentTypeChange = useCallback(() => {
