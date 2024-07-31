@@ -9,6 +9,7 @@ import React, {
     ChangeEvent,
     FunctionComponent,
     useCallback,
+    useEffect,
     useState,
 } from 'react';
 import { Grid } from '@mui/material';
@@ -38,7 +39,7 @@ import {
 
 export const SecurityAnalysisParameters: FunctionComponent<
     Record<string, any>
-> = ({ parametersBackend }) => {
+> = ({ parametersBackend, setHaveDirtyFields }) => {
     const [
         providers,
         provider,
@@ -135,7 +136,7 @@ export const SecurityAnalysisParameters: FunctionComponent<
         [params]
     );
 
-    const { handleSubmit } = formMethods;
+    const { handleSubmit, formState } = formMethods;
 
     const updateLimitReductions = useCallback(
         (formLimits: Record<string, any>) => {
@@ -148,6 +149,10 @@ export const SecurityAnalysisParameters: FunctionComponent<
         },
         [params, updateParameters, toLimitReductions]
     );
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>

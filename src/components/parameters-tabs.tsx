@@ -158,6 +158,7 @@ enum TAB_VALUES {
 }
 
 const hasValidationTabs = [
+    TAB_VALUES.securityAnalysisParamsTabValue,
     TAB_VALUES.sensitivityAnalysisParamsTabValue,
     TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
     TAB_VALUES.shortCircuitParamsTabValue,
@@ -311,6 +312,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return (
                     <SecurityAnalysisParameters
                         parametersBackend={securityAnalysisParametersBackend}
+                        setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
