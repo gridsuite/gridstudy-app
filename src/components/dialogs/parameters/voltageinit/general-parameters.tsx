@@ -76,6 +76,8 @@ export const GeneralParameters = () => {
                 style={styles.parameterName}
                 label={'ReactiveSlacksThreshold'}
                 adornment={ReactivePowerAdornment}
+                labelSize={8}
+                inputSize={4}
             />
             <ParameterFloat
                 name={`${GENERAL}.${SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD}`}
@@ -83,6 +85,8 @@ export const GeneralParameters = () => {
                 label={'ShuntCompensatorActivationThreshold'}
                 adornment={ReactivePowerAdornment}
                 tooltip={'ShuntCompensatorActivationThresholdDescription'}
+                labelSize={8}
+                inputSize={4}
             />
         </Grid>
     );

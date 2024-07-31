@@ -6,7 +6,6 @@
  */
 import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import React, { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
@@ -23,8 +22,7 @@ import {
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import ComputingType from '../../computing-status/computing-type';
-import { useAgGridLocalSort } from '../../../hooks/use-aggrid-local-sort';
-import { SortWay } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
 
 import { TimelineEventKeyType } from './types/dynamic-simulation-result.type';
@@ -40,8 +38,10 @@ import { NumberCellRenderer } from '../common/result-cell-renderers';
 import { setDynamicSimulationResultFilter } from 'redux/actions';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
+    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
     TIMELINE,
-} from 'utils/store-filter-fields';
+} from 'utils/store-sort-filter-fields';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
     loader: {
@@ -81,10 +81,10 @@ const DynamicSimulationResultTimeline = memo(
             dynamicSimulationResultInvalidations
         );
 
-        const { onSortChanged, sortConfig } = useAgGridLocalSort(gridRef, {
-            colId: COL_TIME,
-            sort: SortWay.ASC,
-        });
+        const { onSortChanged, sortConfig } = useAgGridSort(
+            DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+            TIMELINE
+        );
 
         const { updateFilter, filterSelector } = useAggridLocalRowFilter(
             gridRef,

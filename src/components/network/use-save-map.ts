@@ -28,7 +28,8 @@ export type UseSaveMapOutput = {
     onSaveSelection: (
         equipments: EquipmentInfos[],
         selection: ISelection,
-        distDir: TreeViewFinderNodeProps
+        distDir: TreeViewFinderNodeProps,
+        nominalVoltages: number[]
     ) => Promise<boolean>;
 };
 
@@ -45,7 +46,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
         async (
             equipments: EquipmentInfos[],
             selection: ISelection,
-            distDir: TreeViewFinderNodeProps
+            distDir: TreeViewFinderNodeProps,
+            nominalVoltages: number[]
         ) => {
             const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
 
@@ -74,7 +76,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             distDir,
                             studyUuid,
                             currentNodeUuid,
-                            selectedEquipmentsIds
+                            selectedEquipmentsIds,
+                            nominalVoltages
                         );
                         snackInfo({
                             messageTxt: intl.formatMessage({
@@ -87,7 +90,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             distDir,
                             studyUuid,
                             currentNodeUuid,
-                            equipments
+                            equipments,
+                            nominalVoltages
                         );
                         snackInfo({
                             messageTxt: intl.formatMessage({
@@ -97,14 +101,25 @@ export const useSaveMap = (): UseSaveMapOutput => {
                     }
                 }
             } catch (error: any) {
-                snackError({
-                    messageTxt: intl.formatMessage({
-                        id: error.message,
-                    }),
-                    headerId: isFilter
-                        ? 'FilterCreationError'
-                        : 'ContingencyListCreationError',
-                });
+                if (error.message === 'EmptySelection') {
+                    snackWarning({
+                        messageTxt: intl.formatMessage({
+                            id: error.message,
+                        }),
+                        headerId: isFilter
+                            ? 'FilterCreationError'
+                            : 'ContingencyListCreationError',
+                    });
+                } else {
+                    snackError({
+                        messageTxt: intl.formatMessage({
+                            id: error.message,
+                        }),
+                        headerId: isFilter
+                            ? 'FilterCreationError'
+                            : 'ContingencyListCreationError',
+                    });
+                }
                 return false;
             } finally {
                 setPendingState(false);

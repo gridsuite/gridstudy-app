@@ -11,11 +11,12 @@ import {
     Equipment,
     EquipmentInfos,
     EquipmentItem,
+    TagRendererProps,
+    EquipmentType,
     equipmentStyles,
     useSnackMessage,
-    // Equipment,
 } from '@gridsuite/commons-ui';
-import { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomSuffixRenderer } from './custom-suffix-renderer';
 import { useDisabledSearchReason } from './use-disabled-search-reason';
@@ -27,8 +28,7 @@ import {
 } from 'redux/local-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
-import { TextField } from '@mui/material';
-import { Search, SearchOff } from '@mui/icons-material';
+import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
 
 interface TopBarEquipmentSearchDialogProps {
     showVoltageLevelDiagram: (element: Equipment) => void;
@@ -50,22 +50,30 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     const currentNode = useSelector(
         (state: ReduxState) => state.currentTreeNode
     );
+    const [equipmentTypeFilter, setEquipmentTypeFilter] =
+        useState<EquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
         useTopBarSearchMatchingEquipment({
             studyUuid: studyUuid,
             nodeUuid: currentNode?.id,
+            equipmentType: equipmentTypeFilter ?? undefined,
         });
     const disabledSearchReason = useDisabledSearchReason();
 
     const enableSearchDialog = useCallback(() => {
         setIsDialogSearchOpen(true);
     }, [setIsDialogSearchOpen]);
+
     const { snackWarning } = useSnackMessage();
+
+    const closeDialog = useCallback(() => {
+        setIsDialogSearchOpen(false);
+    }, [setIsDialogSearchOpen]);
 
     const onSelectionChange = useCallback(
         (equipment: EquipmentInfos) => {
-            setIsDialogSearchOpen(false);
+            closeDialog();
             updateSearchTerm('');
             addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
@@ -93,7 +101,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         },
         [
             updateSearchTerm,
-            setIsDialogSearchOpen,
+            closeDialog,
             showVoltageLevelDiagram,
             studyUuid,
             snackWarning,
@@ -101,13 +109,23 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         ]
     );
 
+    const suffixRenderer = useCallback(
+        (props: TagRendererProps) => (
+            <CustomSuffixRenderer {...props} onClose={closeDialog} />
+        ),
+        [closeDialog]
+    );
+
     useSearchEvent(enableSearchDialog);
 
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
-            showResults={equipmentsFound.length > 0 || isLoading}
-            onClose={() => setIsDialogSearchOpen(false)}
+            showResults={
+                disabledSearchReason === '' &&
+                (equipmentsFound.length > 0 || isLoading)
+            }
+            onClose={closeDialog}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
             onSelectionChange={onSelectionChange}
@@ -117,11 +135,12 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     styles={equipmentStyles}
                     {...props}
                     key={'ei-' + props.element.key}
-                    suffixRenderer={CustomSuffixRenderer}
+                    suffixRenderer={suffixRenderer}
                 />
             )}
             searchTermDisabled={disabledSearchReason !== ''}
             searchTermDisableReason={disabledSearchReason}
+            disableClearable
             loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
             getOptionLabel={(equipment) => equipment.label}
@@ -129,26 +148,11 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                 equipment1.id === equipment2.id
             }
             renderInput={(displayedValue, params) => (
-                <TextField
-                    autoFocus={true}
-                    {...params}
-                    label={intl.formatMessage({
-                        id: 'equipment_search/label',
-                    })}
-                    InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                            <>
-                                {disabledSearchReason !== '' ? (
-                                    <SearchOff color="disabled" />
-                                ) : (
-                                    <Search color="disabled" />
-                                )}
-                                {params.InputProps.startAdornment}
-                            </>
-                        ),
-                    }}
-                    value={displayedValue}
+                <TopBarEquipmentSearchInput
+                    displayedValue={displayedValue}
+                    params={params}
+                    setEquipmentType={setEquipmentTypeFilter}
+                    equipmentType={equipmentTypeFilter}
                 />
             )}
         />

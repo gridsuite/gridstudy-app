@@ -7,7 +7,6 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { SecurityAnalysisResultProps } from './security-analysis.type';
-import { CustomAGGrid } from '../../custom-aggrid/custom-aggrid';
 import {
     getNoRowsMessage,
     getRows,
@@ -19,6 +18,7 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { ComputingType } from '../../computing-status/computing-type';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 export const SecurityAnalysisTable: FunctionComponent<
     SecurityAnalysisResultProps

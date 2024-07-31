@@ -12,7 +12,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { CustomAGGrid } from '../../../custom-aggrid/custom-aggrid';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
 import {
     DefaultCellRenderer,
@@ -35,6 +34,8 @@ import {
     ANGLE,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AgGridReact } from 'ag-grid-react';
 
 export const ALLOWED_KEYS = [
     'Escape',
@@ -158,6 +159,7 @@ interface VoltageInitModificationProps {
     onClose: CloseFunction;
     onPreviewModeSubmit?: PreviewModeSubmitFunction;
     editDataFetchStatus: FetchStatus;
+    disabledSave: boolean;
     dialogProps: any;
 }
 
@@ -183,6 +185,7 @@ const VoltageInitModificationDialog: FunctionComponent<
     onClose,
     onPreviewModeSubmit,
     editDataFetchStatus,
+    disabledSave,
     dialogProps,
 }) => {
     const intl = useIntl();
@@ -195,7 +198,7 @@ const VoltageInitModificationDialog: FunctionComponent<
         setTabIndex(newValue);
     }, []);
 
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact<any>>(null);
 
     const generatorsColumnDefs = useMemo(() => {
         return [
@@ -620,7 +623,9 @@ const VoltageInitModificationDialog: FunctionComponent<
             onClear={handleClear}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
             disabledSave={
-                onPreviewModeSubmit === undefined || editData === undefined
+                disabledSave ||
+                onPreviewModeSubmit === undefined ||
+                editData === undefined
             }
             aria-labelledby="dialog-voltage-init-modification"
             subtitle={equipmentTabs}

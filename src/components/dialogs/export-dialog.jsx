@@ -26,10 +26,15 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
+import {
+    CancelButton,
+    FlatParameters,
+    fetchDirectoryElementPath,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
-import { CGMES } from 'components/utils/constants';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -55,8 +60,30 @@ const ExportDialog = ({
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [exportStudyErr, setExportStudyErr] = React.useState('');
+    const [studyName, setStudyName] = useState(null);
+    const { snackError } = useSnackMessage();
 
     const [unfolded, setUnfolded] = React.useState(false);
+
+    const fetchStudyName = useCallback(() => {
+        fetchDirectoryElementPath(studyUuid)
+            .then((response) => {
+                const studyName = response[response.length - 1]?.elementName;
+                setStudyName(studyName);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'LoadStudyAndParentsInfoError',
+                });
+            });
+    }, [studyUuid, snackError]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            fetchStudyName(studyUuid);
+        }
+    }, [fetchStudyName, studyUuid]);
 
     useEffect(() => {
         if (open) {
@@ -105,16 +132,21 @@ const ExportDialog = ({
                 selectedFormat
             );
             let suffix;
+            const urlSearchParams = new URLSearchParams();
             if (Object.keys(currentParameters).length > 0) {
-                const urlSearchParams = new URLSearchParams();
                 const jsoned = JSON.stringify(currentParameters);
                 urlSearchParams.append('formatParameters', jsoned);
-                // we have already as parameters, the tokens, so use '&' in stead of '?'
-                suffix = '&' + urlSearchParams.toString();
+            }
+            if (!isBlankOrEmpty(studyName)) {
+                urlSearchParams.append('studyName', studyName);
             }
 
+            // we have already as parameters, the access tokens, so use '&' instead of '?'
+            suffix = urlSearchParams.toString()
+                ? '&' + urlSearchParams.toString()
+                : '';
             setLoading(true);
-            onClick(downloadUrl + (suffix ? suffix : ''));
+            onClick(downloadUrl + suffix);
         } else {
             setExportStudyErr(
                 intl.formatMessage({ id: 'exportStudyErrorMsg' })
@@ -167,17 +199,11 @@ const ExportDialog = ({
                             id: 'select-format',
                         }}
                     >
-                        {Object.keys(formatsWithParameters)
-                            .filter(
-                                (format) =>
-                                    // Hide the CGMES item while waiting for the Fix of getIdentifiable on the back end
-                                    format !== CGMES
-                            )
-                            .map((formatKey) => (
-                                <MenuItem key={formatKey} value={formatKey}>
-                                    {formatKey}
-                                </MenuItem>
-                            ))}
+                        {Object.keys(formatsWithParameters).map((formatKey) => (
+                            <MenuItem key={formatKey} value={formatKey}>
+                                {formatKey}
+                            </MenuItem>
+                        ))}
                     </Select>
                     <Stack
                         marginTop="0.7em"

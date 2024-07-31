@@ -118,11 +118,16 @@ const MapViewer = ({
     const previousStudyDisplayMode = useRef(undefined);
     const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
 
+    const [nominalVoltages, setNominalVoltages] = useState();
+
     const openVoltageLevel = useCallback(
         (vlId) => {
-            openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+            // don't open the sld if the drawing mode is activated
+            if (!isInDrawingMode) {
+                openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+            }
         },
-        [openDiagramView]
+        [openDiagramView, isInDrawingMode]
     );
 
     function showInSpreadsheet(equipment) {
@@ -336,6 +341,7 @@ const MapViewer = ({
                                     onPolygonChanged={() => {}}
                                     onDrawEvent={onDrawEvent}
                                     isInDrawingMode={isInDrawingMode}
+                                    onNominalVoltagesChange={setNominalVoltages}
                                 ></NetworkMapTab>
                             </Box>
 
@@ -371,6 +377,7 @@ const MapViewer = ({
                                                 false
                                             );
                                         }}
+                                        nominalVoltages={nominalVoltages}
                                     />
                                 )}
                             </Box>

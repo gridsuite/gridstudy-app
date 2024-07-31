@@ -47,6 +47,7 @@ import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../country-cell-render';
 import EnumCellRenderer from '../enum-cell-renderer';
 import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { store } from '../../../redux/store';
 
 const generateTapPositions = (params) => {
     return params
@@ -78,6 +79,11 @@ const applyFluxConvention = (convention, val) => {
         return -val;
     }
     return val;
+};
+
+const getFluxConvention = () => {
+    const state = store.getState();
+    return state.fluxConvention;
 };
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
@@ -179,16 +185,83 @@ const countryEnumFilterConfig = {
     isCountry: true,
 };
 
-const defaultNumericFilterConfig = {
-    filter: 'agNumberColumnFilter',
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.NUMBER,
-        filterComparators: [
-            FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-            FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-            FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
-        ],
-    },
+const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
+    return {
+        filter: 'agNumberColumnFilter',
+        agGridFilterParams: {
+            filterOptions: [
+                {
+                    displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    displayName:
+                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    predicate: ([filterValue], cellValue) => {
+                        const transformedValue = applyFluxConvention
+                            ? applyFluxConvention(
+                                  getFluxConvention(),
+                                  cellValue
+                              )
+                            : cellValue;
+                        return transformedValue
+                            ? transformedValue >= filterValue
+                            : false;
+                    },
+                },
+                {
+                    displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
+                    displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
+                    predicate: ([filterValue], cellValue) => {
+                        const transformedValue = applyFluxConvention
+                            ? applyFluxConvention(
+                                  getFluxConvention(),
+                                  cellValue
+                              )
+                            : cellValue;
+                        return transformedValue
+                            ? transformedValue > filterValue
+                            : false;
+                    },
+                },
+                {
+                    displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                    predicate: ([filterValue], cellValue) => {
+                        const transformedValue = applyFluxConvention
+                            ? applyFluxConvention(
+                                  getFluxConvention(),
+                                  cellValue
+                              )
+                            : cellValue;
+                        return transformedValue
+                            ? transformedValue <= filterValue
+                            : false;
+                    },
+                },
+                {
+                    displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN,
+                    displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN,
+                    predicate: ([filterValue], cellValue) => {
+                        const transformedValue = applyFluxConvention
+                            ? applyFluxConvention(
+                                  getFluxConvention(),
+                                  cellValue
+                              )
+                            : cellValue;
+                        return transformedValue
+                            ? transformedValue < filterValue
+                            : false;
+                    },
+                },
+            ],
+        },
+        customFilterParams: {
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
+            filterComparators: [
+                FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+            ],
+        },
+    };
 };
 
 const propertiesGetter = (params) => {
@@ -326,7 +399,7 @@ const generateEditableNumericColumnDefinition = (
         id: id,
         field: field,
         numeric: true,
-        ...defaultNumericFilterConfig,
+        ...defaultNumericFilterConfig(),
         fractionDigits: fractionDigits,
         changeCmd: changeCmd,
         editable: isEditable,
@@ -400,13 +473,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -447,7 +513,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalV',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -485,7 +551,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'IpMin',
                 field: 'identifiableShortCircuit.ipMin',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -523,7 +589,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'IpMax',
                 field: 'identifiableShortCircuit.ipMax',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -576,13 +642,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -634,21 +693,21 @@ export const TABLES_DEFINITIONS = {
                 id: 'nominalVoltage1KV',
                 field: 'nominalVoltage1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'nominalVoltage2KV',
                 field: 'nominalVoltage2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'ActivePowerSide1',
                 field: 'p1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -657,7 +716,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide2',
                 field: 'p2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -666,7 +725,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide1',
                 field: 'q1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -675,7 +734,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide2',
                 field: 'q2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -684,7 +743,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'r',
                 field: 'r',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -692,7 +751,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'x',
                 field: 'x',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -700,7 +759,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'g1',
                 field: 'g1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g1),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -709,7 +768,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'g2',
                 field: 'g2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g2),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -718,7 +777,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'b1',
                 field: 'b1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b1),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -727,7 +786,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'b2',
                 field: 'b2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b2),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -801,21 +860,21 @@ export const TABLES_DEFINITIONS = {
                 id: 'nominalVoltage1KV',
                 field: 'nominalVoltage1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'nominalVoltage2KV',
                 field: 'nominalVoltage2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'ratedVoltage1KV',
                 field: 'ratedU1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -835,7 +894,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ratedVoltage2KV',
                 field: 'ratedU2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -855,7 +914,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide1',
                 field: 'p1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -864,7 +923,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide2',
                 field: 'p2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -873,7 +932,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide1',
                 field: 'q1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -882,7 +941,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide2',
                 field: 'q2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -961,7 +1020,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'TargetVPoint',
                 field: 'ratioTapChanger.targetV',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
@@ -987,7 +1046,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioDeadBand',
                 field: 'ratioTapChanger.targetDeadband',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: (params) => isTwtRatioOnloadAndEditable(params),
                 cellStyle: editableCellStyle,
@@ -1101,7 +1160,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RatioLowTapPosition',
                 field: 'ratioTapChanger.lowTapPosition',
                 getQuickFilterText: excludeFromGlobalFilter,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
                 editable: (params) =>
@@ -1132,7 +1191,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioHighTapPosition',
                 field: 'ratioTapChanger.highTapPosition',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 valueGetter: (params) =>
                     computeHighTapPosition(
                         params?.data?.ratioTapChanger?.steps
@@ -1142,7 +1201,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioTap',
                 field: 'ratioTapChanger.tapPosition',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1202,7 +1261,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RegulatingValue',
                 field: 'phaseTapChanger.regulationValue',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 valueGetter: (params) =>
@@ -1235,7 +1294,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseDeadBand',
                 field: 'phaseTapChanger.targetDeadband',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
@@ -1354,7 +1413,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PhaseLowTapPosition',
                 field: 'phaseTapChanger.lowTapPosition',
                 getQuickFilterText: excludeFromGlobalFilter,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
                 editable: (params) =>
@@ -1385,7 +1444,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseHighTapPosition',
                 field: 'phaseTapChanger.highTapPosition',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 valueGetter: (params) =>
                     computeHighTapPosition(
                         params?.data?.phaseTapChanger?.steps
@@ -1395,7 +1454,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap',
                 field: 'phaseTapChanger.tapPosition',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1430,7 +1489,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'r',
                 field: 'r',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1438,7 +1497,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'x',
                 field: 'x',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1446,7 +1505,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'g',
                 field: 'g',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1455,7 +1514,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'b',
                 field: 'b',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1464,7 +1523,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ratedNominalPower',
                 field: 'ratedS',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -1498,13 +1557,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -1554,28 +1606,28 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalVT3WSide1',
                 field: 'nominalV1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVT3WSide2',
                 field: 'nominalV2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'NominalVT3WSide3',
                 field: 'nominalV3',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'ActivePowerT3WSide1',
                 field: 'p1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1584,7 +1636,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerT3WSide2',
                 field: 'p2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1593,7 +1645,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerT3WSide3',
                 field: 'p3',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1602,7 +1654,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerT3WSide1',
                 field: 'q1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1611,7 +1663,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerT3WSide2',
                 field: 'q2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1620,7 +1672,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerT3WSide3',
                 field: 'q3',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1645,14 +1697,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetVPoint1',
                 field: 'targetV1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap1',
                 field: 'ratioTapChanger1',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1696,14 +1748,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetVPoint2',
                 field: 'targetV2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap2',
                 field: 'ratioTapChanger2',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1747,14 +1799,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'TargetVPoint3',
                 field: 'targetV3',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
                 id: 'RatioTap3',
                 field: 'ratioTapChanger3',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1796,7 +1848,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap1',
                 field: 'phaseTapChanger1',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1824,7 +1876,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingValue1',
                 field: 'regulatingValue1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1847,7 +1899,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap2',
                 field: 'phaseTapChanger2',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1875,7 +1927,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingValue2',
                 field: 'regulatingValue2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1898,7 +1950,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'PhaseTap3',
                 field: 'phaseTapChanger3',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
                 valueGetter: (params) =>
@@ -1926,7 +1978,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingValue3',
                 field: 'regulatingValue3',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2007,7 +2059,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
@@ -2029,7 +2081,10 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(
+                    applyFluxConvention,
+                    getFluxConvention
+                ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2039,7 +2094,10 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(
+                    applyFluxConvention,
+                    getFluxConvention
+                ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2078,7 +2136,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerRegulationDroop',
                 field: 'activePowerControl.droop',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2112,7 +2170,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'minP',
                 field: 'minP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 changeCmd: 'equipment.setMinP({})\n',
                 editable: isEditable,
@@ -2136,7 +2194,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'maxP',
                 field: 'maxP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 changeCmd: 'equipment.setMaxP({})\n',
                 editable: isEditable,
@@ -2160,7 +2218,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePowerSetpoint',
                 field: 'targetP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 changeCmd:
                     'if ((equipment.getMinP() <= {} && {} <= equipment.getMaxP()) || {} == 0) { \n' +
                     '    equipment.setTargetP({})\n' +
@@ -2192,7 +2250,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetQ({})\n',
                 editable: isEditable,
@@ -2239,7 +2297,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 changeCmd: 'equipment.setTargetV({})\n',
                 editable: isEditable,
@@ -2266,7 +2324,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'ReactivePercentageVoltageRegulation',
                 field: 'coordinatedReactiveControl.qPercent',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2304,7 +2362,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'directTransX',
                 field: 'generatorShortCircuit.directTransX',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2338,7 +2396,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'stepUpTransformerX',
                 field: 'generatorShortCircuit.stepUpTransformerX',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2372,7 +2430,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'plannedActivePowerSetPoint',
                 field: 'generatorStartup.plannedActivePowerSetPoint',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2409,7 +2467,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 cellEditor: NumericalField,
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellEditorParams: (params) => {
@@ -2439,7 +2497,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'plannedOutageRate',
                 field: 'generatorStartup.plannedOutageRate',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2475,7 +2533,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'forcedOutageRate',
                 field: 'generatorStartup.forcedOutageRate',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 2,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: isEditable,
@@ -2570,13 +2628,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -2636,14 +2687,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2652,7 +2703,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2661,7 +2712,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'p0',
                 field: 'p0',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 changeCmd: 'equipment.setP0({})\n',
                 editable: isEditable,
@@ -2682,7 +2733,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'q0',
                 field: 'q0',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 changeCmd: 'equipment.setQ0({})\n',
                 editable: isEditable,
@@ -2721,13 +2772,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -2770,14 +2814,17 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(
+                    applyFluxConvention,
+                    getFluxConvention
+                ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2799,7 +2846,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
                     minExpression: 1,
@@ -2821,7 +2868,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
                     minExpression: 0,
@@ -2858,7 +2905,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
@@ -2873,7 +2920,7 @@ export const TABLES_DEFINITIONS = {
                     (params?.data?.maxQAtNominalV /
                         params?.data?.maximumSectionCount) *
                     params?.data?.sectionCount,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2893,7 +2940,7 @@ export const TABLES_DEFINITIONS = {
                         rowData: params.data,
                     };
                 },
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2905,7 +2952,7 @@ export const TABLES_DEFINITIONS = {
                     (params?.data?.maxSusceptance /
                         params?.data?.maximumSectionCount) *
                     params?.data?.sectionCount,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2913,7 +2960,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'voltageSetpoint',
                 field: 'targetV',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -2939,13 +2986,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -2984,14 +3024,14 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: NOMINAL_V,
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3000,7 +3040,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3009,7 +3049,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3017,7 +3057,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3080,14 +3120,17 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalVoltage',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(
+                    applyFluxConvention,
+                    getFluxConvention
+                ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -3097,7 +3140,10 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(
+                    applyFluxConvention,
+                    getFluxConvention
+                ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -3136,7 +3182,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'DroopColumnName',
                 field: 'activePowerControl.droop',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3170,7 +3216,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'minP',
                 field: 'minP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3193,7 +3239,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'maxP',
                 field: 'maxP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3216,7 +3262,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePowerSetpoint',
                 field: 'targetP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3241,7 +3287,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'reactivePowerSetpoint',
                 field: 'targetQ',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -3279,13 +3325,6 @@ export const TABLES_DEFINITIONS = {
                     return params;
                 },
                 cellEditor: SitePropertiesEditor,
-                cellEditorParams: (params) => {
-                    return {
-                        gridApi: params.api,
-                        colDef: params.colDef,
-                        rowData: params.data,
-                    };
-                },
                 cellEditorPopup: true,
                 ...defaultTextFilterConfig,
             },
@@ -3356,7 +3395,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'R',
                 field: 'r',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3364,7 +3403,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSetpoint',
                 field: 'activePowerSetpoint',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3372,7 +3411,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'maxActivePower',
                 field: 'maxP',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3380,7 +3419,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'OprFromCS1toCS2',
                 field: 'hvdcOperatorActivePowerRange.oprFromCS1toCS2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3389,7 +3428,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'OprFromCS2toCS1',
                 field: 'hvdcOperatorActivePowerRange.oprFromCS2toCS1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 columnWidth: LARGE_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3406,7 +3445,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'K',
                 field: 'hvdcAngleDroopActivePowerControl.droop',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3414,7 +3453,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'P0',
                 field: 'hvdcAngleDroopActivePowerControl.p0',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3466,7 +3505,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalV',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
@@ -3478,7 +3517,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3487,7 +3526,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3496,7 +3535,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PowerFactor',
                 field: 'powerFactor',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3504,7 +3543,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'LossFactor',
                 field: 'lossFactor',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3565,7 +3604,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: 'nominalV',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
@@ -3577,7 +3616,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3586,7 +3625,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3595,7 +3634,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'LossFactor',
                 field: 'lossFactor',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3611,7 +3650,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'VoltageSetpointKV',
                 field: 'voltageSetpoint',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3619,7 +3658,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSetpointMVAR',
                 field: 'reactivePowerSetpoint',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3679,7 +3718,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'NominalV',
                 field: NOMINAL_V,
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
@@ -3692,7 +3731,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3701,7 +3740,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3710,7 +3749,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'p0',
                 field: 'p0',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3718,7 +3757,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'q0',
                 field: 'q0',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3763,7 +3802,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
                 canBeInvalidated: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
             },
             {
                 id: 'Angle',
@@ -3771,17 +3810,17 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 fractionDigits: 1,
                 canBeInvalidated: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
             },
             {
                 id: 'ConnectedComponent',
                 field: 'connectedComponentNum',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
             },
             {
                 id: 'SynchronousComponent',
                 field: 'synchronousComponentNum',
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
             },
             {
                 id: 'VoltageLevelId',
@@ -3800,7 +3839,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 filter: 'agNumberColumnFilter',
                 fractionDigits: 0,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
             },
             {
                 id: 'Properties',
@@ -3862,21 +3901,21 @@ export const TABLES_DEFINITIONS = {
                 id: 'nominalVoltage1KV',
                 field: 'nominalVoltage1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'nominalVoltage2KV',
                 field: 'nominalVoltage2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 0,
             },
             {
                 id: 'ActivePowerSide1',
                 field: 'p1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3885,7 +3924,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ActivePowerSide2',
                 field: 'p2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3894,7 +3933,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide1',
                 field: 'q1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3903,7 +3942,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePowerSide2',
                 field: 'q2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 canBeInvalidated: true,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3912,7 +3951,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'r',
                 field: 'r',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3920,7 +3959,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'x',
                 field: 'x',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
             },
@@ -3928,7 +3967,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'g1',
                 field: 'g1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g1),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3937,7 +3976,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'g2',
                 field: 'g2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.g2),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3946,7 +3985,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'b1',
                 field: 'b1',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b1),
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3955,7 +3994,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'b2',
                 field: 'b2',
                 numeric: true,
-                ...defaultNumericFilterConfig,
+                ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 valueGetter: (params) => unitToMicroUnit(params.data.b2),
                 getQuickFilterText: excludeFromGlobalFilter,

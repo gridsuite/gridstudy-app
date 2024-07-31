@@ -132,6 +132,7 @@ export const SensitivityAnalysisParameters = ({
 
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] =
         useState(params);
 
@@ -225,6 +226,7 @@ export const SensitivityAnalysisParameters = ({
             setLaunchLoader(true);
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
+                currentNode.id,
                 arrayFormName === SENSI_INJECTIONS_SET,
                 formatFilteredParams(row)
             )
@@ -246,7 +248,14 @@ export const SensitivityAnalysisParameters = ({
                     });
                 });
         },
-        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount]
+        [
+            snackError,
+            studyUuid,
+            formatFilteredParams,
+            setValue,
+            getResultCount,
+            currentNode,
+        ]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
@@ -427,9 +436,9 @@ export const SensitivityAnalysisParameters = ({
                         };
                     }) ?? [],
             };
-            reset(values);
+            return values;
         },
-        [reset]
+        []
     );
 
     const initRowsCount = useCallback(() => {
@@ -503,7 +512,7 @@ export const SensitivityAnalysisParameters = ({
                 fetchSensitivityAnalysisParameters(newParams[0].id)
                     .then((parameters) => {
                         console.info(
-                            'loading the following loadflow parameters : ' +
+                            'loading the following sensi parameters : ' +
                                 parameters.uuid
                         );
                         reset(
@@ -514,6 +523,7 @@ export const SensitivityAnalysisParameters = ({
                                 keepDefaultValues: true,
                             }
                         );
+                        initRowsCount();
                     })
                     .catch((error) => {
                         console.error(error);
@@ -525,13 +535,20 @@ export const SensitivityAnalysisParameters = ({
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, fromSensitivityAnalysisParamsDataToFormValues, reset]
+        [
+            snackError,
+            fromSensitivityAnalysisParamsDataToFormValues,
+            reset,
+            initRowsCount,
+        ]
     );
 
     useEffect(() => {
         if (sensitivityAnalysisParams) {
-            fromSensitivityAnalysisParamsDataToFormValues(
-                sensitivityAnalysisParams
+            reset(
+                fromSensitivityAnalysisParamsDataToFormValues(
+                    sensitivityAnalysisParams
+                )
             );
             !isSubmitAction && initRowsCount();
         }
@@ -540,6 +557,7 @@ export const SensitivityAnalysisParameters = ({
         sensitivityAnalysisParams,
         initRowsCount,
         isSubmitAction,
+        reset,
     ]);
 
     const clear = useCallback(() => {
