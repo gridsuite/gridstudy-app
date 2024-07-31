@@ -11,13 +11,7 @@ import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 export default function useGetLabelEquipmentTypes() {
     const intl = useIntl();
     return useMemo(
-        () => (equipmentType: string) => {
-            if (equipmentType === EQUIPMENT_TYPES.HVDC_LINE) {
-                return intl.formatMessage({ id: 'Hvdc' });
-            } else {
-                return intl.formatMessage({ id: equipmentType });
-            }
-        },
+        () => (equipmentType: string) => intl.formatMessage({ id: equipmentType === EQUIPMENT_TYPES.HVDC_LINE ? 'Hvdc' :  equipmentType}),
         [intl]
     );
 }
