@@ -4,6 +4,7 @@ import {
     useCallback,
     useMemo,
     useRef,
+    useState,
 } from 'react';
 import { HotTable, HotTableClass } from '@handsontable/react';
 import { useSpreadsheetEquipments } from '../network/use-spreadsheet-equipments';
@@ -41,18 +42,19 @@ const isDataAltered = (hotTableComponent: RefObject<HotTableClass>) => {
     );
 };
 
-const customColumnsIndexes = (hotTableComponent: RefObject<HotTableClass>) => {
-    return (
-        hotTableComponent.current?.hotInstance
-            ?.getCellMetaAtRow(0)
-            .filter((cellMeta) => cellMeta.hasOwnProperty('addedColumn'))
-            .map((cellMeta) => cellMeta.col) ?? []
-    );
-};
+function toLetters(num: number): string {
+    var mod = num % 26,
+        pow = (num / 26) | 0,
+        out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
+    return pow ? toLetters(pow) + out : out;
+}
 
 const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
     const intl = useIntl();
     const hotTableComponent = useRef<HotTableClass>(null);
+    const [customColumnsIndexes, setCustomColumnsIndexes] = useState<number[]>(
+        []
+    );
 
     const equipmentDefinition = useMemo(
         () => ({
@@ -62,9 +64,35 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
         []
     );
 
+    const getColHeaders = useCallback(() => {
+        const headers = isDataAltered(hotTableComponent)
+            ? (hotTableComponent.current?.hotInstance?.getColHeader() as string[])
+            : TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)?.columns.map(
+                  (column, index) => intl.formatMessage({ id: column.id })
+              ) ?? [];
+
+        const columnLabel = 'Custom column';
+        customColumnsIndexes.forEach((customColumnIndex, index) => {
+            if (headers[customColumnIndex] !== columnLabel) {
+                headers.splice(customColumnIndex, 0, columnLabel);
+            }
+        });
+        return headers ?? [];
+    }, [customColumnsIndexes, intl]);
+
+    const getNestedHeaders = useCallback(() => {
+        const letters =
+            hotTableComponent.current?.hotInstance
+                ?.getColHeader()
+                ?.map((column, index) => {
+                    return toLetters(index + 1);
+                }) ?? [];
+
+        return [letters, getColHeaders()];
+    }, [getColHeaders]);
+
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
-            //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
             return formatFetchedEquipments(
                 equipmentDefinition.type as string,
                 fetchedEquipments
@@ -118,8 +146,9 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
             : [];
 
         if (isDataAltered(hotTableComponent)) {
-            customColumnsIndexes(hotTableComponent).forEach((index) => {
-                initialData.map((row: any[], rowIndex: number) =>
+            console.log(customColumnsIndexes);
+            customColumnsIndexes.forEach((index) => {
+                initialData.map((row: any[], rowIndex: number) => {
                     row.splice(
                         index,
                         0,
@@ -127,20 +156,12 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                             rowIndex,
                             index
                         )
-                    )
-                );
+                    );
+                });
             });
         }
         return initialData;
-    }, [equipments]);
-
-    const getColHeaders = useCallback(() => {
-        return isDataAltered(hotTableComponent)
-            ? (hotTableComponent.current?.hotInstance?.getColHeader() as Array<string>)
-            : TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)?.columns.map(
-                  (column, index) => intl.formatMessage({ id: column.id })
-              );
-    }, [intl]);
+    }, [customColumnsIndexes, equipments]);
 
     const tagCustomColumn = useCallback(
         (index: number, amount: number, source?: ChangeSource) => {
@@ -168,7 +189,10 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 height="auto"
                 data={data}
                 rowHeaders={true}
-                colHeaders={getColHeaders()}
+                filters={true}
+                dropdownMenu={true}
+                //colHeaders={getColHeaders()}
+                nestedHeaders={getNestedHeaders()}
                 formulas={{
                     engine: hyperformulaInstance,
                     sheetName: 'Sheet1',
@@ -178,22 +202,56 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 contextMenu={true}
                 allowInsertColumn={true}
                 afterCreateCol={tagCustomColumn}
+                afterSetCellMeta={(row, column, key, value) => {
+                    const previousIndexes =
+                        hotTableComponent.current?.hotInstance
+                            ?.getCellMetaAtRow(0)
+                            .filter(
+                                (cellMeta) =>
+                                    cellMeta?.hasOwnProperty('addedColumn') &&
+                                    cellMeta?.hasOwnProperty('col')
+                            )
+                            .map((cellMeta) => {
+                                console.log(cellMeta);
+                                return cellMeta?.col;
+                            }) ?? [];
+
+                    setCustomColumnsIndexes(() => [...previousIndexes, column]);
+                }}
                 licenseKey="non-commercial-and-evaluation"
                 viewportRowRenderingOffset={10}
                 viewportColumnRenderingOffset={2}
-                beforeOnCellMouseDown={(event, coords, TD, controller) => {
-                    const activeEditor =
-                        hotTableComponent.current?.hotInstance?.getActiveEditor();
-                    /*                    if (!activeEditor || !activeEditor?.isOpened()) {
-                                  return;
-                              }
-                              const spreadsheetAddress = `${Handsontable.helper.spreadsheetColumnLabel(
-                                  coords.col
-                              )}${coords.row + 1}`;
-          
-                              hotTableComponent.current?.hotInstance?.getCellMeta()
-          
-                              activeEditor.value += spreadsheetAddress;*/
+                /*beforeOnCellMouseDown={(event, coords, TD, controller) => {
+const activeEditor =
+hotTableComponent.current?.hotInstance?.getActiveEditor();
+hotTableComponent.current?.hotInstance
+?.getFocusManager()
+.setFocusMode('cell');
+if (activeEditor && activeEditor.isOpened()) {
+controller.cell = true;
+activeEditor.setValue(
+activeEditor.getValue() +
+hotTableComponent.current?.hotInstance?.getColHeader(
+coords.col
+) +
+(coords.row + 1)
+);
+activeEditor.focus();
+}
+}}*/
+                afterOnCellMouseDown={(event, coords, TD) => {
+                    /*const activeEditor =
+hotTableComponent.current?.hotInstance?.getActiveEditor();
+if (activeEditor && activeEditor.isOpened()) {
+console.log(activeEditor.getValue());
+}
+activeEditor?.focus();*/
+                    console.log(
+                        hotTableComponent.current?.hotInstance?.getCellMeta(
+                            coords.row,
+                            coords.col
+                        )
+                    );
                 }}
             />
         </Box>
