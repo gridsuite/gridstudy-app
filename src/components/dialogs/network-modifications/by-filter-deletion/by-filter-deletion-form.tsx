@@ -7,7 +7,6 @@
 
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
@@ -16,27 +15,16 @@ import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import { getIdOrValue } from '../../commons/utils';
+import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
 
 const ByFilterDeletionForm = () => {
-    const intl = useIntl();
-
     const equipmentTypeWatch = useWatch({
         name: TYPE,
     });
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = useMemo(
-        () => (rt: { id: string; label: string } | string) => {
-            if (rt === EQUIPMENT_TYPES.HVDC_LINE) {
-                return intl.formatMessage({ id: 'Hvdc' });
-            } else {
-                return intl.formatMessage({ id: getIdOrValue(rt) });
-            }
-        },
-        [intl]
-    );
+    const richTypeLabel = useGetLabelEquipmentTypes();
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([

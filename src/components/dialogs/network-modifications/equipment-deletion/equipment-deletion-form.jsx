@@ -13,7 +13,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
@@ -33,9 +32,9 @@ import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-s
 import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types.js';
 
 const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef(null);
     const currentTypeRef = useRef(null);
@@ -52,13 +51,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { specificUpdate: hvdcLccSpecificUpdate } = useHvdcLccDeletion();
     const { setValue } = useFormContext();
 
-    const richTypeLabel = (richType) => {
-        if (richType === EQUIPMENT_TYPES.HVDC_LINE) {
-            return intl.formatMessage({ id: 'Hvdc' });
-        } else {
-            return intl.formatMessage({ id: richType });
-        }
-    };
+    const richTypeLabel = useGetLabelEquipmentTypes();
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
 
