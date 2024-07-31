@@ -7,7 +7,6 @@
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
-import { getIdOrValue } from '../components/dialogs/commons/utils';
 
 export default function useGetLabelEquipmentTypes() {
     const intl = useIntl();
@@ -16,7 +15,7 @@ export default function useGetLabelEquipmentTypes() {
             if (equipmentType === EQUIPMENT_TYPES.HVDC_LINE) {
                 return intl.formatMessage({ id: 'Hvdc' });
             } else {
-                return intl.formatMessage({ id: getIdOrValue(equipmentType) });
+                return intl.formatMessage({ id: equipmentType });
             }
         },
         [intl]
