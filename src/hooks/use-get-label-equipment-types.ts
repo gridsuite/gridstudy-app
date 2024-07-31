@@ -7,16 +7,18 @@
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import { getIdOrValue } from '../components/dialogs/commons/utils';
+import { Option } from '@gridsuite/commons-ui';
 
 export default function useGetLabelEquipmentTypes() {
     const intl = useIntl();
     return useMemo(
-        () => (equipmentType: string) =>
+        () => (equipmentType: Option) =>
             intl.formatMessage({
                 id:
                     equipmentType === EQUIPMENT_TYPES.HVDC_LINE
                         ? 'Hvdc'
-                        : equipmentType,
+                        : getIdOrValue(equipmentType),
             }),
         [intl]
     );
