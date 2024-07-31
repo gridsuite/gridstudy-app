@@ -15,7 +15,10 @@ import Alert from '@mui/material/Alert';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
+import {
+    REACTIVE_SLACKS_THRESHOLD,
+    SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
+} from './voltage-init-constants';
 import { ParameterFloat } from '../widget/parameter-float';
 import { ReactivePowerAdornment } from '../../dialogUtils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
@@ -73,6 +76,15 @@ export const GeneralParameters = () => {
                 style={styles.parameterName}
                 label={'ReactiveSlacksThreshold'}
                 adornment={ReactivePowerAdornment}
+                labelSize={8}
+                inputSize={4}
+            />
+            <ParameterFloat
+                name={`${GENERAL}.${SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD}`}
+                style={styles.parameterName}
+                label={'ShuntCompensatorActivationThreshold'}
+                adornment={ReactivePowerAdornment}
+                tooltip={'ShuntCompensatorActivationThresholdDescription'}
                 labelSize={8}
                 inputSize={4}
             />
