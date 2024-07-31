@@ -24,7 +24,7 @@ const ByFilterDeletionForm = () => {
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = useGetLabelEquipmentTypes();
+    const getOptionLabel = useGetLabelEquipmentTypes();
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
@@ -67,12 +67,12 @@ const ByFilterDeletionForm = () => {
                 label="Type"
                 options={typesOptions}
                 onChangeCallback={handleEquipmentTypeChange}
-                getOptionLabel={richTypeLabel}
+                getOptionLabel={getOptionLabel}
                 size={'small'}
                 formProps={{ variant: 'filled' }}
             />
         );
-    }, [handleEquipmentTypeChange, richTypeLabel, typesOptions]);
+    }, [handleEquipmentTypeChange, getOptionLabel, typesOptions]);
 
     return (
         <>
