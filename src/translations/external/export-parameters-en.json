@@ -61,7 +61,7 @@
   "iidm.export.xml.extensions.cgmesControlAreas": "Cgmes control areas",
   "iidm.export.xml.extensions.cgmesDanglingLineBoundaryNode": "Cgmes dangling line boundary node",
   "iidm.export.xml.extensions.cgmesLineBoundaryNode": "Cgmes line boundary node",
-  "iidm.import.xml.extensions.cgmesMetadataModels": "Cgmes models metadata",
+  "iidm.export.xml.extensions.cgmesMetadataModels": "Cgmes models metadata",
   "iidm.export.xml.extensions.cgmesSshMetadata": "Cgmes ssh metadata",
   "iidm.export.xml.extensions.cgmesSvMetadata": "Cgmes sv metadata",
   "iidm.export.xml.extensions.cgmesTapChangers": "Cgmes tap changers",
