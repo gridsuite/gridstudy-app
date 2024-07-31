@@ -9,7 +9,6 @@ import React, {
     ChangeEvent,
     FunctionComponent,
     useCallback,
-    useEffect,
     useMemo,
     useState,
 } from 'react';
@@ -68,10 +67,6 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
 }) => {
     const [values, setValues] = useState<Record<string, any>>(initValue);
     const positiveDoubleValue = useMemo(() => /^\d*[.,]?\d?\d?$/, []);
-
-    useEffect(() => {
-        setValues(initValue);
-    }, [initValue]);
 
     const checkValue = useCallback(
         (

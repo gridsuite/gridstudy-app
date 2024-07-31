@@ -30,6 +30,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     getLimitReductionsFormSchema,
+    ILimitReductionsByVoltageLevel,
+    IST_FORM,
+    LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
 } from './columns-definitions';
 
@@ -106,11 +109,45 @@ export const SecurityAnalysisParameters: FunctionComponent<
         resolver: yupResolver(formSchema),
     });
 
+    const toLimitReductions = useCallback(
+        (formLimits: Record<string, any>[]) => {
+            return params.limitReductions.map(
+                (vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
+                    let vlLNewLimits: ILimitReductionsByVoltageLevel = {
+                        ...vlLimits,
+                        permanentLimitReduction: formLimits[indexVl][IST_FORM],
+                    };
+                    vlLimits.temporaryLimitReductions.forEach(
+                        (temporaryLimit, index) => {
+                            vlLNewLimits.temporaryLimitReductions[index] = {
+                                ...temporaryLimit,
+                                reduction:
+                                    formLimits[indexVl][
+                                        LIMIT_DURATION_FORM + index
+                                    ],
+                            };
+                        }
+                    );
+                    return vlLNewLimits;
+                }
+            );
+        },
+        [params]
+    );
+
     const { handleSubmit } = formMethods;
 
-    const updateLimitReductions = useCallback((values: Record<string, any>) => {
-        console.info('VALUES =', values);
-    }, []);
+    const updateLimitReductions = useCallback(
+        (formLimits: Record<string, any>) => {
+            updateParameters({
+                ...params,
+                limitReductions: toLimitReductions(
+                    formLimits[LIMIT_REDUCTIONS_FORM]
+                ),
+            });
+        },
+        [params, updateParameters, toLimitReductions]
+    );
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
