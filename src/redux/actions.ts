@@ -737,12 +737,18 @@ export function setFullScreenDiagram(
     diagramIdParam: string | null,
     svgTypeParam?: DiagramType
 ): SetFullscreenDiagramAction {
-    return {
-        type: SET_FULLSCREEN_DIAGRAM,
-        diagramId: diagramIdParam,
-        // @ts-expect-error: function overload protect call
-        svgType: svgTypeParam,
-    };
+    if (diagramIdParam === null) {
+        return {
+            type: SET_FULLSCREEN_DIAGRAM,
+            diagramId: diagramIdParam,
+        };
+    } else {
+        return {
+            type: SET_FULLSCREEN_DIAGRAM,
+            diagramId: diagramIdParam,
+            svgType: svgTypeParam!,
+        };
+    }
 }
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';

@@ -8,6 +8,7 @@
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
 import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
+import { BUILD_STATUS } from '../network/constants';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
@@ -232,7 +233,8 @@ export default class NetworkModificationTreeModel {
     setBuildingStatus() {
         this.isAnyNodeBuilding =
             this.treeNodes.find(
-                (node) => node?.data?.globalBuildStatus === 'BUILDING'
+                (node) =>
+                    node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING
             ) !== undefined;
     }
 

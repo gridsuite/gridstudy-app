@@ -30,6 +30,7 @@ import {
     EVENT_CRUD_FINISHED,
     EventCrudType,
 } from 'components/network/constants.type';
+import { UUID } from 'crypto';
 import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import {
     Event,
@@ -64,7 +65,7 @@ const EventModificationScenarioEditor = () => {
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const currentNodeIdRef = useRef<string>(); // initial empty to get first update
+    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<Event[]>([]);

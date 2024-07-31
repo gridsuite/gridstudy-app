@@ -65,7 +65,6 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
         filterTab: mappingTabs(sensiKind, nOrNkIndex),
-        // @ts-expect-error TODO: found how to have Action type in props type
         filterStoreAction: setSensitivityAnalysisResultFilter,
     });
 

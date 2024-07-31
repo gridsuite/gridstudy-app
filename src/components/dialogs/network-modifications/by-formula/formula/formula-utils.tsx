@@ -21,7 +21,22 @@ import {
 import yup from 'components/utils/yup-config';
 import { AnyObject, TestContext, TestFunction } from 'yup';
 
-export const EQUIPMENTS_FIELDS = {
+export type EquipmentField = {
+    id: string;
+    label: string;
+};
+type EquipmentFieldsKeys =
+    | EQUIPMENT_TYPES.GENERATOR
+    | EQUIPMENT_TYPES.BATTERY
+    | EQUIPMENT_TYPES.SHUNT_COMPENSATOR
+    | EQUIPMENT_TYPES.VOLTAGE_LEVEL
+    | EQUIPMENT_TYPES.LOAD
+    | EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER;
+type EquipmentFields = {
+    [key in EquipmentFieldsKeys]: EquipmentField[];
+};
+
+export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.GENERATOR]: [
         { id: 'RATED_NOMINAL_POWER', label: 'RatedNominalPowerText' },
         { id: 'MINIMUM_ACTIVE_POWER', label: 'MinimumActivePowerText' },
@@ -93,13 +108,16 @@ export const EQUIPMENTS_FIELDS = {
     ],
 };
 
-function isValueInEquipmentFields(context: TestContext<AnyObject>, value: any) {
+function isValueInEquipmentFields(
+    context: TestContext<AnyObject>,
+    value: string
+) {
     // this will return the highest level parent, so we can get the equipment type
     const parent = context.from?.[context.from.length - 1];
     const equipmentType = parent?.value?.[EQUIPMENT_TYPE_FIELD];
     return parent
-        ? // @ts-expect-error TODO: conflicts types
-          EQUIPMENTS_FIELDS[equipmentType]?.some(
+        ? // @ts-expect-error TODO: missing type in context
+          EQUIPMENTS_FIELDS[equipmentType!]?.some(
               (field: { id: string; label: string }) => field.id === value
           )
         : false;

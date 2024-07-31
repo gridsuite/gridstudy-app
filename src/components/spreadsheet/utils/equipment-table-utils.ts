@@ -216,7 +216,7 @@ export const formatFetchedEquipments = (
     equipments: IEquipment[]
 ) => {
     if (equipments && equipments?.length > 0) {
-        return equipments.map((equipment: any) => {
+        return equipments.map((equipment) => {
             return formatFetchedEquipment(equipmentType, equipment);
         });
     }
