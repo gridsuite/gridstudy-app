@@ -9,7 +9,6 @@ import {
     DirectoryItemSelector,
     ElementType,
     FlatParameters,
-    useLocalizedCountries,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Autocomplete, Box, Chip, Grid, TextField } from '@mui/material';
@@ -21,6 +20,7 @@ import {
     PARAM_LIMIT_REDUCTION,
 } from '../../../utils/config-params';
 import { mergeSx } from '../../utils/functions';
+import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';

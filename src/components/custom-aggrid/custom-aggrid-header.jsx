@@ -20,13 +20,13 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import { SortWay } from '../../hooks/use-aggrid-sort';
 import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
 } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
 

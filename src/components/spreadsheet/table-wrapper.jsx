@@ -20,7 +20,7 @@ import {
     TABLES_NAMES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
-import { useLocalizedCountries, useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
@@ -82,6 +82,7 @@ import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-ag
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import {
     SPREADSHEET_SORT_STORE,
     SPREADSHEET_STORE_FIELD,

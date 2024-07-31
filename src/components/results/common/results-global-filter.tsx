@@ -10,8 +10,8 @@ import { Box, FilterOptionsState } from '@mui/material';
 import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import { mergeSx } from '../../utils/functions';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { Theme } from '@mui/material';
@@ -121,7 +121,6 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
     filters = emptyArray,
 }) => {
     const intl = useIntl();
-    // @ts-expect-error: will be fixed in the next version of commons-ui
     const { translate } = useLocalizedCountries();
     const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters = useSelector(

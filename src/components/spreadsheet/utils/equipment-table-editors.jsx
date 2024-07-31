@@ -17,11 +17,11 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Autocomplete, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useLocalizedCountries } from '@gridsuite/commons-ui';
 import {
     checkValidationsAndRefreshCells,
     deepUpdateValue,
 } from './equipment-table-utils';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 
