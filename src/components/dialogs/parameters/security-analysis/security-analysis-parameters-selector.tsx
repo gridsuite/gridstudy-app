@@ -20,7 +20,6 @@ import { TabPanel } from '../parameters';
 import { TAB_VALUES } from './columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
 import LimitReductionsTableForm from './limit-reductions-table-form';
-import { UseFormReturn } from 'react-hook-form';
 
 const TAB_INFO = [
     { label: TAB_VALUES[TAB_VALUES.General] },
@@ -28,10 +27,9 @@ const TAB_INFO = [
 ];
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
-    formMethods: UseFormReturn;
     params: Record<string, any>;
     updateParameters: (value: Record<string, any>) => void;
-}> = ({ formMethods, params, updateParameters }) => {
+}> = ({ params, updateParameters }) => {
     const [tabValue, setTabValue] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback(
         (event: SyntheticEvent, newValue: number) => {
@@ -68,7 +66,6 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                         )}
                         {tabValue === TAB_VALUES.LimitReductions && (
                             <LimitReductionsTableForm
-                                formMethods={formMethods}
                                 limits={params.limitReductions}
                             />
                         )}

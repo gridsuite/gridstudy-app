@@ -106,11 +106,11 @@ export const SecurityAnalysisParameters: FunctionComponent<
         resolver: yupResolver(formSchema),
     });
 
-    const { getValues } = formMethods;
+    const { handleSubmit } = formMethods;
 
-    const updateLimitReductions = useCallback(() => {
-        console.info('VALUES =', getValues());
-    }, [getValues]);
+    const updateLimitReductions = useCallback((values: Record<string, any>) => {
+        console.info('VALUES =', values);
+    }, []);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -137,7 +137,6 @@ export const SecurityAnalysisParameters: FunctionComponent<
                         <LineSeparator />
                     </Grid>
                     <SecurityAnalysisParametersSelector
-                        formMethods={formMethods}
                         params={params}
                         updateParameters={updateParameters}
                     />
@@ -174,7 +173,7 @@ export const SecurityAnalysisParameters: FunctionComponent<
                     callback={resetSAParameters}
                 />
                 <SubmitButton
-                    onClick={updateLimitReductions}
+                    onClick={handleSubmit(updateLimitReductions)}
                     variant="outlined"
                 >
                     <FormattedMessage id="validate" />

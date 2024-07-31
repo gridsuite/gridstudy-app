@@ -76,16 +76,16 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
     const checkValue = useCallback(
         (
             e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-            allowedRE: any,
+            allowedRE: RegExp,
             isPercentage: boolean
         ) => {
-            const outputTransformToString = (value: string): any => {
+            const outputTransformToString = (value: string) => {
                 return value?.replace(',', '.') || '';
             };
             const newValue = outputTransformToString(e.target.value);
             const isValid = allowedRE.exec(newValue);
             const isAllValid = isPercentage
-                ? isValid && newValue <= 100
+                ? isValid && Number(newValue) <= 100
                 : isValid;
             if (isAllValid || newValue === '') {
                 setValues((prevState) => ({

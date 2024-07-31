@@ -7,17 +7,19 @@
 
 import { TableCell } from '@mui/material';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import {
     IColumnsDef,
     LIMIT_REDUCTIONS_FORM,
     VOLTAGE_LEVELS_FORM,
 } from './columns-definitions';
 
-function LimitReductionTableCell(rowIndex: number, column: IColumnsDef) {
+const LimitReductionTableCell: FunctionComponent<{
+    rowIndex: number;
+    column: IColumnsDef;
+}> = ({ rowIndex, column }) => {
     return (
         <TableCell
-            key={`${rowIndex}].${column.dataKey}`}
             sx={{
                 width: column.width,
             }}
@@ -34,6 +36,6 @@ function LimitReductionTableCell(rowIndex: number, column: IColumnsDef) {
             )}
         </TableCell>
     );
-}
+};
 
 export default LimitReductionTableCell;

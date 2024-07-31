@@ -12,20 +12,22 @@ import { IColumnsDef } from './columns-definitions';
 
 interface TableRowComponentProps {
     columnsDefinition: IColumnsDef[];
-    row: Record<'id', string>;
     index: number;
 }
 
 const LimitReductionTableRow: FunctionComponent<TableRowComponentProps> = ({
     columnsDefinition,
-    row,
     index,
 }) => {
     return (
-        <TableRow key={`${row.id}.${index}`}>
-            {columnsDefinition.map((column: IColumnsDef) =>
-                LimitReductionTableCell(index, column)
-            )}
+        <TableRow>
+            {columnsDefinition.map((column: IColumnsDef) => (
+                <LimitReductionTableCell
+                    key={`${column.dataKey}.${index}`}
+                    rowIndex={index}
+                    column={column}
+                />
+            ))}
         </TableRow>
     );
 };

@@ -57,8 +57,8 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
                 <TableBody>
                     {rows.map((row: Record<'id', string>, index: number) => (
                         <LimitReductionTableRow
+                            key={`${row.id}`}
                             columnsDefinition={columnsDefinition}
-                            row={row}
                             index={index}
                         />
                     ))}

@@ -21,15 +21,14 @@ import {
 } from './columns-definitions';
 import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
-import { UseFormReturn } from 'react-hook-form';
+import { useFormContext } from 'react-hook-form';
 
 const LimitReductionsTableForm: FunctionComponent<{
-    formMethods: UseFormReturn;
     limits: ILimitReductionsByVoltageLevel[];
-}> = ({ formMethods, limits }) => {
+}> = ({ limits }) => {
     const intl = useIntl();
 
-    const { reset } = formMethods;
+    const { reset } = useFormContext();
 
     const getLabelColumn = useCallback(
         (limit: ITemporaryLimitReduction) => {
@@ -51,33 +50,30 @@ const LimitReductionsTableForm: FunctionComponent<{
                 label: intl.formatMessage({ id: column.label }),
             })
         );
-        if (limits) {
-            limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
-                columnsDefinition.push({
-                    label: getLabelColumn(tlimit),
-                    dataKey: LIMIT_DURATION_FORM + index,
-                    width: '20%',
-                });
+
+        limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
+            columnsDefinition.push({
+                label: getLabelColumn(tlimit),
+                dataKey: LIMIT_DURATION_FORM + index,
             });
-        }
+        });
+
         return columnsDefinition;
     }, [intl, limits, getLabelColumn]);
 
     const toFormValues = useCallback(() => {
-        return limits
-            ? {
-                  [LIMIT_REDUCTIONS_FORM]: limits.map((vlLimits) => {
-                      return {
-                          [VOLTAGE_LEVELS_FORM]:
-                              vlLimits.voltageLevel.nominalV + ' (kV)',
-                          [IST_FORM]: vlLimits.permanentLimitReduction,
-                          ...toFormValuesFromTemporaryLimits(
-                              vlLimits.temporaryLimitReductions
-                          ),
-                      };
-                  }),
-              }
-            : {};
+        return {
+            [LIMIT_REDUCTIONS_FORM]: limits.map((vlLimits) => {
+                return {
+                    [VOLTAGE_LEVELS_FORM]:
+                        vlLimits.voltageLevel.nominalV + ' (kV)',
+                    [IST_FORM]: vlLimits.permanentLimitReduction,
+                    ...toFormValuesFromTemporaryLimits(
+                        vlLimits.temporaryLimitReductions
+                    ),
+                };
+            }),
+        };
     }, [limits]);
 
     const toFormValuesFromTemporaryLimits = (

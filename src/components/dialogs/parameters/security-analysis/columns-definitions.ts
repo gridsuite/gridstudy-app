@@ -20,9 +20,9 @@ export interface IVoltageLevel {
 
 export interface ILimitDuration {
     lowBound: number;
-    lowClosed: number;
+    lowClosed: boolean;
     highBound: number;
-    highClosed: number;
+    highClosed: boolean;
 }
 
 export interface ITemporaryLimitReduction {
@@ -56,18 +56,18 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
     {
         label: 'IST',
         dataKey: IST_FORM,
-        width: '20%',
     },
 ];
 
-const getLimitDurationsFormSchema = (
-    limits: ILimitReductionsByVoltageLevel[]
-) => {
+const getLimitDurationsFormSchema = (nbLimits: number) => {
     let limitDurationsFormSchema: Record<string, NumberSchema> = {};
-    if (limits) {
-        for (let i = 0; i < limits[0].temporaryLimitReductions.length; i++) {
-            limitDurationsFormSchema[LIMIT_DURATION_FORM + i] = yup.number();
-        }
+    for (let i = 0; i < nbLimits; i++) {
+        limitDurationsFormSchema[LIMIT_DURATION_FORM + i] = yup
+            .number()
+            .min(0, 'ValueMustBeBetweenZeroAndOne')
+            .max(1, 'ValueMustBeBetweenZeroAndOne')
+            .nullable()
+            .required();
     }
     return limitDurationsFormSchema;
 };
@@ -81,8 +81,15 @@ export const getLimitReductionsFormSchema = (
             [LIMIT_REDUCTIONS_FORM]: yup.array().of(
                 yup.object().shape({
                     [VOLTAGE_LEVELS_FORM]: yup.string(),
-                    [IST_FORM]: yup.number(),
-                    ...getLimitDurationsFormSchema(limits),
+                    [IST_FORM]: yup
+                        .number()
+                        .min(0, 'ValueMustBeBetweenZeroAndOne')
+                        .max(1, 'ValueMustBeBetweenZeroAndOne')
+                        .nullable()
+                        .required(),
+                    ...getLimitDurationsFormSchema(
+                        limits[0].temporaryLimitReductions.length
+                    ),
                 })
             ),
         })
