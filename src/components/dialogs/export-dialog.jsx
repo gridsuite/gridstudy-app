@@ -83,19 +83,19 @@ const ExportDialog = ({
     }, [studyUuid, snackError]);
 
     const fetchNodeName = useCallback(
-        (studyUuid, nodeUuid) => {
+        (studyUuid) => {
             fetchNetworkModificationTreeNode(studyUuid, nodeUuid).then(
                 (response) => {
                     setFileName(`${studyName}_${response.name}`);
                 }
             );
         },
-        [studyName]
+        [studyName, nodeUuid]
     );
 
     useEffect(() => {
         if (studyUuid && nodeUuid) {
-            fetchNodeName(studyUuid, nodeUuid);
+            fetchNodeName(studyUuid);
         }
     }, [fetchNodeName, studyUuid, nodeUuid]);
 
@@ -210,7 +210,6 @@ const ExportDialog = ({
                     value={fileName}
                     style={{ width: '100%' }}
                     fullWidth
-                    size="small"
                     variant="filled"
                     InputLabelProps={{ shrink: true }}
                     onChange={(event) => setFileName(event.target.value)}
