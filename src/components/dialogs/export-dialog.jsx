@@ -211,6 +211,8 @@ const ExportDialog = ({
                     style={{ width: '100%' }}
                     fullWidth
                     size="small"
+                    variant="filled"
+                    InputLabelProps={{ shrink: true }}
                     onChange={(event) => setFileName(event.target.value)}
                 />
                 <FormControl fullWidth size="small">
