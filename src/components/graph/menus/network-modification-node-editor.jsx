@@ -325,7 +325,7 @@ const NetworkModificationNodeEditor = () => {
                     label: 'menu.modifyMultiple',
                     subItems: [
                         {
-                            id: MODIFICATION_TYPES.BY_FILTER_MODIFICATION.type,
+                            id: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
                             label: 'BY_FILTER',
                             action: () => adapt(ByFilterModificationDialog),
                         },
@@ -406,7 +406,7 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(ByFormulaDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.BY_FILTER_MODIFICATION.type,
+                    id: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
                     label: 'BY_FILTER',
                     action: () => adapt(ByFilterModificationDialog),
                 },
