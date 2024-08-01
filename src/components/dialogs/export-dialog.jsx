@@ -86,10 +86,6 @@ const ExportDialog = ({
         (studyUuid, nodeUuid) => {
             fetchNetworkModificationTreeNode(studyUuid, nodeUuid).then(
                 (response) => {
-                    console.log(
-                        'Mathieu response : ' +
-                            JSON.stringify(response, null, 4)
-                    );
                     setFileName(`${studyName}_${response.name}`);
                 }
             );
@@ -164,6 +160,9 @@ const ExportDialog = ({
             if (!isBlankOrEmpty(studyName)) {
                 urlSearchParams.append('studyName', studyName);
             }
+            if (!isBlankOrEmpty(fileName)) {
+                urlSearchParams.append('fileName', fileName);
+            }
 
             // we have already as parameters, the access tokens, so use '&' instead of '?'
             suffix = urlSearchParams.toString()
@@ -201,17 +200,17 @@ const ExportDialog = ({
             onClose={handleClose}
             aria-labelledby="dialog-title-export"
         >
-            <DialogTitle>
-                {title}
-                <div style={{ marginTop: '0.8em' }} />
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
                 <TextField
                     key="fileName"
                     margin="dense"
                     label={<FormattedMessage id="download.fileName" />}
-                    variant="filled"
                     id="fileName"
                     value={fileName}
                     style={{ width: '100%' }}
+                    fullWidth
+                    size="small"
                     onChange={(event) => setFileName(event.target.value)}
                 />
                 <FormControl fullWidth size="small">
@@ -262,8 +261,6 @@ const ExportDialog = ({
                         </IconButton>
                     </Stack>
                 </FormControl>
-            </DialogTitle>
-            <DialogContent>
                 <Collapse in={unfolded}>
                     <FlatParameters
                         paramsAsArray={metasAsArray}
