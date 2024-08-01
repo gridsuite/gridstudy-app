@@ -4,37 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import TableCell from '@mui/material/TableCell';
-import { styled } from '@mui/system';
-import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { FilterButton } from './filter-button';
+import { CustomAGGrid } from '../custom-aggrid/custom-aggrid';
+import { makeAgGridCustomHeaderColumn } from '../custom-aggrid/custom-aggrid-header-utils';
+import { FILTER_DATA_TYPES } from '../custom-aggrid/custom-aggrid-header.type';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
-
-const styles = {
-    flexContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        boxSizing: 'border-box',
-    },
-    table: (theme) => ({
-        // temporary right-to-left patch, waiting for
-        // https://github.com/bvaughn/react-virtualized/issues/454
-        '& .ReactVirtualized__Table__headerRow': {
-            flip: false,
-            paddingRight:
-                theme.direction === 'rtl' ? '0 !important' : undefined,
-        },
-    }),
-    header: { variant: 'header' },
-};
-
-const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
 
 const LogTable = ({
     logs,
@@ -47,7 +27,17 @@ const LogTable = ({
     const theme = useTheme();
 
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
+    const [rowData, setRowData] = useState(null);
 
+    const [filterWrapperData, setFilterWrapperData] = useState([
+        ...Object.keys(selectedSeverity),
+    ]);
+
+    useEffect(() => {
+        setFilterWrapperData([...Object.keys(selectedSeverity)]);
+    }, [selectedSeverity]);
+
+    //TODO Externalize and tweak renderer to fit TableCell to cell borders
     const severityCellRender = (cellData) => {
         return (
             <TableCell
@@ -56,38 +46,47 @@ const LogTable = ({
                 style={{
                     display: 'flex',
                     flex: '1',
-                    backgroundColor: cellData.rowData.backgroundColor,
+                    backgroundColor: cellData.data.backgroundColor,
                 }}
                 align="center"
             >
-                {cellData.rowData.severity}
+                {cellData.data.severity}
             </TableCell>
         );
     };
 
-    const COLUMNS_DEFINITIONS = [
-        {
-            label: intl
-                .formatMessage({ id: 'report_viewer/severity' })
-                .toUpperCase(),
-            id: 'severity',
-            dataKey: 'severity',
-            maxWidth: SEVERITY_COLUMN_FIXED_WIDTH,
-            minWidth: SEVERITY_COLUMN_FIXED_WIDTH,
-            cellRenderer: severityCellRender,
-            extra: (
-                <FilterButton
-                    selectedItems={selectedSeverity}
-                    setSelectedItems={setSelectedSeverity}
-                />
-            ),
+    const formatUpdateFilter = useCallback(
+        (field, data) => {
+            const filterConfig = {};
+            Object.keys(selectedSeverity).forEach((severity) => {
+                filterConfig[severity] = !!data.value.includes(severity);
+            });
+            setSelectedSeverity(filterConfig);
         },
+        [selectedSeverity, setSelectedSeverity]
+    );
+
+    const COLUMNS_DEFINITIONS = [
+        makeAgGridCustomHeaderColumn({
+            headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
+            width: SEVERITY_COLUMN_FIXED_WIDTH,
+            field: 'severity',
+            filterProps: {
+                updateFilter: formatUpdateFilter,
+            },
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterEnums: {
+                    severity: filterWrapperData,
+                },
+            },
+            cellRenderer: severityCellRender,
+        }),
         {
             label: intl
                 .formatMessage({ id: 'report_viewer/message' })
                 .toUpperCase(),
-            id: 'message',
-            dataKey: 'message',
+            field: 'message',
         },
     ];
 
@@ -97,7 +96,7 @@ const LogTable = ({
         });
     };
 
-    const generateTableRows = () => {
+    const generateTableRows = useCallback(() => {
         return !logs
             ? []
             : logs.map((log) => {
@@ -108,36 +107,50 @@ const LogTable = ({
                       reportId: log.getReportId(),
                   };
               });
-    };
+    }, [logs]);
 
-    const handleRowClick = (event) => {
-        setSelectedRowIndex(event.index);
-        onRowClick(event.rowData);
+    const handleRowClick = (row) => {
+        setSelectedRowIndex(row.rowIndex);
+        onRowClick(row.data);
     };
 
     const rowStyleFormat = (row) => {
-        if (row.index < 0) {
-            return;
+        const styles = {};
+        if (row.rowIndex < 0) {
+            return styles;
         }
-        if (selectedRowIndex === row.index) {
+        if (selectedRowIndex === row.rowIndex) {
             return {
                 backgroundColor: theme.palette.action.selected,
             };
         }
+        return styles;
     };
 
     useEffect(() => {
         setSelectedRowIndex(-1);
-    }, [logs]);
+        setRowData(generateTableRows());
+    }, [generateTableRows, logs]);
+
+    const onGridReady = ({ api }) => {
+        api?.sizeColumnsToFit();
+    };
+
+    const defaultColumnDefinition = {
+        sortable: false,
+        resizable: false,
+        suppressMovable: true,
+    };
 
     return (
         //TODO do we need to useMemo/useCallback these props to avoid rerenders ?
-        <VirtualizedTable
-            columns={generateTableColumns()}
-            rows={generateTableRows()}
-            sortable={false}
-            onRowClick={handleRowClick}
-            rowStyle={rowStyleFormat}
+        <CustomAGGrid
+            columnDefs={generateTableColumns()}
+            rowData={rowData}
+            onCellClicked={handleRowClick}
+            getRowStyle={rowStyleFormat}
+            onGridReady={onGridReady}
+            defaultColDef={defaultColumnDefinition}
         />
     );
 };
