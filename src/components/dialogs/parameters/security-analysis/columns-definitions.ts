@@ -73,25 +73,32 @@ const getLimitDurationsFormSchema = (nbLimits: number) => {
 };
 
 export const getLimitReductionsFormSchema = (
-    limits: ILimitReductionsByVoltageLevel[]
+    limits: ILimitReductionsByVoltageLevel[],
+    provider: string
 ) => {
-    return yup
-        .object()
-        .shape({
-            [LIMIT_REDUCTIONS_FORM]: yup.array().of(
-                yup.object().shape({
-                    [VOLTAGE_LEVELS_FORM]: yup.string(),
-                    [IST_FORM]: yup
-                        .number()
-                        .min(0, 'ValueMustBeBetweenZeroAndOne')
-                        .max(1, 'ValueMustBeBetweenZeroAndOne')
-                        .nullable()
-                        .required(),
-                    ...getLimitDurationsFormSchema(
-                        limits[0].temporaryLimitReductions.length
-                    ),
-                })
-            ),
-        })
-        .required();
+    if (provider === 'OpenLoadFlow') {
+        console.log(limits, "==========");
+        return yup
+            .object()
+            .shape({
+                [LIMIT_REDUCTIONS_FORM]: yup.array().of(
+                    yup.object().shape({
+                        [VOLTAGE_LEVELS_FORM]: yup.string(),
+                        [IST_FORM]: yup
+                            .number()
+                            .min(0, 'ValueMustBeBetweenZeroAndOne')
+                            .max(1, 'ValueMustBeBetweenZeroAndOne')
+                            .nullable()
+                            .required(),
+                        ...getLimitDurationsFormSchema(
+                            limits[0].temporaryLimitReductions.length
+                        ),
+                    })
+                ),
+            })
+            .required();
+    } else {
+        // Return an empty schema or some other default schema
+        return yup.object().shape({});
+    }
 };

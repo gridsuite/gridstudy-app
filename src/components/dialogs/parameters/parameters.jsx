@@ -491,6 +491,7 @@ export const useParametersBackend = (
         ) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
+                    console.log("^^^^ ", params)
                     setParams(params);
                     if ('provider' in params) {
                         setProvider(params.provider);
