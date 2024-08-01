@@ -28,11 +28,12 @@ import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { StudyDisplayMode } from 'redux/reducer';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import SelectionCreationPanel from './network/selection-creation-panel';
+import { StudyDisplayMode } from './network-modification.type';
+
 const styles = {
     map: {
         display: 'flex',

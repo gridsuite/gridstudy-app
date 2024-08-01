@@ -280,6 +280,7 @@ import { IEquipment } from '../services/study/contingency-list';
 import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
+import { StudyDisplayMode } from '../components/network-modification.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -289,13 +290,6 @@ export enum StudyIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
     INDEXING_ONGOING = 'INDEXING_ONGOING',
     INDEXED = 'INDEXED',
-}
-
-export enum StudyDisplayMode {
-    MAP = 'Map',
-    TREE = 'Tree',
-    HYBRID = 'Hybrid',
-    DRAW = 'Draw',
 }
 
 export interface OneBusShortCircuitAnalysisDiagram {

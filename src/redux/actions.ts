@@ -48,7 +48,6 @@ import {
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
     SpreadsheetEquipmentType,
-    StudyDisplayMode,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -71,6 +70,7 @@ import {
     SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
+import { StudyDisplayMode } from '../components/network-modification.type';
 
 type MutableUnknownArray = unknown[];
 
