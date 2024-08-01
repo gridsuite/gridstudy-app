@@ -336,8 +336,9 @@ export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
 export const EQUIPMENT_FIELD = 'equipmentField';
 
 // By filter
-export const MODIFICATION_LINE = 'filterLine';
+export const SIMPLE_MODIFICATIONS = 'simpleModifications';
 export const PROPERTY_NAME_FIELD = 'propertyName';
+export const DATA_TYPE = 'dataType';
 export const VALUE_FIELD = 'value';
 
 // non evacuated energy

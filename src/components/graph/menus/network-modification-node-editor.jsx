@@ -488,14 +488,6 @@ const NetworkModificationNodeEditor = () => {
         },
     ];
 
-    const subMenuItemsList = menuDefinition.reduce(
-        (actions, currentMenuItem) =>
-            currentMenuItem.subItems === undefined
-                ? [...actions, currentMenuItem]
-                : [...actions, ...currentMenuItem.subItems],
-        []
-    );
-
     const fillNotification = useCallback(
         (study, messageId) => {
             // (work for all users)

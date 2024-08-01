@@ -35,7 +35,7 @@ export enum DataType {
 }
 
 export enum FieldType {
-    PROPERTY = 'FREE_PROPERTIES',
+    PROPERTY = 'PROPERTY',
     RATED_NOMINAL_POWER = 'RATED_NOMINAL_POWER',
     MINIMUM_ACTIVE_POWER = 'MINIMUM_ACTIVE_POWER',
     MAXIMUM_ACTIVE_POWER = 'MAXIMUM_ACTIVE_POWER',
@@ -345,7 +345,7 @@ export const EQUIPMENTS_FIELDS = {
     ],
 };
 
-const getDataType = (fieldName: string) => {
+export const getDataType = (fieldName: string) => {
     return (searchTree(FIELD_OPTIONS, 'id', fieldName) as FieldOptionType)
         ?.dataType;
 };

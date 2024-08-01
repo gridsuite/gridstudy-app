@@ -9,7 +9,7 @@ import React, { FunctionComponent, useEffect } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
     EQUIPMENT_TYPE_FIELD,
-    MODIFICATION_LINE,
+    SIMPLE_MODIFICATIONS,
 } from '../../../utils/field-constants';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import ModificationLineForm from './modification-line/modification-line-form';
@@ -55,8 +55,8 @@ const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
             options={EQUIPMENT_TYPE_OPTIONS}
             onValidate={() => {
                 setValue(
-                    MODIFICATION_LINE,
-                    getValues(MODIFICATION_LINE).map(() => ({
+                    SIMPLE_MODIFICATIONS,
+                    getValues(SIMPLE_MODIFICATIONS).map(() => ({
                         ...getModificationLineInitialValue(),
                     }))
                 );
@@ -66,7 +66,7 @@ const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
 
     const modificationLinesField = (
         <ExpandableInput
-            name={MODIFICATION_LINE}
+            name={SIMPLE_MODIFICATIONS}
             Field={ModificationLineForm}
             fieldProps={{
                 predefinedProperties,
