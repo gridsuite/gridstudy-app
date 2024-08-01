@@ -143,11 +143,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     );
 
     const previousVoltageRegulatorOn = () => {
-        if (previousValues?.voltageRegulatorOn === true) {
-            return intl.formatMessage({ id: 'On' });
-        }
-
-        return intl.formatMessage({ id: 'Off' });
+        return intl.formatMessage({
+            id: previousValues?.voltageRegulatorOn ? 'On' : 'Off',
+        });
     };
     const voltageRegulation = isModification ? (
         <CheckboxNullableInput
