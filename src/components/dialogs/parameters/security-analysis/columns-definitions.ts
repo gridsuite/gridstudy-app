@@ -64,8 +64,8 @@ const getLimitDurationsFormSchema = (nbLimits: number) => {
     for (let i = 0; i < nbLimits; i++) {
         limitDurationsFormSchema[LIMIT_DURATION_FORM + i] = yup
             .number()
-            .min(0, 'ValueMustBeBetweenZeroAndOne')
-            .max(1, 'ValueMustBeBetweenZeroAndOne')
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage')
             .nullable()
             .required();
     }
@@ -83,8 +83,8 @@ export const getLimitReductionsFormSchema = (
                     [VOLTAGE_LEVELS_FORM]: yup.string(),
                     [IST_FORM]: yup
                         .number()
-                        .min(0, 'ValueMustBeBetweenZeroAndOne')
-                        .max(1, 'ValueMustBeBetweenZeroAndOne')
+                        .min(0, 'RealPercentage')
+                        .max(1, 'RealPercentage')
                         .nullable()
                         .required(),
                     ...getLimitDurationsFormSchema(

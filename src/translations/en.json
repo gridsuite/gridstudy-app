@@ -4,7 +4,6 @@
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
     "LimitDuration" : "Limit duration {sign} {value}min",
-    "ValueMustBeBetweenZeroAndOne": "Value must be between 0 and 1",
 
     "button.delete": "Delete",
     "button.changeType": "Change",
