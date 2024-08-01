@@ -29,6 +29,7 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
+    useAnnouncementsSubscriber,
 } from '@gridsuite/commons-ui';
 
 import PageNotFound from './page-not-found';
@@ -67,7 +68,10 @@ import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
-import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import {
+    connectNotificationsWsUpdateConfig,
+    getAnnouncementsWsUrl,
+} from '../services/config-notification';
 import {
     fetchConfigParameter,
     fetchConfigParameters,
@@ -75,6 +79,7 @@ import {
 import {
     fetchDefaultParametersValues,
     fetchIdpSettings,
+    getToken,
 } from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import {
@@ -140,6 +145,8 @@ const App = () => {
     const location = useLocation();
 
     const [tabIndex, setTabIndex] = useState(0);
+
+    useAnnouncementsSubscriber(getAnnouncementsWsUrl(), getToken());
 
     const updateParams = useCallback(
         (params) => {
