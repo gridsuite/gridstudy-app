@@ -107,7 +107,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         [snackError, updateParameters]
     );
 
-    const formSchema = getLimitReductionsFormSchema(params.limitReductions, provider);
+    const formSchema = getLimitReductionsFormSchema(params.limitReductions);
     const formMethods = useForm({
         defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
         resolver: yupResolver(formSchema),

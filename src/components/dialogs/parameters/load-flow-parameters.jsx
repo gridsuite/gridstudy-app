@@ -12,6 +12,7 @@ import {
     FlatParameters,
     SubmitButton,
     useSnackMessage,
+    yup,
 } from '@gridsuite/commons-ui';
 import {
     Autocomplete,
@@ -561,16 +562,22 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             resetProvider();
         }
     }, [provider, resetProvider, enableDeveloperMode]);
-    console.log(' $$$$$$$$$ ', params);
-    const formSchema = getLimitReductionsFormSchema(
-        params.limitReductions,
-        provider
-    );
+
+    const getFormSchema = () => {
+        if (provider === 'OpenLoadFlow' && params.limitReductions !== null) {
+            getLimitReductionsFormSchema(params?.limitReductions);
+        } else {
+            // Return an empty schema or some other default schema
+            return yup.object().shape({});
+        }
+    };
+    const formSchema = getFormSchema();
+
     const formMethods = useForm({
         defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
         resolver: yupResolver(formSchema),
     });
-    const { handleSubmit, formState } = formMethods;
+    const { handleSubmit } = formMethods;
 
     const toLimitReductions = useCallback(
         (formLimits) => {
