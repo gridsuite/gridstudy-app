@@ -65,7 +65,6 @@ import { UpdateTypes } from '../../redux/reducer.type';
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
     const { snackError } = useSnackMessage();
-    const dispatch = useDispatch();
     const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
@@ -265,11 +264,6 @@ const useDisplayView = (studyUuid, currentNode) => {
                         if (nadTitle === '') {
                             nadTitle = ids.toString();
                         }
-                        dispatch(
-                            setNetworkAreaDiagramNbVoltageLevels(
-                                svg.additionalMetadata?.nbVoltageLevels
-                            )
-                        );
                         return {
                             id: ids[0],
                             ids: ids,
@@ -315,7 +309,6 @@ const useDisplayView = (studyUuid, currentNode) => {
             studyUuid,
             currentNode,
             fetchSvgData,
-            dispatch,
         ]
     );
 };
@@ -348,6 +341,7 @@ export function DiagramPane({
     visible,
     oneBusShortCircuitStatus,
 }) {
+    const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const [views, setViews] = useState([]);
@@ -542,11 +536,17 @@ export function DiagramPane({
                         ...networkAreaDiagramView,
                         loadingState: false,
                     };
+                    dispatch(
+                        setNetworkAreaDiagramNbVoltageLevels(
+                            networkAreaDiagramView.additionalMetadata
+                                ?.nbVoltageLevels
+                        )
+                    );
                     return updatedViews;
                 });
             });
         },
-        [createView, intl]
+        [createView, intl, dispatch]
     );
 
     const removeNAD = useCallback(() => {
@@ -794,6 +794,18 @@ export function DiagramPane({
                                     ...svg,
                                     loadingState: false,
                                 };
+                                if (
+                                    fromScratch &&
+                                    svg.svgType ===
+                                        DiagramType.NETWORK_AREA_DIAGRAM
+                                ) {
+                                    dispatch(
+                                        setNetworkAreaDiagramNbVoltageLevels(
+                                            svg.additionalMetadata
+                                                ?.nbVoltageLevels
+                                        )
+                                    );
+                                }
                                 return updatedViews;
                             });
                         });
@@ -801,7 +813,7 @@ export function DiagramPane({
                 }
             }
         },
-        [createView]
+        [createView, dispatch]
     );
 
     // Updates particular diagrams from the current node
