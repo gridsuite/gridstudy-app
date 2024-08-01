@@ -17,6 +17,7 @@ import TableWrapper from './spreadsheet/table-wrapper';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
+import CustomHandsontable from './handsontable/custom-handsontable';
 
 const styles = {
     map: {
@@ -50,6 +51,7 @@ export const StudyView = {
     RESULTS: 'Results',
     LOGS: 'Logs',
     PARAMETERS: 'Parameters',
+    EXPERIMENTAL_SPREADSHEET: 'Experimental spreadsheet',
 };
 
 const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
@@ -110,7 +112,14 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     />
                 </Paper>
             </TabPanelLazy>
-
+            <TabPanelLazy
+                selected={props.view === StudyView.EXPERIMENTAL_SPREADSHEET}
+                key={`experimental-spreadsheet-${currentNode?.id}`}
+            >
+                <Paper sx={styles.table}>
+                    <CustomHandsontable />
+                </Paper>
+            </TabPanelLazy>
             <Box
                 sx={{
                     height: '100%',
