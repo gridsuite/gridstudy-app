@@ -7,7 +7,9 @@
 
 import React, {
     ChangeEvent,
+    Dispatch,
     FunctionComponent,
+    SetStateAction,
     useCallback,
     useEffect,
     useState,
@@ -37,9 +39,10 @@ import {
     LIMIT_REDUCTIONS_FORM,
 } from './columns-definitions';
 
-export const SecurityAnalysisParameters: FunctionComponent<
-    Record<string, any>
-> = ({ parametersBackend, setHaveDirtyFields }) => {
+export const SecurityAnalysisParameters: FunctionComponent<{
+    parametersBackend: any[];
+    setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
+}> = ({ parametersBackend, setHaveDirtyFields }) => {
     const [
         providers,
         provider,

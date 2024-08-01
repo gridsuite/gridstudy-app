@@ -80,11 +80,9 @@ const LimitReductionsTableForm: FunctionComponent<{
         limits: ITemporaryLimitReduction[]
     ) => {
         let formValues: Record<string, number> = {};
-        if (limits) {
-            limits.forEach((limits, index) => {
-                formValues[LIMIT_DURATION_FORM + index] = limits.reduction;
-            });
-        }
+        limits.forEach((limit, index) => {
+            formValues[LIMIT_DURATION_FORM + index] = limit.reduction;
+        });
         return formValues;
     };
 
