@@ -35,6 +35,8 @@ import {
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import TextField from '@mui/material/TextField';
+import { fetchNetworkModificationTreeNode } from '../../services/study/tree-subtree.js';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -62,6 +64,7 @@ const ExportDialog = ({
     const [exportStudyErr, setExportStudyErr] = React.useState('');
     const [studyName, setStudyName] = useState(null);
     const { snackError } = useSnackMessage();
+    const [fileName, setFileName] = useState();
 
     const [unfolded, setUnfolded] = React.useState(false);
 
@@ -78,6 +81,23 @@ const ExportDialog = ({
                 });
             });
     }, [studyUuid, snackError]);
+
+    const fetchNodeName = useCallback(
+        (studyUuid) => {
+            fetchNetworkModificationTreeNode(studyUuid, nodeUuid).then(
+                (response) => {
+                    setFileName(`${studyName}_${response.name}`);
+                }
+            );
+        },
+        [studyName, nodeUuid]
+    );
+
+    useEffect(() => {
+        if (studyUuid && nodeUuid) {
+            fetchNodeName(studyUuid);
+        }
+    }, [fetchNodeName, studyUuid, nodeUuid]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -140,6 +160,9 @@ const ExportDialog = ({
             if (!isBlankOrEmpty(studyName)) {
                 urlSearchParams.append('studyName', studyName);
             }
+            if (!isBlankOrEmpty(fileName)) {
+                urlSearchParams.append('fileName', fileName);
+            }
 
             // we have already as parameters, the access tokens, so use '&' instead of '?'
             suffix = urlSearchParams.toString()
@@ -177,9 +200,20 @@ const ExportDialog = ({
             onClose={handleClose}
             aria-labelledby="dialog-title-export"
         >
-            <DialogTitle>
-                {title}
-                <div style={{ marginTop: '0.8em' }} />
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
+                <TextField
+                    key="fileName"
+                    margin="dense"
+                    label={<FormattedMessage id="download.fileName" />}
+                    id="fileName"
+                    value={fileName}
+                    style={{ width: '100%' }}
+                    fullWidth
+                    variant="filled"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={(event) => setFileName(event.target.value)}
+                />
                 <FormControl fullWidth size="small">
                     <InputLabel
                         id="select-format-label"
@@ -228,8 +262,6 @@ const ExportDialog = ({
                         </IconButton>
                     </Stack>
                 </FormControl>
-            </DialogTitle>
-            <DialogContent>
                 <Collapse in={unfolded}>
                     <FlatParameters
                         paramsAsArray={metasAsArray}
