@@ -49,10 +49,11 @@ import {
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
+    TAB_INFO,
     TAB_VALUES,
     getLimitReductionsFormSchema,
-} from './security-analysis/columns-definitions';
-import LimitReductionsTableForm from './security-analysis/limit-reductions-table-form';
+} from './common/limitreductions/columns-definitions';
+import LimitReductionsTableForm from './common/limitreductions/limit-reductions-table-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -608,7 +609,8 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             updateParameters({
                 ...params,
                 limitReductions: toLimitReductions(
-                    formLimits[LIMIT_REDUCTIONS_FORM]
+                    formLimits[LIMIT_REDUCTIONS_FORM],
+                    params
                 ),
             });
         },
@@ -671,14 +673,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
-    useEffect(() => {
-        console.log(params, '===============================');
-    }, [params]);
-
-    const TAB_INFO = [
-        { label: TAB_VALUES[TAB_VALUES.General] },
-        { label: TAB_VALUES[TAB_VALUES.LimitReductions] },
-    ];
 
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
@@ -714,7 +708,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                             <LineSeparator />
                         </Grid>
                     </Box>
-                    {/* ==================================== */}
                     <Grid sx={{ width: '100%' }}>
                         <Tabs value={tabValue} onChange={handleTabChange}>
                             {TAB_INFO.map((tab, index) => (
@@ -738,7 +731,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                                 index={index}
                             >
                                 {tabValue === TAB_VALUES.General && (
-                                    // =====================================
                                     <Box
                                         sx={{
                                             flexGrow: 1,
@@ -787,7 +779,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                                             />
                                         </Grid>
                                     </Box>
-                                    // =====================================
                                 )}
                                 {tabValue === TAB_VALUES.LimitReductions && (
                                     <Grid

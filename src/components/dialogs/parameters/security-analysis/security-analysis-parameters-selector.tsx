@@ -17,14 +17,12 @@ import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
-import { TAB_VALUES } from './columns-definitions';
+import {
+    TAB_INFO,
+    TAB_VALUES,
+} from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
-import LimitReductionsTableForm from './limit-reductions-table-form';
-
-const TAB_INFO = [
-    { label: TAB_VALUES[TAB_VALUES.General] },
-    { label: TAB_VALUES[TAB_VALUES.LimitReductions] },
-];
+import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: Record<string, any>;
