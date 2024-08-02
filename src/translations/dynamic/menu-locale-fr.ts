@@ -16,6 +16,7 @@ const menu_locale_fr = {
     Trip2WTransformer: 'Déclencher le transformateur',
     Trip3WTransformer: 'Déclencher le transformateur',
     TripLine: 'Déclencher la ligne',
+    TripBusbarSection: 'Déclencher la section de jeu de barre',
     TripHvdcLine: 'Déclencher la ligne HVDC',
     UnableToEnergiseOnOneEndLine: 'Impossible de mettre sous tension à vide',
     UnableToLockout2WTransformer: 'Impossible de consigner le transformateur',
@@ -26,6 +27,8 @@ const menu_locale_fr = {
     UnableToTrip2WTransformer: 'Impossible de déclencher le transformateur',
     UnableToTrip3WTransformer: 'Impossible de déclencher le transformateur',
     UnableToTripLine: 'Impossible de déclencher la ligne',
+    UnableToTripBusbarSection:
+        'Impossible de déclencher la section de jeu de barre',
     UnableToTripHvdcLine: 'Impossible de déclencher la ligne HVDC',
 
     // Dynamic simulation events with format {eventType}{equipmentType}`
