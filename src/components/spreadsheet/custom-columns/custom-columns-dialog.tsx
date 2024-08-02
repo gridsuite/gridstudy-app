@@ -40,6 +40,7 @@ import { ReduxState } from '../../../redux/reducer.type';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { useEffect, useState } from 'react';
 import { ColumnWithFormula } from './custom-columns.types';
+import CustomColumnsImExPort from './custom-columns-port';
 
 type CustomColumnItemProps = {
     key: string;
@@ -99,6 +100,10 @@ export type CustomColumnsDialogProps = {
     indexTab: number;
 };
 
+function onImport(content: unknown) {
+    //TODO
+}
+
 export default function CustomColumnsDialog({
     indexTab,
     open,
@@ -119,7 +124,7 @@ export default function CustomColumnsDialog({
             resetContentModified();
         }
     }, [open.value, allDefinitions, resetContentModified]);
-    //const dialogImportOpen = useStateBoolean(false);
+    const dialogImportOpen = useStateBoolean(false);
     return (
         <Dialog
             open={open.value}
@@ -180,7 +185,7 @@ export default function CustomColumnsDialog({
                         <FormattedMessage id="spreadsheet/custom_column/dialog/add_column" />
                     </Button>
                     <Button
-                        onClick={undefined /*TODO*/}
+                        onClick={dialogImportOpen.setTrue}
                         color="inherit"
                         variant="outlined"
                         startIcon={<ImportExportIcon />}
@@ -208,6 +213,11 @@ export default function CustomColumnsDialog({
                     </>
                 ))}
             </List>
+            <CustomColumnsImExPort
+                indexTab={indexTab}
+                open={dialogImportOpen}
+                onImport={onImport}
+            />
         </Dialog>
     );
 }

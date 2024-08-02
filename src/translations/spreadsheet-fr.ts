@@ -13,4 +13,8 @@ export default {
         'Close{isContentModified, select, true { without saving change(s)} other {}}',
     'spreadsheet/custom_column/dialog/add_column': 'Add column',
     'spreadsheet/custom_column/dialog/import_export': 'Import/Export formulas',
+    'spreadsheet/custom_column/import': 'Import',
+    'spreadsheet/custom_column/reset': 'Reset',
+    'spreadsheet/custom_column/copy': 'Copy to clipboard',
+    'spreadsheet/custom_column/paste': 'Paste from clipboard',
 } as Readonly<Record<string, string>>;
