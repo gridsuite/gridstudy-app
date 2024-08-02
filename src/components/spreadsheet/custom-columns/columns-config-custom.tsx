@@ -20,15 +20,17 @@ export type CustomColumnsConfigProps = {
     indexTab: number;
 };
 
-/* TODO: ideas
-    - show custom columns différently in dialog selection columns (color+icon?)
-    - show custom columns différently in table (color+icon?)
+/* TODO: notes/ideas/questions
+    - show custom columns différently in dialog selection columns (color+icon?) => nope
+    - show custom columns différently in table (color+icon?) => nope
     - check at export that columns name/id is unique with custom columns exported (can't check before because of translation)
     - verify data at import
     - if import empty, warn
     - show import errors in snackbar
     - update state.allDisplayedColumnsNames + state.allLockedColumnsNames on column removed or config imported (maybe state.allReorderedTableDefinitionIndexes ?)
-    -
+    - sort alphabetically columns defs by name
+    - when to calculate formulas? (each time tab shown, detect data modified, cache?, ...)
+    - add type with formula for render in aggrid (enum types)
 */
 
 export default function CustomColumnsConfig({

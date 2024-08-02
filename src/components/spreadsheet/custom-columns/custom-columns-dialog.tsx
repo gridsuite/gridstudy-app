@@ -10,8 +10,13 @@ import {
     Badge,
     Button,
     Dialog,
+    Divider,
     IconButton,
     List,
+    ListItem,
+    ListItemText,
+    SxProps,
+    Theme,
     Toolbar,
     Tooltip,
     Typography,
@@ -19,6 +24,8 @@ import {
 import {
     AddCircle as AddCircleIcon,
     Close as CloseIcon,
+    DeleteForever as DeleteForeverIcon,
+    Edit as EditIcon,
     ImportExport as ImportExportIcon,
     Save as SaveIcon,
     Warning as WarningIcon,
@@ -31,8 +38,61 @@ import {
 import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../redux/reducer.type';
 import { TABLES_NAMES } from '../utils/config-tables';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ColumnWithFormula } from './custom-columns.types';
+
+type CustomColumnItemProps = {
+    key: string;
+    data: ColumnWithFormula;
+};
+
+const styles: Record<string, SxProps<Theme>> = {
+    toolbarBtn: {
+        marginRight: 1,
+    },
+};
+
+function CustomColumnItem({ key, data }: Readonly<CustomColumnItemProps>) {
+    console.log('CustomColumnItem', key, data);
+    return (
+        <ListItem
+            key={`item-${key}`}
+            sx={{
+                '&.MuiListItem-secondaryAction': {
+                    //default of 48px
+                    //TODO: get original padding from theme
+                    paddingRight: 96,
+                },
+            }}
+            //TODO: maybe use a horizontal grid?
+            secondaryAction={
+                <>
+                    <IconButton
+                        aria-label="modify"
+                        onClick={undefined /*TODO*/}
+                        color="primary"
+                    >
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton
+                        aria-label="delete"
+                        onClick={undefined /*TODO*/}
+                        color="secondary"
+                        edge="end"
+                    >
+                        <DeleteForeverIcon />
+                    </IconButton>
+                </>
+            }
+        >
+            <ListItemText
+                id={`custom-column-line-${key}`}
+                primary={data.name}
+                secondary={data.formula}
+            />
+        </ListItem>
+    );
+}
 
 export type CustomColumnsDialogProps = {
     open: UseStateBooleanReturn;
@@ -42,20 +102,23 @@ export type CustomColumnsDialogProps = {
 export default function CustomColumnsDialog({
     indexTab,
     open,
-}: CustomColumnsDialogProps) {
+}: Readonly<CustomColumnsDialogProps>) {
     const intl = useIntl();
     const allDefinitions = useSelector(
         (state: ReduxState) =>
             state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
     );
-    let columnsDefinitions: ColumnWithFormula[] = [];
+    const [columnsDefinitions, setColumnsDefinitions] = useState<
+        ColumnWithFormula[]
+    >([]);
     const contentModified = useStateBoolean(false); //TODO
+    const resetContentModified = contentModified.setFalse;
     useEffect(() => {
         if (open.value) {
-            columnsDefinitions = allDefinitions.map((def) => ({ ...def }));
-            contentModified.setFalse();
+            setColumnsDefinitions(allDefinitions.map((def) => ({ ...def })));
+            resetContentModified();
         }
-    }, [open.value]);
+    }, [open.value, allDefinitions, resetContentModified]);
     //const dialogImportOpen = useStateBoolean(false);
     return (
         <Dialog
@@ -112,6 +175,7 @@ export default function CustomColumnsDialog({
                         color="secondary"
                         variant="outlined"
                         startIcon={<AddCircleIcon />}
+                        sx={styles.toolbarBtn}
                     >
                         <FormattedMessage id="spreadsheet/custom_column/dialog/add_column" />
                     </Button>
@@ -120,6 +184,7 @@ export default function CustomColumnsDialog({
                         color="inherit"
                         variant="outlined"
                         startIcon={<ImportExportIcon />}
+                        sx={styles.toolbarBtn}
                     >
                         <FormattedMessage id="spreadsheet/custom_column/dialog/import_export" />
                     </Button>
@@ -135,50 +200,14 @@ export default function CustomColumnsDialog({
                     </Button>
                 </Toolbar>
             </AppBar>
-            <List></List>
-            {/*<DialogTitle id="custom-columns-dialog-title">
-                    <FormattedMessage
-                        id="TODO"
-                        defaultMessage="Manage formulas"
-                    />
-                </DialogTitle>
-                <IconButton
-                    aria-label="close"
-                    onClick={dialogOpen.setFalse}
-                    sx={{
-                        position: 'absolute',
-                        right: 8,
-                        top: 8,
-                        color: (theme) => theme.palette.grey[500],
-                    }}
-                >
-                    <CloseIcon />
-                </IconButton>
-                <DialogContent dividers>
-                    <DialogContentText id="custom-columns-description">
-                        TODO
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={dialogOpen.setFalse}
-                        variant="outlined"
-                        color={contentModified.value ? 'warning' : 'inherit'}
-                        startIcon={<CloseIcon />}
-                    >
-                        <FormattedMessage id="TODO" defaultMessage="Close" />
-                    </Button>
-                    <Button
-                        onClick={dialogOpen.setFalse}
-                        variant="outlined"
-                        disabled={!contentModified.value}
-                        color="primary"
-                        startIcon={<SaveIcon />}
-                        autoFocus
-                    >
-                        <FormattedMessage id="TODO" defaultMessage="Close" />
-                    </Button>
-                </DialogActions>*/}
+            <List>
+                {columnsDefinitions.map((data, idx, arr) => (
+                    <>
+                        <CustomColumnItem key={data.name} data={data} />
+                        {idx >= arr.length - 1 ? undefined : <Divider />}
+                    </>
+                ))}
+            </List>
         </Dialog>
     );
 }
