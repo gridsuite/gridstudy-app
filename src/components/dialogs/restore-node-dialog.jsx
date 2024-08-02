@@ -12,7 +12,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Checkbox, DialogContentText, FormGroup } from '@mui/material';
+import { Box, DialogContentText, FormGroup } from '@mui/material';
 import {
     deleteStashedNodes,
     fetchStashedNodes,
@@ -20,20 +20,8 @@ import {
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
-import {
-    CancelButton,
-    OverflowableText,
-    CheckboxList,
-} from '@gridsuite/commons-ui';
+import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
-
-const styles = {
-    selectAll: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        paddingBottom: theme.spacing(1),
-    }),
-};
 
 /**
  * Dialog to select network modification to create
@@ -50,14 +38,6 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [selectedNodes, setSelectedNodes] = useState([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
         useState(false);
-
-    const handleSelectAll = () => {
-        if (selectedNodes.length === nodes.length) {
-            setSelectedNodes([]);
-        } else {
-            setSelectedNodes(nodes);
-        }
-    };
 
     const handleClose = () => {
         onClose();
@@ -126,33 +106,21 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                         component="fieldset"
                     >
                         <FormGroup name="nodes-to-restore-selection">
-                            <Box sx={styles.selectAll}>
-                                <Checkbox
-                                    color={'primary'}
-                                    edge="start"
-                                    checked={
-                                        selectedNodes.length === nodes.length
-                                    }
-                                    onClick={handleSelectAll}
-                                    disableRipple
-                                />
-                                <OverflowableText
-                                    text={intl.formatMessage({
-                                        id: 'SelectAll',
-                                    })}
-                                />
-                            </Box>
                             <CheckboxList
-                                values={nodes}
+                                items={nodes}
+                                addSelectAllCheckbox
+                                selectAllCheckBoxLabel={'SelectAll'}
                                 selectedItems={selectedNodes}
-                                setSelectedItems={setSelectedNodes}
-                                getValueId={(v) => v.first.id}
-                                getValueLabel={(v) =>
+                                onSelectionChange={setSelectedNodes}
+                                getItemId={(v) => v.first.id}
+                                getItemLabel={(v) =>
                                     v.first.name +
                                     (v.second !== 0
                                         ? ' ( + ' + v.second + ' )'
                                         : '')
                                 }
+                                divider
+                                fullwidth
                             />
                         </FormGroup>
                     </FormControl>

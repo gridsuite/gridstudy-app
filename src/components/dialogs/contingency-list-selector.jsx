@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -67,16 +67,19 @@ const ContingencyListSelector = (props) => {
         props.onStart(checkedContingencyList.map((c) => c.id));
     };
 
-    const saveFavorites = (newList) => {
-        updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
-            .then()
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
+    const saveFavorites = useCallback(
+        (newList) => {
+            updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
+                .then()
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsChangingError',
+                    });
                 });
-            });
-    };
+        },
+        [snackError]
+    );
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
@@ -143,18 +146,21 @@ const ContingencyListSelector = (props) => {
         setFavoriteSelectorOpen(true);
     };
 
-    const removeFromFavorites = (toRemove) => {
-        const toRemoveIdsSet = new Set(toRemove.map((e) => e.id));
-        saveFavorites(
-            contingencyList
-                .map((e) => e.id)
-                .filter((id) => !toRemoveIdsSet.has(id))
-        );
+    const removeFromFavorites = useCallback(
+        (toRemove) => {
+            const toRemoveIdsSet = new Set(toRemove.map((e) => e.id));
+            saveFavorites(
+                contingencyList
+                    .map((e) => e.id)
+                    .filter((id) => !toRemoveIdsSet.has(id))
+            );
 
-        setCheckedContingencyList((oldChecked) =>
-            oldChecked.filter((item) => !toRemoveIdsSet.has(item.id))
-        );
-    };
+            setCheckedContingencyList((oldChecked) =>
+                oldChecked.filter((item) => !toRemoveIdsSet.has(item.id))
+            );
+        },
+        [contingencyList, saveFavorites]
+    );
 
     const addFavorites = (favorites) => {
         if (favorites && favorites.length > 0) {
@@ -187,6 +193,25 @@ const ContingencyListSelector = (props) => {
         );
     };
 
+    const handleSecondaryAction = useCallback(
+        (item) => (
+            <IconButton
+                style={{
+                    alignItems: 'end',
+                }}
+                edge="end"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    removeFromFavorites([item]);
+                }}
+                size={'small'}
+            >
+                <DeleteIcon />
+            </IconButton>
+        ),
+        [removeFromFavorites]
+    );
+
     return (
         <>
             <Dialog
@@ -204,26 +229,12 @@ const ContingencyListSelector = (props) => {
                     <Grid container spacing={1} direction="column" item xs={12}>
                         <Grid item>
                             <CheckboxList
-                                values={contingencyList || []}
-                                getValueId={(v) => v.id}
-                                getValueLabel={(v) => v.name}
+                                items={contingencyList || []}
+                                getItemId={(v) => v.id}
+                                getItemLabel={(v) => v.name}
                                 selectedItems={checkedContingencyList}
-                                setSelectedItems={setCheckedContingencyList}
-                                secondaryAction={(item) => (
-                                    <IconButton
-                                        style={{
-                                            alignItems: 'end',
-                                        }}
-                                        edge="end"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            removeFromFavorites([item]);
-                                        }}
-                                        size={'small'}
-                                    >
-                                        <DeleteIcon />
-                                    </IconButton>
-                                )}
+                                onSelectionChange={setCheckedContingencyList}
+                                secondaryAction={handleSecondaryAction}
                             />
                         </Grid>
                         <Grid item>

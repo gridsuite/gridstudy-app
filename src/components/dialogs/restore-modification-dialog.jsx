@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,22 +12,14 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Checkbox, DialogContentText } from '@mui/material';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { Box, DialogContentText } from '@mui/material';
 import {
     deleteModifications,
     restoreModifications,
 } from 'services/study/network-modifications';
-import {
-    CancelButton,
-    OverflowableText,
-    CheckboxList,
-} from '@gridsuite/commons-ui';
+import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
-import { isPartial } from 'components/graph/menus/network-modification-node-editor';
-import { areUuidsEqual } from 'components/utils/utils';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
-import { isChecked } from '../graph/menus/network-modification-node-editor.jsx';
 
 const styles = {
     text: (theme) => ({
@@ -108,12 +100,6 @@ const RestoreModificationDialog = ({
         handleClose();
     };
 
-    const handleSelectAll = useCallback(() => {
-        setSelectedItems((oldValues) =>
-            oldValues.length === 0 ? stashedModifications : []
-        );
-    }, [stashedModifications]);
-
     useEffect(() => {
         setStashedModifications(modifToRestore);
     }, [modifToRestore]);
@@ -149,52 +135,17 @@ const RestoreModificationDialog = ({
                         })}
                     </DialogContentText>
                 </Box>
-                <DragDropContext>
-                    <Droppable
-                        droppableId="restore-modification-list"
-                        isDropDisabled={true}
-                    >
-                        {(provided) => (
-                            <Box
-                                sx={styles.listContainer}
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
-                                <Box sx={styles.selectAll}>
-                                    <Checkbox
-                                        color={'primary'}
-                                        edge="start"
-                                        checked={isChecked(
-                                            selectedItems.length
-                                        )}
-                                        indeterminate={isPartial(
-                                            selectedItems.length,
-                                            stashedModifications?.length
-                                        )}
-                                        onClick={handleSelectAll}
-                                        disableRipple
-                                    />
-                                    <OverflowableText
-                                        text={intl.formatMessage({
-                                            id: 'SelectAll',
-                                        })}
-                                    />
-                                </Box>
-                                <CheckboxList
-                                    sx={styles.list}
-                                    values={stashedModifications}
-                                    itemComparator={areUuidsEqual}
-                                    selectedItems={selectedItems}
-                                    setSelectedItems={setSelectedItems}
-                                    getValueId={(v) => v.uuid}
-                                    getValueLabel={getLabel}
-                                    labelSx={{ flexGrow: '1' }}
-                                />
-                                {provided.placeholder}
-                            </Box>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                <CheckboxList
+                    sx={{ checkboxList: styles.list, label: { flexGrow: '1' } }}
+                    items={stashedModifications}
+                    selectedItems={selectedItems}
+                    onSelectionChange={setSelectedItems}
+                    getItemId={(v) => v.uuid}
+                    getItemLabel={getLabel}
+                    addSelectAllCheckbox
+                    selectAllCheckBoxLabel={'SelectAll'}
+                    divider
+                />
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />

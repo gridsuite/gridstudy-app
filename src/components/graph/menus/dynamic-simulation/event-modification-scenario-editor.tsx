@@ -50,7 +50,6 @@ import {
     styles,
 } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
-import { areUuidsEqual } from 'components/utils/utils';
 import EditIcon from '@mui/icons-material/Edit';
 
 const EventModificationScenarioEditor = () => {
@@ -297,29 +296,30 @@ const EventModificationScenarioEditor = () => {
         );
     };
 
+    const handleSecondaryAction = useCallback(
+        (item) =>
+            isAnyNodeBuilding && (
+                <IconButton
+                    onClick={() => doEditEvent(item)}
+                    size={'small'}
+                    sx={styles.iconEdit}
+                >
+                    <EditIcon />
+                </IconButton>
+            ),
+        [isAnyNodeBuilding]
+    );
     const renderEventList = () => {
         return (
-            <CheckboxList
-                sx={styles.list}
-                values={events}
-                itemComparator={areUuidsEqual}
+            <CheckboxList<Event>
+                sx={{ checkboxList: styles.list, label: { flexGrow: '1' } }}
+                items={events}
                 selectedItems={selectedItems}
-                setSelectedItems={setSelectedItems}
-                getValueId={(v) => v.equipmentId}
-                getValueLabel={getItemLabel}
-                labelSx={{ flexGrow: '1' }}
-                secondaryAction={(item) =>
-                    isAnyNodeBuilding && (
-                        <IconButton
-                            onClick={() => doEditEvent(item)}
-                            size={'small'}
-                            sx={styles.iconEdit}
-                        >
-                            <EditIcon />
-                        </IconButton>
-                    )
-                }
-                disabled={isLoading()}
+                onSelectionChange={setSelectedItems}
+                getItemId={(v) => v.equipmentId}
+                getItemLabel={getItemLabel}
+                secondaryAction={handleSecondaryAction}
+                isDisabled={() => isLoading()}
             />
         );
     };
