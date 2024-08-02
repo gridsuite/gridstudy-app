@@ -14,7 +14,7 @@ import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
-import SelectWithConfirmationInput from './select-with-confirmation-input';
+import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
 
 interface ByFormulaFormProps {}
 

@@ -77,6 +77,8 @@ const network_modifications_locale_en = {
     'network_modifications.tabular.LOAD_MODIFICATION': 'load modifications',
     'network_modifications.BY_FORMULA_MODIFICATION':
         'By formula modification {computedLabel}',
+    'network_modifications.BY_SIMPLE_MODIFICATION':
+        'By filter modification {computedLabel}',
     'network_modifications.tabular.LINE_MODIFICATION': 'line modifications',
     'network_modifications.tabular.BATTERY_MODIFICATION':
         'battery modifications',

@@ -108,6 +108,9 @@ export const MODIFICATION_TYPES = {
     BY_FORMULA_MODIFICATION: {
         type: 'BY_FORMULA_MODIFICATION',
     },
+    BY_SIMPLE_MODIFICATION: {
+        type: 'BY_SIMPLE_MODIFICATION',
+    },
     TABULAR_CREATION: {
         type: 'TABULAR_CREATION',
     },

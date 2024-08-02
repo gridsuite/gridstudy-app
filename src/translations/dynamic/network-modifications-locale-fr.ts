@@ -91,6 +91,8 @@ const network_modifications_locale_fr = {
         'modifications de consommations',
     'network_modifications.BY_FORMULA_MODIFICATION':
         'Modification par formule {computedLabel}',
+    'network_modifications.BY_SIMPLE_MODIFICATION':
+        'Modification par filtre {computedLabel}',
     'network_modifications.tabular.LINE_MODIFICATION':
         'modifications de lignes',
     'network_modifications.tabular.BATTERY_MODIFICATION':

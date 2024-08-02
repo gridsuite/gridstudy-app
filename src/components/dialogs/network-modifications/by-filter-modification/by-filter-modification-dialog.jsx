@@ -14,47 +14,37 @@ import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import ByFormulaForm from './by-formula-form';
+import ByFilterModificationForm from './by-filter-modification-form';
 import {
+    DATA_TYPE,
     EDITED_FIELD,
-    EQUIPMENT_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
-    FORMULAS,
-    OPERATOR,
-    REFERENCE_FIELD_OR_VALUE_1,
-    REFERENCE_FIELD_OR_VALUE_2,
-    VALUE,
+    PROPERTY_NAME_FIELD,
+    SIMPLE_MODIFICATIONS,
+    VALUE_FIELD,
 } from '../../../utils/field-constants';
-import { modifyByFormula } from '../../../../services/study/network-modifications';
+import { modifyByFilter } from '../../../../services/study/network-modifications';
 import {
-    getFormulaInitialValue,
-    getFormulaSchema,
-} from './formula/formula-utils';
-
-function getFieldOrValue(input) {
-    const value = input.replace(',', '.');
-    const isNumber = !isNaN(parseFloat(value));
-    return {
-        [VALUE]: isNumber ? value : null,
-        [EQUIPMENT_FIELD]: isNumber ? null : input,
-    };
-}
+    getDataType,
+    getModificationLineInitialValue,
+    getModificationLinesSchema,
+} from './modification-line/modification-line-utils.ts';
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        ...getFormulaSchema(FORMULAS),
+        ...getModificationLinesSchema(SIMPLE_MODIFICATIONS),
     })
     .required();
 
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
-    [FORMULAS]: [getFormulaInitialValue()],
+    [SIMPLE_MODIFICATIONS]: [getModificationLineInitialValue()],
 };
 
-const ByFormulaDialog = ({
+const ByFilterModificationDialog = ({
     editData,
     currentNode,
     studyUuid,
@@ -82,24 +72,21 @@ const ByFormulaDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const formulas = editData.formulaInfosList?.map((formula) => {
-                const ref1 =
-                    formula?.fieldOrValue1?.value?.toString() ??
-                    formula?.fieldOrValue1?.equipmentField;
-                const ref2 =
-                    formula?.fieldOrValue2?.value?.toString() ??
-                    formula?.fieldOrValue2?.equipmentField;
-                return {
-                    [REFERENCE_FIELD_OR_VALUE_1]: ref1,
-                    [REFERENCE_FIELD_OR_VALUE_2]: ref2,
-                    [EDITED_FIELD]: formula.editedField,
-                    [OPERATOR]: formula.operator,
-                    [FILTERS]: formula.filters,
-                };
-            });
+            const simpleModifications =
+                editData.simpleModificationInfosList?.map(
+                    (simpleModification) => ({
+                        [PROPERTY_NAME_FIELD]: simpleModification.propertyName,
+                        [VALUE_FIELD]: simpleModification.value,
+                        [EDITED_FIELD]: simpleModification.editedField,
+                        [DATA_TYPE]: getDataType(
+                            simpleModification.editedField
+                        ),
+                        [FILTERS]: simpleModification.filters,
+                    })
+                );
             reset({
                 [EQUIPMENT_TYPE_FIELD]: editData.identifiableType,
-                [FORMULAS]: formulas,
+                [SIMPLE_MODIFICATIONS]: simpleModifications,
             });
         }
     }, [editData, reset]);
@@ -109,31 +96,29 @@ const ByFormulaDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (data) => {
-            const formulas = data[FORMULAS].map((formula) => {
-                const fieldOrValue1 = getFieldOrValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_1]
-                );
-                const fieldOrValue2 = getFieldOrValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_2]
-                );
-                return {
-                    fieldOrValue1,
-                    fieldOrValue2,
-                    ...formula,
-                };
-            });
-            modifyByFormula(
+        (formData) => {
+            const simpleModificationsList = formData[SIMPLE_MODIFICATIONS].map(
+                (simpleModification) => {
+                    const dataType = getDataType(
+                        simpleModification[EDITED_FIELD]
+                    );
+                    return {
+                        ...simpleModification,
+                        dataType,
+                    };
+                }
+            );
+            modifyByFilter(
                 studyUuid,
                 currentNodeUuid,
-                data[EQUIPMENT_TYPE_FIELD],
-                formulas,
+                formData[EQUIPMENT_TYPE_FIELD],
+                simpleModificationsList,
                 !!editData,
                 editData?.uuid ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ModifyByFormula',
+                    headerId: 'ModifyByFilter',
                 });
             });
         },
@@ -146,8 +131,8 @@ const ByFormulaDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-by-formula"
-                titleId="ModifyByFormula"
+                aria-labelledby="dialog-modify-by-filter"
+                titleId="ModifyByFilter"
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={
@@ -155,10 +140,10 @@ const ByFormulaDialog = ({
                 }
                 {...dialogProps}
             >
-                <ByFormulaForm />
+                <ByFilterModificationForm />
             </ModificationDialog>
         </CustomFormProvider>
     );
 };
 
-export default ByFormulaDialog;
+export default ByFilterModificationDialog;
