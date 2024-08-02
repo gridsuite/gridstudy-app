@@ -8,6 +8,7 @@
 import { useIntl } from 'react-intl';
 import { MODIFICATION_TYPES } from '../../utils/modification-type';
 import { useCallback } from 'react';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types.js';
 
 const getOperatingStatusModificationValues = (modification, withFormat) => {
     return {
@@ -68,7 +69,11 @@ export const useModificationLabelComputer = () => {
                     });
                 case MODIFICATION_TYPES.BY_FILTER_DELETION.type:
                     return intl.formatMessage({
-                        id: modificationMetadata.equipmentType,
+                        id:
+                            modificationMetadata.equipmentType ===
+                            EQUIPMENT_TYPES.HVDC_LINE
+                                ? 'Hvdc'
+                                : modificationMetadata.equipmentType,
                     });
                 case MODIFICATION_TYPES.TABULAR_CREATION.type:
                     return intl.formatMessage({
