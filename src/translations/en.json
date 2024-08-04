@@ -1,4 +1,11 @@
 {
+    "General": "General",
+    "LimitReductions" : "Limit reductions",
+    "IST" : "IST",
+    "LimitDuration10" : "Limit duration > 10min",
+    "LimitDuration5" : "Limit duration >= 5min",
+    "LimitDuration0" : "Limit duration > 0min",
+
     "button.delete": "Delete",
     "button.changeType": "Change",
     "filter": "Filter",
