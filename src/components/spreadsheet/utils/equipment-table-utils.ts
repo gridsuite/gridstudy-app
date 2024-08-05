@@ -12,17 +12,8 @@ import {
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
 import { EDIT_COLUMN } from './config-tables';
-import {
-    CellEditingStoppedEvent,
-    ColDef,
-    Column,
-    RefreshCellsParams,
-    GridApi,
-} from 'ag-grid-community';
-import {
-    REGULATION_TYPES,
-    SHUNT_COMPENSATOR_TYPES,
-} from 'components/network/constants';
+import { CellEditingStoppedEvent, ColDef, Column, RefreshCellsParams, GridApi } from 'ag-grid-community';
+import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
     getComputedRegulationTypeId,
     getComputedTapSideId,
@@ -48,11 +39,7 @@ export interface CrossValidationOptions {
     maxExpression?: number | string;
 }
 
-const updateCellValue = (
-    colId: string,
-    value: any,
-    cellEditingParams: CellEditingStoppedEvent
-) => {
+const updateCellValue = (colId: string, value: any, cellEditingParams: CellEditingStoppedEvent) => {
     const columnState = cellEditingParams.columnApi.getColumnState();
     if (columnState.find(({ colId: columnId }: any) => columnId === colId)) {
         cellEditingParams.node.setDataValue(colId, value);
@@ -78,32 +65,23 @@ export const updateGeneratorCells = (params: CellEditingStoppedEvent) => {
             rowNode.setDataValue('RegulatingTerminalGenerator', null);
         }
         if (regulationTypeText === REGULATION_TYPES.DISTANT.id) {
-            params.data.regulatingTerminalVlId =
-                previousData.regulatingTerminalVlId ?? ' ';
-            params.data.regulatingTerminalConnectableId =
-                previousData.regulatingTerminalConnectableId ?? ' ';
-            params.data.regulatingTerminalConnectableType =
-                previousData.regulatingTerminalConnectableType ?? ' ';
+            params.data.regulatingTerminalVlId = previousData.regulatingTerminalVlId ?? ' ';
+            params.data.regulatingTerminalConnectableId = previousData.regulatingTerminalConnectableId ?? ' ';
+            params.data.regulatingTerminalConnectableType = previousData.regulatingTerminalConnectableType ?? ' ';
 
-            const regulatingTerminalGenerator =
-                previousData.regulatingTerminalConnectableType
-                    ? `${previousData.regulatingTerminalConnectableType} (${previousData.regulatingTerminalConnectableId} )`
-                    : null;
-            rowNode.setDataValue(
-                'RegulatingTerminalGenerator',
-                regulatingTerminalGenerator
-            );
+            const regulatingTerminalGenerator = previousData.regulatingTerminalConnectableType
+                ? `${previousData.regulatingTerminalConnectableType} (${previousData.regulatingTerminalConnectableId} )`
+                : null;
+            rowNode.setDataValue('RegulatingTerminalGenerator', regulatingTerminalGenerator);
         }
         params.api.flashCells({
             rowNodes: [rowNode],
             columns: ['RegulationTypeText', 'RegulatingTerminalGenerator'],
         });
     } else if (colId === 'RegulatingTerminalGenerator') {
-        const RegulatingTerminalGenerator =
-            params.data.RegulatingTerminalGenerator;
+        const RegulatingTerminalGenerator = params.data.RegulatingTerminalGenerator;
         if (RegulatingTerminalGenerator) {
-            params.data.regulatingTerminalVlId =
-                params.context.dynamicValidation.regulatingTerminalVlId;
+            params.data.regulatingTerminalVlId = params.context.dynamicValidation.regulatingTerminalVlId;
             params.data.regulatingTerminalConnectableId =
                 params.context.dynamicValidation.regulatingTerminalConnectableId;
             params.data.regulatingTerminalConnectableType =
@@ -126,10 +104,7 @@ const formatRatioTapChanger = (twt: any) => {
     }
 
     const regulationType = getComputedRegulationTypeId(twt) ?? undefined;
-    const regulationSide =
-        regulationType === REGULATION_TYPES.LOCAL.id
-            ? getComputedTapSideId(twt)
-            : undefined;
+    const regulationSide = regulationType === REGULATION_TYPES.LOCAL.id ? getComputedTapSideId(twt) : undefined;
     const ratioRegulatingTerminal =
         regulationType === REGULATION_TYPES.DISTANT.id
             ? getTapChangerRegulationTerminalValue(twt.ratioTapChanger)
@@ -139,8 +114,7 @@ const formatRatioTapChanger = (twt: any) => {
         ...twt,
         ratioTapChanger: {
             ...twt.ratioTapChanger,
-            regulationMode:
-                getInitialTwtRatioRegulationModeId(twt) ?? undefined,
+            regulationMode: getInitialTwtRatioRegulationModeId(twt) ?? undefined,
             regulationType,
             regulationSide,
             ratioRegulatingTerminal,
@@ -154,10 +128,7 @@ const formatPhaseTapChanger = (twt: any) => {
     }
 
     const regulationType = getComputedPhaseRegulationTypeId(twt) ?? undefined;
-    const regulationSide =
-        regulationType === REGULATION_TYPES.LOCAL.id
-            ? getPhaseTapRegulationSideId(twt)
-            : undefined;
+    const regulationSide = regulationType === REGULATION_TYPES.LOCAL.id ? getPhaseTapRegulationSideId(twt) : undefined;
     const phaseRegulatingTerminal =
         regulationType === REGULATION_TYPES.DISTANT.id
             ? getTapChangerRegulationTerminalValue(twt.phaseTapChanger)
@@ -185,13 +156,10 @@ const formatGeneratorDataForTable = (generator: any) => {
     const formattedGenerator = { ...generator };
 
     const hasDistantRegulation =
-        formattedGenerator.regulatingTerminalVlId ||
-        formattedGenerator.regulatingTerminalConnectableId;
+        formattedGenerator.regulatingTerminalVlId || formattedGenerator.regulatingTerminalConnectableId;
     const regulationType =
         formattedGenerator.RegulationTypeText ||
-        (hasDistantRegulation
-            ? REGULATION_TYPES.DISTANT.id
-            : REGULATION_TYPES.LOCAL.id);
+        (hasDistantRegulation ? REGULATION_TYPES.DISTANT.id : REGULATION_TYPES.LOCAL.id);
 
     formattedGenerator.RegulationTypeText = regulationType;
 
@@ -211,10 +179,7 @@ const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
     return formattedCompensator;
 };
 
-export const formatFetchedEquipments = (
-    equipmentType: EQUIPMENT_TYPES,
-    equipments: IEquipment[]
-) => {
+export const formatFetchedEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: IEquipment[]) => {
     if (equipments && equipments?.length > 0) {
         return equipments.map((equipment) => {
             return formatFetchedEquipment(equipmentType, equipment);
@@ -223,10 +188,7 @@ export const formatFetchedEquipments = (
     return equipments;
 };
 
-export const formatFetchedEquipment = (
-    equipmentType: EQUIPMENT_TYPES,
-    equipment: IEquipment
-) => {
+export const formatFetchedEquipment = (equipmentType: EQUIPMENT_TYPES, equipment: IEquipment) => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             return formatTwtDataForTable(equipment);
@@ -241,10 +203,8 @@ export const formatFetchedEquipment = (
 
 export const updateTwtCells = (params: CellEditingStoppedEvent) => {
     const colId = params.column.getColId();
-    const ratioRegulationTypeText =
-        params.data?.ratioTapChanger?.regulationType;
-    const phaseRegulationTypeText =
-        params.data?.phaseTapChanger?.regulationType;
+    const ratioRegulationTypeText = params.data?.ratioTapChanger?.regulationType;
+    const phaseRegulationTypeText = params.data?.phaseTapChanger?.regulationType;
     switch (colId) {
         case 'ratioTapChanger.regulationType':
             if (ratioRegulationTypeText === REGULATION_TYPES.DISTANT.id) {
@@ -252,15 +212,9 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                 updateCellValue('ratioTapChanger.regulationSide', null, params);
             } else if (ratioRegulationTypeText === REGULATION_TYPES.LOCAL.id) {
                 params.data.ratioTapChanger.regulatingTerminalVlId = null;
-                params.data.ratioTapChanger.regulatingTerminalConnectableId =
-                    null;
-                params.data.ratioTapChanger.regulatingTerminalConnectableType =
-                    null;
-                updateCellValue(
-                    'ratioTapChanger.ratioRegulatingTerminal',
-                    null,
-                    params
-                );
+                params.data.ratioTapChanger.regulatingTerminalConnectableId = null;
+                params.data.ratioTapChanger.regulatingTerminalConnectableType = null;
+                updateCellValue('ratioTapChanger.ratioRegulatingTerminal', null, params);
             }
             break;
 
@@ -270,21 +224,14 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
                 updateCellValue('phaseTapChanger.regulationSide', null, params);
             } else if (phaseRegulationTypeText === REGULATION_TYPES.LOCAL.id) {
                 params.data.phaseTapChanger.regulatingTerminalVlId = null;
-                params.data.phaseTapChanger.regulatingTerminalConnectableId =
-                    null;
-                params.data.phaseTapChanger.regulatingTerminalConnectableType =
-                    null;
-                updateCellValue(
-                    'phaseTapChanger.phaseRegulatingTerminal',
-                    null,
-                    params
-                );
+                params.data.phaseTapChanger.regulatingTerminalConnectableId = null;
+                params.data.phaseTapChanger.regulatingTerminalConnectableType = null;
+                updateCellValue('phaseTapChanger.phaseRegulatingTerminal', null, params);
             }
             break;
 
         case 'ratioTapChanger.ratioRegulatingTerminal':
-            const ratioRegulatingTerminal =
-                params.data?.ratioTapChanger?.ratioRegulatingTerminal;
+            const ratioRegulatingTerminal = params.data?.ratioTapChanger?.ratioRegulatingTerminal;
             if (ratioRegulatingTerminal) {
                 const ratioTapChanger = { ...params.data?.ratioTapChanger };
                 ratioTapChanger.regulatingTerminalVlId =
@@ -298,8 +245,7 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
             break;
 
         case 'phaseTapChanger.phaseRegulatingTerminal':
-            const phaseRegulatingTerminal =
-                params.data?.phaseTapChanger?.phaseRegulatingTerminal;
+            const phaseRegulatingTerminal = params.data?.phaseTapChanger?.phaseRegulatingTerminal;
             if (phaseRegulatingTerminal) {
                 const phaseTapChanger = { ...params.data?.phaseTapChanger };
                 phaseTapChanger.regulatingTerminalVlId =
@@ -316,17 +262,12 @@ export const updateTwtCells = (params: CellEditingStoppedEvent) => {
     }
 };
 
-export const updateShuntCompensatorCells = (
-    params: CellEditingStoppedEvent
-) => {
+export const updateShuntCompensatorCells = (params: CellEditingStoppedEvent) => {
     const colId = params.column.getColId();
     const maxSusceptance = params.data.maxSusceptance;
     let type = params.data.type;
     if (type === undefined) {
-        type =
-            maxSusceptance < 0
-                ? SHUNT_COMPENSATOR_TYPES.REACTOR.id
-                : SHUNT_COMPENSATOR_TYPES.CAPACITOR.id;
+        type = maxSusceptance < 0 ? SHUNT_COMPENSATOR_TYPES.REACTOR.id : SHUNT_COMPENSATOR_TYPES.CAPACITOR.id;
     }
     const nominalVoltage = params.data.nominalVoltage;
     const maxQAtNominalV = params.data.maxQAtNominalV;
@@ -335,101 +276,59 @@ export const updateShuntCompensatorCells = (
 
     if (colId === 'type') {
         if (
-            (type === SHUNT_COMPENSATOR_TYPES.REACTOR.id &&
-                maxSusceptance > 0) ||
-            (type === SHUNT_COMPENSATOR_TYPES.CAPACITOR.id &&
-                maxSusceptance < 0)
+            (type === SHUNT_COMPENSATOR_TYPES.REACTOR.id && maxSusceptance > 0) ||
+            (type === SHUNT_COMPENSATOR_TYPES.CAPACITOR.id && maxSusceptance < 0)
         ) {
             updateCellValue('maxSusceptance', -maxSusceptance, params);
             updateCellValue('switchedOnSusceptance', -maxSusceptance, params);
         }
     } else if (colId === 'maxSusceptance') {
         if (Math.abs(maxSusceptance) !== Math.abs(params.oldValue)) {
-            updateCellValue(
-                'maxQAtNominalV',
-                computeMaxQAtNominalV(maxSusceptance, nominalVoltage),
-                params
-            );
+            updateCellValue('maxQAtNominalV', computeMaxQAtNominalV(maxSusceptance, nominalVoltage), params);
             updateCellValue(
                 'switchedOnQAtNominalV',
-                computeSwitchedOnValue(
-                    sectionCount,
-                    maximumSectionCount,
-                    maxQAtNominalV
-                ),
+                computeSwitchedOnValue(sectionCount, maximumSectionCount, maxQAtNominalV),
                 params
             );
         }
         updateCellValue(
             'switchedOnSusceptance',
-            computeSwitchedOnValue(
-                sectionCount,
-                maximumSectionCount,
-                maxSusceptance
-            ),
+            computeSwitchedOnValue(sectionCount, maximumSectionCount, maxSusceptance),
             params
         );
         if (maxSusceptance < 0 && type !== SHUNT_COMPENSATOR_TYPES.REACTOR.id) {
             updateCellValue('type', SHUNT_COMPENSATOR_TYPES.REACTOR.id, params);
-        } else if (
-            maxSusceptance > 0 &&
-            type !== SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
-        ) {
-            updateCellValue(
-                'type',
-                SHUNT_COMPENSATOR_TYPES.CAPACITOR.id,
-                params
-            );
+        } else if (maxSusceptance > 0 && type !== SHUNT_COMPENSATOR_TYPES.CAPACITOR.id) {
+            updateCellValue('type', SHUNT_COMPENSATOR_TYPES.CAPACITOR.id, params);
         }
         params.context.lastEditedField = 'maxSusceptance';
     } else if (colId === 'maxQAtNominalV') {
         updateCellValue(
             'switchedOnQAtNominalV',
-            computeSwitchedOnValue(
-                sectionCount,
-                maximumSectionCount,
-                maxQAtNominalV
-            ),
+            computeSwitchedOnValue(sectionCount, maximumSectionCount, maxQAtNominalV),
             params
         );
-        const maxSusceptance = computeMaxSusceptance(
-            maxQAtNominalV,
-            nominalVoltage
-        );
+        const maxSusceptance = computeMaxSusceptance(maxQAtNominalV, nominalVoltage);
         updateCellValue(
             'maxSusceptance',
-            type === SHUNT_COMPENSATOR_TYPES.REACTOR.id
-                ? -maxSusceptance
-                : maxSusceptance,
+            type === SHUNT_COMPENSATOR_TYPES.REACTOR.id ? -maxSusceptance : maxSusceptance,
             params
         );
         updateCellValue(
             'switchedOnSusceptance',
-            computeSwitchedOnValue(
-                sectionCount,
-                maximumSectionCount,
-                maxSusceptance
-            ),
+            computeSwitchedOnValue(sectionCount, maximumSectionCount, maxSusceptance),
             params
         );
         params.context.lastEditedField = 'maxQAtNominalV';
     } else if (colId === 'sectionCount' || colId === 'maximumSectionCount') {
         updateCellValue(
             'switchedOnQAtNominalV',
-            computeSwitchedOnValue(
-                sectionCount,
-                maximumSectionCount,
-                maxQAtNominalV
-            ),
+            computeSwitchedOnValue(sectionCount, maximumSectionCount, maxQAtNominalV),
             params
         );
         updateCellValue(
             'switchedOnSusceptance',
-            computeSwitchedOnValue(
-                sectionCount,
-                maximumSectionCount,
-                maxSusceptance
-            ),
+            computeSwitchedOnValue(sectionCount, maximumSectionCount, maxSusceptance),
             params
         );
     }
@@ -470,33 +369,18 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
-    if (
-        fieldVal === undefined ||
-        fieldVal === null ||
-        fieldVal === '' ||
-        (isNaN(fieldVal) && colDef.numeric)
-    ) {
-        let originalValue = deepFindValue(
-            gridContext.dataToModify,
-            colDef.field
-        );
-        originalValue =
-            colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
+    if (fieldVal === undefined || fieldVal === null || fieldVal === '' || (isNaN(fieldVal) && colDef.numeric)) {
+        let originalValue = deepFindValue(gridContext.dataToModify, colDef.field);
+        originalValue = colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
 
         // if the original value is not undefined, we don't let the user empty the field unless we have
         // another condition that verifies that the field can be empty (requiredOn, optional, etc.)
-        if (
-            originalValue !== undefined &&
-            !colDef.crossValidation?.requiredOn
-        ) {
+        if (originalValue !== undefined && !colDef.crossValidation?.requiredOn) {
             return false;
         } else if (colDef.crossValidation?.optional) {
             return true;
         } else if (colDef.crossValidation?.requiredOn) {
-            const isConditionFulfiled = checkCrossValidationRequiredOn(
-                gridContext.dynamicValidation,
-                colDef
-            );
+            const isConditionFulfiled = checkCrossValidationRequiredOn(gridContext.dynamicValidation, colDef);
             if (!isConditionFulfiled) {
                 return false;
             }
@@ -516,22 +400,14 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
         const maxVal = !isNaN(maxExpression)
             ? maxExpression
             : deepFindValue(gridContext.dynamicValidation, maxExpression);
-        return (
-            (minVal === undefined || fieldVal >= minVal) &&
-            (maxVal === undefined || fieldVal <= maxVal)
-        );
+        return (minVal === undefined || fieldVal >= minVal) && (maxVal === undefined || fieldVal <= maxVal);
     }
     return true;
 };
 
-export const checkValidationsAndRefreshCells = (
-    gridApi: GridApi,
-    gridContext: any
-) => {
+export const checkValidationsAndRefreshCells = (gridApi: GridApi, gridContext: any) => {
     const updatedErrors = { ...gridContext.editErrors };
-    const columnsWithCrossValidation =
-        gridApi.getColumnDefs()?.filter(({ editable }: ColDef) => editable) ??
-        [];
+    const columnsWithCrossValidation = gridApi.getColumnDefs()?.filter(({ editable }: ColDef) => editable) ?? [];
     columnsWithCrossValidation.forEach((colDef: ColDef) => {
         const { field = '' } = colDef;
         const fieldVal = deepFindValue(gridContext.dynamicValidation, field);
@@ -546,9 +422,7 @@ export const checkValidationsAndRefreshCells = (
     });
     const rowNode = gridApi.getPinnedTopRow(0);
     if (rowNode) {
-        const mappedColumnsWithCrossValidation: Column[] = (
-            columnsWithCrossValidation || []
-        )
+        const mappedColumnsWithCrossValidation: Column[] = (columnsWithCrossValidation || [])
             .map(({ field }: ColDef) => field as Column | undefined)
             .filter((field): field is Column => typeof field !== 'undefined');
         const refreshConfig: RefreshCellsParams = {
@@ -560,15 +434,9 @@ export const checkValidationsAndRefreshCells = (
     }
 };
 
-const checkCrossValidationRequiredOn = (
-    dynamicValidation: DynamicValidation,
-    colDef: ColDef
-) => {
+const checkCrossValidationRequiredOn = (dynamicValidation: DynamicValidation, colDef: ColDef) => {
     const requiredOn = colDef?.crossValidation?.requiredOn ?? {};
-    let dependencyValue = deepFindValue(
-        dynamicValidation,
-        requiredOn?.dependencyColumn
-    );
+    let dependencyValue = deepFindValue(dynamicValidation, requiredOn?.dependencyColumn);
     if (typeof dependencyValue === 'boolean') {
         dependencyValue = dependencyValue ? 1 : 0;
     }

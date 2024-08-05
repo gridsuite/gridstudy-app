@@ -40,21 +40,16 @@ const styles = {
     },
 };
 
-export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = [
-    'nonEvacuatedEnergyResult',
-];
+export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = ['nonEvacuatedEnergyResult'];
 
-export const NonEvacuatedEnergyResultTab: FunctionComponent<
-    NonEvacuatedEnergyTabProps
-> = ({ studyUuid, nodeUuid }) => {
+export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({ studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const RESULTS_TAB_INDEX = 0;
     const LOGS_TAB_INDEX = 1;
 
     const nonEvacuatedEnergyStatus = useSelector(
-        (state: AppState) =>
-            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const [nonEvacuatedEnergyResult] = useNodeData(
@@ -79,34 +74,19 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<
                 <Box sx={styles.tabs}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
                         <Tab label="Results" />
-                        <Tab
-                            label={
-                                <FormattedMessage
-                                    id={'ComputationResultsLogs'}
-                                />
-                            }
-                        />
+                        <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                     </Tabs>
                 </Box>
             </Box>
-            <Box sx={styles.loader}>
-                {shouldOpenLoader && <LinearProgress />}
-            </Box>
+            <Box sx={styles.loader}>{shouldOpenLoader && <LinearProgress />}</Box>
             <Box sx={styles.resultContainer}>
                 {tabIndex === RESULTS_TAB_INDEX && (
-                    <NonEvacuatedEnergyResult
-                        result={nonEvacuatedEnergyResult}
-                        status={nonEvacuatedEnergyStatus}
-                    />
+                    <NonEvacuatedEnergyResult result={nonEvacuatedEnergyResult} status={nonEvacuatedEnergyStatus} />
                 )}
                 {tabIndex === LOGS_TAB_INDEX &&
                     (nonEvacuatedEnergyStatus === RunningStatus.SUCCEED ||
                         nonEvacuatedEnergyStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer
-                            reportType={
-                                REPORT_TYPES.NON_EVACUATED_ENERGY_ANALYSIS
-                            }
-                        />
+                        <ComputationReportViewer reportType={REPORT_TYPES.NON_EVACUATED_ENERGY_ANALYSIS} />
                     )}
             </Box>
         </>

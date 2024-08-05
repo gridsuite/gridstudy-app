@@ -542,7 +542,6 @@
     "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
-
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
@@ -550,8 +549,6 @@
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
     "Default": "Défaut",
-
-
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",

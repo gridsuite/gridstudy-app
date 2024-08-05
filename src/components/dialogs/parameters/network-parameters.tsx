@@ -9,10 +9,7 @@ import { Grid } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
 import { fetchDefaultParametersValues } from '../../../services/utils';
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_FLUX_CONVENTION,
-} from '../../../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import { mergeSx } from '../../utils/functions';
 import { LineSeparator } from '../dialogUtils';
 import { LabelledButton, styles, useParameterState } from './parameters';
@@ -25,22 +22,15 @@ export enum FluxConventions {
 }
 
 export const NetworkParameters = () => {
-    const [, handleChangeFluxConvention] = useParameterState(
-        PARAM_FLUX_CONVENTION
-    );
-    const [enableDeveloperMode, handleChangeEnableDeveloperMode] =
-        useParameterState(PARAM_DEVELOPER_MODE);
+    const [, handleChangeFluxConvention] = useParameterState(PARAM_FLUX_CONVENTION);
+    const [enableDeveloperMode, handleChangeEnableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const resetNetworkParameters = () => {
         fetchDefaultParametersValues().then((defaultValues) => {
             const defaultFluxConvention = defaultValues.fluxConvention;
-            if (
-                Object.values(FluxConventions).includes(defaultFluxConvention)
-            ) {
+            if (Object.values(FluxConventions).includes(defaultFluxConvention)) {
                 handleChangeFluxConvention(defaultFluxConvention);
             }
-            handleChangeEnableDeveloperMode(
-                defaultValues?.enableDeveloperMode ?? false
-            );
+            handleChangeEnableDeveloperMode(defaultValues?.enableDeveloperMode ?? false);
         });
     };
 
@@ -66,10 +56,7 @@ export const NetworkParameters = () => {
                     />
                     <LineSeparator />
                     <Grid item container xs={12}>
-                        <ParameterLineSwitch
-                            paramNameId={PARAM_DEVELOPER_MODE}
-                            label="EnableDeveloperMode"
-                        />
+                        <ParameterLineSwitch paramNameId={PARAM_DEVELOPER_MODE} label="EnableDeveloperMode" />
                         {enableDeveloperMode && (
                             <Alert severity={'warning'}>
                                 <FormattedMessage id="DeveloperModeWarningMsg" />
@@ -79,17 +66,8 @@ export const NetworkParameters = () => {
                 </Grid>
                 <LineSeparator />
             </Grid>
-            <Grid
-                container
-                sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
-                )}
-            >
-                <LabelledButton
-                    callback={resetNetworkParameters}
-                    label="resetToDefault"
-                />
+            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
+                <LabelledButton callback={resetNetworkParameters} label="resetToDefault" />
             </Grid>
         </>
     );

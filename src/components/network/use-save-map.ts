@@ -4,20 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    EquipmentInfos,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { EquipmentInfos, TreeViewFinderNodeProps, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from '../utils/selection-types';
-import {
-    createMapContingencyList,
-    createMapFilter,
-} from '../../services/study/network-map';
+import { createMapContingencyList, createMapFilter } from '../../services/study/network-map';
 
 export interface ISelection {
     selectionType: string;
@@ -36,9 +29,7 @@ export type UseSaveMapOutput = {
 export const useSaveMap = (): UseSaveMapOutput => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentNodeUuid = useSelector(
-        (state: AppState) => state.currentTreeNode?.id
-    );
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
 
@@ -56,17 +47,13 @@ export const useSaveMap = (): UseSaveMapOutput => {
                 //we want to calculate selectedLine or selectedSubstation only when needed
                 //call getSelectedLines if the user want to create a filter with lines
                 //for all others case we call getSelectedSubstations
-                const selectedEquipmentsIds = equipments.map(
-                    (eq: EquipmentInfos) => eq.id
-                );
+                const selectedEquipmentsIds = equipments.map((eq: EquipmentInfos) => eq.id);
                 if (selectedEquipmentsIds.length === 0) {
                     snackWarning({
                         messageTxt: intl.formatMessage({
                             id: 'EmptySelection',
                         }),
-                        headerId: isFilter
-                            ? 'FilterCreationIgnored'
-                            : 'ContingencyListCreationIgnored',
+                        headerId: isFilter ? 'FilterCreationIgnored' : 'ContingencyListCreationIgnored',
                     });
                     return false;
                 } else {
@@ -106,18 +93,14 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         messageTxt: intl.formatMessage({
                             id: error.message,
                         }),
-                        headerId: isFilter
-                            ? 'FilterCreationError'
-                            : 'ContingencyListCreationError',
+                        headerId: isFilter ? 'FilterCreationError' : 'ContingencyListCreationError',
                     });
                 } else {
                     snackError({
                         messageTxt: intl.formatMessage({
                             id: error.message,
                         }),
-                        headerId: isFilter
-                            ? 'FilterCreationError'
-                            : 'ContingencyListCreationError',
+                        headerId: isFilter ? 'FilterCreationError' : 'ContingencyListCreationError',
                     });
                 }
                 return false;

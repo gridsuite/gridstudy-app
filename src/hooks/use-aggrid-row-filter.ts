@@ -31,9 +31,7 @@ const removeElementFromArrayWithFieldValue = (
     filtersArrayToRemoveFieldValueFrom: FilterSelectorType[],
     field: string
 ) => {
-    return filtersArrayToRemoveFieldValueFrom.filter(
-        (f: FilterSelectorType) => f.column !== field
-    );
+    return filtersArrayToRemoveFieldValueFrom.filter((f: FilterSelectorType) => f.column !== field);
 };
 
 const changeValueFromArrayWithFieldValue = (
@@ -41,9 +39,7 @@ const changeValueFromArrayWithFieldValue = (
     field: string,
     newData: FilterSelectorType
 ) => {
-    const filterIndex = filtersArrayToModify.findIndex(
-        (f: FilterSelectorType) => f.column === field
-    );
+    const filterIndex = filtersArrayToModify.findIndex((f: FilterSelectorType) => f.column === field);
     if (filterIndex === -1) {
         return [...filtersArrayToModify, newData];
     } else {
@@ -75,16 +71,9 @@ export const useAggridRowFilter = (
             let updatedFilters;
 
             if (!data.value) {
-                updatedFilters = removeElementFromArrayWithFieldValue(
-                    filterStore,
-                    field
-                );
+                updatedFilters = removeElementFromArrayWithFieldValue(filterStore, field);
             } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(
-                    filterStore,
-                    field,
-                    newFilter
-                );
+                updatedFilters = changeValueFromArrayWithFieldValue(filterStore, field, newFilter);
             }
 
             updateFilterCallback && updateFilterCallback();
@@ -93,13 +82,7 @@ export const useAggridRowFilter = (
                 // @ts-expect-error TODO: maybe resolve this with discriminate union parameter in FilterStorePropsType?
                 dispatch(filterStoreAction(filterTab, updatedFilters));
         },
-        [
-            filterTab,
-            filterStore,
-            updateFilterCallback,
-            dispatch,
-            filterStoreAction,
-        ]
+        [filterTab, filterStore, updateFilterCallback, dispatch, filterStoreAction]
     );
 
     return { updateFilter, filterSelector: filterStore };

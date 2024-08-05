@@ -108,25 +108,17 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
     ],
 };
 
-function isValueInEquipmentFields(
-    context: TestContext<AnyObject>,
-    value: string
-) {
+function isValueInEquipmentFields(context: TestContext<AnyObject>, value: string) {
     // this will return the highest level parent, so we can get the equipment type
     const parent = context.from?.[context.from.length - 1];
     const equipmentType = parent?.value?.[EQUIPMENT_TYPE_FIELD];
     return parent
         ? // @ts-expect-error TODO: missing type in context
-          EQUIPMENTS_FIELDS[equipmentType!]?.some(
-              (field: { id: string; label: string }) => field.id === value
-          )
+          EQUIPMENTS_FIELDS[equipmentType!]?.some((field: { id: string; label: string }) => field.id === value)
         : false;
 }
 
-const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
-    value,
-    context
-) => {
+const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (value, context) => {
     const newValue = value.replace(',', '.');
     if (!isNaN(parseFloat(newValue))) {
         return true;
@@ -135,10 +127,7 @@ const checkValueInEquipmentFieldsOrNumeric: TestFunction<any, AnyObject> = (
     return isValueInEquipmentFields(context, value);
 };
 
-const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (
-    value,
-    context
-) => {
+const checkValueInEquipmentFields: TestFunction<any, AnyObject> = (value, context) => {
     return isValueInEquipmentFields(context, value);
 };
 
@@ -172,30 +161,20 @@ export function getFormulaSchema(id: string) {
                 [REFERENCE_FIELD_OR_VALUE_1]: yup
                     .mixed()
                     .required()
-                    .test(
-                        'checkRefOrValue',
-                        'WrongRefOrValueError',
-                        checkValueInEquipmentFieldsOrNumeric
-                    )
+                    .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
                     .when([OPERATOR], {
                         is: 'PERCENTAGE',
                         then: (schema) =>
                             schema.test(
                                 'checkValueIsReference',
                                 'ValueMustBeNumericWhenPercentageError',
-                                (value: any) =>
-                                    !isNaN(parseFloat(value)) &&
-                                    parseFloat(value) >= 0
+                                (value: any) => !isNaN(parseFloat(value)) && parseFloat(value) >= 0
                             ),
                     }),
                 [REFERENCE_FIELD_OR_VALUE_2]: yup
                     .mixed()
                     .required()
-                    .test(
-                        'checkRefOrValue',
-                        'WrongRefOrValueError',
-                        checkValueInEquipmentFieldsOrNumeric
-                    )
+                    .test('checkRefOrValue', 'WrongRefOrValueError', checkValueInEquipmentFieldsOrNumeric)
                     .when([OPERATOR], {
                         is: 'PERCENTAGE',
                         then: (schema) =>

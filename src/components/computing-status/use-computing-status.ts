@@ -13,10 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
 import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
-import {
-    setComputingStatus,
-    setLastCompletedComputation,
-} from '../../redux/actions';
+import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppDispatch } from '../../redux/store';
 
 interface UseComputingStatusProps {
@@ -55,10 +52,7 @@ function isWorthUpdate(
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
         return true;
     }
-    if (
-        studyUpdatedForce &&
-        lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
-    ) {
+    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
         return false;
     }
     if (!updateType) {
@@ -98,9 +92,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
-    const studyUpdatedForce = useSelector(
-        (state: AppState) => state.studyUpdated
-    );
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
 
@@ -109,10 +101,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     const isComputationCompleted = useCallback(
         (status: RunningStatus) =>
             [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
-            completions.includes(
-                lastUpdateRef.current?.studyUpdatedForce.eventData?.headers
-                    ?.updateType ?? ''
-            ),
+            completions.includes(lastUpdateRef.current?.studyUpdatedForce.eventData?.headers?.updateType ?? ''),
         [completions]
     );
 
@@ -137,32 +126,18 @@ export const useComputingStatus: UseComputingStatusProps = (
             })
             .catch(() => {
                 if (!canceledRequest) {
-                    dispatch(
-                        setComputingStatus(computingType, RunningStatus.FAILED)
-                    );
+                    dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
                 }
             });
 
         return () => {
             canceledRequest = true;
         };
-    }, [
-        nodeUuid,
-        fetcher,
-        studyUuid,
-        resultConversion,
-        dispatch,
-        computingType,
-        isComputationCompleted,
-    ]);
+    }, [nodeUuid, fetcher, studyUuid, resultConversion, dispatch, computingType, isComputationCompleted]);
 
     /* initial fetch and update */
     useEffect(() => {
-        if (
-            !studyUuid ||
-            !nodeUuid ||
-            optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
-        ) {
+        if (!studyUuid || !nodeUuid || optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up) {
             return;
         }
 
@@ -178,13 +153,5 @@ export const useComputingStatus: UseComputingStatusProps = (
         if (isUpdateForUs) {
             update();
         }
-    }, [
-        update,
-        fetcher,
-        nodeUuid,
-        invalidations,
-        studyUpdatedForce,
-        studyUuid,
-        optionalServiceAvailabilityStatus,
-    ]);
+    }, [update, fetcher, nodeUuid, invalidations, studyUpdatedForce, studyUuid, optionalServiceAvailabilityStatus]);
 };

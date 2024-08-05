@@ -7,17 +7,14 @@
 
 type EquipmentInfosTypesStruct<T extends string = string> = { type: T };
 //TODO: rename to PascalCase
-export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> =
-    {
-        LIST: { type: 'LIST' },
-        MAP: { type: 'MAP' },
-        FORM: { type: 'FORM' },
-        TAB: { type: 'TAB' },
-        TOOLTIP: { type: 'TOOLTIP' },
-    };
-export type EquipmentInfosTypes = EquipmentInfosTypesStruct<
-    'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP'
->;
+export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = {
+    LIST: { type: 'LIST' },
+    MAP: { type: 'MAP' },
+    FORM: { type: 'FORM' },
+    TAB: { type: 'TAB' },
+    TOOLTIP: { type: 'TOOLTIP' },
+};
+export type EquipmentInfosTypes = EquipmentInfosTypesStruct<'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP'>;
 
 //TODO: Compare with commons-ui's EquipmentType enum (miss TIE_LINE and not same order)
 //TODO: rename to PascalCase

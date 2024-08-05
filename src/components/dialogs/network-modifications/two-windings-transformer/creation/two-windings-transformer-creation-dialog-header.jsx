@@ -19,34 +19,18 @@ import { TextInput } from '@gridsuite/commons-ui';
 import { SwitchInput } from '@gridsuite/commons-ui';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
-    const twoWindingsTransformerIdField = (
-        <TextInput
-            name={`${EQUIPMENT_ID}`}
-            label="ID"
-            formProps={filledTextField}
-        />
-    );
+    const twoWindingsTransformerIdField = <TextInput name={`${EQUIPMENT_ID}`} label="ID" formProps={filledTextField} />;
 
     const twoWindingsTransformerNameField = (
-        <TextInput
-            name={`${EQUIPMENT_NAME}`}
-            label="Name"
-            formProps={filledTextField}
-        />
+        <TextInput name={`${EQUIPMENT_NAME}`} label="Name" formProps={filledTextField} />
     );
 
     const ratioTapChangerEnabledField = (
-        <SwitchInput
-            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigureRatioTapChanger"
-        />
+        <SwitchInput name={`${RATIO_TAP_CHANGER}.${ENABLED}`} label="ConfigureRatioTapChanger" />
     );
 
     const phaseTapChangerEnabledField = (
-        <SwitchInput
-            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
-            label="ConfigurePhaseTapChanger"
-        />
+        <SwitchInput name={`${PHASE_TAP_CHANGER}.${ENABLED}`} label="ConfigurePhaseTapChanger" />
     );
 
     return (

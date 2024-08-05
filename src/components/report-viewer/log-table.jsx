@@ -27,8 +27,7 @@ const styles = {
         // https://github.com/bvaughn/react-virtualized/issues/454
         '& .ReactVirtualized__Table__headerRow': {
             flip: false,
-            paddingRight:
-                theme.direction === 'rtl' ? '0 !important' : undefined,
+            paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
         },
     }),
     header: { variant: 'header' },
@@ -36,12 +35,7 @@ const styles = {
 
 const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
 
-const LogTable = ({
-    logs,
-    onRowClick,
-    selectedSeverity,
-    setSelectedSeverity,
-}) => {
+const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) => {
     const intl = useIntl();
 
     const theme = useTheme();
@@ -67,25 +61,16 @@ const LogTable = ({
 
     const COLUMNS_DEFINITIONS = [
         {
-            label: intl
-                .formatMessage({ id: 'report_viewer/severity' })
-                .toUpperCase(),
+            label: intl.formatMessage({ id: 'report_viewer/severity' }).toUpperCase(),
             id: 'severity',
             dataKey: 'severity',
             maxWidth: SEVERITY_COLUMN_FIXED_WIDTH,
             minWidth: SEVERITY_COLUMN_FIXED_WIDTH,
             cellRenderer: severityCellRender,
-            extra: (
-                <FilterButton
-                    selectedItems={selectedSeverity}
-                    setSelectedItems={setSelectedSeverity}
-                />
-            ),
+            extra: <FilterButton selectedItems={selectedSeverity} setSelectedItems={setSelectedSeverity} />,
         },
         {
-            label: intl
-                .formatMessage({ id: 'report_viewer/message' })
-                .toUpperCase(),
+            label: intl.formatMessage({ id: 'report_viewer/message' }).toUpperCase(),
             id: 'message',
             dataKey: 'message',
         },

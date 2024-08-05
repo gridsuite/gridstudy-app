@@ -23,9 +23,7 @@ export interface IOptionalService {
     name: OptionalServicesNames;
     status: OptionalServicesStatus;
 }
-export const getOptionalServiceByServerName = (
-    serverName: string
-): OptionalServicesNames | undefined => {
+export const getOptionalServiceByServerName = (serverName: string): OptionalServicesNames | undefined => {
     switch (serverName) {
         case 'security-analysis-server':
             return OptionalServicesNames.SecurityAnalysis;

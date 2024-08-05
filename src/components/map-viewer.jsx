@@ -93,29 +93,18 @@ const MapViewer = ({
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
     const { snackInfo, closeSnackbar } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-    const lineParallelPath = useSelector(
-        (state) => state[PARAM_LINE_PARALLEL_PATH]
-    );
-    const [
-        shouldOpenSelectionCreationPanel,
-        setShouldOpenSelectionCreationPanel,
-    ] = useState(false);
+    const lineParallelPath = useSelector((state) => state[PARAM_LINE_PARALLEL_PATH]);
+    const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
 
     const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
-    const lineFlowColorMode = useSelector(
-        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
-    );
+    const lineFlowColorMode = useSelector((state) => state[PARAM_LINE_FLOW_COLOR_MODE]);
 
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
-    );
+    const lineFlowAlertThreshold = useSelector((state) => Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD]));
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const oneBusShortCircuitStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
-    );
+    const oneBusShortCircuitStatus = useSelector((state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]);
     const previousStudyDisplayMode = useRef(undefined);
     const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
 
@@ -185,10 +174,7 @@ const MapViewer = ({
         const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
         // fitst click on draw button, the polygon is not drawn yet, and the user want to draw
-        if (
-            drawingMode === DRAW_MODES.DRAW_POLYGON &&
-            isPolygonDrawn === false
-        ) {
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
             // save the previous mode so we can restore it when the user cancel the drawing
             if (!isInDrawingMode) {
                 previousStudyDisplayMode.current = studyDisplayMode;
@@ -197,37 +183,18 @@ const MapViewer = ({
             dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
         }
         // the user has a polygon, and want to draw another
-        else if (
-            drawingMode === DRAW_MODES.DRAW_POLYGON &&
-            isPolygonDrawn === true
-        ) {
-            if (
-                networkMapref.current.getMapDrawer()?.getAll().features
-                    ?.length > 1
-            ) {
+        else if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
+            if (networkMapref.current.getMapDrawer()?.getAll().features?.length > 1) {
                 setShouldOpenSelectionCreationPanel(false);
-                const idFirstPolygon = networkMapref.current
-                    .getMapDrawer()
-                    .getAll().features[0].id;
-                networkMapref.current
-                    .getMapDrawer()
-                    .delete(String(idFirstPolygon));
+                const idFirstPolygon = networkMapref.current.getMapDrawer().getAll().features[0].id;
+                networkMapref.current.getMapDrawer().delete(String(idFirstPolygon));
             }
         }
         // transition between Drawing polygon mode -> cancel the drawing and return to previous display mode
-        else if (
-            drawingMode === DRAW_MODES.SIMPLE_SELECT &&
-            isPolygonDrawn === false
-        ) {
+        else if (drawingMode === DRAW_MODES.SIMPLE_SELECT && isPolygonDrawn === false) {
             navigateToPreviousDisplayMode();
         }
-    }, [
-        dispatch,
-        drawingMode,
-        navigateToPreviousDisplayMode,
-        studyDisplayMode,
-        isInDrawingMode,
-    ]);
+    }, [dispatch, drawingMode, navigateToPreviousDisplayMode, studyDisplayMode, isInDrawingMode]);
 
     const onDrawEvent = useCallback((event) => {
         switch (event) {
@@ -260,35 +227,22 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === StudyDisplayMode.TREE ||
-                            studyDisplayMode === StudyDisplayMode.HYBRID
+                            studyDisplayMode === StudyDisplayMode.TREE || studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
-                        flexBasis:
-                            studyDisplayMode === StudyDisplayMode.HYBRID
-                                ? '50%'
-                                : '100%',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
                     }}
                 >
                     <ReactFlowProvider>
-                        <NetworkModificationTreePane
-                            studyUuid={studyUuid}
-                            studyMapTreeDisplay={studyDisplayMode}
-                        />
+                        <NetworkModificationTreePane studyUuid={studyUuid} studyMapTreeDisplay={studyDisplayMode} />
                     </ReactFlowProvider>
                 </Box>
                 {/* Map */}
                 <Box
                     sx={{
-                        display:
-                            studyDisplayMode !== StudyDisplayMode.TREE
-                                ? 'flex'
-                                : 'none',
-                        flexBasis:
-                            studyDisplayMode === StudyDisplayMode.HYBRID
-                                ? '50%'
-                                : '100%',
+                        display: studyDisplayMode !== StudyDisplayMode.TREE ? 'flex' : 'none',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
                         height: '100%',
                     }}
                 >
@@ -302,9 +256,7 @@ const MapViewer = ({
                             <Box
                                 sx={{
                                     position: 'absolute',
-                                    width: shouldOpenSelectionCreationPanel
-                                        ? '80%'
-                                        : '100%',
+                                    width: shouldOpenSelectionCreationPanel ? '80%' : '100%',
                                     height: '100%',
                                 }}
                             >
@@ -321,18 +273,12 @@ const MapViewer = ({
                                 <NetworkMapTab
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
-                                    visible={
-                                        view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                            StudyDisplayMode.TREE
-                                    }
+                                    visible={view === StudyView.MAP && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={lineFullPath}
                                     lineParallelPath={lineParallelPath}
                                     lineFlowMode={lineFlowMode}
                                     lineFlowColorMode={lineFlowColorMode}
-                                    lineFlowAlertThreshold={
-                                        lineFlowAlertThreshold
-                                    }
+                                    lineFlowAlertThreshold={lineFlowAlertThreshold}
                                     openVoltageLevel={openVoltageLevel}
                                     currentNode={currentNode}
                                     onChangeTab={onChangeTab}
@@ -355,16 +301,12 @@ const MapViewer = ({
                                     view === StudyView.MAP &&
                                     studyDisplayMode !== StudyDisplayMode.TREE
                                 }
-                                oneBusShortCircuitStatus={
-                                    oneBusShortCircuitStatus
-                                }
+                                oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                             />
 
                             <Box
                                 sx={{
-                                    width: shouldOpenSelectionCreationPanel
-                                        ? '20%'
-                                        : '0%',
+                                    width: shouldOpenSelectionCreationPanel ? '20%' : '0%',
                                     height: '100%',
                                     position: 'absolute',
                                     right: 0,
@@ -374,9 +316,7 @@ const MapViewer = ({
                                     <SelectionCreationPanel
                                         getEquipments={getEquipments}
                                         onCancel={() => {
-                                            setShouldOpenSelectionCreationPanel(
-                                                false
-                                            );
+                                            setShouldOpenSelectionCreationPanel(false);
                                         }}
                                         nominalVoltages={nominalVoltages}
                                     />

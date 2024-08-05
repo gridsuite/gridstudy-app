@@ -14,11 +14,7 @@ export const useSearchEvent = (enableSearchCallback: () => void) => {
     useEffect(() => {
         if (user) {
             const openSearch = (e: KeyboardEvent) => {
-                if (
-                    e.ctrlKey &&
-                    e.shiftKey &&
-                    (e.key === 'F' || e.key === 'f')
-                ) {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
                     e.preventDefault();
                     enableSearchCallback();
                 }

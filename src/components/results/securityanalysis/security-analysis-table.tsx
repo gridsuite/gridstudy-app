@@ -7,11 +7,7 @@
 
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
 import { SecurityAnalysisResultProps } from './security-analysis.type';
-import {
-    getNoRowsMessage,
-    getRows,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
@@ -20,14 +16,16 @@ import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
-export const SecurityAnalysisTable: FunctionComponent<
-    SecurityAnalysisResultProps
-> = ({ rows, columnDefs, isLoadingResult, agGridProps }) => {
+export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
+    rows,
+    columnDefs,
+    isLoadingResult,
+    agGridProps,
+}) => {
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
-        (state: AppState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
 
