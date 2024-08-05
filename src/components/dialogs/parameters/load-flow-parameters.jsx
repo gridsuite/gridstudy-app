@@ -12,7 +12,6 @@ import {
     FlatParameters,
     SubmitButton,
     useSnackMessage,
-    yup,
 } from '@gridsuite/commons-ui';
 import {
     Autocomplete,
@@ -455,7 +454,10 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
-export const LoadFlowParameters = ({ parametersBackend }) => {
+export const LoadFlowParameters = ({
+    parametersBackend,
+    setHaveDirtyFields,
+}) => {
     const [
         providers,
         provider,
@@ -564,58 +566,6 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         }
     }, [provider, resetProvider, enableDeveloperMode]);
 
-    const getFormSchema = () => {
-        if (provider === 'OpenLoadFlow' && params.limitReductions !== null) {
-            getLimitReductionsFormSchema(params?.limitReductions);
-        } else {
-            // Return an empty schema or some other default schema
-            return yup.object().shape({});
-        }
-    };
-    const formSchema = getFormSchema();
-
-    const formMethods = useForm({
-        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
-        resolver: yupResolver(formSchema),
-    });
-    const { handleSubmit } = formMethods;
-
-    const toLimitReductions = useCallback(
-        (formLimits) => {
-            return params.limitReductions.map((vlLimits, indexVl) => {
-                let vlLNewLimits = {
-                    ...vlLimits,
-                    permanentLimitReduction: formLimits[indexVl][IST_FORM],
-                };
-                vlLimits.temporaryLimitReductions.forEach(
-                    (temporaryLimit, index) => {
-                        vlLNewLimits.temporaryLimitReductions[index] = {
-                            ...temporaryLimit,
-                            reduction:
-                                formLimits[indexVl][
-                                    LIMIT_DURATION_FORM + index
-                                ],
-                        };
-                    }
-                );
-                return vlLNewLimits;
-            });
-        },
-        [params]
-    );
-
-    const updateLimitReductions = useCallback(
-        (formLimits) => {
-            updateParameters({
-                ...params,
-                limitReductions: toLimitReductions(
-                    formLimits[LIMIT_REDUCTIONS_FORM],
-                    params
-                ),
-            });
-        },
-        [params, updateParameters, toLimitReductions]
-    );
     // TODO: remove this when DynaFlow will be available not only in developer mode
     const LoadFlowProviders = Object.fromEntries(
         Object.entries(providers).filter(
@@ -669,10 +619,59 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             specificParametersPerProvider: speceficParameters,
         };
     }, []);
+
     const [tabValue, setTabValue] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
+
+    const formSchema = getLimitReductionsFormSchema(params.limitReductions);
+    const formMethods = useForm({
+        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        resolver: yupResolver(formSchema),
+    });
+
+    const toLimitReductions = useCallback(
+        (formLimits) => {
+            return params.limitReductions.map((vlLimits, indexVl) => {
+                let vlLNewLimits = {
+                    ...vlLimits,
+                    permanentLimitReduction: formLimits[indexVl][IST_FORM],
+                };
+                vlLimits.temporaryLimitReductions.forEach(
+                    (temporaryLimit, index) => {
+                        vlLNewLimits.temporaryLimitReductions[index] = {
+                            ...temporaryLimit,
+                            reduction:
+                                formLimits[indexVl][
+                                    LIMIT_DURATION_FORM + index
+                                ],
+                        };
+                    }
+                );
+                return vlLNewLimits;
+            });
+        },
+        [params]
+    );
+
+    const { handleSubmit, formState } = formMethods;
+
+    const updateLimitReductions = useCallback(
+        (formLimits) => {
+            updateParameters({
+                ...params,
+                limitReductions: toLimitReductions(
+                    formLimits[LIMIT_REDUCTIONS_FORM]
+                ),
+            });
+        },
+        [params, updateParameters, toLimitReductions]
+    );
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
 
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
