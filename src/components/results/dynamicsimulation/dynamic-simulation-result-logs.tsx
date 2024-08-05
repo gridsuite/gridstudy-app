@@ -18,8 +18,7 @@ import Overlay from '../common/Overlay';
 
 const DynamicSimulationResultLogs = memo(() => {
     const dynamicSimulationStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+        (state: ReduxState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
     const intl = useIntl();
@@ -41,9 +40,7 @@ const DynamicSimulationResultLogs = memo(() => {
     return (
         <>
             <Overlay message={overlayMessage}>
-                <ComputationReportViewer
-                    reportType={REPORT_TYPES.DYNAMIC_SIMULATION}
-                />
+                <ComputationReportViewer reportType={REPORT_TYPES.DYNAMIC_SIMULATION} />
             </Overlay>
         </>
     );

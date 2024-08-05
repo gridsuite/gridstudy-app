@@ -27,9 +27,11 @@ interface GenericIllustrationNetworkModificationProps {
 /**
  * This component displays a hide able explanation illustration
  */
-const GenericIllustrationNetworkModification: React.FC<
-    GenericIllustrationNetworkModificationProps
-> = ({ svgComponent: SvgComponent, replacedTexts, backgroundElementId }) => {
+const GenericIllustrationNetworkModification: React.FC<GenericIllustrationNetworkModificationProps> = ({
+    svgComponent: SvgComponent,
+    replacedTexts,
+    backgroundElementId,
+}) => {
     const [showDiagram, setShowDiagram] = useState(true);
     const intl = useIntl();
     const theme = useSelector((state: ReduxState) => state[PARAM_THEME]);
@@ -52,40 +54,25 @@ const GenericIllustrationNetworkModification: React.FC<
          * @param cssProperty : String preceding and describing the property whose opacity must be changed
          * @param svgElt : element fetched from the svg that should be updated
          */
-        function updateOpacity(
-            cssProperty: string,
-            svgElt: HTMLElement | null
-        ) {
+        function updateOpacity(cssProperty: string, svgElt: HTMLElement | null) {
             if (!!svgElt) {
                 const eltCssText = svgElt.style.cssText;
                 const indexOpacity = eltCssText.indexOf(cssProperty);
                 if (indexOpacity !== -1) {
                     svgElt.style.cssText =
-                        eltCssText.substring(
-                            0,
-                            indexOpacity + cssProperty.length
-                        ) +
+                        eltCssText.substring(0, indexOpacity + cssProperty.length) +
                         (theme === LIGHT_THEME ? '0' : '1') +
-                        eltCssText.substring(
-                            indexOpacity + cssProperty.length + 1
-                        );
+                        eltCssText.substring(indexOpacity + cssProperty.length + 1);
                 } else {
-                    svgElt.style.cssText =
-                        cssProperty + (theme === LIGHT_THEME ? '0' : '1');
+                    svgElt.style.cssText = cssProperty + (theme === LIGHT_THEME ? '0' : '1');
                 }
             }
         }
-        updateOpacity(
-            'fill-opacity: ',
-            document.getElementById(backgroundElementId)
-        );
+        updateOpacity('fill-opacity: ', document.getElementById(backgroundElementId));
     }, [backgroundElementId, theme]);
 
     return (
-        <AccordionIllustration
-            state={showDiagram}
-            onClick={() => setShowDiagram((showDiagram) => !showDiagram)}
-        >
+        <AccordionIllustration state={showDiagram} onClick={() => setShowDiagram((showDiagram) => !showDiagram)}>
             <Paper elevation={0} sx={{ backgroundColor: 'transparent' }}>
                 <SvgComponent />
             </Paper>

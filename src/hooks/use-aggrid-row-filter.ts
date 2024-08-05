@@ -29,9 +29,7 @@ const removeElementFromArrayWithFieldValue = (
     filtersArrayToRemoveFieldValueFrom: FilterSelectorType[],
     field: string
 ) => {
-    return filtersArrayToRemoveFieldValueFrom.filter(
-        (f: FilterSelectorType) => f.column !== field
-    );
+    return filtersArrayToRemoveFieldValueFrom.filter((f: FilterSelectorType) => f.column !== field);
 };
 
 const changeValueFromArrayWithFieldValue = (
@@ -39,9 +37,7 @@ const changeValueFromArrayWithFieldValue = (
     field: string,
     newData: FilterSelectorType
 ) => {
-    const filterIndex = filtersArrayToModify.findIndex(
-        (f: FilterSelectorType) => f.column === field
-    );
+    const filterIndex = filtersArrayToModify.findIndex((f: FilterSelectorType) => f.column === field);
     if (filterIndex === -1) {
         return [...filtersArrayToModify, newData];
     } else {
@@ -57,9 +53,7 @@ export const useAggridRowFilter = (
 ): UseAggridRowFilterOutputType => {
     const dispatch = useDispatch();
     const { filterType, filterTab, filterStoreAction } = filterStoreParam;
-    const filterStore = useSelector(
-        (state: any) => state[filterType][filterTab]
-    );
+    const filterStore = useSelector((state: any) => state[filterType][filterTab]);
 
     const updateFilter = useCallback(
         (field: string, data: FilterDataType): void => {
@@ -72,30 +66,15 @@ export const useAggridRowFilter = (
             let updatedFilters;
 
             if (!data.value) {
-                updatedFilters = removeElementFromArrayWithFieldValue(
-                    filterStore,
-                    field
-                );
+                updatedFilters = removeElementFromArrayWithFieldValue(filterStore, field);
             } else {
-                updatedFilters = changeValueFromArrayWithFieldValue(
-                    filterStore,
-                    field,
-                    newFilter
-                );
+                updatedFilters = changeValueFromArrayWithFieldValue(filterStore, field, newFilter);
             }
 
             updateFilterCallback && updateFilterCallback();
-            filterStoreAction &&
-                filterTab &&
-                dispatch(filterStoreAction(filterTab, updatedFilters));
+            filterStoreAction && filterTab && dispatch(filterStoreAction(filterTab, updatedFilters));
         },
-        [
-            filterTab,
-            filterStore,
-            updateFilterCallback,
-            dispatch,
-            filterStoreAction,
-        ]
+        [filterTab, filterStore, updateFilterCallback, dispatch, filterStoreAction]
     );
 
     return { updateFilter, filterSelector: filterStore };

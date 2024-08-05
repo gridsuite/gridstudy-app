@@ -5,24 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ComponentResult,
-    LimitTypes,
-    OverloadedEquipment,
-    OverloadedEquipmentFromBack,
-} from './load-flow-result.type';
+import { ComponentResult, LimitTypes, OverloadedEquipment, OverloadedEquipmentFromBack } from './load-flow-result.type';
 import { IntlShape } from 'react-intl';
-import {
-    ColDef,
-    ICellRendererParams,
-    ValueFormatterParams,
-    ValueGetterParams,
-} from 'ag-grid-community';
+import { ColDef, ICellRendererParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { BranchSide } from '../../utils/constants';
-import {
-    convertDuration,
-    formatNAValue,
-} from '../../spreadsheet/utils/cell-renderers';
+import { convertDuration, formatNAValue } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
@@ -34,26 +21,19 @@ import {
     FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';
-import {
-    translateLimitNameBackToFront,
-    translateLimitNameFrontToBack,
-} from '../common/utils';
+import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
     LOADFLOW_RESULT,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType, {
-    ComputingType,
-} from '../../computing-status/computing-type';
+import computingType, { ComputingType } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import RunningStatus from 'components/utils/running-status';
 
-export const convertMillisecondsToMinutesSeconds = (
-    durationInMilliseconds: number
-): string => {
+export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
 
     const minutes = Math.floor(durationInSeconds / 60);
@@ -78,10 +58,7 @@ export const convertSide = (side: string | undefined, intl: IntlShape) => {
         : undefined;
 };
 
-export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<
-    string,
-    string
-> = {
+export const FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT: Record<string, string> = {
     subjectId: 'subjectId',
     status: 'status',
     limitType: 'limitType',
@@ -107,10 +84,7 @@ export const FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT: Record<string, string> = {
 
 const textFilterParams = {
     filterDataType: FILTER_DATA_TYPES.TEXT,
-    filterComparators: [
-        FILTER_TEXT_COMPARATORS.STARTS_WITH,
-        FILTER_TEXT_COMPARATORS.CONTAINS,
-    ],
+    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
 };
 
 const translatedFilterParams = {
@@ -172,17 +146,12 @@ export const makeData = (
             subjectId: overloadedEquipment.subjectId,
             value: overloadedEquipment.value,
             actualOverloadDuration:
-                overloadedEquipment.actualOverloadDuration ===
-                UNDEFINED_ACCEPTABLE_DURATION
+                overloadedEquipment.actualOverloadDuration === UNDEFINED_ACCEPTABLE_DURATION
                     ? null
                     : overloadedEquipment.actualOverloadDuration,
-            upComingOverloadDuration:
-                overloadedEquipment.upComingOverloadDuration,
+            upComingOverloadDuration: overloadedEquipment.upComingOverloadDuration,
             limit: overloadedEquipment.limit,
-            limitName: translateLimitNameBackToFront(
-                overloadedEquipment.limitName,
-                intl
-            ),
+            limitName: translateLimitNameBackToFront(overloadedEquipment.limitName, intl),
             side: convertSide(overloadedEquipment.side, intl),
             limitType: overloadedEquipment.limitType,
         };
@@ -203,48 +172,29 @@ export const useFetchFiltersEnums = (): {
         side: null,
     });
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
-    const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const currentNode = useSelector((state: ReduxState) => state.currentTreeNode);
+    const loadFlowStatus = useSelector((state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
         if (loadFlowStatus !== RunningStatus.SUCCEED) {
             return;
         }
 
-        const filterTypes = [
-            'computation-status',
-            'limit-types',
-            'branch-sides',
-        ];
+        const filterTypes = ['computation-status', 'limit-types', 'branch-sides'];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.LOAD_FLOW,
-                filterType
-            )
+            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, computingType.LOAD_FLOW, filterType)
         );
 
         setLoading(true);
         Promise.all(promises)
-            .then(
-                ([
-                    computationsStatusResult,
-                    limitTypesResult,
-                    branchSidesResult,
-                ]) => {
-                    setResult({
-                        status: computationsStatusResult,
-                        limitType: limitTypesResult,
-                        side: branchSidesResult,
-                    });
-                }
-            )
+            .then(([computationsStatusResult, limitTypesResult, branchSidesResult]) => {
+                setResult({
+                    status: computationsStatusResult,
+                    limitType: limitTypesResult,
+                    side: branchSidesResult,
+                });
+            })
             .catch((err) => {
                 setError(err);
             })
@@ -256,19 +206,13 @@ export const useFetchFiltersEnums = (): {
     return { loading, result, error };
 };
 
-export const convertFilterValues = (
-    filterSelector: FilterSelectorType[],
-    intl: IntlShape
-) => {
+export const convertFilterValues = (filterSelector: FilterSelectorType[], intl: IntlShape) => {
     return filterSelector.map((filter) => {
         switch (filter.column) {
             case 'limitName':
                 return {
                     ...filter,
-                    value: translateLimitNameFrontToBack(
-                        filter.value as string,
-                        intl
-                    ),
+                    value: translateLimitNameFrontToBack(filter.value as string, intl),
                 };
             default:
                 return filter;
@@ -296,8 +240,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             sortProps,
             filterProps,
             filterParams: translatedFilterParams,
-            valueFormatter: (params: ValueFormatterParams) =>
-                formatNAValue(params.value, intl),
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
@@ -335,8 +278,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                 ...numericFilterParams,
                 isDuration: true,
             },
-            valueGetter: (value: ValueGetterParams) =>
-                convertDuration(value.data.actualOverloadDuration),
+            valueGetter: (value: ValueGetterParams) => convertDuration(value.data.actualOverloadDuration),
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
@@ -350,10 +292,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
             valueGetter: (value: ValueGetterParams) => {
                 if (value.data.upComingOverloadDuration === null) {
                     return intl.formatMessage({ id: 'NoneUpcomingOverload' });
-                } else if (
-                    value.data.upComingOverloadDuration ===
-                    UNDEFINED_ACCEPTABLE_DURATION
-                ) {
+                } else if (value.data.upComingOverloadDuration === UNDEFINED_ACCEPTABLE_DURATION) {
                     return ' ';
                 }
                 return convertDuration(value.data.upComingOverloadDuration);
@@ -373,9 +312,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
 };
 
 export const formatLimitType = (limitType: string, intl: IntlShape) => {
-    return limitType in LimitTypes
-        ? intl.formatMessage({ id: limitType })
-        : limitType;
+    return limitType in LimitTypes ? intl.formatMessage({ id: limitType }) : limitType;
 };
 export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
@@ -494,9 +431,7 @@ export const formatComponentResult = (componentResults: ComponentResult[]) => {
             synchronousComponentNum: componentResult.synchronousComponentNum,
             status: componentResult.status,
             iterationCount: componentResult.iterationCount,
-            id: componentResult.slackBusResults
-                ?.map((slackBus) => slackBus.id)
-                .join(' | '),
+            id: componentResult.slackBusResults?.map((slackBus) => slackBus.id).join(' | '),
             activePowerMismatch: componentResult.slackBusResults
                 ?.map((slackBus) => slackBus.activePowerMismatch)
                 .reduce((prev, current) => prev + current, 0),

@@ -7,9 +7,7 @@
 
 import { APP_NAME } from '../utils/config-params';
 
-export const SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX = (
-    APP_NAME + '_DIAGRAM_STATE_'
-).toUpperCase();
+export const SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX = (APP_NAME + '_DIAGRAM_STATE_').toUpperCase();
 
 const getDiagramStateKeyPrefixFromStudyUuid = (studyUuid) => {
     return SESSION_STORAGE_DIAGRAM_STATE_KEY_PREFIX + studyUuid;
@@ -19,16 +17,11 @@ export const syncDiagramStateWithSessionStorage = (diagramState, studyUuid) => {
     if (studyUuid == null) {
         return;
     }
-    sessionStorage.setItem(
-        getDiagramStateKeyPrefixFromStudyUuid(studyUuid),
-        JSON.stringify(diagramState)
-    );
+    sessionStorage.setItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid), JSON.stringify(diagramState));
 };
 
 export const loadDiagramStateFromSessionStorage = (studyUuid) => {
-    const diagramState = JSON.parse(
-        sessionStorage.getItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid))
-    );
+    const diagramState = JSON.parse(sessionStorage.getItem(getDiagramStateKeyPrefixFromStudyUuid(studyUuid)));
     if (diagramState === null) {
         return [];
     }

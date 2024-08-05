@@ -15,12 +15,7 @@ import {
 } from './shortcircuit-analysis-result.type';
 import { ReduxState } from 'redux/reducer.type';
 import { RunningStatus } from 'components/utils/running-status';
-import React, {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
@@ -37,10 +32,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import {
-    FilterEnumsType,
-    useAggridRowFilter,
-} from '../../../hooks/use-aggrid-row-filter';
+import { FilterEnumsType, useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -61,9 +53,7 @@ interface IShortCircuitAnalysisGlobalResultProps {
     onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
-export const ShortCircuitAnalysisResult: FunctionComponent<
-    IShortCircuitAnalysisGlobalResultProps
-> = ({
+export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysisGlobalResultProps> = ({
     analysisType,
     analysisStatus,
     result,
@@ -75,21 +65,16 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const [rowsPerPage, setRowsPerPage] = useState<number>(
-        DEFAULT_PAGE_COUNT as number
-    );
+    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT as number);
     const [count, setCount] = useState<number>(0);
     const [page, setPage] = useState<number>(0);
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [filterEnums, setFilterEnums] = useState<FilterEnumsType>({});
 
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: ReduxState) => state.currentTreeNode);
 
-    const isOneBusShortCircuitAnalysisType =
-        analysisType === ShortCircuitAnalysisType.ONE_BUS;
+    const isOneBusShortCircuitAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
     const fromFrontColumnToBackKeys = isOneBusShortCircuitAnalysisType
         ? FROM_COLUMN_TO_FIELD_ONE_BUS
@@ -142,19 +127,12 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
             colId: fromFrontColumnToBackKeys[sort.colId],
         }));
 
-        const updatedFilters = filterSelector
-            ? convertFilterValues(filterSelector)
-            : null;
+        const updatedFilters = filterSelector ? convertFilterValues(filterSelector) : null;
 
         const selector = {
             page,
             size: rowsPerPage,
-            filter: updatedFilters
-                ? mapFieldsToColumnsFilter(
-                      updatedFilters,
-                      fromFrontColumnToBackKeys
-                  )
-                : null,
+            filter: updatedFilters ? mapFieldsToColumnsFilter(updatedFilters, fromFrontColumnToBackKeys) : null,
             sort: backSortConfig,
         };
 
@@ -209,12 +187,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         const filterTypes = ['fault-types', 'limit-violation-types'];
 
         const promises = filterTypes.map((filter) =>
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode?.id,
-                computingType.SHORT_CIRCUIT,
-                filter
-            )
+            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.SHORT_CIRCUIT, filter)
         );
 
         Promise.all(promises)

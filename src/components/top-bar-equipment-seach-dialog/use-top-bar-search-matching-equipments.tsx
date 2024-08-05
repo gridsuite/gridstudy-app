@@ -16,16 +16,13 @@ interface UseTopBarSearchMatchingEquipmentProps {
     equipmentType?: EquipmentType;
 }
 
-export const useTopBarSearchMatchingEquipment = (
-    props: UseTopBarSearchMatchingEquipmentProps
-) => {
+export const useTopBarSearchMatchingEquipment = (props: UseTopBarSearchMatchingEquipmentProps) => {
     const { nodeUuid, studyUuid, equipmentType } = props;
-    const { equipmentsFound, searchTerm, ...otherStates } =
-        useSearchMatchingEquipments({
-            studyUuid: studyUuid,
-            nodeUuid: nodeUuid,
-            equipmentType: equipmentType ?? undefined,
-        });
+    const { equipmentsFound, searchTerm, ...otherStates } = useSearchMatchingEquipments({
+        studyUuid: studyUuid,
+        nodeUuid: nodeUuid,
+        equipmentType: equipmentType ?? undefined,
+    });
 
     // when searching from topbar, if user input is empty, display last clicked element from localstorage
     const equipmentsToReturn = useMemo(() => {

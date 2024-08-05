@@ -15,10 +15,7 @@ type CommonEventPropertyName = 'staticId' | 'startTime';
 type DisconnectEventPropertyName = 'disconnectOnly';
 type NodeFaultEventPropertyName = 'faultTime' | 'rPu' | 'xPu';
 
-export type EventPropertyName =
-    | CommonEventPropertyName
-    | DisconnectEventPropertyName
-    | NodeFaultEventPropertyName;
+export type EventPropertyName = CommonEventPropertyName | DisconnectEventPropertyName | NodeFaultEventPropertyName;
 
 export enum PrimitiveTypes {
     ENUM = 'ENUM',

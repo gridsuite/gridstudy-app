@@ -22,22 +22,19 @@ interface ShortCircuitAnalysisAllBusResultProps {
     onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
-export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<
-    ShortCircuitAnalysisAllBusResultProps
-> = ({ onGridColumnsChanged, onRowDataUpdated }) => {
+export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitAnalysisAllBusResultProps> = ({
+    onGridColumnsChanged,
+    onRowDataUpdated,
+}) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT]
+        (state: ReduxState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const [result, setResult] = useState<SCAFaultResult[]>([]);
 
-    const updateResult = useCallback(
-        (results: SCAFaultResult[] | SCAFeederResult[] | null) => {
-            setResult((results as SCAFaultResult[]) ?? []);
-        },
-        []
-    );
+    const updateResult = useCallback((results: SCAFaultResult[] | SCAFeederResult[] | null) => {
+        setResult((results as SCAFaultResult[]) ?? []);
+    }, []);
 
     return (
         <ShortCircuitAnalysisResult
@@ -46,8 +43,7 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<
             result={result}
             updateResult={updateResult}
             customTablePaginationProps={{
-                labelRowsPerPageId:
-                    'muiTablePaginationLabelRowsPerPageAllBusesSCA',
+                labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPageAllBusesSCA',
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}

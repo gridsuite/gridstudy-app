@@ -46,13 +46,12 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
-        useSearchMatchingEquipments({
-            studyUuid: studyUuid,
-            nodeUuid: currentNodeUuid,
-            inUpstreamBuiltParentNode: true,
-            equipmentType: equipmentType,
-        });
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useSearchMatchingEquipments({
+        studyUuid: studyUuid,
+        nodeUuid: currentNodeUuid,
+        inUpstreamBuiltParentNode: true,
+        equipmentType: equipmentType,
+    });
 
     return (
         <ElementSearchDialog
@@ -65,18 +64,10 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
                 onSelectionChange(element);
             }}
             elementsFound={equipmentsFound}
-            renderElement={(props) => (
-                <EquipmentItem
-                    styles={equipmentStyles}
-                    {...props}
-                    key={props.element.key}
-                />
-            )}
+            renderElement={(props) => <EquipmentItem styles={equipmentStyles} {...props} key={props.element.key} />}
             loading={isLoading}
             getOptionLabel={(equipment) => equipment.label}
-            isOptionEqualToValue={(equipment1, equipment2) =>
-                equipment1.id === equipment2.id
-            }
+            isOptionEqualToValue={(equipment1, equipment2) => equipment1.id === equipment2.id}
             renderInput={(displayedValue, params) => (
                 <TextField
                     autoFocus={true}

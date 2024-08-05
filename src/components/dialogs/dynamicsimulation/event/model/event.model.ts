@@ -4,18 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Event,
-    EventDefinition,
-    EventType,
-    PrimitiveTypes,
-} from '../types/event.type';
+import { Event, EventDefinition, EventType, PrimitiveTypes } from '../types/event.type';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
-const BRANCH_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.LINE,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-];
+const BRANCH_EQUIPMENT_TYPES = [EQUIPMENT_TYPES.LINE, EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER];
 
 export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
     startTime: {
@@ -97,16 +89,9 @@ export const getEventType = (equipmentType: string): EventType | undefined => {
 
 // util methods for Event
 export const getStartTime = (event: Event): number => {
-    return parseFloat(
-        event.properties.find((property) => property.name === 'startTime')
-            ?.value ?? ''
-    );
+    return parseFloat(event.properties.find((property) => property.name === 'startTime')?.value ?? '');
 };
 
 export const getStartTimeUnit = (event: Event): string => {
-    return (
-        (event.eventType &&
-            eventDefinitions[event.eventType]?.startTime?.unit) ??
-        ''
-    );
+    return (event.eventType && eventDefinitions[event.eventType]?.startTime?.unit) ?? '';
 };

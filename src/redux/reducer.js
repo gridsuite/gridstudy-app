@@ -102,10 +102,7 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './local-storage/local-storage';
-import {
-    TABLES_COLUMNS_NAMES_JSON,
-    TABLES_DEFINITIONS,
-} from '../components/spreadsheet/utils/config-tables';
+import { TABLES_COLUMNS_NAMES_JSON, TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_MAPBOX,
     PARAM_CENTER_LABEL,
@@ -137,10 +134,7 @@ import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/utils/node-insert-modes';
-import {
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../components/utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     LOADFLOW_CURRENT_LIMIT_VIOLATION,
@@ -252,17 +246,12 @@ const defaultSpreadsheetSort = [
     },
 ];
 
-const initialSpreadsheetSort = Object.values(TABLES_DEFINITIONS).reduce(
-    (acc, current) => {
-        acc[current.type] = defaultSpreadsheetSort;
-        return acc;
-    },
-    {}
-);
+const initialSpreadsheetSort = Object.values(TABLES_DEFINITIONS).reduce((acc, current) => {
+    acc[current.type] = defaultSpreadsheetSort;
+    return acc;
+}, {});
 
-export const defaultOptionalServicesState = Object.keys(
-    OptionalServicesNames
-).map((key) => ({
+export const defaultOptionalServicesState = Object.keys(OptionalServicesNames).map((key) => ({
     name: key,
     status: OptionalServicesStatus.Pending,
 }));
@@ -403,8 +392,7 @@ const initialState = {
         [SECURITY_ANALYSIS_RESULT_SORT_STORE]: securityAnalysisResultSort,
         [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: sensitivityAnalysisResultSort,
         [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: dynamicSimulationResultSort,
-        [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]:
-            shortcircuitAnalysisResultSort,
+        [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: shortcircuitAnalysisResultSort,
     },
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
@@ -417,9 +405,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.studyUuid = action.studyRef[0];
 
         if (action.studyRef[0] != null) {
-            state.diagramStates = loadDiagramStateFromSessionStorage(
-                action.studyRef[0]
-            );
+            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
         }
     });
 
@@ -457,15 +443,13 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LOAD_NETWORK_MODIFICATION_TREE_SUCCESS, (state, action) => {
-        state.networkModificationTreeModel =
-            action.networkModificationTreeModel;
+        state.networkModificationTreeModel = action.networkModificationTreeModel;
         state.networkModificationTreeModel.setBuildingStatus();
     });
 
     builder.addCase(NETWORK_MODIFICATION_TREE_NODE_ADDED, (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel =
-                state.networkModificationTreeModel.newSharedForUpdate();
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             newModel.addChild(
                 action.networkModificationTreeNode,
                 action.parentNodeId,
@@ -475,11 +459,7 @@ export const reducer = createReducer(initialState, (builder) => {
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
-            if (
-                action.networkModificationTreeNode?.childrenIds.includes(
-                    state.currentTreeNode?.id
-                )
-            ) {
+            if (action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
@@ -488,8 +468,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NETWORK_MODIFICATION_TREE_NODE_MOVED, (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel =
-                state.networkModificationTreeModel.newSharedForUpdate();
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             newModel.removeNodes([action.networkModificationTreeNode.id]);
             newModel.addChild(
                 action.networkModificationTreeNode,
@@ -500,11 +479,7 @@ export const reducer = createReducer(initialState, (builder) => {
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
-            if (
-                action.networkModificationTreeNode?.childrenIds.includes(
-                    state.currentTreeNode?.id
-                )
-            ) {
+            if (action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
@@ -513,86 +488,54 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NETWORK_MODIFICATION_HANDLE_SUBTREE, (state, action) => {
         if (state.networkModificationTreeModel) {
-            let newModel =
-                state.networkModificationTreeModel.newSharedForUpdate();
-            unravelSubTree(
-                newModel,
-                action.parentNodeId,
-                action.networkModificationTreeNodes
-            );
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
 
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
         }
     });
 
-    builder.addCase(
-        NETWORK_MODIFICATION_TREE_NODES_REMOVED,
-        (state, action) => {
-            if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate();
+    builder.addCase(NETWORK_MODIFICATION_TREE_NODES_REMOVED, (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
 
-                //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
-                //in the future, if the deleted nodes are no longer contiguous we will need another implementation
-                const nextCurrentNodeUuid = newModel.treeNodes
-                    .filter((node) =>
-                        action.networkModificationTreeNodes.includes(node.id)
-                    )
-                    .map((node) => node.data.parentNodeUuid)
-                    .find(
-                        (parentNodeUuid) =>
-                            !action.networkModificationTreeNodes.includes(
-                                parentNodeUuid
-                            )
-                    );
+            //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
+            //in the future, if the deleted nodes are no longer contiguous we will need another implementation
+            const nextCurrentNodeUuid = newModel.treeNodes
+                .filter((node) => action.networkModificationTreeNodes.includes(node.id))
+                .map((node) => node.data.parentNodeUuid)
+                .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
 
-                newModel.removeNodes(action.networkModificationTreeNodes);
-                newModel.updateLayout();
-                state.networkModificationTreeModel = newModel;
+            newModel.removeNodes(action.networkModificationTreeNodes);
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
 
-                // check if current node is in the nodes deleted list
-                if (
-                    action.networkModificationTreeNodes.includes(
-                        state.currentTreeNode?.id
-                    )
-                ) {
-                    synchCurrentTreeNode(state, nextCurrentNodeUuid);
-                } // check if parent node of the current node is in the nodes deleted list
-                else if (
-                    action.networkModificationTreeNodes.includes(
-                        state.currentTreeNode?.data?.parentNodeUuid
-                    )
-                ) {
-                    // Then must overwrite currentTreeNode to get new parentNodeUuid
-                    synchCurrentTreeNode(state, state.currentTreeNode?.id);
-                }
+            // check if current node is in the nodes deleted list
+            if (action.networkModificationTreeNodes.includes(state.currentTreeNode?.id)) {
+                synchCurrentTreeNode(state, nextCurrentNodeUuid);
+            } // check if parent node of the current node is in the nodes deleted list
+            else if (action.networkModificationTreeNodes.includes(state.currentTreeNode?.data?.parentNodeUuid)) {
+                // Then must overwrite currentTreeNode to get new parentNodeUuid
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
-    );
+    });
 
-    builder.addCase(
-        NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-        (state, action) => {
-            if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate();
-                newModel.updateNodes(action.networkModificationTreeNodes);
-                state.networkModificationTreeModel = newModel;
-                state.networkModificationTreeModel.setBuildingStatus();
-                // check if current node is in the nodes updated list
-                if (
-                    action.networkModificationTreeNodes.find(
-                        (node) => node.id === state.currentTreeNode?.id
-                    )
-                ) {
-                    synchCurrentTreeNode(state, state.currentTreeNode?.id);
-                    // current node has changed, then will need to reload Geo Data
-                    state.reloadMap = true;
-                }
+    builder.addCase(NETWORK_MODIFICATION_TREE_NODES_UPDATED, (state, action) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.updateNodes(action.networkModificationTreeNodes);
+            state.networkModificationTreeModel = newModel;
+            state.networkModificationTreeModel.setBuildingStatus();
+            // check if current node is in the nodes updated list
+            if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
+                // current node has changed, then will need to reload Geo Data
+                state.reloadMap = true;
             }
         }
-    );
+    });
 
     builder.addCase(STUDY_UPDATED, (state, action) => {
         state.studyUpdated = {
@@ -673,8 +616,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LINE_FLOW_ALERT_THRESHOLD, (state, action) => {
-        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
-            action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
+        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] = action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
     });
 
     builder.addCase(UNAUTHORIZED_USER_INFO, (state, action) => {
@@ -694,8 +636,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(SHOW_AUTH_INFO_LOGIN, (state, action) => {
-        state.showAuthenticationRouterLogin =
-            action.showAuthenticationRouterLogin;
+        state.showAuthenticationRouterLogin = action.showAuthenticationRouterLogin;
     });
 
     builder.addCase(MAP_MANUAL_REFRESH, (state, action) => {
@@ -760,8 +701,7 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action) => {
-        state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
-            action[PARAM_FAVORITE_CONTINGENCY_LISTS];
+        state[PARAM_FAVORITE_CONTINGENCY_LISTS] = action[PARAM_FAVORITE_CONTINGENCY_LISTS];
     });
 
     builder.addCase(CURRENT_TREE_NODE, (state, action) => {
@@ -774,8 +714,7 @@ export const reducer = createReducer(initialState, (builder) => {
         if (
             selectionForCopy.sourceStudyUuid === state.studyUuid &&
             selectionForCopy.nodeId &&
-            (selectionForCopy.copyType === CopyType.SUBTREE_COPY ||
-                selectionForCopy.copyType === CopyType.SUBTREE_CUT)
+            (selectionForCopy.copyType === CopyType.SUBTREE_COPY || selectionForCopy.copyType === CopyType.SUBTREE_CUT)
         ) {
             selectionForCopy.allChildrenIds = getAllChildren(
                 state.networkModificationTreeModel,
@@ -789,10 +728,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
 
         // exclusively open between two components
-        if (
-            action.isModificationsDrawerOpen &&
-            state.isEventScenarioDrawerOpen
-        ) {
+        if (action.isModificationsDrawerOpen && state.isEventScenarioDrawerOpen) {
             state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
         }
     });
@@ -801,10 +737,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
 
         // exclusively open between two components
-        if (
-            action.isEventScenarioDrawerOpen &&
-            state.isModificationsDrawerOpen
-        ) {
+        if (action.isEventScenarioDrawerOpen && state.isModificationsDrawerOpen) {
             state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
         }
     });
@@ -814,17 +747,12 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_NOTIFICATION, (state, action) => {
-        state.notificationIdList = [
-            ...state.notificationIdList,
-            ...action.notificationIds,
-        ];
+        state.notificationIdList = [...state.notificationIdList, ...action.notificationIds];
     });
 
     builder.addCase(REMOVE_NOTIFICATION_BY_NODE, (state, action) => {
         state.notificationIdList = [
-            ...state.notificationIdList.filter(
-                (nodeId) => !action.notificationIds.includes(nodeId)
-            ),
+            ...state.notificationIdList.filter((nodeId) => !action.notificationIds.includes(nodeId)),
         ];
     });
 
@@ -857,15 +785,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(OPEN_DIAGRAM, (state, action) => {
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) =>
-                diagram.id === action.id && diagram.svgType === action.svgType
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
 
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // First, we check if there is already a Network Area Diagram in the diagramStates.
             const firstNadIndex = diagramStates.findIndex(
-                (diagram) =>
-                    diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                (diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
             );
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
@@ -884,13 +810,9 @@ export const reducer = createReducer(initialState, (builder) => {
                 }
             } else {
                 // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
-                if (
-                    diagramStates[firstNadIndex].state === ViewState.MINIMIZED
-                ) {
+                if (diagramStates[firstNadIndex].state === ViewState.MINIMIZED) {
                     diagramStates.forEach((diagram) => {
-                        if (
-                            diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                        ) {
+                        if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                             diagram.state = ViewState.OPENED;
                         }
                     });
@@ -908,8 +830,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
                 if (
                     state.fullScreenDiagram?.svgType &&
-                    state.fullScreenDiagram?.svgType !==
-                        DiagramType.NETWORK_AREA_DIAGRAM
+                    state.fullScreenDiagram?.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                 ) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
@@ -921,15 +842,11 @@ export const reducer = createReducer(initialState, (builder) => {
             // We check if the SLD to open is already in the diagramStates.
             if (diagramToOpenIndex >= 0) {
                 // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
-                if (
-                    diagramStates[diagramToOpenIndex].state ===
-                    ViewState.MINIMIZED
-                ) {
+                if (diagramStates[diagramToOpenIndex].state === ViewState.MINIMIZED) {
                     // We minimize all the other OPENED SLD.
                     diagramStates.forEach((diagram) => {
                         if (
-                            diagram.svgType !==
-                                DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagram.state === ViewState.OPENED
                         ) {
                             diagram.state = ViewState.MINIMIZED;
@@ -954,10 +871,7 @@ export const reducer = createReducer(initialState, (builder) => {
             } else {
                 // We minimize all the other OPENED SLD.
                 diagramStates.forEach((diagram) => {
-                    if (
-                        diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagram.state === ViewState.OPENED
-                    ) {
+                    if (diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.state === ViewState.OPENED) {
                         diagram.state = ViewState.MINIMIZED;
                     }
                 });
@@ -993,13 +907,10 @@ export const reducer = createReducer(initialState, (builder) => {
         } else {
             // For single line diagram, we will update the corresponding diagram.
             const diagramToMinimizeIndex = diagramStates.findIndex(
-                (diagram) =>
-                    diagram.id === action.id &&
-                    diagram.svgType === action.svgType
+                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
             );
             if (diagramToMinimizeIndex >= 0) {
-                diagramStates[diagramToMinimizeIndex].state =
-                    ViewState.MINIMIZED;
+                diagramStates[diagramToMinimizeIndex].state = ViewState.MINIMIZED;
             }
         }
         state.diagramStates = diagramStates;
@@ -1010,15 +921,13 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // search targeted diagram among the diagramStates
         const diagramToPinToggleIndex = diagramStates.findIndex(
-            (diagram) =>
-                diagram.id === action.id && diagram.svgType === action.svgType
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
         if (diagramToPinToggleIndex >= 0) {
             if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
                 const newStateForNads =
-                    diagramStates[diagramToPinToggleIndex].state ===
-                    ViewState.PINNED
+                    diagramStates[diagramToPinToggleIndex].state === ViewState.PINNED
                         ? ViewState.OPENED
                         : ViewState.PINNED;
                 diagramStates.forEach((diagram) => {
@@ -1027,13 +936,9 @@ export const reducer = createReducer(initialState, (builder) => {
                     }
                 });
             } else {
-                if (
-                    diagramStates[diagramToPinToggleIndex].state !==
-                    ViewState.PINNED
-                ) {
+                if (diagramStates[diagramToPinToggleIndex].state !== ViewState.PINNED) {
                     // If the current SLD is minimized or opened, we pin it.
-                    diagramStates[diagramToPinToggleIndex].state =
-                        ViewState.PINNED;
+                    diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
                 } else {
                     // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
                     // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
@@ -1044,11 +949,9 @@ export const reducer = createReducer(initialState, (builder) => {
                                 diagram.svgType === DiagramType.VOLTAGE_LEVEL)
                     );
                     if (currentlyOpenedDiagramIndex >= 0) {
-                        diagramStates[diagramToPinToggleIndex].state =
-                            ViewState.MINIMIZED;
+                        diagramStates[diagramToPinToggleIndex].state = ViewState.MINIMIZED;
                     } else {
-                        diagramStates[diagramToPinToggleIndex].state =
-                            ViewState.OPENED;
+                        diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
                     }
                 }
             }
@@ -1062,16 +965,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // If we close a NAD, we close all of them.
-            diagramStates = diagramStates.filter(
-                (diagram) =>
-                    diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-            );
+            diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
         } else {
             // If we close a SLD, we only remove one.
             const diagramToCloseIndex = diagramStates.findIndex(
-                (diagram) =>
-                    diagram.id === action.id &&
-                    diagram.svgType === action.svgType
+                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
             );
             if (diagramToCloseIndex >= 0) {
                 diagramStates.splice(diagramToCloseIndex, 1);
@@ -1083,9 +981,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CLOSE_DIAGRAMS, (state, action) => {
         const idsToClose = new Set(action.ids);
-        state.diagramStates = state.diagramStates.filter(
-            (diagram) => !idsToClose.has(diagram.id)
-        );
+        state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
     });
 
     builder.addCase(STOP_DIAGRAM_BLINK, (state) => {
@@ -1125,79 +1021,53 @@ export const reducer = createReducer(initialState, (builder) => {
 
         // equipmentType : type of equipment updated
         // equipments : list of updated equipments of type <equipmentType>
-        for (const [updateType, equipments] of Object.entries(
-            updatedEquipments
-        )) {
+        for (const [updateType, equipments] of Object.entries(updatedEquipments)) {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
             const currentEquipment = state.spreadsheetNetwork[equipmentType];
 
             // Format the updated equipments to match the table format
-            const formattedEquipments = formatFetchedEquipments(
-                equipmentType,
-                equipments
-            );
+            const formattedEquipments = formatFetchedEquipments(equipmentType, equipments);
 
             // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
             if (currentEquipment != null) {
                 //since substations data contains voltage level ones, they have to be treated separatly
                 if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
-                    const [updatedSubtations, updatedVoltageLevels] =
-                        updateSubstationsAndVoltageLevels(
-                            state.spreadsheetNetwork[
-                                EQUIPMENT_TYPES.SUBSTATION
-                            ],
-                            state.spreadsheetNetwork[
-                                EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                            ],
-                            formattedEquipments
-                        );
-
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
-                        updatedSubtations;
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL] =
-                        updatedVoltageLevels;
-                } else {
-                    state.spreadsheetNetwork[equipmentType] = updateEquipments(
-                        currentEquipment,
+                    const [updatedSubtations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
                         formattedEquipments
                     );
+
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] = updatedSubtations;
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL] = updatedVoltageLevels;
+                } else {
+                    state.spreadsheetNetwork[equipmentType] = updateEquipments(currentEquipment, formattedEquipments);
                 }
             }
         }
     });
 
     builder.addCase(DELETE_EQUIPMENTS, (state, action) => {
-        action.equipments.forEach(
-            ({
-                equipmentType: equipmentToDeleteType,
-                equipmentId: equipmentToDeleteId,
-            }) => {
-                const currentEquipments =
-                    state.spreadsheetNetwork[equipmentToDeleteType];
-                if (currentEquipments != null) {
-                    // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                    if (
-                        equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                    ) {
-                        const currentSubstations =
-                            state.spreadsheetNetwork[
-                                EQUIPMENT_TYPES.SUBSTATION
-                            ];
-                        if (currentSubstations != null) {
-                            state.spreadsheetNetwork[
-                                EQUIPMENT_TYPES.SUBSTATION
-                            ] = updateSubstationAfterVLDeletion(
-                                currentSubstations,
-                                equipmentToDeleteId
-                            );
-                        }
+        action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
+            const currentEquipments = state.spreadsheetNetwork[equipmentToDeleteType];
+            if (currentEquipments != null) {
+                // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+                if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+                    const currentSubstations = state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION];
+                    if (currentSubstations != null) {
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] = updateSubstationAfterVLDeletion(
+                            currentSubstations,
+                            equipmentToDeleteId
+                        );
                     }
-
-                    state.spreadsheetNetwork[equipmentToDeleteType] =
-                        deleteEquipment(currentEquipments, equipmentToDeleteId);
                 }
+
+                state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
+                    currentEquipments,
+                    equipmentToDeleteId
+                );
             }
-        );
+        });
     });
 
     builder.addCase(RESET_EQUIPMENTS, (state) => {
@@ -1212,12 +1082,9 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state) => {
         state.spreadsheetNetwork = {
             ...initialSpreadsheetNetworkState,
-            [EQUIPMENT_TYPES.SUBSTATION]:
-                state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
-            [EQUIPMENT_TYPES.VOLTAGE_LEVEL]:
-                state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-            [EQUIPMENT_TYPES.HVDC_LINE]:
-                state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
+            [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
+            [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+            [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
         };
     });
 
@@ -1233,15 +1100,12 @@ export const reducer = createReducer(initialState, (builder) => {
         state.optionalServices = action.optionalServices;
     });
 
-    builder.addCase(
-        SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
-        (state, action) => {
-            state.oneBusShortCircuitAnalysisDiagram = {
-                diagramId: action.diagramId,
-                nodeId: action.nodeId,
-            };
-        }
-    );
+    builder.addCase(SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM, (state, action) => {
+        state.oneBusShortCircuitAnalysisDiagram = {
+            diagramId: action.diagramId,
+            nodeId: action.nodeId,
+        };
+    });
 
     builder.addCase(SET_STUDY_INDEXATION_STATUS, (state, action) => {
         state.studyIndexationStatus = action.studyIndexationStatus;
@@ -1252,9 +1116,7 @@ export const reducer = createReducer(initialState, (builder) => {
         action.globalFilters.forEach((filter) => {
             if (
                 !newRecentGlobalFilters.some(
-                    (obj) =>
-                        obj.label === filter.label &&
-                        obj.filterType === filter.filterType
+                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
                 )
             ) {
                 newRecentGlobalFilters.push(filter);
@@ -1268,13 +1130,11 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(LOADFLOW_RESULT_FILTER, (state, action) => {
-        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] =
-            action[LOADFLOW_RESULT_STORE_FIELD];
+        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] = action[LOADFLOW_RESULT_STORE_FIELD];
     });
 
     builder.addCase(SECURITY_ANALYSIS_RESULT_FILTER, (state, action) => {
-        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
+        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
     });
 
     builder.addCase(SENSITIVITY_ANALYSIS_RESULT_FILTER, (state, action) => {
@@ -1288,18 +1148,15 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action) => {
-        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] =
-            action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
+        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     });
 
     builder.addCase(SPREADSHEET_FILTER, (state, action) => {
-        state[SPREADSHEET_STORE_FIELD][action.filterTab] =
-            action[SPREADSHEET_STORE_FIELD];
+        state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
 
     builder.addCase(TABLE_SORT, (state, action) => {
-        state.tableSort[action.tableSort.table][action.tableSort.tab] =
-            action.tableSort.sort;
+        state.tableSort[action.tableSort.table][action.tableSort.tab] = action.tableSort.sort;
     });
 });
 
@@ -1308,10 +1165,9 @@ function updateSubstationAfterVLDeletion(currentSubstations, VLToDeleteId) {
         sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
     );
     if (substationToUpdateIndex >= 0) {
-        currentSubstations[substationToUpdateIndex].voltageLevels =
-            currentSubstations[substationToUpdateIndex].voltageLevels.filter(
-                (vl) => vl.id !== VLToDeleteId
-            );
+        currentSubstations[substationToUpdateIndex].voltageLevels = currentSubstations[
+            substationToUpdateIndex
+        ].voltageLevels.filter((vl) => vl.id !== VLToDeleteId);
     }
 
     return currentSubstations;
@@ -1357,40 +1213,25 @@ function getEquipmentTypeFromUpdateType(updateType) {
 }
 
 function deleteEquipment(currentEquipments, equipmentToDeleteId) {
-    const equipmentToDeleteIndex = currentEquipments.findIndex(
-        (eq) => eq.id === equipmentToDeleteId
-    );
+    const equipmentToDeleteIndex = currentEquipments.findIndex((eq) => eq.id === equipmentToDeleteId);
     if (equipmentToDeleteIndex >= 0) {
         currentEquipments.splice(equipmentToDeleteIndex, 1);
     }
     return currentEquipments;
 }
 
-function updateSubstationsAndVoltageLevels(
-    currentSubstations,
-    currentVoltageLevels,
-    newOrUpdatedSubstations
-) {
-    const updatedSubstations = updateEquipments(
-        currentSubstations,
-        newOrUpdatedSubstations
-    );
+function updateSubstationsAndVoltageLevels(currentSubstations, currentVoltageLevels, newOrUpdatedSubstations) {
+    const updatedSubstations = updateEquipments(currentSubstations, newOrUpdatedSubstations);
 
     let updatedVoltageLevels = null;
 
     // if voltage levels are not loaded yet, we don't need to update them
     if (currentVoltageLevels != null) {
-        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce(
-            (acc, currentSub) => {
-                return acc.concat([...currentSub.voltageLevels]);
-            },
-            []
-        );
+        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce((acc, currentSub) => {
+            return acc.concat([...currentSub.voltageLevels]);
+        }, []);
 
-        updatedVoltageLevels = updateEquipments(
-            currentVoltageLevels,
-            newOrUpdatedVoltageLevels
-        );
+        updatedVoltageLevels = updateEquipments(currentVoltageLevels, newOrUpdatedVoltageLevels);
     }
 
     return [updatedSubstations, updatedVoltageLevels];
@@ -1398,9 +1239,7 @@ function updateSubstationsAndVoltageLevels(
 
 function updateEquipments(currentEquipments, newOrUpdatedEquipments) {
     newOrUpdatedEquipments.forEach((equipment) => {
-        const existingEquipmentIndex = currentEquipments.findIndex(
-            (equip) => equip.id === equipment.id
-        );
+        const existingEquipmentIndex = currentEquipments.findIndex((equip) => equip.id === equipment.id);
 
         if (existingEquipmentIndex >= 0) {
             currentEquipments[existingEquipmentIndex] = equipment;

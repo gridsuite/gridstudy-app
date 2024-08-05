@@ -7,17 +7,8 @@
 
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-    closeDiagram,
-    closeDiagrams,
-    minimizeDiagram,
-    openDiagram,
-    togglePinDiagram,
-} from '../../redux/actions';
-import {
-    INVALID_LOADFLOW_OPACITY,
-    NAD_INVALID_LOADFLOW_OPACITY,
-} from '../../utils/colors';
+import { closeDiagram, closeDiagrams, minimizeDiagram, openDiagram, togglePinDiagram } from '../../redux/actions';
+import { INVALID_LOADFLOW_OPACITY, NAD_INVALID_LOADFLOW_OPACITY } from '../../utils/colors';
 import { FEEDER_TYPES } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 

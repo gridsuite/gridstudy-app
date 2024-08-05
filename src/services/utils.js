@@ -14,15 +14,10 @@ export const FetchStatus = {
     RUNNING: 'RUNNING',
 };
 
-export const getWsBase = () =>
-    document.baseURI
-        .replace(/^http:\/\//, 'ws://')
-        .replace(/^https:\/\//, 'wss://');
+export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
 export const getRequestParamFromList = (params, paramName) => {
-    return new URLSearchParams(
-        params?.length ? params.map((param) => [paramName, param]) : []
-    );
+    return new URLSearchParams(params?.length ? params.map((param) => [paramName, param]) : []);
 };
 
 const parseError = (text) => {
@@ -38,30 +33,13 @@ const handleError = (response) => {
         const errorName = 'HttpResponseError : ';
         let error;
         const errorJson = parseError(text);
-        if (
-            errorJson &&
-            errorJson.status &&
-            errorJson.error &&
-            errorJson.message
-        ) {
+        if (errorJson && errorJson.status && errorJson.error && errorJson.message) {
             error = new Error(
-                errorName +
-                    errorJson.status +
-                    ' ' +
-                    errorJson.error +
-                    ', message : ' +
-                    errorJson.message
+                errorName + errorJson.status + ' ' + errorJson.error + ', message : ' + errorJson.message
             );
             error.status = errorJson.status;
         } else {
-            error = new Error(
-                errorName +
-                    response.status +
-                    ' ' +
-                    response.statusText +
-                    ', message : ' +
-                    text
-            );
+            error = new Error(errorName + response.status + ' ' + response.statusText + ', message : ' + text);
             error.status = response.status;
         }
         throw error;
@@ -75,9 +53,7 @@ export const getToken = () => {
 
 const prepareRequest = (init, token) => {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
-        throw new TypeError(
-            'Argument 2 of backendFetch is not an object' + typeof init
-        );
+        throw new TypeError('Argument 2 of backendFetch is not an object' + typeof init);
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
@@ -87,9 +63,7 @@ const prepareRequest = (init, token) => {
 };
 
 const safeFetch = (url, initCopy) => {
-    return fetch(url, initCopy).then((response) =>
-        response.ok ? response : handleError(response)
-    );
+    return fetch(url, initCopy).then((response) => (response.ok ? response : handleError(response)));
 };
 
 export const backendFetch = (url, init, token) => {
@@ -104,9 +78,7 @@ export const backendFetchText = (url, init, token) => {
 
 export const backendFetchJson = (url, init, token) => {
     const initCopy = prepareRequest(init, token);
-    return safeFetch(url, initCopy).then((safeResponse) =>
-        safeResponse.status === 204 ? null : safeResponse.json()
-    );
+    return safeFetch(url, initCopy).then((safeResponse) => (safeResponse.status === 204 ? null : safeResponse.json()));
 };
 
 export const backendFetchFile = (url, init, token) => {
@@ -156,14 +128,10 @@ export function fetchVersion() {
 
 export const fetchDefaultParametersValues = () => {
     return fetchAppsMetadata().then((res) => {
-        console.info(
-            'fecthing default parameters values from apps-metadata file'
-        );
+        console.info('fecthing default parameters values from apps-metadata file');
         const studyMetadata = res.find((metadata) => metadata.name === 'Study');
         if (!studyMetadata) {
-            return Promise.reject(
-                'Study entry could not be found in metadatas'
-            );
+            return Promise.reject('Study entry could not be found in metadatas');
         }
 
         return studyMetadata.defaultParametersValues;

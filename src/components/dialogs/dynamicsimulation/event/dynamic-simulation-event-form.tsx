@@ -18,9 +18,7 @@ export type DynamicSimulationBasicEventFormProps = {
     event?: Event;
 };
 
-export const DynamicSimulationEventForm = (
-    props: DynamicSimulationBasicEventFormProps
-) => {
+export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFormProps) => {
     const { equipmentId, equipmentType, eventDefinition, event } = props;
 
     const propertyNames: EventPropertyName[] = (
@@ -51,22 +49,14 @@ export const DynamicSimulationEventForm = (
             {/* event's properties defined in the eventDefinition   */}
             <Grid container item spacing={2}>
                 {propertyNames.map((propertyName) => {
-                    const propertyDefinition = eventDefinition
-                        ? eventDefinition[propertyName]
-                        : undefined;
+                    const propertyDefinition = eventDefinition ? eventDefinition[propertyName] : undefined;
 
-                    const hasEnumValues = propertyDefinition
-                        ? !!propertyDefinition.values
-                        : false;
+                    const hasEnumValues = propertyDefinition ? !!propertyDefinition.values : false;
 
-                    const propertyValue = event?.properties.find(
-                        (elem) => elem.name === propertyName
-                    )?.value;
+                    const propertyValue = event?.properties.find((elem) => elem.name === propertyName)?.value;
 
                     // compatibility check between event property and equipment type to show or not
-                    const visible =
-                        !propertyDefinition?.acceptOnly ||
-                        propertyDefinition.acceptOnly(equipmentType);
+                    const visible = !propertyDefinition?.acceptOnly || propertyDefinition.acceptOnly(equipmentType);
 
                     return (
                         visible &&

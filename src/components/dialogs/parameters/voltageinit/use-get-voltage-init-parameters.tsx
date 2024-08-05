@@ -11,10 +11,7 @@ import { useSelector } from 'react-redux';
 import { ReduxState } from '../../../../redux/reducer.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
-import {
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../../../utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
 
 export const useGetVoltageInitParameters = (): [
@@ -23,18 +20,12 @@ export const useGetVoltageInitParameters = (): [
 ] => {
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
     const { snackError } = useSnackMessage();
-    const [voltageInitParams, setVoltageInitParams] =
-        useState<VoltageInitParam | null>(null);
+    const [voltageInitParams, setVoltageInitParams] = useState<VoltageInitParam | null>(null);
 
-    const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit
-    );
+    const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
 
     useEffect(() => {
-        if (
-            studyUuid &&
-            voltageInitAvailability === OptionalServicesStatus.Up
-        ) {
+        if (studyUuid && voltageInitAvailability === OptionalServicesStatus.Up) {
             getVoltageInitStudyParameters(studyUuid)
                 .then((params: VoltageInitParam) => {
                     setVoltageInitParams(params);

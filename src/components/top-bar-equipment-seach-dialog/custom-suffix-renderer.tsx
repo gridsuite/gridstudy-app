@@ -4,30 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    FunctionComponent,
-    MouseEvent as ReactMouseEvent,
-    useCallback,
-} from 'react';
+import { FunctionComponent, MouseEvent as ReactMouseEvent, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    equipmentStyles,
-    TagRenderer,
-    TagRendererProps,
-} from '@gridsuite/commons-ui';
+import { equipmentStyles, TagRenderer, TagRendererProps } from '@gridsuite/commons-ui';
 import { IconButton } from '@mui/material';
-import {
-    GpsFixed as GpsFixedIcon,
-    Timeline as TimelineIcon,
-} from '@mui/icons-material';
-import {
-    DiagramType,
-    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
-} from '../diagrams/diagram-common';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../utils/equipment-types';
+import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
+import { DiagramType, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from '../diagrams/diagram-common';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { centerOnSubstation, openDiagram } from '../../redux/actions';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { ReduxState } from '../../redux/reducer.type';
@@ -36,20 +19,18 @@ interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
 }
 
-export const CustomSuffixRenderer: FunctionComponent<
-    CustomSuffixRendererProps
-> = ({ element, onClose, ...tagRendererProps }) => {
+export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> = ({
+    element,
+    onClose,
+    ...tagRendererProps
+}) => {
     const dispatch = useDispatch();
     const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: ReduxState) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
         (state: ReduxState) => state.networkAreaDiagramNbVoltageLevels
     );
-    const networkAreaDiagramDepth = useSelector(
-        (state: ReduxState) => state.networkAreaDiagramDepth
-    );
+    const networkAreaDiagramDepth = useSelector((state: ReduxState) => state.networkAreaDiagramDepth);
 
     const centerOnSubstationCB = useCallback(
         (e: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -88,17 +69,13 @@ export const CustomSuffixRenderer: FunctionComponent<
         [dispatch, element.id, onClose]
     );
 
-    if (
-        element.type === EQUIPMENT_TYPES.SUBSTATION ||
-        element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL
-    ) {
+    if (element.type === EQUIPMENT_TYPES.SUBSTATION || element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
         return (
             <>
                 {element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL && (
                     <IconButton
                         disabled={
-                            networkAreaDiagramNbVoltageLevels >
-                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
+                            networkAreaDiagramNbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS &&
                             networkAreaDiagramDepth !== 0
                         }
                         onClick={openNetworkAreaDiagramCB}
@@ -108,10 +85,7 @@ export const CustomSuffixRenderer: FunctionComponent<
                     </IconButton>
                 )}
                 <IconButton
-                    disabled={
-                        (!studyUuid || !currentNode) &&
-                        element.type !== EQUIPMENT_TYPES.SUBSTATION
-                    }
+                    disabled={(!studyUuid || !currentNode) && element.type !== EQUIPMENT_TYPES.SUBSTATION}
                     onClick={centerOnSubstationCB}
                     size="small"
                 >
@@ -120,12 +94,6 @@ export const CustomSuffixRenderer: FunctionComponent<
             </>
         );
     } else {
-        return (
-            <TagRenderer
-                {...tagRendererProps}
-                element={element}
-                styles={equipmentStyles}
-            />
-        );
+        return <TagRenderer {...tagRendererProps} element={element} styles={equipmentStyles} />;
     }
 };

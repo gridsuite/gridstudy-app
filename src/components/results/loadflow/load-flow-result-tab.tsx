@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    SyntheticEvent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -20,10 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl/lib';
 import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
-import {
-    fetchLimitViolations,
-    fetchLoadFlowResult,
-} from '../../../services/study/loadflow';
+import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import { REPORT_TYPES } from 'components/utils/report-type';
 import RunningStatus from 'components/utils/running-status';
 import { ReduxState } from 'redux/reducer.type';
@@ -43,30 +33,15 @@ import {
     convertFilterValues,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
-import {
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from 'components/custom-aggrid/custom-aggrid-header.type';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { setLoadflowResultFilter } from 'redux/actions';
-import {
-    NumberCellRenderer,
-    StatusCellRender,
-} from '../common/result-cell-renderers';
-import ResultsGlobalFilter, {
-    Filter,
-    FilterType,
-} from '../common/results-global-filter';
+import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
+import ResultsGlobalFilter, { Filter, FilterType } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    fetchAllCountries,
-    fetchAllNominalVoltages,
-} from '../../../services/study/network-map';
-import {
-    LOADFLOW_RESULT_SORT_STORE,
-    LOADFLOW_RESULT_STORE_FIELD,
-} from 'utils/store-sort-filter-fields';
+import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
+import { LOADFLOW_RESULT_SORT_STORE, LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
 
@@ -94,23 +69,15 @@ export interface GlobalFilter {
     limitViolationsTypes?: LimitTypes[];
 }
 
-export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
-    studyUuid,
-    nodeUuid,
-}) => {
+export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUuid, nodeUuid }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const loadflowResultInvalidations = ['loadflowResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
-    const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const loadFlowStatus = useSelector((state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        LOADFLOW_RESULT_SORT_STORE,
-        mappingTabs(tabIndex)
-    );
+    const { onSortChanged, sortConfig } = useAgGridSort(LOADFLOW_RESULT_SORT_STORE, mappingTabs(tabIndex));
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOADFLOW_RESULT_STORE_FIELD,
@@ -119,14 +86,11 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     });
 
     const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
-    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>(
-        []
-    );
+    const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>([]);
 
     const [globalFilter, setGlobalFilter] = useState<GlobalFilter>();
 
-    const { loading: filterEnumsLoading, result: filterEnums } =
-        useFetchFiltersEnums();
+    const { loading: filterEnumsLoading, result: filterEnums } = useFetchFiltersEnums();
 
     // load countries
     useEffect(() => {
@@ -166,10 +130,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         (globalFilter: GlobalFilter | undefined) => {
             let shouldSentParameter = false;
             if (globalFilter) {
-                if (
-                    globalFilter.countryCode &&
-                    globalFilter.countryCode.length > 0
-                ) {
+                if (globalFilter.countryCode && globalFilter.countryCode.length > 0) {
                     shouldSentParameter = true;
                 }
                 if (globalFilter.nominalV && globalFilter.nominalV.length > 0) {
@@ -182,9 +143,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             return {
                 ...globalFilter,
                 limitViolationsTypes:
-                    tabIndex === 0
-                        ? [LimitTypes.CURRENT]
-                        : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
+                    tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE],
             };
         },
         [tabIndex]
@@ -192,20 +151,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
-            tabIndex === 0
-                ? [LimitTypes.CURRENT]
-                : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
+            tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
         const initialFilters = filterSelector || [];
         let updatedFilters = convertFilterValues(initialFilters, intl);
-        let limitTypeFilter = initialFilters.find(
-            (f) => f.column === 'limitType'
-        );
+        let limitTypeFilter = initialFilters.find((f) => f.column === 'limitType');
 
         // If 'limitType' filter does not exist or its value array is empty, add the default one
-        if (
-            !limitTypeFilter ||
-            !(limitTypeFilter.value as LimitTypes[]).length
-        ) {
+        if (!limitTypeFilter || !(limitTypeFilter.value as LimitTypes[]).length) {
             updatedFilters.push({
                 column: 'limitType',
                 dataType: FILTER_DATA_TYPES.TEXT,
@@ -218,22 +170,10 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 ...sort,
                 colId: FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT[sort.colId],
             })),
-            filters: mapFieldsToColumnsFilter(
-                updatedFilters,
-                mappingFields(tabIndex)
-            ),
+            filters: mapFieldsToColumnsFilter(updatedFilters, mappingFields(tabIndex)),
             globalFilters: getGlobalFilterParameter(globalFilter),
         });
-    }, [
-        studyUuid,
-        nodeUuid,
-        sortConfig,
-        filterSelector,
-        tabIndex,
-        globalFilter,
-        getGlobalFilterParameter,
-        intl,
-    ]);
+    }, [studyUuid, nodeUuid, sortConfig, filterSelector, tabIndex, globalFilter, getGlobalFilterParameter, intl]);
 
     const fetchloadflowResultWithParameters = useCallback(() => {
         return fetchLoadFlowResult(studyUuid, nodeUuid, {
@@ -248,11 +188,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         } else if (tabIndex === 2) {
             return fetchloadflowResultWithParameters;
         }
-    }, [
-        tabIndex,
-        fetchLimitViolationsWithParameters,
-        fetchloadflowResultWithParameters,
-    ]);
+    }, [tabIndex, fetchLimitViolationsWithParameters, fetchloadflowResultWithParameters]);
 
     const [loadflowResult, isLoadingResult, setResult] = useNodeData(
         studyUuid,
@@ -290,15 +226,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
             default:
                 return [];
         }
-    }, [
-        filterEnums,
-        filterSelector,
-        intl,
-        onSortChanged,
-        sortConfig,
-        updateFilter,
-        tabIndex,
-    ]);
+    }, [filterEnums, filterSelector, intl, onSortChanged, sortConfig, updateFilter, tabIndex]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);
@@ -314,18 +242,12 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
         if (value) {
             const nominalVs = new Set(
                 value
-                    .filter(
-                        (filter: Filter) =>
-                            filter.filterType === FilterType.VOLTAGE_LEVEL
-                    )
+                    .filter((filter: Filter) => filter.filterType === FilterType.VOLTAGE_LEVEL)
                     .map((filter: Filter) => filter.label)
             );
             const countryCodes = new Set(
                 value
-                    .filter(
-                        (filter: Filter) =>
-                            filter.filterType === FilterType.COUNTRY
-                    )
+                    .filter((filter: Filter) => filter.filterType === FilterType.COUNTRY)
                     .map((filter: Filter) => filter.label)
             );
             newGlobalFilter.nominalV = [...nominalVs];
@@ -347,44 +269,13 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     return (
         <>
             <Box sx={styles.flexWrapper}>
-                <Tabs
-                    value={tabIndex}
-                    onChange={handleTabChange}
-                    sx={styles.flexElement}
-                >
-                    <Tab
-                        label={
-                            <FormattedMessage
-                                id={'LoadFlowResultsCurrentViolations'}
-                            />
-                        }
-                    />
-                    <Tab
-                        label={
-                            <FormattedMessage
-                                id={'LoadFlowResultsVoltageViolations'}
-                            />
-                        }
-                    />
-                    <Tab
-                        label={
-                            <FormattedMessage id={'LoadFlowResultsStatus'} />
-                        }
-                    />
-                    <Tab
-                        label={
-                            <FormattedMessage id={'ComputationResultsLogs'} />
-                        }
-                    />
+                <Tabs value={tabIndex} onChange={handleTabChange} sx={styles.flexElement}>
+                    <Tab label={<FormattedMessage id={'LoadFlowResultsCurrentViolations'} />} />
+                    <Tab label={<FormattedMessage id={'LoadFlowResultsVoltageViolations'} />} />
+                    <Tab label={<FormattedMessage id={'LoadFlowResultsStatus'} />} />
+                    <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
-                <Box
-                    sx={mergeSx(
-                        styles.flexElement,
-                        tabIndex === 0 || tabIndex === 1
-                            ? styles.show
-                            : styles.hide
-                    )}
-                >
+                <Box sx={mergeSx(styles.flexElement, tabIndex === 0 || tabIndex === 1 ? styles.show : styles.hide)}>
                     <ResultsGlobalFilter
                         onChange={handleGlobalFilterChange}
                         filters={[...countriesFilter, ...voltageLevelsFilter]}
@@ -428,11 +319,8 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
                 />
             )}
             {tabIndex === 3 &&
-                (loadFlowStatus === RunningStatus.SUCCEED ||
-                    loadFlowStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer
-                        reportType={REPORT_TYPES.LOAD_FLOW}
-                    />
+                (loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED) && (
+                    <ComputationReportViewer reportType={REPORT_TYPES.LOAD_FLOW} />
                 )}
         </>
     );

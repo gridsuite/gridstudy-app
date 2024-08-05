@@ -40,20 +40,10 @@ const styles = {
 
 //Here's the rundown of the signature : the ReactElement is related to the loader JSX component, the boolean indicated wether the loader should be active,
 //the first function submits the sld data on hand to the redux store and the second function reset the redux store state
-type oneBusShortcircuitAnalysisLoader = [
-    ReactElement,
-    boolean,
-    () => void,
-    () => void
-];
+type oneBusShortcircuitAnalysisLoader = [ReactElement, boolean, () => void, () => void];
 
-export function useOneBusShortcircuitAnalysisLoader(
-    diagramId: string,
-    nodeId: UUID
-): oneBusShortcircuitAnalysisLoader {
-    const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
-    );
+export function useOneBusShortcircuitAnalysisLoader(diagramId: string, nodeId: UUID): oneBusShortcircuitAnalysisLoader {
+    const studyUpdatedForce = useSelector((state: ReduxState) => state.studyUpdated);
     const oneBusShortCircuitAnalysisDiagram = useSelector(
         (state: ReduxState) => state.oneBusShortCircuitAnalysisDiagram
     );
@@ -76,30 +66,27 @@ export function useOneBusShortcircuitAnalysisLoader(
         [nodeId, diagramId, oneBusShortCircuitAnalysisDiagram]
     );
 
-    const oneBusShortcircuitAnalysisLoaderMessage =
-        useMemo<ReactElement>(() => {
-            return (
-                <>
-                    {isDiagramRunningOneBusShortcircuitAnalysis && (
-                        <Chip
-                            label={intl.formatMessage({
-                                id: 'ShortcircuitInProgress',
-                            })}
-                            variant="outlined"
-                            sx={styles.loaderMessage}
-                        />
-                    )}
-                </>
-            );
-        }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
+    const oneBusShortcircuitAnalysisLoaderMessage = useMemo<ReactElement>(() => {
+        return (
+            <>
+                {isDiagramRunningOneBusShortcircuitAnalysis && (
+                    <Chip
+                        label={intl.formatMessage({
+                            id: 'ShortcircuitInProgress',
+                        })}
+                        variant="outlined"
+                        sx={styles.loaderMessage}
+                    />
+                )}
+            </>
+        );
+    }, [intl, isDiagramRunningOneBusShortcircuitAnalysis]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'oneBusShortCircuitAnalysisResult' ||
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'oneBusShortCircuitAnalysis_failed'
+                studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysisResult' ||
+                studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysis_failed'
             ) {
                 resetOneBusShortcircuitAnalysisLoader();
             }

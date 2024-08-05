@@ -6,12 +6,7 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-    DeletedEquipment,
-    NetworkImpactsInfos,
-    ReduxState,
-    UpdateTypes,
-} from '../redux/reducer.type';
+import { DeletedEquipment, NetworkImpactsInfos, ReduxState, UpdateTypes } from '../redux/reducer.type';
 import { UUID } from 'crypto';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
@@ -24,19 +19,11 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  * Custom hook that consume the update notification 'study' and return the impacts of the study
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
-    const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
-    );
+    const studyUpdatedForce = useSelector((state: ReduxState) => state.studyUpdated);
 
-    const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<
-        UUID[]
-    >([]);
-    const [deletedEquipments, setDeletedEquipments] = useState<
-        DeletedEquipment[]
-    >([]);
-    const [impactedElementTypes, setImpactedElementTypes] = useState<string[]>(
-        []
-    );
+    const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
+    const [deletedEquipments, setDeletedEquipments] = useState<DeletedEquipment[]>([]);
+    const [impactedElementTypes, setImpactedElementTypes] = useState<string[]>([]);
 
     const resetImpactedSubstationsIds = useCallback(() => {
         setImpactedSubstationsIds([]);

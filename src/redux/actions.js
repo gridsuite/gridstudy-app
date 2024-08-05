@@ -82,13 +82,7 @@ export function resetEquipmentsPostLoadflow() {
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 
-export function mapEquipmentsCreated(
-    mapEquipments,
-    newLines,
-    newTieLines,
-    newSubstations,
-    newHvdcLines
-) {
+export function mapEquipmentsCreated(mapEquipments, newLines, newTieLines, newSubstations, newHvdcLines) {
     return {
         type: MAP_EQUIPMENTS_CREATED,
         mapEquipments: mapEquipments,
@@ -99,20 +93,16 @@ export function mapEquipmentsCreated(
     };
 }
 
-export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS =
-    'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
+export const LOAD_NETWORK_MODIFICATION_TREE_SUCCESS = 'LOAD_NETWORK_MODIFICATION_TREE_SUCCESS';
 
-export function loadNetworkModificationTreeSuccess(
-    networkModificationTreeModel
-) {
+export function loadNetworkModificationTreeSuccess(networkModificationTreeModel) {
     return {
         type: LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
         networkModificationTreeModel: networkModificationTreeModel,
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_NODE_ADDED =
-    'NETWORK_MODIFICATION_TREE_NODE_ADDED';
+export const NETWORK_MODIFICATION_TREE_NODE_ADDED = 'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 
 export function networkModificationTreeNodeAdded(
     networkModificationTreeNode,
@@ -129,8 +119,7 @@ export function networkModificationTreeNodeAdded(
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_NODE_MOVED =
-    'NETWORK_MODIFICATION_TREE_NODE_MOVED';
+export const NETWORK_MODIFICATION_TREE_NODE_MOVED = 'NETWORK_MODIFICATION_TREE_NODE_MOVED';
 
 export function networkModificationTreeNodeMoved(
     networkModificationTreeNode,
@@ -147,13 +136,9 @@ export function networkModificationTreeNodeMoved(
     };
 }
 
-export const NETWORK_MODIFICATION_HANDLE_SUBTREE =
-    'NETWORK_MODIFICATION_HANDLE_SUBTREE';
+export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 
-export function networkModificationHandleSubtree(
-    networkModificationTreeNodes,
-    parentNodeId
-) {
+export function networkModificationHandleSubtree(networkModificationTreeNodes, parentNodeId) {
     return {
         type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
         networkModificationTreeNodes: networkModificationTreeNodes,
@@ -161,24 +146,18 @@ export function networkModificationHandleSubtree(
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_NODES_REMOVED =
-    'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
+export const NETWORK_MODIFICATION_TREE_NODES_REMOVED = 'NETWORK_MODIFICATION_TREE_NODES_REMOVED';
 
-export function networkModificationTreeNodesRemoved(
-    networkModificationTreeNodes
-) {
+export function networkModificationTreeNodesRemoved(networkModificationTreeNodes) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,
         networkModificationTreeNodes: networkModificationTreeNodes,
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_NODES_UPDATED =
-    'NETWORK_MODIFICATION_TREE_NODES_UPDATED';
+export const NETWORK_MODIFICATION_TREE_NODES_UPDATED = 'NETWORK_MODIFICATION_TREE_NODES_UPDATED';
 
-export function networkModificationTreeNodesUpdated(
-    networkModificationTreeNodes
-) {
+export function networkModificationTreeNodesUpdated(networkModificationTreeNodes) {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_UPDATED,
         networkModificationTreeNodes: networkModificationTreeNodes,
@@ -575,8 +554,7 @@ export function stopDiagramBlink() {
     };
 }
 
-export const RESET_NETWORK_AREA_DIAGRAM_DEPTH =
-    'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
+export const RESET_NETWORK_AREA_DIAGRAM_DEPTH = 'RESET_NETWORK_AREA_DIAGRAM_DEPTH';
 
 export function resetNetworkAreaDiagramDepth() {
     return {
@@ -584,8 +562,7 @@ export function resetNetworkAreaDiagramDepth() {
     };
 }
 
-export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
-    'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
+export const INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
 
 export function incrementNetworkAreaDiagramDepth() {
     return {
@@ -593,8 +570,7 @@ export function incrementNetworkAreaDiagramDepth() {
     };
 }
 
-export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH =
-    'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
+export const DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH = 'DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH';
 
 export function decrementNetworkAreaDiagramDepth() {
     return {
@@ -602,8 +578,7 @@ export function decrementNetworkAreaDiagramDepth() {
     };
 }
 
-export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS =
-    'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
+export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 
 export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels) {
     return {
@@ -649,8 +624,7 @@ export const setOptionalServices = (optionalServices) => {
     };
 };
 
-export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM =
-    'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
+export const SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM = 'SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM';
 
 export function setOneBusShortcircuitAnalysisDiagram(diagramId, nodeId) {
     return {
@@ -688,13 +662,9 @@ export function setLoadflowResultFilter(filterTab, loadflowResultFilter) {
     };
 }
 
-export const SECURITY_ANALYSIS_RESULT_FILTER =
-    'SECURITY_ANALYSIS_RESULT_FILTER';
+export const SECURITY_ANALYSIS_RESULT_FILTER = 'SECURITY_ANALYSIS_RESULT_FILTER';
 
-export function setSecurityAnalysisResultFilter(
-    filterTab,
-    securityAnalysisResultFilter
-) {
+export function setSecurityAnalysisResultFilter(filterTab, securityAnalysisResultFilter) {
     return {
         type: SECURITY_ANALYSIS_RESULT_FILTER,
         filterTab: filterTab,
@@ -702,13 +672,9 @@ export function setSecurityAnalysisResultFilter(
     };
 }
 
-export const SENSITIVITY_ANALYSIS_RESULT_FILTER =
-    'SENSITIVITY_ANALYSIS_RESULT_FILTER';
+export const SENSITIVITY_ANALYSIS_RESULT_FILTER = 'SENSITIVITY_ANALYSIS_RESULT_FILTER';
 
-export function setSensitivityAnalysisResultFilter(
-    filterTab,
-    sensitivityAnalysisResultFilter
-) {
+export function setSensitivityAnalysisResultFilter(filterTab, sensitivityAnalysisResultFilter) {
     return {
         type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
         filterTab: filterTab,
@@ -716,13 +682,9 @@ export function setSensitivityAnalysisResultFilter(
     };
 }
 
-export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER =
-    'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
+export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER = 'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
 
-export function setShortcircuitAnalysisResultFilter(
-    filterTab,
-    shortcircuitAnalysisResultFilter
-) {
+export function setShortcircuitAnalysisResultFilter(filterTab, shortcircuitAnalysisResultFilter) {
     return {
         type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
         filterTab: filterTab,
@@ -730,13 +692,9 @@ export function setShortcircuitAnalysisResultFilter(
     };
 }
 
-export const DYNAMIC_SIMULATION_RESULT_FILTER =
-    'DYNAMIC_SIMULATION_RESULT_FILTER';
+export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
 
-export function setDynamicSimulationResultFilter(
-    filterTab,
-    dynamicSimulationResultFilter
-) {
+export function setDynamicSimulationResultFilter(filterTab, dynamicSimulationResultFilter) {
     return {
         type: DYNAMIC_SIMULATION_RESULT_FILTER,
         filterTab: filterTab,

@@ -40,11 +40,7 @@ export const ParameterFloat = ({
     );
 
     if (tooltip) {
-        return (
-            <Tooltip title={<FormattedMessage id={tooltip} />}>
-                {content}
-            </Tooltip>
-        );
+        return <Tooltip title={<FormattedMessage id={tooltip} />}>{content}</Tooltip>;
     }
     return content;
 };

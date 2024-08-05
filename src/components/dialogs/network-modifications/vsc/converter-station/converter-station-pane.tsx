@@ -76,15 +76,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a: { id: string }, b: { id: string }) =>
-                            a.id.localeCompare(b.id)
-                        )
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
+                setVoltageLevelOptions(values.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id)));
+            });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -100,10 +94,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             disabled
         />
     ) : (
-        <TextInput
-            name={`${id}.${CONVERTER_STATION_ID}`}
-            label={'converterStationId'}
-        />
+        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
     );
 
     const generatorNameField = (
@@ -156,10 +147,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             formProps={undefined}
         />
     ) : (
-        <SwitchInput
-            name={`${id}.${VOLTAGE_REGULATION_ON}`}
-            label={'VoltageRegulationText'}
-        />
+        <SwitchInput name={`${id}.${VOLTAGE_REGULATION_ON}`} label={'VoltageRegulationText'} />
     );
 
     const voltageField = (

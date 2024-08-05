@@ -40,8 +40,7 @@ const computePageTitleWithFirstDirectory = (pageTitle, parents) => {
 };
 
 const computePageTitleWithFullPath = (pageTitle, parents) => {
-    const maxAllowedPathSize =
-        MAX_TITLE_LENGTH - pageTitle.length - '...'.length;
+    const maxAllowedPathSize = MAX_TITLE_LENGTH - pageTitle.length - '...'.length;
 
     pageTitle = pageTitle + computePath(parents, maxAllowedPathSize);
 
@@ -63,16 +62,10 @@ export const computePageTitle = (appName, studyName, parents) => {
 
     pageTitle = pageTitle + SEPARATOR;
     // Rule 1 : if first repository causes exceeding of the maximum number of characters, truncates this repository name
-    const titleWithFirstDir = computePageTitleWithFirstDirectory(
-        pageTitle,
-        parents
-    );
+    const titleWithFirstDir = computePageTitleWithFirstDirectory(pageTitle, parents);
 
     if (titleWithFirstDir.length > MAX_TITLE_LENGTH) {
-        return (
-            titleWithFirstDir.substring(0, MAX_TITLE_LENGTH - ' ...'.length) +
-            ' ...'
-        );
+        return titleWithFirstDir.substring(0, MAX_TITLE_LENGTH - ' ...'.length) + ' ...';
     } else {
         // Rule 2 : Otherwise, display the path to the study up to the allowed character limit
         return computePageTitleWithFullPath(pageTitle, parents);
