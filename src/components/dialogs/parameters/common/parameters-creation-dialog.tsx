@@ -57,8 +57,7 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterFormatter,
 }: CreateParameterProps<T>) => {
     const intl = useIntl();
-    const [defaultFolder, setDefaultFolder] =
-        useState<TreeViewFinderNodeProps>();
+    const [defaultFolder, setDefaultFolder] = useState<TreeViewFinderNodeProps>();
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
@@ -130,21 +129,13 @@ const CreateParameterDialog = <T extends FieldValues>({
     const folderChooser = (
         <Grid container item>
             <Grid item>
-                <Button
-                    onClick={handleChangeFolder}
-                    variant="contained"
-                    size={'small'}
-                >
+                <Button onClick={handleChangeFolder} variant="contained" size={'small'}>
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
                 </Button>
             </Grid>
             <Typography m={1} component="span">
                 <Box fontWeight={'fontWeightBold'}>
-                    {defaultFolder == null ? (
-                        <CircularProgress />
-                    ) : (
-                        defaultFolder.name
-                    )}
+                    {defaultFolder == null ? <CircularProgress /> : defaultFolder.name}
                 </Box>
             </Typography>
         </Grid>

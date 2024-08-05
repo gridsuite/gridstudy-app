@@ -10,16 +10,10 @@ import { Box, LinearProgress } from '@mui/material';
 import React, { memo, useMemo } from 'react';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
-import {
-    dynamicSimulationResultInvalidations,
-    MEDIUM_COLUMN_WIDTH,
-} from './utils/dynamic-simulation-result-utils';
+import { dynamicSimulationResultInvalidations, MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
-import {
-    getNoRowsMessage,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { StatusCellRender } from '../common/result-cell-renderers';
@@ -50,77 +44,65 @@ type DynamicSimulationResultSynthesisProps = {
     nodeUuid: UUID;
 };
 
-const DynamicSimulationResultSynthesis = memo(
-    ({ nodeUuid, studyUuid }: DynamicSimulationResultSynthesisProps) => {
-        const intl = useIntl();
+const DynamicSimulationResultSynthesis = memo(({ nodeUuid, studyUuid }: DynamicSimulationResultSynthesisProps) => {
+    const intl = useIntl();
 
-        const [result, isLoading] = useNodeData(
-            studyUuid,
-            nodeUuid,
-            fetchDynamicSimulationStatus,
-            dynamicSimulationResultInvalidations,
-            null,
-            (status: RunningStatus) =>
-                status && [
-                    {
-                        status,
-                    },
-                ]
-        );
+    const [result, isLoading] = useNodeData(
+        studyUuid,
+        nodeUuid,
+        fetchDynamicSimulationStatus,
+        dynamicSimulationResultInvalidations,
+        null,
+        (status: RunningStatus) =>
+            status && [
+                {
+                    status,
+                },
+            ]
+    );
 
-        const columnDefs = useMemo(
-            () => [
-                makeAgGridCustomHeaderColumn({
-                    headerName: intl.formatMessage({
-                        id: 'status',
-                    }),
-                    field: 'status',
-                    width: MEDIUM_COLUMN_WIDTH,
-                    cellRenderer: StatusCellRender,
+    const columnDefs = useMemo(
+        () => [
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({
+                    id: 'status',
                 }),
-            ],
-            [intl]
-        );
+                field: 'status',
+                width: MEDIUM_COLUMN_WIDTH,
+                cellRenderer: StatusCellRender,
+            }),
+        ],
+        [intl]
+    );
 
-        // messages to show when no data
-        const dynamicSimulationStatus = useSelector(
-            (state: AppState) =>
-                state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
-        );
-        const messages = useIntlResultStatusMessages(intl, true);
-        const overlayMessage = useMemo(
-            () =>
-                getNoRowsMessage(
-                    messages,
-                    result,
-                    dynamicSimulationStatus,
-                    !isLoading
-                ),
-            [messages, result, dynamicSimulationStatus, isLoading]
-        );
+    // messages to show when no data
+    const dynamicSimulationStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+    );
+    const messages = useIntlResultStatusMessages(intl, true);
+    const overlayMessage = useMemo(
+        () => getNoRowsMessage(messages, result, dynamicSimulationStatus, !isLoading),
+        [messages, result, dynamicSimulationStatus, isLoading]
+    );
 
-        const rowDataToShow = useMemo(
-            () => (overlayMessage ? [] : result),
-            [result, overlayMessage]
-        );
+    const rowDataToShow = useMemo(() => (overlayMessage ? [] : result), [result, overlayMessage]);
 
-        return (
-            <>
-                {isLoading && (
-                    <Box sx={styles.loader}>
-                        <LinearProgress />
-                    </Box>
-                )}
-                <CustomAGGrid
-                    rowData={rowDataToShow}
-                    columnDefs={columnDefs}
-                    defaultColDef={defaultColDef}
-                    overlayNoRowsTemplate={overlayMessage}
-                    enableCellTextSelection
-                />
-            </>
-        );
-    }
-);
+    return (
+        <>
+            {isLoading && (
+                <Box sx={styles.loader}>
+                    <LinearProgress />
+                </Box>
+            )}
+            <CustomAGGrid
+                rowData={rowDataToShow}
+                columnDefs={columnDefs}
+                defaultColDef={defaultColDef}
+                overlayNoRowsTemplate={overlayMessage}
+                enableCellTextSelection
+            />
+        </>
+    );
+});
 
 export default DynamicSimulationResultSynthesis;

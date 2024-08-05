@@ -7,19 +7,10 @@
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import {
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../components/utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 
-export const useOptionalServiceStatus = (
-    serviceName: OptionalServicesNames
-): OptionalServicesStatus | undefined => {
-    const optionalServices = useSelector(
-        (state: AppState) => state.optionalServices
-    );
-    const optionalService = optionalServices?.find(
-        (service) => service.name === serviceName
-    );
+export const useOptionalServiceStatus = (serviceName: OptionalServicesNames): OptionalServicesStatus | undefined => {
+    const optionalServices = useSelector((state: AppState) => state.optionalServices);
+    const optionalService = optionalServices?.find((service) => service.name === serviceName);
     return optionalService?.status;
 };

@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    useCallback,
-    useState,
-    useMemo,
-    useRef,
-    useEffect,
-} from 'react';
+import React, { useCallback, useState, useMemo, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -99,8 +93,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         !result || !result.modificationsGroupUuid
     );
     const [applyingModifications, setApplyingModifications] = useState(false);
-    const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] =
-        useState(false);
+    const [previewModificationsDialogOpen, setPreviewModificationsDialogOpen] = useState(false);
     const [voltageInitModification, setVoltageInitModification] = useState();
 
     const intl = useIntl();
@@ -164,24 +157,14 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                 setDisableApplyModifications(false);
                 setApplyingModifications(false);
             });
-    }, [
-        currentNode?.id,
-        snackError,
-        studyUuid,
-        setVoltageInitModification,
-        setPreviewModificationsDialogOpen,
-    ]);
+    }, [currentNode?.id, snackError, studyUuid, setVoltageInitModification, setPreviewModificationsDialogOpen]);
 
     const [autoApplyModifications, setAutoApplyModifications] = useState(false);
 
     useEffect(() => {
-        getVoltageInitStudyParameters(studyUuid).then(
-            (voltageInitParameters) => {
-                setAutoApplyModifications(
-                    voltageInitParameters?.applyModifications ?? false
-                );
-            }
-        );
+        getVoltageInitStudyParameters(studyUuid).then((voltageInitParameters) => {
+            setAutoApplyModifications(voltageInitParameters?.applyModifications ?? false);
+        });
     }, [studyUuid]);
 
     const renderPreviewModificationsDialog = () => {
@@ -213,46 +196,27 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         const calculateTotal = (reactiveSlacks, isPositive) => {
             return reactiveSlacks
                 ? reactiveSlacks
-                      .filter((reactiveSlack) =>
-                          isPositive
-                              ? reactiveSlack.slack > 0
-                              : reactiveSlack.slack < 0
-                      )
-                      .reduce(
-                          (sum, reactiveSlack) => sum + reactiveSlack.slack,
-                          0
-                      )
+                      .filter((reactiveSlack) => (isPositive ? reactiveSlack.slack > 0 : reactiveSlack.slack < 0))
+                      .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
                 : 0;
         };
 
         const totalInjection = calculateTotal(result.reactiveSlacks, false);
         const totalConsumption = calculateTotal(result.reactiveSlacks, true);
         return (
-            <Stack
-                direction={'row'}
-                gap={1}
-                marginBottom={2}
-                marginTop={1.5}
-                marginLeft={2}
-            >
+            <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
                 <Typography sx={styles.typography}>
                     <FormattedMessage id="TotalInjection" />
                 </Typography>
-                <Typography sx={styles.totalTypography}>
-                    {totalInjection.toFixed(2)} MVar
-                </Typography>
+                <Typography sx={styles.totalTypography}>{totalInjection.toFixed(2)} MVar</Typography>
 
                 <Typography sx={styles.secondTypography}>
                     <FormattedMessage id="TotalConsumption" />
                 </Typography>
-                <Typography sx={styles.totalTypography}>
-                    {totalConsumption.toFixed(2)} MVar
-                </Typography>
+                <Typography sx={styles.totalTypography}>{totalConsumption.toFixed(2)} MVar</Typography>
 
                 {result.reactiveSlacksOverThreshold && (
-                    <Typography
-                        sx={styles.reactiveSlacksOverThresholdTypography}
-                    >
+                    <Typography sx={styles.reactiveSlacksOverThresholdTypography}>
                         <FormattedMessage
                             id={'REACTIVE_SLACKS_OVER_THRESHOLD'}
                             values={{
@@ -275,18 +239,10 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
         const statusToShow = status === 'SUCCEED' ? 'OK' : 'KO';
         return (
             <>
-                <Stack
-                    direction={'row'}
-                    gap={1}
-                    marginBottom={2}
-                    marginTop={1.5}
-                    marginLeft={2}
-                >
+                <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
                     <Typography style={{ fontWeight: 'bold' }}>
                         <FormattedMessage id="VoltageInitStatus" />
-                        <span style={{ marginLeft: '4px' }}>
-                            {statusToShow}
-                        </span>
+                        <span style={{ marginLeft: '4px' }}>{statusToShow}</span>
                     </Typography>
                     <Lens fontSize={'medium'} sx={color} />
                 </Stack>
@@ -373,14 +329,9 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const renderReportViewer = () => {
         return (
             <>
-                <Box sx={{ height: '4px' }}>
-                    {openLoader && <LinearProgress />}
-                </Box>
-                {(status === RunningStatus.SUCCEED ||
-                    status === RunningStatus.FAILED) && (
-                    <ComputationReportViewer
-                        reportType={REPORT_TYPES.VOLTAGE_INITIALIZATION}
-                    />
+                <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
+                {(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && (
+                    <ComputationReportViewer reportType={REPORT_TYPES.VOLTAGE_INITIALIZATION} />
                 )}
             </>
         );
@@ -391,20 +342,13 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             <>
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
-                        <Tabs
-                            value={tabIndex}
-                            onChange={(event, newTabIndex) =>
-                                setTabIndex(newTabIndex)
-                            }
-                        >
+                        <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
                             <Tab
                                 label={intl.formatMessage({
                                     id: 'ReactiveSlacks',
                                 })}
                             />
-                            <Tab
-                                label={intl.formatMessage({ id: 'Indicators' })}
-                            />
+                            <Tab label={intl.formatMessage({ id: 'Indicators' })} />
                             {enableDeveloperMode && (
                                 <Tab
                                     label={intl.formatMessage({
@@ -412,13 +356,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                                     })}
                                 />
                             )}
-                            <Tab
-                                label={
-                                    <FormattedMessage
-                                        id={'ComputationResultsLogs'}
-                                    />
-                                }
-                            />
+                            <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                         </Tabs>
                     </Box>
 
@@ -426,44 +364,24 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
                         <Button
                             variant="outlined"
                             onClick={previewModifications}
-                            disabled={
-                                !result ||
-                                !result.modificationsGroupUuid ||
-                                disabledApplyModifications
-                            }
+                            disabled={!result || !result.modificationsGroupUuid || disabledApplyModifications}
                         >
                             <FormattedMessage id="previewModifications" />
                         </Button>
-                        {previewModificationsDialogOpen &&
-                            renderPreviewModificationsDialog()}
-                        {result &&
-                            !result.modificationsGroupUuid &&
-                            status === RunningStatus.SUCCEED && (
-                                <Box sx={{ paddingLeft: 2 }}>
-                                    <FormattedMessage id="modificationsAlreadyApplied" />
-                                </Box>
-                            )}
-                        {applyingModifications && (
-                            <CircularProgress
-                                sx={{ paddingLeft: 2 }}
-                                size={'1em'}
-                            />
+                        {previewModificationsDialogOpen && renderPreviewModificationsDialog()}
+                        {result && !result.modificationsGroupUuid && status === RunningStatus.SUCCEED && (
+                            <Box sx={{ paddingLeft: 2 }}>
+                                <FormattedMessage id="modificationsAlreadyApplied" />
+                            </Box>
                         )}
+                        {applyingModifications && <CircularProgress sx={{ paddingLeft: 2 }} size={'1em'} />}
                     </Box>
                 </Box>
                 <div style={{ flexGrow: 1 }}>
-                    {result &&
-                        tabIndex === 0 &&
-                        renderReactiveSlacksTable(result)}
-                    {result &&
-                        tabIndex === 1 &&
-                        renderIndicatorsTable(result.indicators)}
-                    {result &&
-                        tabIndex === 2 &&
-                        enableDeveloperMode &&
-                        renderBusVoltagesTable(result.busVoltages)}
-                    {((tabIndex === 3 && enableDeveloperMode) ||
-                        (tabIndex === 2 && !enableDeveloperMode)) &&
+                    {result && tabIndex === 0 && renderReactiveSlacksTable(result)}
+                    {result && tabIndex === 1 && renderIndicatorsTable(result.indicators)}
+                    {result && tabIndex === 2 && enableDeveloperMode && renderBusVoltagesTable(result.busVoltages)}
+                    {((tabIndex === 3 && enableDeveloperMode) || (tabIndex === 2 && !enableDeveloperMode)) &&
                         renderReportViewer()}
                 </div>
             </>

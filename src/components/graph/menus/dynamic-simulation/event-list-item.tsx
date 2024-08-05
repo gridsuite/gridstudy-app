@@ -17,10 +17,7 @@ import { Theme } from '@mui/material/styles';
 import { Event } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { AppState } from '../../../../redux/reducer';
 import { ListItemProps } from '@mui/material/ListItem/ListItem';
-import {
-    getStartTime,
-    getStartTimeUnit,
-} from '../../../dialogs/dynamicsimulation/event/model/event.model';
+import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 
 const styles = {
@@ -73,9 +70,7 @@ export const EventListItem = ({
             computedLabel: (
                 <>
                     <strong>{item.equipmentId}</strong>
-                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(
-                        item
-                    )}`}</i>
+                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(item)}`}</i>
                 </>
             ),
         } as {};
@@ -96,10 +91,7 @@ export const EventListItem = ({
     const [hover, setHover] = useState(false);
 
     return (
-        <Box
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-        >
+        <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <ListItem key={item.equipmentId} {...props} sx={styles.listItem}>
                 <ListItemIcon sx={styles.iconCheck}>
                     <Checkbox
@@ -113,11 +105,7 @@ export const EventListItem = ({
                 </ListItemIcon>
                 <OverflowableText sx={styles.label} text={itemLabel} />
                 {!isOneNodeBuilding && hover && (
-                    <IconButton
-                        onClick={() => onEdit(item)}
-                        size={'small'}
-                        sx={styles.iconEdit}
-                    >
+                    <IconButton onClick={() => onEdit(item)} size={'small'} sx={styles.iconEdit}>
                         <EditIcon />
                     </IconButton>
                 )}

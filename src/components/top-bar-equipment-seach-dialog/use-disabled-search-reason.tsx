@@ -12,12 +12,8 @@ import { StudyDisplayMode } from '../network-modification.type';
 
 export const useDisabledSearchReason = () => {
     const intl = useIntl();
-    const studyDisplayMode = useSelector(
-        (state: AppState) => state.studyDisplayMode
-    );
-    const studyIndexationStatus = useSelector(
-        (state: AppState) => state.studyIndexationStatus
-    );
+    const studyDisplayMode = useSelector((state: AppState) => state.studyDisplayMode);
+    const studyIndexationStatus = useSelector((state: AppState) => state.studyIndexationStatus);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     if (studyDisplayMode === StudyDisplayMode.TREE) {

@@ -30,10 +30,7 @@ import {
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
@@ -73,20 +70,14 @@ import {
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
-import {
-    REGULATION_TYPES,
-    SHUNT_COMPENSATOR_TYPES,
-} from 'components/network/constants';
+import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import {
-    SPREADSHEET_SORT_STORE,
-    SPREADSHEET_STORE_FIELD,
-} from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -147,26 +138,15 @@ const TableWrapper = (props) => {
 
     const { snackError } = useSnackMessage();
 
-    const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const allDisplayedColumnsNames = useSelector(
-        (state) => state.allDisplayedColumnsNames
-    );
-    const allLockedColumnsNames = useSelector(
-        (state) => state.allLockedColumnsNames
-    );
-    const allReorderedTableDefinitionIndexes = useSelector(
-        (state) => state.allReorderedTableDefinitionIndexes
-    );
+    const allDisplayedColumnsNames = useSelector((state) => state.allDisplayedColumnsNames);
+    const allLockedColumnsNames = useSelector((state) => state.allLockedColumnsNames);
+    const allReorderedTableDefinitionIndexes = useSelector((state) => state.allReorderedTableDefinitionIndexes);
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
-    const [
-        reorderedTableDefinitionIndexes,
-        setReorderedTableDefinitionIndexes,
-    ] = useState([]);
+    const [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes] = useState([]);
 
     const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -180,10 +160,7 @@ const TableWrapper = (props) => {
     const [editingData, setEditingData] = useState();
     const editingDataRef = useRef(editingData);
 
-    const isLockedColumnNamesEmpty = useMemo(
-        () => lockedColumnsNames.size === 0,
-        [lockedColumnsNames.size]
-    );
+    const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
 
     const globalFilterRef = useRef();
 
@@ -235,10 +212,7 @@ const TableWrapper = (props) => {
 
     const formatFetchedEquipmentHandler = useCallback(
         (fetchedEquipment) => {
-            return formatFetchedEquipment(
-                equipmentDefinition.type,
-                fetchedEquipment
-            );
+            return formatFetchedEquipment(equipmentDefinition.type, fetchedEquipment);
         },
         [equipmentDefinition.type]
     );
@@ -246,10 +220,7 @@ const TableWrapper = (props) => {
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
-            return formatFetchedEquipments(
-                equipmentDefinition.type,
-                fetchedEquipments
-            );
+            return formatFetchedEquipments(equipmentDefinition.type, fetchedEquipments);
         },
         [equipmentDefinition.type]
     );
@@ -261,8 +232,7 @@ const TableWrapper = (props) => {
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
     const getEnumFilterColumns = useCallback(() => {
-        const generatedTableColumns =
-            TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
+        const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
         return generatedTableColumns.filter(({ isEnum }) => isEnum === true);
     }, [tabIndex]);
 
@@ -275,9 +245,7 @@ const TableWrapper = (props) => {
             filterEnums[column.field] = [
                 ...new Set(
                     equipments
-                        .map((equipment) =>
-                            deepFindValue(equipment, column.field)
-                        )
+                        .map((equipment) => deepFindValue(equipment, column.field))
                         .filter((value) => value != null)
                 ),
             ];
@@ -285,10 +253,7 @@ const TableWrapper = (props) => {
         return filterEnums;
     }, [getEnumFilterColumns, equipments]);
 
-    const filterEnums = useMemo(
-        () => generateEquipmentsFilterEnums(),
-        [generateEquipmentsFilterEnums]
-    );
+    const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
 
     const enrichColumn = useCallback(
         (column) => {
@@ -296,9 +261,7 @@ const TableWrapper = (props) => {
 
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
-                const isValueInvalid =
-                    loadFlowStatus !== RunningStatus.SUCCEED &&
-                    column.canBeInvalidated;
+                const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && column.canBeInvalidated;
 
                 column.cellRendererParams = {
                     isValueInvalid: isValueInvalid,
@@ -307,23 +270,11 @@ const TableWrapper = (props) => {
                 if (column.normed) {
                     column.cellRendererParams.fluxConvention = fluxConvention;
                     column.comparator = (valueA, valueB) => {
-                        const normedValueA =
-                            valueA !== undefined
-                                ? column.normed(fluxConvention, valueA)
-                                : undefined;
-                        const normedValueB =
-                            valueB !== undefined
-                                ? column.normed(fluxConvention, valueB)
-                                : undefined;
-                        if (
-                            normedValueA !== undefined &&
-                            normedValueB !== undefined
-                        ) {
+                        const normedValueA = valueA !== undefined ? column.normed(fluxConvention, valueA) : undefined;
+                        const normedValueB = valueB !== undefined ? column.normed(fluxConvention, valueB) : undefined;
+                        if (normedValueA !== undefined && normedValueB !== undefined) {
                             return normedValueA - normedValueB;
-                        } else if (
-                            normedValueA === undefined &&
-                            normedValueB === undefined
-                        ) {
+                        } else if (normedValueA === undefined && normedValueB === undefined) {
                             return 0;
                         } else if (normedValueA === undefined) {
                             return -1;
@@ -342,9 +293,7 @@ const TableWrapper = (props) => {
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
             //we reuse and mutate the column objects so we need to clear to undefined
-            column.pinned = lockedColumnsNames.has(column.id)
-                ? 'left'
-                : undefined;
+            column.pinned = lockedColumnsNames.has(column.id) ? 'left' : undefined;
 
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
             if (column?.isEnum) {
@@ -365,10 +314,8 @@ const TableWrapper = (props) => {
                         return value;
                     };
 
-                    const translatedValueA =
-                        getTranslatedOrOriginalValue(valueA);
-                    const translatedValueB =
-                        getTranslatedOrOriginalValue(valueB);
+                    const translatedValueA = getTranslatedOrOriginalValue(valueA);
+                    const translatedValueB = getTranslatedOrOriginalValue(valueB);
 
                     return translatedValueA.localeCompare(translatedValueB);
                 };
@@ -451,17 +398,13 @@ const TableWrapper = (props) => {
     }, [tabIndex]);
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-        const newSelectedColumns = new Set(
-            allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []
-        );
+        const newSelectedColumns = new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []);
         setSelectedColumnsNames(newSelectedColumns);
     }, [tabIndex, allDisplayedColumnsNames]);
 
     useEffect(() => {
         const allLockedTemp = allLockedColumnsNames[tabIndex];
-        setLockedColumnsNames(
-            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
-        );
+        setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
     }, [tabIndex, allLockedColumnsNames]);
 
     useEffect(() => {
@@ -469,9 +412,7 @@ const TableWrapper = (props) => {
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map(
-                      (item) => item.id
-                  )
+                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map((item) => item.id)
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
@@ -480,16 +421,10 @@ const TableWrapper = (props) => {
     }, [props.equipmentChanged]);
 
     const scrollToEquipmentIndex = useCallback(() => {
-        if (
-            props.equipmentId !== null &&
-            props.equipmentType !== null &&
-            !manualTabSwitch
-        ) {
+        if (props.equipmentId !== null && props.equipmentType !== null && !manualTabSwitch) {
             //calculate row index to scroll to
             //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
-            const selectedRow = gridRef.current?.api?.getRowNode(
-                props.equipmentId
-            );
+            const selectedRow = gridRef.current?.api?.getRowNode(props.equipmentId);
             if (selectedRow) {
                 gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
@@ -498,11 +433,7 @@ const TableWrapper = (props) => {
     }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
 
     useEffect(() => {
-        if (
-            props.equipmentId !== null &&
-            props.equipmentType !== null &&
-            !manualTabSwitch
-        ) {
+        if (props.equipmentId !== null && props.equipmentType !== null && !manualTabSwitch) {
             const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
             if (tabIndex === definition.index) {
                 // already in expected tab => explicit call to scroll to expected row
@@ -523,9 +454,7 @@ const TableWrapper = (props) => {
 
     const handleGridReady = useCallback(() => {
         if (globalFilterRef.current) {
-            gridRef.current?.api?.setQuickFilter(
-                globalFilterRef.current.getFilterValue()
-            );
+            gridRef.current?.api?.setQuickFilter(globalFilterRef.current.getFilterValue());
         }
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
@@ -565,27 +494,16 @@ const TableWrapper = (props) => {
         (event) => {
             if (event.finished && event.column) {
                 const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
-                    reorderedTableDefinitionIndexes.indexOf(
-                        event.column.colDef.id
-                    ),
+                    reorderedTableDefinitionIndexes.indexOf(event.column.colDef.id),
                     1
                 );
-                const destinationIndex = isEditColumnVisible()
-                    ? event.toIndex - 1
-                    : event.toIndex;
+                const destinationIndex = isEditColumnVisible() ? event.toIndex - 1 : event.toIndex;
 
-                reorderedTableDefinitionIndexes.splice(
-                    destinationIndex,
-                    0,
-                    reorderedItem
-                );
-                setReorderedTableDefinitionIndexes(
-                    reorderedTableDefinitionIndexes
-                );
+                reorderedTableDefinitionIndexes.splice(destinationIndex, 0, reorderedItem);
+                setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexes);
 
                 updateConfigParameter(
-                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
-                        TABLES_NAMES[tabIndex],
+                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
                     JSON.stringify(reorderedTableDefinitionIndexes)
                 ).catch((error) => {
                     snackError({
@@ -604,13 +522,7 @@ const TableWrapper = (props) => {
                 setColumnData(columnData);
             }
         },
-        [
-            columnData,
-            isEditColumnVisible,
-            reorderedTableDefinitionIndexes,
-            snackError,
-            tabIndex,
-        ]
+        [columnData, isEditColumnVisible, reorderedTableDefinitionIndexes, snackError, tabIndex]
     );
 
     const getFieldValue = useCallback((newField, oldField) => {
@@ -640,22 +552,10 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        getFieldValue(
-                            editingData.name,
-                            editingDataRef.current.name
-                        ),
-                        getFieldValue(
-                            editingData.type,
-                            editingDataRef.current.type
-                        ),
-                        getFieldValue(
-                            editingData.p0,
-                            editingDataRef.current.p0
-                        ),
-                        getFieldValue(
-                            editingData.q0,
-                            editingDataRef.current.q0
-                        ),
+                        getFieldValue(editingData.name, editingDataRef.current.name),
+                        getFieldValue(editingData.type, editingDataRef.current.type),
+                        getFieldValue(editingData.p0, editingDataRef.current.p0),
+                        getFieldValue(editingData.q0, editingDataRef.current.q0),
                         undefined,
                         undefined,
                         false,
@@ -666,107 +566,70 @@ const TableWrapper = (props) => {
                     let ratioTap = null;
                     if (editingData?.ratioTapChanger) {
                         ratioTap = {
-                            [LOAD_TAP_CHANGING_CAPABILITIES]:
-                                toModificationOperation(
-                                    getFieldValue(
-                                        editingData.ratioTapChanger?.[
-                                            LOAD_TAP_CHANGING_CAPABILITIES
-                                        ],
-                                        editingDataRef.current
-                                            .ratioTapChanger?.[
-                                            LOAD_TAP_CHANGING_CAPABILITIES
-                                        ]
-                                    )
-                                ),
+                            [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
+                                getFieldValue(
+                                    editingData.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES],
+                                    editingDataRef.current.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES]
+                                )
+                            ),
                             [TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
                                     editingData.ratioTapChanger?.[TAP_POSITION],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        TAP_POSITION
-                                    ]
+                                    editingDataRef.current.ratioTapChanger?.[TAP_POSITION]
                                 )
                             ),
                             [LOW_TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger?.[
-                                        LOW_TAP_POSITION
-                                    ],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        LOW_TAP_POSITION
-                                    ]
+                                    editingData.ratioTapChanger?.[LOW_TAP_POSITION],
+                                    editingDataRef.current.ratioTapChanger?.[LOW_TAP_POSITION]
                                 )
                             ),
                             [REGULATING]: toModificationOperation(
                                 getFieldValue(
                                     editingData.ratioTapChanger?.[REGULATING],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        REGULATING
-                                    ]
+                                    editingDataRef.current.ratioTapChanger?.[REGULATING]
                                 )
                             ),
                             [REGULATION_TYPE]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger?.[
-                                        REGULATION_TYPE
-                                    ],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        REGULATION_TYPE
-                                    ]
+                                    editingData.ratioTapChanger?.[REGULATION_TYPE],
+                                    editingDataRef.current.ratioTapChanger?.[REGULATION_TYPE]
                                 )
                             ),
                             [REGULATION_SIDE]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger?.[
-                                        REGULATION_SIDE
-                                    ],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        REGULATION_SIDE
-                                    ]
+                                    editingData.ratioTapChanger?.[REGULATION_SIDE],
+                                    editingDataRef.current.ratioTapChanger?.[REGULATION_SIDE]
                                 )
                             ),
                             regulatingTerminalId: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger
-                                        ?.regulatingTerminalConnectableId,
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        'regulatingTerminalConnectableId'
-                                    ]
+                                    editingData.ratioTapChanger?.regulatingTerminalConnectableId,
+                                    editingDataRef.current.ratioTapChanger?.['regulatingTerminalConnectableId']
                                 )
                             ),
                             regulatingTerminalType: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger
-                                        ?.regulatingTerminalConnectableType,
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        'regulatingTerminalConnectableType'
-                                    ]
+                                    editingData.ratioTapChanger?.regulatingTerminalConnectableType,
+                                    editingDataRef.current.ratioTapChanger?.['regulatingTerminalConnectableType']
                                 )
                             ),
                             regulatingTerminalVlId: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger
-                                        ?.regulatingTerminalVlId,
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        'regulatingTerminalVlId'
-                                    ]
+                                    editingData.ratioTapChanger?.regulatingTerminalVlId,
+                                    editingDataRef.current.ratioTapChanger?.['regulatingTerminalVlId']
                                 )
                             ),
                             [TARGET_V]: toModificationOperation(
                                 getFieldValue(
                                     editingData.ratioTapChanger?.[TARGET_V],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        TARGET_V
-                                    ]
+                                    editingDataRef.current.ratioTapChanger?.[TARGET_V]
                                 )
                             ),
                             [TARGET_DEADBAND]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.ratioTapChanger?.[
-                                        TARGET_DEADBAND
-                                    ],
-                                    editingDataRef.current.ratioTapChanger?.[
-                                        TARGET_DEADBAND
-                                    ]
+                                    editingData.ratioTapChanger?.[TARGET_DEADBAND],
+                                    editingDataRef.current.ratioTapChanger?.[TARGET_DEADBAND]
                                 )
                             ),
                             steps: null,
@@ -777,95 +640,62 @@ const TableWrapper = (props) => {
                         phaseTap = {
                             [REGULATION_MODE]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger?.[
-                                        REGULATION_MODE
-                                    ],
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        REGULATION_MODE
-                                    ]
+                                    editingData.phaseTapChanger?.[REGULATION_MODE],
+                                    editingDataRef.current.phaseTapChanger?.[REGULATION_MODE]
                                 )
                             ),
                             [TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
                                     editingData.phaseTapChanger?.[TAP_POSITION],
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        TAP_POSITION
-                                    ]
+                                    editingDataRef.current.phaseTapChanger?.[TAP_POSITION]
                                 )
                             ),
                             [LOW_TAP_POSITION]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger?.[
-                                        LOW_TAP_POSITION
-                                    ],
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        LOW_TAP_POSITION
-                                    ]
+                                    editingData.phaseTapChanger?.[LOW_TAP_POSITION],
+                                    editingDataRef.current.phaseTapChanger?.[LOW_TAP_POSITION]
                                 )
                             ),
                             [REGULATION_TYPE]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger?.[
-                                        REGULATION_TYPE
-                                    ],
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        REGULATION_TYPE
-                                    ]
+                                    editingData.phaseTapChanger?.[REGULATION_TYPE],
+                                    editingDataRef.current.phaseTapChanger?.[REGULATION_TYPE]
                                 )
                             ),
                             [REGULATION_SIDE]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger?.[
-                                        REGULATION_SIDE
-                                    ],
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        REGULATION_SIDE
-                                    ]
+                                    editingData.phaseTapChanger?.[REGULATION_SIDE],
+                                    editingDataRef.current.phaseTapChanger?.[REGULATION_SIDE]
                                 )
                             ),
                             regulatingTerminalId: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger
-                                        ?.regulatingTerminalConnectableId,
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        'regulatingTerminalConnectableId'
-                                    ]
+                                    editingData.phaseTapChanger?.regulatingTerminalConnectableId,
+                                    editingDataRef.current.phaseTapChanger?.['regulatingTerminalConnectableId']
                                 )
                             ),
                             regulatingTerminalType: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger
-                                        ?.regulatingTerminalConnectableType,
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        'regulatingTerminalConnectableType'
-                                    ]
+                                    editingData.phaseTapChanger?.regulatingTerminalConnectableType,
+                                    editingDataRef.current.phaseTapChanger?.['regulatingTerminalConnectableType']
                                 )
                             ),
                             regulatingTerminalVlId: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger
-                                        ?.regulatingTerminalVlId,
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        'regulatingTerminalVlId'
-                                    ]
+                                    editingData.phaseTapChanger?.regulatingTerminalVlId,
+                                    editingDataRef.current.phaseTapChanger?.['regulatingTerminalVlId']
                                 )
                             ),
                             regulationValue: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger
-                                        ?.regulationValue,
-                                    editingDataRef.current.phaseTapChanger
-                                        ?.regulationValue
+                                    editingData.phaseTapChanger?.regulationValue,
+                                    editingDataRef.current.phaseTapChanger?.regulationValue
                                 )
                             ),
                             [TARGET_DEADBAND]: toModificationOperation(
                                 getFieldValue(
-                                    editingData.phaseTapChanger?.[
-                                        TARGET_DEADBAND
-                                    ],
-                                    editingDataRef.current.phaseTapChanger?.[
-                                        TARGET_DEADBAND
-                                    ]
+                                    editingData.phaseTapChanger?.[TARGET_DEADBAND],
+                                    editingDataRef.current.phaseTapChanger?.[TARGET_DEADBAND]
                                 )
                             ),
                         };
@@ -875,55 +705,15 @@ const TableWrapper = (props) => {
                         props.currentNode?.id,
                         editingData.id,
                         toModificationOperation(
-                            sanitizeString(
-                                getFieldValue(
-                                    editingData?.name,
-                                    editingDataRef.current?.name
-                                )
-                            )
+                            sanitizeString(getFieldValue(editingData?.name, editingDataRef.current?.name))
                         ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.r,
-                                editingDataRef.current.r
-                            )
-                        ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.x,
-                                editingDataRef.current.x
-                            )
-                        ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.g,
-                                editingDataRef.current.g
-                            )
-                        ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.b,
-                                editingDataRef.current.b
-                            )
-                        ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.ratedS,
-                                editingDataRef.current.ratedS
-                            )
-                        ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.ratedU1,
-                                editingDataRef.current.ratedU1
-                            )
-                        ),
-                        toModificationOperation(
-                            getFieldValue(
-                                editingData.ratedU2,
-                                editingDataRef.current.ratedU2
-                            )
-                        ),
+                        toModificationOperation(getFieldValue(editingData.r, editingDataRef.current.r)),
+                        toModificationOperation(getFieldValue(editingData.x, editingDataRef.current.x)),
+                        toModificationOperation(getFieldValue(editingData.g, editingDataRef.current.g)),
+                        toModificationOperation(getFieldValue(editingData.b, editingDataRef.current.b)),
+                        toModificationOperation(getFieldValue(editingData.ratedS, editingDataRef.current.ratedS)),
+                        toModificationOperation(getFieldValue(editingData.ratedU1, editingDataRef.current.ratedU1)),
+                        toModificationOperation(getFieldValue(editingData.ratedU2, editingDataRef.current.ratedU2)),
                         undefined,
                         undefined,
                         ratioTap,
@@ -933,18 +723,14 @@ const TableWrapper = (props) => {
                         propertiesForBackend
                     );
                 case EQUIPMENT_TYPES.GENERATOR:
-                    const regulatingTerminalConnectableIdFieldValue =
-                        getFieldValue(
-                            editingData.regulatingTerminalConnectableId,
-                            editingDataRef.current
-                                ?.regulatingTerminalConnectableId
-                        );
-                    const regulatingTerminalConnectableTypeFieldValue =
-                        getFieldValue(
-                            editingData.regulatingTerminalConnectableType,
-                            editingDataRef.current
-                                ?.regulatingTerminalConnectableType
-                        );
+                    const regulatingTerminalConnectableIdFieldValue = getFieldValue(
+                        editingData.regulatingTerminalConnectableId,
+                        editingDataRef.current?.regulatingTerminalConnectableId
+                    );
+                    const regulatingTerminalConnectableTypeFieldValue = getFieldValue(
+                        editingData.regulatingTerminalConnectableType,
+                        editingDataRef.current?.regulatingTerminalConnectableType
+                    );
                     const regulatingTerminalVlIdFieldValue =
                         regulatingTerminalConnectableIdFieldValue !== null ||
                         regulatingTerminalConnectableTypeFieldValue !== null
@@ -954,87 +740,52 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        getFieldValue(
-                            editingData.name,
-                            editingDataRef.current.name
-                        ),
-                        getFieldValue(
-                            editingData.energySource,
-                            editingDataRef.current.energySource
-                        ),
-                        getFieldValue(
-                            editingData.minP,
-                            editingDataRef.current.minP
-                        ),
-                        getFieldValue(
-                            editingData.maxP,
-                            editingDataRef.current.maxP
-                        ),
+                        getFieldValue(editingData.name, editingDataRef.current.name),
+                        getFieldValue(editingData.energySource, editingDataRef.current.energySource),
+                        getFieldValue(editingData.minP, editingDataRef.current.minP),
+                        getFieldValue(editingData.maxP, editingDataRef.current.maxP),
                         undefined,
-                        getFieldValue(
-                            editingData.targetP,
-                            editingDataRef.current.targetP
-                        ),
-                        getFieldValue(
-                            editingData.targetQ,
-                            editingDataRef.current.targetQ
-                        ),
-                        getFieldValue(
-                            editingData.voltageRegulatorOn,
-                            editingDataRef.current.voltageRegulatorOn
-                        ),
-                        getFieldValue(
-                            editingData.targetV,
-                            editingDataRef.current.targetV
-                        ),
+                        getFieldValue(editingData.targetP, editingDataRef.current.targetP),
+                        getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
+                        getFieldValue(editingData.voltageRegulatorOn, editingDataRef.current.voltageRegulatorOn),
+                        getFieldValue(editingData.targetV, editingDataRef.current.targetV),
                         undefined,
                         undefined,
                         undefined,
                         getFieldValue(
                             editingData?.coordinatedReactiveControl?.qPercent,
-                            editingDataRef.current?.coordinatedReactiveControl
-                                ?.qPercent
+                            editingDataRef.current?.coordinatedReactiveControl?.qPercent
                         ),
                         getFieldValue(
-                            editingData?.generatorStartup
-                                ?.plannedActivePowerSetPoint,
-                            editingDataRef.current?.generatorStartup
-                                ?.plannedActivePowerSetPoint
+                            editingData?.generatorStartup?.plannedActivePowerSetPoint,
+                            editingDataRef.current?.generatorStartup?.plannedActivePowerSetPoint
                         ),
                         getFieldValue(
                             editingData?.generatorStartup?.marginalCost,
-                            editingDataRef.current?.generatorStartup
-                                ?.marginalCost
+                            editingDataRef.current?.generatorStartup?.marginalCost
                         ),
                         getFieldValue(
                             editingData?.generatorStartup?.plannedOutageRate,
-                            editingDataRef.current?.generatorStartup
-                                ?.plannedOutageRate
+                            editingDataRef.current?.generatorStartup?.plannedOutageRate
                         ),
                         getFieldValue(
                             editingData?.generatorStartup?.forcedOutageRate,
-                            editingDataRef.current?.generatorStartup
-                                ?.forcedOutageRate
+                            editingDataRef.current?.generatorStartup?.forcedOutageRate
                         ),
                         getFieldValue(
                             editingData?.generatorShortCircuit?.directTransX,
-                            editingDataRef.current?.generatorShortCircuit
-                                ?.directTransX
+                            editingDataRef.current?.generatorShortCircuit?.directTransX
                         ),
                         getFieldValue(
-                            editingData?.generatorShortCircuit
-                                ?.stepUpTransformerX,
-                            editingDataRef.current?.generatorShortCircuit
-                                ?.stepUpTransformerX
+                            editingData?.generatorShortCircuit?.stepUpTransformerX,
+                            editingDataRef.current?.generatorShortCircuit?.stepUpTransformerX
                         ),
                         getFieldValue(
-                            editingData?.regulatingTerminalVlId ||
-                                editingData?.regulatingTerminalConnectableId
+                            editingData?.regulatingTerminalVlId || editingData?.regulatingTerminalConnectableId
                                 ? REGULATION_TYPES.DISTANT.id
                                 : REGULATION_TYPES.LOCAL.id,
                             editingDataRef.current?.regulatingTerminalVlId ||
-                                editingDataRef.current
-                                    ?.regulatingTerminalConnectableId
+                                editingDataRef.current?.regulatingTerminalConnectableId
                                 ? REGULATION_TYPES.DISTANT.id
                                 : REGULATION_TYPES.LOCAL.id
                         ),
@@ -1044,8 +795,7 @@ const TableWrapper = (props) => {
                         undefined,
                         getFieldValue(
                             editingData?.activePowerControl?.participate,
-                            editingDataRef.current?.activePowerControl
-                                ?.participate
+                            editingDataRef.current?.activePowerControl?.participate
                         ),
                         getFieldValue(
                             editingData?.activePowerControl?.droop,
@@ -1061,31 +811,17 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        getFieldValue(
-                            editingData.name,
-                            editingDataRef.current.name
-                        ),
-                        getFieldValue(
-                            editingData.nominalV,
-                            editingDataRef.current.nominalV
-                        ),
-                        getFieldValue(
-                            editingData.lowVoltageLimit,
-                            editingDataRef.current.lowVoltageLimit
-                        ),
-                        getFieldValue(
-                            editingData.highVoltageLimit,
-                            editingDataRef.current.highVoltageLimit
-                        ),
+                        getFieldValue(editingData.name, editingDataRef.current.name),
+                        getFieldValue(editingData.nominalV, editingDataRef.current.nominalV),
+                        getFieldValue(editingData.lowVoltageLimit, editingDataRef.current.lowVoltageLimit),
+                        getFieldValue(editingData.highVoltageLimit, editingDataRef.current.highVoltageLimit),
                         getFieldValue(
                             editingData.identifiableShortCircuit?.ipMin,
-                            editingDataRef.current.identifiableShortCircuit
-                                ?.ipMin
+                            editingDataRef.current.identifiableShortCircuit?.ipMin
                         ),
                         getFieldValue(
                             editingData.identifiableShortCircuit?.ipMax,
-                            editingDataRef.current.identifiableShortCircuit
-                                ?.ipMax
+                            editingDataRef.current.identifiableShortCircuit?.ipMax
                         ),
                         false,
                         undefined,
@@ -1096,37 +832,19 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        getFieldValue(
-                            editingData.name,
-                            editingDataRef.current.name
-                        ),
-                        getFieldValue(
-                            editingData.minP,
-                            editingDataRef.current.minP
-                        ),
-                        getFieldValue(
-                            editingData.maxP,
-                            editingDataRef.current.maxP
-                        ),
-                        getFieldValue(
-                            editingData.targetP,
-                            editingDataRef.current.targetP
-                        ),
-                        getFieldValue(
-                            editingData.targetQ,
-                            editingDataRef.current.targetQ
-                        ),
+                        getFieldValue(editingData.name, editingDataRef.current.name),
+                        getFieldValue(editingData.minP, editingDataRef.current.minP),
+                        getFieldValue(editingData.maxP, editingDataRef.current.maxP),
+                        getFieldValue(editingData.targetP, editingDataRef.current.targetP),
+                        getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
                         undefined,
                         undefined,
                         undefined,
                         getFieldValue(
                             editingData.activePowerControl?.participate,
-                            editingDataRef.current.activePowerControl
-                                ?.participate != null
-                                ? +editingDataRef.current.activePowerControl
-                                      .participate
-                                : editingDataRef.current.activePowerControl
-                                      ?.participate
+                            editingDataRef.current.activePowerControl?.participate != null
+                                ? +editingDataRef.current.activePowerControl.participate
+                                : editingDataRef.current.activePowerControl?.participate
                         ),
                         getFieldValue(
                             editingData.activePowerControl?.droop,
@@ -1143,29 +861,14 @@ const TableWrapper = (props) => {
                         props.studyUuid,
                         props.currentNode?.id,
                         editingData.id,
-                        getFieldValue(
-                            editingData.name,
-                            editingDataRef.current.name
-                        ),
-                        getFieldValue(
-                            editingData.maximumSectionCount,
-                            editingDataRef.current.maximumSectionCount
-                        ),
-                        getFieldValue(
-                            editingData.sectionCount,
-                            editingDataRef.current.sectionCount
-                        ),
+                        getFieldValue(editingData.name, editingDataRef.current.name),
+                        getFieldValue(editingData.maximumSectionCount, editingDataRef.current.maximumSectionCount),
+                        getFieldValue(editingData.sectionCount, editingDataRef.current.sectionCount),
                         context.lastEditedField === 'maxSusceptance'
-                            ? getFieldValue(
-                                  editingData.maxSusceptance,
-                                  editingDataRef.current.maxSusceptance
-                              )
+                            ? getFieldValue(editingData.maxSusceptance, editingDataRef.current.maxSusceptance)
                             : null,
                         context.lastEditedField === 'maxQAtNominalV'
-                            ? getFieldValue(
-                                  editingData.maxQAtNominalV,
-                                  editingDataRef.current.maxQAtNominalV
-                              )
+                            ? getFieldValue(editingData.maxQAtNominalV, editingDataRef.current.maxQAtNominalV)
                             : null,
                         getFieldValue(
                             editingData.type,
@@ -1179,11 +882,7 @@ const TableWrapper = (props) => {
                         propertiesForBackend
                     );
                 default:
-                    return requestNetworkChange(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        groovyCr
-                    );
+                    return requestNetworkChange(props.studyUuid, props.currentNode?.id, groovyCr);
             }
         },
         [props.currentNode?.id, props.studyUuid, getFieldValue]
@@ -1209,15 +908,10 @@ const TableWrapper = (props) => {
                     ? column.colDef.valueGetter(wrappedEditedData)
                     : editingData[field];
 
-                groovyCr +=
-                    column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
+                groovyCr += column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
 
-            const editPromise = buildEditPromise(
-                editingData,
-                groovyCr,
-                params.context
-            );
+            const editPromise = buildEditPromise(editingData, groovyCr, params.context);
             Promise.resolve(editPromise)
                 .then(() => {
                     const transaction = {
@@ -1238,25 +932,15 @@ const TableWrapper = (props) => {
                     });
                 });
         },
-        [
-            buildEditPromise,
-            editingData,
-            priorValuesBuffer,
-            resetBuffer,
-            rollbackEdit,
-            snackError,
-            tabIndex,
-        ]
+        [buildEditPromise, editingData, priorValuesBuffer, resetBuffer, rollbackEdit, snackError, tabIndex]
     );
 
     // After the modification has been applied, we need to update the equipment data in the grid
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                    'UPDATE_FINISHED' &&
-                studyUpdatedForce.eventData.headers['parentNode'] ===
-                    props.currentNode.id &&
+                studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED' &&
+                studyUpdatedForce.eventData.headers['parentNode'] === props.currentNode.id &&
                 lastModifiedEquipment
             ) {
                 fetchNetworkElementInfos(
@@ -1268,8 +952,7 @@ const TableWrapper = (props) => {
                     true
                 )
                     .then((updatedEquipment) => {
-                        const formattedData =
-                            formatFetchedEquipmentHandler(updatedEquipment);
+                        const formattedData = formatFetchedEquipmentHandler(updatedEquipment);
                         const transaction = {
                             update: [formattedData],
                         };
@@ -1277,11 +960,7 @@ const TableWrapper = (props) => {
                         setLastModifiedEquipment();
                         gridRef.current.api.refreshCells({
                             force: true,
-                            rowNodes: [
-                                gridRef.current.api.getRowNode(
-                                    formattedData.id
-                                ),
-                            ],
+                            rowNodes: [gridRef.current.api.getRowNode(formattedData.id)],
                         });
                     })
                     .catch((error) => {
@@ -1301,20 +980,11 @@ const TableWrapper = (props) => {
     const handleCellEditingStopped = useCallback(
         (params) => {
             if (params.oldValue !== params.newValue) {
-                if (
-                    params.data.metadata.equipmentType ===
-                    EQUIPMENT_TYPES.SHUNT_COMPENSATOR
-                ) {
+                if (params.data.metadata.equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR) {
                     updateShuntCompensatorCells(params);
-                } else if (
-                    params.data.metadata?.equipmentType ===
-                    EQUIPMENT_TYPES.GENERATOR
-                ) {
+                } else if (params.data.metadata?.equipmentType === EQUIPMENT_TYPES.GENERATOR) {
                     updateGeneratorCells(params);
-                } else if (
-                    params.data.metadata.equipmentType ===
-                    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER
-                ) {
+                } else if (params.data.metadata.equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER) {
                     updateTwtCells(params);
                 }
                 addDataToBuffer(params.colDef.field, params.oldValue);
@@ -1373,9 +1043,7 @@ const TableWrapper = (props) => {
                             component: EditableCellRenderer,
                             params: {
                                 setEditingData: setEditingData,
-                                equipmentType:
-                                    TABLES_DEFINITION_INDEXES.get(tabIndex)
-                                        .type,
+                                equipmentType: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
                             },
                         };
                     }
@@ -1387,19 +1055,14 @@ const TableWrapper = (props) => {
 
     const generateTableColumns = useCallback(
         (tabIndex) => {
-            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(
-                tabIndex
-            )
+            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex)
                 .columns.filter((c) => {
                     return selectedColumnsNames.has(c.id);
                 })
                 .map((column) => enrichColumn(column));
 
             function sortByIndex(a, b) {
-                return (
-                    reorderedTableDefinitionIndexes.indexOf(a.id) -
-                    reorderedTableDefinitionIndexes.indexOf(b.id)
-                );
+                return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
             }
 
             generatedTableColumns.sort(sortByIndex);
@@ -1409,13 +1072,7 @@ const TableWrapper = (props) => {
             }
             return generatedTableColumns;
         },
-        [
-            addEditColumn,
-            enrichColumn,
-            isEditColumnVisible,
-            reorderedTableDefinitionIndexes,
-            selectedColumnsNames,
-        ]
+        [addEditColumn, enrichColumn, isEditColumnVisible, reorderedTableDefinitionIndexes, selectedColumnsNames]
     );
 
     useEffect(() => {
@@ -1451,12 +1108,8 @@ const TableWrapper = (props) => {
                         <ColumnsConfig
                             tabIndex={tabIndex}
                             disabled={!!(props.disabled || editingData)}
-                            reorderedTableDefinitionIndexes={
-                                reorderedTableDefinitionIndexes
-                            }
-                            setReorderedTableDefinitionIndexes={
-                                setReorderedTableDefinitionIndexes
-                            }
+                            reorderedTableDefinitionIndexes={reorderedTableDefinitionIndexes}
+                            setReorderedTableDefinitionIndexes={setReorderedTableDefinitionIndexes}
                             selectedColumnsNames={selectedColumnsNames}
                             setSelectedColumnsNames={setSelectedColumnsNames}
                             lockedColumnsNames={lockedColumnsNames}
@@ -1468,16 +1121,8 @@ const TableWrapper = (props) => {
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnData}
-                            tableName={
-                                TABLES_DEFINITION_INDEXES.get(tabIndex).name
-                            }
-                            disabled={
-                                !!(
-                                    props.disabled ||
-                                    rowData.length === 0 ||
-                                    editingData
-                                )
-                            }
+                            tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
+                            disabled={!!(props.disabled || rowData.length === 0 || editingData)}
                         />
                     </Grid>
                 </Grid>
@@ -1502,9 +1147,7 @@ const TableWrapper = (props) => {
                         handleCellEditingStopped={handleCellEditingStopped}
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
-                        shouldHidePinnedHeaderRightBorder={
-                            isLockedColumnNamesEmpty
-                        }
+                        shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                     />
                 </Box>
             )}

@@ -21,10 +21,7 @@ import {
     VOLTAGE_LIMITS_MODIFICATION,
 } from '../../../utils/field-constants';
 import { isBlankOrEmpty } from '../../../utils/validation-functions';
-import {
-    REACTIVE_SLACKS_THRESHOLD,
-    SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
-} from './voltage-init-constants';
+import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
 
 export const GENERAL = 'GENERAL';
 export const GENERAL_APPLY_MODIFICATIONS = 'GENERAL_APPLY_MODIFICATIONS';
@@ -45,8 +42,7 @@ export const initialVoltageInitParametersForm: VoltageInitParametersForm = {
         [GENERAL_APPLY_MODIFICATIONS]: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
         [UPDATE_BUS_VOLTAGE]: DEFAULT_UPDATE_BUS_VOLTAGE,
         [REACTIVE_SLACKS_THRESHOLD]: DEFAULT_REACTIVE_SLACKS_THRESHOLD,
-        [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]:
-            DEFAULT_SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
+        [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]: DEFAULT_SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
     },
     [VOLTAGE_LIMITS_MODIFICATION]: [],
     [VOLTAGE_LIMITS_DEFAULT]: [],
@@ -65,10 +61,7 @@ export const voltageInitParametersFormSchema = yup.object().shape({
             .required(),
         [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]: yup
             .number()
-            .min(
-                0,
-                'ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero'
-            )
+            .min(0, 'ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero')
             .required(),
     }),
     [VOLTAGE_LIMITS_MODIFICATION]: yup.array().of(
@@ -102,20 +95,14 @@ export const voltageInitParametersFormSchema = yup.object().shape({
                 .min(0)
                 .nullable()
                 .test((value, context) => {
-                    return (
-                        !isBlankOrEmpty(value) ||
-                        !isBlankOrEmpty(context.parent[HIGH_VOLTAGE_LIMIT])
-                    );
+                    return !isBlankOrEmpty(value) || !isBlankOrEmpty(context.parent[HIGH_VOLTAGE_LIMIT]);
                 }),
             [HIGH_VOLTAGE_LIMIT]: yup
                 .number()
                 .min(0)
                 .nullable()
                 .test((value, context) => {
-                    return (
-                        !isBlankOrEmpty(value) ||
-                        !isBlankOrEmpty(context.parent[LOW_VOLTAGE_LIMIT])
-                    );
+                    return !isBlankOrEmpty(value) || !isBlankOrEmpty(context.parent[LOW_VOLTAGE_LIMIT]);
                 }),
             [SELECTED]: yup.boolean().required(),
         })
@@ -140,6 +127,4 @@ export const voltageInitParametersFormSchema = yup.object().shape({
     ),
 });
 
-export type VoltageInitParametersForm = yup.InferType<
-    typeof voltageInitParametersFormSchema
->;
+export type VoltageInitParametersForm = yup.InferType<typeof voltageInitParametersFormSchema>;

@@ -18,8 +18,7 @@ const table_locale_fr = {
     ValRefInkV: 'Tension de référence (kV)',
     ValRefInkVBeforeContingency: 'Tension de référence (kV) avant aléa',
     ValRefInkW: 'Puissance active de référence (MW)',
-    ValRefInkWBeforeContingency:
-        'Puissance active de référence (MW) avant aléa',
+    ValRefInkWBeforeContingency: 'Puissance active de référence (MW) avant aléa',
 };
 
 export default table_locale_fr;

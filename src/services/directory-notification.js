@@ -9,8 +9,7 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { getUrlWithToken, getWsBase } from './utils';
 import { getUserToken } from '../redux/user-store';
 
-const PREFIX_DIRECTORY_NOTIFICATION_WS =
-    import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
+const PREFIX_DIRECTORY_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 
 export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
     // The websocket API doesn't allow relative urls
@@ -38,13 +37,9 @@ export function connectNotificationsWsUpdateDirectories() {
     const webSocketBaseUrl = getWsBase();
     const webSocketUrl = `${webSocketBaseUrl}${PREFIX_DIRECTORY_NOTIFICATION_WS}/notify?updateType=directories`;
 
-    const reconnectingWebSocket = new ReconnectingWebSocket(
-        () => `${webSocketUrl}&access_token=${getUserToken()}`
-    );
+    const reconnectingWebSocket = new ReconnectingWebSocket(() => `${webSocketUrl}&access_token=${getUserToken()}`);
     reconnectingWebSocket.onopen = function () {
-        console.info(
-            `Connected Websocket update directories ${webSocketUrl} ...`
-        );
+        console.info(`Connected Websocket update directories ${webSocketUrl} ...`);
     };
     return reconnectingWebSocket;
 }
