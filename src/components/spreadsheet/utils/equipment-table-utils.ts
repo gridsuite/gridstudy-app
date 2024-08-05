@@ -33,6 +33,7 @@ import {
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { IEquipment } from '../../../services/study/contingency-list';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -211,11 +212,11 @@ const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
 };
 
 export const formatFetchedEquipments = (
-    equipmentType: string,
-    equipments: any
+    equipmentType: EQUIPMENT_TYPES,
+    equipments: IEquipment[]
 ) => {
     if (equipments && equipments?.length > 0) {
-        return equipments.map((equipment: any) => {
+        return equipments.map((equipment) => {
             return formatFetchedEquipment(equipmentType, equipment);
         });
     }
@@ -223,8 +224,8 @@ export const formatFetchedEquipments = (
 };
 
 export const formatFetchedEquipment = (
-    equipmentType: string,
-    equipment: any
+    equipmentType: EQUIPMENT_TYPES,
+    equipment: IEquipment
 ) => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:

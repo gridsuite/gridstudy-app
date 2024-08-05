@@ -6,7 +6,7 @@
  */
 
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../redux/reducer.type';
+import { AppState } from '../redux/reducer';
 import {
     OptionalServicesNames,
     OptionalServicesStatus,
@@ -16,7 +16,7 @@ export const useOptionalServiceStatus = (
     serviceName: OptionalServicesNames
 ): OptionalServicesStatus | undefined => {
     const optionalServices = useSelector(
-        (state: ReduxState) => state.optionalServices
+        (state: AppState) => state.optionalServices
     );
     const optionalService = optionalServices?.find(
         (service) => service.name === serviceName

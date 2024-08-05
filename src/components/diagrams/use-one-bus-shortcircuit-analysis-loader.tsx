@@ -9,9 +9,10 @@ import { UUID } from 'crypto';
 import { ReactElement, useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { Chip, darken, lighten, Theme } from '@mui/material';
 import { setOneBusShortcircuitAnalysisDiagram } from '../../redux/actions';
+import { AppDispatch } from '../../redux/store';
 
 /**
  * A hook that handles the logic behind the diagram one bus shortcircuit analysis loader
@@ -52,13 +53,13 @@ export function useOneBusShortcircuitAnalysisLoader(
     nodeId: UUID
 ): oneBusShortcircuitAnalysisLoader {
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: AppState) => state.studyUpdated
     );
     const oneBusShortCircuitAnalysisDiagram = useSelector(
-        (state: ReduxState) => state.oneBusShortCircuitAnalysisDiagram
+        (state: AppState) => state.oneBusShortCircuitAnalysisDiagram
     );
 
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const intl = useIntl();
 
     const displayOneBusShortcircuitAnalysisLoader = useCallback(() => {

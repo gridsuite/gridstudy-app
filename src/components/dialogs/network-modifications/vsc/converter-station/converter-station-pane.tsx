@@ -25,7 +25,7 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
-import { CurrentTreeNode } from '../../../../../redux/reducer.type';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';

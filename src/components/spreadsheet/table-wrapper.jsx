@@ -5,33 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useMemo,
-} from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Alert } from '@mui/material';
+import { Box } from '@mui/system';
+import { Alert, Grid } from '@mui/material';
 import {
+    EDIT_COLUMN,
+    MIN_COLUMN_WIDTH,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_DEFINITION_INDEXES,
-    TABLES_NAMES,
-    MIN_COLUMN_WIDTH,
-    EDIT_COLUMN,
     TABLES_DEFINITION_TYPES,
+    TABLES_NAMES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
+    DefaultCellRenderer,
     EditableCellRenderer,
     EditingCellRenderer,
-    DefaultCellRenderer,
     ReferenceLineCellRenderer,
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
@@ -45,17 +40,16 @@ import { EquipmentTabs } from './equipment-tabs';
 import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
-    modifySubstation,
+    formatPropertiesForBackend,
     modifyBattery,
     modifyGenerator,
     modifyLoad,
     modifyShuntCompensator,
+    modifySubstation,
     modifyTwoWindingsTransformer,
     modifyVoltageLevel,
     requestNetworkChange,
-    formatPropertiesForBackend,
 } from '../../services/study/network-modifications';
-import { Box } from '@mui/system';
 import {
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
@@ -90,8 +84,8 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import {
-    SPREADSHEET_STORE_FIELD,
     SPREADSHEET_SORT_STORE,
+    SPREADSHEET_STORE_FIELD,
 } from 'utils/store-sort-filter-fields';
 
 const useEditBuffer = () => {

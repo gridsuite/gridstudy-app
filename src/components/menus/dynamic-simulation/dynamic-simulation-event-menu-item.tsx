@@ -52,6 +52,7 @@ const DynamicSimulationEventMenuItem = (
                     equipmentId,
                     equipmentType,
                     `${getEventType(equipmentType)}${
+                        // @ts-expect-error TODO: conflicts types
                         EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
                     }`
                 )
@@ -66,6 +67,7 @@ const DynamicSimulationEventMenuItem = (
                     <Typography noWrap>
                         {intl.formatMessage({
                             id: `${getEventType(equipmentType)}${
+                                // @ts-expect-error TODO: conflicts types
                                 EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
                             }`,
                         })}

@@ -20,7 +20,7 @@ import {
     useIntlResultStatusMessages,
 } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import ComputingType from '../../computing-status/computing-type';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
@@ -91,6 +91,7 @@ const DynamicSimulationResultTimeline = memo(
             {
                 filterType: DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
                 filterTab: TIMELINE,
+                // @ts-expect-error TODO: found how to have Action type in props type
                 filterStoreAction: setDynamicSimulationResultFilter,
             }
         );
@@ -166,7 +167,7 @@ const DynamicSimulationResultTimeline = memo(
 
         // messages to show when no data
         const dynamicSimulationStatus = useSelector(
-            (state: ReduxState) =>
+            (state: AppState) =>
                 state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
         );
         const messages = useIntlResultStatusMessages(intl, true);

@@ -18,8 +18,10 @@ import {
     INVALID_LOADFLOW_OPACITY,
     NAD_INVALID_LOADFLOW_OPACITY,
 } from '../../utils/colors';
-import { FEEDER_TYPES } from 'components/utils/feederType';
+import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { Theme } from '@mui/material';
+import { AppDispatch } from '../../redux/store';
 
 export const LOADING_WIDTH = 300;
 export const LOADING_HEIGHT = 300;
@@ -46,7 +48,7 @@ export const DEFAULT_HEIGHT_NETWORK_AREA_DIAGRAM = 400;
 export const MAP_BOTTOM_OFFSET = 80;
 
 // Percentage of the diagram pane's total height that correspond to the minimum
-// height of opened diagrams : diagrams should not be smaller than 25% of the
+// height of opened diagrams: diagrams should not be smaller than 25% of the
 // diagram pane's height.
 export const DIAGRAM_MAP_RATIO_MIN_PERCENTAGE = 0.25;
 
@@ -62,7 +64,7 @@ export const styles = {
         },
         overflow: 'hidden',
     },
-    divNetworkAreaDiagram: (theme) => ({
+    divNetworkAreaDiagram: (theme: Theme) => ({
         '& .nad-label-box': {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,
@@ -71,7 +73,7 @@ export const styles = {
             stroke: theme.palette.text.primary,
         },
     }),
-    divSingleLineDiagram: (theme) => ({
+    divSingleLineDiagram: (theme: Theme) => ({
         '& polyline': {
             pointerEvents: 'none',
         },
@@ -116,35 +118,35 @@ export const styles = {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
     },
-    paperBorders: (theme) => ({
+    paperBorders: (theme: Theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
         borderBottom: '1px solid ' + theme.palette.action.disabledBackground,
         borderRight: '1px solid ' + theme.palette.action.hover,
     }),
 };
 
-export const ViewState = {
-    PINNED: 'pinned',
-    MINIMIZED: 'minimized',
-    OPENED: 'opened',
-};
+export enum ViewState {
+    PINNED = 'pinned',
+    MINIMIZED = 'minimized',
+    OPENED = 'opened',
+}
 
-export const SubstationLayout = {
-    HORIZONTAL: 'horizontal',
-    VERTICAL: 'vertical',
-    SMART: 'smart',
-    SMARTHORIZONTALCOMPACTION: 'smartHorizontalCompaction',
-    SMARTVERTICALCOMPACTION: 'smartVerticalCompaction',
-};
+export enum SubstationLayout {
+    HORIZONTAL = 'horizontal',
+    VERTICAL = 'vertical',
+    SMART = 'smart',
+    SMARTHORIZONTALCOMPACTION = 'smartHorizontalCompaction',
+    SMARTVERTICALCOMPACTION = 'smartVerticalCompaction',
+}
 
-export const DiagramType = {
-    VOLTAGE_LEVEL: 'voltage-level',
-    SUBSTATION: 'substation',
-    NETWORK_AREA_DIAGRAM: 'network-area-diagram',
-};
+export enum DiagramType {
+    VOLTAGE_LEVEL = 'voltage-level',
+    SUBSTATION = 'substation',
+    NETWORK_AREA_DIAGRAM = 'network-area-diagram',
+}
 
 // be careful when using this method because there are treatments made on purpose
-export function getEquipmentTypeFromFeederType(feederType) {
+export function getEquipmentTypeFromFeederType(feederType: FeederTypes) {
     switch (feederType) {
         case FEEDER_TYPES.LINE:
             return EQUIPMENT_TYPES.LINE;
@@ -181,7 +183,7 @@ export function getEquipmentTypeFromFeederType(feederType) {
     }
 }
 
-export function getFeederTypeFromEquipmentType(equipmentType) {
+export function getFeederTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES) {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
             return FEEDER_TYPES.SUBSTATION;
@@ -220,38 +222,38 @@ export function getFeederTypeFromEquipmentType(equipmentType) {
 }
 
 export const useDiagram = () => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     const openDiagramView = useCallback(
-        (id, type) => {
+        (id: string, type: DiagramType) => {
             dispatch(openDiagram(id, type));
         },
         [dispatch]
     );
 
     const togglePinDiagramView = useCallback(
-        (id, type) => {
+        (id: string, type: DiagramType) => {
             dispatch(togglePinDiagram(id, type));
         },
         [dispatch]
     );
 
     const minimizeDiagramView = useCallback(
-        (id, type) => {
+        (id: string, type: DiagramType) => {
             dispatch(minimizeDiagram(id, type));
         },
         [dispatch]
     );
 
     const closeDiagramView = useCallback(
-        (id, type) => {
+        (id: string, type: DiagramType) => {
             dispatch(closeDiagram(id, type));
         },
         [dispatch]
     );
 
     const closeDiagramViews = useCallback(
-        (idsToRemove) => {
+        (idsToRemove: string[]) => {
             dispatch(closeDiagrams(idsToRemove));
         },
         [dispatch]

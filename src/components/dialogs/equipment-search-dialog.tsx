@@ -17,7 +17,7 @@ import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -45,9 +45,10 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
     currentNodeUuid,
 }) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
         useSearchMatchingEquipments({
+            // @ts-expect-error TODO: manage null case
             studyUuid: studyUuid,
             nodeUuid: currentNodeUuid,
             inUpstreamBuiltParentNode: true,

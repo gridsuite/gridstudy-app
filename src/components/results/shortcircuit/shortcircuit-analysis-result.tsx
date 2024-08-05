@@ -13,7 +13,7 @@ import {
     SCAPagedResults,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { RunningStatus } from 'components/utils/running-status';
 import React, {
     FunctionComponent,
@@ -83,10 +83,8 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
     const [isFetching, setIsFetching] = useState<boolean>(false);
     const [filterEnums, setFilterEnums] = useState<FilterEnumsType>({});
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const isOneBusShortCircuitAnalysisType =
         analysisType === ShortCircuitAnalysisType.ONE_BUS;
@@ -107,6 +105,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
         {
             filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
             filterTab: mappingTabs(analysisType),
+            // @ts-expect-error TODO: found how to have Action type in props type
             filterStoreAction: setShortcircuitAnalysisResultFilter,
         },
         memoizedSetPageCallback
@@ -230,7 +229,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [analysisStatus, intl, snackError, studyUuid, currentNode.id]);
+    }, [analysisStatus, intl, snackError, studyUuid, currentNode?.id]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

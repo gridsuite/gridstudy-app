@@ -11,12 +11,13 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { ReduxState, StudyUpdated } from 'redux/reducer.type';
+import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import {
     setComputingStatus,
     setLastCompletedComputation,
 } from '../../redux/actions';
+import { AppDispatch } from '../../redux/store';
 
 interface UseComputingStatusProps {
     (
@@ -98,10 +99,10 @@ export const useComputingStatus: UseComputingStatusProps = (
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
+        (state: AppState) => state.studyUpdated
     );
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
 
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended

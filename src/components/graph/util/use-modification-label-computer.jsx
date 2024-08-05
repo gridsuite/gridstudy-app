@@ -8,7 +8,7 @@
 import { useIntl } from 'react-intl';
 import { MODIFICATION_TYPES } from '../../utils/modification-type';
 import { useCallback } from 'react';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types.js';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 const getOperatingStatusModificationValues = (modification, withFormat) => {
     return {
