@@ -140,7 +140,7 @@ export function fetchNetworkElementsInfos(
     elementType,
     infoType,
     inUpstreamBuiltParentNode,
-    nominalVoltages = undefined
+    nominalVoltages
 ) {
     const substationsCount = substationsIds ? substationsIds.length : 0;
     const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';

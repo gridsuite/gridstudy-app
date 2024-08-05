@@ -6,6 +6,7 @@
  */
 import {
     EquipmentInfos,
+    EquipmentType,
     TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
@@ -13,21 +14,18 @@ import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
-import { SELECTION_TYPES } from '../utils/selection-types';
+import { SELECTION_TYPES } from './selection-types';
 import {
     createMapContingencyList,
     createMapFilter,
-} from '../../services/study/network-map';
+} from '../../../services/study/network-map';
+import { SelectionCreationPanelFormFields } from './selection-creation-panel';
 
-export interface ISelection {
-    selectionType: string;
-    equipmentType: string;
-}
 export type UseSaveMapOutput = {
     pendingState: boolean;
     onSaveSelection: (
         equipments: EquipmentInfos[],
-        selection: ISelection,
+        selection: SelectionCreationPanelFormFields,
         distDir: TreeViewFinderNodeProps,
         nominalVoltages: number[]
     ) => Promise<boolean>;
@@ -45,7 +43,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
     const onSaveSelection = useCallback(
         async (
             equipments: EquipmentInfos[],
-            selection: ISelection,
+            selection: SelectionCreationPanelFormFields,
             distDir: TreeViewFinderNodeProps,
             nominalVoltages: number[]
         ) => {
@@ -72,7 +70,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                 } else {
                     if (isFilter) {
                         await createMapFilter(
-                            selection,
+                            selection.equipmentType as EquipmentType,
+                            selection.name,
                             distDir,
                             studyUuid,
                             currentNodeUuid,
@@ -86,7 +85,8 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         });
                     } else {
                         await createMapContingencyList(
-                            selection,
+                            selection.equipmentType as EquipmentType,
+                            selection.name,
                             distDir,
                             studyUuid,
                             currentNodeUuid,

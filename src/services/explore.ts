@@ -78,7 +78,7 @@ export function createCompositeModifications(
  * @returns {Promise<Response>}
  */
 export function createContingencyList(
-    newContingencyList: ContingencyList[],
+    newContingencyList: ContingencyList,
     contingencyListName: string,
     description: string,
     parentDirectoryUuid: string

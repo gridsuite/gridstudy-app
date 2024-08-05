@@ -32,7 +32,7 @@ import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
-import SelectionCreationPanel from './network/selection-creation-panel';
+import SelectionCreationPanel from './network/selection-creation-panel/selection-creation-panel';
 const styles = {
     map: {
         display: 'flex',
