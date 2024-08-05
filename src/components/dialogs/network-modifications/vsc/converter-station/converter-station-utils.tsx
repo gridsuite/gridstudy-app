@@ -176,7 +176,7 @@ export function getVscConverterStationSchema(id: string) {
 export function getVscConverterStationModificationSchema(id: string) {
     return {
         [id]: yup.object().shape({
-            [CONVERTER_STATION_ID]: yup.string().nullable(),
+            [CONVERTER_STATION_ID]: yup.string(),
             [CONVERTER_STATION_NAME]: yup.string().nullable(),
             [LOSS_FACTOR]: yup.number().nullable(),
             [VOLTAGE_REGULATION_ON]: yup.boolean().nullable(),
@@ -193,7 +193,7 @@ export function getVscConverterStationEmptyFormData(
 ) {
     return {
         [id]: {
-            [CONVERTER_STATION_ID]: null,
+            [CONVERTER_STATION_ID]: isModification ? '' : null,
             [CONVERTER_STATION_NAME]: isModification ? '' : null,
             [LOSS_FACTOR]: null,
             [REACTIVE_POWER]: null,
@@ -258,7 +258,9 @@ export function getConverterStationModificationData(
 
     return {
         type: MODIFICATION_TYPES.CONVERTER_STATION_MODIFICATION.type,
-        equipmentId: converterStationToModify?.id,
+        equipmentId:
+            converterStationToModify?.id ??
+            converterStation[CONVERTER_STATION_ID],
         equipmentName: toModificationOperation(
             converterStation[CONVERTER_STATION_NAME]
         ),

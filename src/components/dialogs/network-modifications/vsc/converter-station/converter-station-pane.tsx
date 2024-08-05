@@ -36,6 +36,7 @@ import {
     UpdateReactiveCapabilityCurveTable,
 } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 interface VscConverterStationPaneProps {
@@ -57,6 +58,8 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     previousValues,
     updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
+    const intl = useIntl();
+
     const { trigger } = useFormContext();
 
     const voltageRegulationOnWatch = useWatch({
@@ -79,7 +82,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             size="small"
             fullWidth
             label={'ID'}
-            value={previousValues?.id || ''}
+            value={previousValues?.id}
             InputProps={{
                 readOnly: true,
             }}
@@ -130,12 +133,16 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
-    const voltageRegulationOn = previousValues?.voltageRegulationOn ?? null;
+    const previousVoltageRegulatorOn = () => {
+        return intl.formatMessage({
+            id: previousValues?.voltageRegulatorOn ? 'On' : 'Off',
+        });
+    };
     const voltageRegulation = isModification ? (
         <CheckboxNullableInput
             name={`${id}.${VOLTAGE_REGULATION_ON}`}
             label={'VoltageRegulationText'}
-            previousValue={voltageRegulationOn}
+            previousValue={previousVoltageRegulatorOn()}
             id={undefined}
             formProps={undefined}
         />
