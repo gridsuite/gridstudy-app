@@ -8,18 +8,9 @@ import { GridSection } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useState } from 'react';
 import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
-import {
-    ADDED,
-    ADDITIONAL_PROPERTIES,
-    DELETION_MARK,
-    PREVIOUS_VALUE,
-} from '../../../../utils/field-constants';
+import { ADDED, ADDITIONAL_PROPERTIES, DELETION_MARK, PREVIOUS_VALUE } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
-import {
-    fetchPredefinedProperties,
-    initializedProperty,
-    PredefinedProperties,
-} from './property-utils';
+import { fetchPredefinedProperties, initializedProperty, PredefinedProperties } from './property-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 type PropertiesFormProps = {
@@ -27,17 +18,12 @@ type PropertiesFormProps = {
     isModification?: boolean;
 };
 
-const PropertiesForm = ({
-    networkElementType,
-    isModification = false,
-}: PropertiesFormProps) => {
+const PropertiesForm = ({ networkElementType, isModification = false }: PropertiesFormProps) => {
     const watchProps = useWatch({
         name: ADDITIONAL_PROPERTIES,
     });
     const { getValues, setValue } = useFormContext();
-    const [predefinedProperties, setPredefinedProperties] = useState(
-        {} as PredefinedProperties
-    );
+    const [predefinedProperties, setPredefinedProperties] = useState({} as PredefinedProperties);
 
     useEffect(() => {
         networkElementType &&
@@ -72,23 +58,12 @@ const PropertiesForm = ({
             let canRemoveLine = true;
             if (markedForDeletion) {
                 // just unmark
-                setValue(
-                    `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                    false,
-                    { shouldDirty: true }
-                );
+                setValue(`${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`, false, { shouldDirty: true });
                 canRemoveLine = false;
             } else {
                 // we should mark for deletion a property that actually exists in the network and not delete the property line straight away
-                if (
-                    properties[idx][PREVIOUS_VALUE] &&
-                    properties[idx][ADDED] === false
-                ) {
-                    setValue(
-                        `${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`,
-                        true,
-                        { shouldDirty: true }
-                    );
+                if (properties[idx][PREVIOUS_VALUE] && properties[idx][ADDED] === false) {
+                    setValue(`${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`, true, { shouldDirty: true });
                     canRemoveLine = false;
                 }
             }

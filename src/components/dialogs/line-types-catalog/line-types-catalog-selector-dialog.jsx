@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useRef,
-    useMemo,
-    useEffect,
-    useState,
-} from 'react';
+import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
 import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -19,32 +13,18 @@ import { Box, Grid, Tab, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
-export const ALLOWED_KEYS = [
-    'Escape',
-    'ArrowDown',
-    'ArrowUp',
-    'ArrowLeft',
-    'ArrowRight',
-];
+export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
 export const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
     UNDERGROUND_TAB: 1,
 };
 
-const LineTypesCatalogSelectorDialog = ({
-    onSelectLine,
-    preselectedRowId,
-    rowData,
-    onClose,
-    ...dialogProps
-}) => {
+const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowData, onClose, ...dialogProps }) => {
     const intl = useIntl();
     const gridRef = useRef(); // Necessary to call getSelectedRows on aggrid component
 
-    const [tabIndex, setTabIndex] = useState(
-        LineTypesCatalogSelectorDialogTabs.AERIAL_TAB
-    );
+    const [tabIndex, setTabIndex] = useState(LineTypesCatalogSelectorDialogTabs.AERIAL_TAB);
 
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -63,10 +43,7 @@ const LineTypesCatalogSelectorDialog = ({
     }, [rowData]);
 
     const handleClear = useCallback(() => onClose && onClose(), [onClose]);
-    const handleSubmit = useCallback(
-        () => onSelectLine && onSelectLine(selectedRow),
-        [onSelectLine, selectedRow]
-    );
+    const handleSubmit = useCallback(() => onSelectLine && onSelectLine(selectedRow), [onSelectLine, selectedRow]);
     const handleTabChange = useCallback((newValue) => {
         setTabIndex(newValue);
     }, []);
@@ -229,9 +206,7 @@ const LineTypesCatalogSelectorDialog = ({
     // Select the correct tab when opening the dialog, if a row is preselected
     useEffect(() => {
         if (preselectedRowId && rowData) {
-            const preselectedRow = rowData?.find(
-                (entry) => entry.id === preselectedRowId
-            );
+            const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
             const newTabIndex =
                 preselectedRow?.category === 'UNDERGROUND'
                     ? LineTypesCatalogSelectorDialogTabs.UNDERGROUND_TAB
@@ -254,21 +229,9 @@ const LineTypesCatalogSelectorDialog = ({
             }}
         >
             <Grid container>
-                <Tabs
-                    value={tabIndex}
-                    variant="scrollable"
-                    onChange={(event, newValue) => handleTabChange(newValue)}
-                >
-                    <Tab
-                        label={
-                            <FormattedMessage id="lineTypes.category.aerial" />
-                        }
-                    />
-                    <Tab
-                        label={
-                            <FormattedMessage id="lineTypes.category.underground" />
-                        }
-                    />
+                <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
+                    <Tab label={<FormattedMessage id="lineTypes.category.aerial" />} />
+                    <Tab label={<FormattedMessage id="lineTypes.category.underground" />} />
                 </Tabs>
             </Grid>
         </Box>

@@ -13,28 +13,14 @@ import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
 
-const RunButton = ({
-    runnables,
-    activeRunnables,
-    getStatus,
-    computationStopped,
-    disabled,
-}) => {
+const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
 
     const runnablesText = useMemo(
-        () =>
-            Object.fromEntries(
-                activeRunnables.map((k) => [
-                    k,
-                    intl.formatMessage({ id: runnables[k].messageId }),
-                ])
-            ),
+        () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
         [intl, runnables, activeRunnables]
     );
-    const [selectedRunnable, setSelectedRunnable] = React.useState(
-        activeRunnables[0]
-    );
+    const [selectedRunnable, setSelectedRunnable] = React.useState(activeRunnables[0]);
 
     function getOptions() {
         switch (getRunningStatus()) {
@@ -80,9 +66,7 @@ const RunButton = ({
         <SplitButton
             options={getOptions()}
             selectedIndex={activeRunnables.indexOf(selectedRunnable)}
-            onSelectionChange={(index) =>
-                setSelectedRunnable(activeRunnables[index])
-            }
+            onSelectionChange={(index) => setSelectedRunnable(activeRunnables[index])}
             onClick={runnables[selectedRunnable].startComputation}
             runningStatus={getRunningStatus()}
             buttonDisabled={disabled || isButtonDisable()}

@@ -49,9 +49,8 @@ html {
 
 body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
-        'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-        'Helvetica Neue', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+        'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -60,14 +59,13 @@ body {
    Except iframes have a border value set to 2 which can cause a slight offset to the UI. 
    This rule prevent the iframe to cause an unwanted offset.
    It can be removed if oidc-client-js is no longer the authentification library in use in this project. */
-   
+
 body > iframe[width='0'][height='0'] {
     border: 0;
 }
 
 code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-        monospace;
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 /* Single line diagram */
@@ -85,7 +83,7 @@ code {
     fill: white;
 }
 .sld-bus-connection {
-    fill: var(--sld-vl-color, black)
+    fill: var(--sld-vl-color, black);
 }
 .sld-busbar-section {
     stroke: var(--sld-vl-color, black);
@@ -97,17 +95,17 @@ code {
     fill: none;
 }
 .sld-wire.sld-dangling-line {
-    stroke-width: 2px
+    stroke-width: 2px;
 }
 .sld-wire.sld-tie-line {
-    stroke-width: 2px
+    stroke-width: 2px;
 }
 .sld-busbar-section.sld-bus-disconnected {
-    stroke-dasharray: 3,3
+    stroke-dasharray: 3, 3;
 }
 .sld-load-break-switch {
     stroke: blue;
-    fill: white
+    fill: white;
 }
 .sld-load {
     stroke: var(--sld-vl-color, blue);
@@ -149,7 +147,8 @@ code {
     stroke: var(--sld-vl-color, blue);
     fill: none;
 }
-.sld-vsc, .sld-lcc {
+.sld-vsc,
+.sld-lcc {
     stroke: var(--sld-vl-color, blue);
     font-size: 7.43px;
     fill: none;
@@ -171,7 +170,7 @@ code {
 .sld-legend {
     stroke: none;
     fill: black;
-    font: 11px Verdana
+    font: 11px Verdana;
 }
 .sld-node {
     stroke: none;
@@ -208,7 +207,7 @@ code {
     stroke: maroon;
 }
 .sld-cell-shape-flat .sld-bus-connection {
-    visibility: hidden
+    visibility: hidden;
 }
 
 /* tautologies.css */
@@ -515,4 +514,3 @@ code {
 .react-flow__node > .MuiButton-root {
     width: 100%;
 }
-

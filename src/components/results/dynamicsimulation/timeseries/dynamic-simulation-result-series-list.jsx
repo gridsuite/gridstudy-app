@@ -22,13 +22,7 @@ const styles = {
     }),
 };
 
-const DynamicSimulationResultSeriesList = ({
-    index,
-    items,
-    headers,
-    onLeftAxisSelected,
-    onRightAxisSelected,
-}) => {
+const DynamicSimulationResultSeriesList = ({ index, items, headers, onLeftAxisSelected, onRightAxisSelected }) => {
     const [leftAxisCheckedIndexes, setLeftAxisCheckedIndexes] = useState([]);
     const [rightAxisCheckedIndexes, setRightAxisCheckedIndexes] = useState([]);
 
@@ -75,10 +69,7 @@ const DynamicSimulationResultSeriesList = ({
                 <Grid container>
                     {headers.map((header, index) => (
                         <Grid item flexGrow={index === 1 ? 1 : 0} key={index}>
-                            <Typography
-                                sx={styles.headerItem}
-                                variant={'subtitle1'}
-                            >
+                            <Typography sx={styles.headerItem} variant={'subtitle1'}>
                                 {header}
                             </Typography>
                         </Grid>

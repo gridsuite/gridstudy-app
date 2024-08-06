@@ -27,9 +27,7 @@ function NetworkAreaDiagramContent(props) {
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -47,35 +45,21 @@ function NetworkAreaDiagramContent(props) {
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(
-                props.diagramId,
-                props.svgType,
-                diagramViewer.getWidth(),
-                diagramViewer.getHeight()
-            );
+            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
             // the user's zoom and scoll state for the current render.
             if (
                 diagramViewerRef.current &&
-                diagramViewer.getWidth() ===
-                    diagramViewerRef.current.getWidth() &&
-                diagramViewer.getHeight() ===
-                    diagramViewerRef.current.getHeight()
+                diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
+                diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
             ) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
 
             diagramViewerRef.current = diagramViewer;
         }
-    }, [
-        props.diagramId,
-        props.svgType,
-        props.svg,
-        currentNode,
-        props.loadingState,
-        diagramSizeSetter,
-    ]);
+    }, [props.diagramId, props.svgType, props.svg, currentNode, props.loadingState, diagramSizeSetter]);
 
     /**
      * RENDER
@@ -89,8 +73,7 @@ function NetworkAreaDiagramContent(props) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divNetworkAreaDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED &&
-                        styles.divDiagramInvalid
+                    loadFlowStatus !== RunningStatus.SUCCEED && styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />

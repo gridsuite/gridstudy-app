@@ -40,16 +40,13 @@ function makeButton(onClick, message, disabled) {
 
 const CONTINGENCY_TYPES = [ElementType.CONTINGENCY_LIST];
 const ContingencyListSelector = (props) => {
-    const favoriteContingencyListUuids = useSelector(
-        (state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]
-    );
+    const favoriteContingencyListUuids = useSelector((state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
     const [contingencyList, setContingencyList] = useState([]);
 
-    const [simulatedContingencyCount, setSimulatedContingencyCount] =
-        useState(0);
+    const [simulatedContingencyCount, setSimulatedContingencyCount] = useState(0);
 
     const [checkedContingencyList, setCheckedContingencyList] = useState([]);
 
@@ -101,10 +98,7 @@ const ContingencyListSelector = (props) => {
     }, [props.open, props.studyUuid, currentNode, checkedContingencyList]);
 
     useEffect(() => {
-        if (
-            favoriteContingencyListUuids &&
-            favoriteContingencyListUuids.length > 0
-        ) {
+        if (favoriteContingencyListUuids && favoriteContingencyListUuids.length > 0) {
             fetchContingencyAndFiltersLists(favoriteContingencyListUuids)
                 .then((res) => {
                     const mapCont = res.reduce((map, obj) => {
@@ -119,11 +113,7 @@ const ContingencyListSelector = (props) => {
                         favoriteContingencyListUuids
                             .map((id) => mapCont[id])
                             .filter((item) => item !== undefined)
-                            .sort((a, b) =>
-                                a.name
-                                    .toLowerCase()
-                                    .localeCompare(b.name.toLowerCase())
-                            )
+                            .sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()))
                     );
                 })
                 .catch(() => {
@@ -137,9 +127,7 @@ const ContingencyListSelector = (props) => {
     }, [favoriteContingencyListUuids, snackError]);
 
     function getSimulatedContingencyCountLabel() {
-        return simulatedContingencyCount != null
-            ? simulatedContingencyCount
-            : '...';
+        return simulatedContingencyCount != null ? simulatedContingencyCount : '...';
     }
 
     const handleAddFavorite = () => {
@@ -149,15 +137,9 @@ const ContingencyListSelector = (props) => {
     const removeFromFavorites = useCallback(
         (toRemove) => {
             const toRemoveIdsSet = new Set(toRemove.map((e) => e.id));
-            saveFavorites(
-                contingencyList
-                    .map((e) => e.id)
-                    .filter((id) => !toRemoveIdsSet.has(id))
-            );
+            saveFavorites(contingencyList.map((e) => e.id).filter((id) => !toRemoveIdsSet.has(id)));
 
-            setCheckedContingencyList((oldChecked) =>
-                oldChecked.filter((item) => !toRemoveIdsSet.has(item.id))
-            );
+            setCheckedContingencyList((oldChecked) => oldChecked.filter((item) => !toRemoveIdsSet.has(item.id)));
         },
         [contingencyList, saveFavorites]
     );
@@ -165,10 +147,7 @@ const ContingencyListSelector = (props) => {
     const addFavorites = (favorites) => {
         if (favorites && favorites.length > 0) {
             // avoid duplicates here
-            const newFavoriteIdsSet = new Set([
-                ...favoriteContingencyListUuids,
-                ...favorites.map((item) => item.id),
-            ]);
+            const newFavoriteIdsSet = new Set([...favoriteContingencyListUuids, ...favorites.map((item) => item.id)]);
             saveFavorites(Array.from([...newFavoriteIdsSet]));
         }
         setFavoriteSelectorOpen(false);
@@ -184,11 +163,7 @@ const ContingencyListSelector = (props) => {
                     'DeleteContingencyList',
                     checkedContingencyList.length === 0
                 )}
-                {makeButton(
-                    handleStart,
-                    'Execute',
-                    simulatedContingencyCount === 0
-                )}
+                {makeButton(handleStart, 'Execute', simulatedContingencyCount === 0)}
             </Grid>
         );
     };
@@ -214,12 +189,7 @@ const ContingencyListSelector = (props) => {
 
     return (
         <>
-            <Dialog
-                open={props.open}
-                onClose={handleClose}
-                maxWidth={'sm'}
-                fullWidth={true}
-            >
+            <Dialog open={props.open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
                 <DialogTitle>
                     <Typography component="span" variant="h5">
                         <FormattedMessage id="ContingencyListsSelection" />

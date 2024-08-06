@@ -26,8 +26,7 @@ export const getEnumLabelById = (enumValues, id) => {
 };
 
 export const isFieldRequired = (fieldName, schema, values) => {
-    const { schema: fieldSchema, parent: parentValues } =
-        getIn(schema, fieldName, values) || {};
+    const { schema: fieldSchema, parent: parentValues } = getIn(schema, fieldName, values) || {};
     return fieldSchema.describe({ parent: parentValues })?.optional === false;
 
     //static way, not working when using "when" in schema, but does not need form values
@@ -72,10 +71,7 @@ export const areNumbersOrdered = (array) => {
         if (order === null) {
             order = current < nextOne ? 'asc' : 'desc';
         }
-        if (
-            (order === 'asc' && current > nextOne) ||
-            (order === 'desc' && current < nextOne)
-        ) {
+        if ((order === 'asc' && current > nextOne) || (order === 'desc' && current < nextOne)) {
             return false;
         }
         current = nextOne;
@@ -104,11 +100,7 @@ export const getObjectId = (object) => {
     return typeof object === 'string' ? object : object?.id ?? null;
 };
 
-export const buildNewBusbarSections = (
-    equipmentId,
-    sectionCount,
-    busbarCount
-) => {
+export const buildNewBusbarSections = (equipmentId, sectionCount, busbarCount) => {
     const newBusbarSections = [];
     for (let i = 0; i < busbarCount; i++) {
         for (let j = 0; j < sectionCount; j++) {
@@ -122,18 +114,14 @@ export const buildNewBusbarSections = (
 };
 
 export function toModificationOperation(value) {
-    return value === 0 || value === false || value
-        ? { value: value, op: 'SET' }
-        : null;
+    return value === 0 || value === false || value ? { value: value, op: 'SET' } : null;
 }
 
 export function toModificationUnsetOperation(value) {
     if (value === null) {
         return null;
     }
-    return value === 0 || value === false || value
-        ? { value: value, op: 'SET' }
-        : { op: 'UNSET' };
+    return value === 0 || value === false || value ? { value: value, op: 'SET' } : { op: 'UNSET' };
 }
 
 export const formatTemporaryLimits = (temporaryLimits) =>
@@ -172,53 +160,33 @@ export const getTapChangerEquipmentSectionTypeValue = (tapChanger) => {
     if (!tapChanger?.regulatingTerminalConnectableType) {
         return null;
     } else {
-        return (
-            tapChanger?.regulatingTerminalConnectableType +
-            ' : ' +
-            tapChanger?.regulatingTerminalConnectableId
-        );
+        return tapChanger?.regulatingTerminalConnectableType + ' : ' + tapChanger?.regulatingTerminalConnectableId;
     }
 };
 
 export const getTapChangerRegulationTerminalValue = (tapChanger) => {
-    let regulatingTerminalGeneratorValue =
-        tapChanger?.regulatingTerminalConnectableId ?? '';
+    let regulatingTerminalGeneratorValue = tapChanger?.regulatingTerminalConnectableId ?? '';
     if (tapChanger?.regulatingTerminalVlId) {
-        regulatingTerminalGeneratorValue +=
-            ' ( ' + tapChanger?.regulatingTerminalVlId + ' )';
+        regulatingTerminalGeneratorValue += ' ( ' + tapChanger?.regulatingTerminalVlId + ' )';
     }
     return regulatingTerminalGeneratorValue;
 };
 
 export function calculateResistance(distance, linearResistance) {
-    if (
-        distance === undefined ||
-        isNaN(distance) ||
-        linearResistance === undefined ||
-        isNaN(linearResistance)
-    ) {
+    if (distance === undefined || isNaN(distance) || linearResistance === undefined || isNaN(linearResistance)) {
         return 0;
     }
     return Number(distance) * Number(linearResistance);
 }
 
 export function calculateReactance(distance, linearReactance) {
-    if (
-        distance === undefined ||
-        isNaN(distance) ||
-        linearReactance === undefined ||
-        isNaN(linearReactance)
-    ) {
+    if (distance === undefined || isNaN(distance) || linearReactance === undefined || isNaN(linearReactance)) {
         return 0;
     }
     return Number(distance) * Number(linearReactance);
 }
 
-export const computeSwitchedOnValue = (
-    sectionCount,
-    maximumSectionCount,
-    linkedSwitchedOnValue
-) => {
+export const computeSwitchedOnValue = (sectionCount, maximumSectionCount, linkedSwitchedOnValue) => {
     return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
 
@@ -231,22 +199,10 @@ export const computeMaxSusceptance = (maxQAtNominalV, nominalVoltage) => {
 };
 
 export function calculateSusceptance(distance, linearCapacity) {
-    if (
-        distance === undefined ||
-        isNaN(distance) ||
-        linearCapacity === undefined ||
-        isNaN(linearCapacity)
-    ) {
+    if (distance === undefined || isNaN(distance) || linearCapacity === undefined || isNaN(linearCapacity)) {
         return 0;
     }
-    return (
-        Number(distance) *
-        Number(linearCapacity) *
-        2 *
-        Math.PI *
-        50 *
-        Math.pow(10, 6)
-    );
+    return Number(distance) * Number(linearCapacity) * 2 * Math.PI * 50 * Math.pow(10, 6);
 }
 
 export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
@@ -257,31 +213,18 @@ export const replaceAllDefaultValues = (arrayParams, oldValue, newValue) => {
                 ...accumulator,
                 {
                     ...current,
-                    defaultValue:
-                        current.defaultValue === oldValue
-                            ? newValue
-                            : current.defaultValue,
+                    defaultValue: current.defaultValue === oldValue ? newValue : current.defaultValue,
                 },
             ];
         }, [])
     );
 };
 
-export function getNewVoltageLevelOptions(
-    formattedVoltageLevel,
-    oldVoltageLevelId,
-    voltageLevelOptions
-) {
+export function getNewVoltageLevelOptions(formattedVoltageLevel, oldVoltageLevelId, voltageLevelOptions) {
     const newVoltageLevelOptions =
         formattedVoltageLevel.id === oldVoltageLevelId
-            ? voltageLevelOptions.filter(
-                  (vl) => vl.id !== formattedVoltageLevel.id
-              )
-            : voltageLevelOptions.filter(
-                  (vl) =>
-                      vl.id !== formattedVoltageLevel.id &&
-                      vl.id !== oldVoltageLevelId
-              );
+            ? voltageLevelOptions.filter((vl) => vl.id !== formattedVoltageLevel.id)
+            : voltageLevelOptions.filter((vl) => vl.id !== formattedVoltageLevel.id && vl.id !== oldVoltageLevelId);
     newVoltageLevelOptions.push(formattedVoltageLevel);
 
     return newVoltageLevelOptions;

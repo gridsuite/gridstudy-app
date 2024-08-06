@@ -9,21 +9,14 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 
 import { getUrlWithToken, getWsBase } from './utils';
 
-const PREFIX_STUDY_NOTIFICATION_WS =
-    import.meta.env.VITE_WS_GATEWAY + '/study-notification';
+const PREFIX_STUDY_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/study-notification';
 
 export function connectNotificationsWebsocket(studyUuid, options) {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
-    const wsAdress = `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(
-        studyUuid
-    )}`;
+    const wsAdress = `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`;
 
-    const rws = new ReconnectingWebSocket(
-        () => getUrlWithToken(wsAdress),
-        [],
-        options
-    );
+    const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsAdress), [], options);
     // don't log the token, it's private
     rws.onopen = function () {
         console.info(`Connected Websocket ${wsAdress} ...`);

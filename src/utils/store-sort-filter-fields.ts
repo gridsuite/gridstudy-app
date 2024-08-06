@@ -13,17 +13,14 @@ export const LOADFLOW_VOLTAGE_LIMIT_VIOLATION = 'loadflowVoltageLimitViolation';
 export const LOADFLOW_RESULT = 'loadflowResult';
 
 //Security analysis result store fields
-export const SECURITY_ANALYSIS_RESULT_STORE_FIELD =
-    'securityAnalysisResultFilter';
+export const SECURITY_ANALYSIS_RESULT_STORE_FIELD = 'securityAnalysisResultFilter';
 export const SECURITY_ANALYSIS_RESULT_SORT_STORE = 'securityAnalysisResult';
 export const SECURITY_ANALYSIS_RESULT_N = 'securityAnalysisResultN';
 export const SECURITY_ANALYSIS_RESULT_N_K = 'securityAnalysisResultNK';
 
 //Sensitivity analysis result store fields
-export const SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD =
-    'sensitivityAnalysisResultFilter';
-export const SENSITIVITY_ANALYSIS_RESULT_SORT_STORE =
-    'sensitivityAnalysisResult';
+export const SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD = 'sensitivityAnalysisResultFilter';
+export const SENSITIVITY_ANALYSIS_RESULT_SORT_STORE = 'sensitivityAnalysisResult';
 export const SENSITIVITY_IN_DELTA_MW_N = 'sensitivityInDeltaMWN';
 export const SENSITIVITY_IN_DELTA_MW_N_K = 'sensitivityInDeltaMWNK';
 export const SENSITIVITY_IN_DELTA_A_N = 'sensitivityInDeltaAN';
@@ -32,16 +29,13 @@ export const SENSITIVITY_AT_NODE_N = 'sensitivityAtNodeN';
 export const SENSITIVITY_AT_NODE_N_K = 'sensitivityAtNodeNK';
 
 //Shortcircuit analysis result store fields
-export const SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD =
-    'shortcircuitAnalysisResultFilter';
-export const SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE =
-    'shortcircuitAnalysisResult';
+export const SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD = 'shortcircuitAnalysisResultFilter';
+export const SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE = 'shortcircuitAnalysisResult';
 export const ONE_BUS = 'oneBus';
 export const ALL_BUSES = 'allBuses';
 
 //Dynamic simulation result store fields
-export const DYNAMIC_SIMULATION_RESULT_STORE_FIELD =
-    'dynamicSimulationResultFilter';
+export const DYNAMIC_SIMULATION_RESULT_STORE_FIELD = 'dynamicSimulationResultFilter';
 export const DYNAMIC_SIMULATION_RESULT_SORT_STORE = 'dynamicSimulationResult';
 export const TIMELINE = 'timeline';
 

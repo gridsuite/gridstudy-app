@@ -5,23 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    LEFT_SIDE_PERCENTAGE,
-    RIGHT_SIDE_PERCENTAGE,
-    SLIDER_PERCENTAGE,
-} from 'components/utils/field-constants';
+import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
 const percentageAreaValidationSchema = () => ({
     [SLIDER_PERCENTAGE]: yup.number(),
-    [LEFT_SIDE_PERCENTAGE]: yup
-        .number()
-        .min(0.1, 'OutOfBoundsPercentage')
-        .max(99.9, 'OutOfBoundsPercentage'),
-    [RIGHT_SIDE_PERCENTAGE]: yup
-        .number()
-        .min(0.1, 'OutOfBoundsPercentage')
-        .max(99.9, 'OutOfBoundsPercentage'),
+    [LEFT_SIDE_PERCENTAGE]: yup.number().min(0.1, 'OutOfBoundsPercentage').max(99.9, 'OutOfBoundsPercentage'),
+    [RIGHT_SIDE_PERCENTAGE]: yup.number().min(0.1, 'OutOfBoundsPercentage').max(99.9, 'OutOfBoundsPercentage'),
 });
 export const getPercentageAreaValidationSchema = () => {
     return percentageAreaValidationSchema();

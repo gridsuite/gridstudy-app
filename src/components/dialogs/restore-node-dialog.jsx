@@ -13,11 +13,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, DialogContentText } from '@mui/material';
-import {
-    deleteStashedNodes,
-    fetchStashedNodes,
-    restoreStashedNodes,
-} from '../../services/study/tree-subtree';
+import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
@@ -35,8 +31,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [nodes, setNodes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedNodes, setSelectedNodes] = useState([]);
-    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
-        useState(false);
+    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const handleClose = () => {
         onClose();
@@ -71,13 +66,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     }, [studyUuid, open]);
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="xs"
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-restore-nodes"
-        >
+        <Dialog fullWidth maxWidth="xs" open={open} onClose={handleClose} aria-labelledby="dialog-restore-nodes">
             <DialogTitle>
                 {intl.formatMessage({
                     id: 'restoreNodes',
@@ -107,10 +96,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                         selectedItems={selectedNodes}
                         onSelectionChange={setSelectedNodes}
                         getItemId={(v) => v.first.id}
-                        getItemLabel={(v) =>
-                            v.first.name +
-                            (v.second !== 0 ? ' ( + ' + v.second + ' )' : '')
-                        }
+                        getItemLabel={(v) => v.first.name + (v.second !== 0 ? ' ( + ' + v.second + ' )' : '')}
                         divider
                     />
                 )}

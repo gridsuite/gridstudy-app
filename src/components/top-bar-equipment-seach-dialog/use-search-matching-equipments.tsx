@@ -6,11 +6,7 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import {
-    EquipmentType,
-    getEquipmentsInfosForSearchBar,
-    useElementSearch,
-} from '@gridsuite/commons-ui';
+import { EquipmentType, getEquipmentsInfosForSearchBar, useElementSearch } from '@gridsuite/commons-ui';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
@@ -23,38 +19,27 @@ interface UseSearchMatchingEquipmentsProps {
     equipmentType?: EquipmentType;
 }
 
-export const useSearchMatchingEquipments = (
-    props: UseSearchMatchingEquipmentsProps
-) => {
-    const { studyUuid, nodeUuid, inUpstreamBuiltParentNode, equipmentType } =
-        props;
+export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {
+    const { studyUuid, nodeUuid, inUpstreamBuiltParentNode, equipmentType } = props;
 
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
-    const fetchElements: (newSearchTerm: string) => Promise<Equipment[]> =
-        useCallback(
-            (newSearchTerm) =>
-                searchEquipmentsInfos(
-                    studyUuid,
-                    nodeUuid,
-                    newSearchTerm,
-                    getUseNameParameterKey,
-                    inUpstreamBuiltParentNode,
-                    equipmentType
-                ),
-            [
-                equipmentType,
+    const fetchElements: (newSearchTerm: string) => Promise<Equipment[]> = useCallback(
+        (newSearchTerm) =>
+            searchEquipmentsInfos(
+                studyUuid,
+                nodeUuid,
+                newSearchTerm,
                 getUseNameParameterKey,
                 inUpstreamBuiltParentNode,
-                nodeUuid,
-                studyUuid,
-            ]
-        );
+                equipmentType
+            ),
+        [equipmentType, getUseNameParameterKey, inUpstreamBuiltParentNode, nodeUuid, studyUuid]
+    );
 
-    const { elementsFound, isLoading, searchTerm, updateSearchTerm } =
-        useElementSearch({
-            fetchElements,
-        });
+    const { elementsFound, isLoading, searchTerm, updateSearchTerm } = useElementSearch({
+        fetchElements,
+    });
 
     const equipmentsFound = useMemo(
         () => getEquipmentsInfosForSearchBar(elementsFound, getNameOrId),

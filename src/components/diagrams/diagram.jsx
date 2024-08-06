@@ -35,34 +35,24 @@ const Diagram = (props) => {
     const dispatch = useDispatch();
     const intl = useIntl();
 
-    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } =
-        useDiagram();
+    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } = useDiagram();
 
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
     const shouldBeHidden =
         fullScreenDiagram?.id &&
-        (fullScreenDiagram.id !== props.diagramId ||
-            fullScreenDiagram.svgType !== props.svgType);
+        (fullScreenDiagram.id !== props.diagramId || fullScreenDiagram.svgType !== props.svgType);
 
     const shouldBeFullscreen =
-        fullScreenDiagram?.id === props.diagramId &&
-        fullScreenDiagram?.svgType === props.svgType;
+        fullScreenDiagram?.id === props.diagramId && fullScreenDiagram?.svgType === props.svgType;
 
-    const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
-    );
+    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
 
-    const nbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
-    );
+    const nbVoltageLevels = useSelector((state) => state.networkAreaDiagramNbVoltageLevels);
 
-    const incrementCounterDisabled =
-        props.loadingState ||
-        nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
+    const incrementCounterDisabled = props.loadingState || nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
 
-    const decrementCounterDisabled =
-        props.loadingState || networkAreaDiagramDepth === 0;
+    const decrementCounterDisabled = props.loadingState || networkAreaDiagramDepth === 0;
 
     /**
      * DIAGRAM CONTROL HANDLERS
@@ -134,9 +124,7 @@ const Diagram = (props) => {
                     diagramId={props.diagramId}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
-                    showTogglePinControl={
-                        props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-                    }
+                    showTogglePinControl={props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
                     onTogglePin={onTogglePinHandler}
                     pinned={props.pinned}
                     showCloseControl
@@ -145,19 +133,13 @@ const Diagram = (props) => {
 
                 {props.warningToDisplay ? (
                     <Box position="relative" left={0} right={0} top={0}>
-                        <AlertCustomMessageNode
-                            message={props.warningToDisplay}
-                            noMargin
-                        />
+                        <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
                     </Box>
                 ) : (
                     <Box height={'100%'}>
                         {props.children}
                         <DiagramFooter
-                            showCounterControls={
-                                props.svgType ===
-                                DiagramType.NETWORK_AREA_DIAGRAM
-                            }
+                            showCounterControls={props.svgType === DiagramType.NETWORK_AREA_DIAGRAM}
                             counterText={intl.formatMessage({
                                 id: 'depth',
                             })}

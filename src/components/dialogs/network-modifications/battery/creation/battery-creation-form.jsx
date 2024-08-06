@@ -35,31 +35,17 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
+                setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
+            });
         }
     }, [studyUuid, currentNodeUuid]);
 
     const batteryIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const batteryNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const batteryNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const connectivityForm = (
         <ConnectivityForm
@@ -71,19 +57,11 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const maximumActivePowerField = (
-        <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
-            label={'MaximumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MAXIMUM_ACTIVE_POWER} label={'MaximumActivePowerText'} adornment={ActivePowerAdornment} />
     );
 
     const minimumActivePowerField = (
-        <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
-            label={'MinimumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
     );
     const activePowerSetPointField = (
         <FloatInput

@@ -6,12 +6,7 @@
  */
 
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import {
-    CombinatorType,
-    DataType,
-    FieldType,
-    OperatorType,
-} from '../../../../filter/expert/expert-filter.type';
+import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -23,9 +18,7 @@ export const CURVE_EQUIPMENT_TYPES = [
 // this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
 export const getReferencedEquipmentTypeForModel = (equipmentType: string) => {
     // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
-    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION
-        ? EQUIPMENT_TYPES.BUS
-        : equipmentType;
+    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION ? EQUIPMENT_TYPES.BUS : equipmentType;
 };
 
 // this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS

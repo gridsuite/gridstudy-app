@@ -6,13 +6,7 @@
  */
 import React, { useMemo } from 'react';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import {
-    NAME,
-    VALUE,
-    PREVIOUS_VALUE,
-    DELETION_MARK,
-    ADDED,
-} from 'components/utils/field-constants';
+import { NAME, VALUE, PREVIOUS_VALUE, DELETION_MARK, ADDED } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { TextInput } from '@gridsuite/commons-ui';
 import { PredefinedProperties } from './property-utils';
@@ -24,11 +18,7 @@ type PropertyFormProps = {
     predefinedProperties: PredefinedProperties;
 };
 
-const PropertyForm = ({
-    name,
-    index,
-    predefinedProperties,
-}: PropertyFormProps) => {
+const PropertyForm = ({ name, index, predefinedProperties }: PropertyFormProps) => {
     const watchPropertyName = useWatch({ name: `${name}.${index}.${NAME}` });
     const watchPropertyPreviousValue = useWatch({
         name: `${name}.${index}.${PREVIOUS_VALUE}`,
@@ -89,13 +79,10 @@ const PropertyForm = ({
     function renderPropertyLine() {
         return (
             <>
-                {watchPropertyDeletionMark ||
-                (watchPropertyAdded === false && watchPropertyPreviousValue)
+                {watchPropertyDeletionMark || (watchPropertyAdded === false && watchPropertyPreviousValue)
                     ? gridItem(nameReadOnlyField, 5)
                     : gridItem(nameField, 5)}
-                {watchPropertyDeletionMark
-                    ? gridItem(valueReadOnlyField, 5)
-                    : gridItem(valueField, 5)}
+                {watchPropertyDeletionMark ? gridItem(valueReadOnlyField, 5) : gridItem(valueField, 5)}
             </>
         );
     }

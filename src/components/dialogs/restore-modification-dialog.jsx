@@ -13,11 +13,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, DialogContentText } from '@mui/material';
-import {
-    deleteModifications,
-    restoreModifications,
-} from 'services/study/network-modifications';
 import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
+import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
 
@@ -53,19 +50,12 @@ const styles = {
  * @param studyUuid Id of the current study
  */
 
-const RestoreModificationDialog = ({
-    open,
-    onClose,
-    modifToRestore,
-    currentNode,
-    studyUuid,
-}) => {
+const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode, studyUuid }) => {
     const intl = useIntl();
 
     const [stashedModifications, setStashedModifications] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
-    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
-        useState(false);
+    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const { computeLabel } = useModificationLabelComputer();
 
@@ -75,28 +65,16 @@ const RestoreModificationDialog = ({
     };
 
     const handleDelete = () => {
-        const selectedModificationsUuidsToDelete = selectedItems.map(
-            (item) => item.uuid
-        );
+        const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
         setOpenDeleteConfirmationPopup(false);
-        deleteModifications(
-            studyUuid,
-            currentNode.id,
-            selectedModificationsUuidsToDelete
-        );
+        deleteModifications(studyUuid, currentNode.id, selectedModificationsUuidsToDelete);
         handleClose();
     };
 
     const handleRestore = () => {
-        const selectedModificationsUuidToRestore = selectedItems.map(
-            (item) => item.uuid
-        );
+        const selectedModificationsUuidToRestore = selectedItems.map((item) => item.uuid);
 
-        restoreModifications(
-            studyUuid,
-            currentNode.id,
-            selectedModificationsUuidToRestore
-        );
+        restoreModifications(studyUuid, currentNode.id, selectedModificationsUuidToRestore);
         handleClose();
     };
 
@@ -124,9 +102,7 @@ const RestoreModificationDialog = ({
             onClose={handleClose}
             aria-labelledby="dialog-restore-modifications"
         >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'RestoreModifications' })}
-            </DialogTitle>
+            <DialogTitle>{intl.formatMessage({ id: 'RestoreModifications' })}</DialogTitle>
             <DialogContent>
                 <Box sx={styles.text}>
                     <DialogContentText>
@@ -149,17 +125,10 @@ const RestoreModificationDialog = ({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    onClick={() => setOpenDeleteConfirmationPopup(true)}
-                    disabled={!selectedItems.length}
-                >
+                <Button onClick={() => setOpenDeleteConfirmationPopup(true)} disabled={!selectedItems.length}>
                     <FormattedMessage id="DeleteRows" />
                 </Button>
-                <Button
-                    variant="outlined"
-                    onClick={handleRestore}
-                    disabled={!selectedItems.length}
-                >
+                <Button variant="outlined" onClick={handleRestore} disabled={!selectedItems.length}>
                     <FormattedMessage id="button.restore" />
                 </Button>
             </DialogActions>
