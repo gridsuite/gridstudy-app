@@ -19,6 +19,10 @@ import CreateParameterDialog from './common/parameters-creation-dialog';
 import { DropDown, LabelledButton, SwitchWithLabel, styles, useParameterState } from './parameters';
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
+import { useSelector } from 'react-redux';
+import RunningStatus from 'components/utils/running-status';
+import GlassPane from 'components/results/common/glass-pane';
+import ComputingType from 'components/computing-status/computing-type';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -511,110 +515,115 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             specificParametersPerProvider: speceficParameters,
         };
     }, []);
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <Grid item sx={{ height: '100%' }} xl={8} lg={10} md={12}>
-            <Box
-                sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <Box sx={{ flexGrow: 0 }}>
-                    <Grid
-                        container
-                        spacing={1}
-                        sx={{
-                            paddingLeft: 0,
-                            paddingRight: 2,
-                            height: 'fit-content',
-                        }}
-                        justifyContent={'space-between'}
-                    >
-                        <DropDown
-                            value={provider}
-                            label="Provider"
-                            values={LoadFlowProviders}
-                            callback={updateLfProviderCallback}
-                        />
-                    </Grid>
-                </Box>
+        <Grid item sx={{ height: '100%', position: 'relative' }} xl={9} lg={11} md={12}>
+            <GlassPane active={loadFlowStatus === RunningStatus.RUNNING}>
                 <Box
                     sx={{
-                        flexGrow: 1,
-                        overflow: 'auto',
+                        height: '100%',
+                        position: 'relative',
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
                 >
-                    <Grid
-                        container
-                        sx={mergeSx(styles.scrollableGrid, {
-                            maxHeight: '100%',
-                        })}
-                        key="lfParameters"
-                    >
-                        <LineSeparator />
-                        <Grid container spacing={1} paddingTop={1}>
-                            <ParameterLineSlider
-                                paramNameId={PARAM_LIMIT_REDUCTION}
-                                label="LimitReduction"
-                                marks={alertThresholdMarks}
-                                minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            spacing={1}
+                            sx={{
+                                paddingLeft: 0,
+                                paddingRight: 2,
+                                height: 'fit-content',
+                            }}
+                            justifyContent={'space-between'}
+                        >
+                            <DropDown
+                                value={provider}
+                                label="Provider"
+                                values={LoadFlowProviders}
+                                callback={updateLfProviderCallback}
                             />
-                            <LineSeparator />
                         </Grid>
-                        <BasicLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
-                        <AdvancedLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
-                        <SpecificLoadFlowParameters
-                            disabled={!specificParamsDescriptions?.[provider]}
-                            subText={provider}
-                            specificParamsDescription={specificParamsDescrWithoutNanVals[provider]}
-                            specificCurrentParams={specificCurrentParams[provider]}
-                            onSpecificParamChange={onSpecificParamChange}
-                        />
-                    </Grid>
-                </Box>
-                <Box sx={{ flexGrow: 0 }}>
-                    <Grid
-                        container
-                        item
-                        sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                    </Box>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            overflow: 'auto',
+                            paddingLeft: 1,
+                        }}
                     >
-                        <LabelledButton
-                            callback={() => setOpenSelectParameterDialog(true)}
-                            label="settings.button.chooseSettings"
+                        <Grid
+                            container
+                            sx={mergeSx(styles.scrollableGrid, {
+                                maxHeight: '100%',
+                            })}
+                            key="lfParameters"
+                        >
+                            <LineSeparator />
+                            <Grid container spacing={1} paddingTop={1}>
+                                <ParameterLineSlider
+                                    paramNameId={PARAM_LIMIT_REDUCTION}
+                                    label="LimitReduction"
+                                    marks={alertThresholdMarks}
+                                    minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                />
+                                <LineSeparator />
+                            </Grid>
+                            <BasicLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
+                            <AdvancedLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
+                            <SpecificLoadFlowParameters
+                                disabled={!specificParamsDescriptions?.[provider]}
+                                subText={provider}
+                                specificParamsDescription={specificParamsDescrWithoutNanVals[provider]}
+                                specificCurrentParams={specificCurrentParams[provider]}
+                                onSpecificParamChange={onSpecificParamChange}
+                            />
+                        </Grid>
+                    </Box>
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            item
+                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                        >
+                            <LabelledButton
+                                callback={() => setOpenSelectParameterDialog(true)}
+                                label="settings.button.chooseSettings"
+                            />
+                            <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                            <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
+                            <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
+                        </Grid>
+                    </Box>
+                    {openCreateParameterDialog && (
+                        <CreateParameterDialog
+                            open={openCreateParameterDialog}
+                            onClose={() => setOpenCreateParameterDialog(false)}
+                            parameterValues={() => formatNewParams(params)}
+                            parameterFormatter={(newParams) => newParams}
+                            parameterType={ElementType.LOADFLOW_PARAMETERS}
                         />
-                        <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
-                        <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
-                        <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
-                    </Grid>
+                    )}
+                    {openSelectParameterDialog && (
+                        <DirectoryItemSelector
+                            open={openSelectParameterDialog}
+                            onClose={handleLoadParameter}
+                            types={[ElementType.LOADFLOW_PARAMETERS]}
+                            title={intl.formatMessage({
+                                id: 'showSelectParameterDialog',
+                            })}
+                            onlyLeaves={true}
+                            multiselect={false}
+                            validationButtonText={intl.formatMessage({
+                                id: 'validate',
+                            })}
+                        />
+                    )}
                 </Box>
-                {openCreateParameterDialog && (
-                    <CreateParameterDialog
-                        open={openCreateParameterDialog}
-                        onClose={() => setOpenCreateParameterDialog(false)}
-                        parameterValues={() => formatNewParams(params)}
-                        parameterFormatter={(newParams) => newParams}
-                        parameterType={ElementType.LOADFLOW_PARAMETERS}
-                    />
-                )}
-                {openSelectParameterDialog && (
-                    <DirectoryItemSelector
-                        open={openSelectParameterDialog}
-                        onClose={handleLoadParameter}
-                        types={[ElementType.LOADFLOW_PARAMETERS]}
-                        title={intl.formatMessage({
-                            id: 'showSelectParameterDialog',
-                        })}
-                        onlyLeaves={true}
-                        multiselect={false}
-                        validationButtonText={intl.formatMessage({
-                            id: 'validate',
-                        })}
-                    />
-                )}
-            </Box>
+            </GlassPane>
         </Grid>
     );
 };
