@@ -12,14 +12,13 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, DialogContentText, FormGroup } from '@mui/material';
+import { Box, DialogContentText } from '@mui/material';
 import {
     deleteStashedNodes,
     fetchStashedNodes,
     restoreStashedNodes,
 } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
-import FormControl from '@mui/material/FormControl';
 import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 
@@ -101,29 +100,19 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     />
                 )}
                 {!isLoading && nodes && (
-                    <FormControl
-                        sx={{ paddingLeft: '20px' }}
-                        component="fieldset"
-                    >
-                        <FormGroup name="nodes-to-restore-selection">
-                            <CheckboxList
-                                items={nodes}
-                                addSelectAllCheckbox
-                                selectAllCheckBoxLabel={'SelectAll'}
-                                selectedItems={selectedNodes}
-                                onSelectionChange={setSelectedNodes}
-                                getItemId={(v) => v.first.id}
-                                getItemLabel={(v) =>
-                                    v.first.name +
-                                    (v.second !== 0
-                                        ? ' ( + ' + v.second + ' )'
-                                        : '')
-                                }
-                                divider
-                                fullwidth
-                            />
-                        </FormGroup>
-                    </FormControl>
+                    <CheckboxList
+                        items={nodes}
+                        addSelectAllCheckbox
+                        selectAllCheckBoxLabel={'SelectAll'}
+                        selectedItems={selectedNodes}
+                        onSelectionChange={setSelectedNodes}
+                        getItemId={(v) => v.first.id}
+                        getItemLabel={(v) =>
+                            v.first.name +
+                            (v.second !== 0 ? ' ( + ' + v.second + ' )' : '')
+                        }
+                        divider
+                    />
                 )}
             </DialogContent>
             <DialogActions>
