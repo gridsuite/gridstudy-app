@@ -35,7 +35,6 @@ import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
-
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
