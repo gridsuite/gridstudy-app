@@ -22,39 +22,21 @@ import {
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils';
 
-const characteristicsValidationSchema = (
-    id,
-    displayConnectivity,
-    modification
-) => ({
+const characteristicsValidationSchema = (id, displayConnectivity, modification) => ({
     [id]: yup.object().shape({
-        [R]: modification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
-        [X]: modification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
+        [R]: modification ? yup.number().nullable() : yup.number().nullable().required(),
+        [X]: modification ? yup.number().nullable() : yup.number().nullable().required(),
         [B1]: yup.number().nullable(),
         [G1]: yup.number().nullable(),
         [B2]: yup.number().nullable(),
         [G2]: yup.number().nullable(),
-        ...(displayConnectivity &&
-            getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
-        ...(displayConnectivity &&
-            getConnectivityWithPositionValidationSchema(CONNECTIVITY_2)),
+        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
+        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(CONNECTIVITY_2)),
     }),
 });
 
-export const getCharacteristicsValidationSchema = (
-    id,
-    displayConnectivity,
-    modification = false
-) => {
-    return characteristicsValidationSchema(
-        id,
-        displayConnectivity,
-        modification
-    );
+export const getCharacteristicsValidationSchema = (id, displayConnectivity, modification = false) => {
+    return characteristicsValidationSchema(id, displayConnectivity, modification);
 };
 
 const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
@@ -65,31 +47,17 @@ const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
         [G1]: null,
         [B2]: null,
         [G2]: null,
-        ...(displayConnectivity &&
-            getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1)),
-        ...(displayConnectivity &&
-            getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2)),
+        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1)),
+        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2)),
     },
 });
 
-export const getCharacteristicsEmptyFormData = (
-    id = CHARACTERISTICS,
-    displayConnectivity = true
-) => {
+export const getCharacteristicsEmptyFormData = (id = CHARACTERISTICS, displayConnectivity = true) => {
     return characteristicsEmptyFormData(id, displayConnectivity);
 };
 
 export const getCharacteristicsFormData = (
-    {
-        r = null,
-        x = null,
-        g1 = null,
-        b1 = null,
-        g2 = null,
-        b2 = null,
-        connectivity1 = null,
-        connectivity2 = null,
-    },
+    { r = null, x = null, g1 = null, b1 = null, g2 = null, b2 = null, connectivity1 = null, connectivity2 = null },
     id = CHARACTERISTICS
 ) => ({
     [id]: {

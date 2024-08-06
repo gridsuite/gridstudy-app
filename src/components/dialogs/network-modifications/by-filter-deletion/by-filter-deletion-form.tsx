@@ -7,7 +7,6 @@
 
 import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
-import { useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
@@ -16,23 +15,16 @@ import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import { getIdOrValue } from '../../commons/utils';
+import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
 
 const ByFilterDeletionForm = () => {
-    const intl = useIntl();
-
     const equipmentTypeWatch = useWatch({
         name: TYPE,
     });
 
     const { setValue } = useFormContext();
 
-    const richTypeLabel = useMemo(
-        () => (rt: { id: string; label: string } | string) => {
-            return intl.formatMessage({ id: getIdOrValue(rt) });
-        },
-        [intl]
-    );
+    const getOptionLabel = useGetLabelEquipmentTypes();
 
     const typesOptions = useMemo(() => {
         const equipmentTypesToExclude = new Set([
@@ -44,9 +36,7 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_TYPES.TIE_LINE,
         ]);
-        return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-        );
+        return Object.values(EQUIPMENT_TYPES).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
     }, []);
 
     const handleEquipmentTypeChange = useCallback(() => {
@@ -75,12 +65,12 @@ const ByFilterDeletionForm = () => {
                 label="Type"
                 options={typesOptions}
                 onChangeCallback={handleEquipmentTypeChange}
-                getOptionLabel={richTypeLabel}
+                getOptionLabel={getOptionLabel}
                 size={'small'}
                 formProps={{ variant: 'filled' }}
             />
         );
-    }, [handleEquipmentTypeChange, richTypeLabel, typesOptions]);
+    }, [handleEquipmentTypeChange, getOptionLabel, typesOptions]);
 
     return (
         <>

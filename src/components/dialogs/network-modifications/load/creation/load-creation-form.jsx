@@ -6,13 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
 import {
     ActivePowerAdornment,
@@ -36,31 +30,17 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
+                setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
+            });
         }
     }, [studyUuid, currentNodeUuid]);
 
     const loadIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const loadNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const loadTypeField = (
         <SelectInput
@@ -73,21 +53,9 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const activePowerField = (
-        <FloatInput
-            name={P0}
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
-    );
+    const activePowerField = <FloatInput name={P0} label={'ActivePowerText'} adornment={ActivePowerAdornment} />;
 
-    const reactivePowerField = (
-        <FloatInput
-            name={Q0}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-        />
-    );
+    const reactivePowerField = <FloatInput name={Q0} label={'ReactivePowerText'} adornment={ReactivePowerAdornment} />;
 
     const connectivityForm = (
         <ConnectivityForm

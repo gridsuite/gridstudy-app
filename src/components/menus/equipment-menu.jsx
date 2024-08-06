@@ -40,21 +40,14 @@ const withEquipmentMenu =
         const currentNode = useSelector((state) => state.currentTreeNode);
         const isAnyNodeBuilding = useIsAnyNodeBuilding();
         const isNodeEditable = useMemo(
-            () =>
-                isNodeBuilt(currentNode) &&
-                !isNodeReadOnly(currentNode) &&
-                !isAnyNodeBuilding,
+            () => isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isAnyNodeBuilding,
             [currentNode, isAnyNodeBuilding]
         );
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
             (equipmentId, equipmentType, dialogTitle) => {
                 handleClose();
-                onOpenDynamicSimulationEventDialog(
-                    equipmentId,
-                    equipmentType,
-                    dialogTitle
-                );
+                onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
             },
             [handleClose, onOpenDynamicSimulationEventDialog]
         );
@@ -82,9 +75,7 @@ const withEquipmentMenu =
                     <DynamicSimulationEventMenuItem
                         equipmentId={equipment.id}
                         equipmentType={equipmentType}
-                        onOpenDynamicSimulationEventDialog={
-                            handleOpenDynamicSimulationEventDialog
-                        }
+                        onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                         disabled={!isNodeEditable}
                     />
                 )}

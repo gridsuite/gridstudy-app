@@ -1,113 +1,365 @@
-.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path {stroke: var(--nad-vl-color, lightgrey); stroke-width: 5; fill: none}
-.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding {stroke: var(--nad-vl-color, lightgrey); stroke-width: 5; fill: none}
-.nad-text-edges {stroke: black; stroke-width: 3; stroke-dasharray: 6,7}
-.nad-disconnected .nad-edge-path {stroke-dasharray: 10,10}
-.nad-vl-nodes .nad-busnode {fill: var(--nad-vl-color, lightgrey)}
-.nad-vl-nodes circle.nad-unknown-busnode {stroke: var(--nad-vl-color, #808080); stroke-width: 5; stroke-dasharray: 5,5; fill: none}
-.nad-hvdc-edge polyline.nad-hvdc {stroke: grey; stroke-width: 20}
-.nad-pst-arrow {stroke: #6a6a6a; stroke-width: 4; stroke-linecap: round; fill: none}
-path.nad-arrow-out:not(.nad-state-out .nad-arrow-out) {visibility: hidden}
-path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {visibility: hidden}
-.nad-active {fill: #546e7a}
-.nad-reactive {fill: #0277bd}
-.nad-current {fill: #bd4802}
-.nad-text-background {flood-color: #90a4aeaa}
-.nad-text-nodes {font: 25px serif; fill: black; dominant-baseline: central}
-.nad-text-nodes foreignObject {overflow: visible; color: black}
-.nad-label-box {background-color: #6c6c6c20; width: max-content; padding: 10px; border-radius: 10px;}
-.nad-legend-square {width: 20px; height: 20px; background: var(--nad-vl-color, black);}
-.nad-edge-infos text {font: 20px serif; dominant-baseline:middle; stroke: #FFFFFFAA; stroke-width: 10; stroke-linejoin:round; paint-order: stroke}
-.nad-disconnected {--nad-vl-color: #808080}
-.nad-vl0to30-line {--nad-vl-color: #afb42b}
-.nad-vl0to30-0 {--nad-vl-color: #aaae27}
-.nad-vl0to30-1 {--nad-vl-color: #195b0f}
-.nad-vl0to30-2 {--nad-vl-color: #eababe}
-.nad-vl0to30-3 {--nad-vl-color: #2d6c13}
-.nad-vl0to30-4 {--nad-vl-color: #dda193}
-.nad-vl0to30-5 {--nad-vl-color: #477d17}
-.nad-vl0to30-6 {--nad-vl-color: #ce9a6e}
-.nad-vl0to30-7 {--nad-vl-color: #648d1c}
-.nad-vl0to30-8 {--nad-vl-color: #bea04a}
-.nad-vl0to30-9 {--nad-vl-color: #869d22}
-.nad-vl30to50-line {--nad-vl-color: #ef9a9a}
-.nad-vl30to50-0 {--nad-vl-color: #ff8290}
-.nad-vl30to50-1 {--nad-vl-color: #7f6f41}
-.nad-vl30to50-2 {--nad-vl-color: #f6d9ff}
-.nad-vl30to50-3 {--nad-vl-color: #99784e}
-.nad-vl30to50-4 {--nad-vl-color: #ffc3fb}
-.nad-vl30to50-5 {--nad-vl-color: #b27d5b}
-.nad-vl30to50-6 {--nad-vl-color: #ffade3}
-.nad-vl30to50-7 {--nad-vl-color: #cc7e68}
-.nad-vl30to50-8 {--nad-vl-color: #ff97bf}
-.nad-vl30to50-9 {--nad-vl-color: #e57b75}
-.nad-vl50to70-line {--nad-vl-color: #9c27b0}
-.nad-vl50to70-0 {--nad-vl-color: #a020ef}
-.nad-vl50to70-1 {--nad-vl-color: #7f0848}
-.nad-vl50to70-2 {--nad-vl-color: #b7dbfe}
-.nad-vl50to70-3 {--nad-vl-color: #960c6d}
-.nad-vl50to70-4 {--nad-vl-color: #8da6fe}
-.nad-vl50to70-5 {--nad-vl-color: #ad109a}
-.nad-vl50to70-6 {--nad-vl-color: #6f66fb}
-.nad-vl50to70-7 {--nad-vl-color: #bc14c4}
-.nad-vl50to70-8 {--nad-vl-color: #7f42f6}
-.nad-vl50to70-9 {--nad-vl-color: #b11ad9}
-.nad-vl70to120-line {--nad-vl-color: #e65100}
-.nad-vl70to120-0 {--nad-vl-color: #cc5500}
-.nad-vl70to120-1 {--nad-vl-color: #4a6600}
-.nad-vl70to120-2 {--nad-vl-color: #efb2dd}
-.nad-vl70to120-3 {--nad-vl-color: #6e7a00}
-.nad-vl70to120-4 {--nad-vl-color: #e685ae}
-.nad-vl70to120-5 {--nad-vl-color: #8e8400}
-.nad-vl70to120-6 {--nad-vl-color: #dd596b}
-.nad-vl70to120-7 {--nad-vl-color: #a37b00}
-.nad-vl70to120-8 {--nad-vl-color: #d4432c}
-.nad-vl70to120-9 {--nad-vl-color: #b76b00}
-.nad-vl120to180-line {--nad-vl-color: #00ACC1}
-.nad-vl120to180-0 {--nad-vl-color: #00afae}
-.nad-vl120to180-1 {--nad-vl-color: #000d58}
-.nad-vl120to180-2 {--nad-vl-color: #b8e7b2}
-.nad-vl120to180-3 {--nad-vl-color: #002169}
-.nad-vl120to180-4 {--nad-vl-color: #85d993}
-.nad-vl120to180-5 {--nad-vl-color: #003c7b}
-.nad-vl120to180-6 {--nad-vl-color: #59cb8b}
-.nad-vl120to180-7 {--nad-vl-color: #005c8c}
-.nad-vl120to180-8 {--nad-vl-color: #2cbd94}
-.nad-vl120to180-9 {--nad-vl-color: #00839e}
-.nad-vl180to300-line {--nad-vl-color: #2e7d32}
-.nad-vl180to300-0 {--nad-vl-color: #218b21}
-.nad-vl180to300-1 {--nad-vl-color: #0d4940}
-.nad-vl180to300-2 {--nad-vl-color: #dfdab9}
-.nad-vl180to300-3 {--nad-vl-color: #105640}
-.nad-vl180to300-4 {--nad-vl-color: #c2cb92}
-.nad-vl180to300-5 {--nad-vl-color: #14643c}
-.nad-vl180to300-6 {--nad-vl-color: #95b66b}
-.nad-vl180to300-7 {--nad-vl-color: #187036}
-.nad-vl180to300-8 {--nad-vl-color: #5fa046}
-.nad-vl180to300-9 {--nad-vl-color: #1c7e2d}
-.nad-vl300to500-line {--nad-vl-color: #d32f2f}
-.nad-vl300to500-0 {--nad-vl-color: #ff0000}
-.nad-vl300to500-1 {--nad-vl-color: #7f6c00}
-.nad-vl300to500-2 {--nad-vl-color: #f6b2ff}
-.nad-vl300to500-3 {--nad-vl-color: #996700}
-.nad-vl300to500-4 {--nad-vl-color: #ff85eb}
-.nad-vl300to500-5 {--nad-vl-color: #b25b00}
-.nad-vl300to500-6 {--nad-vl-color: #ff59b5}
-.nad-vl300to500-7 {--nad-vl-color: #cc4400}
-.nad-vl300to500-8 {--nad-vl-color: #ff2c67}
-.nad-vl300to500-9 {--nad-vl-color: #e52600}
-.nad-branch-edges .nad-overload .nad-edge-path {animation: line-blink 3s infinite}
-.nad-vl-nodes .nad-overvoltage {animation: node-over-blink 3s infinite}
-.nad-vl-nodes .nad-undervoltage {animation: node-under-blink 3s infinite}
+.nad-branch-edges .nad-edge-path,
+.nad-3wt-edges .nad-edge-path {
+    stroke: var(--nad-vl-color, lightgrey);
+    stroke-width: 5;
+    fill: none;
+}
+.nad-branch-edges .nad-winding,
+.nad-3wt-nodes .nad-winding {
+    stroke: var(--nad-vl-color, lightgrey);
+    stroke-width: 5;
+    fill: none;
+}
+.nad-text-edges {
+    stroke: black;
+    stroke-width: 3;
+    stroke-dasharray: 6, 7;
+}
+.nad-disconnected .nad-edge-path {
+    stroke-dasharray: 10, 10;
+}
+.nad-vl-nodes .nad-busnode {
+    fill: var(--nad-vl-color, lightgrey);
+}
+.nad-vl-nodes circle.nad-unknown-busnode {
+    stroke: var(--nad-vl-color, #808080);
+    stroke-width: 5;
+    stroke-dasharray: 5, 5;
+    fill: none;
+}
+.nad-hvdc-edge polyline.nad-hvdc {
+    stroke: grey;
+    stroke-width: 20;
+}
+.nad-pst-arrow {
+    stroke: #6a6a6a;
+    stroke-width: 4;
+    stroke-linecap: round;
+    fill: none;
+}
+path.nad-arrow-out:not(.nad-state-out .nad-arrow-out) {
+    visibility: hidden;
+}
+path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
+    visibility: hidden;
+}
+.nad-active {
+    fill: #546e7a;
+}
+.nad-reactive {
+    fill: #0277bd;
+}
+.nad-current {
+    fill: #bd4802;
+}
+.nad-text-background {
+    flood-color: #90a4aeaa;
+}
+.nad-text-nodes {
+    font: 25px serif;
+    fill: black;
+    dominant-baseline: central;
+}
+.nad-text-nodes foreignObject {
+    overflow: visible;
+    color: black;
+}
+.nad-label-box {
+    background-color: #6c6c6c20;
+    width: max-content;
+    padding: 10px;
+    border-radius: 10px;
+}
+.nad-legend-square {
+    width: 20px;
+    height: 20px;
+    background: var(--nad-vl-color, black);
+}
+.nad-edge-infos text {
+    font: 20px serif;
+    dominant-baseline: middle;
+    stroke: #ffffffaa;
+    stroke-width: 10;
+    stroke-linejoin: round;
+    paint-order: stroke;
+}
+.nad-disconnected {
+    --nad-vl-color: #808080;
+}
+.nad-vl0to30-line {
+    --nad-vl-color: #afb42b;
+}
+.nad-vl0to30-0 {
+    --nad-vl-color: #aaae27;
+}
+.nad-vl0to30-1 {
+    --nad-vl-color: #195b0f;
+}
+.nad-vl0to30-2 {
+    --nad-vl-color: #eababe;
+}
+.nad-vl0to30-3 {
+    --nad-vl-color: #2d6c13;
+}
+.nad-vl0to30-4 {
+    --nad-vl-color: #dda193;
+}
+.nad-vl0to30-5 {
+    --nad-vl-color: #477d17;
+}
+.nad-vl0to30-6 {
+    --nad-vl-color: #ce9a6e;
+}
+.nad-vl0to30-7 {
+    --nad-vl-color: #648d1c;
+}
+.nad-vl0to30-8 {
+    --nad-vl-color: #bea04a;
+}
+.nad-vl0to30-9 {
+    --nad-vl-color: #869d22;
+}
+.nad-vl30to50-line {
+    --nad-vl-color: #ef9a9a;
+}
+.nad-vl30to50-0 {
+    --nad-vl-color: #ff8290;
+}
+.nad-vl30to50-1 {
+    --nad-vl-color: #7f6f41;
+}
+.nad-vl30to50-2 {
+    --nad-vl-color: #f6d9ff;
+}
+.nad-vl30to50-3 {
+    --nad-vl-color: #99784e;
+}
+.nad-vl30to50-4 {
+    --nad-vl-color: #ffc3fb;
+}
+.nad-vl30to50-5 {
+    --nad-vl-color: #b27d5b;
+}
+.nad-vl30to50-6 {
+    --nad-vl-color: #ffade3;
+}
+.nad-vl30to50-7 {
+    --nad-vl-color: #cc7e68;
+}
+.nad-vl30to50-8 {
+    --nad-vl-color: #ff97bf;
+}
+.nad-vl30to50-9 {
+    --nad-vl-color: #e57b75;
+}
+.nad-vl50to70-line {
+    --nad-vl-color: #9c27b0;
+}
+.nad-vl50to70-0 {
+    --nad-vl-color: #a020ef;
+}
+.nad-vl50to70-1 {
+    --nad-vl-color: #7f0848;
+}
+.nad-vl50to70-2 {
+    --nad-vl-color: #b7dbfe;
+}
+.nad-vl50to70-3 {
+    --nad-vl-color: #960c6d;
+}
+.nad-vl50to70-4 {
+    --nad-vl-color: #8da6fe;
+}
+.nad-vl50to70-5 {
+    --nad-vl-color: #ad109a;
+}
+.nad-vl50to70-6 {
+    --nad-vl-color: #6f66fb;
+}
+.nad-vl50to70-7 {
+    --nad-vl-color: #bc14c4;
+}
+.nad-vl50to70-8 {
+    --nad-vl-color: #7f42f6;
+}
+.nad-vl50to70-9 {
+    --nad-vl-color: #b11ad9;
+}
+.nad-vl70to120-line {
+    --nad-vl-color: #e65100;
+}
+.nad-vl70to120-0 {
+    --nad-vl-color: #cc5500;
+}
+.nad-vl70to120-1 {
+    --nad-vl-color: #4a6600;
+}
+.nad-vl70to120-2 {
+    --nad-vl-color: #efb2dd;
+}
+.nad-vl70to120-3 {
+    --nad-vl-color: #6e7a00;
+}
+.nad-vl70to120-4 {
+    --nad-vl-color: #e685ae;
+}
+.nad-vl70to120-5 {
+    --nad-vl-color: #8e8400;
+}
+.nad-vl70to120-6 {
+    --nad-vl-color: #dd596b;
+}
+.nad-vl70to120-7 {
+    --nad-vl-color: #a37b00;
+}
+.nad-vl70to120-8 {
+    --nad-vl-color: #d4432c;
+}
+.nad-vl70to120-9 {
+    --nad-vl-color: #b76b00;
+}
+.nad-vl120to180-line {
+    --nad-vl-color: #00acc1;
+}
+.nad-vl120to180-0 {
+    --nad-vl-color: #00afae;
+}
+.nad-vl120to180-1 {
+    --nad-vl-color: #000d58;
+}
+.nad-vl120to180-2 {
+    --nad-vl-color: #b8e7b2;
+}
+.nad-vl120to180-3 {
+    --nad-vl-color: #002169;
+}
+.nad-vl120to180-4 {
+    --nad-vl-color: #85d993;
+}
+.nad-vl120to180-5 {
+    --nad-vl-color: #003c7b;
+}
+.nad-vl120to180-6 {
+    --nad-vl-color: #59cb8b;
+}
+.nad-vl120to180-7 {
+    --nad-vl-color: #005c8c;
+}
+.nad-vl120to180-8 {
+    --nad-vl-color: #2cbd94;
+}
+.nad-vl120to180-9 {
+    --nad-vl-color: #00839e;
+}
+.nad-vl180to300-line {
+    --nad-vl-color: #2e7d32;
+}
+.nad-vl180to300-0 {
+    --nad-vl-color: #218b21;
+}
+.nad-vl180to300-1 {
+    --nad-vl-color: #0d4940;
+}
+.nad-vl180to300-2 {
+    --nad-vl-color: #dfdab9;
+}
+.nad-vl180to300-3 {
+    --nad-vl-color: #105640;
+}
+.nad-vl180to300-4 {
+    --nad-vl-color: #c2cb92;
+}
+.nad-vl180to300-5 {
+    --nad-vl-color: #14643c;
+}
+.nad-vl180to300-6 {
+    --nad-vl-color: #95b66b;
+}
+.nad-vl180to300-7 {
+    --nad-vl-color: #187036;
+}
+.nad-vl180to300-8 {
+    --nad-vl-color: #5fa046;
+}
+.nad-vl180to300-9 {
+    --nad-vl-color: #1c7e2d;
+}
+.nad-vl300to500-line {
+    --nad-vl-color: #d32f2f;
+}
+.nad-vl300to500-0 {
+    --nad-vl-color: #ff0000;
+}
+.nad-vl300to500-1 {
+    --nad-vl-color: #7f6c00;
+}
+.nad-vl300to500-2 {
+    --nad-vl-color: #f6b2ff;
+}
+.nad-vl300to500-3 {
+    --nad-vl-color: #996700;
+}
+.nad-vl300to500-4 {
+    --nad-vl-color: #ff85eb;
+}
+.nad-vl300to500-5 {
+    --nad-vl-color: #b25b00;
+}
+.nad-vl300to500-6 {
+    --nad-vl-color: #ff59b5;
+}
+.nad-vl300to500-7 {
+    --nad-vl-color: #cc4400;
+}
+.nad-vl300to500-8 {
+    --nad-vl-color: #ff2c67;
+}
+.nad-vl300to500-9 {
+    --nad-vl-color: #e52600;
+}
+.nad-branch-edges .nad-overload .nad-edge-path {
+    animation: line-blink 3s infinite;
+}
+.nad-vl-nodes .nad-overvoltage {
+    animation: node-over-blink 3s infinite;
+}
+.nad-vl-nodes .nad-undervoltage {
+    animation: node-under-blink 3s infinite;
+}
 
 @keyframes line-blink {
-    0%, 80%, 100% {stroke: var(--nad-vl-color, black); stroke-width: 5}
-    40% {stroke: #FFEB3B; stroke-width: 15}
+    0%,
+    80%,
+    100% {
+        stroke: var(--nad-vl-color, black);
+        stroke-width: 5;
+    }
+    40% {
+        stroke: #ffeb3b;
+        stroke-width: 15;
+    }
 }
 @keyframes node-over-blink {
-    0%, 80%, 100% {stroke: white; stroke-width: 5}
-    40% {stroke: #ff5722; stroke-width: 15}
+    0%,
+    80%,
+    100% {
+        stroke: white;
+        stroke-width: 5;
+    }
+    40% {
+        stroke: #ff5722;
+        stroke-width: 15;
+    }
 }
 @keyframes node-under-blink {
-    0%, 80%, 100% {stroke: white; stroke-width: 5}
-    40% {stroke: #00BCD4; stroke-width: 15}
+    0%,
+    80%,
+    100% {
+        stroke: white;
+        stroke-width: 5;
+    }
+    40% {
+        stroke: #00bcd4;
+        stroke-width: 15;
+    }
 }

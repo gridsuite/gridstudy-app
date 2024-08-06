@@ -540,7 +540,6 @@
     "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
-
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
@@ -548,8 +547,6 @@
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
     "Default": "Défaut",
-
-
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
@@ -1367,6 +1364,9 @@
     "ReactiveSlacksThreshold": "Seuil d'alerte sur les investissements réactifs",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
     "TieLines": "Interconnexions",
+    "ShuntCompensatorActivationThreshold": "Seuil d'alerte sur l'enclenchement des MCS",
+    "ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
+    "ShuntCompensatorActivationThresholdDescription": "Seuil (en MVar) au-dessus duquel on considère qu'il y a un écart significatif (et donc tracé dans les logs fonctionnels) entre valeur arrondie et valeur théorique pour l'enclenchement d'un MCS",
     "StateEstimation": "Estimation d'état",
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",

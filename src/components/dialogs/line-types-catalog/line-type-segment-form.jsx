@@ -28,11 +28,7 @@ import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { emptyLineSegment } from './line-type-segment-dialog';
-import {
-    calculateResistance,
-    calculateReactance,
-    calculateSusceptance,
-} from '../../utils/utils';
+import { calculateResistance, calculateReactance, calculateSusceptance } from '../../utils/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import { Box } from '@mui/system';
@@ -70,61 +66,33 @@ export const LineTypeSegmentForm = () => {
 
     const updateSegmentValues = useCallback(
         (index) => {
-            const distance = getValues(
-                `${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`
-            );
+            const distance = getValues(`${SEGMENTS}.${index}.${SEGMENT_DISTANCE_VALUE}`);
             const typeId = getValues(`${SEGMENTS}.${index}.${SEGMENT_TYPE_ID}`);
 
-            const entryFromCatalog = lineTypesCatalog?.find(
-                (entry) => entry.id === typeId
-            );
+            const entryFromCatalog = lineTypesCatalog?.find((entry) => entry.id === typeId);
 
             const newResistance = roundToDefaultPrecision(
-                calculateResistance(
-                    distance,
-                    entryFromCatalog?.linearResistance ?? 0
-                )
+                calculateResistance(distance, entryFromCatalog?.linearResistance ?? 0)
             );
             const newReactance = roundToDefaultPrecision(
-                calculateReactance(
-                    distance,
-                    entryFromCatalog?.linearReactance ?? 0
-                )
+                calculateReactance(distance, entryFromCatalog?.linearReactance ?? 0)
             );
             const newSusceptance = roundToDefaultPrecision(
-                calculateSusceptance(
-                    distance,
-                    entryFromCatalog?.linearCapacity ?? 0
-                )
+                calculateSusceptance(distance, entryFromCatalog?.linearCapacity ?? 0)
             );
 
-            setValue(
-                `${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`,
-                newResistance
-            );
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_RESISTANCE}`, newResistance);
             setValue(`${SEGMENTS}.${index}.${SEGMENT_REACTANCE}`, newReactance);
-            setValue(
-                `${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`,
-                newSusceptance
-            );
+            setValue(`${SEGMENTS}.${index}.${SEGMENT_SUSCEPTANCE}`, newSusceptance);
         },
         [getValues, setValue, lineTypesCatalog]
     );
 
     const updateTotals = useCallback(() => {
         const segments = getValues(SEGMENTS);
-        const totalResistance = segments.reduce(
-            (accum, item) => accum + (item[SEGMENT_RESISTANCE] ?? 0),
-            0
-        );
-        const totalReactance = segments.reduce(
-            (accum, item) => accum + (item[SEGMENT_REACTANCE] ?? 0),
-            0
-        );
-        const totalSusceptance = segments.reduce(
-            (accum, item) => accum + (item[SEGMENT_SUSCEPTANCE] ?? 0),
-            0
-        );
+        const totalResistance = segments.reduce((accum, item) => accum + (item[SEGMENT_RESISTANCE] ?? 0), 0);
+        const totalReactance = segments.reduce((accum, item) => accum + (item[SEGMENT_REACTANCE] ?? 0), 0);
+        const totalSusceptance = segments.reduce((accum, item) => accum + (item[SEGMENT_SUSCEPTANCE] ?? 0), 0);
         setValue(TOTAL_RESISTANCE, roundToDefaultPrecision(totalResistance));
         setValue(TOTAL_REACTANCE, roundToDefaultPrecision(totalReactance));
         setValue(TOTAL_SUSCEPTANCE, roundToDefaultPrecision(totalSusceptance));
@@ -143,28 +111,14 @@ export const LineTypeSegmentForm = () => {
             if (selectedLine) {
                 const selectedType = selectedLine.type ?? '';
                 const selectedTypeId = selectedLine.id ?? '';
-                setValue(
-                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`,
-                    selectedType
-                );
-                setValue(
-                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`,
-                    selectedTypeId
-                );
-                clearErrors(
-                    `${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`
-                );
+                setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`, selectedType);
+                setValue(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_ID}`, selectedTypeId);
+                clearErrors(`${SEGMENTS}.${openCatalogDialogIndex}.${SEGMENT_TYPE_VALUE}`);
                 updateSegmentValues(openCatalogDialogIndex);
                 updateTotals();
             }
         },
-        [
-            updateSegmentValues,
-            updateTotals,
-            setValue,
-            clearErrors,
-            openCatalogDialogIndex,
-        ]
+        [updateSegmentValues, updateTotals, setValue, clearErrors, openCatalogDialogIndex]
     );
 
     const handleSegmentDistantChange = useCallback(
@@ -220,17 +174,11 @@ export const LineTypeSegmentForm = () => {
         </Box>
     );
 
-    const totalResistanceField = (
-        <ReadOnlyInput isNumerical name={TOTAL_RESISTANCE} />
-    );
+    const totalResistanceField = <ReadOnlyInput isNumerical name={TOTAL_RESISTANCE} />;
 
-    const totalReactanceField = (
-        <ReadOnlyInput isNumerical name={TOTAL_REACTANCE} />
-    );
+    const totalReactanceField = <ReadOnlyInput isNumerical name={TOTAL_REACTANCE} />;
 
-    const totalSusceptanceField = (
-        <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />
-    );
+    const totalSusceptanceField = <ReadOnlyInput isNumerical name={TOTAL_SUSCEPTANCE} />;
 
     return (
         <>
@@ -246,8 +194,7 @@ export const LineTypeSegmentForm = () => {
                 name={SEGMENTS}
                 Field={LineTypeSegmentCreation}
                 fieldProps={{
-                    onSegmentDistanceChange: (index, newDistance) =>
-                        handleSegmentDistantChange(index, newDistance),
+                    onSegmentDistanceChange: (index, newDistance) => handleSegmentDistantChange(index, newDistance),
                     onEditButtonClick: (index) => openCatalogDialog(index),
                 }}
                 addButtonLabel={'AddSegment'}
@@ -271,9 +218,7 @@ export const LineTypeSegmentForm = () => {
                     rowData={lineTypesCatalog}
                     onSelectLine={onSelectCatalogLine}
                     titleId={'SelectType'}
-                    preselectedRowId={getPreselectedRowIdForCatalog(
-                        openCatalogDialogIndex
-                    )}
+                    preselectedRowId={getPreselectedRowIdForCatalog(openCatalogDialogIndex)}
                 />
             )}
         </>

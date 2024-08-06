@@ -19,26 +19,11 @@ const FilterPanel = ({ filtersDef = [], updateFilter, rowFilters }) => {
                 <Grid key={field} item p={1} xs={6} sm={4} md={3} lg={2}>
                     {!!options?.length && (
                         <Autocomplete
-                            value={
-                                rowFilters?.find(
-                                    (rowFilter) => rowFilter.field === field
-                                )?.value || ''
-                            }
-                            isOptionEqualToValue={(option, value) =>
-                                value === '' || option === value
-                            }
+                            value={rowFilters?.find((rowFilter) => rowFilter.field === field)?.value || ''}
+                            isOptionEqualToValue={(option, value) => value === '' || option === value}
                             options={options}
-                            onChange={(_, data) =>
-                                handleFilterChange(field, data)
-                            }
-                            renderInput={(params) => (
-                                <TextField
-                                    {...params}
-                                    fullWidth
-                                    label={label}
-                                    size="small"
-                                />
-                            )}
+                            onChange={(_, data) => handleFilterChange(field, data)}
+                            renderInput={(params) => <TextField {...params} fullWidth label={label} size="small" />}
                         />
                     )}
                 </Grid>

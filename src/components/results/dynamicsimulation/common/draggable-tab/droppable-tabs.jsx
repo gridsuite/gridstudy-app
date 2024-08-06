@@ -25,9 +25,7 @@ const DroppableTabs = (props) => {
                         allowScrollButtonsMobile
                     >
                         {tabsRender()}
-                        {droppableProvided
-                            ? droppableProvided.placeholder
-                            : null}
+                        {droppableProvided ? droppableProvided.placeholder : null}
                     </Tabs>
                 )}
             </Droppable>

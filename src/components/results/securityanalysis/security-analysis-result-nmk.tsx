@@ -34,9 +34,7 @@ const styles = {
     },
 };
 
-export const SecurityAnalysisResultNmk: FunctionComponent<
-    SecurityAnalysisResultNmkProps
-> = ({
+export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResultNmkProps> = ({
     result,
     columnDefs,
     isLoadingResult,
@@ -51,23 +49,14 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
     const rows = useMemo(
         () =>
             isFromContingency
-                ? flattenNmKResultsContingencies(
-                      intl,
-                      content as ConstraintsFromContingencyItem[]
-                  )
-                : flattenNmKResultsConstraints(
-                      intl,
-                      content as ContingenciesFromConstraintItem[]
-                  ),
+                ? flattenNmKResultsContingencies(intl, content as ConstraintsFromContingencyItem[])
+                : flattenNmKResultsConstraints(intl, content as ContingenciesFromConstraintItem[]),
         [content, intl, isFromContingency]
     );
 
     const getRowStyle = useCallback(
         (params: RowClassParams) => {
-            if (
-                (isFromContingency && params?.data?.contingencyId) ||
-                (!isFromContingency && params?.data?.subjectId)
-            ) {
+            if ((isFromContingency && params?.data?.contingencyId) || (!isFromContingency && params?.data?.subjectId)) {
                 return {
                     backgroundColor: theme.selectedRow.background,
                 };
@@ -93,10 +82,7 @@ export const SecurityAnalysisResultNmk: FunctionComponent<
                 />
             </Box>
             <Box>
-                <CustomTablePagination
-                    rowsPerPageOptions={PAGE_OPTIONS}
-                    {...paginationProps}
-                />
+                <CustomTablePagination rowsPerPageOptions={PAGE_OPTIONS} {...paginationProps} />
             </Box>
         </Box>
     );

@@ -37,9 +37,7 @@ export const MapParameters = () => {
         },
     ];
 
-    const [lineFlowColorModeLocal] = useParameterState(
-        PARAM_LINE_FLOW_COLOR_MODE
-    );
+    const [lineFlowColorModeLocal] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
 
     const [isLineFlowNominal, setDisabledFlowAlertThreshold] = useState(
         lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE
@@ -56,15 +54,9 @@ export const MapParameters = () => {
                 marginTop={-3}
                 justifyContent={'space-between'}
             >
-                <ParameterLineSwitch
-                    paramNameId={PARAM_LINE_FULL_PATH}
-                    label="lineFullPath"
-                />
+                <ParameterLineSwitch paramNameId={PARAM_LINE_FULL_PATH} label="lineFullPath" />
                 <LineSeparator />
-                <ParameterLineSwitch
-                    paramNameId={PARAM_LINE_PARALLEL_PATH}
-                    label="lineParallelPath"
-                />
+                <ParameterLineSwitch paramNameId={PARAM_LINE_PARALLEL_PATH} label="lineParallelPath" />
                 <LineSeparator />
                 <ParameterLineDropdown
                     paramNameId={PARAM_LINE_FLOW_MODE}
@@ -86,10 +78,7 @@ export const MapParameters = () => {
                         [LineFlowColorMode.OVERLOADS]: 'Overloads',
                     }}
                     onPreChange={(event) => {
-                        setDisabledFlowAlertThreshold(
-                            event.target.value ===
-                                LineFlowColorMode.NOMINAL_VOLTAGE
-                        );
+                        setDisabledFlowAlertThreshold(event.target.value === LineFlowColorMode.NOMINAL_VOLTAGE);
                     }}
                 />
                 <LineSeparator />
@@ -100,10 +89,7 @@ export const MapParameters = () => {
                     marks={alertThresholdMarks}
                 />
                 <LineSeparator />
-                <ParameterLineSwitch
-                    paramNameId={PARAM_MAP_MANUAL_REFRESH}
-                    label="MapManualRefresh"
-                />
+                <ParameterLineSwitch paramNameId={PARAM_MAP_MANUAL_REFRESH} label="MapManualRefresh" />
                 <LineSeparator />
                 <ParameterLineDropdown
                     paramNameId={PARAM_MAP_BASEMAP}
