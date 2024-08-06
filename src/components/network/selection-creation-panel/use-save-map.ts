@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
-    EquipmentInfos,
     EquipmentType,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -20,11 +19,12 @@ import {
     createMapFilter,
 } from '../../../services/study/network-map';
 import { SelectionCreationPanelFormFields } from './selection-creation-panel';
+import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 export type UseSaveMapOutput = {
     pendingState: boolean;
     onSaveSelection: (
-        equipments: EquipmentInfos[],
+        equipments: Equipment[],
         selection: SelectionCreationPanelFormFields,
         distDir: TreeViewFinderNodeProps,
         nominalVoltages: number[]
@@ -42,7 +42,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
 
     const onSaveSelection = useCallback(
         async (
-            equipments: EquipmentInfos[],
+            equipments: Equipment[],
             selection: SelectionCreationPanelFormFields,
             distDir: TreeViewFinderNodeProps,
             nominalVoltages: number[]
@@ -54,9 +54,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                 //we want to calculate selectedLine or selectedSubstation only when needed
                 //call getSelectedLines if the user want to create a filter with lines
                 //for all others case we call getSelectedSubstations
-                const selectedEquipmentsIds = equipments.map(
-                    (eq: EquipmentInfos) => eq.id
-                );
+                const selectedEquipmentsIds = equipments.map((eq) => eq.id);
                 if (selectedEquipmentsIds.length === 0) {
                     snackWarning({
                         messageTxt: intl.formatMessage({

@@ -22,34 +22,42 @@ import {
     SELECTION_TYPE,
 } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { ReduxState } from 'redux/reducer.type';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { useDispatch } from 'react-redux';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 import { openNadList } from 'redux/actions';
+import { Nullable } from 'components/utils/ts-utils';
 
 const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().required(),
-        [SELECTION_TYPE]: yup.string().nullable().required(),
-        [EQUIPMENT_TYPE_FIELD]: yup.string().nullable().required(),
+        [SELECTION_TYPE]: yup
+            .mixed<SELECTION_TYPES>()
+            .oneOf(Object.values(SELECTION_TYPES))
+            .nullable()
+            .required(),
+        [EQUIPMENT_TYPE_FIELD]: yup
+            .mixed<EquipmentType>()
+            .oneOf(Object.values(EquipmentType))
+            .nullable()
+            .required(),
     })
     .required();
 const emptyFormData = {
     [NAME]: '',
-    [EQUIPMENT_TYPE_FIELD]: '',
-    [SELECTION_TYPE]: '',
+    [EQUIPMENT_TYPE_FIELD]: null,
+    [SELECTION_TYPE]: null,
 };
 
 export type SelectionCreationPanelFormFields = yup.InferType<typeof formSchema>;
 
 type SelectionCreationPanelProps = {
-    getEquipments: (equipmentType: string) => any[];
+    getEquipments: (equipmentType: EquipmentType) => Equipment[];
     onCancel: () => void;
     nominalVoltages: number[];
 };
@@ -64,7 +72,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const { pendingState, onSaveSelection } = useSaveMap();
     const formMethods = useForm({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        // "Nullable" to allow null values as default values for required values
+        // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
+        resolver:
+            yupResolver<Nullable<SelectionCreationPanelFormFields>>(formSchema),
     });
     const dispatch = useDispatch();
 
@@ -93,9 +104,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
     const handleValidate = (formData: SelectionCreationPanelFormFields) => {
         if (formData.selectionType === SELECTION_TYPES.NAD) {
-            const equ = getEquipments(
-                EquipmentType.VOLTAGE_LEVEL
-            ) as Equipment[]; // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
+            const equ = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
             console.log('TEST', equ);
 
             dispatch(
@@ -152,8 +161,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         onClick={() => {
                             const equ = getEquipments(
                                 EquipmentType.VOLTAGE_LEVEL
-                            ) as Equipment[]; // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
-                            console.log('TEST', equ);
+                            ); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
 
                             dispatch(
                                 openNadList(
