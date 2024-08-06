@@ -11,14 +11,10 @@ import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 import { ComputingType } from '../../computing-status/computing-type';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 
 import { LoadflowResultProps } from './load-flow-result.type';
-import {
-    getNoRowsMessage,
-    getRows,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { Box } from '@mui/system';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -28,25 +24,17 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
 
-export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
-    result,
-    isLoadingResult,
-    columnDefs,
-}) => {
+export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
     const theme = useTheme();
     const intl = useIntl();
 
-    const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const gridRef = useRef();
 
     const openLoaderStatusTab = useOpenLoaderShortWait({
         isLoading:
-            loadFlowStatus === RunningStatus.RUNNING ||
-            result?.componentResults?.length !== 0 ||
-            !isLoadingResult,
+            loadFlowStatus === RunningStatus.RUNNING || result?.componentResults?.length !== 0 || !isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
 
@@ -99,9 +87,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({
         const rowsToShow = getRows(formattedResult, loadFlowStatus);
         return (
             <>
-                <Box sx={{ height: '4px' }}>
-                    {openLoaderStatusTab && <LinearProgress />}
-                </Box>
+                <Box sx={{ height: '4px' }}>{openLoaderStatusTab && <LinearProgress />}</Box>
                 <RenderTableAndExportCsv
                     gridRef={gridRef}
                     columns={columnDefs}

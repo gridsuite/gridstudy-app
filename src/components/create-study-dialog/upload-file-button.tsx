@@ -50,11 +50,7 @@ export const UploadFileButton: FunctionComponent<UploadFileButtonProps> = ({
             <tbody>
                 <tr>
                     <th>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            component="label"
-                        >
+                        <Button variant="contained" color="primary" component="label">
                             <FormattedMessage id={label} />
                             <input
                                 type="file"

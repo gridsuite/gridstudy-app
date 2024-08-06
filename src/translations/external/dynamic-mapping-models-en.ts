@@ -8,10 +8,8 @@
 // Note: Translation keys (not taken into account prefix) come from db of dynamic-mapping-server
 const dynamic_mapping_models_en = {
     // --- models --- //
-    'models.GeneratorSynchronousThreeWindings':
-        'Three windings synchronous generator',
-    'models.GeneratorSynchronousFourWindings':
-        'Four windings synchronous generator',
+    'models.GeneratorSynchronousThreeWindings': 'Three windings synchronous generator',
+    'models.GeneratorSynchronousFourWindings': 'Four windings synchronous generator',
     'models.GeneratorSynchronousThreeWindingsProportionalRegulations':
         'Three windings synchronous generator with proportional regulations',
     'models.GeneratorSynchronousFourWindingsProportionalRegulations':
@@ -33,17 +31,14 @@ const dynamic_mapping_models_en = {
     'variables.generator_QGen': 'Reactive power in Mvar',
     'variables.generator_QGenPu': 'Reactive power in pu',
     'variables.generator_running_value': 'Running',
-    'variables.generator_UStatorPu':
-        'Stator voltage amplitude in pu (base UNom)',
-    'variables.voltageRegulator_EfdPu':
-        'EfdPu in pu (user-selected base voltage)',
+    'variables.generator_UStatorPu': 'Stator voltage amplitude in pu (base UNom)',
+    'variables.voltageRegulator_EfdPu': 'EfdPu in pu (user-selected base voltage)',
 
     // Load
     'variables.load_PPu': 'Active power consumed in pu',
     'variables.load_PRefPu': 'Active power consumed at nominal voltage in MW',
     'variables.load_QPu': 'Reactive power consumed in pu',
-    'variables.load_QRefPu':
-        'Reactive power consumed at nominal voltage in Mvar',
+    'variables.load_QRefPu': 'Reactive power consumed at nominal voltage in Mvar',
     'variables.load_running_value': 'Running',
 
     // Bus

@@ -15,13 +15,7 @@ const ResponsiveGridLayout = ({ computeRowHeight, ...rest }) => {
     // use AutoSizer to make react-grid-layout Responsive component aware of width
     return (
         <AutoSizer>
-            {({ width, height }) => (
-                <RGLResponsive
-                    width={width}
-                    rowHeight={computeRowHeight(height)}
-                    {...rest}
-                />
-            )}
+            {({ width, height }) => <RGLResponsive width={width} rowHeight={computeRowHeight(height)} {...rest} />}
         </AutoSizer>
     );
 };

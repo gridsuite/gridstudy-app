@@ -6,10 +6,7 @@
  */
 
 import { RadioInput } from '@gridsuite/commons-ui';
-import {
-    ACTIVE_VARIATION_MODES,
-    VARIATION_TYPES,
-} from 'components/network/constants';
+import { ACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
 import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
@@ -24,21 +21,14 @@ const styles = {
 };
 
 const LoadScalingForm = () => {
-    const variationTypeField = (
-        <RadioInput
-            name={VARIATION_TYPE}
-            options={Object.values(VARIATION_TYPES)}
-        />
-    );
+    const variationTypeField = <RadioInput name={VARIATION_TYPE} options={Object.values(VARIATION_TYPES)} />;
 
     const variationsField = (
         <ExpandableInput
             name={VARIATIONS}
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
-            initialValue={getVariationEmptyForm(
-                ACTIVE_VARIATION_MODES.PROPORTIONAL.id
-            )}
+            initialValue={getVariationEmptyForm(ACTIVE_VARIATION_MODES.PROPORTIONAL.id)}
         />
     );
 

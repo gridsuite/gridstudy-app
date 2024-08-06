@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
     Equipment,
@@ -25,7 +25,7 @@ import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-
 import {
     addToLocalStorageSearchEquipmentHistory,
     excludeElementFromCurrentSearchHistory,
-} from 'redux/local-storage/search-equipment-history';
+} from 'redux/session-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
@@ -36,29 +36,21 @@ interface TopBarEquipmentSearchDialogProps {
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const TopBarEquipmentSearchDialog: FunctionComponent<
-    TopBarEquipmentSearchDialogProps
-> = (props) => {
-    const {
-        isDialogSearchOpen,
-        setIsDialogSearchOpen,
-        showVoltageLevelDiagram,
-    } = props;
+export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
+    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram } = props;
     const intl = useIntl();
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
-    const [equipmentTypeFilter, setEquipmentTypeFilter] =
-        useState<EquipmentType | null>(null);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | null>(null);
 
-    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
-        useTopBarSearchMatchingEquipment({
-            studyUuid: studyUuid,
-            nodeUuid: currentNode?.id,
-            equipmentType: equipmentTypeFilter ?? undefined,
-        });
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useTopBarSearchMatchingEquipment({
+        // @ts-expect-error TODO: manage null case
+        studyUuid: studyUuid,
+        // @ts-expect-error TODO: manage null case
+        nodeUuid: currentNode?.id,
+        equipmentType: equipmentTypeFilter ?? undefined,
+    });
     const disabledSearchReason = useDisabledSearchReason();
 
     const enableSearchDialog = useCallback(() => {
@@ -75,6 +67,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         (equipment: EquipmentInfos) => {
             closeDialog();
             updateSearchTerm('');
+            // @ts-expect-error TODO: manage null case
             addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
                 studyUuid,
@@ -89,6 +82,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                 })
                 .catch(() => {
                     excludeElementFromCurrentSearchHistory(
+                        // @ts-expect-error TODO: manage null case
                         studyUuid,
                         equipment
                     );
@@ -99,20 +93,11 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     });
                 });
         },
-        [
-            updateSearchTerm,
-            closeDialog,
-            showVoltageLevelDiagram,
-            studyUuid,
-            snackWarning,
-            currentNode,
-        ]
+        [updateSearchTerm, closeDialog, showVoltageLevelDiagram, studyUuid, snackWarning, currentNode]
     );
 
     const suffixRenderer = useCallback(
-        (props: TagRendererProps) => (
-            <CustomSuffixRenderer {...props} onClose={closeDialog} />
-        ),
+        (props: TagRendererProps) => <CustomSuffixRenderer {...props} onClose={closeDialog} />,
         [closeDialog]
     );
 
@@ -121,7 +106,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
-            showResults={equipmentsFound.length > 0 || isLoading}
+            showResults={disabledSearchReason === '' && (equipmentsFound.length > 0 || isLoading)}
             onClose={closeDialog}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
@@ -141,12 +126,9 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
             getOptionLabel={(equipment) => equipment.label}
-            isOptionEqualToValue={(equipment1, equipment2) =>
-                equipment1.id === equipment2.id
-            }
+            isOptionEqualToValue={(equipment1, equipment2) => equipment1.id === equipment2.id}
             renderInput={(displayedValue, params) => (
                 <TopBarEquipmentSearchInput
-                    isSearchDisabled={disabledSearchReason !== ''}
                     displayedValue={displayedValue}
                     params={params}
                     setEquipmentType={setEquipmentTypeFilter}

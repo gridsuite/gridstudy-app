@@ -15,7 +15,7 @@ import React, { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer.type';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { TextInput } from '@gridsuite/commons-ui';
 import { Box, TextField } from '@mui/material';
@@ -36,9 +36,7 @@ interface VscModificationFormProps {
     updatePreviousReactiveCapabilityCurveTableConverterStation: UpdateReactiveCapabilityCurveTableConverterStation;
 }
 
-export const VscModificationForm: FunctionComponent<
-    VscModificationFormProps
-> = ({
+export const VscModificationForm: FunctionComponent<VscModificationFormProps> = ({
     tabIndex,
     setTabIndex,
     studyUuid,
@@ -84,11 +82,7 @@ export const VscModificationForm: FunctionComponent<
                 {gridItem(vscIdField, 4)}
                 {gridItem(vscNameField, 4)}
             </Grid>
-            <VscTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-            />
+            <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
     );
 
@@ -96,16 +90,9 @@ export const VscModificationForm: FunctionComponent<
         <>
             <Box>{headersAndTabs}</Box>
             <Box hidden={tabIndex !== VSC_CREATION_TABS.HVDC_LINE_TAB} p={1}>
-                <VscHvdcLinePane
-                    id={HVDC_LINE_TAB}
-                    previousValues={vscToModify}
-                    isEquipementModification={true}
-                />
+                <VscHvdcLinePane id={HVDC_LINE_TAB} previousValues={vscToModify} isEquipementModification={true} />
             </Box>
-            <Box
-                hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1}
-                p={1}
-            >
+            <Box hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_1} p={1}>
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -113,22 +100,12 @@ export const VscModificationForm: FunctionComponent<
                     stationLabel={'converterStation1'}
                     isModification
                     previousValues={vscToModify?.converterStation1}
-                    updatePreviousReactiveCapabilityCurveTableConverterStation={(
-                        action,
-                        index
-                    ) => {
-                        updatePreviousReactiveCapabilityCurveTableConverterStation(
-                            action,
-                            index,
-                            'converterStation1'
-                        );
+                    updatePreviousReactiveCapabilityCurveTableConverterStation={(action, index) => {
+                        updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation1');
                     }}
                 />
             </Box>
-            <Box
-                hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2}
-                p={1}
-            >
+            <Box hidden={tabIndex !== VSC_CREATION_TABS.CONVERTER_STATION_2} p={1}>
                 <ConverterStationPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
@@ -136,15 +113,8 @@ export const VscModificationForm: FunctionComponent<
                     stationLabel={'converterStation2'}
                     isModification
                     previousValues={vscToModify?.converterStation2}
-                    updatePreviousReactiveCapabilityCurveTableConverterStation={(
-                        action,
-                        index
-                    ) => {
-                        updatePreviousReactiveCapabilityCurveTableConverterStation(
-                            action,
-                            index,
-                            'converterStation2'
-                        );
+                    updatePreviousReactiveCapabilityCurveTableConverterStation={(action, index) => {
+                        updatePreviousReactiveCapabilityCurveTableConverterStation(action, index, 'converterStation2');
                     }}
                 />
             </Box>

@@ -5,7 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { setTableSort } from '../redux/actions';
+import { AppState, TableSortKeysType } from '../redux/reducer';
 
 export type SortConfigType = {
     colId: string;
@@ -16,7 +19,6 @@ export type SortConfigType = {
 export type SortPropsType = {
     onSortChanged: (sortConfig: SortConfigType) => void;
     sortConfig: SortConfigType[];
-    initSort?: (colKey: string) => void;
     children?: boolean;
 };
 
@@ -25,31 +27,21 @@ export enum SortWay {
     DESC = 'desc',
 }
 
-export const useAgGridSort = (
-    initSortConfig: SortConfigType
-): SortPropsType => {
-    const [sortConfig, setSortConfig] = useState<SortConfigType[]>([
-        initSortConfig,
-    ]);
+export const useAgGridSort = (table: TableSortKeysType, tab: string): SortPropsType => {
+    const sortConfig = useSelector((state: AppState) => state.tableSort[table][tab]);
 
-    const onSortChanged = useCallback((newSortConfig: SortConfigType) => {
-        setSortConfig((prevSortConfig) =>
-            prevSortConfig
-                // for now, we can have only one parent sort and one children sort
-                .filter(
-                    (sort) =>
-                        (sort.children ?? false) !==
-                        (newSortConfig.children ?? false)
-                )
-                .concat(newSortConfig)
-        );
-    }, []);
+    const dispatch = useDispatch();
 
-    const initSort = useCallback(
-        (colKey: string) =>
-            setSortConfig([{ colId: colKey, sort: initSortConfig.sort }]),
-        [initSortConfig.sort]
+    const onSortChanged = useCallback(
+        (newSortConfig: SortConfigType) => {
+            const updatedSortConfig = sortConfig
+                .filter((sort) => (sort.children ?? false) !== (newSortConfig.children ?? false))
+                .concat(newSortConfig);
+
+            dispatch(setTableSort(table, tab, updatedSortConfig));
+        },
+        [dispatch, table, tab, sortConfig]
     );
 
-    return { onSortChanged, sortConfig, initSort };
+    return { onSortChanged, sortConfig };
 };

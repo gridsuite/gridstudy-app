@@ -1,9 +1,6 @@
 {
     "root": true,
-    "extends": [
-        "react-app",
-        "plugin:prettier/recommended"
-    ],
+    "extends": ["react-app", "plugin:prettier/recommended"],
     "ignorePatterns": [
         // node_modules is implicitly always ignored
         "build"
