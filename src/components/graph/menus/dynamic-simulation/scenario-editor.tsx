@@ -12,9 +12,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
 import { useIntl } from 'react-intl';
-import { ReduxState } from '../../../../redux/reducer.type';
+import { AppState } from '../../../../redux/reducer';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
 import { Box } from '@mui/material';
+import { AppDispatch } from '../../../../redux/store';
 
 const styles = {
     paper: {
@@ -32,9 +33,9 @@ const styles = {
 export interface ScenarioEditorProps {}
 
 const ScenarioEditor = (props: ScenarioEditorProps) => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const currentTreeNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
+        (state: AppState) => state.currentTreeNode
     );
 
     const intl = useIntl();

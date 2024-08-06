@@ -26,7 +26,7 @@ import {
 } from '../../../services/study/loadflow';
 import { REPORT_TYPES } from 'components/utils/report-type';
 import RunningStatus from 'components/utils/running-status';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -104,7 +104,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
+        (state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const { onSortChanged, sortConfig } = useAgGridSort(
@@ -115,6 +115,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOADFLOW_RESULT_STORE_FIELD,
         filterTab: mappingTabs(tabIndex),
+        // @ts-expect-error TODO: found how to have Action type in props type
         filterStoreAction: setLoadflowResultFilter,
     });
 

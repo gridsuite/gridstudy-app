@@ -80,10 +80,11 @@ export const ReportViewerTab = ({
 
     const setNodeName = useCallback(
         (report) => {
-            if (report.messageKey === 'Root') {
-                report.messageKey = rootNodeId;
+            if (report.message === 'Root') {
+                report.title = 'Root';
+                report.message = rootNodeId;
             } else {
-                report.messageTemplate = nodesNames.get(report.messageKey);
+                report.title = nodesNames.get(report.message);
             }
             return report;
         },
@@ -99,9 +100,8 @@ export const ReportViewerTab = ({
                     return setNodeName(reportData[0]);
                 }
                 return {
-                    messageKey: GLOBAL_NODE_TASK_KEY,
-                    messageTemplate: GLOBAL_NODE_TASK_KEY,
-                    children: reportData.map((r) => setNodeName(r)),
+                    message: GLOBAL_NODE_TASK_KEY,
+                    subReports: reportData.map((r) => setNodeName(r)),
                 };
             }
         },

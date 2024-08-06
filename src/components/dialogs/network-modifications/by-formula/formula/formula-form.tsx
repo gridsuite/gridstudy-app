@@ -26,7 +26,7 @@ import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 
 interface FormulaProps {
-    name: String;
+    name: string;
     index: number;
 }
 
@@ -44,7 +44,9 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
 
     const intl = useIntl();
 
-    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+    const equipmentFields: { id: string; label: string }[] =
+        // @ts-expect-error TODO: missing type in context
+        EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
 
     const filtersField = (
         <DirectoryItemsInput

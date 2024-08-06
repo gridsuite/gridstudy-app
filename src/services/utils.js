@@ -4,8 +4,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { store } from '../redux/store';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
+import { getUserToken } from '../redux/user-store';
 
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',
@@ -68,11 +68,6 @@ const handleError = (response) => {
     });
 };
 
-export const getToken = () => {
-    const state = store.getState();
-    return state.user.id_token;
-};
-
 const prepareRequest = (init, token) => {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError(
@@ -81,7 +76,7 @@ const prepareRequest = (init, token) => {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ? token : getToken();
+    const tokenCopy = token ? token : getUserToken();
     initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
     return initCopy;
 };
@@ -180,9 +175,9 @@ export const getQueryParamsList = (params, paramName) => {
 
 export function getUrlWithToken(baseUrl) {
     if (baseUrl.includes('?')) {
-        return baseUrl + '&access_token=' + getToken();
+        return baseUrl + '&access_token=' + getUserToken();
     } else {
-        return baseUrl + '?access_token=' + getToken();
+        return baseUrl + '?access_token=' + getUserToken();
     }
 }
 

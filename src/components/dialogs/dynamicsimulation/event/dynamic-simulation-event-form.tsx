@@ -10,10 +10,11 @@ import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import React from 'react';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: EQUIPMENT_TYPES;
     eventDefinition?: EventDefinition;
     event?: Event;
 };

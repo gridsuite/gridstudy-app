@@ -37,7 +37,7 @@ export const DISCONNECT_EVENT_DEFINITION: EventDefinition = {
                 id: 'TwoSides.TWO',
             },
         ],
-        acceptOnly: (equipmentType: string) => {
+        acceptOnly: (equipmentType: EQUIPMENT_TYPES) => {
             return BRANCH_EQUIPMENT_TYPES.includes(equipmentType);
         },
         default: null, // TODO remove when corrected in rhf SelectInput

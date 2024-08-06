@@ -25,7 +25,7 @@ import {
 } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import {
     FilterEnumsType,
@@ -231,7 +231,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<
     }, [intl, analysisType, sortProps, filterProps, filterEnums]);
 
     const shortCircuitAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[
                 analysisType === ShortCircuitAnalysisType.ALL_BUSES
                     ? ComputingType.SHORT_CIRCUIT

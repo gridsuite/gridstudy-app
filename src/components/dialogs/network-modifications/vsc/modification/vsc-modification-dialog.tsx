@@ -175,7 +175,10 @@ const VscModificationDialog: React.FC<any> = ({
 
     const onEquipmentIdChange = useCallback(
         (equipmentId: string | null) => {
-            if (equipmentId) {
+            if (!equipmentId) {
+                setValuesAndEmptyOthers();
+                setVcsToModify(null);
+            } else {
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
@@ -186,61 +189,63 @@ const VscModificationDialog: React.FC<any> = ({
                     true
                 )
                     .then((value: any) => {
-                        const previousReactiveCapabilityCurveTable1 =
-                            value?.converterStation1
-                                ?.reactiveCapabilityCurvePoints;
-                        if (previousReactiveCapabilityCurveTable1) {
-                            setCurrentReactiveCapabilityCurveTable(
-                                previousReactiveCapabilityCurveTable1,
-                                `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                getValues,
-                                setValue
-                            );
-                        }
+                        if (value) {
+                            // when editing modification form, first render should not trigger this reset
+                            // which would empty the form instead of displaying data of existing form
 
-                        const previousReactiveCapabilityCurveTable2 =
-                            value?.converterStation2
-                                ?.reactiveCapabilityCurvePoints;
-                        if (previousReactiveCapabilityCurveTable2) {
-                            setCurrentReactiveCapabilityCurveTable(
-                                previousReactiveCapabilityCurveTable2,
-                                `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
-                                getValues,
-                                setValue
-                            );
-                        }
-
-                        setSelectedReactiveLimits(
-                            `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
-                            value.converterStation1?.minMaxReactiveLimits,
-                            setValue
-                        );
-                        setSelectedReactiveLimits(
-                            `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
-                            value.converterStation2?.minMaxReactiveLimits,
-                            setValue
-                        );
-
-                        setVcsToModify({
-                            ...value,
-                            converterStation1: {
-                                ...value.converterStation1,
-                                reactiveCapabilityCurveTable:
+                            const previousReactiveCapabilityCurveTable1 =
+                                value.converterStation1
+                                    ?.reactiveCapabilityCurvePoints;
+                            if (previousReactiveCapabilityCurveTable1) {
+                                setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable1,
-                            },
-                            converterStation2: {
-                                ...value.converterStation2,
-                                reactiveCapabilityCurveTable:
+                                    `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    getValues,
+                                    setValue
+                                );
+                            }
+
+                            const previousReactiveCapabilityCurveTable2 =
+                                value.converterStation2
+                                    ?.reactiveCapabilityCurvePoints;
+                            if (previousReactiveCapabilityCurveTable2) {
+                                setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable2,
-                            },
-                        });
-                        reset((formValues) => ({
-                            ...formValues,
-                            [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(
-                                value,
-                                getValues
-                            ),
-                        }));
+                                    `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
+                                    getValues,
+                                    setValue
+                                );
+                            }
+                            setSelectedReactiveLimits(
+                                `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                                value.converterStation1?.minMaxReactiveLimits,
+                                setValue
+                            );
+
+                            setSelectedReactiveLimits(
+                                `${CONVERTER_STATION_2}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
+                                value.converterStation2?.minMaxReactiveLimits,
+                                setValue
+                            );
+                            setVcsToModify({
+                                ...value,
+                                converterStation1: {
+                                    ...value.converterStation1,
+                                    reactiveCapabilityCurveTable:
+                                        previousReactiveCapabilityCurveTable1,
+                                },
+                                converterStation2: {
+                                    ...value.converterStation2,
+                                    reactiveCapabilityCurveTable:
+                                        previousReactiveCapabilityCurveTable2,
+                                },
+                            });
+                            reset((formValues) => ({
+                                ...formValues,
+                                [ADDITIONAL_PROPERTIES]:
+                                    getConcatenatedProperties(value, getValues),
+                            }));
+                        }
                         setDataFetchStatus(FetchStatus.SUCCEED);
                     })
                     .catch(() => {
@@ -250,23 +255,23 @@ const VscModificationDialog: React.FC<any> = ({
                             reset(emptyFormData);
                         }
                     });
-            } else {
-                setValuesAndEmptyOthers();
-                setVcsToModify(null);
             }
         },
         [
+            setValuesAndEmptyOthers,
             studyUuid,
             currentNodeUuid,
             setValue,
-            getValues,
             reset,
-            setValuesAndEmptyOthers,
-            editData,
+            getValues,
+            editData?.equipmentId,
         ]
     );
+
     useEffect(() => {
-        onEquipmentIdChange(equipmentId);
+        if (equipmentId) {
+            onEquipmentIdChange(equipmentId);
+        }
     }, [equipmentId, onEquipmentIdChange]);
 
     const onSubmit = (hvdcLine: any) => {

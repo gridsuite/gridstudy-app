@@ -48,7 +48,7 @@ import computingType, {
     ComputingType,
 } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 
 export const convertMillisecondsToMinutesSeconds = (
@@ -202,12 +202,10 @@ export const useFetchFiltersEnums = (): {
         limitType: null,
         side: null,
     });
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
+        (state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     useEffect(() => {
@@ -224,7 +222,7 @@ export const useFetchFiltersEnums = (): {
         const promises = filterTypes.map((filterType) =>
             fetchAvailableFilterEnumValues(
                 studyUuid,
-                currentNode.id,
+                currentNode?.id,
                 computingType.LOAD_FLOW,
                 filterType
             )
@@ -251,7 +249,7 @@ export const useFetchFiltersEnums = (): {
             .finally(() => {
                 setLoading(false);
             });
-    }, [loadFlowStatus, studyUuid, currentNode.id]);
+    }, [loadFlowStatus, studyUuid, currentNode?.id]);
 
     return { loading, result, error };
 };

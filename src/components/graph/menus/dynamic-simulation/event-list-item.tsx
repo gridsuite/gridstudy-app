@@ -15,7 +15,7 @@ import IconButton from '@mui/material/IconButton';
 import { useSelector } from 'react-redux';
 import { Theme } from '@mui/material/styles';
 import { Event } from '../../../dialogs/dynamicsimulation/event/types/event.type';
-import { ReduxState } from '../../../../redux/reducer.type';
+import { AppState } from '../../../../redux/reducer';
 import { ListItemProps } from '@mui/material/ListItem/ListItem';
 import {
     getStartTime,
@@ -59,10 +59,8 @@ export const EventListItem = ({
     ...props
 }: EventListItemProps) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
 
@@ -85,6 +83,7 @@ export const EventListItem = ({
         return intl.formatMessage(
             {
                 id: `Event${item.eventType}${
+                    // @ts-expect-error TODO: conflicts types
                     EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]
                 }`,
             },

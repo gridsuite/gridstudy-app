@@ -52,7 +52,7 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { StudyIndexationStatus } from 'redux/reducer.type';
+import { StudyIndexationStatus } from 'redux/reducer';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 
 function isWorthUpdate(

@@ -14,7 +14,6 @@ click [here](https://github.com/gridsuite/commons-ui) and follow instructions.
 Files tsconfig.json and src/react-app-env.d.ts both results from create-react-app typescript template (version 5).
 Some property values have been changed to meet the project needs (ex: target, baseUrl,...).
 
-
 #### License Headers and dependencies checking
 
 To check dependencies license compatibility with this project one locally, please run the following command :

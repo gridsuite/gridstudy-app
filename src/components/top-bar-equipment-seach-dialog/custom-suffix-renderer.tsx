@@ -30,7 +30,8 @@ import {
 } from '../utils/equipment-types';
 import { centerOnSubstation, openDiagram } from '../../redux/actions';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { ReduxState } from '../../redux/reducer.type';
+import { AppState } from '../../redux/reducer';
+import { AppDispatch } from '../../redux/store';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -39,16 +40,14 @@ interface CustomSuffixRendererProps extends TagRendererProps {
 export const CustomSuffixRenderer: FunctionComponent<
     CustomSuffixRendererProps
 > = ({ element, onClose, ...tagRendererProps }) => {
-    const dispatch = useDispatch();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const dispatch = useDispatch<AppDispatch>();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const networkAreaDiagramNbVoltageLevels = useSelector(
-        (state: ReduxState) => state.networkAreaDiagramNbVoltageLevels
+        (state: AppState) => state.networkAreaDiagramNbVoltageLevels
     );
     const networkAreaDiagramDepth = useSelector(
-        (state: ReduxState) => state.networkAreaDiagramDepth
+        (state: AppState) => state.networkAreaDiagramDepth
     );
 
     const centerOnSubstationCB = useCallback(
@@ -58,6 +57,7 @@ export const CustomSuffixRenderer: FunctionComponent<
                 return;
             }
             let substationIdPromise;
+            // @ts-expect-error: conflicts between commons-ui's EquipmentType and gridstudy's EQUIPMENT_TYPE
             if (element.type === EQUIPMENT_TYPES.SUBSTATION) {
                 substationIdPromise = Promise.resolve(element.id);
             } else {
@@ -89,7 +89,9 @@ export const CustomSuffixRenderer: FunctionComponent<
     );
 
     if (
+        // @ts-expect-error: conflicts between commons-ui's EquipmentType and gridstudy's EQUIPMENT_TYPE
         element.type === EQUIPMENT_TYPES.SUBSTATION ||
+        // @ts-expect-error: conflicts between commons-ui's EquipmentType and gridstudy's EQUIPMENT_TYPE
         element.type === EQUIPMENT_TYPES.VOLTAGE_LEVEL
     ) {
         return (

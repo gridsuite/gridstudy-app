@@ -25,7 +25,7 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
@@ -84,7 +84,7 @@ const DynamicSimulationResultSynthesis = memo(
 
         // messages to show when no data
         const dynamicSimulationStatus = useSelector(
-            (state: ReduxState) =>
+            (state: AppState) =>
                 state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
         );
         const messages = useIntlResultStatusMessages(intl, true);

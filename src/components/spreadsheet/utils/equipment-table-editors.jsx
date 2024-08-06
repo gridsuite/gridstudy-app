@@ -335,7 +335,7 @@ export const BooleanListField = forwardRef(
             () => {
                 return {
                     getValue: () => {
-                        return value;
+                        return Boolean(value);
                     },
                     getField: () => {
                         return colDef.field;

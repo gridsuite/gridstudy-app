@@ -33,6 +33,7 @@ import { useSelector } from 'react-redux';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
+import { AppState } from '../../redux/reducer';
 
 interface ICompositeCreateModificationDialog {
     [NAME]: string;
@@ -66,7 +67,7 @@ const CreateCompositeModificationDialog: React.FC<
     CreateCompositeModificationDialogProps
 > = ({ open, onSave, onClose }) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: any) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -76,6 +77,7 @@ const CreateCompositeModificationDialog: React.FC<
     const [destinationFolder, setDestinationFolder] =
         useState<TreeViewFinderNodeProps>();
     const fetchDefaultDirectoryForStudy = useCallback(() => {
+        // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (!res || res.length < 2) {
                 snackError({

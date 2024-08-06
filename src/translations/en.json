@@ -549,8 +549,6 @@
     "LimitReduction": "Limit reduction",
     "Default": "Default",
 
-
-
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
@@ -1369,6 +1367,9 @@
     "ReactiveSlacksThreshold": "Alert threshold on reactive slacks",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
     "TieLines": "Tie lines",
+    "ShuntCompensatorActivationThreshold": "Alert threshold on shunt compensator activation",
+    "ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero": "The threshold must be greater or equal to 0",
+    "ShuntCompensatorActivationThresholdDescription": "Threshold (in MVar) above which the difference between discretized and optimal value for shunt compensator activation is considered significant (and will thus be recorded in the functional logs)",
     "StateEstimation": "State estimation",
     "startStateEstmationError": "An error occurred while launching the state estimation",
     "stateEstimationError": "An error occured when executing the state estimation",

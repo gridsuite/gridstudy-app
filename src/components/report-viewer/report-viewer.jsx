@@ -105,9 +105,8 @@ export default function ReportViewer({
                 return reportData[0];
             }
             return {
-                messageKey: GLOBAL_NODE_TASK_KEY,
-                messageTemplate: GLOBAL_NODE_TASK_KEY,
-                children: reportData,
+                message: GLOBAL_NODE_TASK_KEY,
+                subReports: reportData,
             };
         }
     };
@@ -119,7 +118,7 @@ export default function ReportViewer({
                 LogReportType.NodeReport
             ) {
                 return nodeReportPromise(
-                    reportTreeData.current[nodeId].getKey(),
+                    nodeId,
                     reportTreeData.current[nodeId].getId(),
                     severityList
                 );
@@ -138,7 +137,7 @@ export default function ReportViewer({
     );
 
     const buildLogReport = useCallback((jsonData) => {
-        return jsonData.messageKey === GLOBAL_NODE_TASK_KEY
+        return jsonData.message === GLOBAL_NODE_TASK_KEY
             ? new LogReport(LogReportType.GlobalReport, jsonData)
             : new LogReport(LogReportType.NodeReport, jsonData);
     }, []);
@@ -188,7 +187,7 @@ export default function ReportViewer({
 
     useEffect(() => {
         const reportType =
-            jsonReportTree.messageKey === GLOBAL_NODE_TASK_KEY
+            jsonReportTree.message === GLOBAL_NODE_TASK_KEY
                 ? LogReportType.GlobalReport
                 : LogReportType.NodeReport;
         rootReport.current = new LogReport(reportType, jsonReportTree);

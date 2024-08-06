@@ -12,6 +12,7 @@ import React from 'react';
 import { Handle } from 'react-flow-renderer';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
+import { BUILD_STATUS } from '../../network/constants';
 
 const styles = {
     rootSelected: (theme) => ({
@@ -62,7 +63,8 @@ const RootNode = (props) => {
                     variant="outlined"
                     sx={isSelectedNode() ? styles.rootSelected : styles.root}
                 >
-                    {(props.data.globalBuildStatus === 'BUILDING' && (
+                    {(props.data.globalBuildStatus ===
+                        BUILD_STATUS.BUILDING && (
                         <CircularProgress size={24} />
                     )) || <PhotoIcon />}
                 </IconButton>

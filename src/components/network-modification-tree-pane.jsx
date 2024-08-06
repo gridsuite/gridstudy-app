@@ -41,7 +41,7 @@ import {
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study';
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
-import { StudyDisplayMode } from '../redux/reducer.type';
+import { StudyDisplayMode } from './network-modification.type';
 
 const styles = {
     container: {

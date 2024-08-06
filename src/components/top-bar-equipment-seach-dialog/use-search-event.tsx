@@ -6,10 +6,10 @@
  */
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 
 export const useSearchEvent = (enableSearchCallback: () => void) => {
-    const user = useSelector((state: ReduxState) => state.user);
+    const user = useSelector((state: AppState) => state.user);
 
     useEffect(() => {
         if (user) {

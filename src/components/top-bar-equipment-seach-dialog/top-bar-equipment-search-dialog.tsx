@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import {
     ElementSearchDialog,
     Equipment,
@@ -25,7 +25,7 @@ import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-
 import {
     addToLocalStorageSearchEquipmentHistory,
     excludeElementFromCurrentSearchHistory,
-} from 'redux/local-storage/search-equipment-history';
+} from 'redux/session-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';
@@ -46,16 +46,16 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     } = props;
     const intl = useIntl();
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [equipmentTypeFilter, setEquipmentTypeFilter] =
         useState<EquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
         useTopBarSearchMatchingEquipment({
+            // @ts-expect-error TODO: manage null case
             studyUuid: studyUuid,
+            // @ts-expect-error TODO: manage null case
             nodeUuid: currentNode?.id,
             equipmentType: equipmentTypeFilter ?? undefined,
         });
@@ -75,6 +75,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
         (equipment: EquipmentInfos) => {
             closeDialog();
             updateSearchTerm('');
+            // @ts-expect-error TODO: manage null case
             addToLocalStorageSearchEquipmentHistory(studyUuid, equipment);
             fetchNetworkElementInfos(
                 studyUuid,
@@ -89,6 +90,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                 })
                 .catch(() => {
                     excludeElementFromCurrentSearchHistory(
+                        // @ts-expect-error TODO: manage null case
                         studyUuid,
                         equipment
                     );

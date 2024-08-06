@@ -14,7 +14,7 @@ import {
     isNodeReadOnly,
 } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -61,9 +61,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // to check is node editable
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isNodeEditable = useMemo(
         () =>
@@ -74,11 +72,11 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     );
 
     const computationStarting = useSelector(
-        (state: ReduxState) => state.computationStarting
+        (state: AppState) => state.computationStarting
     );
 
     const oneBusShortcircuitAnalysisState = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 

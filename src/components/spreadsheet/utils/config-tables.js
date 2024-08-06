@@ -47,7 +47,7 @@ import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../country-cell-render';
 import EnumCellRenderer from '../enum-cell-renderer';
 import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { store } from '../../../redux/store';
+import { useSelector } from 'react-redux';
 
 const generateTapPositions = (params) => {
     return params
@@ -81,13 +81,12 @@ const applyFluxConvention = (convention, val) => {
     return val;
 };
 
-const getFluxConvention = () => {
-    const state = store.getState();
-    return state.fluxConvention;
-};
+function useFluxConvention() {
+    return useSelector((state) => state.fluxConvention);
+}
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
-// The columns we want to include in the global filter at the date of this comment : ID (all), Name, Country, Type and Nominal Voltage (all).
+// The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
 const excludeFromGlobalFilter = () => '';
 
@@ -2083,7 +2082,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(
                     applyFluxConvention,
-                    getFluxConvention
+                    useFluxConvention
                 ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
@@ -2096,7 +2095,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(
                     applyFluxConvention,
-                    getFluxConvention
+                    useFluxConvention
                 ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
@@ -2823,7 +2822,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(
                     applyFluxConvention,
-                    getFluxConvention
+                    useFluxConvention
                 ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
@@ -3129,7 +3128,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(
                     applyFluxConvention,
-                    getFluxConvention
+                    useFluxConvention
                 ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
@@ -3142,7 +3141,7 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(
                     applyFluxConvention,
-                    getFluxConvention
+                    useFluxConvention
                 ),
                 fractionDigits: 1,
                 normed: applyFluxConvention,

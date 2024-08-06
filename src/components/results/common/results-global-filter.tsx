@@ -15,7 +15,8 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
 import { Theme } from '@mui/material';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
+import { AppDispatch } from '../../../redux/store';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -121,9 +122,9 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({
 }) => {
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const recentGlobalFilters = useSelector(
-        (state: ReduxState) => state.recentGlobalFilters
+        (state: AppState) => state.recentGlobalFilters
     );
 
     const getOptionLabel = useCallback(

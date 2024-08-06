@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../redux/reducer.type';
+import { AppState } from '../redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
 
@@ -16,41 +16,40 @@ import RunningStatus from 'components/utils/running-status';
  */
 export const useComputationResultsCount = () => {
     const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
+        (state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]
     );
 
     const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const sensitivityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
     const nonEvacuateEnergyAnalysisStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const oneBusallBusesShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const allBusesShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
     const voltageInitStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 

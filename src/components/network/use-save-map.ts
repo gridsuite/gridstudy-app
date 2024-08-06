@@ -12,7 +12,7 @@ import {
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from '../utils/selection-types';
 import {
     createMapContingencyList,
@@ -35,9 +35,9 @@ export type UseSaveMapOutput = {
 
 export const useSaveMap = (): UseSaveMapOutput => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector(
-        (state: ReduxState) => state.currentTreeNode.id
+        (state: AppState) => state.currentTreeNode?.id
     );
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);

@@ -22,7 +22,7 @@ import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
@@ -50,7 +50,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     ShortCircuitAnalysisResultTabProps
 > = ({ studyUuid, nodeUuid, view }) => {
     const lastCompletedComputation = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation
+        (state: AppState) => state.lastCompletedComputation
     );
 
     const [csvHeaders, setCsvHeaders] = useState([]);
@@ -58,6 +58,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
+            // @ts-expect-error TODO: manage null case
             computingTypeToShortcircuitTabRedirection(lastCompletedComputation),
         [lastCompletedComputation]
     );
@@ -67,11 +68,10 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
     const OneBusShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 

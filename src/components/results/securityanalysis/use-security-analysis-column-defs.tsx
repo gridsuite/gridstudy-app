@@ -22,7 +22,7 @@ import {
 import { SortPropsType } from 'hooks/use-aggrid-sort';
 import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 
 const styles = {
     button: {
@@ -53,12 +53,12 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     ) => {
         const intl = useIntl();
         const { snackError } = useSnackMessage();
-        const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+        const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector(
-            (state: ReduxState) => state.currentTreeNode
+            (state: AppState) => state.currentTreeNode
         );
 
-        const nodeUuid = currentNode.id;
+        const nodeUuid = currentNode?.id;
 
         // for nmk views, click handler on subjectId cell
         const onClickNmKConstraint = useCallback(

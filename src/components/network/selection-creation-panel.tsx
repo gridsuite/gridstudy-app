@@ -29,14 +29,14 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
 import {
-    equipementTypeToLabel,
+    equipmentTypeToLabel,
     EQUIPMENT_TYPES,
 } from '../utils/equipment-types';
 import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import {
     SELECTION_TYPES,
     selectionTypeToLabel,
@@ -70,7 +70,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     onCancel,
     nominalVoltages,
 }) => {
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
@@ -91,6 +91,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
+        // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 const parentFolderIndex = res.length - 2;
@@ -147,7 +148,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 .map((value) => {
                     return {
                         id: value,
-                        label: equipementTypeToLabel(value),
+                        label: equipmentTypeToLabel(value),
                     };
                 });
         }
