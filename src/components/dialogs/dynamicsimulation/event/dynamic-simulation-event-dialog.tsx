@@ -28,12 +28,13 @@ import {
 } from '../../../../services/dynamic-simulation';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 export type DynamicSimulationEventDialogProps = {
     studyUuid: string;
     currentNodeId: string;
     equipmentId: string;
-    equipmentType: string; // must be a string enum
+    equipmentType: EQUIPMENT_TYPES;
     onClose: () => void;
     title: string;
     open?: boolean;

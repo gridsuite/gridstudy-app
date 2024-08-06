@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 import { useStateBoolean, useStateNumber } from '../../../hooks/use-states';
 import CustomColumnsDialog from './custom-columns-dialog';
 import { TABLES_NAMES } from '../utils/config-tables';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 
 export type CustomColumnsConfigProps = {
     indexTab: number;
@@ -41,7 +41,7 @@ export default function CustomColumnsConfig({
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
     const allDefinitions = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
     );
     const uEffectNumberColumnsSetValue = numberColumns.setValue; // eslint detection

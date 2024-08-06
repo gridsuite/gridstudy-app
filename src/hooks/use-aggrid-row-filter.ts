@@ -12,6 +12,8 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch } from '../redux/store';
+import { AppState } from '../redux/reducer';
 
 export type FilterEnumsType = Record<string, string[] | null>;
 
@@ -55,10 +57,11 @@ export const useAggridRowFilter = (
     filterStoreParam: FilterStorePropsType,
     updateFilterCallback?: () => void
 ): UseAggridRowFilterOutputType => {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { filterType, filterTab, filterStoreAction } = filterStoreParam;
     const filterStore = useSelector(
-        (state: any) => state[filterType][filterTab]
+        // @ts-expect-error TODO: found a better way to go into state
+        (state: AppState) => state[filterType][filterTab]
     );
 
     const updateFilter = useCallback(
@@ -87,6 +90,7 @@ export const useAggridRowFilter = (
             updateFilterCallback && updateFilterCallback();
             filterStoreAction &&
                 filterTab &&
+                // @ts-expect-error TODO: maybe resolve this with discriminate union parameter in FilterStorePropsType?
                 dispatch(filterStoreAction(filterTab, updatedFilters));
         },
         [

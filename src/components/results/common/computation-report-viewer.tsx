@@ -15,7 +15,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import ReportViewer from '../../report-viewer/report-viewer';
 import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 
@@ -28,10 +28,8 @@ export const ComputationReportViewer: FunctionComponent<
 > = ({ reportType }) => {
     const [report, setReport] = useState(undefined);
     const { snackError } = useSnackMessage();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const makeReport = useCallback(
@@ -43,7 +41,7 @@ export const ComputationReportViewer: FunctionComponent<
                     ? reportData[0]
                     : undefined;
             if (nodeName && singleReport) {
-                singleReport.messageTemplate = nodeName;
+                singleReport.title = nodeName;
             }
             return singleReport;
         },
@@ -86,8 +84,8 @@ export const ComputationReportViewer: FunctionComponent<
         severityFilterList: string[]
     ) => {
         return fetchSubReport(
-            studyUuid.toString(),
-            currentNode.id.toString(),
+            studyUuid?.toString(),
+            currentNode?.id.toString(),
             reportId,
             severityFilterList
         );
@@ -99,7 +97,7 @@ export const ComputationReportViewer: FunctionComponent<
         severityFilterList: string[]
     ) => {
         return fetchNodeReport(
-            studyUuid.toString(),
+            studyUuid?.toString(),
             nodeId,
             reportId,
             severityFilterList,

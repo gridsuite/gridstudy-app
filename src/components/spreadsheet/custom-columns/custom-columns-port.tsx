@@ -19,7 +19,7 @@ import {
 } from '../../../hooks/use-states';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useState } from 'react';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { JsonTextarea } from '../../inputs/json-textarea';

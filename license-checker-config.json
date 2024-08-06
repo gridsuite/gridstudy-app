@@ -1,5 +1,5 @@
 {
-    "onlyAllow" : [
+    "onlyAllow": [
         "MPL-2.0",
         "MIT",
         "Zlib",

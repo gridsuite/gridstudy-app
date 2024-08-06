@@ -7,7 +7,7 @@
 import { UUID } from 'crypto';
 import { useSearchMatchingEquipments } from './use-search-matching-equipments';
 import { useMemo } from 'react';
-import { getLocalStorageSearchEquipmentHistory } from 'redux/local-storage/search-equipment-history';
+import { getLocalStorageSearchEquipmentHistory } from 'redux/session-storage/search-equipment-history';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
 interface UseTopBarSearchMatchingEquipmentProps {

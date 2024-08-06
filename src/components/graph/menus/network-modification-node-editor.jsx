@@ -84,7 +84,7 @@ import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 import { createCompositeModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
-import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog.tsx';
+import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
 
 export const styles = {
     listContainer: (theme) => ({

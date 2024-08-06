@@ -10,7 +10,7 @@ import { IService } from 'components/result-view-tab';
 import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsRootLevel {
@@ -40,7 +40,7 @@ export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>,
     view: string
-): Dispatch<SetStateAction<Boolean>> => {
+): Dispatch<SetStateAction<boolean>> => {
     const [redirectionLock, setRedirectionLock] =
         useResultsTabRedirectionLock();
 
@@ -54,13 +54,13 @@ export const useResultsTab = (
 };
 
 const useResultsTabRedirectionLock = (): [
-    Boolean,
-    Dispatch<SetStateAction<Boolean>>
+    boolean,
+    Dispatch<SetStateAction<boolean>>
 ] => {
-    const lastCompletedComputation: string = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation
+    const lastCompletedComputation = useSelector(
+        (state: AppState) => state.lastCompletedComputation
     );
-    const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
+    const [redirectionLock, setRedirectionLock] = useState<boolean>(false);
 
     useEffect(() => {
         //we ought to release the redirection lock if the user launches a new computation

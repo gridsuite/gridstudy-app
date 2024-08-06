@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';
 import { AccordionIllustration } from './AccordionIllustration';
 import { PARAM_THEME } from 'utils/config-params';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 
 interface ReplacedText {
     eltId: string;
@@ -32,7 +32,7 @@ const GenericIllustrationNetworkModification: React.FC<
 > = ({ svgComponent: SvgComponent, replacedTexts, backgroundElementId }) => {
     const [showDiagram, setShowDiagram] = useState(true);
     const intl = useIntl();
-    const theme = useSelector((state: ReduxState) => state[PARAM_THEME]);
+    const theme = useSelector((state: AppState) => state[PARAM_THEME]);
 
     useEffect(() => {
         // dynamically modify the text inside the svg :

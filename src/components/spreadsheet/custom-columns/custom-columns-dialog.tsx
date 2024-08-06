@@ -36,7 +36,7 @@ import {
     UseStateBooleanReturn,
 } from '../../../hooks/use-states';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { useEffect, useState } from 'react';
 import { ColumnWithFormula } from './custom-columns.types';
@@ -110,7 +110,7 @@ export default function CustomColumnsDialog({
 }: Readonly<CustomColumnsDialogProps>) {
     const intl = useIntl();
     const allDefinitions = useSelector(
-        (state: ReduxState) =>
+        (state: AppState) =>
             state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
     );
     const [columnsDefinitions, setColumnsDefinitions] = useState<

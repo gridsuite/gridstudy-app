@@ -11,7 +11,7 @@ import 'ace-builds/src-noconflict/theme-github_dark';
 import 'ace-builds/src-noconflict/theme-github_light_default';
 import 'ace-builds/src-noconflict/keybinding-vscode';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../redux/reducer.type';
+import { AppState } from '../../redux/reducer';
 import { useMemo } from 'react';
 import { DARK_THEME, LIGHT_THEME } from '@gridsuite/commons-ui';
 
@@ -46,7 +46,7 @@ ext-whitespace.js
 export type EditorTextareaProps = Exclude<IAceEditorProps, 'theme'>;
 
 export default function EditorTextarea(props: Readonly<EditorTextareaProps>) {
-    const theme = useSelector((state: ReduxState) => state.theme);
+    const theme = useSelector((state: AppState) => state.theme);
     const aceTheme = useMemo<IAceEditorProps['theme']>(() => {
         switch (theme) {
             case LIGHT_THEME:
