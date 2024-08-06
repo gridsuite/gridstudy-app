@@ -210,8 +210,6 @@
     "SelectAll": "All",
     "UnselectAll": "None",
 
-    "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
-
     "noOption": "No options",
     "maxSelection": "selections maximum",
     "options": "options",
@@ -1375,5 +1373,10 @@
     "stateEstimationError": "An error occured when executing the state estimation",
     "NoFilter": "No filter",
     "EquipmentSearchPlaceholder": "Search",
-    "GeneratedModification": "Generated-modification"
+    "GeneratedModification": "Generated-modification",
+    "guidancePopUp.title": "Selection on the map",
+    "guidancePopUp.firstVariant":"Click on the map to start drawing a polygon.",
+    "guidancePopUp.secondVariant":"Press Enter to finish or Esc to cancel.",
+    "guidancePopUp.action":"Close editor"
+
 }
