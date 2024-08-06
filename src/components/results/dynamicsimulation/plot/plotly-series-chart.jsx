@@ -23,9 +23,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
     const debouncedResizeHandler = useDebounce((entries) => {
         plotRef.current.resizeHandler();
     }, 500);
-    const resizeObserverRef = useRef(
-        new ResizeObserver(debouncedResizeHandler)
-    );
+    const resizeObserverRef = useRef(new ResizeObserver(debouncedResizeHandler));
 
     const [layout, setLayout] = useState(
         JSON.parse(JSON.stringify(defaultLayout)) // deep clone can be done by lodash
@@ -39,10 +37,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
             color: 'rgba(255,255,255,0.5)',
             line: {
                 color: baseColors[s.index % baseColors.length][
-                    `${
-                        300 +
-                        (Math.floor(s.index / baseColors.length) % 7) * 100
-                    }` // compute from 300 to 900 with step = 100
+                    `${300 + (Math.floor(s.index / baseColors.length) % 7) * 100}` // compute from 300 to 900 with step = 100
                 ],
                 width: 1,
             },
@@ -59,10 +54,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
                 marker: getMarker(s),
                 line: {
                     color: baseColors[s.index % baseColors.length][
-                        `${
-                            300 +
-                            (Math.floor(s.index / baseColors.length) % 7) * 100
-                        }` // compute from 300 to 900 with step = 100
+                        `${300 + (Math.floor(s.index / baseColors.length) % 7) * 100}` // compute from 300 to 900 with step = 100
                     ],
                 },
                 x: s.data.x ? s.data.x.map((value) => value / 1000) : [], // ms => s
@@ -90,12 +82,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
         (eventData) => {
             // propagate data to parent
             if (sync) {
-                eventCenter.emit(
-                    PlotEvents.ON_RELAYOUT,
-                    groupId,
-                    id,
-                    eventData
-                );
+                eventCenter.emit(PlotEvents.ON_RELAYOUT, groupId, id, eventData);
             }
         },
         [sync, groupId, id]
@@ -145,10 +132,7 @@ const PlotlySeriesChart = ({ id, groupId, leftSeries, rightSeries, sync }) => {
 
         return () => {
             if (sync) {
-                eventCenter.removeListener(
-                    PlotEvents.ON_RELAYOUT,
-                    syncOnRelayout
-                );
+                eventCenter.removeListener(PlotEvents.ON_RELAYOUT, syncOnRelayout);
             }
         };
     }, [sync, syncOnRelayout]);

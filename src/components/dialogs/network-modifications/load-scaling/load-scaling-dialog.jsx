@@ -14,10 +14,7 @@ import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import {
-    FORM_LOADING_DELAY,
-    VARIATION_TYPES,
-} from 'components/network/constants';
+import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { loadScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
@@ -35,14 +32,7 @@ const formSchema = yup
     })
     .required();
 
-const LoadScalingDialog = ({
-    editData,
-    currentNode,
-    studyUuid,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+const LoadScalingDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -86,9 +76,7 @@ const LoadScalingDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -101,9 +89,7 @@ const LoadScalingDialog = ({
                 maxWidth={'md'}
                 titleId="LoadScaling"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <LoadScalingForm />

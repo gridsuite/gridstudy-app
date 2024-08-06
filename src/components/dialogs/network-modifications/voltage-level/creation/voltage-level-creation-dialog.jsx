@@ -95,17 +95,13 @@ const formSchema = yup
             .number()
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
-            .max(
-                yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
-                'ShortCircuitCurrentLimitMinMaxError'
-            ),
+            .max(yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
         [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
             .when([LOW_SHORT_CIRCUIT_CURRENT_LIMIT], {
-                is: (lowShortCircuitCurrentLimit) =>
-                    lowShortCircuitCurrentLimit != null,
+                is: (lowShortCircuitCurrentLimit) => lowShortCircuitCurrentLimit != null,
                 then: (schema) => schema.required(),
             }),
         [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
@@ -126,10 +122,7 @@ const formSchema = yup
                 })
             )
             .test('coupling-omnibus-between-sections', (values) =>
-                controlCouplingOmnibusBetweenSections(
-                    values,
-                    'CouplingOmnibusBetweenSameBusbar'
-                )
+                controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
             ),
     })
     .concat(creationPropertiesSchema);
@@ -159,25 +152,18 @@ const VoltageLevelCreationDialog = ({
                 ? copyEquipmentPropertiesForCreation(voltageLevel)
                 : getPropertiesFromModification(voltageLevel.properties);
             reset({
-                [EQUIPMENT_ID]:
-                    (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) +
-                    (fromCopy ? '(1)' : ''),
-                [EQUIPMENT_NAME]:
-                    voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
+                [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
+                [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                 [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
                 [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
                 [NOMINAL_V]: voltageLevel[NOMINAL_V],
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
-                    fromCopy
-                        ? voltageLevel.identifiableShortCircuit?.ipMin
-                        : voltageLevel.ipMin
+                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
                 ),
                 [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
-                    fromCopy
-                        ? voltageLevel.identifiableShortCircuit?.ipMax
-                        : voltageLevel.ipMax
+                    fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
                 [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
                 [SECTION_COUNT]: voltageLevel[SECTION_COUNT] ?? 1,
@@ -229,12 +215,8 @@ const VoltageLevelCreationDialog = ({
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                ipMin: kiloUnitToUnit(
-                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
-                ),
-                ipMax: kiloUnitToUnit(
-                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
-                ),
+                ipMin: kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                ipMax: kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 busbarCount: voltageLevel[BUS_BAR_COUNT],
                 sectionCount: voltageLevel[SECTION_COUNT],
                 switchKinds: voltageLevel[SWITCH_KINDS].map((e) => {
@@ -261,9 +243,7 @@ const VoltageLevelCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -278,15 +258,10 @@ const VoltageLevelCreationDialog = ({
                 titleId="CreateVoltageLevel"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VoltageLevelCreationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
+                <VoltageLevelCreationForm currentNode={currentNode} studyUuid={studyUuid} />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

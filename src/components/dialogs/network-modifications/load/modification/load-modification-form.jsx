@@ -6,12 +6,7 @@
  */
 
 import { TextInput } from '@gridsuite/commons-ui';
-import {
-    P0,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    Q0,
-} from 'components/utils/field-constants';
+import { P0, EQUIPMENT_NAME, LOAD_TYPE, Q0 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,

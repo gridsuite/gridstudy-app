@@ -6,12 +6,7 @@
  */
 import { EquipmentType, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { Search, SearchOff, Tune } from '@mui/icons-material';
-import {
-    AutocompleteRenderInputParams,
-    Chip,
-    IconButton,
-    TextField,
-} from '@mui/material';
+import { AutocompleteRenderInputParams, Chip, IconButton, TextField } from '@mui/material';
 import { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TopBarEquipmentSearchPopover } from './top-bar-equipment-search-popover';
@@ -33,9 +28,7 @@ const styles = {
     },
 };
 
-export const TopBarEquipmentSearchInput = (
-    props: TopBarEquipmentSearchInputProps
-) => {
+export const TopBarEquipmentSearchInput = (props: TopBarEquipmentSearchInputProps) => {
     const { displayedValue, params, equipmentType, setEquipmentType } = props;
     const intl = useIntl();
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
@@ -62,11 +55,7 @@ export const TopBarEquipmentSearchInput = (
                     ...params.InputProps,
                     startAdornment: (
                         <>
-                            {params.disabled ? (
-                                <SearchOff color="disabled" />
-                            ) : (
-                                <Search color="disabled" />
-                            )}
+                            {params.disabled ? <SearchOff color="disabled" /> : <Search color="disabled" />}
                             {params.InputProps.startAdornment}
                         </>
                     ),
@@ -78,22 +67,15 @@ export const TopBarEquipmentSearchInput = (
                                     label={
                                         <FormattedMessage
                                             id={
-                                                Object.values(
-                                                    FILTER_EQUIPMENTS
-                                                ).find(
-                                                    (eq) =>
-                                                        eq.id === equipmentType
-                                                )?.label
+                                                Object.values(FILTER_EQUIPMENTS).find((eq) => eq.id === equipmentType)
+                                                    ?.label
                                             }
                                         />
                                     }
                                     sx={styles.chip}
                                 />
                             )}
-                            <IconButton
-                                onClick={() => setIsPopoverOpen(true)}
-                                disabled={params.disabled}
-                            >
+                            <IconButton onClick={() => setIsPopoverOpen(true)} disabled={params.disabled}>
                                 <Tune />
                             </IconButton>
                         </>

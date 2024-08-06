@@ -5,25 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    getStudyUrl,
-    getStudyUrlWithNodeUuid,
-    PREFIX_STUDY_QUERIES,
-} from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
-    const getDefaultLoadFlowProviderUrl =
-        PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
+    const getDefaultLoadFlowProviderUrl = PREFIX_STUDY_QUERIES + '/v1/loadflow-default-provider';
     console.debug(getDefaultLoadFlowProviderUrl);
     return backendFetchText(getDefaultLoadFlowProviderUrl);
 }
 
 export function setLoadFlowParameters(studyUuid, newParams) {
     console.info('set load flow parameters');
-    const setLoadFlowParametersUrl =
-        getStudyUrl(studyUuid) + '/loadflow/parameters';
+    const setLoadFlowParametersUrl = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);
     return backendFetch(setLoadFlowParametersUrl, {
         method: 'POST',
@@ -44,8 +38,7 @@ export function getLoadFlowParameters(studyUuid) {
 
 export function setLoadFlowProvider(studyUuid, newProvider) {
     console.info('set load flow provider');
-    const setLoadFlowProviderUrl =
-        getStudyUrl(studyUuid) + '/loadflow/provider';
+    const setLoadFlowProviderUrl = getStudyUrl(studyUuid) + '/loadflow/provider';
     console.debug(setLoadFlowProviderUrl);
     return backendFetch(setLoadFlowProviderUrl, {
         method: 'POST',
@@ -59,12 +52,7 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
 
 export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
     console.info(
-        'Running loadflow on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' with limit reduction ' +
-            limitReduction
+        'Running loadflow on ' + studyUuid + ' and node ' + currentNodeUuid + ' with limit reduction ' + limitReduction
     );
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -75,30 +63,21 @@ export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
 }
 
 export function stopLoadFlow(studyUuid, currentNodeUuid) {
-    console.info(
-        `Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const stopLoadFlowUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
+    console.info(`Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const stopLoadFlowUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
     console.debug(stopLoadFlowUrl);
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
 export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/loadflow/status';
+    console.info(`Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/status';
     console.debug(url);
     return backendFetchText(url);
 }
 
 export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
-    console.info(
-        `Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
+    console.info(`Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});
 
@@ -107,9 +86,7 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/loadflow/result';
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/result';
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
@@ -130,9 +107,7 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
         params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/limit-violations';
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/limit-violations';
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
@@ -140,8 +115,7 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
 
 export function invalidateLoadFlowStatus(studyUuid) {
     console.info('invalidate loadflow status');
-    const invalidateLoadFlowStatusUrl =
-        getStudyUrl(studyUuid) + '/loadflow/invalidate-status';
+    const invalidateLoadFlowStatusUrl = getStudyUrl(studyUuid) + '/loadflow/invalidate-status';
     console.debug(invalidateLoadFlowStatusUrl);
     return backendFetch(invalidateLoadFlowStatusUrl, {
         method: 'PUT',

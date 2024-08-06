@@ -31,10 +31,7 @@ const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [MODIFICATIONS_TABLE]: yup
-            .array()
-            .min(1, 'ModificationsRequiredTabError')
-            .required(),
+        [MODIFICATIONS_TABLE]: yup.array().min(1, 'ModificationsRequiredTabError').required(),
     })
     .required();
 
@@ -75,16 +72,11 @@ const TabularModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromModificationType(
-                editData?.modificationType
-            );
+            const equipmentType = getEquipmentTypeFromModificationType(editData?.modificationType);
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertValueFromBackToFront(
-                        key,
-                        modif[key]
-                    );
+                    modification[key] = convertValueFromBackToFront(key, modif[key]);
                 });
                 return modification;
             });
@@ -103,10 +95,7 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    modification[key] = convertValueFromFrontToBack(
-                        key,
-                        row[key]
-                    );
+                    modification[key] = convertValueFromFrontToBack(key, row[key]);
                 });
                 return modification;
             });
@@ -133,9 +122,7 @@ const TabularModificationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -149,9 +136,7 @@ const TabularModificationDialog = ({
                 aria-labelledby="dialog-tabular-modification"
                 titleId="TabularModification"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <TabularModificationForm />

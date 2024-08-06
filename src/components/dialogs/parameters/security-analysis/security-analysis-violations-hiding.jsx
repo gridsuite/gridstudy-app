@@ -30,11 +30,7 @@ const formatValues = (values, isDivision) => {
     Object.entries(values)?.forEach(([key, value]) => {
         result = {
             ...result,
-            [key]: isProportionalSAParam(key)
-                ? roundToDefaultPrecision(
-                      isDivision ? value / 100 : value * 100
-                  )
-                : value,
+            [key]: isProportionalSAParam(key) ? roundToDefaultPrecision(isDivision ? value / 100 : value * 100) : value,
         };
     });
     return result;
@@ -83,10 +79,7 @@ const SecurityAnalysisFields = ({
         [checkValue, positiveDoubleValue]
     );
 
-    const formatedValues = useCallback(
-        (values) => formatValues(values, true),
-        []
-    );
+    const formatedValues = useCallback((values) => formatValues(values, true), []);
 
     const updateValue = useCallback(
         (e) => {
@@ -117,11 +110,7 @@ const SecurityAnalysisFields = ({
                 item
                 container
                 xs={isSingleField ? 8 : 4}
-                sx={
-                    isSingleField
-                        ? styles.singleTextField
-                        : styles.firstTextField
-                }
+                sx={isSingleField ? styles.singleTextField : styles.firstTextField}
             >
                 <TextField
                     fullWidth
@@ -148,10 +137,7 @@ const SecurityAnalysisFields = ({
                     />
                 </Grid>
             )}
-            <Tooltip
-                title={<FormattedMessage id={tooltipInfoId} />}
-                placement="left-start"
-            >
+            <Tooltip title={<FormattedMessage id={tooltipInfoId} />} placement="left-start">
                 <InfoIcon />
             </Tooltip>
         </Grid>
@@ -225,11 +211,7 @@ const ViolationsHidingParameters = ({ params, updateParameters }) => {
                     </Typography>
                     <Tooltip
                         sx={styles.tooltip}
-                        title={
-                            <FormattedMessage
-                                id={'securityAnalysis.toolTip.violationsHiding'}
-                            />
-                        }
+                        title={<FormattedMessage id={'securityAnalysis.toolTip.violationsHiding'} />}
                         placement="left-start"
                     >
                         <InfoIcon />

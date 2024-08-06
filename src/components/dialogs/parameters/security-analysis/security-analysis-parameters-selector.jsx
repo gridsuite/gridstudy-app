@@ -44,10 +44,7 @@ const SecurityAnalysisParametersSelector = ({ params, updateParameters }) => {
                 {TAB_INFO.map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
                         {tabValue === TAB_VALUES.General && (
-                            <ViolationsHidingParameters
-                                params={params}
-                                updateParameters={updateParameters}
-                            />
+                            <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
                         )}
                     </TabPanel>
                 ))}

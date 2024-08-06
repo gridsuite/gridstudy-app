@@ -15,12 +15,9 @@ import IconButton from '@mui/material/IconButton';
 import { useSelector } from 'react-redux';
 import { Theme } from '@mui/material/styles';
 import { Event } from '../../../dialogs/dynamicsimulation/event/types/event.type';
-import { ReduxState } from '../../../../redux/reducer.type';
+import { AppState } from '../../../../redux/reducer';
 import { ListItemProps } from '@mui/material/ListItem/ListItem';
-import {
-    getStartTime,
-    getStartTimeUnit,
-} from '../../../dialogs/dynamicsimulation/event/model/event.model';
+import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 
 const styles = {
@@ -59,10 +56,8 @@ export const EventListItem = ({
     ...props
 }: EventListItemProps) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const toggle = useCallback(() => handleToggle(item), [item, handleToggle]);
 
@@ -75,9 +70,7 @@ export const EventListItem = ({
             computedLabel: (
                 <>
                     <strong>{item.equipmentId}</strong>
-                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(
-                        item
-                    )}`}</i>
+                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(item)}`}</i>
                 </>
             ),
         } as {};
@@ -85,6 +78,7 @@ export const EventListItem = ({
         return intl.formatMessage(
             {
                 id: `Event${item.eventType}${
+                    // @ts-expect-error TODO: conflicts types
                     EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]
                 }`,
             },
@@ -97,10 +91,7 @@ export const EventListItem = ({
     const [hover, setHover] = useState(false);
 
     return (
-        <Box
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-        >
+        <Box onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
             <ListItem key={item.equipmentId} {...props} sx={styles.listItem}>
                 <ListItemIcon sx={styles.iconCheck}>
                     <Checkbox
@@ -114,11 +105,7 @@ export const EventListItem = ({
                 </ListItemIcon>
                 <OverflowableText sx={styles.label} text={itemLabel} />
                 {!isOneNodeBuilding && hover && (
-                    <IconButton
-                        onClick={() => onEdit(item)}
-                        size={'small'}
-                        sx={styles.iconEdit}
-                    >
+                    <IconButton onClick={() => onEdit(item)} size={'small'} sx={styles.iconEdit}>
                         <EditIcon />
                     </IconButton>
                 )}

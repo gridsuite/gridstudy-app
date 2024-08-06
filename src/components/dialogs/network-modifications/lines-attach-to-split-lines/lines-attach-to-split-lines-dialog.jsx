@@ -121,9 +121,7 @@ const LinesAttachToSplitLinesDialog = ({
                 linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
                 linesAttachToSplitLine[ATTACHED_LINE_ID],
                 linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[
-                    ID
-                ],
+                linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 linesAttachToSplitLine[REPLACING_LINE_1_ID],
                 sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
                 linesAttachToSplitLine[REPLACING_LINE_2_ID],
@@ -144,9 +142,7 @@ const LinesAttachToSplitLinesDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -160,15 +156,10 @@ const LinesAttachToSplitLinesDialog = ({
                 subtitle={<LineAttachToSplitLinesIllustration />}
                 aria-labelledby="dialog-attach-lines-to-split-lines"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LinesAttachToSplitLinesForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
+                <LinesAttachToSplitLinesForm currentNode={currentNode} studyUuid={studyUuid} />
             </ModificationDialog>
         </CustomFormProvider>
     );
