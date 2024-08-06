@@ -94,6 +94,7 @@ import {
     RESET_EQUIPMENTS_BY_TYPES,
     DELETE_EQUIPMENTS,
     TABLE_SORT,
+    OPEN_NAD_LIST,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -978,6 +979,26 @@ export const reducer = createReducer(initialState, (builder) => {
             }
         }
         state.diagramStates = diagramStates;
+    });
+
+    builder.addCase(OPEN_NAD_LIST, (state, action) => {
+        const diagramStates = state.diagramStates;
+        const uniqueIds = [...new Set(action.ids)];
+        // remove all existing NAD from store, we replace them with lists passed as param
+        const diagramStatesWithoutNad = diagramStates.filter(
+            (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+        );
+
+        diagramStatesWithoutNad.concat(
+            uniqueIds.map((id) => ({
+                id: id,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            }))
+        );
+        console.log('SAVING uniqueIds', uniqueIds, diagramStatesWithoutNad);
+
+        state.diagramStates = diagramStatesWithoutNad;
     });
 
     builder.addCase(MINIMIZE_DIAGRAM, (state, action) => {

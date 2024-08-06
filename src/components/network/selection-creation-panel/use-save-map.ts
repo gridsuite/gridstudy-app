@@ -67,38 +67,38 @@ export const useSaveMap = (): UseSaveMapOutput => {
                             : 'ContingencyListCreationIgnored',
                     });
                     return false;
+                }
+
+                if (isFilter) {
+                    await createMapFilter(
+                        selection.equipmentType as EquipmentType,
+                        selection.name,
+                        distDir,
+                        studyUuid,
+                        currentNodeUuid,
+                        selectedEquipmentsIds,
+                        nominalVoltages
+                    );
+                    snackInfo({
+                        messageTxt: intl.formatMessage({
+                            id: 'FilterCreationSuccess',
+                        }),
+                    });
                 } else {
-                    if (isFilter) {
-                        await createMapFilter(
-                            selection.equipmentType as EquipmentType,
-                            selection.name,
-                            distDir,
-                            studyUuid,
-                            currentNodeUuid,
-                            selectedEquipmentsIds,
-                            nominalVoltages
-                        );
-                        snackInfo({
-                            messageTxt: intl.formatMessage({
-                                id: 'FilterCreationSuccess',
-                            }),
-                        });
-                    } else {
-                        await createMapContingencyList(
-                            selection.equipmentType as EquipmentType,
-                            selection.name,
-                            distDir,
-                            studyUuid,
-                            currentNodeUuid,
-                            equipments,
-                            nominalVoltages
-                        );
-                        snackInfo({
-                            messageTxt: intl.formatMessage({
-                                id: 'ContingencyListCreationSuccess',
-                            }),
-                        });
-                    }
+                    await createMapContingencyList(
+                        selection.equipmentType as EquipmentType,
+                        selection.name,
+                        distDir,
+                        studyUuid,
+                        currentNodeUuid,
+                        equipments,
+                        nominalVoltages
+                    );
+                    snackInfo({
+                        messageTxt: intl.formatMessage({
+                            id: 'ContingencyListCreationSuccess',
+                        }),
+                    });
                 }
             } catch (error: any) {
                 if (error.message === 'EmptySelection') {

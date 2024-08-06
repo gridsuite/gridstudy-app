@@ -528,6 +528,15 @@ export function openDiagram(id, svgType) {
     };
 }
 
+export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
+
+export function openNadList(ids) {
+    return {
+        type: OPEN_NAD_LIST,
+        ids: ids,
+    };
+}
+
 export const MINIMIZE_DIAGRAM = 'MINIMIZE_DIAGRAM';
 
 export function minimizeDiagram(id, svgType) {

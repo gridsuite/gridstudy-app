@@ -9,7 +9,6 @@ import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
     CustomFormProvider,
-    EquipmentInfos,
     EquipmentType,
     fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
@@ -31,8 +30,7 @@ import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-s
 import { SELECTION_TYPES } from './selection-types';
 import { useDispatch } from 'react-redux';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
-import { openDiagram } from 'redux/actions';
-import { DiagramType } from 'components/diagrams/diagram-common';
+import { openNadList } from 'redux/actions';
 
 const formSchema = yup
     .object()
@@ -98,16 +96,19 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             const equ = getEquipments(
                 EquipmentType.VOLTAGE_LEVEL
             ) as Equipment[]; // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
-            equ.forEach((eq) => {
-                console.log('TRYING', eq);
-                eq.voltageLevels?.forEach((vl) => {
-                    console.log('OPENING', vl.id);
-                    dispatch(
-                        openDiagram(vl.id, DiagramType.NETWORK_AREA_DIAGRAM)
-                    );
-                });
-            });
-            console.log('EQUIPMENTS', equ);
+            console.log('TEST', equ);
+
+            dispatch(
+                openNadList(
+                    equ
+                        .flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
+                        .filter((id) => id)
+                )
+            );
+            console.log(
+                'SAVING',
+                equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
+            );
         }
 
         if (destinationFolder) {
@@ -153,19 +154,22 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                 EquipmentType.VOLTAGE_LEVEL
                             ) as Equipment[]; // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
                             console.log('TEST', equ);
-                            equ.forEach((eq) => {
-                                console.log('TRYING', eq);
-                                eq.voltageLevels?.forEach((vl) => {
-                                    console.log('OPENING', vl.id);
-                                    dispatch(
-                                        openDiagram(
-                                            vl.id,
-                                            DiagramType.NETWORK_AREA_DIAGRAM
+
+                            dispatch(
+                                openNadList(
+                                    equ
+                                        .flatMap((eq) =>
+                                            eq.voltageLevels?.map((vl) => vl.id)
                                         )
-                                    );
-                                });
-                            });
-                            console.log('EQUIPMENTS', equ);
+                                        .filter((id) => id)
+                                )
+                            );
+                            console.log(
+                                'SAVING',
+                                equ.flatMap((eq) =>
+                                    eq.voltageLevels?.map((vl) => vl.id)
+                                )
+                            );
                         }}
                     >
                         test

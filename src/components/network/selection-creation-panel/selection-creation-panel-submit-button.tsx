@@ -1,10 +1,12 @@
 import { Button, CircularProgress } from '@mui/material';
-import { NAME } from 'components/utils/field-constants';
-import { FieldValues, useFormContext } from 'react-hook-form';
+import { NAME, SELECTION_TYPE } from 'components/utils/field-constants';
+import { FieldValues, useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
+import { SelectionCreationPanelFormFields } from './selection-creation-panel';
+import { SELECTION_TYPES } from './selection-types';
 
 interface SelectionCreationPanelSubmitButtonProps<T> {
-    handleValidate: (formData: T) => void;
+    handleValidate: (formData: SelectionCreationPanelFormFields) => void;
     pendingState: boolean;
 }
 export const SelectionCreationPanelSubmitButton = <T extends FieldValues>(
@@ -14,14 +16,32 @@ export const SelectionCreationPanelSubmitButton = <T extends FieldValues>(
     const {
         handleSubmit,
         formState: { errors, isDirty },
-    } = useFormContext<T>();
+    } = useFormContext<SelectionCreationPanelFormFields>();
 
+    // UniqueNameInput validation is made with those values
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
+
+    const watchSelectionType = useWatch<SelectionCreationPanelFormFields>({
+        name: SELECTION_TYPE,
+    });
+
+    const handleClick = () => {
+        if (watchSelectionType !== SELECTION_TYPES.NAD) {
+            return handleSubmit(handleValidate);
+        }
+
+        return handleValidate;
+    };
+
     return (
         <Button
-            onClick={handleSubmit(handleValidate)}
-            disabled={!isDirty || pendingState || !!nameError || !!isValidating}
+            onClick={handleClick}
+            disabled={
+                // when watchSelectionType is equal to SELECTION_TYPES.NAD, button is never disabled
+                watchSelectionType !== SELECTION_TYPES.NAD &&
+                (!isDirty || pendingState || !!nameError || !!isValidating)
+            }
             variant="outlined"
             type={'submit'}
             size={'large'}
