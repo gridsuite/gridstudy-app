@@ -24,7 +24,10 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import { CONNECTION_DIRECTIONS } from '../../network/constants';
+import {
+    CONNECTION_DIRECTIONS,
+    getConnectionDirectionLabel,
+} from '../../network/constants';
 import {
     AutocompleteInput,
     IntegerInput,
@@ -256,15 +259,22 @@ export const ConnectivityForm = ({
         />
     );
 
+    const previousConnectionDirectionLabel = isEquipmentModification
+        ? getConnectionDirectionLabel(
+              previousValues?.connectablePosition?.connectionDirection
+          ) ?? null
+        : null;
+
     const newConnectionDirectionField = (
         <SelectInput
             name={`${id}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
             previousValue={
-                isEquipmentModification
-                    ? previousValues?.connectablePosition?.connectionDirection
-                    : null
+                previousConnectionDirectionLabel &&
+                intl.formatMessage({
+                    id: previousConnectionDirectionLabel,
+                })
             }
             fullWidth
             size={'small'}

@@ -80,6 +80,14 @@ export const CONNECTION_DIRECTIONS = [
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
+export function getConnectionDirectionLabel(connectionDirectionId: string) {
+    if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
+        return 'Undefined';
+    }
+    return CONNECTION_DIRECTIONS.find(({ id }) => id === connectionDirectionId)
+        ?.label;
+}
+
 export function getEnergySourceLabel(energySourceId: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
