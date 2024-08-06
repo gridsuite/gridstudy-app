@@ -26,8 +26,6 @@ import { DiagramPane } from './diagrams/diagram-pane';
 import { StudyView } from './study-pane';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
-import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -201,10 +199,7 @@ const MapViewer = ({
         const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
         // first click on draw button, the polygon is not drawn yet, and the user want to draw
-        if (
-            drawingMode === DRAW_MODES.DRAW_POLYGON &&
-            isPolygonDrawn === false
-        ) {
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
             if (!isInDrawingMode) {
                 // save the previous display mode, so we can restore it when the user cancel the drawing
                 if (!previousStudyDisplayMode.current) {
@@ -320,23 +315,18 @@ const MapViewer = ({
                                     isInDrawingMode={isInDrawingMode}
                                     onNominalVoltagesChange={setNominalVoltages}
                                 ></NetworkMapTab>
-                                {isInDrawingMode &&
-                                    studyDisplayMode ===
-                                        StudyDisplayMode.MAP && (
-                                        <GuidancePopup
-                                            title={<Title />}
-                                            content={<Content />}
-                                            actions={
-                                                <Button
-                                                    size="small"
-                                                    onClick={leaveDrawingMode}
-                                                >
-                                                    <FormattedMessage id="guidancePopUp.action" />
-                                                </Button>
-                                            }
-                                            styles={guidancePopupStyle}
-                                        />
-                                    )}
+                                {isInDrawingMode && studyDisplayMode === StudyDisplayMode.MAP && (
+                                    <GuidancePopup
+                                        title={<Title />}
+                                        content={<Content />}
+                                        actions={
+                                            <Button size="small" onClick={leaveDrawingMode}>
+                                                <FormattedMessage id="guidancePopUp.action" />
+                                            </Button>
+                                        }
+                                        styles={guidancePopupStyle}
+                                    />
+                                )}
                             </Box>
 
                             <DiagramPane

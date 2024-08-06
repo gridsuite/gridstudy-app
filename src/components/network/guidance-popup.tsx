@@ -24,12 +24,7 @@ type GuidancePopupProps = {
     styles: GuidancePopupStyle;
 };
 
-const GuidancePopup: React.FC<GuidancePopupProps> = ({
-    title,
-    content,
-    actions,
-    styles,
-}) => {
+const GuidancePopup: React.FC<GuidancePopupProps> = ({ title, content, actions, styles }) => {
     return (
         <Card sx={styles.card}>
             <CardHeader sx={styles.header} title={title} />
