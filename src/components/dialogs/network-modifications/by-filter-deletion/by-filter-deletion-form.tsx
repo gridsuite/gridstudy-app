@@ -36,9 +36,7 @@ const ByFilterDeletionForm = () => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_TYPES.TIE_LINE,
         ]);
-        return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-        );
+        return Object.values(EQUIPMENT_TYPES).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
     }, []);
 
     const handleEquipmentTypeChange = useCallback(() => {

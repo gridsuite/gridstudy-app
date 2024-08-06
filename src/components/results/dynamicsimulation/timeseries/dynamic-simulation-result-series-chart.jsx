@@ -10,14 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import FitScreenSharpIcon from '@mui/icons-material/FitScreenSharp';
 import FullscreenExitSharpIcon from '@mui/icons-material/FullscreenExitSharp';
 import PlotlySeriesChart from '../plot/plotly-series-chart';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    ToggleButton,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { Card, CardContent, CardHeader, ToggleButton, Tooltip, Typography } from '@mui/material';
 import { memo, useCallback, useState } from 'react';
 import TooltipIconButton from '../common/tooltip-icon-button';
 import { lighten } from '@mui/material/styles';
@@ -82,10 +75,7 @@ const DynamicSimulationResultSeriesChart = ({
     );
 
     return (
-        <Card
-            sx={mergeSx(selected && styles.cardActive, styles.card)}
-            onClick={() => onSelect(index)}
-        >
+        <Card sx={mergeSx(selected && styles.cardActive, styles.card)} onClick={() => onSelect(index)}>
             <CardHeader
                 sx={styles.cardHeader}
                 avatar={

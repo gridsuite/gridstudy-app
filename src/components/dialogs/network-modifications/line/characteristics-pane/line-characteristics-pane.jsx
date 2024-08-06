@@ -6,12 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import {
-    gridItem,
-    GridSection,
-    MicroSusceptanceAdornment,
-    OhmAdornment,
-} from '../../../dialogUtils';
+import { gridItem, GridSection, MicroSusceptanceAdornment, OhmAdornment } from '../../../dialogUtils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
@@ -50,13 +45,9 @@ const LineCharacteristicsPane = ({
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
+                setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
+            });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -170,10 +161,7 @@ const LineCharacteristicsPane = ({
                 {gridItem(shuntConductance2Field, 4)}
                 {gridItem(shuntSusceptance2Field, 4)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'line'}
-                isModification={isModification}
-            />
+            <PropertiesForm networkElementType={'line'} isModification={isModification} />
         </>
     );
 };

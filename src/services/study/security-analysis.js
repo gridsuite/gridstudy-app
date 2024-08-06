@@ -5,71 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    getStudyUrl,
-    getStudyUrlWithNodeUuid,
-    PREFIX_STUDY_QUERIES,
-} from './index';
-import {
-    backendFetch,
-    backendFetchFile,
-    backendFetchJson,
-    backendFetchText,
-    getRequestParamFromList,
-} from '../utils';
+import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
+import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 
-export function startSecurityAnalysis(
-    studyUuid,
-    currentNodeUuid,
-    contingencyListNames
-) {
-    console.info(
-        `Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
+export function startSecurityAnalysis(studyUuid, currentNodeUuid, contingencyListNames) {
+    console.info(`Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
 
     // Add params to Url
-    const contingencyListsQueryParams = getRequestParamFromList(
-        contingencyListNames,
-        'contingencyListName'
-    );
+    const contingencyListsQueryParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
 
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/security-analysis/run?${urlSearchParams}`;
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/run?${urlSearchParams}`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
 export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
-    console.info(
-        'Stopping security analysis on ' +
-            studyUuid +
-            ' and node ' +
-            currentNodeUuid +
-            ' ...'
-    );
-    const stopSecurityAnalysisUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/security-analysis/stop';
+    console.info('Stopping security analysis on ' + studyUuid + ' and node ' + currentNodeUuid + ' ...');
+    const stopSecurityAnalysisUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(
-    studyUuid,
-    currentNodeUuid,
-    queryParams
-) {
-    console.info(
-        `Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/security-analysis/result`;
+export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, queryParams) {
+    console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result`;
 
     const { resultType, page, size, sort, filters } = queryParams || {};
 
@@ -98,13 +59,8 @@ export function downloadSecurityAnalysisResultZippedCsv(
     headers,
     enumValueTranslations
 ) {
-    console.info(
-        `Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/security-analysis/result/csv`;
+    console.info(`Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result/csv`;
 
     const { resultType } = queryParams || {};
 
@@ -126,13 +82,9 @@ export function downloadSecurityAnalysisResultZippedCsv(
 }
 
 export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
+    console.info(`Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`);
 
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/security-analysis/status';
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/security-analysis/status';
     console.debug(url);
     return backendFetchText(url);
 }

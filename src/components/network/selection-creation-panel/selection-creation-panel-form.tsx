@@ -8,21 +8,18 @@ import { useWatch } from 'react-hook-form';
 import { ContingencyFilterCreationList } from './contingency-filter-creation-fields';
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 
-interface SelectionCreationPanelForm {
+interface SelectionCreationPanelFormProps {
     pendingState: boolean;
 }
 
-export const SelectionCreationPanelForm: FC<SelectionCreationPanelForm> = (
-    props
-) => {
+export const SelectionCreationPanelForm: FC<SelectionCreationPanelFormProps> = (props) => {
     const { pendingState } = props;
     const watchSelectionType = useWatch({
         name: SELECTION_TYPE,
     });
 
     const isFilterOrContingenciesSelected =
-        watchSelectionType === SELECTION_TYPES.FILTER ||
-        watchSelectionType === SELECTION_TYPES.CONTIGENCY_LIST;
+        watchSelectionType === SELECTION_TYPES.FILTER || watchSelectionType === SELECTION_TYPES.CONTIGENCY_LIST;
 
     return (
         <Grid container rowGap={2}>
@@ -42,10 +39,7 @@ export const SelectionCreationPanelForm: FC<SelectionCreationPanelForm> = (
                 />
             </Grid>
             {isFilterOrContingenciesSelected && (
-                <ContingencyFilterCreationList
-                    selectionType={watchSelectionType}
-                    pendingState={pendingState}
-                />
+                <ContingencyFilterCreationList selectionType={watchSelectionType} pendingState={pendingState} />
             )}
         </Grid>
     );

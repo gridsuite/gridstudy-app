@@ -8,23 +8,11 @@
 import PropTypes from 'prop-types';
 import { IconButton, Tooltip } from '@mui/material';
 
-const TooltipIconButton = ({
-    toolTip,
-    onClick,
-    children,
-    disabled,
-    ...props
-}) => {
+const TooltipIconButton = ({ toolTip, onClick, children, disabled, ...props }) => {
     return (
         <Tooltip title={toolTip}>
             <span>
-                <IconButton
-                    size={'medium'}
-                    onClick={onClick}
-                    children={children}
-                    disabled={disabled}
-                    {...props}
-                />
+                <IconButton size={'medium'} onClick={onClick} children={children} disabled={disabled} {...props} />
             </span>
         </Tooltip>
     );

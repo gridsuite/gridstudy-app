@@ -9,12 +9,7 @@ import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
-import {
-    AutocompleteInput,
-    CustomAGGrid,
-    ErrorInput,
-    FieldErrorAlert,
-} from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert } from '@gridsuite/commons-ui';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import {
     CONNECTED,
@@ -28,15 +23,8 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
 import { Alert, Button } from '@mui/material';
-import {
-    TABULAR_CREATION_FIELDS,
-    styles,
-    TabularCreationField,
-} from './tabular-creation-utils';
-import {
-    BooleanNullableCellRenderer,
-    DefaultCellRenderer,
-} from 'components/spreadsheet/utils/cell-renderers';
+import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular-creation-utils';
+import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
 
@@ -45,10 +33,7 @@ const TabularCreationForm = () => {
 
     const { setValue, clearErrors, setError, getValues } = useFormContext();
 
-    const getTypeLabel = useCallback(
-        (type: string) => intl.formatMessage({ id: type }),
-        [intl]
-    );
+    const getTypeLabel = useCallback((type: string) => intl.formatMessage({ id: type }), [intl]);
 
     const handleComplete = useCallback(
         (results: Papa.ParseResult<any>) => {
@@ -57,16 +42,10 @@ const TabularCreationForm = () => {
             let fieldNameInError: string = '';
             results.data.every((result) => {
                 Object.keys(result).every((key) => {
-                    const found = TABULAR_CREATION_FIELDS[
-                        getValues(TYPE)
-                    ]?.find((field) => {
+                    const found = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find((field) => {
                         return field.id === key;
                     });
-                    if (
-                        found !== undefined &&
-                        found.required &&
-                        (result[key] === undefined || result[key] === null)
-                    ) {
+                    if (found !== undefined && found.required && (result[key] === undefined || result[key] === null)) {
                         fieldNameInError = key;
                         return false;
                     }
@@ -98,19 +77,14 @@ const TabularCreationForm = () => {
     });
 
     const csvColumns = useMemo(() => {
-        return TABULAR_CREATION_FIELDS[watchType]?.map(
-            (field: TabularCreationField) => {
-                return field.id;
-            }
-        );
+        return TABULAR_CREATION_FIELDS[watchType]?.map((field: TabularCreationField) => {
+            return field.id;
+        });
     }, [watchType]);
 
     const csvTranslatedColumns = useMemo(() => {
         return TABULAR_CREATION_FIELDS[watchType]?.map((field) => {
-            return (
-                intl.formatMessage({ id: field.id }) +
-                (field.required ? ' (*)' : '')
-            );
+            return intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
         });
     }, [intl, watchType]);
 
@@ -119,9 +93,7 @@ const TabularCreationForm = () => {
         if (csvTranslatedColumns) {
             // First comment line contains header translation
             commentData.push(['#' + csvTranslatedColumns.join(',')]);
-            if (
-                !!intl.messages['TabularCreationSkeletonComment.' + watchType]
-            ) {
+            if (!!intl.messages['TabularCreationSkeletonComment.' + watchType]) {
                 // Optionally a second comment line, if present in translation file
                 commentData.push([
                     intl.formatMessage({
@@ -160,26 +132,15 @@ const TabularCreationForm = () => {
                 complete: handleComplete,
                 transformHeader: (header: string) => {
                     // transform header to creation field
-                    const transformedHeader = TABULAR_CREATION_FIELDS[
-                        getValues(TYPE)
-                    ]?.find(
-                        (field) =>
-                            intl.formatMessage({ id: field.id }) === header
+                    const transformedHeader = TABULAR_CREATION_FIELDS[getValues(TYPE)]?.find(
+                        (field) => intl.formatMessage({ id: field.id }) === header
                     );
                     return transformedHeader ?? header;
                 },
                 transform: (value) => value.trim(),
             });
         }
-    }, [
-        clearErrors,
-        getValues,
-        handleComplete,
-        intl,
-        selectedFile,
-        selectedFileError,
-        setValue,
-    ]);
+    }, [clearErrors, getValues, handleComplete, intl, selectedFile, selectedFileError, setValue]);
 
     const typesOptions = useMemo(() => {
         //only available types for tabular creation
@@ -225,14 +186,8 @@ const TabularCreationForm = () => {
                 columnDef.pinned = true;
             }
             columnDef.field = field.id;
-            columnDef.headerName =
-                intl.formatMessage({ id: field.id }) +
-                (field.required ? ' (*)' : '');
-            if (
-                field.id === VOLTAGE_REGULATION_ON ||
-                field.id === CONNECTED ||
-                field.id === FREQUENCY_REGULATION
-            ) {
+            columnDef.headerName = intl.formatMessage({ id: field.id }) + (field.required ? ' (*)' : '');
+            if (field.id === VOLTAGE_REGULATION_ON || field.id === CONNECTED || field.id === FREQUENCY_REGULATION) {
                 columnDef.cellRenderer = BooleanNullableCellRenderer;
             } else {
                 columnDef.cellRenderer = DefaultCellRenderer;
@@ -261,13 +216,8 @@ const TabularCreationForm = () => {
                     </CsvDownloader>
                 </Grid>
                 <Grid item>
-                    <ErrorInput
-                        name={CREATIONS_TABLE}
-                        InputField={FieldErrorAlert}
-                    />
-                    {selectedFileError && (
-                        <Alert severity="error">{selectedFileError}</Alert>
-                    )}
+                    <ErrorInput name={CREATIONS_TABLE} InputField={FieldErrorAlert} />
+                    {selectedFileError && <Alert severity="error">{selectedFileError}</Alert>}
                 </Grid>
             </Grid>
             <Grid item xs={12} sx={styles.grid}>

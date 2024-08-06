@@ -46,9 +46,7 @@ export const SelectionCreationPanelSubmitButton = <T extends FieldValues>(
             type={'submit'}
             size={'large'}
         >
-            {(pendingState && <CircularProgress size={24} />) || (
-                <FormattedMessage id="save" />
-            )}
+            {(pendingState && <CircularProgress size={24} />) || <FormattedMessage id="save" />}
         </Button>
     );
 };

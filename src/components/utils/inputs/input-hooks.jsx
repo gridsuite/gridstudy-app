@@ -6,34 +6,16 @@
  */
 
 import InputAdornment from '@mui/material/InputAdornment';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    CircularProgress,
-    InputLabel,
-    TextField,
-    Tooltip,
-    Button,
-    Grid,
-} from '@mui/material';
+import { CircularProgress, InputLabel, TextField, Tooltip, Button, Grid } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import FolderIcon from '@mui/icons-material/Folder';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 
 import { styles } from '../../dialogs/dialogUtils';
-import {
-    useSnackMessage,
-    OverflowableText,
-    useDebounce,
-    FieldLabel,
-} from '@gridsuite/commons-ui';
+import { useSnackMessage, OverflowableText, useDebounce, FieldLabel } from '@gridsuite/commons-ui';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import Chip from '@mui/material/Chip';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
@@ -78,15 +60,7 @@ export const useInputForm = () => {
             setHasChanged,
             removeValidation,
         };
-    }, [
-        toggleClear,
-        clear,
-        validate,
-        addValidation,
-        reset,
-        hasChanged,
-        removeValidation,
-    ]);
+    }, [toggleClear, clear, validate, addValidation, reset, hasChanged, removeValidation]);
 };
 
 export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
@@ -114,12 +88,7 @@ export const useButtonWithTooltip = ({ handleClick, label, icon }) => {
     }, [label, handleClick, icon]);
 };
 
-export const useSimpleTextValue = ({
-    defaultValue,
-    adornment,
-    error,
-    triggerReset,
-}) => {
+export const useSimpleTextValue = ({ defaultValue, adornment, error, triggerReset }) => {
     const [value, setValue] = useState(defaultValue);
 
     const handleChangeValue = useCallback((event) => {
@@ -204,9 +173,7 @@ export const useValidNodeName = ({ studyUuid, defaultValue, triggerReset }) => {
         } else if (!isValidName) {
             setAdornment(undefined);
         } else {
-            setAdornment(
-                inputAdornment(<CheckIcon style={{ color: 'green' }} />)
-            );
+            setAdornment(inputAdornment(<CheckIcon style={{ color: 'green' }} />));
         }
     }, [checking, isValidName]);
 
@@ -237,8 +204,7 @@ export const useDirectoryElements = ({
     inputForm = undefined,
 }) => {
     const [values, setValues] = useState(initialValues);
-    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] =
-        useState(false);
+    const [directoryItemSelectorOpen, setDirectoryItemSelectorOpen] = useState(false);
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const refInitialValues = useRef();
@@ -290,25 +256,15 @@ export const useDirectoryElements = ({
         return (
             <>
                 <FormControl
-                    sx={mergeSx(
-                        styles.formDirectoryElements1,
-                        errorMsg && styles.formDirectoryElementsError
-                    )}
+                    sx={mergeSx(styles.formDirectoryElements1, errorMsg && styles.formDirectoryElementsError)}
                     error={!!errorMsg}
                     aria-errormessage={errorMsg}
                 >
                     {values?.length === 0 && (
                         <Grid container>
                             <Grid item>
-                                <InputLabel
-                                    id="elements"
-                                    sx={styles.labelDirectoryElements}
-                                    error={!!errorMsg}
-                                >
-                                    <FieldLabel
-                                        label={label}
-                                        optional={false}
-                                    />
+                                <InputLabel id="elements" sx={styles.labelDirectoryElements} error={!!errorMsg}>
+                                    <FieldLabel label={label} optional={false} />
                                 </InputLabel>
                             </Grid>
                         </Grid>
@@ -321,15 +277,8 @@ export const useDirectoryElements = ({
                                         sx={elementStyle}
                                         key={label + '_' + index}
                                         size="small"
-                                        onDelete={() =>
-                                            handleDelete(item, index)
-                                        }
-                                        label={
-                                            <OverflowableText
-                                                text={item.name}
-                                                sx={{ width: '100%' }}
-                                            />
-                                        }
+                                        onDelete={() => handleDelete(item, index)}
+                                        label={<OverflowableText text={item.name} sx={{ width: '100%' }} />}
                                     />
                                 ))}
                             </div>
@@ -340,9 +289,7 @@ export const useDirectoryElements = ({
                             <IconButton
                                 sx={styles.addDirectoryElements}
                                 size={'small'}
-                                onClick={() =>
-                                    setDirectoryItemSelectorOpen(true)
-                                }
+                                onClick={() => setDirectoryItemSelectorOpen(true)}
                             >
                                 <FolderIcon />
                             </IconButton>
@@ -376,13 +323,7 @@ export const useDirectoryElements = ({
     return [values, field];
 };
 
-export const useCSVPicker = ({
-    label,
-    header,
-    resetTrigger,
-    maxTapNumber,
-    disabled = false,
-}) => {
+export const useCSVPicker = ({ label, header, resetTrigger, maxTapNumber, disabled = false }) => {
     const intl = useIntl();
 
     const { CSVReader } = useCSVReader();
@@ -400,10 +341,7 @@ export const useCSVPicker = ({
                 <CSVReader
                     onUploadAccepted={(results, acceptedFile) => {
                         setAcceptedFile(acceptedFile);
-                        if (
-                            results?.data.length > 0 &&
-                            equals(header, results.data[0])
-                        ) {
+                        if (results?.data.length > 0 && equals(header, results.data[0])) {
                             setFileError();
                         } else {
                             setFileError(
@@ -414,22 +352,13 @@ export const useCSVPicker = ({
                         }
 
                         if (results.data.length > maxTapNumber) {
-                            setFileError(
-                                intl.formatMessage(
-                                    { id: 'TapPositionValueError' },
-                                    { value: maxTapNumber }
-                                )
-                            );
+                            setFileError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: maxTapNumber }));
                         }
                     }}
                 >
                     {({ getRootProps }) => (
                         <Grid item>
-                            <Button
-                                {...getRootProps()}
-                                variant={'contained'}
-                                disabled={disabled}
-                            >
+                            <Button {...getRootProps()} variant={'contained'} disabled={disabled}>
                                 <FormattedMessage id={label} />
                             </Button>
                             <span

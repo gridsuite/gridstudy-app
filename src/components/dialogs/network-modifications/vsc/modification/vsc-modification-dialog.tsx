@@ -9,10 +9,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { sanitizeString } from '../../../dialogUtils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -108,14 +105,10 @@ const VscModificationDialog: React.FC<any> = ({
     ...dialogProps
 }) => {
     const currentNodeUuid = currentNode.id;
-    const [tabIndex, setTabIndex] = useState(
-        VSC_MODIFICATION_TABS.HVDC_LINE_TAB
-    );
+    const [tabIndex, setTabIndex] = useState(VSC_MODIFICATION_TABS.HVDC_LINE_TAB);
 
     const [equipmentId, setEquipmentId] = useState<string | null>(null); // add defaultIdValue to preselect an equipment ? see GeneratorModificationDialog for an example
-    const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(
-        null
-    );
+    const [vscToModify, setVcsToModify] = useState<VscModificationInfo | null>(null);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -126,9 +119,7 @@ const VscModificationDialog: React.FC<any> = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     const fromEditDataToFormValues = useCallback(
@@ -138,18 +129,9 @@ const VscModificationDialog: React.FC<any> = ({
             }
             reset({
                 [EQUIPMENT_NAME]: editData?.equipmentName?.value ?? '',
-                ...getVscHvdcLineModificationTabFormData(
-                    HVDC_LINE_TAB,
-                    editData
-                ),
-                ...getConverterStationModificationFormEditData(
-                    CONVERTER_STATION_1,
-                    editData.converterStation1
-                ),
-                ...getConverterStationModificationFormEditData(
-                    CONVERTER_STATION_2,
-                    editData.converterStation2
-                ),
+                ...getVscHvdcLineModificationTabFormData(HVDC_LINE_TAB, editData),
+                ...getConverterStationModificationFormEditData(CONVERTER_STATION_1, editData.converterStation1),
+                ...getConverterStationModificationFormEditData(CONVERTER_STATION_2, editData.converterStation2),
                 ...getPropertiesFromModification(editData.properties),
             });
         },
@@ -165,10 +147,7 @@ const VscModificationDialog: React.FC<any> = ({
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
-            reset(
-                { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepDefaultValues }
-            );
+            reset({ ...emptyFormData, ...customData }, { keepDefaultValues: keepDefaultValues });
         },
         [reset]
     );
@@ -194,8 +173,7 @@ const VscModificationDialog: React.FC<any> = ({
                             // which would empty the form instead of displaying data of existing form
 
                             const previousReactiveCapabilityCurveTable1 =
-                                value.converterStation1
-                                    ?.reactiveCapabilityCurvePoints;
+                                value.converterStation1?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable1) {
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable1,
@@ -206,8 +184,7 @@ const VscModificationDialog: React.FC<any> = ({
                             }
 
                             const previousReactiveCapabilityCurveTable2 =
-                                value.converterStation2
-                                    ?.reactiveCapabilityCurvePoints;
+                                value.converterStation2?.reactiveCapabilityCurvePoints;
                             if (previousReactiveCapabilityCurveTable2) {
                                 setCurrentReactiveCapabilityCurveTable(
                                     previousReactiveCapabilityCurveTable2,
@@ -231,19 +208,16 @@ const VscModificationDialog: React.FC<any> = ({
                                 ...value,
                                 converterStation1: {
                                     ...value.converterStation1,
-                                    reactiveCapabilityCurveTable:
-                                        previousReactiveCapabilityCurveTable1,
+                                    reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable1,
                                 },
                                 converterStation2: {
                                     ...value.converterStation2,
-                                    reactiveCapabilityCurveTable:
-                                        previousReactiveCapabilityCurveTable2,
+                                    reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable2,
                                 },
                             });
                             reset((formValues) => ({
                                 ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(value, getValues),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -257,15 +231,7 @@ const VscModificationDialog: React.FC<any> = ({
                     });
             }
         },
-        [
-            setValuesAndEmptyOthers,
-            studyUuid,
-            currentNodeUuid,
-            setValue,
-            reset,
-            getValues,
-            editData?.equipmentId,
-        ]
+        [setValuesAndEmptyOthers, studyUuid, currentNodeUuid, setValue, reset, getValues, editData?.equipmentId]
     );
 
     useEffect(() => {
@@ -341,24 +307,13 @@ const VscModificationDialog: React.FC<any> = ({
         converterStationName: 'converterStation1' | 'converterStation2'
     ) => {
         setVcsToModify((previousValue: VscModificationInfo | null) => {
-            const newRccValues =
-                previousValue?.[converterStationName]
-                    ?.reactiveCapabilityCurveTable;
-            return updateConverterStationCapabilityCurveTable(
-                newRccValues,
-                action,
-                index,
-                previousValue
-            );
+            const newRccValues = previousValue?.[converterStationName]?.reactiveCapabilityCurveTable;
+            return updateConverterStationCapabilityCurveTable(newRccValues, action, index, previousValue);
         });
     };
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
@@ -375,9 +330,7 @@ const VscModificationDialog: React.FC<any> = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={equipmentId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >

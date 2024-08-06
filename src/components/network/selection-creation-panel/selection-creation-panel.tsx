@@ -16,36 +16,24 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
-import {
-    NAME,
-    EQUIPMENT_TYPE_FIELD,
-    SELECTION_TYPE,
-} from 'components/utils/field-constants';
+import { NAME, EQUIPMENT_TYPE_FIELD, SELECTION_TYPE } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
 import { useSaveMap } from './use-save-map';
-import { SelectionCreationPanelForm } from './selection-creation-panel-form';
+import { SelectionCreationPanelFormProps } from './selection-creation-panel-form';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 import { openNadList } from 'redux/actions';
 import { Nullable } from 'components/utils/ts-utils';
+import { AppState } from 'redux/reducer';
 
 const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().required(),
-        [SELECTION_TYPE]: yup
-            .mixed<SELECTION_TYPES>()
-            .oneOf(Object.values(SELECTION_TYPES))
-            .nullable()
-            .required(),
-        [EQUIPMENT_TYPE_FIELD]: yup
-            .mixed<EquipmentType>()
-            .oneOf(Object.values(EquipmentType))
-            .nullable()
-            .required(),
+        [SELECTION_TYPE]: yup.mixed<SELECTION_TYPES>().oneOf(Object.values(SELECTION_TYPES)).nullable().required(),
+        [EQUIPMENT_TYPE_FIELD]: yup.mixed<EquipmentType>().oneOf(Object.values(EquipmentType)).nullable().required(),
     })
     .required();
 const emptyFormData = {
@@ -67,33 +55,33 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     onCancel,
     nominalVoltages,
 }) => {
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
     const formMethods = useForm({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values
         // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
-        resolver:
-            yupResolver<Nullable<SelectionCreationPanelFormFields>>(formSchema),
+        resolver: yupResolver<Nullable<SelectionCreationPanelFormFields>>(formSchema),
     });
     const dispatch = useDispatch();
 
     const { setValue } = formMethods;
 
-    const [destinationFolder, setDestinationFolder] =
-        useState<TreeViewFinderNodeProps>();
+    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid).then((res) => {
-            if (res) {
-                const parentFolderIndex = res.length - 2;
-                setDestinationFolder({
-                    id: res[parentFolderIndex].elementUuid,
-                    name: res[parentFolderIndex].elementName,
-                });
-            }
-        });
+        if (studyUuid) {
+            fetchDirectoryElementPath(studyUuid).then((res) => {
+                if (res) {
+                    const parentFolderIndex = res.length - 2;
+                    setDestinationFolder({
+                        id: res[parentFolderIndex].elementUuid,
+                        name: res[parentFolderIndex].elementName,
+                    });
+                }
+            });
+        }
     }, [studyUuid]);
 
     useEffect(() => {
@@ -109,9 +97,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
             dispatch(
                 openNadList(
-                    equ
-                        .flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
-                        .filter((id) => id)
+                    equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id)).filter((id): id is string => !!id)
                 )
             );
             console.log(
@@ -121,34 +107,21 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         }
 
         if (destinationFolder) {
-            onSaveSelection(
-                getEquipments(formData.equipmentType),
-                formData,
-                destinationFolder,
-                nominalVoltages
-            ).then((result) => {
-                if (result) {
-                    setValue(NAME, '', {
-                        shouldDirty: true,
-                    });
+            onSaveSelection(getEquipments(formData.equipmentType), formData, destinationFolder, nominalVoltages).then(
+                (result) => {
+                    if (result) {
+                        setValue(NAME, '', {
+                            shouldDirty: true,
+                        });
+                    }
                 }
-            });
+            );
         }
     };
 
     return (
-        <CustomFormProvider
-            removeOptional={true}
-            validationSchema={formSchema}
-            {...formMethods}
-        >
-            <Box
-                p={4}
-                display="flex"
-                justifyContent="space-between"
-                flexDirection="column"
-                height="100%"
-            >
+        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
+            <Box p={4} display="flex" justifyContent="space-between" flexDirection="column" height="100%">
                 <SelectionCreationPanelForm pendingState={pendingState} />
                 <Grid container justifyContent="flex-end">
                     <Button onClick={onCancel} size={'large'}>
@@ -159,33 +132,24 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     <Box m={1} />
                     <Button
                         onClick={() => {
-                            const equ = getEquipments(
-                                EquipmentType.VOLTAGE_LEVEL
-                            ); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
+                            const equ = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
 
                             dispatch(
                                 openNadList(
                                     equ
-                                        .flatMap((eq) =>
-                                            eq.voltageLevels?.map((vl) => vl.id)
-                                        )
-                                        .filter((id) => id)
+                                        .flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
+                                        .filter((id): id is string => !!id)
                                 )
                             );
                             console.log(
                                 'SAVING',
-                                equ.flatMap((eq) =>
-                                    eq.voltageLevels?.map((vl) => vl.id)
-                                )
+                                equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
                             );
                         }}
                     >
                         test
                     </Button>
-                    <SelectionCreationPanelSubmitButton
-                        handleValidate={handleValidate}
-                        pendingState={pendingState}
-                    />
+                    <SelectionCreationPanelSubmitButton handleValidate={handleValidate} pendingState={pendingState} />
                 </Grid>
             </Box>
         </CustomFormProvider>

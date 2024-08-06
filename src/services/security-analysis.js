@@ -7,8 +7,7 @@
 
 import { backendFetchJson } from './utils';
 
-const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/security-analysis';
+const PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/security-analysis';
 
 function getSecurityAnalysisUrl() {
     return `${PREFIX_SECURITY_ANALYSIS_SERVER_QUERIES}/v1/`;
@@ -23,10 +22,7 @@ export function fetchSecurityAnalysisProviders() {
 
 export function fetchSecurityAnalysisParameters(parameterUuid) {
     console.info('fetch security analysis parameters');
-    const url =
-        getSecurityAnalysisUrl() +
-        'parameters/' +
-        encodeURIComponent(parameterUuid);
+    const url = getSecurityAnalysisUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
     console.debug(url);
     return backendFetchJson(url);
 }

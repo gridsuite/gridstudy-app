@@ -10,26 +10,21 @@ import {
 } from '@gridsuite/commons-ui';
 import { FolderOutlined } from '@mui/icons-material';
 import { Box, Button, Grid, Typography } from '@mui/material';
-import {
-    EQUIPMENT_TYPES,
-    equipementTypeToLabel,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_TYPES, equipmentTypeToLabel } from 'components/utils/equipment-types';
 import { EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
 import { UUID } from 'crypto';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
 import { SELECTION_TYPES } from './selection-types';
+import { AppState } from 'redux/reducer';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
     selectionType: SELECTION_TYPES.CONTIGENCY_LIST | SELECTION_TYPES.FILTER;
 }
 
-const selectionTypeToElementType = (
-    selectionType: SELECTION_TYPES.CONTIGENCY_LIST | SELECTION_TYPES.FILTER
-) => {
+const selectionTypeToElementType = (selectionType: SELECTION_TYPES.CONTIGENCY_LIST | SELECTION_TYPES.FILTER) => {
     if (selectionType === SELECTION_TYPES.CONTIGENCY_LIST) {
         return ElementType.CONTINGENCY_LIST;
     }
@@ -37,28 +32,27 @@ const selectionTypeToElementType = (
     return ElementType.FILTER;
 };
 
-export const ContingencyFilterCreationList: FC<
-    ContingencyFilterCreationListProps
-> = (props) => {
+export const ContingencyFilterCreationList: FC<ContingencyFilterCreationListProps> = (props) => {
     const { selectionType, pendingState } = props;
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
 
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
 
-    const [destinationFolder, setDestinationFolder] =
-        useState<TreeViewFinderNodeProps>();
+    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid).then((res) => {
-            if (res) {
-                const parentFolderIndex = res.length - 2;
-                setDestinationFolder({
-                    id: res[parentFolderIndex].elementUuid,
-                    name: res[parentFolderIndex].elementName,
-                });
-            }
-        });
+        if (studyUuid) {
+            fetchDirectoryElementPath(studyUuid).then((res) => {
+                if (res) {
+                    const parentFolderIndex = res.length - 2;
+                    setDestinationFolder({
+                        id: res[parentFolderIndex].elementUuid,
+                        name: res[parentFolderIndex].elementName,
+                    });
+                }
+            });
+        }
     }, [studyUuid]);
 
     const handleChangeFolder = () => {
@@ -84,14 +78,12 @@ export const ContingencyFilterCreationList: FC<
 
     const equipmentTypesOptions = useMemo(() => {
         if (selectionType === SELECTION_TYPES.FILTER) {
-            return Object.values(FILTER_EQUIPMENTS).map(
-                (equipment: FormEquipment) => {
-                    return {
-                        id: equipment.id,
-                        label: equipment.label,
-                    };
-                }
-            );
+            return Object.values(FILTER_EQUIPMENTS).map((equipment: FormEquipment) => {
+                return {
+                    id: equipment.id,
+                    label: equipment.label,
+                };
+            });
         } else {
             // might be better to use CONTINGENCY_LIST_EQUIPMENTS from commons ui once the list is finalised
             const equipmentTypesToExclude = new Set([
@@ -100,14 +92,11 @@ export const ContingencyFilterCreationList: FC<
                 EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
             ]);
             return Object.values(EQUIPMENT_TYPES)
-                .filter(
-                    (equipmentType) =>
-                        !equipmentTypesToExclude.has(equipmentType)
-                )
+                .filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType))
                 .map((value) => {
                     return {
                         id: value,
-                        label: equipementTypeToLabel(value),
+                        label: equipmentTypeToLabel(value),
                     };
                 });
         }
@@ -144,12 +133,7 @@ export const ContingencyFilterCreationList: FC<
                 {/* icon directory */}
 
                 <Typography m={1} component="span">
-                    <Box
-                        fontWeight={'fontWeightBold'}
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                    >
+                    <Box fontWeight={'fontWeightBold'} display="flex" justifyContent="center" alignItems="center">
                         <FolderOutlined />
                         <span>
                             &nbsp;{destinationFolder?.name}
@@ -157,12 +141,7 @@ export const ContingencyFilterCreationList: FC<
                         </span>
                     </Box>
                 </Typography>
-                <Button
-                    onClick={handleChangeFolder}
-                    variant="contained"
-                    size="small"
-                    disabled={pendingState}
-                >
+                <Button onClick={handleChangeFolder} variant="contained" size="small" disabled={pendingState}>
                     <FormattedMessage id={'button.changeType'} />
                 </Button>
             </Grid>

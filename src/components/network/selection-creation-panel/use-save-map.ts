@@ -4,20 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    EquipmentType,
-    TreeViewFinderNodeProps,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { EquipmentType, TreeViewFinderNodeProps, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from './selection-types';
-import {
-    createMapContingencyList,
-    createMapFilter,
-} from '../../../services/study/network-map';
+import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
 import { SelectionCreationPanelFormFields } from './selection-creation-panel';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
@@ -33,10 +26,8 @@ export type UseSaveMapOutput = {
 
 export const useSaveMap = (): UseSaveMapOutput => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNodeUuid = useSelector(
-        (state: ReduxState) => state.currentTreeNode.id
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
 
@@ -60,9 +51,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         messageTxt: intl.formatMessage({
                             id: 'EmptySelection',
                         }),
-                        headerId: isFilter
-                            ? 'FilterCreationIgnored'
-                            : 'ContingencyListCreationIgnored',
+                        headerId: isFilter ? 'FilterCreationIgnored' : 'ContingencyListCreationIgnored',
                     });
                     return false;
                 }
@@ -72,6 +61,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         selection.equipmentType as EquipmentType,
                         selection.name,
                         distDir,
+                        // @ts-expect-error TODO: manage null case
                         studyUuid,
                         currentNodeUuid,
                         selectedEquipmentsIds,
@@ -87,6 +77,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         selection.equipmentType as EquipmentType,
                         selection.name,
                         distDir,
+                        // @ts-expect-error TODO: manage null case
                         studyUuid,
                         currentNodeUuid,
                         equipments,
@@ -104,18 +95,14 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         messageTxt: intl.formatMessage({
                             id: error.message,
                         }),
-                        headerId: isFilter
-                            ? 'FilterCreationError'
-                            : 'ContingencyListCreationError',
+                        headerId: isFilter ? 'FilterCreationError' : 'ContingencyListCreationError',
                     });
                 } else {
                     snackError({
                         messageTxt: intl.formatMessage({
                             id: error.message,
                         }),
-                        headerId: isFilter
-                            ? 'FilterCreationError'
-                            : 'ContingencyListCreationError',
+                        headerId: isFilter ? 'FilterCreationError' : 'ContingencyListCreationError',
                     });
                 }
                 return false;

@@ -13,11 +13,7 @@ import CheckboxItem from './checkbox-item';
 
 export const LISTBOX_PADDING = 8; // px
 
-const VirtualizedListItem = ({
-    data,
-    index,
-    style,
-}: ListChildComponentProps) => {
+const VirtualizedListItem = ({ data, index, style }: ListChildComponentProps) => {
     const [option, selected, getOptionLabel, itemProps] = data[index];
     return (
         <CheckboxItem

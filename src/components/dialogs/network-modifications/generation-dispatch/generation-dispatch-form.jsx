@@ -16,10 +16,7 @@ import {
 } from 'components/utils/field-constants';
 import { gridItem, percentageTextField, GridSection } from '../../dialogUtils';
 import { Box, Grid, Typography } from '@mui/material';
-import {
-    formatPercentageValue,
-    isValidPercentage,
-} from '../../percentage-area/percentage-area-utils';
+import { formatPercentageValue, isValidPercentage } from '../../percentage-area/percentage-area-utils';
 import { ElementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
@@ -37,9 +34,7 @@ const GenerationDispatchForm = () => {
             label={'LossCoefficient'}
             adornment={percentageTextField}
             acceptValue={isValidPercentage}
-            outputTransform={(value) =>
-                handleCoefficientValueChange(LOSS_COEFFICIENT, value)
-            }
+            outputTransform={(value) => handleCoefficientValueChange(LOSS_COEFFICIENT, value)}
         />
     );
 
@@ -72,9 +67,7 @@ const GenerationDispatchForm = () => {
                     label={'DefaultOutageRate'}
                     adornment={percentageTextField}
                     acceptValue={isValidPercentage}
-                    outputTransform={(value) =>
-                        handleCoefficientValueChange(DEFAULT_OUTAGE_RATE, value)
-                    }
+                    outputTransform={(value) => handleCoefficientValueChange(DEFAULT_OUTAGE_RATE, value)}
                 />
             </Grid>
         </Grid>

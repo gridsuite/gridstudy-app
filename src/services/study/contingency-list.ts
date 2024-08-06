@@ -41,10 +41,7 @@ function createIdentifiersList(selectedEquipments: EquipmentInfos[]) {
     return identifierLists;
 }
 
-export function createIdentifierContingencyList(
-    contingencyListName: string,
-    equipmentList: EquipmentInfos[]
-) {
+export function createIdentifierContingencyList(contingencyListName: string, equipmentList: EquipmentInfos[]) {
     const identifiersList = createIdentifiersList(equipmentList);
     return {
         identifierContingencyList: {
