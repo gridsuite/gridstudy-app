@@ -24,7 +24,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
-import { CONNECTION_DIRECTIONS } from '../../network/constants';
+import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import { AutocompleteInput, IntegerInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { fetchBusbarSectionsForVoltageLevel, fetchBusesForVoltageLevel } from '../../../services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
@@ -145,7 +145,6 @@ export const ConnectivityForm = ({
             forcePopupIcon
             name={`${id}.${VOLTAGE_LEVEL}`}
             label={voltageLevelSelectLabel}
-            previousValue={isEquipmentModification ? previousValues?.voltageLevelId : null}
             options={voltageLevelOptions}
             getOptionLabel={getObjectId}
             size={'small'}
@@ -153,15 +152,19 @@ export const ConnectivityForm = ({
     );
 
     const previousConnectedField = useMemo(() => {
+        if (!isEquipmentModification) {
+            return null;
+        }
         if (previousValues?.terminalConnected) {
             return intl.formatMessage({ id: 'connected' });
-        } else if (
+        }
+        if (
             previousValues?.terminalConnected === false ||
             (previousValues && previousValues?.terminalConnected === undefined)
         ) {
             return intl.formatMessage({ id: 'disconnected' });
         }
-    }, [intl, previousValues]);
+    }, [intl, previousValues, isEquipmentModification]);
 
     const connectedField = isEquipmentModification ? (
         <CheckboxNullableInput name={`${id}.${CONNECTED}`} label="connected" previousValue={previousConnectedField} />
@@ -188,7 +191,6 @@ export const ConnectivityForm = ({
             options={busOrBusbarSectionOptions}
             getOptionLabel={getObjectId}
             isOptionEqualToValue={areIdsEqual}
-            previousValue={isEquipmentModification ? previousValues?.busOrBusbarSectionId : null}
             inputTransform={(value) => (value === null ? '' : value)}
             outputTransform={(value) =>
                 typeof value === 'string'
@@ -209,12 +211,21 @@ export const ConnectivityForm = ({
         />
     );
 
+    const previousConnectionDirectionLabel = isEquipmentModification
+        ? getConnectionDirectionLabel(previousValues?.connectablePosition?.connectionDirection) ?? null
+        : null;
+
     const newConnectionDirectionField = (
         <SelectInput
             name={`${id}.${CONNECTION_DIRECTION}`}
             label="ConnectionDirection"
             options={CONNECTION_DIRECTIONS}
-            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionDirection : null}
+            previousValue={
+                previousConnectionDirectionLabel &&
+                intl.formatMessage({
+                    id: previousConnectionDirectionLabel,
+                })
+            }
             fullWidth
             size={'small'}
         />
