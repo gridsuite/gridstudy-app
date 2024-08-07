@@ -8,8 +8,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { DropDown, LabelledButton, styles } from './parameters';
-import { LineSeparator } from '../dialogUtils';
+import { DropDown, LabelledButton, styles } from '../parameters';
+import { LineSeparator } from '../../dialogUtils';
 import Typography from '@mui/material/Typography';
 import {
     isProportionalSAParam,
@@ -18,14 +18,14 @@ import {
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
-} from '../../../utils/config-params';
-import { roundToDefaultPrecision } from '../../../utils/rounding';
+} from '../../../../utils/config-params';
+import { roundToDefaultPrecision } from '../../../../utils/rounding';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { inputAdornment } from './util/make-component-utils';
-import { mergeSx } from '../../utils/functions';
-import CreateParameterDialog from './common/parameters-creation-dialog';
+import { inputAdornment } from '../util/make-component-utils';
+import { mergeSx } from '../../../utils/functions';
+import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
-import { fetchSecurityAnalysisParameters } from '../../../services/security-analysis';
+import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 
 const formatValues = (values, isDivision) => {
