@@ -177,6 +177,11 @@ const ResultsGlobalFilter: FunctionComponent<ResultsGlobalFilterProps> = ({ onCh
                         })}
                         InputProps={{
                             ...params.InputProps,
+                            onKeyDown: (e) => {
+                                if (e.key === 'Enter') {
+                                    e.stopPropagation();
+                                }
+                            },
                             startAdornment: (
                                 <>
                                     <InputAdornment position="start">
