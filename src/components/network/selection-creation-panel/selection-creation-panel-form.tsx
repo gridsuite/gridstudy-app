@@ -5,7 +5,7 @@ import { SELECTION_TYPE } from 'components/utils/field-constants';
 
 import { FC } from 'react';
 import { useWatch } from 'react-hook-form';
-import { ContingencyFilterCreationList } from './contingency-filter-creation-fields';
+import { ContingencyFilterCreationFields } from './contingency-filter-creation/contingency-filter-creation-fields';
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 
 interface SelectionCreationPanelFormProps {
@@ -39,7 +39,7 @@ export const SelectionCreationPanelForm: FC<SelectionCreationPanelFormProps> = (
                 />
             </Grid>
             {isFilterOrContingenciesSelected && (
-                <ContingencyFilterCreationList selectionType={watchSelectionType} pendingState={pendingState} />
+                <ContingencyFilterCreationFields selectionType={watchSelectionType} pendingState={pendingState} />
             )}
         </Grid>
     );

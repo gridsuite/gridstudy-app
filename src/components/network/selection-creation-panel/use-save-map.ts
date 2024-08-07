@@ -4,22 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, TreeViewFinderNodeProps, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
-import { SelectionCreationPanelNotNadFields } from './selection-creation-panel';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';
 
 export type UseSaveMapOutput = {
     pendingState: boolean;
     onSaveSelection: (
         equipments: Equipment[],
         selection: SelectionCreationPanelNotNadFields,
-        distDir: TreeViewFinderNodeProps,
+        distDir: DestinationFolder,
         nominalVoltages: number[]
     ) => Promise<boolean>;
 };
@@ -35,7 +35,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
         async (
             equipments: Equipment[],
             selection: SelectionCreationPanelNotNadFields,
-            distDir: TreeViewFinderNodeProps,
+            distDir: DestinationFolder,
             nominalVoltages: number[]
         ) => {
             const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
@@ -60,7 +60,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                     await createMapFilter(
                         selection.equipmentType as EquipmentType,
                         selection.name,
-                        distDir,
+                        distDir.folderId,
                         // @ts-expect-error TODO: manage null case
                         studyUuid,
                         currentNodeUuid,
@@ -76,7 +76,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                     await createMapContingencyList(
                         selection.equipmentType as EquipmentType,
                         selection.name,
-                        distDir,
+                        distDir.folderId,
                         // @ts-expect-error TODO: manage null case
                         studyUuid,
                         currentNodeUuid,

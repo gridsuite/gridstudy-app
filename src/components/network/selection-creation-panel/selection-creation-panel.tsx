@@ -15,7 +15,14 @@ import {
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { NAME, EQUIPMENT_TYPE_FIELD, SELECTION_TYPE } from 'components/utils/field-constants';
+import {
+    NAME,
+    EQUIPMENT_TYPE_FIELD,
+    SELECTION_TYPE,
+    DESTINATION_FOLDER,
+    FOLDER_ID,
+    FOLDER_NAME,
+} from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSaveMap } from './use-save-map';
@@ -43,6 +50,7 @@ const emptyFormData = {
     [NAME]: '',
     [EQUIPMENT_TYPE_FIELD]: null,
     [SELECTION_TYPE]: null,
+    [DESTINATION_FOLDER]: null,
 };
 
 const formSchema = getSelectionCreationSchema();
@@ -67,16 +75,14 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
     const { setValue } = formMethods;
 
-    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
-
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         if (studyUuid) {
             fetchDirectoryElementPath(studyUuid).then((res) => {
                 if (res) {
                     const parentFolderIndex = res.length - 2;
-                    setDestinationFolder({
-                        id: res[parentFolderIndex].elementUuid,
-                        name: res[parentFolderIndex].elementName,
+                    setValue(DESTINATION_FOLDER, {
+                        [FOLDER_ID]: res[parentFolderIndex].elementUuid,
+                        [FOLDER_NAME]: res[parentFolderIndex].elementName,
                     });
                 }
             });
@@ -84,35 +90,36 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     }, [studyUuid]);
 
     useEffect(() => {
-        if (studyUuid) {
-            fetchDefaultDirectoryForStudy();
-        }
-    }, [fetchDefaultDirectoryForStudy, studyUuid]);
+        fetchDefaultDirectoryForStudy();
+    }, [fetchDefaultDirectoryForStudy]);
 
     const handleValidate = (formData: SelectionCreationPaneFields) => {
         if (formData.selectionType === SELECTION_TYPES.NAD) {
-            const equ = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
+            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
 
             dispatch(
                 openNadList(
-                    equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id)).filter((id): id is string => !!id)
+                    selectedSubstationsWithVl
+                        .flatMap((selectedSubstation) => selectedSubstation.voltageLevels?.map((vl) => vl.id))
+                        .filter((id): id is string => !!id)
                 )
             );
             navigateToPreviousDisplayMode();
             return;
         }
 
-        if (destinationFolder) {
-            onSaveSelection(getEquipments(formData.equipmentType), formData, destinationFolder, nominalVoltages).then(
-                (result) => {
-                    if (result) {
-                        setValue(NAME, '', {
-                            shouldDirty: true,
-                        });
-                    }
-                }
-            );
-        }
+        onSaveSelection(
+            getEquipments(formData.equipmentType),
+            formData,
+            formData.destinationFolder,
+            nominalVoltages
+        ).then((result) => {
+            if (result) {
+                setValue(NAME, '', {
+                    shouldDirty: true,
+                });
+            }
+        });
     };
 
     return (

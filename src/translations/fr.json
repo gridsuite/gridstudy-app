@@ -1374,5 +1374,7 @@
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
     "EquipmentSearchPlaceholder": "Recherche",
-    "GeneratedModification": "Modification-générée"
+    "GeneratedModification": "Modification-générée",
+    "generateNad": "Générer",
+    "nad": "NAD"
 }

@@ -1375,5 +1375,7 @@
     "stateEstimationError": "An error occured when executing the state estimation",
     "NoFilter": "No filter",
     "EquipmentSearchPlaceholder": "Search",
-    "GeneratedModification": "Generated-modification"
+    "GeneratedModification": "Generated-modification",
+    "generateNad": "Generate",
+    "nad": "NAD"
 }

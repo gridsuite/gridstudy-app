@@ -1,28 +1,43 @@
 import { EquipmentType, yup } from '@gridsuite/commons-ui';
-import { EQUIPMENT_TYPE_FIELD, NAME, SELECTION_TYPE } from 'components/utils/field-constants';
+import {
+    DESTINATION_FOLDER,
+    EQUIPMENT_TYPE_FIELD,
+    FOLDER_ID,
+    FOLDER_NAME,
+    NAME,
+    SELECTION_TYPE,
+} from 'components/utils/field-constants';
 import { SELECTION_TYPES } from './selection-types';
+import { UUID } from 'crypto';
 
-const formSchema = yup
-    .object()
-    .shape({
-        TOTO: yup.string().nullable().required(),
-        [SELECTION_TYPE]: yup.mixed<SELECTION_TYPES>().oneOf(Object.values(SELECTION_TYPES)).nullable().required(),
-        [NAME]: yup.string().when([SELECTION_TYPE], {
+const formSchema = yup.object().shape({
+    [SELECTION_TYPE]: yup.mixed<SELECTION_TYPES>().oneOf(Object.values(SELECTION_TYPES)).nullable().required(),
+    [NAME]: yup.string().when([SELECTION_TYPE], {
+        is: (value: SELECTION_TYPES) => value === SELECTION_TYPES.CONTIGENCY_LIST || value === SELECTION_TYPES.FILTER,
+        then: (schema) => schema.required(),
+    }),
+    [EQUIPMENT_TYPE_FIELD]: yup
+        .mixed<EquipmentType>()
+        .oneOf(Object.values(EquipmentType))
+        .nullable()
+        .when([SELECTION_TYPE], {
             is: (value: SELECTION_TYPES) =>
                 value === SELECTION_TYPES.CONTIGENCY_LIST || value === SELECTION_TYPES.FILTER,
             then: (schema) => schema.required(),
         }),
-        [EQUIPMENT_TYPE_FIELD]: yup
-            .mixed<EquipmentType>()
-            .oneOf(Object.values(EquipmentType))
-            .nullable()
-            .when([SELECTION_TYPE], {
-                is: (value: SELECTION_TYPES) =>
-                    value === SELECTION_TYPES.CONTIGENCY_LIST || value === SELECTION_TYPES.FILTER,
-                then: (schema) => schema.required(),
-            }),
-    })
-    .required();
+    [DESTINATION_FOLDER]: yup
+        .object()
+        .shape({
+            [FOLDER_ID]: yup.mixed<UUID>().required(),
+            [FOLDER_NAME]: yup.string().required(),
+        })
+        .nullable()
+        .when([SELECTION_TYPE], {
+            is: (value: SELECTION_TYPES) =>
+                value === SELECTION_TYPES.CONTIGENCY_LIST || value === SELECTION_TYPES.FILTER,
+            then: (schema) => schema.required(),
+        }),
+});
 
 export const getSelectionCreationSchema = () => formSchema;
 
@@ -37,6 +52,10 @@ export type SelectionCreationPanelNotNadFields = SelectionCreationPanelFormSchem
     [SELECTION_TYPE]: SELECTION_TYPES.CONTIGENCY_LIST | SELECTION_TYPES.FILTER;
     [NAME]: string;
     [EQUIPMENT_TYPE_FIELD]: EquipmentType;
+    [DESTINATION_FOLDER]: {
+        [FOLDER_ID]: UUID;
+        [FOLDER_NAME]: string;
+    };
 };
 
 // used for handleSubmit typing -> makes type discrimination possible

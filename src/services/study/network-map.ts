@@ -163,7 +163,7 @@ function createEquipmentIdentifierList(equipmentType: EquipmentType, equipmentLi
 export async function createMapFilter(
     equipmentType: EquipmentType,
     elementName: string,
-    distDir: TreeViewFinderNodeProps,
+    destinationDirectoryId: UUID,
     studyUuid: UUID,
     currentNodeUuid: UUID,
     selectedEquipmentsIds: string[],
@@ -206,13 +206,13 @@ export async function createMapFilter(
         throw new Error('EmptySelection');
     }
 
-    return createFilter(equipmentFilters, elementName, '', distDir.id as UUID);
+    return createFilter(equipmentFilters, elementName, '', destinationDirectoryId);
 }
 
 export async function createMapContingencyList(
     equipmentType: EquipmentType,
     elementName: string,
-    distDir: TreeViewFinderNodeProps,
+    destinationDirectoryId: UUID,
     studyUuid: UUID,
     currentNodeUuid: UUID,
     selectedEquipments: EquipmentInfos[],
@@ -255,7 +255,7 @@ export async function createMapContingencyList(
         throw new Error('EmptySelection');
     }
 
-    return createContingencyList(equipmentContingencyList, elementName, '', distDir.id?.toString() ?? '');
+    return createContingencyList(equipmentContingencyList, elementName, '', destinationDirectoryId);
 }
 
 export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID) {

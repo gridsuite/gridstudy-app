@@ -11,13 +11,16 @@ import {
 import { FolderOutlined } from '@mui/icons-material';
 import { Box, Button, Grid, Typography } from '@mui/material';
 import { EQUIPMENT_TYPES, equipmentTypeToLabel } from 'components/utils/equipment-types';
-import { EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
+import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, FOLDER_ID, NAME } from 'components/utils/field-constants';
 import { UUID } from 'crypto';
 import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { SELECTION_TYPES } from './selection-types';
+import { SELECTION_TYPES } from '../selection-types';
 import { AppState } from 'redux/reducer';
+import { SelectionCreationPanelDirectorySelector } from './contingency-filter-creation-directory-selector';
+import { SelectionCreationPanelFormSchema, SelectionCreationPanelNotNadFields } from '../selection-creation-schema';
+import { useWatch } from 'react-hook-form';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
@@ -32,49 +35,11 @@ const selectionTypeToElementType = (selectionType: SELECTION_TYPES.CONTIGENCY_LI
     return ElementType.FILTER;
 };
 
-export const ContingencyFilterCreationList: FC<ContingencyFilterCreationListProps> = (props) => {
+export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListProps> = (props) => {
     const { selectionType, pendingState } = props;
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const intl = useIntl();
-
-    const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
-
-    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
-
-    const fetchDefaultDirectoryForStudy = useCallback(() => {
-        if (studyUuid) {
-            fetchDirectoryElementPath(studyUuid).then((res) => {
-                if (res) {
-                    const parentFolderIndex = res.length - 2;
-                    setDestinationFolder({
-                        id: res[parentFolderIndex].elementUuid,
-                        name: res[parentFolderIndex].elementName,
-                    });
-                }
-            });
-        }
-    }, [studyUuid]);
-
-    const handleChangeFolder = () => {
-        setOpenDirectorySelector(true);
-    };
-    const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
-        if (folder && folder.length > 0) {
-            if (folder[0].id !== destinationFolder?.id) {
-                setDestinationFolder({
-                    id: folder[0].id,
-                    name: folder[0].name,
-                });
-            }
-        }
-        setOpenDirectorySelector(false);
-    };
-
-    useEffect(() => {
-        if (studyUuid) {
-            fetchDefaultDirectoryForStudy();
-        }
-    }, [fetchDefaultDirectoryForStudy, studyUuid]);
+    const destinationFolderWatcher = useWatch<SelectionCreationPanelFormSchema, 'destinationFolder.folderId'>({
+        name: `${DESTINATION_FOLDER}.${FOLDER_ID}`,
+    });
 
     const equipmentTypesOptions = useMemo(() => {
         if (selectionType === SELECTION_TYPES.FILTER) {
@@ -121,7 +86,7 @@ export const ContingencyFilterCreationList: FC<ContingencyFilterCreationListProp
                     name={NAME}
                     label={'Name'}
                     elementType={selectionTypeToElementType(selectionType)}
-                    activeDirectory={destinationFolder?.id as UUID}
+                    activeDirectory={destinationFolderWatcher}
                     autoFocus
                     formProps={{
                         variant: 'standard',
@@ -129,37 +94,7 @@ export const ContingencyFilterCreationList: FC<ContingencyFilterCreationListProp
                     }}
                 />
             </Grid>
-            <Grid container>
-                {/* icon directory */}
-
-                <Typography m={1} component="span">
-                    <Box fontWeight={'fontWeightBold'} display="flex" justifyContent="center" alignItems="center">
-                        <FolderOutlined />
-                        <span>
-                            &nbsp;{destinationFolder?.name}
-                            &nbsp;
-                        </span>
-                    </Box>
-                </Typography>
-                <Button onClick={handleChangeFolder} variant="contained" size="small" disabled={pendingState}>
-                    <FormattedMessage id={'button.changeType'} />
-                </Button>
-            </Grid>
-            <Grid container>
-                <DirectoryItemSelector
-                    open={openDirectorySelector}
-                    onClose={setSelectedFolder}
-                    types={[ElementType.DIRECTORY]}
-                    onlyLeaves={false}
-                    multiSelect={false}
-                    validationButtonText={intl.formatMessage({
-                        id: 'validate',
-                    })}
-                    title={intl.formatMessage({
-                        id: 'showSelectDirectoryDialog',
-                    })}
-                />
-            </Grid>
+            <SelectionCreationPanelDirectorySelector pendingState={pendingState} />
         </>
     );
 };
