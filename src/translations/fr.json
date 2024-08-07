@@ -210,8 +210,6 @@
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
 
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Appuyez sur Entrée pour terminer ou Échap pour annuler.",
-
     "noOption": "Pas d'options",
     "maxSelection": "sélections maximum",
     "options": "options",
@@ -1375,6 +1373,10 @@
     "NoFilter": "Aucun filtre",
     "EquipmentSearchPlaceholder": "Recherche",
     "GeneratedModification": "Modification-générée",
+    "guidancePopUp.title": "Sélection sur la carte",
+    "guidancePopUp.firstVariant":"Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant":"Appuyez sur Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.action":"Fermer l'éditeur",
     "generateNad": "Générer",
     "nad": "NAD"
 }
