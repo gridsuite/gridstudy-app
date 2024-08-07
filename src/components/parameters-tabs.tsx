@@ -56,6 +56,8 @@ import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import ComputingType from './computing-status/computing-type';
+import RunningStatus from './utils/running-status';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -244,6 +246,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.sldParamsTabValue:
@@ -312,7 +315,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             orientation="vertical"
                             sx={styles.listDisplay}
                         >
-                            <Tab label={<FormattedMessage id="LoadFlow" />} value={TAB_VALUES.lfParamsTabValue} />
+                            <Tab
+                                label={<FormattedMessage id="LoadFlow" />}
+                                disabled={loadFlowStatus === RunningStatus.RUNNING}
+                                value={TAB_VALUES.lfParamsTabValue}
+                            />
                             <Tab
                                 disabled={securityAnalysisAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="SecurityAnalysis" />}
