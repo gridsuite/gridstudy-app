@@ -33,13 +33,10 @@ const CheckboxSelect = ({
     disabled,
 }) => {
     const intl = useIntl();
-    const [selectedOptions, setSelectedOptions] = useState(
-        initialSelectedOptions ?? []
-    );
+    const [selectedOptions, setSelectedOptions] = useState(initialSelectedOptions ?? []);
 
     // used to reset internal state when initial selected value changed
-    const [prevInitialSelectedOptions, setPrevInitialSelectedOptions] =
-        useState(initialSelectedOptions);
+    const [prevInitialSelectedOptions, setPrevInitialSelectedOptions] = useState(initialSelectedOptions);
     if (initialSelectedOptions !== prevInitialSelectedOptions) {
         setPrevInitialSelectedOptions(initialSelectedOptions);
         setSelectedOptions(initialSelectedOptions);
@@ -87,9 +84,9 @@ const CheckboxSelect = ({
                 if (selectedOptions.length === 1) {
                     return getOptionLabel(selectedOptions[0]);
                 } else if (selectedOptions.length > 1) {
-                    return `${getOptionLabel(
-                        selectedOptions[selectedOptions.length - 1]
-                    )} (+${selectedOptions.length - 1})`;
+                    return `${getOptionLabel(selectedOptions[selectedOptions.length - 1])} (+${
+                        selectedOptions.length - 1
+                    })`;
                 }
                 return '';
             }}
@@ -97,23 +94,11 @@ const CheckboxSelect = ({
             sx={{ width: '100%' }}
             disabled={disabled}
         >
-            <MenuItem
-                size={'small'}
-                key={CHECK_ALL.value}
-                value={CHECK_ALL.value}
-            >
-                <ListItemText
-                    primary={intl.formatMessage({ id: CHECK_ALL.label })}
-                />
+            <MenuItem size={'small'} key={CHECK_ALL.value} value={CHECK_ALL.value}>
+                <ListItemText primary={intl.formatMessage({ id: CHECK_ALL.label })} />
             </MenuItem>
-            <MenuItem
-                size={'small'}
-                key={UNCHECK_ALL.value}
-                value={UNCHECK_ALL.value}
-            >
-                <ListItemText
-                    primary={intl.formatMessage({ id: UNCHECK_ALL.label })}
-                />
+            <MenuItem size={'small'} key={UNCHECK_ALL.value} value={UNCHECK_ALL.value}>
+                <ListItemText primary={intl.formatMessage({ id: UNCHECK_ALL.label })} />
             </MenuItem>
             {options.map((option) => (
                 <MenuItem size={'small'} key={option} value={option}>

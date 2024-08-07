@@ -14,10 +14,7 @@ import { useCallback, useEffect } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import { getVariationsSchema } from './variation/variation-utils';
-import {
-    FORM_LOADING_DELAY,
-    VARIATION_TYPES,
-} from 'components/network/constants';
+import { FORM_LOADING_DELAY, VARIATION_TYPES } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { generatorScaling } from '../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../services/utils';
@@ -86,9 +83,7 @@ const GeneratorScalingDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -102,9 +97,7 @@ const GeneratorScalingDialog = ({
                 maxWidth={'md'}
                 titleId="GeneratorScaling"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <GeneratorScalingForm />

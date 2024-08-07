@@ -86,9 +86,7 @@ const DndTableBottomRightButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleMoveUpButton()}
-                            disabled={
-                                disabled || noRowsSelected || firstRowSelected
-                            }
+                            disabled={disabled || noRowsSelected || firstRowSelected}
                         >
                             <ArrowUpwardIcon />
                         </IconButton>
@@ -106,9 +104,7 @@ const DndTableBottomRightButtons = ({
                         <IconButton
                             color="primary"
                             onClick={() => handleMoveDownButton()}
-                            disabled={
-                                disabled || noRowsSelected || lastRowSelected
-                            }
+                            disabled={disabled || noRowsSelected || lastRowSelected}
                         >
                             <ArrowDownwardIcon />
                         </IconButton>

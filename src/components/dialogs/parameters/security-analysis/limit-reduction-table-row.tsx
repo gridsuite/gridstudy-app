@@ -15,18 +15,11 @@ interface TableRowComponentProps {
     index: number;
 }
 
-const LimitReductionTableRow: FunctionComponent<TableRowComponentProps> = ({
-    columnsDefinition,
-    index,
-}) => {
+const LimitReductionTableRow: FunctionComponent<TableRowComponentProps> = ({ columnsDefinition, index }) => {
     return (
         <TableRow>
             {columnsDefinition.map((column: IColumnsDef) => (
-                <LimitReductionTableCell
-                    key={`${column.dataKey}`}
-                    rowIndex={index}
-                    column={column}
-                />
+                <LimitReductionTableCell key={`${column.dataKey}`} rowIndex={index} column={column} />
             ))}
         </TableRow>
     );

@@ -22,9 +22,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
         dynamicSimulationResultInvalidations,
         null,
         (timeseriesMetadatas: TimeSeriesMetadata[] | null) => ({
-            timeseries: timeseriesMetadatas
-                ? Array(timeseriesMetadatas.length)
-                : undefined,
+            timeseries: timeseriesMetadatas ? Array(timeseriesMetadatas.length) : undefined,
             timeseriesMetadatas: timeseriesMetadatas,
         })
     );
@@ -34,9 +32,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
     const lazyLoadTimeSeriesCb = useCallback(
         (selectedIndexes: number[]) => {
             // check cache to get not yet loaded selected indexes
-            const selectedIndexesToLoad = selectedIndexes.filter(
-                (indexValue) => !result.timeseries[indexValue]
-            );
+            const selectedIndexesToLoad = selectedIndexes.filter((indexValue) => !result.timeseries[indexValue]);
 
             // LOAD ON DEMAND
             if (selectedIndexesToLoad.length === 0) {
@@ -54,18 +50,13 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
                     (indexValue) => result.timeseriesMetadatas[indexValue].name
                 );
 
-                return fetchDynamicSimulationResultTimeSeries(
-                    studyUuid,
-                    nodeUuid,
-                    timeSeriesNamesToLoad
-                )
+                return fetchDynamicSimulationResultTimeSeries(studyUuid, nodeUuid, timeSeriesNamesToLoad)
                     .then((newlyLoadedTimeSeries) => {
                         // insert one by one newly loaded timeserie into the cache
                         for (const newSeries of newlyLoadedTimeSeries) {
                             result.timeseries.splice(
                                 result.timeseriesMetadatas.findIndex(
-                                    (elem: TimeSeriesMetadata) =>
-                                        elem.name === newSeries.metadata.name
+                                    (elem: TimeSeriesMetadata) => elem.name === newSeries.metadata.name
                                 ),
                                 1,
                                 newSeries
