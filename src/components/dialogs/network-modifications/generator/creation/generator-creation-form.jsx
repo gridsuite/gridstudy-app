@@ -40,26 +40,13 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const currentNodeUuid = currentNode?.id;
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNodeUuid
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     const generatorIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const generatorNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const generatorNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const energySourceField = (
         <SelectInput
@@ -83,43 +70,23 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const maximumActivePowerField = (
-        <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
-            label={'MaximumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MAXIMUM_ACTIVE_POWER} label={'MaximumActivePowerText'} adornment={ActivePowerAdornment} />
     );
 
     const minimumActivePowerField = (
-        <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
-            label={'MinimumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
     );
 
     const ratedNominalPowerField = (
-        <FloatInput
-            name={RATED_NOMINAL_POWER}
-            label={'RatedNominalPowerText'}
-            adornment={MVAPowerAdornment}
-        />
+        <FloatInput name={RATED_NOMINAL_POWER} label={'RatedNominalPowerText'} adornment={MVAPowerAdornment} />
     );
 
     const transientReactanceField = (
-        <FloatInput
-            name={TRANSIENT_REACTANCE}
-            label={'TransientReactanceForm'}
-            adornment={OhmAdornment}
-        />
+        <FloatInput name={TRANSIENT_REACTANCE} label={'TransientReactanceForm'} adornment={OhmAdornment} />
     );
 
     const transformerReactanceField = (
-        <FloatInput
-            name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactanceForm'}
-            adornment={OhmAdornment}
-        />
+        <FloatInput name={TRANSFORMER_REACTANCE} label={'TransformerReactanceForm'} adornment={OhmAdornment} />
     );
 
     const plannedActivePowerSetPointField = (
@@ -130,17 +97,11 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const marginalCostField = (
-        <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />
-    );
+    const marginalCostField = <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />;
 
-    const plannedOutageRateField = (
-        <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />
-    );
+    const plannedOutageRateField = <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />;
 
-    const forcedOutageRateField = (
-        <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />
-    );
+    const forcedOutageRateField = <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />;
 
     return (
         <>

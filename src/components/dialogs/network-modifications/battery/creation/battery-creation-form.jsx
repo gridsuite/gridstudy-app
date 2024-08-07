@@ -30,26 +30,13 @@ import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const BatteryCreationForm = ({ studyUuid, currentNode }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNode.id
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
 
     const batteryIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const batteryNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const batteryNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const connectivityForm = (
         <ConnectivityForm
@@ -61,19 +48,11 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const maximumActivePowerField = (
-        <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
-            label={'MaximumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MAXIMUM_ACTIVE_POWER} label={'MaximumActivePowerText'} adornment={ActivePowerAdornment} />
     );
 
     const minimumActivePowerField = (
-        <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
-            label={'MinimumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
     );
     const activePowerSetPointField = (
         <FloatInput

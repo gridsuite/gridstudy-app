@@ -31,10 +31,7 @@ export interface LoadFlowResult {
     componentResults: ComponentResult[];
 }
 
-export type QueryParamsType = Record<
-    string,
-    string | number | SortConfigType | FilterSelectorType[]
->;
+export type QueryParamsType = Record<string, string | number | SortConfigType | FilterSelectorType[]>;
 
 export enum LimitTypes {
     HIGH_VOLTAGE = 'HIGH_VOLTAGE',

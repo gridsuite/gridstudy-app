@@ -6,12 +6,7 @@
  */
 
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
-import {
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -27,12 +22,7 @@ import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
 
-const LoadModificationForm = ({
-    studyUuid,
-    currentNode,
-    loadToModify,
-    equipmentId,
-}) => {
+const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentId }) => {
     const intl = useIntl();
 
     const loadIdField = (

@@ -5,38 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const EQUIPMENT_INFOS_TYPES = {
+type EquipmentInfosTypesStruct<T extends string = string> = { type: T };
+//TODO: rename to PascalCase
+export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = {
     LIST: { type: 'LIST' },
     MAP: { type: 'MAP' },
     FORM: { type: 'FORM' },
     TAB: { type: 'TAB' },
     TOOLTIP: { type: 'TOOLTIP' },
 };
+export type EquipmentInfosTypes = EquipmentInfosTypesStruct<'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP'>;
 
-export const EQUIPMENT_TYPES = {
-    SUBSTATION: 'SUBSTATION',
-    VOLTAGE_LEVEL: 'VOLTAGE_LEVEL',
-    LINE: 'LINE',
-    TIE_LINE: 'TIE_LINE',
-    TWO_WINDINGS_TRANSFORMER: 'TWO_WINDINGS_TRANSFORMER',
-    THREE_WINDINGS_TRANSFORMER: 'THREE_WINDINGS_TRANSFORMER',
-    HVDC_LINE: 'HVDC_LINE',
-    BUS: 'BUS',
-    BUSBAR_SECTION: 'BUSBAR_SECTION',
-    GENERATOR: 'GENERATOR',
-    BATTERY: 'BATTERY',
-    LOAD: 'LOAD',
-    SHUNT_COMPENSATOR: 'SHUNT_COMPENSATOR',
-    DANGLING_LINE: 'DANGLING_LINE',
-    STATIC_VAR_COMPENSATOR: 'STATIC_VAR_COMPENSATOR',
-    HVDC_CONVERTER_STATION: 'HVDC_CONVERTER_STATION',
-    VSC_CONVERTER_STATION: 'VSC_CONVERTER_STATION',
-    LCC_CONVERTER_STATION: 'LCC_CONVERTER_STATION',
-    SWITCH: 'SWITCH',
-};
+//TODO: Compare with commons-ui's EquipmentType enum (miss TIE_LINE and not same order)
+//TODO: rename to PascalCase
+export enum EQUIPMENT_TYPES {
+    SUBSTATION = 'SUBSTATION',
+    VOLTAGE_LEVEL = 'VOLTAGE_LEVEL',
+    LINE = 'LINE',
+    TIE_LINE = 'TIE_LINE',
+    TWO_WINDINGS_TRANSFORMER = 'TWO_WINDINGS_TRANSFORMER',
+    THREE_WINDINGS_TRANSFORMER = 'THREE_WINDINGS_TRANSFORMER',
+    HVDC_LINE = 'HVDC_LINE',
+    BUS = 'BUS',
+    BUSBAR_SECTION = 'BUSBAR_SECTION',
+    GENERATOR = 'GENERATOR',
+    BATTERY = 'BATTERY',
+    LOAD = 'LOAD',
+    SHUNT_COMPENSATOR = 'SHUNT_COMPENSATOR',
+    DANGLING_LINE = 'DANGLING_LINE',
+    STATIC_VAR_COMPENSATOR = 'STATIC_VAR_COMPENSATOR',
+    HVDC_CONVERTER_STATION = 'HVDC_CONVERTER_STATION',
+    VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
+    LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
+    SWITCH = 'SWITCH',
+}
 
-//TODO merge the labels with the equipement types
-export function equipementTypeToLabel(equipmentType) {
+//TODO merge the labels with the equipment types
+export function equipmentTypeToLabel(equipmentType: EQUIPMENT_TYPES) {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.GENERATOR:
             return 'Generators';

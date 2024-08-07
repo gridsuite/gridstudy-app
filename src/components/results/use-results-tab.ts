@@ -10,7 +10,7 @@ import { IService } from 'components/result-view-tab';
 import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsRootLevel {
@@ -26,9 +26,7 @@ export enum ResultsTabsRootLevel {
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)
 type ResultsTabsLevelOne = ShortCircuitAnalysisResultTabs;
 
-export type ResultTabIndexRedirection =
-    | ResultsTabsRootLevel
-    | ResultsTabsLevelOne;
+export type ResultTabIndexRedirection = ResultsTabsRootLevel | ResultsTabsLevelOne;
 
 /**
  * handles redirection to specific tab
@@ -40,9 +38,8 @@ export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
     setTabIndex: React.Dispatch<React.SetStateAction<number>>,
     view: string
-): Dispatch<SetStateAction<Boolean>> => {
-    const [redirectionLock, setRedirectionLock] =
-        useResultsTabRedirectionLock();
+): Dispatch<SetStateAction<boolean>> => {
+    const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();
 
     useEffect(() => {
         if (view !== StudyView.RESULTS && !redirectionLock) {
@@ -53,14 +50,9 @@ export const useResultsTab = (
     return setRedirectionLock;
 };
 
-const useResultsTabRedirectionLock = (): [
-    Boolean,
-    Dispatch<SetStateAction<Boolean>>
-] => {
-    const lastCompletedComputation: string = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation
-    );
-    const [redirectionLock, setRedirectionLock] = useState<Boolean>(false);
+const useResultsTabRedirectionLock = (): [boolean, Dispatch<SetStateAction<boolean>>] => {
+    const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
+    const [redirectionLock, setRedirectionLock] = useState<boolean>(false);
 
     useEffect(() => {
         //we ought to release the redirection lock if the user launches a new computation

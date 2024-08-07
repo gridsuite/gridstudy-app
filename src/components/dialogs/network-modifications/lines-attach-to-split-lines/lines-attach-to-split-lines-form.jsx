@@ -27,19 +27,10 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const [linesIds, setLinesIds] = useState([]);
 
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNodeUuid
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            'LINE',
-            true
-        ).then((values) => {
+        fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'LINE', true).then((values) => {
             setLinesIds(values?.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNodeUuid]);
@@ -87,21 +78,13 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const newLine1IdField = (
-        <TextInput name={REPLACING_LINE_1_ID} label={'Line1ID'} />
-    );
+    const newLine1IdField = <TextInput name={REPLACING_LINE_1_ID} label={'Line1ID'} />;
 
-    const newLine1NameField = (
-        <TextInput name={REPLACING_LINE_1_NAME} label={'Line1Name'} />
-    );
+    const newLine1NameField = <TextInput name={REPLACING_LINE_1_NAME} label={'Line1Name'} />;
 
-    const newLine2IdField = (
-        <TextInput name={REPLACING_LINE_2_ID} label={'Line2ID'} />
-    );
+    const newLine2IdField = <TextInput name={REPLACING_LINE_2_ID} label={'Line2ID'} />;
 
-    const newLine2NameField = (
-        <TextInput name={REPLACING_LINE_2_NAME} label={'Line2Name'} />
-    );
+    const newLine2NameField = <TextInput name={REPLACING_LINE_2_NAME} label={'Line2Name'} />;
 
     return (
         <>

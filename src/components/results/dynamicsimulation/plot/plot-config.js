@@ -5,15 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    blue,
-    cyan,
-    green,
-    orange,
-    pink,
-    purple,
-    red,
-} from '@mui/material/colors';
+import { blue, cyan, green, orange, pink, purple, red } from '@mui/material/colors';
 
 export const baseColors = [red, orange, blue, green, purple, pink, cyan];
 export const defaultLayout = {

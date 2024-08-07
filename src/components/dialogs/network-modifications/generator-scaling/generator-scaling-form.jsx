@@ -21,21 +21,14 @@ const styles = {
 };
 
 const GeneratorScalingForm = () => {
-    const variationTypeField = (
-        <RadioInput
-            name={VARIATION_TYPE}
-            options={Object.values(VARIATION_TYPES)}
-        />
-    );
+    const variationTypeField = <RadioInput name={VARIATION_TYPE} options={Object.values(VARIATION_TYPES)} />;
 
     const variationsField = (
         <ExpandableInput
             name={VARIATIONS}
             Field={VariationForm}
             addButtonLabel={'CreateVariation'}
-            initialValue={getVariationEmptyForm(
-                VARIATION_MODES.PROPORTIONAL_TO_PMAX.id
-            )}
+            initialValue={getVariationEmptyForm(VARIATION_MODES.PROPORTIONAL_TO_PMAX.id)}
         />
     );
 

@@ -6,13 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import React from 'react';
 import {
     ActivePowerAdornment,
@@ -28,26 +22,13 @@ import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNode?.id
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const loadNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const loadTypeField = (
         <SelectInput
@@ -60,21 +41,9 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const activePowerField = (
-        <FloatInput
-            name={P0}
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
-    );
+    const activePowerField = <FloatInput name={P0} label={'ActivePowerText'} adornment={ActivePowerAdornment} />;
 
-    const reactivePowerField = (
-        <FloatInput
-            name={Q0}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-        />
-    );
+    const reactivePowerField = <FloatInput name={Q0} label={'ReactivePowerText'} adornment={ReactivePowerAdornment} />;
 
     const connectivityForm = (
         <ConnectivityForm

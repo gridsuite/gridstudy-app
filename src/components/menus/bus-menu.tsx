@@ -9,12 +9,9 @@ import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
 import React, { FunctionComponent, useCallback, useMemo } from 'react';
-import {
-    isNodeBuilt,
-    isNodeReadOnly,
-} from 'components/graph/util/model-functions';
+import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
@@ -28,11 +25,7 @@ import { CustomMenuItem } from '../utils/custom-nested-menu';
 interface BusMenuProps {
     busId: string;
     handleRunShortcircuitAnalysis: (busId: string) => void;
-    onOpenDynamicSimulationEventDialog: (
-        equipmentId: string,
-        equipmentType: string,
-        dialogTitle: string
-    ) => void;
+    onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
     position: [number, number];
     onClose: () => void;
 }
@@ -61,25 +54,17 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     // to check is node editable
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isNodeEditable = useMemo(
-        () =>
-            isNodeBuilt(currentNode) &&
-            !isNodeReadOnly(currentNode) &&
-            !isAnyNodeBuilding,
+        () => isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isAnyNodeBuilding,
         [currentNode, isAnyNodeBuilding]
     );
 
-    const computationStarting = useSelector(
-        (state: ReduxState) => state.computationStarting
-    );
+    const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
     const oneBusShortcircuitAnalysisState = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const handleClickRunShortcircuitAnalysis = useCallback(() => {
@@ -90,11 +75,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const handleOpenDynamicSimulationEventDialog = useCallback(
         (equipmentId: string, equipmentType: string, dialogTitle: string) => {
             onClose();
-            onOpenDynamicSimulationEventDialog(
-                equipmentId,
-                equipmentType,
-                dialogTitle
-            );
+            onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
         },
         [onClose, onOpenDynamicSimulationEventDialog]
     );
@@ -115,9 +96,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 onClick={handleClickRunShortcircuitAnalysis}
                 selected={false}
                 disabled={
-                    computationStarting ||
-                    oneBusShortcircuitAnalysisState === RunningStatus.RUNNING ||
-                    !isNodeEditable
+                    computationStarting || oneBusShortcircuitAnalysisState === RunningStatus.RUNNING || !isNodeEditable
                 }
             >
                 <ListItemIcon>
@@ -136,9 +115,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
                     equipmentType={EQUIPMENT_TYPES.BUS}
-                    onOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     disabled={!isNodeEditable}
                 />
             )}

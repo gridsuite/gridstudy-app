@@ -147,9 +147,7 @@ const BatteryModificationForm = ({
             </Grid>
             <ReactiveLimitsForm
                 equipmentToModify={batteryToModify}
-                updatePreviousReactiveCapabilityCurveTable={
-                    updatePreviousReactiveCapabilityCurveTable
-                }
+                updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
             {/* Set points part */}
             <GridSection title="Setpoints" />
@@ -158,15 +156,9 @@ const BatteryModificationForm = ({
                 {gridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation
-                    isEquipmentModification={true}
-                    previousValues={batteryToModify}
-                />
+                <FrequencyRegulation isEquipmentModification={true} previousValues={batteryToModify} />
             </Grid>
-            <PropertiesForm
-                networkElementType={'battery'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
 };

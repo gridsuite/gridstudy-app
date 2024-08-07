@@ -15,12 +15,7 @@ import { CharacteristicsForm } from '../characteristics-pane/characteristics-for
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
 
-const ShuntCompensatorModificationForm = ({
-    studyUuid,
-    currentNode,
-    shuntCompensatorInfos,
-    equipmentId,
-}) => {
+const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompensatorInfos, equipmentId }) => {
     const shuntCompensatorIdField = (
         <TextField
             size="small"
@@ -44,12 +39,7 @@ const ShuntCompensatorModificationForm = ({
         />
     );
 
-    const characteristicsForm = (
-        <CharacteristicsForm
-            previousValues={shuntCompensatorInfos}
-            isModification={true}
-        />
-    );
+    const characteristicsForm = <CharacteristicsForm previousValues={shuntCompensatorInfos} isModification={true} />;
 
     const connectivityForm = (
         <ConnectivityForm
@@ -76,10 +66,7 @@ const ShuntCompensatorModificationForm = ({
             <Grid container spacing={2}>
                 {gridItem(characteristicsForm, 12)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'shuntCompensator'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>
     );
 };

@@ -24,7 +24,7 @@ import {
     ReactivePowerAdornment,
     VoltageAdornment,
 } from '../../../dialogUtils';
-import { CurrentTreeNode } from '../../../../../redux/reducer.type';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';
@@ -72,10 +72,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     });
 
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNode?.id
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const generatorIdField = isModification ? (
         <TextField
@@ -89,10 +86,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             disabled
         />
     ) : (
-        <TextInput
-            name={`${id}.${CONVERTER_STATION_ID}`}
-            label={'converterStationId'}
-        />
+        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
     );
 
     const generatorNameField = (
@@ -147,10 +141,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             formProps={undefined}
         />
     ) : (
-        <SwitchInput
-            name={`${id}.${VOLTAGE_REGULATION_ON}`}
-            label={'VoltageRegulationText'}
-        />
+        <SwitchInput name={`${id}.${VOLTAGE_REGULATION_ON}`} label={'VoltageRegulationText'} />
     );
 
     const voltageField = (

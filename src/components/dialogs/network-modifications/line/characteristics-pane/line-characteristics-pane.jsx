@@ -6,12 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import {
-    gridItem,
-    GridSection,
-    MicroSusceptanceAdornment,
-    OhmAdornment,
-} from '../../../dialogUtils';
+import { gridItem, GridSection, MicroSusceptanceAdornment, OhmAdornment } from '../../../dialogUtils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
@@ -47,10 +42,7 @@ const LineCharacteristicsPane = ({
     isModification = false,
 }) => {
     const currentNodeUuid = currentNode.id;
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNodeUuid
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     const seriesResistanceField = (
         <FloatInput
@@ -162,10 +154,7 @@ const LineCharacteristicsPane = ({
                 {gridItem(shuntConductance2Field, 4)}
                 {gridItem(shuntSusceptance2Field, 4)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'line'}
-                isModification={isModification}
-            />
+            <PropertiesForm networkElementType={'line'} isModification={isModification} />
         </>
     );
 };

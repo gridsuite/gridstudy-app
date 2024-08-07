@@ -149,38 +149,30 @@ export const getSensiHVDCsFormSchema = () => ({
 
 export const getSensiHvdcformatNewParams = (newParams: INewParamsHvdc) => {
     return {
-        [PARAMETER_SENSI_HVDC]: newParams.sensitivityHVDC.map(
-            (sensitivityHVDCs) => {
-                return {
-                    [MONITORED_BRANCHES]: sensitivityHVDCs[
-                        MONITORED_BRANCHES
-                    ].map((container) => {
-                        return {
-                            [CONTAINER_ID]: container[ID],
-                            [CONTAINER_NAME]: container[NAME],
-                        };
-                    }),
-                    [HVDC_LINES]: sensitivityHVDCs[HVDC_LINES].map(
-                        (container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }
-                    ),
-                    [SENSITIVITY_TYPE]: sensitivityHVDCs[SENSITIVITY_TYPE],
-                    [CONTINGENCIES]: sensitivityHVDCs[CONTINGENCIES].map(
-                        (container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }
-                    ),
-                    [ACTIVATED]: sensitivityHVDCs[ACTIVATED],
-                };
-            }
-        ),
+        [PARAMETER_SENSI_HVDC]: newParams.sensitivityHVDC.map((sensitivityHVDCs) => {
+            return {
+                [MONITORED_BRANCHES]: sensitivityHVDCs[MONITORED_BRANCHES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [HVDC_LINES]: sensitivityHVDCs[HVDC_LINES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [SENSITIVITY_TYPE]: sensitivityHVDCs[SENSITIVITY_TYPE],
+                [CONTINGENCIES]: sensitivityHVDCs[CONTINGENCIES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [ACTIVATED]: sensitivityHVDCs[ACTIVATED],
+            };
+        }),
     };
 };
 
@@ -224,41 +216,31 @@ export const getSensiInjectionsFormSchema = () => ({
     ),
 });
 
-export const getSensiInjectionsformatNewParams = (
-    newParams: INewParamsInjections
-) => {
+export const getSensiInjectionsformatNewParams = (newParams: INewParamsInjections) => {
     return {
-        [PARAMETER_SENSI_INJECTION]: newParams.sensitivityInjection.map(
-            (sensitivityInjections) => {
-                return {
-                    [MONITORED_BRANCHES]: sensitivityInjections[
-                        MONITORED_BRANCHES
-                    ].map((container) => {
-                        return {
-                            [CONTAINER_ID]: container[ID],
-                            [CONTAINER_NAME]: container[NAME],
-                        };
-                    }),
-                    [INJECTIONS]: sensitivityInjections[INJECTIONS].map(
-                        (container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }
-                    ),
-                    [CONTINGENCIES]: sensitivityInjections[CONTINGENCIES].map(
-                        (container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }
-                    ),
-                    [ACTIVATED]: sensitivityInjections[ACTIVATED],
-                };
-            }
-        ),
+        [PARAMETER_SENSI_INJECTION]: newParams.sensitivityInjection.map((sensitivityInjections) => {
+            return {
+                [MONITORED_BRANCHES]: sensitivityInjections[MONITORED_BRANCHES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [INJECTIONS]: sensitivityInjections[INJECTIONS].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [CONTINGENCIES]: sensitivityInjections[CONTINGENCIES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [ACTIVATED]: sensitivityInjections[ACTIVATED],
+            };
+        }),
     };
 };
 
@@ -350,60 +332,40 @@ interface IRowNewParams {
 
 export const getGenericRowNewParams = (newRowParams: IRowNewParams) => {
     return {
-        [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map(
-            (container) => container[ID]
-        ),
-        [INJECTIONS]: newRowParams[INJECTIONS]?.map(
-            (container) => container[ID]
-        ),
-        [HVDC_LINES]: newRowParams[HVDC_LINES]?.map(
-            (container) => container[ID]
-        ),
+        [MONITORED_BRANCHES]: newRowParams[MONITORED_BRANCHES].map((container) => container[ID]),
+        [INJECTIONS]: newRowParams[INJECTIONS]?.map((container) => container[ID]),
+        [HVDC_LINES]: newRowParams[HVDC_LINES]?.map((container) => container[ID]),
         [PSTS]: newRowParams[PSTS]?.map((container) => container[ID]),
-        [CONTINGENCIES]: newRowParams[CONTINGENCIES]?.map(
-            (container) => container[ID]
-        ),
+        [CONTINGENCIES]: newRowParams[CONTINGENCIES]?.map((container) => container[ID]),
     };
 };
 
-export const getSensiInjectionsSetformatNewParams = (
-    newParams: INewParamsInjectionsSet
-) => {
+export const getSensiInjectionsSetformatNewParams = (newParams: INewParamsInjectionsSet) => {
     return {
-        [PARAMETER_SENSI_INJECTIONS_SET]:
-            newParams.sensitivityInjectionsSet.map(
-                (sensitivityInjectionSet) => {
+        [PARAMETER_SENSI_INJECTIONS_SET]: newParams.sensitivityInjectionsSet.map((sensitivityInjectionSet) => {
+            return {
+                [MONITORED_BRANCHES]: sensitivityInjectionSet[MONITORED_BRANCHES].map((container) => {
                     return {
-                        [MONITORED_BRANCHES]: sensitivityInjectionSet[
-                            MONITORED_BRANCHES
-                        ].map((container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }),
-                        [INJECTIONS]: sensitivityInjectionSet[INJECTIONS].map(
-                            (container) => {
-                                return {
-                                    [CONTAINER_ID]: container[ID],
-                                    [CONTAINER_NAME]: container[NAME],
-                                };
-                            }
-                        ),
-                        [DISTRIBUTION_TYPE]:
-                            sensitivityInjectionSet[DISTRIBUTION_TYPE],
-                        [CONTINGENCIES]: sensitivityInjectionSet[
-                            CONTINGENCIES
-                        ].map((container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }),
-                        [ACTIVATED]: sensitivityInjectionSet[ACTIVATED],
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
                     };
-                }
-            ),
+                }),
+                [INJECTIONS]: sensitivityInjectionSet[INJECTIONS].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [DISTRIBUTION_TYPE]: sensitivityInjectionSet[DISTRIBUTION_TYPE],
+                [CONTINGENCIES]: sensitivityInjectionSet[CONTINGENCIES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [ACTIVATED]: sensitivityInjectionSet[ACTIVATED],
+            };
+        }),
     };
 };
 
@@ -435,37 +397,31 @@ export const getSensiNodesFormSchema = () => ({
 
 export const getSensiNodesformatNewParams = (newParams: INewParamsNodes) => {
     return {
-        [PARAMETER_SENSI_NODES]: newParams.sensitivityNodes?.map(
-            (sensitivityNode) => {
-                return {
-                    [SUPERVISED_VOLTAGE_LEVELS]: sensitivityNode[
-                        SUPERVISED_VOLTAGE_LEVELS
-                    ].map((container) => {
+        [PARAMETER_SENSI_NODES]: newParams.sensitivityNodes?.map((sensitivityNode) => {
+            return {
+                [SUPERVISED_VOLTAGE_LEVELS]: sensitivityNode[SUPERVISED_VOLTAGE_LEVELS].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [EQUIPMENTS_IN_VOLTAGE_REGULATION]: sensitivityNode[EQUIPMENTS_IN_VOLTAGE_REGULATION].map(
+                    (container) => {
                         return {
                             [CONTAINER_ID]: container[ID],
                             [CONTAINER_NAME]: container[NAME],
                         };
-                    }),
-                    [EQUIPMENTS_IN_VOLTAGE_REGULATION]: sensitivityNode[
-                        EQUIPMENTS_IN_VOLTAGE_REGULATION
-                    ].map((container) => {
-                        return {
-                            [CONTAINER_ID]: container[ID],
-                            [CONTAINER_NAME]: container[NAME],
-                        };
-                    }),
-                    [CONTINGENCIES]: sensitivityNode[CONTINGENCIES].map(
-                        (container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }
-                    ),
-                    [ACTIVATED]: sensitivityNode[ACTIVATED],
-                };
-            }
-        ),
+                    }
+                ),
+                [CONTINGENCIES]: sensitivityNode[CONTINGENCIES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [ACTIVATED]: sensitivityNode[ACTIVATED],
+            };
+        }),
     };
 };
 
@@ -515,35 +471,29 @@ export const getSensiPSTsFormSchema = () => ({
 
 export const getSensiPstformatNewParams = (newParams: INewParamsPst) => {
     return {
-        [PARAMETER_SENSI_PST]: newParams.sensitivityPST.map(
-            (sensitivityPSTs) => {
-                return {
-                    [MONITORED_BRANCHES]: sensitivityPSTs[
-                        MONITORED_BRANCHES
-                    ].map((container) => {
-                        return {
-                            [CONTAINER_ID]: container[ID],
-                            [CONTAINER_NAME]: container[NAME],
-                        };
-                    }),
-                    [PSTS]: sensitivityPSTs[PSTS].map((container) => {
-                        return {
-                            [CONTAINER_ID]: container[ID],
-                            [CONTAINER_NAME]: container[NAME],
-                        };
-                    }),
-                    [SENSITIVITY_TYPE]: sensitivityPSTs[SENSITIVITY_TYPE],
-                    [CONTINGENCIES]: sensitivityPSTs[CONTINGENCIES].map(
-                        (container) => {
-                            return {
-                                [CONTAINER_ID]: container[ID],
-                                [CONTAINER_NAME]: container[NAME],
-                            };
-                        }
-                    ),
-                    [ACTIVATED]: sensitivityPSTs[ACTIVATED],
-                };
-            }
-        ),
+        [PARAMETER_SENSI_PST]: newParams.sensitivityPST.map((sensitivityPSTs) => {
+            return {
+                [MONITORED_BRANCHES]: sensitivityPSTs[MONITORED_BRANCHES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [PSTS]: sensitivityPSTs[PSTS].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [SENSITIVITY_TYPE]: sensitivityPSTs[SENSITIVITY_TYPE],
+                [CONTINGENCIES]: sensitivityPSTs[CONTINGENCIES].map((container) => {
+                    return {
+                        [CONTAINER_ID]: container[ID],
+                        [CONTAINER_NAME]: container[NAME],
+                    };
+                }),
+                [ACTIVATED]: sensitivityPSTs[ACTIVATED],
+            };
+        }),
     };
 };

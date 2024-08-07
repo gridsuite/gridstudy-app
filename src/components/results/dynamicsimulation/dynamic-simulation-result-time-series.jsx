@@ -19,10 +19,7 @@ import TooltipIconButton from './common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
 import ComputingType from '../../computing-status/computing-type';
-import {
-    getNoRowsMessage,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
 
 const styles = {
@@ -40,10 +37,7 @@ const styles = {
 };
 
 const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
-    const [result, loadTimeSeries, isLoading] = useResultTimeSeries(
-        nodeUuid,
-        studyUuid
-    );
+    const [result, loadTimeSeries, isLoading] = useResultTimeSeries(nodeUuid, studyUuid);
 
     // tab id is automatically increased and reset to zero when there is no tab.
     const [tabIncId, setTabIncId] = useState(1);
@@ -71,13 +65,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
         return () => {
             const newTabs = Array.from(tabs);
             newTabs.splice(index, 1);
-            setSelectedIndex(
-                newTabs.length === 0
-                    ? -1
-                    : index === tabs.length - 1
-                    ? newTabs.length - 1
-                    : index
-            ); // get the next item in new tabs
+            setSelectedIndex(newTabs.length === 0 ? -1 : index === tabs.length - 1 ? newTabs.length - 1 : index); // get the next item in new tabs
             setTabs(newTabs);
             if (newTabs.length === 0) {
                 // reset tabId to zero
@@ -100,18 +88,10 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
     };
 
     // messages to show when no data
-    const dynamicSimulationStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
-    );
+    const dynamicSimulationStatus = useSelector((state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]);
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(
-        () =>
-            getNoRowsMessage(
-                messages,
-                result?.timeseriesMetadatas,
-                dynamicSimulationStatus,
-                !isLoading
-            ),
+        () => getNoRowsMessage(messages, result?.timeseriesMetadatas, dynamicSimulationStatus, !isLoading),
         [messages, result, dynamicSimulationStatus, isLoading]
     );
 
@@ -148,16 +128,12 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
                                                         id: 'DynamicSimulationResultTab',
                                                     })} ${tab.id}`}
                                                     <TooltipIconButton
-                                                        toolTip={intl.formatMessage(
-                                                            {
-                                                                id: 'DynamicSimulationCloseTab',
-                                                            }
-                                                        )}
+                                                        toolTip={intl.formatMessage({
+                                                            id: 'DynamicSimulationCloseTab',
+                                                        })}
                                                         size="small"
                                                         component="span"
-                                                        onClick={handleClose(
-                                                            index
-                                                        )}
+                                                        onClick={handleClose(index)}
                                                     >
                                                         <CloseIcon />
                                                     </TooltipIconButton>
@@ -187,16 +163,10 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
                         }}
                     >
                         {tabs.map((tab, index) => (
-                            <Visibility
-                                key={`tab-${tab.id}`}
-                                value={selectedIndex}
-                                index={index}
-                            >
+                            <Visibility key={`tab-${tab.id}`} value={selectedIndex} index={index}>
                                 <DynamicSimulationResultChart
                                     groupId={`${tab.id}`}
-                                    timeseriesMetadatas={
-                                        result?.timeseriesMetadatas
-                                    }
+                                    timeseriesMetadatas={result?.timeseriesMetadatas}
                                     selected={selectedIndex === index}
                                     loadTimeSeries={loadTimeSeries}
                                 />

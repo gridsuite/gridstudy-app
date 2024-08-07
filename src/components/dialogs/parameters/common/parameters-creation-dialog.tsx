@@ -23,7 +23,7 @@ import {
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 
 interface FormData {
@@ -57,10 +57,9 @@ const CreateParameterDialog = <T extends FieldValues>({
     parameterFormatter,
 }: CreateParameterProps<T>) => {
     const intl = useIntl();
-    const [defaultFolder, setDefaultFolder] =
-        useState<TreeViewFinderNodeProps>();
+    const [defaultFolder, setDefaultFolder] = useState<TreeViewFinderNodeProps>();
     const [openDirectoryFolders, setOpenDirectoryFolders] = useState(false);
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
@@ -74,6 +73,7 @@ const CreateParameterDialog = <T extends FieldValues>({
     const nameError = errors[NAME];
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
+        // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((studyPath) => {
             if (studyPath && studyPath.length >= 2) {
                 // studyPath contains [RootDirectoryElement, directoryElement, ...,  directoryElement, studyElement]
@@ -129,21 +129,13 @@ const CreateParameterDialog = <T extends FieldValues>({
     const folderChooser = (
         <Grid container item>
             <Grid item>
-                <Button
-                    onClick={handleChangeFolder}
-                    variant="contained"
-                    size={'small'}
-                >
+                <Button onClick={handleChangeFolder} variant="contained" size={'small'}>
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
                 </Button>
             </Grid>
             <Typography m={1} component="span">
                 <Box fontWeight={'fontWeightBold'}>
-                    {defaultFolder == null ? (
-                        <CircularProgress />
-                    ) : (
-                        defaultFolder.name
-                    )}
+                    {defaultFolder == null ? <CircularProgress /> : defaultFolder.name}
                 </Box>
             </Typography>
         </Grid>

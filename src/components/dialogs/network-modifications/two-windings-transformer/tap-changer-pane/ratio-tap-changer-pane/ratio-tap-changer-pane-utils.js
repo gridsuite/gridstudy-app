@@ -34,20 +34,13 @@ import {
     TYPE,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import {
-    areNumbersOrdered,
-    areArrayElementsUnique,
-} from 'components/utils/utils';
+import { areNumbersOrdered, areArrayElementsUnique } from 'components/utils/utils';
 import yup from 'components/utils/yup-config';
 import {
     getRegulatingTerminalEmptyFormData,
     getRegulatingTerminalFormData,
 } from '../../../../regulating-terminal/regulating-terminal-form-utils';
-import {
-    RATIO_REGULATION_MODES,
-    REGULATION_TYPES,
-    SIDE,
-} from 'components/network/constants';
+import { RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 
 const ratioTapChangerValidationSchema = (id) => ({
     [id]: yup.object().shape({
@@ -57,8 +50,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             .string()
             .nullable()
             .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES], {
-                is: (enabled, hasLoadTapChangingCapabilities) =>
-                    enabled && hasLoadTapChangingCapabilities,
+                is: (enabled, hasLoadTapChangingCapabilities) => enabled && hasLoadTapChangingCapabilities,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_TYPE]: yup
@@ -68,51 +60,31 @@ const ratioTapChangerValidationSchema = (id) => ({
                 is: (enabled, hasLoadTapChangingCapabilities, regulationMode) =>
                     enabled &&
                     hasLoadTapChangingCapabilities &&
-                    regulationMode ===
-                        RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
+                    regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id,
                 then: (schema) => schema.required(),
             }),
         [REGULATION_SIDE]: yup
             .string()
             .nullable()
-            .when(
-                [
-                    ENABLED,
-                    LOAD_TAP_CHANGING_CAPABILITIES,
-                    REGULATION_MODE,
-                    REGULATION_TYPE,
-                ],
-                {
-                    is: (
-                        enabled,
-                        hasLoadTapChangingCapabilities,
-                        regulationMode,
-                        regulationType
-                    ) =>
-                        enabled &&
-                        hasLoadTapChangingCapabilities &&
-                        regulationMode ===
-                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
-                        regulationType === REGULATION_TYPES.LOCAL.id,
-                    then: (schema) => schema.required(),
-                }
-            ),
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE, REGULATION_TYPE], {
+                is: (enabled, hasLoadTapChangingCapabilities, regulationMode, regulationType) =>
+                    enabled &&
+                    hasLoadTapChangingCapabilities &&
+                    regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
+                    regulationType === REGULATION_TYPES.LOCAL.id,
+                then: (schema) => schema.required(),
+            }),
         [TARGET_V]: yup
             .mixed()
             .when([LOAD_TAP_CHANGING_CAPABILITIES], {
                 is: true,
-                then: () =>
-                    yup
-                        .number()
-                        .nullable()
-                        .positive('TargetVoltageMustBeGreaterThanZero'),
+                then: () => yup.number().nullable().positive('TargetVoltageMustBeGreaterThanZero'),
             })
             .when([REGULATION_MODE, LOAD_TAP_CHANGING_CAPABILITIES], {
                 is: (regulationMode, hasLoadTapChangingCapabilities) => {
                     return (
                         hasLoadTapChangingCapabilities === true &&
-                        regulationMode ===
-                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
+                        regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id
                     );
                 },
                 then: (schema) => schema.required(),
@@ -123,11 +95,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             .nullable()
             .when(LOAD_TAP_CHANGING_CAPABILITIES, {
                 is: true,
-                then: () =>
-                    yup
-                        .number()
-                        .nullable()
-                        .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
+                then: () => yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
             }),
         [LOW_TAP_POSITION]: yup
             .number()
@@ -145,14 +113,8 @@ const ratioTapChangerValidationSchema = (id) => ({
                 then: (schema) =>
                     schema
                         .required()
-                        .min(
-                            yup.ref(LOW_TAP_POSITION),
-                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
-                        )
-                        .max(
-                            yup.ref(HIGH_TAP_POSITION),
-                            'TapPositionMustBeBetweenLowAndHighTapPositionValue'
-                        ),
+                        .min(yup.ref(LOW_TAP_POSITION), 'TapPositionMustBeBetweenLowAndHighTapPositionValue')
+                        .max(yup.ref(HIGH_TAP_POSITION), 'TapPositionMustBeBetweenLowAndHighTapPositionValue'),
             }),
         [STEPS]: yup
             .array()
@@ -172,10 +134,7 @@ const ratioTapChangerValidationSchema = (id) => ({
             })
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
-                return (
-                    areNumbersOrdered(ratioArray) &&
-                    areArrayElementsUnique(ratioArray)
-                );
+                return areNumbersOrdered(ratioArray) && areArrayElementsUnique(ratioArray);
             }),
         //regulating terminal fields
         //TODO: is it possible to move it to regulating-terminal-utils.js properly since it depends on "ENABLED" ?
@@ -189,28 +148,14 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NOMINAL_VOLTAGE]: yup.string(),
                 [TOPOLOGY_KIND]: yup.string().nullable(),
             })
-            .when(
-                [
-                    ENABLED,
-                    LOAD_TAP_CHANGING_CAPABILITIES,
-                    REGULATION_MODE,
-                    REGULATION_TYPE,
-                ],
-                {
-                    is: (
-                        enabled,
-                        hasLoadTapChangingCapabilities,
-                        regulationMode,
-                        regulationType
-                    ) =>
-                        enabled &&
-                        hasLoadTapChangingCapabilities &&
-                        regulationMode ===
-                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
-                        regulationType === REGULATION_TYPES.DISTANT.id,
-                    then: (schema) => schema.required(),
-                }
-            ),
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE, REGULATION_TYPE], {
+                is: (enabled, hasLoadTapChangingCapabilities, regulationMode, regulationType) =>
+                    enabled &&
+                    hasLoadTapChangingCapabilities &&
+                    regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
+                    regulationType === REGULATION_TYPES.DISTANT.id,
+                then: (schema) => schema.required(),
+            }),
         [EQUIPMENT]: yup
             .object()
             .nullable()
@@ -219,28 +164,14 @@ const ratioTapChangerValidationSchema = (id) => ({
                 [NAME]: yup.string().nullable(),
                 [TYPE]: yup.string(),
             })
-            .when(
-                [
-                    ENABLED,
-                    LOAD_TAP_CHANGING_CAPABILITIES,
-                    REGULATION_MODE,
-                    REGULATION_TYPE,
-                ],
-                {
-                    is: (
-                        enabled,
-                        hasLoadTapChangingCapabilities,
-                        regulationMode,
-                        regulationType
-                    ) =>
-                        enabled &&
-                        hasLoadTapChangingCapabilities &&
-                        regulationMode ===
-                            RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
-                        regulationType === REGULATION_TYPES.DISTANT.id,
-                    then: (schema) => schema.required(),
-                }
-            ),
+            .when([ENABLED, LOAD_TAP_CHANGING_CAPABILITIES, REGULATION_MODE, REGULATION_TYPE], {
+                is: (enabled, hasLoadTapChangingCapabilities, regulationMode, regulationType) =>
+                    enabled &&
+                    hasLoadTapChangingCapabilities &&
+                    regulationMode === RATIO_REGULATION_MODES.VOLTAGE_REGULATION.id &&
+                    regulationType === REGULATION_TYPES.DISTANT.id,
+                then: (schema) => schema.required(),
+            }),
     }),
 });
 
@@ -251,14 +182,8 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
         [REGULATION_MODE]: yup.string().nullable(),
         [REGULATION_TYPE]: yup.string().nullable(),
         [REGULATION_SIDE]: yup.string().nullable(),
-        [TARGET_V]: yup
-            .number()
-            .nullable()
-            .positive('TargetVoltageMustBeGreaterThanZero'),
-        [TARGET_DEADBAND]: yup
-            .number()
-            .nullable()
-            .min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
+        [TARGET_V]: yup.number().nullable().positive('TargetVoltageMustBeGreaterThanZero'),
+        [TARGET_DEADBAND]: yup.number().nullable().min(0, 'TargetDeadbandMustBeGreaterOrEqualToZero'),
         [LOW_TAP_POSITION]: yup.number().nullable(),
         [HIGH_TAP_POSITION]: yup.number().nullable(),
         [TAP_POSITION]: yup.number().nullable(),
@@ -276,10 +201,7 @@ const ratioTapChangerModificationValidationSchema = (previousValues, id) => ({
             )
             .test('distinctOrderedRatio', 'RatioValuesError', (array) => {
                 const ratioArray = array.map((step) => step[STEPS_RATIO]);
-                return (
-                    areNumbersOrdered(ratioArray) &&
-                    areArrayElementsUnique(ratioArray)
-                );
+                return areNumbersOrdered(ratioArray) && areArrayElementsUnique(ratioArray);
             }),
         //regulating terminal fields
         [VOLTAGE_LEVEL]: yup
@@ -308,10 +230,7 @@ export const getRatioTapChangerValidationSchema = (id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerValidationSchema(id);
 };
 
-export const getRatioTapChangerModificationValidationSchema = (
-    previousValues,
-    id = RATIO_TAP_CHANGER
-) => {
+export const getRatioTapChangerModificationValidationSchema = (previousValues, id = RATIO_TAP_CHANGER) => {
     return ratioTapChangerModificationValidationSchema(previousValues, id);
 };
 
@@ -427,10 +346,7 @@ export const getComputedTapSideId = (twt) => {
         return null;
     }
     if (ratioTapChangerValues?.regulatingTerminalConnectableId === twt?.id) {
-        return ratioTapChangerValues?.regulatingTerminalVlId ===
-            twt?.voltageLevelId1
-            ? SIDE.SIDE1.id
-            : SIDE.SIDE2.id;
+        return ratioTapChangerValues?.regulatingTerminalVlId === twt?.voltageLevelId1 ? SIDE.SIDE1.id : SIDE.SIDE2.id;
     } else {
         return null;
     }

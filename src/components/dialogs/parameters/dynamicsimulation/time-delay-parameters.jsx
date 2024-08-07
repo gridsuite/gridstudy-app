@@ -19,10 +19,7 @@ export const formSchema = yup.object().shape({
         .required()
         .when([START_TIME], ([startTime], schema) => {
             if (startTime) {
-                return schema.min(
-                    startTime,
-                    'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime'
-                );
+                return schema.min(startTime, 'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime');
             }
         }),
 });

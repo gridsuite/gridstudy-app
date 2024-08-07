@@ -38,10 +38,7 @@ export const getConnectivityPropertiesValidationSchema = () => {
     };
 };
 
-export const getConnectivityWithPositionValidationSchema = (
-    isEquipmentModification = false,
-    id = CONNECTIVITY
-) => ({
+export const getConnectivityWithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
@@ -57,17 +54,13 @@ export const getConnectivityWithPositionValidationSchema = (
     }),
 });
 
-export const getConnectivityWithoutPositionValidationSchema = (
-    id = CONNECTIVITY
-) => {
+export const getConnectivityWithoutPositionValidationSchema = (id = CONNECTIVITY) => {
     return {
         [id]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
     };
 };
 
-export const getConnectivityPropertiesEmptyFormData = (
-    isEquipmentModification = false
-) => {
+export const getConnectivityPropertiesEmptyFormData = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
@@ -75,10 +68,7 @@ export const getConnectivityPropertiesEmptyFormData = (
     };
 };
 
-export const getConnectivityWithPositionEmptyFormData = (
-    isEquipmentModification = false,
-    id = CONNECTIVITY
-) => ({
+export const getConnectivityWithPositionEmptyFormData = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: {
         ...getConnectivityPropertiesEmptyFormData(isEquipmentModification),
         [CONNECTION_DIRECTION]: null,
@@ -87,9 +77,7 @@ export const getConnectivityWithPositionEmptyFormData = (
     },
 });
 
-export const getConnectivityWithoutPositionEmptyFormData = (
-    id = CONNECTIVITY
-) => ({
+export const getConnectivityWithoutPositionEmptyFormData = (id = CONNECTIVITY) => ({
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
 
@@ -103,10 +91,7 @@ export const getConnectivityVoltageLevelData = ({ voltageLevelId }) => {
     };
 };
 
-export const getConnectivityBusBarSectionData = ({
-    busbarSectionId,
-    busbarSectionName = '',
-}) => {
+export const getConnectivityBusBarSectionData = ({ busbarSectionId, busbarSectionName = '' }) => {
     if (!busbarSectionId) {
         return null;
     }
@@ -117,11 +102,7 @@ export const getConnectivityBusBarSectionData = ({
     };
 };
 
-export const getConnectivityPropertiesData = ({
-    voltageLevelId,
-    busbarSectionId,
-    busbarSectionName,
-}) => {
+export const getConnectivityPropertiesData = ({ voltageLevelId, busbarSectionId, busbarSectionName }) => {
     return {
         [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
             voltageLevelId,
@@ -140,10 +121,7 @@ export const getNewVoltageLevelData = (newVoltageLevel) => ({
     topologyKind: newVoltageLevel.topologyKind,
 });
 
-export const getConnectivityData = (
-    { voltageLevelId, busbarSectionId, busbarSectionName },
-    id = CONNECTIVITY
-) => {
+export const getConnectivityData = ({ voltageLevelId, busbarSectionId, busbarSectionName }, id = CONNECTIVITY) => {
     return {
         [id]: getConnectivityPropertiesData({
             voltageLevelId,

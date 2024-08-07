@@ -27,10 +27,7 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import {
-    ENERGY_SOURCES,
-    getEnergySourceLabel,
-} from 'components/network/constants';
+import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
@@ -50,14 +47,9 @@ const GeneratorModificationForm = ({
 }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
-    const voltageLevelOptions = useVoltageLevelsListInfos(
-        studyUuid,
-        currentNodeUuid
-    );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
-    const energySourceLabelId = getEnergySourceLabel(
-        generatorToModify?.energySource
-    );
+    const energySourceLabelId = getEnergySourceLabel(generatorToModify?.energySource);
     const previousEnergySourceLabel = energySourceLabelId
         ? intl.formatMessage({
               id: energySourceLabelId,
@@ -135,9 +127,7 @@ const GeneratorModificationForm = ({
             name={TRANSIENT_REACTANCE}
             label={'TransientReactanceForm'}
             adornment={OhmAdornment}
-            previousValue={
-                generatorToModify?.generatorShortCircuit?.directTransX
-            }
+            previousValue={generatorToModify?.generatorShortCircuit?.directTransX}
             clearable={true}
         />
     );
@@ -148,12 +138,9 @@ const GeneratorModificationForm = ({
             label={'TransformerReactanceForm'}
             adornment={OhmAdornment}
             previousValue={
-                isNaN(
-                    generatorToModify?.generatorShortCircuit?.stepUpTransformerX
-                )
+                isNaN(generatorToModify?.generatorShortCircuit?.stepUpTransformerX)
                     ? null
-                    : generatorToModify?.generatorShortCircuit
-                          ?.stepUpTransformerX
+                    : generatorToModify?.generatorShortCircuit?.stepUpTransformerX
             }
             clearable={true}
         />
@@ -164,9 +151,7 @@ const GeneratorModificationForm = ({
             name={PLANNED_ACTIVE_POWER_SET_POINT}
             label={'PlannedActivePowerSetPointForm'}
             adornment={ActivePowerAdornment}
-            previousValue={
-                generatorToModify?.generatorStartup?.plannedActivePowerSetPoint
-            }
+            previousValue={generatorToModify?.generatorStartup?.plannedActivePowerSetPoint}
             clearable={true}
         />
     );
@@ -184,9 +169,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={PLANNED_OUTAGE_RATE}
             label={'plannedOutageRate'}
-            previousValue={
-                generatorToModify?.generatorStartup?.plannedOutageRate
-            }
+            previousValue={generatorToModify?.generatorStartup?.plannedOutageRate}
             clearable={true}
         />
     );
@@ -195,9 +178,7 @@ const GeneratorModificationForm = ({
         <FloatInput
             name={FORCED_OUTAGE_RATE}
             label={'forcedOutageRate'}
-            previousValue={
-                generatorToModify?.generatorStartup?.forcedOutageRate
-            }
+            previousValue={generatorToModify?.generatorStartup?.forcedOutageRate}
             clearable={true}
         />
     );
@@ -251,9 +232,7 @@ const GeneratorModificationForm = ({
             </Grid>
             <ReactiveLimitsForm
                 equipmentToModify={generatorToModify}
-                updatePreviousReactiveCapabilityCurveTable={
-                    updatePreviousReactiveCapabilityCurveTable
-                }
+                updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
 
             {/* Set points part */}
@@ -282,10 +261,7 @@ const GeneratorModificationForm = ({
                     {gridItem(forcedOutageRateField, 4)}
                 </Grid>
             </Grid>
-            <PropertiesForm
-                networkElementType={'generator'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'generator'} isModification={true} />
         </>
     );
 };
