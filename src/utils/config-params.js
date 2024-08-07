@@ -26,6 +26,7 @@ export const PARAM_FLUX_CONVENTION = 'fluxConvention';
 export const PARAM_LANGUAGE = 'language';
 export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
 export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
+export const PARAM_INIT_NAD_GEO_DATA = 'initNadGeoData';
 export const PARAMS_LOADED = 'paramsLoaded';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';

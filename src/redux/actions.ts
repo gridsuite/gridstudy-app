@@ -15,6 +15,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
+    PARAM_INIT_NAD_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -476,6 +477,17 @@ export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableD
     return {
         type: ENABLE_DEVELOPER_MODE,
         [PARAM_DEVELOPER_MODE]: enableDeveloperMode,
+    };
+}
+
+export const INIT_NAD_GEO_DAtA = 'INIT_NAD_GEO_DAtA';
+export type InitNadGeoDataAction = Readonly<Action<typeof INIT_NAD_GEO_DAtA>> & {
+    [PARAM_INIT_NAD_GEO_DATA]: boolean;
+};
+export function selectInitNadGeoData(initNadGeoData: boolean): InitNadGeoDataAction {
+    return {
+        type: INIT_NAD_GEO_DAtA,
+        [PARAM_INIT_NAD_GEO_DATA]: initNadGeoData,
     };
 }
 
