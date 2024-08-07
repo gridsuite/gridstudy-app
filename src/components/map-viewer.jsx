@@ -354,7 +354,7 @@ const MapViewer = ({
                                         onCancel={() => {
                                             setShouldOpenSelectionCreationPanel(false);
                                         }}
-                                        navigateToPreviousDisplayMode={navigateToPreviousDisplayMode}
+                                        leaveDrawingMode={leaveDrawingMode}
                                         nominalVoltages={nominalVoltages}
                                     />
                                 )}

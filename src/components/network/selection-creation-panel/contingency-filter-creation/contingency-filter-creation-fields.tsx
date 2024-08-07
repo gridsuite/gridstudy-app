@@ -1,25 +1,11 @@
-import {
-    DirectoryItemSelector,
-    ElementType,
-    FILTER_EQUIPMENTS,
-    FormEquipment,
-    SelectInput,
-    TreeViewFinderNodeProps,
-    UniqueNameInput,
-    fetchDirectoryElementPath,
-} from '@gridsuite/commons-ui';
-import { FolderOutlined } from '@mui/icons-material';
-import { Box, Button, Grid, Typography } from '@mui/material';
+import { ElementType, FILTER_EQUIPMENTS, FormEquipment, SelectInput, UniqueNameInput } from '@gridsuite/commons-ui';
+import { Grid } from '@mui/material';
 import { EQUIPMENT_TYPES, equipmentTypeToLabel } from 'components/utils/equipment-types';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, FOLDER_ID, NAME } from 'components/utils/field-constants';
-import { UUID } from 'crypto';
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { FC, useMemo } from 'react';
 import { SELECTION_TYPES } from '../selection-types';
-import { AppState } from 'redux/reducer';
 import { SelectionCreationPanelDirectorySelector } from './contingency-filter-creation-directory-selector';
-import { SelectionCreationPanelFormSchema, SelectionCreationPanelNotNadFields } from '../selection-creation-schema';
+import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { useWatch } from 'react-hook-form';
 
 interface ContingencyFilterCreationListProps {

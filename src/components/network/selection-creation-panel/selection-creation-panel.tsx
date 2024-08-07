@@ -42,7 +42,7 @@ import {
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
     onCancel: () => void;
-    navigateToPreviousDisplayMode: () => void;
+    leaveDrawingMode: () => void;
     nominalVoltages: number[];
 };
 
@@ -58,7 +58,7 @@ const formSchema = getSelectionCreationSchema();
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
     onCancel,
-    navigateToPreviousDisplayMode,
+    leaveDrawingMode,
     nominalVoltages,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -104,7 +104,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         .filter((id): id is string => !!id)
                 )
             );
-            navigateToPreviousDisplayMode();
+            leaveDrawingMode();
             return;
         }
 
