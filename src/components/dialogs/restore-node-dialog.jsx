@@ -12,20 +12,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Checkbox, DialogContentText, FormControlLabel, FormGroup } from '@mui/material';
+import { Box, DialogContentText } from '@mui/material';
 import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
-import FormControl from '@mui/material/FormControl';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
+import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
-
-const styles = {
-    selectAll: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        paddingBottom: theme.spacing(1),
-    }),
-};
 
 /**
  * Dialog to select network modification to create
@@ -41,22 +32,6 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [selectedNodes, setSelectedNodes] = useState([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
-
-    const handleSelectAll = () => {
-        if (selectedNodes.length === nodes.length) {
-            setSelectedNodes([]);
-        } else {
-            setSelectedNodes(nodes.map((node) => node.first));
-        }
-    };
-
-    const handleClick = (element) => {
-        if (selectedNodes.includes(element)) {
-            setSelectedNodes((prev) => prev.filter((e) => e !== element));
-        } else {
-            setSelectedNodes((prev) => [...new Set([...prev, element])]);
-        }
-    };
 
     const handleClose = () => {
         onClose();
@@ -114,40 +89,16 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     />
                 )}
                 {!isLoading && nodes && (
-                    <FormControl sx={{ paddingLeft: '20px' }} component="fieldset">
-                        <FormGroup name="nodes-to-restore-selection">
-                            <Box sx={styles.selectAll}>
-                                <Checkbox
-                                    color={'primary'}
-                                    edge="start"
-                                    checked={selectedNodes.length === nodes.length}
-                                    onClick={handleSelectAll}
-                                    disableRipple
-                                />
-                                <OverflowableText
-                                    text={intl.formatMessage({
-                                        id: 'SelectAll',
-                                    })}
-                                />
-                            </Box>
-                            {nodes.map((node) => {
-                                return (
-                                    <FormControlLabel
-                                        key={node.first.id}
-                                        control={
-                                            <Checkbox
-                                                checked={selectedNodes.includes(node.first)}
-                                                onChange={(event) => handleClick(node.first)}
-                                            />
-                                        }
-                                        label={
-                                            node.first.name + (node.second !== 0 ? ' ( + ' + node.second + ' )' : '')
-                                        }
-                                    />
-                                );
-                            })}
-                        </FormGroup>
-                    </FormControl>
+                    <CheckboxList
+                        items={nodes}
+                        addSelectAllCheckbox
+                        selectAllCheckBoxLabel={'SelectAll'}
+                        selectedItems={selectedNodes}
+                        onSelectionChange={setSelectedNodes}
+                        getItemId={(v) => v.first.id}
+                        getItemLabel={(v) => v.first.name + (v.second !== 0 ? ' ( + ' + v.second + ' )' : '')}
+                        divider
+                    />
                 )}
             </DialogContent>
             <DialogActions>

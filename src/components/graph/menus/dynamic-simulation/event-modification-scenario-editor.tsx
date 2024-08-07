@@ -6,27 +6,25 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CheckboxList from '../../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
 import { EVENT_CRUD_FINISHED, EventCrudType } from 'components/network/constants.type';
 import { UUID } from 'crypto';
-import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
 import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
-import { EventListItem } from './event-list-item';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { getStartTime } from '../../../dialogs/dynamicsimulation/event/model/event.model';
+import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
 import { isChecked, isPartial, styles } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
-import { areUuidsEqual } from 'components/utils/utils';
+import EditIcon from '@mui/icons-material/Edit';
+import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 
 const EventModificationScenarioEditor = () => {
@@ -198,23 +196,50 @@ const EventModificationScenarioEditor = () => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     };
 
+    const getItemLabel = (item) => {
+        if (!studyUuid || !currentNode || !item) {
+            return;
+        }
+
+        const computedValues = {
+            computedLabel: (
+                <>
+                    <strong>{item.equipmentId}</strong>
+                    <i>{` - ${getStartTime(item)} ${getStartTimeUnit(item)}`}</i>
+                </>
+            ),
+        } as {};
+
+        return intl.formatMessage(
+            {
+                id: `Event${item.eventType}${EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]}`,
+            },
+            {
+                ...computedValues,
+            }
+        );
+    };
+
+    const handleSecondaryAction = useCallback(
+        (item) =>
+            isAnyNodeBuilding && (
+                <IconButton onClick={() => doEditEvent(item)} size={'small'} sx={styles.iconEdit}>
+                    <EditIcon />
+                </IconButton>
+            ),
+        [isAnyNodeBuilding]
+    );
     const renderEventList = () => {
         return (
-            <CheckboxList
-                className={styles.list}
-                onChecked={setSelectedItems}
-                checkedValues={selectedItems}
-                values={events}
-                itemComparator={areUuidsEqual}
-                itemRenderer={(props: any) => (
-                    <EventListItem
-                        key={props.item.equipmentId}
-                        onEdit={doEditEvent}
-                        isOneNodeBuilding={isAnyNodeBuilding}
-                        disabled={isLoading()}
-                        {...props}
-                    />
-                )}
+            <CheckboxList<Event>
+                sx={{ checkboxList: styles.list, label: { flexGrow: '1' } }}
+                items={events}
+                selectedItems={selectedItems}
+                onSelectionChange={setSelectedItems}
+                getItemId={(v) => v.equipmentId}
+                getItemLabel={getItemLabel}
+                secondaryAction={handleSecondaryAction}
+                isDisabled={() => isLoading()}
             />
         );
     };
