@@ -808,7 +808,7 @@ const NetworkModificationNodeEditor = () => {
             <DragDropContext onDragEnd={commit} onDragStart={() => setIsDragging(true)}>
                 <Droppable
                     droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
+                    isDropDisabled={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
                 >
                     {(provided) => (
                         <Box sx={styles.listContainer} ref={provided.innerRef} {...provided.droppableProps}>
@@ -824,6 +824,7 @@ const NetworkModificationNodeEditor = () => {
                                         onEdit={doEditModification}
                                         isDragging={isDragging}
                                         isOneNodeBuilding={isAnyNodeBuilding}
+                                        deleteInProgress={deleteInProgress}
                                         disabled={isLoading()}
                                         listSize={modifications.length}
                                         {...props}
@@ -950,7 +951,7 @@ const NetworkModificationNodeEditor = () => {
                             onClick={openImportModificationsDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={isAnyNodeBuilding}
+                            disabled={isAnyNodeBuilding || deleteInProgress}
                         >
                             <CreateNewFolderIcon />
                         </IconButton>
@@ -1001,7 +1002,11 @@ const NetworkModificationNodeEditor = () => {
                             size={'small'}
                             sx={styles.toolbarIcon}
                             disabled={
-                                !(copiedModifications.length > 0) || isAnyNodeBuilding || mapDataLoading || !currentNode
+                                !(copiedModifications.length > 0) ||
+                                isAnyNodeBuilding ||
+                                mapDataLoading ||
+                                deleteInProgress ||
+                                !currentNode
                             }
                         >
                             <ContentPasteIcon />
@@ -1012,7 +1017,13 @@ const NetworkModificationNodeEditor = () => {
                     onClick={doDeleteModification}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={selectedItems.length === 0 || isAnyNodeBuilding || mapDataLoading || !currentNode}
+                    disabled={
+                        selectedItems.length === 0 ||
+                        isAnyNodeBuilding ||
+                        mapDataLoading ||
+                        deleteInProgress ||
+                        !currentNode
+                    }
                 >
                     <DeleteIcon />
                 </IconButton>
@@ -1039,7 +1050,7 @@ const NetworkModificationNodeEditor = () => {
                                 onClick={openRestoreModificationDialog}
                                 size={'small'}
                                 sx={styles.toolbarIcon}
-                                disabled={modificationsToRestore.length === 0 || isAnyNodeBuilding}
+                                disabled={modificationsToRestore.length === 0 || isAnyNodeBuilding || deleteInProgress}
                             >
                                 <RestoreFromTrash />
                             </IconButton>
