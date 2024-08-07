@@ -14,56 +14,55 @@ import {
     TreeViewFinderNodeProps,
 } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
 import { useForm } from 'react-hook-form';
 import { NAME, EQUIPMENT_TYPE_FIELD, SELECTION_TYPE } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { useSaveMap } from './use-save-map';
-import { SelectionCreationPanelFormProps } from './selection-creation-panel-form';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 import { openNadList } from 'redux/actions';
 import { Nullable } from 'components/utils/ts-utils';
 import { AppState } from 'redux/reducer';
+import { SelectionCreationPanelForm } from './selection-creation-panel-form';
+import {
+    SelectionCreationPaneFields,
+    SelectionCreationPanelFormSchema,
+    getSelectionCreationSchema,
+} from './selection-creation-schema';
 
-const formSchema = yup
-    .object()
-    .shape({
-        [NAME]: yup.string().required(),
-        [SELECTION_TYPE]: yup.mixed<SELECTION_TYPES>().oneOf(Object.values(SELECTION_TYPES)).nullable().required(),
-        [EQUIPMENT_TYPE_FIELD]: yup.mixed<EquipmentType>().oneOf(Object.values(EquipmentType)).nullable().required(),
-    })
-    .required();
+type SelectionCreationPanelProps = {
+    getEquipments: (equipmentType: EquipmentType) => Equipment[];
+    onCancel: () => void;
+    navigateToPreviousDisplayMode: () => void;
+    nominalVoltages: number[];
+};
+
 const emptyFormData = {
     [NAME]: '',
     [EQUIPMENT_TYPE_FIELD]: null,
     [SELECTION_TYPE]: null,
 };
 
-export type SelectionCreationPanelFormFields = yup.InferType<typeof formSchema>;
-
-type SelectionCreationPanelProps = {
-    getEquipments: (equipmentType: EquipmentType) => Equipment[];
-    onCancel: () => void;
-    nominalVoltages: number[];
-};
+const formSchema = getSelectionCreationSchema();
 
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
     onCancel,
+    navigateToPreviousDisplayMode,
     nominalVoltages,
 }) => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
-    const formMethods = useForm({
+    const formMethods = useForm<Nullable<SelectionCreationPanelFormSchema>>({
         defaultValues: emptyFormData,
         // "Nullable" to allow null values as default values for required values
         // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
-        resolver: yupResolver<Nullable<SelectionCreationPanelFormFields>>(formSchema),
+        resolver: yupResolver<Nullable<SelectionCreationPanelFormSchema>>(formSchema),
     });
+
     const dispatch = useDispatch();
 
     const { setValue } = formMethods;
@@ -90,20 +89,17 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         }
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
 
-    const handleValidate = (formData: SelectionCreationPanelFormFields) => {
+    const handleValidate = (formData: SelectionCreationPaneFields) => {
         if (formData.selectionType === SELECTION_TYPES.NAD) {
             const equ = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
-            console.log('TEST', equ);
 
             dispatch(
                 openNadList(
                     equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id)).filter((id): id is string => !!id)
                 )
             );
-            console.log(
-                'SAVING',
-                equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
-            );
+            navigateToPreviousDisplayMode();
+            return;
         }
 
         if (destinationFolder) {
@@ -130,25 +126,6 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                         })}
                     </Button>
                     <Box m={1} />
-                    <Button
-                        onClick={() => {
-                            const equ = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
-
-                            dispatch(
-                                openNadList(
-                                    equ
-                                        .flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
-                                        .filter((id): id is string => !!id)
-                                )
-                            );
-                            console.log(
-                                'SAVING',
-                                equ.flatMap((eq) => eq.voltageLevels?.map((vl) => vl.id))
-                            );
-                        }}
-                    >
-                        test
-                    </Button>
                     <SelectionCreationPanelSubmitButton handleValidate={handleValidate} pendingState={pendingState} />
                 </Grid>
             </Box>

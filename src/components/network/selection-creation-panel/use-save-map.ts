@@ -11,14 +11,14 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
-import { SelectionCreationPanelFormFields } from './selection-creation-panel';
+import { SelectionCreationPanelNotNadFields } from './selection-creation-panel';
 import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 export type UseSaveMapOutput = {
     pendingState: boolean;
     onSaveSelection: (
         equipments: Equipment[],
-        selection: SelectionCreationPanelFormFields,
+        selection: SelectionCreationPanelNotNadFields,
         distDir: TreeViewFinderNodeProps,
         nominalVoltages: number[]
     ) => Promise<boolean>;
@@ -34,7 +34,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
     const onSaveSelection = useCallback(
         async (
             equipments: Equipment[],
-            selection: SelectionCreationPanelFormFields,
+            selection: SelectionCreationPanelNotNadFields,
             distDir: TreeViewFinderNodeProps,
             nominalVoltages: number[]
         ) => {

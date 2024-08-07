@@ -1238,16 +1238,13 @@ export const reducer = createReducer(initialState, (builder) => {
             (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
         );
 
-        diagramStatesWithoutNad.concat(
+        state.diagramStates = diagramStatesWithoutNad.concat(
             uniqueIds.map((id) => ({
                 id: id,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             }))
-        );
-        console.log('SAVING uniqueIds', uniqueIds, diagramStatesWithoutNad);
-
-        state.diagramStates = diagramStatesWithoutNad;
+        );;
     });
 
     builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {

@@ -206,7 +206,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                         svg.additionalMetadata?.voltageLevels.forEach((voltageLevel) => {
                             const name = getNameOrId(voltageLevel);
                             if (name !== null) {
-                                nadTitle += (nadTitle !== '' ? ' + ' : '') + name;
+                                nadTitle += (nadTitle !== '' ? ', ' : '') + name;
                             }
                             substationsIds.push(voltageLevel.substationId);
                         });
@@ -234,7 +234,7 @@ const useDisplayView = (studyUuid, currentNode) => {
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(diagramState.id, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
+                return createNetworkAreaDiagramView(diagramState.ids.sort(), diagramState.state, diagramState.depth);
             }
         },
         [

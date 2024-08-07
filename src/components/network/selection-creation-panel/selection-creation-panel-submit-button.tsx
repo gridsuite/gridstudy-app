@@ -1,42 +1,32 @@
 import { Button, CircularProgress } from '@mui/material';
 import { NAME, SELECTION_TYPE } from 'components/utils/field-constants';
-import { FieldValues, useFormContext, useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
-import { SelectionCreationPanelFormFields } from './selection-creation-panel';
 import { SELECTION_TYPES } from './selection-types';
+import { SelectionCreationPaneFields } from './selection-creation-panel';
 
-interface SelectionCreationPanelSubmitButtonProps<T> {
-    handleValidate: (formData: SelectionCreationPanelFormFields) => void;
+interface SelectionCreationPanelSubmitButtonProps {
+    handleValidate: (formData: SelectionCreationPaneFields) => void;
     pendingState: boolean;
 }
-export const SelectionCreationPanelSubmitButton = <T extends FieldValues>(
-    props: SelectionCreationPanelSubmitButtonProps<T>
-) => {
+export const SelectionCreationPanelSubmitButton = (props: SelectionCreationPanelSubmitButtonProps) => {
     const { handleValidate, pendingState } = props;
     const {
         handleSubmit,
         formState: { errors, isDirty },
-    } = useFormContext<SelectionCreationPanelFormFields>();
+    } = useFormContext<SelectionCreationPaneFields>();
 
     // UniqueNameInput validation is made with those values
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
 
-    const watchSelectionType = useWatch<SelectionCreationPanelFormFields>({
+    const watchSelectionType = useWatch<SelectionCreationPaneFields>({
         name: SELECTION_TYPE,
     });
 
-    const handleClick = () => {
-        if (watchSelectionType !== SELECTION_TYPES.NAD) {
-            return handleSubmit(handleValidate);
-        }
-
-        return handleValidate;
-    };
-
     return (
         <Button
-            onClick={handleClick}
+            onClick={handleSubmit(handleValidate)}
             disabled={
                 // when watchSelectionType is equal to SELECTION_TYPES.NAD, button is never disabled
                 watchSelectionType !== SELECTION_TYPES.NAD &&
