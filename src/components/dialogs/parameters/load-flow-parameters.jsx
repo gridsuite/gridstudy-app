@@ -605,6 +605,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                 values={LoadFlowProviders}
                                 callback={updateLfProviderCallback}
                             />
+                            <LineSeparator />
                         </Grid>
                     </Box>
                     <Box
@@ -620,26 +621,6 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                             })}
                             key="lfParameters"
                         >
-                            <LineSeparator />
-                            {/* <Grid container spacing={1} paddingTop={1}>
-                                <ParameterLineSlider
-                                    paramNameId={PARAM_LIMIT_REDUCTION}
-                                    label="LimitReduction"
-                                    marks={alertThresholdMarks}
-                                    minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                                />
-                                <LineSeparator />
-                            </Grid>
-                            <BasicLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
-                            <AdvancedLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
-                            <SpecificLoadFlowParameters
-                                disabled={!specificParamsDescriptions?.[provider]}
-                                subText={provider}
-                                specificParamsDescription={specificParamsDescrWithoutNanVals[provider]}
-                                specificCurrentParams={specificCurrentParams[provider]}
-                                onSpecificParamChange={onSpecificParamChange}
-                            /> */}
-
                             <Grid sx={{ width: '100%' }}>
                                 <Tabs value={tabValue} onChange={handleTabChange}>
                                     {TAB_INFO.map((tab, index) => (
