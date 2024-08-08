@@ -31,18 +31,21 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
         <>
             <Grid sx={{ width: '100%' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
-                    {TAB_INFO.map((tab, index) => (
-                        <Tab
-                            key={tab.label}
-                            label={<FormattedMessage id={tab.label} />}
-                            value={index}
-                            sx={{
-                                fontSize: 17,
-                                fontWeight: 'bold',
-                                textTransform: 'capitalize',
-                            }}
-                        />
-                    ))}
+                    {TAB_INFO.map(
+                        (tab, index) =>
+                            (tab.label !== TAB_VALUES[TAB_VALUES.LimitReductions] || params.limitReductions) && (
+                                <Tab
+                                    key={tab.label}
+                                    label={<FormattedMessage id={tab.label} />}
+                                    value={index}
+                                    sx={{
+                                        fontSize: 17,
+                                        fontWeight: 'bold',
+                                        textTransform: 'capitalize',
+                                    }}
+                                />
+                            )
+                    )}
                 </Tabs>
 
                 {TAB_INFO.map((tab, index) => (
