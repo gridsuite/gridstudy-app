@@ -195,7 +195,7 @@ const ExportDialog = ({
                     label={<FormattedMessage id="download.fileName" />}
                     id="fileName"
                     value={fileName}
-                    style={{ width: '100%' }}
+                    sx={{ width: '100%', marginBottom: 1 }}
                     fullWidth
                     variant="filled"
                     InputLabelProps={{ shrink: true }}
@@ -237,7 +237,7 @@ const ExportDialog = ({
                             color={
                                 selectedFormat ? 'text.main' : 'text.disabled'
                             }
-                            style={{ fontWeight: 'bold' }}
+                            sx={{ fontWeight: 'bold' }}
                         >
                             <FormattedMessage id="parameters" />
                         </Typography>
