@@ -8,10 +8,8 @@
 // Note: Translation keys (not taken into account prefix) come from db of dynamic-mapping-server
 const dynamic_mapping_models_fr = {
     // --- models --- //
-    'models.GeneratorSynchronousThreeWindings':
-        'Machine synchrone trois enroulements',
-    'models.GeneratorSynchronousFourWindings':
-        'Machine synchrone quatre enroulements',
+    'models.GeneratorSynchronousThreeWindings': 'Machine synchrone trois enroulements',
+    'models.GeneratorSynchronousFourWindings': 'Machine synchrone quatre enroulements',
     'models.GeneratorSynchronousThreeWindingsProportionalRegulations':
         'Machine synchrone trois enroulements avec régulations proportionnelles',
     'models.GeneratorSynchronousFourWindingsProportionalRegulations':
@@ -33,18 +31,14 @@ const dynamic_mapping_models_fr = {
     'variables.generator_QGen': 'Puissance réactive en Mvar',
     'variables.generator_QGenPu': 'Puissance réactive en pu',
     'variables.generator_running_value': 'generator_running_value',
-    'variables.generator_UStatorPu':
-        'Module de la tension stator en pu (base UNom)',
-    'variables.voltageRegulator_EfdPu':
-        'EfdPu en pu (tension de base sélectionnée)',
+    'variables.generator_UStatorPu': 'Module de la tension stator en pu (base UNom)',
+    'variables.voltageRegulator_EfdPu': 'EfdPu en pu (tension de base sélectionnée)',
 
     // Load
     'variables.load_PPu': 'Puissance active consommée en pu',
-    'variables.load_PRefPu':
-        'Puissance active soutirée à la tension nominale en MW',
+    'variables.load_PRefPu': 'Puissance active soutirée à la tension nominale en MW',
     'variables.load_QPu': 'Puissance réactive consommée en pu',
-    'variables.load_QRefPu':
-        'Puissance réactive soutirée à la tension nominale en Mvar',
+    'variables.load_QRefPu': 'Puissance réactive soutirée à la tension nominale en Mvar',
     'variables.load_running_value': 'load_running_value',
 
     // Bus
@@ -53,8 +47,7 @@ const dynamic_mapping_models_fr = {
     'variables.phi_value': 'Phase du noeud en degrés',
 
     // StaticVarCompensator
-    'variables.SVarC_injector_BPu':
-        'Susceptance totale en pu (base SNom, UNom)',
+    'variables.SVarC_injector_BPu': 'Susceptance totale en pu (base SNom, UNom)',
     'variables.SVarC_injector_PInjPu': 'Puissance active injectée en pu',
     'variables.SVarC_injector_QInjPu': 'Puissance réactive injectée en pu',
     'variables.SVarC_injector_UPu': 'Tension nominale en pu',

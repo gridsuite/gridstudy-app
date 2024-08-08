@@ -5,22 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    SyntheticEvent,
-    useCallback,
-    useState,
-} from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
-import {
-    TAB_INFO,
-    TAB_VALUES,
-} from '../common/limitreductions/columns-definitions';
+import { TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
 import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 
@@ -29,12 +21,9 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
     updateParameters: (value: Record<string, any>) => void;
 }> = ({ params, updateParameters }) => {
     const [tabValue, setTabValue] = useState(TAB_VALUES.General);
-    const handleTabChange = useCallback(
-        (event: SyntheticEvent, newValue: number) => {
-            setTabValue(newValue);
-        },
-        []
-    );
+    const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    }, []);
 
     return (
         <>
@@ -57,15 +46,10 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                 {TAB_INFO.map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
                         {tabValue === TAB_VALUES.General && (
-                            <ViolationsHidingParameters
-                                params={params}
-                                updateParameters={updateParameters}
-                            />
+                            <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
                         )}
                         {tabValue === TAB_VALUES.LimitReductions && (
-                            <LimitReductionsTableForm
-                                limits={params.limitReductions}
-                            />
+                            <LimitReductionsTableForm limits={params.limitReductions} />
                         )}
                     </TabPanel>
                 ))}

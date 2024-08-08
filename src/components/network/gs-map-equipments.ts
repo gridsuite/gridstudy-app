@@ -10,10 +10,7 @@ import { RefObject } from 'react';
 import { IntlShape } from 'react-intl';
 import { Dispatch } from 'redux';
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui/dist/hooks/useSnackMessage';
-import {
-    mapEquipmentsCreated,
-    setMapEquipementsInitialized,
-} from '../../redux/actions';
+import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
@@ -28,44 +25,16 @@ export default class GSMapEquipments extends MapEquipments {
     intlRef: RefObject<IntlShape>;
 
     initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
-        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            false
-        );
-        const fetchLinesMapInfosPromise = fetchLinesMapInfos(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            false
-        );
-        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            false
-        );
-        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            false
-        );
+        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false);
+        const fetchLinesMapInfosPromise = fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
+        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
+        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
 
         this.dispatch(setMapEquipementsInitialized(false));
 
         fetchSubstationsMapInfosPromise
             .then((val) => {
-                this.dispatch(
-                    mapEquipmentsCreated(
-                        this,
-                        undefined,
-                        undefined,
-                        val,
-                        undefined
-                    )
-                );
+                this.dispatch(mapEquipmentsCreated(this, undefined, undefined, val, undefined));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -79,15 +48,7 @@ export default class GSMapEquipments extends MapEquipments {
 
         fetchLinesMapInfosPromise
             .then((val) => {
-                this.dispatch(
-                    mapEquipmentsCreated(
-                        this,
-                        val,
-                        undefined,
-                        undefined,
-                        undefined
-                    )
-                );
+                this.dispatch(mapEquipmentsCreated(this, val, undefined, undefined, undefined));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -101,15 +62,7 @@ export default class GSMapEquipments extends MapEquipments {
 
         fetchTieLinesMapInfosPromise
             .then((val) => {
-                this.dispatch(
-                    mapEquipmentsCreated(
-                        this,
-                        undefined,
-                        val,
-                        undefined,
-                        undefined
-                    )
-                );
+                this.dispatch(mapEquipmentsCreated(this, undefined, val, undefined, undefined));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -123,15 +76,7 @@ export default class GSMapEquipments extends MapEquipments {
 
         fetchHvdcLinesMapInfosPromise
             .then((val) => {
-                this.dispatch(
-                    mapEquipmentsCreated(
-                        this,
-                        undefined,
-                        undefined,
-                        undefined,
-                        val
-                    )
-                );
+                this.dispatch(mapEquipmentsCreated(this, undefined, undefined, undefined, val));
             })
             .catch((error) => {
                 console.error(error.message);
@@ -167,35 +112,11 @@ export default class GSMapEquipments extends MapEquipments {
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
-    reloadImpactedSubstationsEquipments(
-        studyUuid: UUID,
-        currentNode: any,
-        substationsIds: string[]
-    ) {
-        const updatedSubstations = fetchSubstationsMapInfos(
-            studyUuid,
-            currentNode?.id,
-            substationsIds,
-            true
-        );
-        const updatedLines = fetchLinesMapInfos(
-            studyUuid,
-            currentNode?.id,
-            substationsIds,
-            true
-        );
-        const updatedTieLines = fetchTieLinesMapInfos(
-            studyUuid,
-            currentNode?.id,
-            substationsIds,
-            true
-        );
-        const updatedHvdcLines = fetchHvdcLinesMapInfos(
-            studyUuid,
-            currentNode?.id,
-            substationsIds,
-            true
-        );
+    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[]) {
+        const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
+        const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
+        const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
+        const updatedHvdcLines = fetchHvdcLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {
@@ -232,11 +153,6 @@ export default class GSMapEquipments extends MapEquipments {
                 });
             }
         });
-        return [
-            updatedSubstations,
-            updatedLines,
-            updatedTieLines,
-            updatedHvdcLines,
-        ];
+        return [updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines];
     }
 }

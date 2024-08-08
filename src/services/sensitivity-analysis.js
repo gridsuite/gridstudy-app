@@ -7,8 +7,7 @@
 
 import { backendFetchJson } from './utils';
 
-const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis';
+const PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis';
 
 export function getSensiUrl() {
     return `${PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES}/v1/`;

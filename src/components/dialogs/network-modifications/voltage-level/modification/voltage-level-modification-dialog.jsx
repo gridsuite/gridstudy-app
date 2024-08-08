@@ -25,10 +25,7 @@ import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyVoltageLevel } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -65,13 +62,9 @@ const formSchema = yup
             .nullable()
             .min(0, 'ShortCircuitCurrentLimitMustBeGreaterOrEqualToZero')
             .when([HIGH_SHORT_CIRCUIT_CURRENT_LIMIT], {
-                is: (highShortCircuitCurrentLimit) =>
-                    highShortCircuitCurrentLimit != null,
+                is: (highShortCircuitCurrentLimit) => highShortCircuitCurrentLimit != null,
                 then: (schema) =>
-                    schema.max(
-                        yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT),
-                        'ShortCircuitCurrentLimitMinMaxError'
-                    ),
+                    schema.max(yup.ref(HIGH_SHORT_CIRCUIT_CURRENT_LIMIT), 'ShortCircuitCurrentLimitMinMaxError'),
             }),
         [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: yup
             .number()
@@ -112,10 +105,8 @@ const VoltageLevelModificationDialog = ({
                 [NOMINAL_V]: editData?.nominalV?.value ?? null,
                 [LOW_VOLTAGE_LIMIT]: editData?.lowVoltageLimit?.value ?? null,
                 [HIGH_VOLTAGE_LIMIT]: editData?.highVoltageLimit?.value ?? null,
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    unitToKiloUnit(editData?.ipMin?.value) ?? null,
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]:
-                    unitToKiloUnit(editData?.ipMax?.value) ?? null,
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(editData?.ipMin?.value) ?? null,
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(editData?.ipMax?.value) ?? null,
                 ...getPropertiesFromModification(editData.properties),
             });
         }
@@ -137,26 +128,18 @@ const VoltageLevelModificationDialog = ({
                         if (voltageLevel) {
                             //We convert values of low short circuit current limit and high short circuit current limit from A to KA
                             if (voltageLevel.identifiableShortCircuit) {
-                                voltageLevel.identifiableShortCircuit.ipMax =
-                                    unitToKiloUnit(
-                                        voltageLevel.identifiableShortCircuit
-                                            ?.ipMax
-                                    );
-                                voltageLevel.identifiableShortCircuit.ipMin =
-                                    unitToKiloUnit(
-                                        voltageLevel.identifiableShortCircuit
-                                            ?.ipMin
-                                    );
+                                voltageLevel.identifiableShortCircuit.ipMax = unitToKiloUnit(
+                                    voltageLevel.identifiableShortCircuit?.ipMax
+                                );
+                                voltageLevel.identifiableShortCircuit.ipMin = unitToKiloUnit(
+                                    voltageLevel.identifiableShortCircuit?.ipMin
+                                );
                             }
                             setVoltageLevelInfos(voltageLevel);
                             setDataFetchStatus(FetchStatus.SUCCEED);
                             reset((formValues) => ({
                                 ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(
-                                        voltageLevel,
-                                        getValues
-                                    ),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(voltageLevel, getValues),
                                 [SUBSTATION_ID]: voltageLevel?.substationId,
                             }));
                         }
@@ -214,19 +197,13 @@ const VoltageLevelModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -238,9 +215,7 @@ const VoltageLevelModificationDialog = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
@@ -255,10 +230,7 @@ const VoltageLevelModificationDialog = ({
                     />
                 )}
                 {selectedId != null && (
-                    <VoltageLevelModificationForm
-                        voltageLevelInfos={voltageLevelInfos}
-                        equipmentId={selectedId}
-                    />
+                    <VoltageLevelModificationForm voltageLevelInfos={voltageLevelInfos} equipmentId={selectedId} />
                 )}
             </ModificationDialog>
         </CustomFormProvider>

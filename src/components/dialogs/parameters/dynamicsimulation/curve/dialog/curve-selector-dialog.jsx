@@ -5,16 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Grid,
-    Typography,
-    useTheme,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';
@@ -43,11 +34,9 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const intl = useIntl();
 
     const handleAddButton = useCallback(() => {
-        const selectedEquipments =
-            selectorRef.current.api.getSelectedEquipments();
+        const selectedEquipments = selectorRef.current.api.getSelectedEquipments();
 
-        const selectedVariables =
-            selectorRef.current.api.getSelectedVariables();
+        const selectedVariables = selectorRef.current.api.getSelectedVariables();
 
         // combine between equipments and variables
         const curves = selectedEquipments.reduce(
@@ -74,12 +63,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const hasSelectedRow = false;
 
     return (
-        <Dialog
-            open={open}
-            aria-labelledby="curve-selector-dialog-title"
-            maxWidth={'xl'}
-            fullWidth={true}
-        >
+        <Dialog open={open} aria-labelledby="curve-selector-dialog-title" maxWidth={'xl'} fullWidth={true}>
             <DialogTitle id="curve-selector-dialog-title">
                 <Typography component="span" variant="h5" sx={styles.title}>
                     <FormattedMessage id="DynamicSimulationCurveSelectorDialogTitle" />
@@ -97,14 +81,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                     <Grid item container xs={8} spacing={theme.spacing(1)}>
                         <CurveSelector ref={selectorRef} />
                     </Grid>
-                    <Grid
-                        item
-                        container
-                        direction={'column'}
-                        justifyContent={'center'}
-                        alignItems={'center'}
-                        xs={0.5}
-                    >
+                    <Grid item container direction={'column'} justifyContent={'center'} alignItems={'center'} xs={0.5}>
                         <Grid item>
                             <Tooltip
                                 title={intl.formatMessage({

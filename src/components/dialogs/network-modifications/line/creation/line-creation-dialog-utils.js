@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    TAB_HEADER,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME, TAB_HEADER } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
 const headerValidationSchema = (id) => ({
@@ -34,10 +30,7 @@ export const getHeaderEmptyFormData = (id = TAB_HEADER) => {
     return headerEmptyFormData(id);
 };
 
-export const getHeaderFormData = (
-    { equipmentId, equipmentName = '' },
-    id = TAB_HEADER
-) => ({
+export const getHeaderFormData = ({ equipmentId, equipmentName = '' }, id = TAB_HEADER) => ({
     [id]: {
         [EQUIPMENT_ID]: equipmentId,
         [EQUIPMENT_NAME]: equipmentName,

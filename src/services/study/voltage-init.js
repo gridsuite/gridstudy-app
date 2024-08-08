@@ -9,46 +9,30 @@ import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startVoltageInit(studyUuid, currentNodeUuid) {
-    console.info(
-        `Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
+    console.info(`Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
-    const startVoltageInitUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/voltage-init/run';
+    const startVoltageInitUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/voltage-init/run';
     console.debug(startVoltageInitUrl);
     return backendFetch(startVoltageInitUrl, { method: 'put' });
 }
 
 export function stopVoltageInit(studyUuid, currentNodeUuid) {
-    console.info(
-        `Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const stopVoltageInitUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/voltage-init/stop';
+    console.info(`Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const stopVoltageInitUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/voltage-init/stop';
     console.debug(stopVoltageInitUrl);
     return backendFetch(stopVoltageInitUrl, { method: 'put' });
 }
 
 export function fetchVoltageInitStatus(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/voltage-init/status';
+    console.info(`Fetching voltage init status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/voltage-init/status';
     console.debug(url);
     return backendFetchText(url);
 }
 
 export function fetchVoltageInitResult(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/voltage-init/result';
+    console.info(`Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/voltage-init/result';
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -72,8 +56,7 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
 
 export function getVoltageInitStudyParameters(studyUuid) {
     console.info('get voltage init study parameters');
-    const getVoltageInitParams =
-        getStudyUrl(studyUuid) + '/voltage-init/parameters';
+    const getVoltageInitParams = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);
     return backendFetchJson(getVoltageInitParams);
 }
@@ -81,8 +64,7 @@ export function getVoltageInitStudyParameters(studyUuid) {
 export function getVoltageInitModifications(studyUuid, currentNodeId) {
     console.info('get voltage init modifications');
     const getVoltageInitModifications =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) +
-        '/voltage-init/modifications';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) + '/voltage-init/modifications';
     console.debug(getVoltageInitModifications);
     return backendFetchJson(getVoltageInitModifications);
 }
@@ -90,8 +72,7 @@ export function getVoltageInitModifications(studyUuid, currentNodeId) {
 export function cloneVoltageInitModifications(studyUuid, currentNodeId) {
     console.info('cloning voltage init modifications');
     const cloneVoltageInitModificationsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) +
-        '/voltage-init/modifications';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeId) + '/voltage-init/modifications';
 
     return backendFetch(cloneVoltageInitModificationsUrl, {
         method: 'PUT',

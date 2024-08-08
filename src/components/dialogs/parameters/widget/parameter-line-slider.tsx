@@ -29,8 +29,7 @@ const ParameterLineSlider = ({
     minValue = 0,
     maxValue = 100,
 }: SliderParameterLineProps) => {
-    const [parameterValue, handleChangeParameterValue] =
-        useParameterState(paramNameId);
+    const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
     const [sliderValue, setSliderValue] = useState(Number(parameterValue));
 
     return (
@@ -38,12 +37,7 @@ const ParameterLineSlider = ({
             <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={label} />
             </Grid>
-            <Grid
-                item
-                container
-                xs={4}
-                sx={mergeSx(styles.controlItem, { paddingRight: 2 })}
-            >
+            <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
                 <Slider
                     min={minValue}
                     max={maxValue}

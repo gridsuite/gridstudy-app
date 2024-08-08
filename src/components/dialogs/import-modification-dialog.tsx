@@ -6,12 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import {
-    ElementType,
-    useSnackMessage,
-    DirectoryItemSelector,
-    TreeViewFinderNodeProps,
-} from '@gridsuite/commons-ui';
+import { ElementType, useSnackMessage, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { CopyType } from '../graph/menus/network-modification-node-editor';
 import { copyOrMoveModifications } from '../../services/study';
 import { UUID } from 'crypto';
@@ -32,27 +27,23 @@ interface ImportModificationDialogProps {
     studyUuid: UUID;
 }
 
-const ImportModificationDialog: FunctionComponent<
-    ImportModificationDialogProps
-> = ({ open, onClose, currentNode, studyUuid }) => {
+const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps> = ({
+    open,
+    onClose,
+    currentNode,
+    studyUuid,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const processSelectedElements = (
-        selectedElements: TreeViewFinderNodeProps[]
-    ) => {
+    const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
         const copyInfos = {
             copyType: CopyType.INSERT,
         };
         const modificationUuidList = selectedElements.map((e) => e.id);
         // import selected modifications
         if (modificationUuidList.length > 0) {
-            copyOrMoveModifications(
-                studyUuid,
-                currentNode.id,
-                modificationUuidList,
-                copyInfos
-            ).catch((errmsg) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDuplicateModificationMsg',

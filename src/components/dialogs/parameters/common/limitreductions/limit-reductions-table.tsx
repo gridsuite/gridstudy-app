@@ -4,15 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Box,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React, { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
 import { useFieldArray } from 'react-hook-form';
@@ -23,10 +15,7 @@ interface LimitReductionsTableProps {
     tableHeight: number;
 }
 
-const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
-    columnsDefinition,
-    tableHeight,
-}) => {
+const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ columnsDefinition, tableHeight }) => {
     const { fields: rows } = useFieldArray({
         name: LIMIT_REDUCTIONS_FORM,
     });
@@ -56,11 +45,7 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({
                 </TableHead>
                 <TableBody>
                     {rows.map((row: Record<'id', string>, index: number) => (
-                        <LimitReductionTableRow
-                            key={`${row.id}`}
-                            columnsDefinition={columnsDefinition}
-                            index={index}
-                        />
+                        <LimitReductionTableRow key={`${row.id}`} columnsDefinition={columnsDefinition} index={index} />
                     ))}
                 </TableBody>
             </Table>

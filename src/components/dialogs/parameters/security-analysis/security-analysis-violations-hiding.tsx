@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    ChangeEvent,
-    FunctionComponent,
-    useCallback,
-    useMemo,
-    useState,
-} from 'react';
+import React, { ChangeEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../parameters.jsx';
@@ -36,11 +30,7 @@ const formatValues = (values: Record<string, any>, isDivision: boolean) => {
     Object.entries(values)?.forEach(([key, value]) => {
         result = {
             ...result,
-            [key]: isProportionalSAParam(key)
-                ? roundToDefaultPrecision(
-                      isDivision ? value / 100 : value * 100
-                  )
-                : value,
+            [key]: isProportionalSAParam(key) ? roundToDefaultPrecision(isDivision ? value / 100 : value * 100) : value,
         };
     });
     return result;
@@ -69,19 +59,13 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
     const positiveDoubleValue = useMemo(() => /^\d*[.,]?\d?\d?$/, []);
 
     const checkValue = useCallback(
-        (
-            e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-            allowedRE: RegExp,
-            isPercentage: boolean
-        ) => {
+        (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allowedRE: RegExp, isPercentage: boolean) => {
             const outputTransformToString = (value: string) => {
                 return value?.replace(',', '.') || '';
             };
             const newValue = outputTransformToString(e.target.value);
             const isValid = allowedRE.exec(newValue);
-            const isAllValid = isPercentage
-                ? isValid && Number(newValue) <= 100
-                : isValid;
+            const isAllValid = isPercentage ? isValid && Number(newValue) <= 100 : isValid;
             if (isAllValid || newValue === '') {
                 setValues((prevState) => ({
                     ...prevState,
@@ -104,10 +88,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
         [checkValue, positiveDoubleValue]
     );
 
-    const formatedValues = useCallback(
-        (values: Record<string, any>) => formatValues(values, true),
-        []
-    );
+    const formatedValues = useCallback((values: Record<string, any>) => formatValues(values, true), []);
 
     const updateValue = useCallback(
         (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -138,11 +119,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
                 item
                 container
                 xs={isSingleField ? 8 : 4}
-                sx={
-                    isSingleField
-                        ? styles.singleTextField
-                        : styles.firstTextField
-                }
+                sx={isSingleField ? styles.singleTextField : styles.firstTextField}
             >
                 <TextField
                     fullWidth
@@ -169,10 +146,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
                     />
                 </Grid>
             )}
-            <Tooltip
-                title={<FormattedMessage id={tooltipInfoId} />}
-                placement="left-start"
-            >
+            <Tooltip title={<FormattedMessage id={tooltipInfoId} />} placement="left-start">
                 <InfoIcon />
             </Tooltip>
         </Grid>
@@ -249,11 +223,7 @@ const ViolationsHidingParameters: FunctionComponent<{
                     </Typography>
                     <Tooltip
                         sx={styles.tooltip}
-                        title={
-                            <FormattedMessage
-                                id={'securityAnalysis.toolTip.violationsHiding'}
-                            />
-                        }
+                        title={<FormattedMessage id={'securityAnalysis.toolTip.violationsHiding'} />}
                         placement="left-start"
                     >
                         <InfoIcon />
