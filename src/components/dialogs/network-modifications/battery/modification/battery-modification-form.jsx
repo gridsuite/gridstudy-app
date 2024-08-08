@@ -28,11 +28,7 @@ import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
 
-const BatteryModificationForm = ({
-    batteryToModify,
-    updatePreviousReactiveCapabilityCurveTable,
-    equipmentId,
-}) => {
+const BatteryModificationForm = ({ batteryToModify, updatePreviousReactiveCapabilityCurveTable, equipmentId }) => {
     const batteryIdField = (
         <TextField
             size="small"
@@ -129,9 +125,7 @@ const BatteryModificationForm = ({
             </Grid>
             <ReactiveLimitsForm
                 equipmentToModify={batteryToModify}
-                updatePreviousReactiveCapabilityCurveTable={
-                    updatePreviousReactiveCapabilityCurveTable
-                }
+                updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
             {/* Set points part */}
             <GridSection title="Setpoints" />
@@ -140,15 +134,9 @@ const BatteryModificationForm = ({
                 {gridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation
-                    isEquipmentModification={batteryToModify}
-                    previousValues={batteryToModify}
-                />
+                <FrequencyRegulation isEquipmentModification={batteryToModify} previousValues={batteryToModify} />
             </Grid>
-            <PropertiesForm
-                networkElementType={'battery'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
 };

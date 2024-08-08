@@ -19,12 +19,7 @@ import {
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import {
-    gridItem,
-    GridSection,
-    VoltageAdornment,
-    KiloAmpereAdornment,
-} from 'components/dialogs/dialogUtils';
+import { gridItem, GridSection, VoltageAdornment, KiloAmpereAdornment } from 'components/dialogs/dialogUtils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { TextInput } from '@gridsuite/commons-ui';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
@@ -47,33 +42,17 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                'SUBSTATION',
-                true
-            ).then((values) => {
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'SUBSTATION', true).then((values) => {
                 setSubstations(values.sort((a, b) => a.localeCompare(b)));
             });
         }
     }, [studyUuid, currentNodeUuid]);
 
     const voltageLevelIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, margin: 'normal' }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />
     );
 
-    const voltageLevelNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={{ margin: 'normal' }}
-        />
-    );
+    const voltageLevelNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ margin: 'normal' }} />;
 
     const substationField = (
         <AutocompleteInput
@@ -92,28 +71,14 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const nominalVoltageField = (
-        <FloatInput
-            name={NOMINAL_V}
-            label={'NominalVoltage'}
-            adornment={VoltageAdornment}
-        />
-    );
+    const nominalVoltageField = <FloatInput name={NOMINAL_V} label={'NominalVoltage'} adornment={VoltageAdornment} />;
 
     const lowVoltageLimitField = (
-        <FloatInput
-            name={LOW_VOLTAGE_LIMIT}
-            label={'LowVoltageLimit'}
-            adornment={VoltageAdornment}
-        />
+        <FloatInput name={LOW_VOLTAGE_LIMIT} label={'LowVoltageLimit'} adornment={VoltageAdornment} />
     );
 
     const highVoltageLimitField = (
-        <FloatInput
-            name={HIGH_VOLTAGE_LIMIT}
-            label={'HighVoltageLimit'}
-            adornment={VoltageAdornment}
-        />
+        <FloatInput name={HIGH_VOLTAGE_LIMIT} label={'HighVoltageLimit'} adornment={VoltageAdornment} />
     );
 
     const lowShortCircuitCurrentLimitField = (
@@ -132,13 +97,9 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const busBarCountField = (
-        <IntegerInput name={BUS_BAR_COUNT} label={'BusBarCount'} />
-    );
+    const busBarCountField = <IntegerInput name={BUS_BAR_COUNT} label={'BusBarCount'} />;
 
-    const sectionCountField = (
-        <IntegerInput name={SECTION_COUNT} label={'numberOfSections'} />
-    );
+    const sectionCountField = <IntegerInput name={SECTION_COUNT} label={'numberOfSections'} />;
 
     const displayOmnibus = watchBusBarCount > 1 || watchSectionCount > 1;
 

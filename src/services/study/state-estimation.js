@@ -9,50 +9,31 @@ import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startStateEstimation(studyUuid, currentNodeUuid) {
-    console.info(
-        `Running state estimation on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/state-estimation/run';
+    console.info(`Running state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/state-estimation/run';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
 export function stopStateEstimation(studyUuid, currentNodeUuid) {
-    console.info(
-        `Stopping state estimation on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/state-estimation/stop`;
+    console.info(`Stopping state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
 
 export function fetchStateEstimationStatus(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching state estimation status on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/state-estimation/status`;
+    console.info(`Fetching state estimation status on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/status`;
     console.debug(url);
     return backendFetchText(url);
 }
 
 export function fetchStateEstimationResult(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching state estimation result on ${studyUuid} and node ${currentNodeUuid}  ...`
-    );
+    console.info(`Fetching state estimation result on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/state-estimation/result`;
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/result`;
     console.debug(url);
     return backendFetchJson(url);
 }

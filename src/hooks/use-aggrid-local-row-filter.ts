@@ -7,10 +7,7 @@
 
 import { AgGridReact } from 'ag-grid-react';
 import React, { useCallback, useEffect } from 'react';
-import {
-    UseAggridRowFilterOutputType,
-    useAggridRowFilter,
-} from './use-aggrid-row-filter';
+import { UseAggridRowFilterOutputType, useAggridRowFilter } from './use-aggrid-row-filter';
 import {
     FilterSelectorType,
     FilterStorePropsType,
@@ -27,20 +24,16 @@ export const useAggridLocalRowFilter = (
     filterStoreParam: FilterStorePropsType
 ): UseAggridRowFilterOutputType => {
     const columns = gridRef.current?.api?.getColumnDefs();
-    const { updateFilter, filterSelector } =
-        useAggridRowFilter(filterStoreParam);
+    const { updateFilter, filterSelector } = useAggridRowFilter(filterStoreParam);
 
-    const generateEnumFilterModel = useCallback(
-        (filter: FilterSelectorType) => {
-            const filterValue = filter.value as string[];
-            return {
-                filterType: 'text',
-                type: 'customInRange',
-                filter: filterValue,
-            };
-        },
-        []
-    );
+    const generateEnumFilterModel = useCallback((filter: FilterSelectorType) => {
+        const filterValue = filter.value as string[];
+        return {
+            filterType: 'text',
+            type: 'customInRange',
+            filter: filterValue,
+        };
+    }, []);
 
     const formatCustomFiltersForAgGrid = useCallback(
         (filters: FilterSelectorType[]): FilterModel => {
@@ -62,16 +55,12 @@ export const useAggridLocalRowFilter = (
                 if (filters.length === 1) {
                     const filter = filters[0];
                     if (Array.isArray(filter.value)) {
-                        agGridFilterModel[column] =
-                            generateEnumFilterModel(filter);
+                        agGridFilterModel[column] = generateEnumFilterModel(filter);
                     } else {
                         agGridFilterModel[column] = {
                             filterType: filter.dataType,
                             type: filter.type,
-                            filter:
-                                filter.dataType === FILTER_DATA_TYPES.NUMBER
-                                    ? Number(filter.value)
-                                    : filter.value,
+                            filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
                         };
                     }
                 } else {
@@ -79,10 +68,7 @@ export const useAggridLocalRowFilter = (
                     const conditions = filters.map((filter) => ({
                         filterType: filter.dataType,
                         type: filter.type,
-                        filter:
-                            filter.dataType === FILTER_DATA_TYPES.NUMBER
-                                ? Number(filter.value)
-                                : filter.value,
+                        filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
                     }));
 
                     // Create a combined filter model with 'OR' for all conditions
@@ -91,17 +77,10 @@ export const useAggridLocalRowFilter = (
                         operator: 'OR',
                         // Dynamically add additional conditions
                         // Each additional condition is added as 'condition1', 'condition2', etc.
-                        ...conditions.reduce(
-                            (
-                                acc: FilterModel,
-                                condition: FilterModel,
-                                index: number
-                            ) => {
-                                acc[`condition${index + 1}`] = condition;
-                                return acc;
-                            },
-                            {}
-                        ),
+                        ...conditions.reduce((acc: FilterModel, condition: FilterModel, index: number) => {
+                            acc[`condition${index + 1}`] = condition;
+                            return acc;
+                        }, {}),
                     };
                 }
             });
@@ -127,9 +106,7 @@ export const useAggridLocalRowFilter = (
                     return (
                         // Ensure the column definition has a 'field' property
                         // and it matches the filter's column field
-                        'field' in colDef &&
-                        filter &&
-                        colDef?.field === filter.column
+                        'field' in colDef && filter && colDef?.field === filter.column
                     );
                 })
             );
@@ -138,33 +115,24 @@ export const useAggridLocalRowFilter = (
             if (allColumnsExist) {
                 const filterWithTolerance = addToleranceToFilter(filters);
                 // Format the filters for AG Grid and apply them using setFilterModel
-                const formattedFilters =
-                    formatCustomFiltersForAgGrid(filterWithTolerance);
+                const formattedFilters = formatCustomFiltersForAgGrid(filterWithTolerance);
                 gridRef.current.api.setFilterModel(formattedFilters);
             }
         },
         [formatCustomFiltersForAgGrid, gridRef]
     );
 
-    const addToleranceToFilter = (
-        filters: FilterSelectorType[],
-        tolerance: number = 0.00001
-    ): FilterSelectorType[] => {
+    const addToleranceToFilter = (filters: FilterSelectorType[], tolerance: number = 0.00001): FilterSelectorType[] => {
         const decimalPrecision: number = countDecimalPlaces(tolerance);
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
                 let valueAsNumber: number | string[] | null | undefined =
-                    typeof filter.value === 'string'
-                        ? parseFloat(filter.value)
-                        : filter.value;
+                    typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
                     // Call the truncateNumber function to accurately truncate 'valueAsNumber' to 'decimalPrecision' decimal places.
-                    let truncatedNumber = truncateNumber(
-                        valueAsNumber,
-                        decimalPrecision
-                    );
+                    let truncatedNumber = truncateNumber(valueAsNumber, decimalPrecision);
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
                         case 'notEqual':
@@ -173,33 +141,25 @@ export const useAggridLocalRowFilter = (
                                 {
                                     ...filter,
                                     type: 'greaterThan',
-                                    value: (
-                                        truncatedNumber + tolerance
-                                    ).toFixed(decimalPrecision),
+                                    value: (truncatedNumber + tolerance).toFixed(decimalPrecision),
                                 },
                                 {
                                     ...filter,
                                     type: 'lessThan',
-                                    value: (
-                                        truncatedNumber - tolerance
-                                    ).toFixed(decimalPrecision),
+                                    value: (truncatedNumber - tolerance).toFixed(decimalPrecision),
                                 },
                             ];
                         case 'lessThanOrEqual':
                             // For 'lessThanOrEqual', adjust the value upwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber + tolerance).toFixed(
-                                    decimalPrecision
-                                ),
+                                value: (truncatedNumber + tolerance).toFixed(decimalPrecision),
                             };
                         case 'greaterThanOrEqual':
                             // For 'greaterThanOrEqual', adjust the value downwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber - tolerance).toFixed(
-                                    decimalPrecision
-                                ),
+                                value: (truncatedNumber - tolerance).toFixed(decimalPrecision),
                             };
                         default:
                             return filter;

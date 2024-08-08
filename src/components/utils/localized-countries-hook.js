@@ -28,29 +28,19 @@ export const useLocalizedCountries = () => {
         } else if (lang === 'en') {
             localizedCountriesResult = localizedCountries(countriesEn);
         } else {
-            console.warn(
-                'Unsupported language "' +
-                    lang +
-                    '" for countries translation, we use english as default'
-            );
+            console.warn('Unsupported language "' + lang + '" for countries translation, we use english as default');
             localizedCountriesResult = localizedCountries(countriesEn);
         }
         setLocalizedCountriesModule(localizedCountriesResult);
     }, [languageLocal]);
 
     const countryCodes = useMemo(
-        () =>
-            localizedCountriesModule
-                ? Object.keys(localizedCountriesModule.object())
-                : [],
+        () => (localizedCountriesModule ? Object.keys(localizedCountriesModule.object()) : []),
         [localizedCountriesModule]
     );
 
     const translate = useCallback(
-        (countryCode) =>
-            localizedCountriesModule
-                ? localizedCountriesModule.get(countryCode)
-                : '',
+        (countryCode) => (localizedCountriesModule ? localizedCountriesModule.get(countryCode) : ''),
         [localizedCountriesModule]
     );
 

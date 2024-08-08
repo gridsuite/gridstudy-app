@@ -24,9 +24,7 @@ const styles = {
     }),
 };
 
-export const ImportParameters: FunctionComponent<ImportParametersProps> = (
-    props
-) => {
+export const ImportParameters: FunctionComponent<ImportParametersProps> = (props) => {
     const { formatWithParameters, onChange, currentParameters } = props;
 
     const [areParamsDisplayed, setAreParamsDisplayed] = useState(false);

@@ -10,18 +10,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
 import { useWatch } from 'react-hook-form';
-import {
-    ENABLED,
-    PHASE_TAP_CHANGER,
-    RATIO_TAP_CHANGER,
-} from 'components/utils/field-constants';
+import { ENABLED, PHASE_TAP_CHANGER, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
 import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 
-const TwoWindingsTransformerModificationDialogTabs = ({
-    tabIndex,
-    tabIndexesWithError,
-    setTabIndex,
-}) => {
+const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
     const phaseTapChangerEnabledWatch = useWatch({
         name: `${PHASE_TAP_CHANGER}.${ENABLED}`,
     });
@@ -40,9 +32,7 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                 }}
             >
                 <Tab
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
-                    }
+                    label={<FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
                         TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB
@@ -50,29 +40,16 @@ const TwoWindingsTransformerModificationDialogTabs = ({
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.LIMITS_TAB
-                    )}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.LIMITS_TAB)}
                 />
                 <Tab
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
-                    }
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB
-                    )}
+                    label={<FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.RATIO_TAP_TAB)}
                     disabled={!ratioTapChangerEnabledWatch}
                 />
                 <Tab
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
-                    }
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB
-                    )}
+                    label={<FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.PHASE_TAP_TAB)}
                     disabled={!phaseTapChangerEnabledWatch}
                 />
             </Tabs>

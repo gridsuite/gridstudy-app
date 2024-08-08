@@ -5,32 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    PREFIX_STUDY_QUERIES,
-    getStudyUrl,
-    getStudyUrlWithNodeUuid,
-} from './index';
+import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
-const GET_PARAMETERS_PREFIX =
-    import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
+const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
 export function startSensitivityAnalysis(studyUuid, currentNodeUuid) {
-    console.info(
-        `Running sensi on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const startSensiAnalysisUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/sensitivity-analysis/run';
+    console.info(`Running sensi on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const startSensiAnalysisUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/sensitivity-analysis/run';
 
     console.debug(startSensiAnalysisUrl);
     return backendFetch(startSensiAnalysisUrl, { method: 'post' });
 }
 
 export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
-    console.info(
-        `Stopping sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
+    console.info(`Stopping sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const stopSensitivityAnalysisUrl = `${getStudyUrlWithNodeUuid(
         studyUuid,
         currentNodeUuid
@@ -40,47 +29,27 @@ export function stopSensitivityAnalysis(studyUuid, currentNodeUuid) {
 }
 
 export function fetchSensitivityAnalysisStatus(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching sensitivity analysis status on ${studyUuid} and node ${currentNodeUuid} ...`
-    );
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/sensitivity-analysis/status`;
+    console.info(`Fetching sensitivity analysis status on ${studyUuid} and node ${currentNodeUuid} ...`);
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/sensitivity-analysis/status`;
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchSensitivityAnalysisResult(
-    studyUuid,
-    currentNodeUuid,
-    selector
-) {
-    console.info(
-        `Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`
-    );
+export function fetchSensitivityAnalysisResult(studyUuid, currentNodeUuid, selector) {
+    console.info(`Fetching sensitivity analysis on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
     // Add params to Url
     const urlSearchParams = new URLSearchParams();
     const jsoned = JSON.stringify(selector);
     urlSearchParams.append('selector', jsoned);
 
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/sensitivity-analysis/result?${urlSearchParams}`;
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/sensitivity-analysis/result?${urlSearchParams}`;
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchSensitivityAnalysisFilterOptions(
-    studyUuid,
-    currentNodeUuid,
-    selector
-) {
-    console.info(
-        `Fetching sensitivity analysis filter options on ${studyUuid} and node ${currentNodeUuid}  ...`
-    );
+export function fetchSensitivityAnalysisFilterOptions(studyUuid, currentNodeUuid, selector) {
+    console.info(`Fetching sensitivity analysis filter options on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
     // Add params to Url
     const urlSearchParams = new URLSearchParams();
@@ -130,21 +99,14 @@ export function setSensitivityAnalysisParameters(studyUuid, newParams) {
     });
 }
 
-export function getSensitivityAnalysisFactorsCount(
-    studyUuid,
-    currentNodeUuid,
-    isInjectionsSet,
-    newParams
-) {
+export function getSensitivityAnalysisFactorsCount(studyUuid, currentNodeUuid, isInjectionsSet, newParams) {
     console.info('get sensitivity analysis parameters computing count');
     const urlSearchParams = new URLSearchParams();
     const jsoned = JSON.stringify(isInjectionsSet);
     urlSearchParams.append('isInjectionsSet', jsoned);
     Object.keys(newParams)
         .filter((key) => newParams[key])
-        .forEach((key) =>
-            urlSearchParams.append(`ids[${key}]`, newParams[key])
-        );
+        .forEach((key) => urlSearchParams.append(`ids[${key}]`, newParams[key]));
 
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}
       /sensitivity-analysis/factors-count?${urlSearchParams}`;
@@ -154,19 +116,10 @@ export function getSensitivityAnalysisFactorsCount(
     });
 }
 
-export function exportSensitivityResultsAsCsv(
-    studyUuid,
-    currentNodeUuid,
-    csvConfig
-) {
-    console.info(
-        `Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`
-    );
+export function exportSensitivityResultsAsCsv(studyUuid, currentNodeUuid, csvConfig) {
+    console.info(`Exporting sensitivity analysis on ${studyUuid} and node ${currentNodeUuid} as CSV ...`);
 
-    const url = `${getStudyUrlWithNodeUuid(
-        studyUuid,
-        currentNodeUuid
-    )}/sensitivity-analysis/result/csv`;
+    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/sensitivity-analysis/result/csv`;
     console.debug(url);
     return backendFetch(url, {
         method: 'POST',

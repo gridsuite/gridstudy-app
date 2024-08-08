@@ -14,10 +14,7 @@ import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
 
-const ShuntCompensatorModificationForm = ({
-    shuntCompensatorInfos,
-    equipmentId,
-}) => {
+const ShuntCompensatorModificationForm = ({ shuntCompensatorInfos, equipmentId }) => {
     const shuntCompensatorIdField = (
         <TextField
             size="small"
@@ -41,12 +38,7 @@ const ShuntCompensatorModificationForm = ({
         />
     );
 
-    const characteristicsForm = (
-        <CharacteristicsForm
-            previousValues={shuntCompensatorInfos}
-            isModification={true}
-        />
-    );
+    const characteristicsForm = <CharacteristicsForm previousValues={shuntCompensatorInfos} isModification={true} />;
 
     return (
         <>
@@ -58,10 +50,7 @@ const ShuntCompensatorModificationForm = ({
             <Grid container spacing={2}>
                 {gridItem(characteristicsForm, 12)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'shuntCompensator'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>
     );
 };

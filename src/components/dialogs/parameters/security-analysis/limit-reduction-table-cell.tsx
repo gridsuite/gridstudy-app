@@ -8,11 +8,7 @@
 import { TableCell } from '@mui/material';
 import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import React, { FunctionComponent } from 'react';
-import {
-    IColumnsDef,
-    LIMIT_REDUCTIONS_FORM,
-    VOLTAGE_LEVELS_FORM,
-} from './columns-definitions';
+import { IColumnsDef, LIMIT_REDUCTIONS_FORM, VOLTAGE_LEVELS_FORM } from './columns-definitions';
 
 const LimitReductionTableCell: FunctionComponent<{
     rowIndex: number;
@@ -30,9 +26,7 @@ const LimitReductionTableCell: FunctionComponent<{
                     formProps={{ disabled: true }}
                 />
             ) : (
-                <FloatInput
-                    name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`}
-                />
+                <FloatInput name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`} />
             )}
         </TableCell>
     );

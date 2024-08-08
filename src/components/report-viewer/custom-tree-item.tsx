@@ -7,57 +7,28 @@
 import * as React from 'react';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
-import {
-    TreeItem,
-    TreeItemContentProps,
-    TreeItemProps,
-    useTreeItem,
-} from '@mui/x-tree-view/TreeItem';
+import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItem } from '@mui/x-tree-view/TreeItem';
 
 /**
  To have a custom MUI TreeItem where we can toggle a node without changing the current node / triggering handleSelection.
  */
-const CustomContent = React.forwardRef(function CustomContent(
-    props: TreeItemContentProps,
-    ref
-) {
-    const {
-        classes,
-        className,
-        label,
-        nodeId,
-        icon: iconProp,
-        expansionIcon,
-        displayIcon,
-    } = props;
+const CustomContent = React.forwardRef(function CustomContent(props: TreeItemContentProps, ref) {
+    const { classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon } = props;
 
-    const {
-        disabled,
-        expanded,
-        selected,
-        focused,
-        handleExpansion,
-        handleSelection,
-        preventSelection,
-    } = useTreeItem(nodeId);
+    const { disabled, expanded, selected, focused, handleExpansion, handleSelection, preventSelection } =
+        useTreeItem(nodeId);
 
     const icon = iconProp || expansionIcon || displayIcon;
 
-    const handleMouseDown = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>
-    ) => {
+    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         preventSelection(event);
     };
 
-    const handleExpansionClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>
-    ) => {
+    const handleExpansionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         handleExpansion(event);
     };
 
-    const handleSelectionClick = (
-        event: React.MouseEvent<HTMLDivElement, MouseEvent>
-    ) => {
+    const handleSelectionClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         handleSelection(event);
     };
 
@@ -72,27 +43,17 @@ const CustomContent = React.forwardRef(function CustomContent(
             onMouseDown={handleMouseDown}
             ref={ref as React.Ref<HTMLDivElement>}
         >
-            <div
-                onClick={handleExpansionClick}
-                className={classes.iconContainer}
-            >
+            <div onClick={handleExpansionClick} className={classes.iconContainer}>
                 {icon}
             </div>
-            <Typography
-                onClick={handleSelectionClick}
-                component="div"
-                className={classes.label}
-            >
+            <Typography onClick={handleSelectionClick} component="div" className={classes.label}>
                 {label}
             </Typography>
         </div>
     );
 });
 
-const CustomTreeItem = React.forwardRef(function CustomTreeItem(
-    props: TreeItemProps,
-    ref: React.Ref<HTMLLIElement>
-) {
+const CustomTreeItem = React.forwardRef(function CustomTreeItem(props: TreeItemProps, ref: React.Ref<HTMLLIElement>) {
     return <TreeItem ContentComponent={CustomContent} {...props} ref={ref} />;
 });
 

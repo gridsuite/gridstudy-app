@@ -43,28 +43,16 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
-    const [
-        providers,
-        provider,
-        updateProvider,
-        resetProvider,
-        params,
-        updateParameters,
-        resetParameters,
-    ] = parametersBackend;
+    const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
+        parametersBackend;
 
-    const handleUpdateProvider = (
-        evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => updateProvider(evt.target.value);
+    const handleUpdateProvider = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+        updateProvider(evt.target.value);
 
-    const updateProviderCallback = useCallback(handleUpdateProvider, [
-        updateProvider,
-    ]);
+    const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
     const intl = useIntl();
-    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
-        useState(false);
-    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
-        useState(false);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const { snackError } = useSnackMessage();
 
     // TODO: remove this when DynaFlow is supported
@@ -88,10 +76,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 setOpenSelectParameterDialog(false);
                 fetchSecurityAnalysisParameters(newParams[0].id)
                     .then((parameters) => {
-                        console.info(
-                            'loading the following security analysis parameters : ' +
-                                parameters.uuid
-                        );
+                        console.info('loading the following security analysis parameters : ' + parameters.uuid);
                         updateParameters({ ...parameters });
                     })
                     .catch((error) => {
@@ -115,26 +100,19 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
-            return params.limitReductions.map(
-                (vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
-                    let vlLNewLimits: ILimitReductionsByVoltageLevel = {
-                        ...vlLimits,
-                        permanentLimitReduction: formLimits[indexVl][IST_FORM],
+            return params.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
+                let vlLNewLimits: ILimitReductionsByVoltageLevel = {
+                    ...vlLimits,
+                    permanentLimitReduction: formLimits[indexVl][IST_FORM],
+                };
+                vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+                    vlLNewLimits.temporaryLimitReductions[index] = {
+                        ...temporaryLimit,
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
                     };
-                    vlLimits.temporaryLimitReductions.forEach(
-                        (temporaryLimit, index) => {
-                            vlLNewLimits.temporaryLimitReductions[index] = {
-                                ...temporaryLimit,
-                                reduction:
-                                    formLimits[indexVl][
-                                        LIMIT_DURATION_FORM + index
-                                    ],
-                            };
-                        }
-                    );
-                    return vlLNewLimits;
-                }
-            );
+                });
+                return vlLNewLimits;
+            });
         },
         [params]
     );
@@ -145,9 +123,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,
-                limitReductions: toLimitReductions(
-                    formLimits[LIMIT_REDUCTIONS_FORM]
-                ),
+                limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
             });
         },
         [params, updateParameters, toLimitReductions]
@@ -181,46 +157,20 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
-                    <SecurityAnalysisParametersSelector
-                        params={params}
-                        updateParameters={updateParameters}
-                    />
+                    <SecurityAnalysisParametersSelector params={params} updateParameters={updateParameters} />
                 </Grid>
-                <Grid
-                    container
-                    key="secuAnalysisProvider"
-                    sx={styles.scrollableGrid}
-                    spacing={1}
-                ></Grid>
+                <Grid container key="secuAnalysisProvider" sx={styles.scrollableGrid} spacing={1}></Grid>
                 <LineSeparator />
             </Grid>
-            <Grid
-                container
-                sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
-                )}
-            >
+            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
                 <LabelledButton
                     callback={() => setOpenSelectParameterDialog(true)}
                     label="settings.button.chooseSettings"
                 />
-                <LabelledButton
-                    callback={() => setOpenCreateParameterDialog(true)}
-                    label="save"
-                />
-                <LabelledButton
-                    callback={resetSAParametersAndProvider}
-                    label="resetToDefault"
-                />
-                <LabelledButton
-                    label="resetProviderValuesToDefault"
-                    callback={resetSAParameters}
-                />
-                <SubmitButton
-                    onClick={handleSubmit(updateLimitReductions)}
-                    variant="outlined"
-                >
+                <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
+                <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
+                <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
                     <FormattedMessage id="validate" />
                 </SubmitButton>
             </Grid>

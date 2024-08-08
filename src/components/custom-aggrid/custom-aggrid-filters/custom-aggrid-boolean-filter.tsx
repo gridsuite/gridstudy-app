@@ -26,9 +26,7 @@ interface ICustomAggridBooleanFilter {
     onChange: (value: string) => void;
 }
 
-const CustomAggridBooleanFilter: FunctionComponent<
-    ICustomAggridBooleanFilter
-> = ({ value, onChange }) => {
+const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> = ({ value, onChange }) => {
     const intl = useIntl();
 
     const handleValueChange = (event: SelectChangeEvent) => {

@@ -8,12 +8,7 @@
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 
-export function copySubtree(
-    sourceStudyUuid,
-    targetStudyUuid,
-    nodeToCopyUuid,
-    referenceNodeUuid
-) {
+export function copySubtree(sourceStudyUuid, targetStudyUuid, nodeToCopyUuid, referenceNodeUuid) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
@@ -49,12 +44,7 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function cutTreeNode(
-    studyUuid,
-    nodeToCutUuid,
-    referenceNodeUuid,
-    insertMode
-) {
+export function cutTreeNode(studyUuid, nodeToCutUuid, referenceNodeUuid, insertMode) {
     const nodeCutUrl =
         getStudyUrl(studyUuid) +
         '/tree/nodes?insertMode=' +
@@ -73,13 +63,7 @@ export function cutTreeNode(
     });
 }
 
-export function copyTreeNode(
-    sourceStudyUuid,
-    targetStudyId,
-    nodeToCopyUuid,
-    referenceNodeUuid,
-    insertMode
-) {
+export function copyTreeNode(sourceStudyUuid, targetStudyId, nodeToCopyUuid, referenceNodeUuid, insertMode) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyId) +
         '/tree/nodes?insertMode=' +
@@ -102,11 +86,7 @@ export function copyTreeNode(
 
 export function createTreeNode(studyUuid, parentId, insertMode, node) {
     const nodeCreationUrl =
-        getStudyUrl(studyUuid) +
-        '/tree/nodes/' +
-        encodeURIComponent(parentId) +
-        '?mode=' +
-        insertMode;
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentId) + '?mode=' + insertMode;
     console.debug('%s with body: %s', nodeCreationUrl, node);
     return backendFetch(nodeCreationUrl, {
         method: 'post',
@@ -120,11 +100,7 @@ export function createTreeNode(studyUuid, parentId, insertMode, node) {
 
 export function stashTreeNode(studyUuid, nodeId) {
     console.info('Stash tree node : ', nodeId);
-    const url =
-        getStudyUrl(studyUuid) +
-        '/tree/nodes/' +
-        encodeURIComponent(nodeId) +
-        '/stash';
+    const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId) + '/stash';
     console.debug(url);
     return backendFetch(url, {
         method: 'post',
@@ -134,10 +110,7 @@ export function stashTreeNode(studyUuid, nodeId) {
 export function stashSubtree(studyUuid, parentNodeId) {
     console.info('stash node subtree : ', parentNodeId);
     const url =
-        getStudyUrl(studyUuid) +
-        '/tree/nodes/' +
-        encodeURIComponent(parentNodeId) +
-        '/stash?stashChildren=true';
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentNodeId) + '/stash?stashChildren=true';
     console.debug(url);
     return backendFetch(url, {
         method: 'post',
@@ -159,8 +132,7 @@ export function updateTreeNode(studyUuid, node) {
 
 export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     console.info('Fetching network modification tree node : ', nodeUuid);
-    const url =
-        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
+    const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -174,10 +146,7 @@ export function fetchNetworkModificationTree(studyUuid) {
 
 export function fetchNetworkModificationSubtree(studyUuid, parentNodeUuid) {
     console.info('Fetching network modification tree node : ', parentNodeUuid);
-    const url =
-        getStudyUrl(studyUuid) +
-        '/subtree?parentNodeUuid=' +
-        encodeURIComponent(parentNodeUuid);
+    const url = getStudyUrl(studyUuid) + '/subtree?parentNodeUuid=' + encodeURIComponent(parentNodeUuid);
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -197,16 +166,8 @@ export function restoreStashedNodes(studyUuid, nodeToRestoreIds, anchorNodeId) {
     );
     urlSearchParams.append('anchorNodeId', encodeURIComponent(anchorNodeId));
 
-    console.info(
-        'Restoring nodes %s under nodes %s of study : %s',
-        nodeToRestoreIds,
-        nodeToRestoreIds,
-        studyUuid
-    );
-    const url =
-        getStudyUrl(studyUuid) +
-        '/tree/nodes/restore?' +
-        urlSearchParams.toString();
+    console.info('Restoring nodes %s under nodes %s of study : %s', nodeToRestoreIds, nodeToRestoreIds, studyUuid);
+    const url = getStudyUrl(studyUuid) + '/tree/nodes/restore?' + urlSearchParams.toString();
 
     console.debug(url);
     return backendFetch(url, {
@@ -227,8 +188,7 @@ export function deleteStashedNodes(studyUuid, nodeToDeleteIds) {
     urlSearchParams.append('deleteChildren', true);
 
     console.info('Delete nodes %s of study : %s', nodeToDeleteIds, studyUuid);
-    const url =
-        getStudyUrl(studyUuid) + '/tree/nodes?' + urlSearchParams.toString();
+    const url = getStudyUrl(studyUuid) + '/tree/nodes?' + urlSearchParams.toString();
 
     console.debug(url);
     return backendFetch(url, {

@@ -13,26 +13,30 @@ import {
     PARAM_LINE_FLOW_MODE,
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
-} from '../utils/config-params.js';
-import { setStudyDisplayMode } from '../redux/actions.js';
+} from '../utils/config-params';
+import { setStudyDisplayMode } from '../redux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
-import { DiagramType } from './diagrams/diagram-common.js';
+import { DiagramType } from './diagrams/diagram-common';
 import { ReactFlowProvider } from 'react-flow-renderer';
 import { Box } from '@mui/system';
-import HorizontalToolbar from './horizontal-toolbar.jsx';
-import NetworkModificationTreePane from './network-modification-tree-pane.jsx';
-import NetworkMapTab from './network/network-map-tab.jsx';
-import { DiagramPane } from './diagrams/diagram-pane.jsx';
-import { StudyView } from './study-pane.jsx';
+import HorizontalToolbar from './horizontal-toolbar';
+import NetworkModificationTreePane from './network-modification-tree-pane';
+import NetworkMapTab from './network/network-map-tab';
+import { DiagramPane } from './diagrams/diagram-pane';
+import { StudyView } from './study-pane';
 import { darken } from '@mui/material/styles';
 import ComputingType from './computing-status/computing-type';
-import { useIntl } from 'react-intl';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import { StudyDisplayMode } from 'redux/reducer.type.ts';
 
 import { Global, css } from '@emotion/react';
-import { EQUIPMENT_TYPES } from './utils/equipment-types.js';
+import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import SelectionCreationPanel from './network/selection-creation-panel';
+import { StudyDisplayMode } from './network-modification.type';
+
+import GuidancePopup from './network/guidance-popup';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import { FormattedMessage } from 'react-intl';
+
 const styles = {
     map: {
         display: 'flex',
@@ -75,7 +79,45 @@ const styles = {
         flexDirection: 'row',
         overflow: 'hidden',
     },
+    popUpContent: (theme) => ({
+        fontSize: 15,
+        fontFamily: theme.typography.fontFamily,
+    }),
 };
+//define guidancePopup style
+const guidancePopupStyle = {
+    card: {
+        position: 'absolute',
+        left: '10px',
+        bottom: '150px',
+        maxWidth: '200px',
+    },
+    header: {
+        paddingBottom: 'inherit',
+    },
+    actionsContainer: {
+        display: 'flex',
+        justifyContent: 'center',
+    },
+};
+
+// define the guidancePopup title and content
+export const Title = () => (
+    <Typography variant="h6" component="span">
+        <FormattedMessage id="guidancePopUp.title" />
+    </Typography>
+);
+export const Content = () => (
+    <>
+        <Typography variant="body2" sx={styles.popUpContent}>
+            <FormattedMessage id="guidancePopUp.firstVariant" />
+        </Typography>
+        <Typography variant="body2" sx={styles.popUpContent}>
+            <FormattedMessage id="guidancePopUp.secondVariant" />
+        </Typography>
+    </>
+);
+
 const MapViewer = ({
     studyUuid,
     currentNode,
@@ -87,38 +129,25 @@ const MapViewer = ({
     setErrorMessage,
 }) => {
     const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
-    const intl = useIntl();
     const dispatch = useDispatch();
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
-    const { snackInfo, closeSnackbar } = useSnackMessage();
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
-    const lineParallelPath = useSelector(
-        (state) => state[PARAM_LINE_PARALLEL_PATH]
-    );
-    const [
-        shouldOpenSelectionCreationPanel,
-        setShouldOpenSelectionCreationPanel,
-    ] = useState(false);
+    const lineParallelPath = useSelector((state) => state[PARAM_LINE_PARALLEL_PATH]);
+    const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
 
     const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
-    const lineFlowColorMode = useSelector(
-        (state) => state[PARAM_LINE_FLOW_COLOR_MODE]
-    );
+    const lineFlowColorMode = useSelector((state) => state[PARAM_LINE_FLOW_COLOR_MODE]);
 
-    const lineFlowAlertThreshold = useSelector((state) =>
-        Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD])
-    );
+    const lineFlowAlertThreshold = useSelector((state) => Number(state[PARAM_LINE_FLOW_ALERT_THRESHOLD]));
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const oneBusShortCircuitStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
-    );
+    const oneBusShortCircuitStatus = useSelector((state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]);
     const previousStudyDisplayMode = useRef(undefined);
-    const isInDrawingMode = previousStudyDisplayMode.current !== undefined;
 
     const [nominalVoltages, setNominalVoltages] = useState();
+    const [isInDrawingMode, setIsInDrawingMode] = useState(false);
 
     const openVoltageLevel = useCallback(
         (vlId) => {
@@ -140,39 +169,25 @@ const MapViewer = ({
         onChangeTab(1); // switch to spreadsheet view
     }
 
-    const [instructionSnackbar, setInstructionSnackbar] = useState(undefined);
-    useEffect(() => {
-        //display a snackbar
-        if (drawingMode === DRAW_MODES.DRAW_POLYGON && !instructionSnackbar) {
-            setInstructionSnackbar(
-                snackInfo({
-                    messageTxt: intl.formatMessage({
-                        id: 'DrawingPolygonInstruction',
-                    }),
-                    persist: true,
-                })
-            );
-        }
-        if (drawingMode === DRAW_MODES.SIMPLE_SELECT && instructionSnackbar) {
-            closeSnackbar(instructionSnackbar);
-            setInstructionSnackbar(undefined);
-        }
-    }, [drawingMode, intl, snackInfo, instructionSnackbar, closeSnackbar]);
-
-    const navigateToPreviousDisplayMode = useCallback(() => {
-        setShouldOpenSelectionCreationPanel(false);
-        if (isInDrawingMode) {
-            dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
-            previousStudyDisplayMode.current = undefined;
-        }
-    }, [dispatch, isInDrawingMode]);
-
     const onDrawingModeEnter = useCallback((active) => {
         setDrawingMode(active);
     }, []);
 
+    const leaveDrawingMode = useCallback(() => {
+        // clear the user drawing and go back to simple select.
+        networkMapref.current.getMapDrawer()?.trash();
+        setDrawingMode(DRAW_MODES.SIMPLE_SELECT);
+        // leave drawing mode and go back to the previous study display mode and close the creation panel if it's open
+        dispatch(setStudyDisplayMode(previousStudyDisplayMode.current));
+        setIsInDrawingMode(false);
+        previousStudyDisplayMode.current = undefined;
+        if (shouldOpenSelectionCreationPanel) {
+            setShouldOpenSelectionCreationPanel(false);
+        }
+    }, [dispatch, shouldOpenSelectionCreationPanel]);
+
     // When the user enter the drawing mode, we need to switch the study display mode to map
-    // and save the previous mode so we can restore it when the user cancel the drawing
+    // and save the previous mode, so we can restore it when the user cancel the drawing
     useEffect(() => {
         const all = networkMapref.current?.getMapDrawer()?.getAll();
         if (all === undefined) {
@@ -183,50 +198,27 @@ const MapViewer = ({
         const coordinates = features?.geometry?.coordinates;
         const isPolygonDrawn = coordinates?.[0]?.length > 3;
 
-        // fitst click on draw button, the polygon is not drawn yet, and the user want to draw
-        if (
-            drawingMode === DRAW_MODES.DRAW_POLYGON &&
-            isPolygonDrawn === false
-        ) {
-            // save the previous mode so we can restore it when the user cancel the drawing
+        // first click on draw button, the polygon is not drawn yet, and the user want to draw
+        if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === false) {
             if (!isInDrawingMode) {
-                previousStudyDisplayMode.current = studyDisplayMode;
+                // save the previous display mode, so we can restore it when the user cancel the drawing
+                if (!previousStudyDisplayMode.current) {
+                    previousStudyDisplayMode.current = studyDisplayMode;
+                }
+                setIsInDrawingMode(true);
+                //go to map full screen mode
+                dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
             }
-            //go to map full screen mode
-            dispatch(setStudyDisplayMode(StudyDisplayMode.MAP));
         }
         // the user has a polygon, and want to draw another
-        else if (
-            drawingMode === DRAW_MODES.DRAW_POLYGON &&
-            isPolygonDrawn === true
-        ) {
-            if (
-                networkMapref.current.getMapDrawer()?.getAll().features
-                    ?.length > 1
-            ) {
+        else if (drawingMode === DRAW_MODES.DRAW_POLYGON && isPolygonDrawn === true) {
+            if (networkMapref.current.getMapDrawer()?.getAll().features?.length > 1) {
                 setShouldOpenSelectionCreationPanel(false);
-                const idFirstPolygon = networkMapref.current
-                    .getMapDrawer()
-                    .getAll().features[0].id;
-                networkMapref.current
-                    .getMapDrawer()
-                    .delete(String(idFirstPolygon));
+                const idFirstPolygon = networkMapref.current.getMapDrawer().getAll().features[0].id;
+                networkMapref.current.getMapDrawer().delete(String(idFirstPolygon));
             }
         }
-        // transition between Drawing polygon mode -> cancel the drawing and return to previous display mode
-        else if (
-            drawingMode === DRAW_MODES.SIMPLE_SELECT &&
-            isPolygonDrawn === false
-        ) {
-            navigateToPreviousDisplayMode();
-        }
-    }, [
-        dispatch,
-        drawingMode,
-        navigateToPreviousDisplayMode,
-        studyDisplayMode,
-        isInDrawingMode,
-    ]);
+    }, [dispatch, drawingMode, studyDisplayMode, isInDrawingMode]);
 
     const onDrawEvent = useCallback((event) => {
         switch (event) {
@@ -259,35 +251,22 @@ const MapViewer = ({
                 <Box
                     sx={{
                         display:
-                            studyDisplayMode === StudyDisplayMode.TREE ||
-                            studyDisplayMode === StudyDisplayMode.HYBRID
+                            studyDisplayMode === StudyDisplayMode.TREE || studyDisplayMode === StudyDisplayMode.HYBRID
                                 ? 'flex'
                                 : 'none',
                         height: '100%',
-                        flexBasis:
-                            studyDisplayMode === StudyDisplayMode.HYBRID
-                                ? '50%'
-                                : '100%',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
                     }}
                 >
                     <ReactFlowProvider>
-                        <NetworkModificationTreePane
-                            studyUuid={studyUuid}
-                            studyMapTreeDisplay={studyDisplayMode}
-                        />
+                        <NetworkModificationTreePane studyUuid={studyUuid} studyMapTreeDisplay={studyDisplayMode} />
                     </ReactFlowProvider>
                 </Box>
                 {/* Map */}
                 <Box
                     sx={{
-                        display:
-                            studyDisplayMode !== StudyDisplayMode.TREE
-                                ? 'flex'
-                                : 'none',
-                        flexBasis:
-                            studyDisplayMode === StudyDisplayMode.HYBRID
-                                ? '50%'
-                                : '100%',
+                        display: studyDisplayMode !== StudyDisplayMode.TREE ? 'flex' : 'none',
+                        flexBasis: studyDisplayMode === StudyDisplayMode.HYBRID ? '50%' : '100%',
                         height: '100%',
                     }}
                 >
@@ -301,13 +280,11 @@ const MapViewer = ({
                             <Box
                                 sx={{
                                     position: 'absolute',
-                                    width: shouldOpenSelectionCreationPanel
-                                        ? '80%'
-                                        : '100%',
+                                    width: shouldOpenSelectionCreationPanel ? '80%' : '100%',
                                     height: '100%',
                                 }}
                             >
-                                {isInDrawingMode ? (
+                                {isInDrawingMode && (
                                     // hack to override the bg-color of the draw button when we enter in draw mode
                                     <Global
                                         styles={css`
@@ -316,22 +293,17 @@ const MapViewer = ({
                                             }
                                         `}
                                     />
-                                ) : null}
+                                )}
+
                                 <NetworkMapTab
                                     networkMapRef={networkMapref}
                                     studyUuid={studyUuid}
-                                    visible={
-                                        view === StudyView.MAP &&
-                                        studyDisplayMode !==
-                                            StudyDisplayMode.TREE
-                                    }
+                                    visible={view === StudyView.MAP && studyDisplayMode !== StudyDisplayMode.TREE}
                                     lineFullPath={lineFullPath}
                                     lineParallelPath={lineParallelPath}
                                     lineFlowMode={lineFlowMode}
                                     lineFlowColorMode={lineFlowColorMode}
-                                    lineFlowAlertThreshold={
-                                        lineFlowAlertThreshold
-                                    }
+                                    lineFlowAlertThreshold={lineFlowAlertThreshold}
                                     openVoltageLevel={openVoltageLevel}
                                     currentNode={currentNode}
                                     onChangeTab={onChangeTab}
@@ -343,6 +315,18 @@ const MapViewer = ({
                                     isInDrawingMode={isInDrawingMode}
                                     onNominalVoltagesChange={setNominalVoltages}
                                 ></NetworkMapTab>
+                                {isInDrawingMode && studyDisplayMode === StudyDisplayMode.MAP && (
+                                    <GuidancePopup
+                                        title={<Title />}
+                                        content={<Content />}
+                                        actions={
+                                            <Button size="small" onClick={leaveDrawingMode}>
+                                                <FormattedMessage id="guidancePopUp.action" />
+                                            </Button>
+                                        }
+                                        styles={guidancePopupStyle}
+                                    />
+                                )}
                             </Box>
 
                             <DiagramPane
@@ -354,16 +338,12 @@ const MapViewer = ({
                                     view === StudyView.MAP &&
                                     studyDisplayMode !== StudyDisplayMode.TREE
                                 }
-                                oneBusShortCircuitStatus={
-                                    oneBusShortCircuitStatus
-                                }
+                                oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                             />
 
                             <Box
                                 sx={{
-                                    width: shouldOpenSelectionCreationPanel
-                                        ? '20%'
-                                        : '0%',
+                                    width: shouldOpenSelectionCreationPanel ? '20%' : '0%',
                                     height: '100%',
                                     position: 'absolute',
                                     right: 0,
@@ -373,9 +353,7 @@ const MapViewer = ({
                                     <SelectionCreationPanel
                                         getEquipments={getEquipments}
                                         onCancel={() => {
-                                            setShouldOpenSelectionCreationPanel(
-                                                false
-                                            );
+                                            setShouldOpenSelectionCreationPanel(false);
                                         }}
                                         nominalVoltages={nominalVoltages}
                                     />

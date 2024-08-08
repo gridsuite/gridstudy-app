@@ -72,24 +72,15 @@ const getLimitDurationsFormSchema = (nbLimits: number) => {
     return limitDurationsFormSchema;
 };
 
-export const getLimitReductionsFormSchema = (
-    limits: ILimitReductionsByVoltageLevel[]
-) => {
+export const getLimitReductionsFormSchema = (limits: ILimitReductionsByVoltageLevel[]) => {
     return yup
         .object()
         .shape({
             [LIMIT_REDUCTIONS_FORM]: yup.array().of(
                 yup.object().shape({
                     [VOLTAGE_LEVELS_FORM]: yup.string(),
-                    [IST_FORM]: yup
-                        .number()
-                        .min(0, 'RealPercentage')
-                        .max(1, 'RealPercentage')
-                        .nullable()
-                        .required(),
-                    ...getLimitDurationsFormSchema(
-                        limits[0].temporaryLimitReductions.length
-                    ),
+                    [IST_FORM]: yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required(),
+                    ...getLimitDurationsFormSchema(limits[0].temporaryLimitReductions.length),
                 })
             ),
         })

@@ -7,14 +7,7 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import {
-    Grid,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    LinearProgress,
-} from '@mui/material';
+import { Grid, Dialog, DialogTitle, DialogContent, DialogActions, LinearProgress } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useButtonWithTooltip } from '../../utils/inputs/input-hooks';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
@@ -60,8 +53,7 @@ const ModificationDialogContent = ({
     const currentNode = useSelector((state) => {
         return state.currentTreeNode;
     });
-    const isNodeNotBuilt =
-        currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
+    const isNodeNotBuilt = currentNode?.data?.globalBuildStatus === BUILD_STATUS.NOT_BUILT;
     const copyEquipmentButton = useButtonWithTooltip({
         label: 'CopyFromExisting',
         handleClick: searchCopy?.handleOpenSearchDialog,
@@ -79,11 +71,7 @@ const ModificationDialogContent = ({
     };
 
     return (
-        <Dialog
-            onClose={handleClose}
-            aria-labelledby={titleId}
-            {...dialogProps}
-        >
+        <Dialog onClose={handleClose} aria-labelledby={titleId} {...dialogProps}>
             {isDataFetching && <LinearProgress />}
             <DialogTitle>
                 <Grid container spacing={2} justifyContent={'space-between'}>
@@ -91,19 +79,10 @@ const ModificationDialogContent = ({
                         <FormattedMessage id={titleId} />
                     </Grid>
 
-                    <Grid
-                        item
-                        xs={6}
-                        container
-                        spacing={2}
-                        justifyContent={'right'}
-                    >
+                    <Grid item xs={6} container spacing={2} justifyContent={'right'}>
                         {showNodeNotBuiltWarning && isNodeNotBuilt && (
                             <Grid item xs={10}>
-                                <Alert
-                                    severity={'warning'}
-                                    sx={styles.warningMessage}
-                                >
+                                <Alert severity={'warning'} sx={styles.warningMessage}>
                                     <FormattedMessage id="ModifyNodeNotBuiltWarningMsg" />
                                 </Alert>
                             </Grid>

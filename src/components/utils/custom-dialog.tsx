@@ -7,12 +7,7 @@
 
 import React, { FunctionComponent } from 'react';
 import { useIntl } from 'react-intl';
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Button from '@mui/material/Button';
 import { CancelButton } from '@gridsuite/commons-ui';
 

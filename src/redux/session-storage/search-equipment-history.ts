@@ -12,9 +12,7 @@ import yup from 'components/utils/yup-config';
 
 const MAX_SEARCH_EQUIPMENT_HISTORY_SIZE = 5;
 
-const LOCAL_STORAGE_SEARCH_EQUIPMENT_HISTORY_KEY = (
-    APP_NAME + '_SEARCH_EQUIPMENT_HISTORY_'
-).toUpperCase();
+const LOCAL_STORAGE_SEARCH_EQUIPMENT_HISTORY_KEY = (APP_NAME + '_SEARCH_EQUIPMENT_HISTORY_').toUpperCase();
 
 const getLocalStorageSearchEquipmentHistoryKey = (studyUuid: UUID) => {
     return LOCAL_STORAGE_SEARCH_EQUIPMENT_HISTORY_KEY + studyUuid;
@@ -32,10 +30,7 @@ const equipmentSchema = yup.object().shape({
 
 const equipmentListSchema = yup.array(equipmentSchema).required();
 
-export const addToLocalStorageSearchEquipmentHistory = (
-    studyUuid: UUID,
-    equipmentToAdd: EquipmentInfos
-) => {
+export const addToLocalStorageSearchEquipmentHistory = (studyUuid: UUID, equipmentToAdd: EquipmentInfos) => {
     const currentHistory = getLocalStorageSearchEquipmentHistory(studyUuid);
     // if local storage not existing yet or empty, creating it
     if (currentHistory.length === 0) {
@@ -57,34 +52,25 @@ export const addToLocalStorageSearchEquipmentHistory = (
     currentHistory.unshift(equipmentToAdd);
 
     // then we keep only first {MAX_SEARCH_EQUIPMENT_HISTORY_SIZE} elements
-    saveLocalStorageSearchEquipmentHistory(
-        studyUuid,
-        currentHistory.slice(0, MAX_SEARCH_EQUIPMENT_HISTORY_SIZE)
-    );
+    saveLocalStorageSearchEquipmentHistory(studyUuid, currentHistory.slice(0, MAX_SEARCH_EQUIPMENT_HISTORY_SIZE));
 };
 
-export const excludeElementFromCurrentSearchHistory = (
-    studyUuid: UUID,
-    excludedElement: EquipmentInfos
-) => {
-    const filteredHistory = getLocalStorageSearchEquipmentHistory(
-        studyUuid
-    ).filter((item) => item.id !== excludedElement.id);
+export const excludeElementFromCurrentSearchHistory = (studyUuid: UUID, excludedElement: EquipmentInfos) => {
+    const filteredHistory = getLocalStorageSearchEquipmentHistory(studyUuid).filter(
+        (item) => item.id !== excludedElement.id
+    );
     saveLocalStorageSearchEquipmentHistory(studyUuid, filteredHistory);
 };
 
 export const getLocalStorageSearchEquipmentHistory = (studyUuid: UUID) => {
-    const currentHistoryJson = localStorage.getItem(
-        getLocalStorageSearchEquipmentHistoryKey(studyUuid)
-    );
+    const currentHistoryJson = localStorage.getItem(getLocalStorageSearchEquipmentHistoryKey(studyUuid));
     // if local storage not existing yet, return empty
     if (!currentHistoryJson) {
         return [];
     }
     try {
         const currentHistory = JSON.parse(currentHistoryJson);
-        const validatedCurrentHistory: EquipmentInfos[] =
-            equipmentListSchema.validateSync(currentHistory);
+        const validatedCurrentHistory: EquipmentInfos[] = equipmentListSchema.validateSync(currentHistory);
 
         return validatedCurrentHistory;
     } catch (e) {
@@ -98,12 +84,6 @@ export const getLocalStorageSearchEquipmentHistory = (studyUuid: UUID) => {
     }
 };
 
-const saveLocalStorageSearchEquipmentHistory = (
-    studyUuid: UUID,
-    equipments: EquipmentInfos[]
-) => {
-    localStorage.setItem(
-        getLocalStorageSearchEquipmentHistoryKey(studyUuid),
-        JSON.stringify(equipments)
-    );
+const saveLocalStorageSearchEquipmentHistory = (studyUuid: UUID, equipments: EquipmentInfos[]) => {
+    localStorage.setItem(getLocalStorageSearchEquipmentHistoryKey(studyUuid), JSON.stringify(equipments));
 };

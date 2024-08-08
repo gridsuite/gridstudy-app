@@ -53,10 +53,7 @@ import LineModificationDialogHeader from './line-modification-dialog-header';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyLine } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -101,19 +98,13 @@ const LineModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
-    const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
-    );
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
-        useState(false);
+    const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
 
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
-            ...getCharacteristicsEmptyFormData(
-                CHARACTERISTICS,
-                displayConnectivity
-            ),
+            ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
             ...getLimitsEmptyFormData(),
             ...emptyProperties,
         }),
@@ -124,11 +115,7 @@ const LineModificationDialog = ({
         .object()
         .shape({
             [EQUIPMENT_NAME]: yup.string(),
-            ...getCharacteristicsValidationSchema(
-                CHARACTERISTICS,
-                displayConnectivity,
-                true
-            ),
+            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
             ...getLimitsValidationSchema(),
         })
         .concat(modificationPropertiesSchema)
@@ -162,16 +149,12 @@ const LineModificationDialog = ({
                     temporaryLimits1: addSelectedFieldToRows(
                         updatedTemporaryLimits1
                             ? updatedTemporaryLimits1
-                            : formatTemporaryLimits(
-                                  line.currentLimits1?.temporaryLimits
-                              )
+                            : formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
                         updatedTemporaryLimits2
                             ? updatedTemporaryLimits2
-                            : formatTemporaryLimits(
-                                  line.currentLimits2?.temporaryLimits
-                              )
+                            : formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
                     ),
                 }),
                 ...getPropertiesFromModification(line.properties),
@@ -185,20 +168,12 @@ const LineModificationDialog = ({
             fromEditDataToFormValues(
                 editData,
                 updateTemporaryLimits(
-                    formatTemporaryLimits(
-                        editData.currentLimits1?.temporaryLimits
-                    ),
-                    formatTemporaryLimits(
-                        lineToModify?.currentLimits1?.temporaryLimits
-                    )
+                    formatTemporaryLimits(editData.currentLimits1?.temporaryLimits),
+                    formatTemporaryLimits(lineToModify?.currentLimits1?.temporaryLimits)
                 ),
                 updateTemporaryLimits(
-                    formatTemporaryLimits(
-                        editData.currentLimits2?.temporaryLimits
-                    ),
-                    formatTemporaryLimits(
-                        lineToModify?.currentLimits2?.temporaryLimits
-                    )
+                    formatTemporaryLimits(editData.currentLimits2?.temporaryLimits),
+                    formatTemporaryLimits(lineToModify?.currentLimits2?.temporaryLimits)
                 )
             );
         }
@@ -209,36 +184,26 @@ const LineModificationDialog = ({
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                ),
+                sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
                 lineToModify?.currentLimits1?.temporaryLimits,
                 editData?.currentLimits1?.temporaryLimits,
                 currentNode
             );
             let currentLimits1 = null;
-            if (
-                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] ||
-                temporaryLimits1.length > 0
-            ) {
+            if (limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT] || temporaryLimits1.length > 0) {
                 currentLimits1 = {
                     permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                     temporaryLimits: temporaryLimits1,
                 };
             }
             const temporaryLimits2 = addModificationTypeToTemporaryLimits(
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                ),
+                sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
                 lineToModify?.currentLimits2?.temporaryLimits,
                 editData?.currentLimits2?.temporaryLimits,
                 currentNode
             );
             let currentLimits2 = null;
-            if (
-                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] ||
-                temporaryLimits2.length > 0
-            ) {
+            if (limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT] || temporaryLimits2.length > 0) {
                 currentLimits2 = {
                     permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
                     temporaryLimits: temporaryLimits2,
@@ -268,15 +233,7 @@ const LineModificationDialog = ({
                 });
             });
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            lineToModify,
-            editData,
-            currentNode,
-            snackError,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, lineToModify, editData, currentNode, snackError]
     );
 
     const clear = useCallback(() => {
@@ -302,26 +259,14 @@ const LineModificationDialog = ({
                                 reset((formValues) => ({
                                     ...formValues,
                                     ...getLimitsFormData({
-                                        temporaryLimits1:
-                                            addSelectedFieldToRows(
-                                                formatTemporaryLimits(
-                                                    line.currentLimits1
-                                                        ?.temporaryLimits
-                                                )
-                                            ),
-                                        temporaryLimits2:
-                                            addSelectedFieldToRows(
-                                                formatTemporaryLimits(
-                                                    line.currentLimits2
-                                                        ?.temporaryLimits
-                                                )
-                                            ),
-                                    }),
-                                    [ADDITIONAL_PROPERTIES]:
-                                        getConcatenatedProperties(
-                                            line,
-                                            getValues
+                                        temporaryLimits1: addSelectedFieldToRows(
+                                            formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                                         ),
+                                        temporaryLimits2: addSelectedFieldToRows(
+                                            formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
+                                        ),
+                                    }),
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(line, getValues),
                                 }));
                             }
                         }
@@ -339,15 +284,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            selectedId,
-            editData,
-            reset,
-            emptyFormData,
-            getValues,
-        ]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData, getValues]
     );
 
     useEffect(() => {
@@ -375,10 +312,8 @@ const LineModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -412,11 +347,7 @@ const LineModificationDialog = ({
     );
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -430,20 +361,14 @@ const LineModificationDialog = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 PaperProps={{
                     sx: {
                         height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
-                onOpenCatalogDialog={
-                    selectedId != null
-                        ? () => setOpenLineTypesCatalogDialog(true)
-                        : undefined
-                }
+                onOpenCatalogDialog={selectedId != null ? () => setOpenLineTypesCatalogDialog(true) : undefined}
                 {...dialogProps}
             >
                 {selectedId == null && (
