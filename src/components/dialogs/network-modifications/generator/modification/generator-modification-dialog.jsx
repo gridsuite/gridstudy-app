@@ -83,6 +83,7 @@ import {
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils.js';
 
 const emptyFormData = {
@@ -125,6 +126,7 @@ const formSchema = yup
 
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
+        ...getConnectivityWithPositionValidationSchema(true),
         ...getSetPointsSchema(true),
         ...getReactiveLimitsSchema(true),
     })
@@ -184,7 +186,8 @@ const GeneratorModificationDialog = ({
                     connectionName: editData?.connectionName?.value ?? '',
                     connectionDirection: editData?.connectionDirection?.value ?? null,
                     connectionPosition: editData?.connectionPosition?.value ?? null,
-                    terminalConnected: editData?.terminalConnected?.value ?? false,
+                    terminalConnected: editData?.terminalConnected?.value ?? null,
+                    isEquipmentModification: true,
                 }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',

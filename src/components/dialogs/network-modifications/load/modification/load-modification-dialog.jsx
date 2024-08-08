@@ -44,6 +44,7 @@ import {
 } from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import {
+    getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils.js';
@@ -53,7 +54,7 @@ const emptyFormData = {
     [LOAD_TYPE]: null,
     [P0]: null,
     [Q0]: null,
-    ...getConnectivityWithPositionEmptyFormData(),
+    ...getConnectivityWithPositionEmptyFormData(true),
     ...emptyProperties,
 };
 
@@ -111,7 +112,15 @@ const LoadModificationDialog = ({
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [P0]: load.p0?.value ?? null,
                 [Q0]: load.q0?.value ?? null,
-                ...getConnectivityWithPositionEmptyFormData(true),
+                ...getConnectivityFormData({
+                    voltageLevelId: load?.voltageLevelId.value ?? null,
+                    busbarSectionId: load?.busOrBusbarSectionId.value ?? null,
+                    connectionName: load?.connectionName?.value ?? '',
+                    connectionDirection: load?.connectionDirection?.value ?? null,
+                    connectionPosition: load?.connectionPosition?.value ?? null,
+                    terminalConnected: load?.terminalConnected?.value ?? null,
+                    isEquipmentModification: true,
+                }),
                 ...getPropertiesFromModification(load.properties),
             });
         },
