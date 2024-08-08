@@ -18,7 +18,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -28,15 +28,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import {
     CancelButton,
-    FlatParameters,
     fetchDirectoryElementPath,
+    FlatParameters,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
-import { fetchNetworkModificationTreeNode } from '../../services/study/tree-subtree.js';
+import { useSelector } from 'react-redux';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -62,48 +62,38 @@ const ExportDialog = ({
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [exportStudyErr, setExportStudyErr] = React.useState('');
-    const [studyName, setStudyName] = useState(null);
     const { snackError } = useSnackMessage();
     const [fileName, setFileName] = useState();
 
     const [unfolded, setUnfolded] = React.useState(false);
 
-    const fetchStudyName = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid)
-            .then((response) => {
-                const studyName = response[response.length - 1]?.elementName;
-                setStudyName(studyName);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LoadStudyAndParentsInfoError',
-                });
-            });
-    }, [studyUuid, snackError]);
-
-    const fetchNodeName = useCallback(
-        (studyUuid) => {
-            fetchNetworkModificationTreeNode(studyUuid, nodeUuid).then(
-                (response) => {
-                    setFileName(`${studyName}_${response.name}`);
-                }
-            );
-        },
-        [studyName, nodeUuid]
+    const treeModel = useSelector(
+        (state) => state.networkModificationTreeModel
+    );
+    const nodeName = useMemo(
+        () =>
+            treeModel?.treeNodes.find((node) => node.id === nodeUuid)?.data
+                .label,
+        [treeModel, nodeUuid]
     );
 
-    useEffect(() => {
-        if (studyUuid && nodeUuid) {
-            fetchNodeName(studyUuid);
-        }
-    }, [fetchNodeName, studyUuid, nodeUuid]);
-
+    // fetch study name to build default file name
     useEffect(() => {
         if (studyUuid) {
-            fetchStudyName(studyUuid);
+            fetchDirectoryElementPath(studyUuid)
+                .then((response) => {
+                    const studyName =
+                        response[response.length - 1]?.elementName;
+                    setFileName(`${studyName}_${nodeName}`);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'LoadStudyAndParentsInfoError',
+                    });
+                });
         }
-    }, [fetchStudyName, studyUuid]);
+    }, [studyUuid, nodeName, snackError]);
 
     useEffect(() => {
         if (open) {
@@ -157,9 +147,6 @@ const ExportDialog = ({
                 const jsoned = JSON.stringify(currentParameters);
                 urlSearchParams.append('formatParameters', jsoned);
             }
-            if (!isBlankOrEmpty(studyName)) {
-                urlSearchParams.append('studyName', studyName);
-            }
             if (!isBlankOrEmpty(fileName)) {
                 urlSearchParams.append('fileName', fileName);
             }
@@ -208,7 +195,7 @@ const ExportDialog = ({
                     label={<FormattedMessage id="download.fileName" />}
                     id="fileName"
                     value={fileName}
-                    style={{ width: '100%' }}
+                    sx={{ width: '100%', marginBottom: 1 }}
                     fullWidth
                     variant="filled"
                     InputLabelProps={{ shrink: true }}
@@ -250,7 +237,7 @@ const ExportDialog = ({
                             color={
                                 selectedFormat ? 'text.main' : 'text.disabled'
                             }
-                            style={{ fontWeight: 'bold' }}
+                            sx={{ fontWeight: 'bold' }}
                         >
                             <FormattedMessage id="parameters" />
                         </Typography>
@@ -293,7 +280,7 @@ const ExportDialog = ({
                 <Button
                     onClick={handleExportClick}
                     variant="outlined"
-                    disabled={!selectedFormat}
+                    disabled={!selectedFormat || !fileName}
                 >
                     <FormattedMessage id="export" />
                 </Button>
