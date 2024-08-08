@@ -37,7 +37,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import ModificationDialog from '../../../commons/modificationDialog';
 import ShuntCompensatorModificationForm from './shunt-compensator-modification-form';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
+import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
@@ -243,7 +243,7 @@ const ShuntCompensatorModificationDialog = ({
                 shuntCompensator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
                 shuntCompensator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION],
                 shuntCompensator[CONNECTIVITY]?.[CONNECTED],
                 !!editData,

@@ -8,7 +8,7 @@
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
-import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
@@ -182,7 +182,7 @@ const LoadModificationDialog = ({
                 load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
                 load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
-                load[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 load[CONNECTIVITY]?.[CONNECTION_POSITION],
                 load[CONNECTIVITY]?.[CONNECTED],
                 !!editData,

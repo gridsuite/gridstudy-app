@@ -73,7 +73,6 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
 } from '../../../connectivity/connectivity-form-utils.js';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -305,7 +304,7 @@ const BatteryModificationDialog = ({
                 battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
                 battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
-                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 battery[CONNECTIVITY]?.[CONNECTION_POSITION],
                 battery[CONNECTIVITY]?.[CONNECTED],
                 editData?.uuid,

@@ -51,7 +51,7 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { sanitizeString } from '../../../dialogUtils';
-import { REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {
@@ -356,7 +356,7 @@ const GeneratorModificationDialog = ({
                 generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
                 generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 generator[CONNECTIVITY]?.[CONNECTION_POSITION],
                 generator[CONNECTIVITY]?.[CONNECTED],
                 editData?.uuid,
