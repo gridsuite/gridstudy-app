@@ -10,6 +10,11 @@ import {
 import { SELECTION_TYPES } from './selection-types';
 import { UUID } from 'crypto';
 
+export type DestinationFolder = {
+    [FOLDER_ID]: UUID;
+    [FOLDER_NAME]: string;
+};
+
 const formSchema = yup.object().shape({
     [SELECTION_TYPE]: yup.mixed<SELECTION_TYPES>().oneOf(Object.values(SELECTION_TYPES)).nullable().required(),
     [NAME]: yup.string().when([SELECTION_TYPE], {
