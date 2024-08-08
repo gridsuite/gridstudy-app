@@ -30,8 +30,8 @@ const characteristicsValidationSchema = (id, displayConnectivity, modification) 
         [G1]: yup.number().nullable(),
         [B2]: yup.number().nullable(),
         [G2]: yup.number().nullable(),
-        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(CONNECTIVITY_1)),
-        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(CONNECTIVITY_2)),
+        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1)),
+        ...(displayConnectivity && getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2)),
     }),
 });
 
@@ -47,8 +47,8 @@ const characteristicsEmptyFormData = (id, displayConnectivity = true) => ({
         [G1]: null,
         [B2]: null,
         [G2]: null,
-        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1)),
-        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2)),
+        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_1)),
+        ...(displayConnectivity && getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_2)),
     },
 });
 

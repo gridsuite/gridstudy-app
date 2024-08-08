@@ -10,20 +10,20 @@ import { gridItem, GridSection, MicroSusceptanceAdornment, OhmAdornment } from '
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
+    B1,
+    B2,
     CHARACTERISTICS,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    R,
     G1,
     G2,
-    B1,
-    B2,
+    R,
     X,
 } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { unitToMicroUnit } from 'utils/unit-converter';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const styles = {
     h3: {
@@ -42,14 +42,7 @@ const LineCharacteristicsPane = ({
     isModification = false,
 }) => {
     const currentNodeUuid = currentNode.id;
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
-                setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
-            });
-        }
-    }, [studyUuid, currentNodeUuid]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     const seriesResistanceField = (
         <FloatInput

@@ -239,7 +239,7 @@ const GeneratorCreationDialog = ({
                     connectionDirection: editData.connectionDirection,
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
-                    connected: editData.connected,
+                    terminalConnected: editData.terminalConnected,
                 }),
                 ...getPropertiesFromModification(editData.properties),
             });

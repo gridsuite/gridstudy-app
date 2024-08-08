@@ -114,7 +114,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionDirection: shuntCompensator.connectablePosition.connectionDirection,
                     connectionName: shuntCompensator.connectablePosition.connectionName,
                     voltageLevelId: shuntCompensator.voltageLevelId,
-                    // connected is not copied on purpose: we use the default value (true) in all cases
+                    // terminalConnected is not copied on purpose: we use the default value (true) in all cases
                 }),
                 ...getCharacteristicsCreateFormDataFromSearchCopy({
                     bperSection: shuntCompensator.bperSection,
@@ -144,7 +144,7 @@ const ShuntCompensatorCreationDialog = ({
                     connectionName: shuntCompensator.connectionName,
                     connectionPosition: shuntCompensator.connectionPosition,
                     voltageLevelId: shuntCompensator.voltageLevelId,
-                    connected: shuntCompensator.connected,
+                    terminalConnected: shuntCompensator.terminalConnected,
                 }),
                 ...getCharacteristicsFormData({
                     maxSusceptance: shuntCompensator.maxSusceptance ?? null,
