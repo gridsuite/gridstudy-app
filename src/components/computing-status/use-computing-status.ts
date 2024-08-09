@@ -14,10 +14,9 @@ import { ComputingType } from './computing-type';
 import { useParams } from 'react-router-dom';
 import { ReduxState, StudyUpdated } from 'redux/reducer.type';
 import { OptionalServicesStatus } from '../utils/optional-services';
-import {
-    setComputingStatus,
-    setLastCompletedComputation,
-} from '../../redux/actions';
+import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
+import { AppDispatch } from '../../redux/store';
+import { AppState } from 'redux/reducer';
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
@@ -42,10 +41,7 @@ function isWorthUpdate(
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
         return true;
     }
-    if (
-        studyUpdatedForce &&
-        lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce
-    ) {
+    if (studyUpdatedForce && lastUpdateRef.current?.studyUpdatedForce === studyUpdatedForce) {
         return false;
     }
     if (!updateType) {
@@ -73,31 +69,17 @@ type AnalysisStatusType = {
     invalidations: string[];
     completions: string[];
 };
-type ComputingTypeToStatusMapperType = Record<
-    ComputingType,
-    AnalysisStatusType
->;
+type ComputingTypeToStatusMapperType = Record<ComputingType, AnalysisStatusType>;
 const computingTypeToStatusMapper: ComputingTypeToStatusMapperType = {
     [ComputingType.LOAD_FLOW]: genetateStatusFromComputingType('loadflow'),
-    [ComputingType.SECURITY_ANALYSIS]:
-        genetateStatusFromComputingType('securityAnalysis'),
-    [ComputingType.SENSITIVITY_ANALYSIS]: genetateStatusFromComputingType(
-        'sensitivityAnalysis'
-    ),
-    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]:
-        genetateStatusFromComputingType('nonEvacuatedEnergy'),
-    [ComputingType.SHORT_CIRCUIT]: genetateStatusFromComputingType(
-        'shortCircuitAnalysis'
-    ),
-    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: genetateStatusFromComputingType(
-        'oneBusShortCircuitAnalysis'
-    ),
-    [ComputingType.DYNAMIC_SIMULATION]:
-        genetateStatusFromComputingType('dynamicSimulation'),
-    [ComputingType.VOLTAGE_INITIALIZATION]:
-        genetateStatusFromComputingType('voltageInit'),
-    [ComputingType.STATE_ESTIMATION]:
-        genetateStatusFromComputingType('stateEstimation'),
+    [ComputingType.SECURITY_ANALYSIS]: genetateStatusFromComputingType('securityAnalysis'),
+    [ComputingType.SENSITIVITY_ANALYSIS]: genetateStatusFromComputingType('sensitivityAnalysis'),
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: genetateStatusFromComputingType('nonEvacuatedEnergy'),
+    [ComputingType.SHORT_CIRCUIT]: genetateStatusFromComputingType('shortCircuitAnalysis'),
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: genetateStatusFromComputingType('oneBusShortCircuitAnalysis'),
+    [ComputingType.DYNAMIC_SIMULATION]: genetateStatusFromComputingType('dynamicSimulation'),
+    [ComputingType.VOLTAGE_INITIALIZATION]: genetateStatusFromComputingType('voltageInit'),
+    [ComputingType.STATE_ESTIMATION]: genetateStatusFromComputingType('stateEstimation'),
 };
 
 interface UseComputingStatusProps {
@@ -122,14 +104,10 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
-    const nodeUuid = useSelector(
-        (state: ReduxState) => state.currentTreeNode?.id
-    );
+    const nodeUuid = useSelector((state: ReduxState) => state.currentTreeNode?.id);
     const studyUuid = decodeURIComponent(useParams().studyUuid ?? '') as UUID;
     const nodeUuidRef = useRef<UUID | null>(null);
-    const studyUpdatedForce = useSelector(
-        (state: ReduxState) => state.studyUpdated
-    );
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
     const status = computingTypeToStatusMapper[computingType];
@@ -138,13 +116,8 @@ export const useComputingStatus: UseComputingStatusProps = (
     //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
         (runningStatus: RunningStatus) =>
-            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(
-                runningStatus
-            ) &&
-            status.completions.includes(
-                lastUpdateRef.current?.studyUpdatedForce.eventData?.headers
-                    ?.updateType ?? ''
-            ),
+            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(runningStatus) &&
+            status.completions.includes(lastUpdateRef.current?.studyUpdatedForce.eventData?.headers?.updateType ?? ''),
         [status.completions]
     );
 
@@ -169,32 +142,18 @@ export const useComputingStatus: UseComputingStatusProps = (
             })
             .catch(() => {
                 if (!canceledRequest) {
-                    dispatch(
-                        setComputingStatus(computingType, RunningStatus.FAILED)
-                    );
+                    dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
                 }
             });
 
         return () => {
             canceledRequest = true;
         };
-    }, [
-        nodeUuid,
-        fetcher,
-        studyUuid,
-        resultConversion,
-        dispatch,
-        computingType,
-        isComputationCompleted,
-    ]);
+    }, [nodeUuid, fetcher, studyUuid, resultConversion, dispatch, computingType, isComputationCompleted]);
 
     /* initial fetch and update */
     useEffect(() => {
-        if (
-            !studyUuid ||
-            !nodeUuid ||
-            optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
-        ) {
+        if (!studyUuid || !nodeUuid || optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up) {
             return;
         }
 

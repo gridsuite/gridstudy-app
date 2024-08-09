@@ -6,14 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
-import { useIntl } from 'react-intl';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
@@ -23,19 +16,15 @@ import {
     HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE,
     TYPE,
 } from 'components/utils/field-constants';
-import {
-    areIdsEqual,
-    getObjectId,
-    richTypeEquals,
-} from 'components/utils/utils';
+import { areIdsEqual, getObjectId, richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import HvdcLccDeletionSpecificForm from './hvdc-lcc-deletion/hvdc-lcc-deletion-specific-form';
 import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
 
 const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const editedIdRef = useRef(null);
     const currentTypeRef = useRef(null);
@@ -52,13 +41,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { specificUpdate: hvdcLccSpecificUpdate } = useHvdcLccDeletion();
     const { setValue } = useFormContext();
 
-    const richTypeLabel = (richType) => {
-        if (richType === EQUIPMENT_TYPES.HVDC_LINE) {
-            return intl.formatMessage({ id: 'Hvdc' });
-        } else {
-            return intl.formatMessage({ id: richType });
-        }
-    };
+    const getOptionLabel = useGetLabelEquipmentTypes();
 
     const [equipmentsOptions, setEquipmentsOptions] = useState([]);
 
@@ -72,9 +55,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
             EQUIPMENT_TYPES.BUSBAR_SECTION,
             EQUIPMENT_TYPES.TIE_LINE,
         ]);
-        return Object.values(EQUIPMENT_TYPES).filter(
-            (equipmentType) => !equipmentTypesToExclude.has(equipmentType)
-        );
+        return Object.values(EQUIPMENT_TYPES).filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType));
     }, []);
 
     useEffect(() => {
@@ -84,13 +65,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 currentTypeRef.current = watchType;
             }
             let ignore = false;
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNode?.id,
-                undefined,
-                watchType,
-                true
-            )
+            fetchEquipmentsIds(studyUuid, currentNode?.id, undefined, watchType, true)
                 .then((vals) => {
                     // check race condition here
                     if (!ignore) {
@@ -116,20 +91,14 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                     // The first time we render an edition, we want to merge the
                     // dynamic data with the edition data coming from the database
                     editedIdRef.current = editData.equipmentId;
-                } else if (
-                    watchEquipmentId !== editedIdRef.current &&
-                    editedIdRef.current !== ''
-                ) {
+                } else if (watchEquipmentId !== editedIdRef.current && editedIdRef.current !== '') {
                     // we have changed eqptId, leave the "first edit" mode (then if we circle back
                     // to editData?.equipmentId, we wont make the merge anymore).
                     editedIdRef.current = '';
                 }
             }
 
-            if (
-                watchEquipmentId &&
-                currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE
-            ) {
+            if (watchEquipmentId && currentTypeRef.current === EQUIPMENT_TYPES.HVDC_LINE) {
                 // need specific update related to HVDC LCC deletion (for MCS lists)
                 hvdcLccSpecificUpdate(
                     studyUuid,
@@ -141,15 +110,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 setValue(DELETION_SPECIFIC_DATA, null);
             }
         }
-    }, [
-        studyUuid,
-        currentNode?.id,
-        watchEquipmentId,
-        snackError,
-        setValue,
-        hvdcLccSpecificUpdate,
-        editData,
-    ]);
+    }, [studyUuid, currentNode?.id, watchEquipmentId, snackError, setValue, hvdcLccSpecificUpdate, editData]);
 
     const handleChange = useCallback(() => {
         setValue(EQUIPMENT_ID, null);
@@ -162,7 +123,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
             label="Type"
             options={typesOptions}
             onChangeCallback={handleChange}
-            getOptionLabel={richTypeLabel}
+            getOptionLabel={getOptionLabel}
             size={'small'}
             formProps={filledTextField}
         />
@@ -180,9 +141,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
             //hack to work with freesolo autocomplete
             //setting null programatically when freesolo is enable wont empty the field
             inputTransform={(value) => value}
-            outputTransform={(value) =>
-                value === '' ? null : getObjectId(value)
-            }
+            outputTransform={(value) => (value === '' ? null : getObjectId(value))}
             size={'small'}
             formProps={filledTextField}
         />
@@ -194,8 +153,7 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
                 {gridItem(equipmentTypeField, 6)}
                 {gridItem(equipmentField, 6)}
             </Grid>
-            {watchSpecificData?.specificType ===
-                HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
+            {watchSpecificData?.specificType === HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
                 <HvdcLccDeletionSpecificForm />
             )}
         </>

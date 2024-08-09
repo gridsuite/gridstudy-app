@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    Collapse,
-    Dialog,
-    DialogTitle,
-    Stack,
-    Typography,
-} from '@mui/material';
+import { Collapse, Dialog, DialogTitle, Stack, Typography } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -26,9 +20,10 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
-import { CancelButton, FlatParameters } from '@gridsuite/commons-ui';
+import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
+import { isBlankOrEmpty } from 'components/utils/validation-functions';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -42,20 +37,35 @@ const STRING_LIST = 'STRING_LIST';
  * @param {String} title Title of the dialog
  */
 
-const ExportDialog = ({
-    open,
-    onClose,
-    onClick,
-    studyUuid,
-    nodeUuid,
-    title,
-}) => {
+const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) => {
     const [formatsWithParameters, setFormatsWithParameters] = useState([]);
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [exportStudyErr, setExportStudyErr] = React.useState('');
+    const [studyName, setStudyName] = useState(null);
+    const { snackError } = useSnackMessage();
 
     const [unfolded, setUnfolded] = React.useState(false);
+
+    const fetchStudyName = useCallback(() => {
+        fetchDirectoryElementPath(studyUuid)
+            .then((response) => {
+                const studyName = response[response.length - 1]?.elementName;
+                setStudyName(studyName);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'LoadStudyAndParentsInfoError',
+                });
+            });
+    }, [studyUuid, snackError]);
+
+    useEffect(() => {
+        if (studyUuid) {
+            fetchStudyName(studyUuid);
+        }
+    }, [fetchStudyName, studyUuid]);
 
     useEffect(() => {
         if (open) {
@@ -65,10 +75,7 @@ const ExportDialog = ({
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
                 Object.values(formats).forEach((f) => {
                     f.parameters = f.parameters.map((parameter) => {
-                        if (
-                            parameter.type === STRING_LIST &&
-                            parameter.name?.endsWith('extensions')
-                        ) {
+                        if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
                             parameter.defaultValue = parameter.possibleValues;
                         }
                         return parameter;
@@ -98,26 +105,23 @@ const ExportDialog = ({
     }, []);
     const handleExportClick = () => {
         if (selectedFormat) {
-            const downloadUrl = getExportUrl(
-                studyUuid,
-                nodeUuid,
-                selectedFormat
-            );
+            const downloadUrl = getExportUrl(studyUuid, nodeUuid, selectedFormat);
             let suffix;
+            const urlSearchParams = new URLSearchParams();
             if (Object.keys(currentParameters).length > 0) {
-                const urlSearchParams = new URLSearchParams();
                 const jsoned = JSON.stringify(currentParameters);
                 urlSearchParams.append('formatParameters', jsoned);
-                // we have already as parameters, the tokens, so use '&' in stead of '?'
-                suffix = '&' + urlSearchParams.toString();
+            }
+            if (!isBlankOrEmpty(studyName)) {
+                urlSearchParams.append('studyName', studyName);
             }
 
+            // we have already as parameters, the access tokens, so use '&' instead of '?'
+            suffix = urlSearchParams.toString() ? '&' + urlSearchParams.toString() : '';
             setLoading(true);
-            onClick(downloadUrl + (suffix ? suffix : ''));
+            onClick(downloadUrl + suffix);
         } else {
-            setExportStudyErr(
-                intl.formatMessage({ id: 'exportStudyErrorMsg' })
-            );
+            setExportStudyErr(intl.formatMessage({ id: 'exportStudyErrorMsg' }));
         }
     };
 
@@ -137,22 +141,12 @@ const ExportDialog = ({
     const intl = useIntl();
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="sm"
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-title-export"
-        >
+        <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">
             <DialogTitle>
                 {title}
                 <div style={{ marginTop: '0.8em' }} />
                 <FormControl fullWidth size="small">
-                    <InputLabel
-                        id="select-format-label"
-                        margin={'dense'}
-                        variant={'filled'}
-                    >
+                    <InputLabel id="select-format-label" margin={'dense'} variant={'filled'}>
                         <FormattedMessage id="exportFormat" />
                     </InputLabel>
                     <Select
@@ -172,25 +166,15 @@ const ExportDialog = ({
                             </MenuItem>
                         ))}
                     </Select>
-                    <Stack
-                        marginTop="0.7em"
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="center"
-                    >
+                    <Stack marginTop="0.7em" direction="row" justifyContent="space-between" alignItems="center">
                         <Typography
                             component="span"
-                            color={
-                                selectedFormat ? 'text.main' : 'text.disabled'
-                            }
+                            color={selectedFormat ? 'text.main' : 'text.disabled'}
                             style={{ fontWeight: 'bold' }}
                         >
                             <FormattedMessage id="parameters" />
                         </Typography>
-                        <IconButton
-                            onClick={handleFoldChange}
-                            disabled={!selectedFormat}
-                        >
+                        <IconButton onClick={handleFoldChange} disabled={!selectedFormat}>
                             {unfolded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                         </IconButton>
                     </Stack>
@@ -203,14 +187,10 @@ const ExportDialog = ({
                         initValues={currentParameters}
                         onChange={onChange}
                         variant="standard"
-                        selectionWithDialog={(param) =>
-                            param?.possibleValues?.length > 10
-                        }
+                        selectionWithDialog={(param) => param?.possibleValues?.length > 10}
                     />
                 </Collapse>
-                {exportStudyErr !== '' && (
-                    <Alert severity="error">{exportStudyErr}</Alert>
-                )}
+                {exportStudyErr !== '' && <Alert severity="error">{exportStudyErr}</Alert>}
                 {loading && (
                     <div
                         style={{
@@ -225,11 +205,7 @@ const ExportDialog = ({
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    onClick={handleExportClick}
-                    variant="outlined"
-                    disabled={!selectedFormat}
-                >
+                <Button onClick={handleExportClick} variant="outlined" disabled={!selectedFormat}>
                     <FormattedMessage id="export" />
                 </Button>
             </DialogActions>

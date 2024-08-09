@@ -18,13 +18,7 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import {
-    ActivePowerAdornment,
-    gridItem,
-    GridSection,
-    OhmAdornment,
-    VoltageAdornment,
-} from '../../../dialogUtils';
+import { ActivePowerAdornment, gridItem, GridSection, OhmAdornment, VoltageAdornment } from '../../../dialogUtils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import React, { FunctionComponent, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
@@ -91,9 +85,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${OPERATOR_ACTIVE_POWER_LIMIT_SIDE1}`}
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide1Label'}
-            previousValue={
-                previousValues?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2
-            }
+            previousValue={previousValues?.hvdcOperatorActivePowerRange?.oprFromCS1toCS2}
         />
     );
 
@@ -102,24 +94,16 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
             name={`${id}.${OPERATOR_ACTIVE_POWER_LIMIT_SIDE2}`}
             adornment={ActivePowerAdornment}
             label={'operatorActivePowerLimitSide2Label'}
-            previousValue={
-                previousValues?.hvdcOperatorActivePowerRange?.oprFromCS2toCS1
-            }
+            previousValue={previousValues?.hvdcOperatorActivePowerRange?.oprFromCS2toCS1}
         />
     );
 
     const previousConverterMode = () => {
-        if (
-            previousValues?.convertersMode ===
-            VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id
-        ) {
+        if (previousValues?.convertersMode === VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.id) {
             return intl.formatMessage({
                 id: VSC_CONVERTER_MODE.SIDE_1_INVERTER_SIDE_2_RECTIFIER.label,
             });
-        } else if (
-            previousValues?.convertersMode ===
-            VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.id
-        ) {
+        } else if (previousValues?.convertersMode === VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.id) {
             return intl.formatMessage({
                 id: VSC_CONVERTER_MODE.SIDE_1_RECTIFIER_SIDE_2_INVERTER.label,
             });
@@ -147,9 +131,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
     );
 
     const previousAngleDropPowerControl = () => {
-        if (
-            previousValues?.hvdcAngleDroopActivePowerControl?.isEnabled === true
-        ) {
+        if (previousValues?.hvdcAngleDroopActivePowerControl?.isEnabled === true) {
             return intl.formatMessage({ id: 'On' });
         }
 
@@ -192,9 +174,7 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         <FloatInput
             name={`${id}.${DROOP}`}
             label={'droopLabel'}
-            previousValue={
-                previousValues?.hvdcAngleDroopActivePowerControl?.droop
-            }
+            previousValue={previousValues?.hvdcAngleDroopActivePowerControl?.droop}
         />
     );
 

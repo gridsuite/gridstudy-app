@@ -45,13 +45,7 @@ export const EquipmentIdSelector = ({
     const [selectedValue, setSelectedValue] = useState(null);
 
     useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNodeUuid,
-            undefined,
-            equipmentType,
-            true
-        ).then((values) => {
+        fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, equipmentType, true).then((values) => {
             setEquipmentOptions(values.sort((a, b) => a.localeCompare(b)));
         });
     }, [studyUuid, currentNodeUuid, equipmentType]);

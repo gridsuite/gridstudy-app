@@ -21,13 +21,7 @@ import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialogUtils';
 import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 
-const PhaseTapChangerPaneSteps = ({
-    disabled,
-    previousValues,
-    editData,
-    currentNode,
-    isModification = false,
-}) => {
+const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {
     const intl = useIntl();
 
     const COLUMNS_DEFINITIONS = useMemo(() => {
@@ -138,9 +132,7 @@ const PhaseTapChangerPaneSteps = ({
                 ],
                 0
             ),
-            [STEPS_RATIO]: isNaN(
-                parseFloat(val[intl.formatMessage({ id: 'Ratio' })])
-            )
+            [STEPS_RATIO]: isNaN(parseFloat(val[intl.formatMessage({ id: 'Ratio' })]))
                 ? 1
                 : parseFloat(val[intl.formatMessage({ id: 'Ratio' })]),
             [STEPS_ALPHA]: isNaN(

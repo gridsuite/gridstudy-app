@@ -75,12 +75,7 @@ export const BooleanCellRenderer = (props) => {
     return (
         <div>
             {isChecked !== undefined && (
-                <Checkbox
-                    style={{ padding: 0 }}
-                    color="default"
-                    checked={isChecked}
-                    disableRipple={true}
-                />
+                <Checkbox style={{ padding: 0 }} color="default" checked={isChecked} disableRipple={true} />
             )}
         </div>
     );
@@ -177,9 +172,7 @@ export const DefaultCellRenderer = (props) => {
                 <Box
                     sx={mergeSx(
                         styles.overflow,
-                        props?.colDef?.cellRendererParams?.isValueInvalid
-                            ? styles.valueInvalid
-                            : undefined
+                        props?.colDef?.cellRendererParams?.isValueInvalid ? styles.valueInvalid : undefined
                     )}
                     children={cellValue.value}
                 />
@@ -197,8 +190,7 @@ export const PropertiesCellRenderer = (props) => {
             <Tooltip
                 title={
                     <div style={{ whiteSpace: 'pre-line' }}>
-                        {cellValue.value &&
-                            cellValue.value.replaceAll(' | ', '\n')}
+                        {cellValue.value && cellValue.value.replaceAll(' | ', '\n')}
                     </div>
                 }
             >
@@ -217,11 +209,7 @@ export const ContingencyCellRenderer = ({ value }) => {
 
     return (
         <Box sx={styles.tableCell}>
-            <Tooltip
-                title={
-                    <div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>
-                }
-            >
+            <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>}>
                 <Box sx={styles.overflow} children={cellValue} />
             </Tooltip>
         </Box>
@@ -230,10 +218,7 @@ export const ContingencyCellRenderer = ({ value }) => {
 
 export const EditableCellRenderer = (props) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const isRootNode = useMemo(
-        () => isNodeReadOnly(currentNode),
-        [currentNode]
-    );
+    const isRootNode = useMemo(() => isNodeReadOnly(currentNode), [currentNode]);
 
     const handleStartEditing = useCallback(() => {
         props.setEditingData({
@@ -246,11 +231,7 @@ export const EditableCellRenderer = (props) => {
 
     return (
         <Box sx={styles.editCell}>
-            <IconButton
-                size={'small'}
-                onClick={handleStartEditing}
-                disabled={isRootNode || props.context.isEditing}
-            >
+            <IconButton size={'small'} onClick={handleStartEditing} disabled={isRootNode || props.context.isEditing}>
                 <EditIcon />
             </IconButton>
         </Box>
@@ -259,18 +240,8 @@ export const EditableCellRenderer = (props) => {
 
 export const ReferenceLineCellRenderer = (props) => {
     return (
-        <Box
-            sx={mergeSx(
-                styles.referenceEditRow,
-                styles.leftFade,
-                styles.editCell
-            )}
-        >
-            <IconButton
-                size={'small'}
-                style={{ backgroundColor: 'transparent' }}
-                disableRipple
-            >
+        <Box sx={mergeSx(styles.referenceEditRow, styles.leftFade, styles.editCell)}>
+            <IconButton size={'small'} style={{ backgroundColor: 'transparent' }} disableRipple>
                 <MoreHorizIcon />
             </IconButton>
         </Box>
@@ -293,11 +264,7 @@ export const EditingCellRenderer = (props) => {
 
     return (
         <Box sx={mergeSx(styles.leftFade, styles.editCell)}>
-            <IconButton
-                size={'small'}
-                onClick={validateEdit}
-                disabled={isFormInvalid}
-            >
+            <IconButton size={'small'} onClick={validateEdit} disabled={isFormInvalid}>
                 <CheckIcon />
             </IconButton>
 

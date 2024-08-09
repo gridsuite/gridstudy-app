@@ -20,13 +20,7 @@ import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
  * @param menuDefinition the definition of nested menu
  * @param anchorEl anchorEl of fab Button
  */
-const NetworkModificationsMenu = ({
-    open,
-    onClose,
-    onItemClick,
-    menuDefinition,
-    anchorEl,
-}) => {
+const NetworkModificationsMenu = ({ open, onClose, onItemClick, menuDefinition, anchorEl }) => {
     const intl = useIntl();
     const renderMenuItems = (menuItems) => {
         return menuItems.map((menuItem) => {
@@ -43,10 +37,7 @@ const NetworkModificationsMenu = ({
                     }}
                 />
             ) : (
-                <CustomNestedMenuItem
-                    key={menuItem.id}
-                    label={intl.formatMessage({ id: menuItem.label })}
-                >
+                <CustomNestedMenuItem key={menuItem.id} label={intl.formatMessage({ id: menuItem.label })}>
                     {renderMenuItems(menuItem.subItems)}
                 </CustomNestedMenuItem>
             );

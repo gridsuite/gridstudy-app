@@ -18,10 +18,7 @@ import {
 } from 'redux/actions';
 import { fetchAllEquipments } from 'services/study/network-map';
 
-export const useSpreadsheetEquipments = (
-    equipment,
-    formatFetchedEquipments
-) => {
+export const useSpreadsheetEquipments = (equipment, formatFetchedEquipments) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state) => state.spreadsheetNetwork);
     const equipments = allEquipments[equipment.type];
@@ -47,9 +44,7 @@ export const useSpreadsheetEquipments = (
 
         // If we dont have any data in the spreadsheet, we don't need to update the equipments
         const hasSpreadsheedData = () => {
-            return Object.values(allEquipments).some(
-                (value) => Array.isArray(value) && value.length > 0
-            );
+            return Object.values(allEquipments).some((value) => Array.isArray(value) && value.length > 0);
         };
         if (!hasSpreadsheedData()) {
             resetImpactedSubstationsIds();
@@ -64,34 +59,24 @@ export const useSpreadsheetEquipments = (
                 resetImpactedElementTypes();
                 return;
             }
-            const impactedSpreadsheetEquipmentsTypes =
-                impactedElementTypes.filter((type) =>
-                    Object.keys(allEquipments).includes(type)
-                );
+            const impactedSpreadsheetEquipmentsTypes = impactedElementTypes.filter((type) =>
+                Object.keys(allEquipments).includes(type)
+            );
             if (impactedSpreadsheetEquipmentsTypes.length > 0) {
-                dispatch(
-                    resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes)
-                );
+                dispatch(resetEquipmentsByTypes(impactedSpreadsheetEquipmentsTypes));
             }
             resetImpactedElementTypes();
         }
         if (impactedSubstationsIds.length > 0) {
             // The formatting of the fetched equipments is done in the reducer
-            fetchAllEquipments(
-                studyUuid,
-                currentNode.id,
-                impactedSubstationsIds
-            ).then((values) => {
+            fetchAllEquipments(studyUuid, currentNode.id, impactedSubstationsIds).then((values) => {
                 dispatch(updateEquipments(values));
             });
             resetImpactedSubstationsIds();
         }
         if (deletedEquipments.length > 0) {
             const equipmentsToDelete = deletedEquipments
-                .filter(
-                    ({ equipmentType, equipmentId }) =>
-                        equipmentType && equipmentId
-                )
+                .filter(({ equipmentType, equipmentId }) => equipmentType && equipmentId)
                 .map(({ equipmentType, equipmentId }) => {
                     console.info(
                         'removing equipment with id=',
@@ -126,16 +111,11 @@ export const useSpreadsheetEquipments = (
         if (shouldFetchEquipments) {
             setErrorMessage();
             setIsFetching(true);
-            Promise.all(
-                equipment.fetchers.map((fetcher) =>
-                    fetcher(studyUuid, currentNode.id)
-                )
-            )
+            Promise.all(equipment.fetchers.map((fetcher) => fetcher(studyUuid, currentNode.id)))
                 .then((results) => {
                     let fetchedEquipments = results.flat();
                     if (formatFetchedEquipments) {
-                        fetchedEquipments =
-                            formatFetchedEquipments(fetchedEquipments);
+                        fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
                     }
                     dispatch(loadEquipments(equipment.type, fetchedEquipments));
                     setIsFetching(false);
@@ -145,14 +125,7 @@ export const useSpreadsheetEquipments = (
                     setIsFetching(false);
                 });
         }
-    }, [
-        equipment,
-        shouldFetchEquipments,
-        studyUuid,
-        currentNode.id,
-        dispatch,
-        formatFetchedEquipments,
-    ]);
+    }, [equipment, shouldFetchEquipments, studyUuid, currentNode.id, dispatch, formatFetchedEquipments]);
 
     return { equipments, errorMessage, isFetching };
 };

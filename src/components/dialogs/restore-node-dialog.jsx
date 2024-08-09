@@ -12,18 +12,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    Box,
-    Checkbox,
-    DialogContentText,
-    FormControlLabel,
-    FormGroup,
-} from '@mui/material';
-import {
-    deleteStashedNodes,
-    fetchStashedNodes,
-    restoreStashedNodes,
-} from '../../services/study/tree-subtree';
+import { Box, Checkbox, DialogContentText, FormControlLabel, FormGroup } from '@mui/material';
+import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import FormControl from '@mui/material/FormControl';
 import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
@@ -50,8 +40,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     const [nodes, setNodes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [selectedNodes, setSelectedNodes] = useState([]);
-    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] =
-        useState(false);
+    const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const handleSelectAll = () => {
         if (selectedNodes.length === nodes.length) {
@@ -102,13 +91,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     }, [studyUuid, open]);
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="xs"
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="dialog-restore-nodes"
-        >
+        <Dialog fullWidth maxWidth="xs" open={open} onClose={handleClose} aria-labelledby="dialog-restore-nodes">
             <DialogTitle>
                 {intl.formatMessage({
                     id: 'restoreNodes',
@@ -131,18 +114,13 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     />
                 )}
                 {!isLoading && nodes && (
-                    <FormControl
-                        sx={{ paddingLeft: '20px' }}
-                        component="fieldset"
-                    >
+                    <FormControl sx={{ paddingLeft: '20px' }} component="fieldset">
                         <FormGroup name="nodes-to-restore-selection">
                             <Box sx={styles.selectAll}>
                                 <Checkbox
                                     color={'primary'}
                                     edge="start"
-                                    checked={
-                                        selectedNodes.length === nodes.length
-                                    }
+                                    checked={selectedNodes.length === nodes.length}
                                     onClick={handleSelectAll}
                                     disableRipple
                                 />
@@ -158,19 +136,12 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                                         key={node.first.id}
                                         control={
                                             <Checkbox
-                                                checked={selectedNodes.includes(
-                                                    node.first
-                                                )}
-                                                onChange={(event) =>
-                                                    handleClick(node.first)
-                                                }
+                                                checked={selectedNodes.includes(node.first)}
+                                                onChange={(event) => handleClick(node.first)}
                                             />
                                         }
                                         label={
-                                            node.first.name +
-                                            (node.second !== 0
-                                                ? ' ( + ' + node.second + ' )'
-                                                : '')
+                                            node.first.name + (node.second !== 0 ? ' ( + ' + node.second + ' )' : '')
                                         }
                                     />
                                 );

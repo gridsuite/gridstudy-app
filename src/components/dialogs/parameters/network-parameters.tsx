@@ -5,41 +5,32 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_FLUX_CONVENTION,
-} from '../../../utils/config-params';
-import { LabelledButton, useParameterState, styles } from './parameters';
-import { LineSeparator } from '../dialogUtils';
 import Alert from '@mui/material/Alert';
+import { FormattedMessage } from 'react-intl';
 import { fetchDefaultParametersValues } from '../../../services/utils';
-import { ParamLine, ParameterType } from './widget';
+import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import { mergeSx } from '../../utils/functions';
+import { LineSeparator } from '../dialogUtils';
+import { LabelledButton, styles, useParameterState } from './parameters';
+import ParameterLineDropdown from './widget/parameter-line-dropdown';
+import ParameterLineSwitch from './widget/parameter-line-switch';
 
-export const FluxConventions = {
-    IIDM: 'iidm',
-    TARGET: 'target',
-};
+export enum FluxConventions {
+    IIDM = 'iidm',
+    TARGET = 'target',
+}
 
 export const NetworkParameters = () => {
-    const [, handleChangeFluxConvention] = useParameterState(
-        PARAM_FLUX_CONVENTION
-    );
-    const [enableDeveloperMode, handleChangeEnableDeveloperMode] =
-        useParameterState(PARAM_DEVELOPER_MODE);
+    const [, handleChangeFluxConvention] = useParameterState(PARAM_FLUX_CONVENTION);
+    const [enableDeveloperMode, handleChangeEnableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const resetNetworkParameters = () => {
         fetchDefaultParametersValues().then((defaultValues) => {
             const defaultFluxConvention = defaultValues.fluxConvention;
-            if (
-                Object.values(FluxConventions).includes(defaultFluxConvention)
-            ) {
+            if (Object.values(FluxConventions).includes(defaultFluxConvention)) {
                 handleChangeFluxConvention(defaultFluxConvention);
             }
-            handleChangeEnableDeveloperMode(
-                defaultValues?.enableDeveloperMode ?? false
-            );
+            handleChangeEnableDeveloperMode(defaultValues?.enableDeveloperMode ?? false);
         });
     };
 
@@ -54,9 +45,8 @@ export const NetworkParameters = () => {
                     marginTop={-3}
                     justifyContent={'space-between'}
                 >
-                    <ParamLine
-                        type={ParameterType.DropDown}
-                        param_name_id={PARAM_FLUX_CONVENTION}
+                    <ParameterLineDropdown
+                        paramNameId={PARAM_FLUX_CONVENTION}
                         labelTitle="FluxConvention"
                         labelValue="flux-convention-select-label"
                         values={{
@@ -66,11 +56,7 @@ export const NetworkParameters = () => {
                     />
                     <LineSeparator />
                     <Grid item container xs={12}>
-                        <ParamLine
-                            type={ParameterType.Switch}
-                            param_name_id={PARAM_DEVELOPER_MODE}
-                            label="EnableDeveloperMode"
-                        />
+                        <ParameterLineSwitch paramNameId={PARAM_DEVELOPER_MODE} label="EnableDeveloperMode" />
                         {enableDeveloperMode && (
                             <Alert severity={'warning'}>
                                 <FormattedMessage id="DeveloperModeWarningMsg" />
@@ -80,17 +66,8 @@ export const NetworkParameters = () => {
                 </Grid>
                 <LineSeparator />
             </Grid>
-            <Grid
-                container
-                sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
-                )}
-            >
-                <LabelledButton
-                    callback={resetNetworkParameters}
-                    label="resetToDefault"
-                />
+            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
+                <LabelledButton callback={resetNetworkParameters} label="resetToDefault" />
             </Grid>
         </>
     );

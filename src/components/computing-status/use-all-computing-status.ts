@@ -34,33 +34,15 @@ import { ComputingType } from './computing-type';
 
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
 export const useAllComputingStatus = (): void => {
-    const securityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SecurityAnalysis
-    );
-    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis
-    );
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis
-    );
-    const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation
-    );
-    const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit
-    );
-    const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit
-    );
-    const stateEstimationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.StateEstimation
-    );
+    const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
+    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+    const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
-    useComputingStatus(
-        fetchLoadFlowStatus,
-        getLoadFlowRunningStatus,
-        ComputingType.LOAD_FLOW
-    );
+    useComputingStatus(fetchLoadFlowStatus, getLoadFlowRunningStatus, ComputingType.LOAD_FLOW);
 
     useComputingStatus(
         fetchSecurityAnalysisStatus,

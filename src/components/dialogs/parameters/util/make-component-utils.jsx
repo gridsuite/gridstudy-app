@@ -10,13 +10,7 @@ import { styles } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import {
-    FloatInput,
-    IntegerInput,
-    MuiSelectInput,
-    SwitchInput,
-    TextInput,
-} from '@gridsuite/commons-ui';
+import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 
 // --- define data types --- //
 export const TYPES = {

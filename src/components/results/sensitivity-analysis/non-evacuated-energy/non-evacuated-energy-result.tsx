@@ -21,9 +21,7 @@ const styles = {
     },
 };
 
-export const NonEvacuatedEnergyResult: FunctionComponent<
-    NonEvacuatedEnergyResultProps
-> = ({ result, status }) => {
+export const NonEvacuatedEnergyResult: FunctionComponent<NonEvacuatedEnergyResultProps> = ({ result, status }) => {
     const exportResult = useCallback(() => {
         const blob = new Blob([JSON.stringify(result, null, 2)], {
             type: 'application/json',

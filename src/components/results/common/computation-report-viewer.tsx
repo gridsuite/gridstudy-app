@@ -6,16 +6,12 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import {
-    fetchNodeReport,
-    fetchParentNodesReport,
-    fetchSubReport,
-} from '../../../services/study';
+import { fetchNodeReport, fetchParentNodesReport, fetchSubReport } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ReportViewer from '../../report-viewer/report-viewer';
 import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 
@@ -23,27 +19,20 @@ interface ComputationReportViewerProps {
     reportType: ComputingType;
 }
 
-export const ComputationReportViewer: FunctionComponent<
-    ComputationReportViewerProps
-> = ({ reportType }) => {
+export const ComputationReportViewer: FunctionComponent<ComputationReportViewerProps> = ({ reportType }) => {
     const [report, setReport] = useState(undefined);
     const { snackError } = useSnackMessage();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
 
     const makeReport = useCallback(
         (reportData: any) => {
             const nodeName = currentNode?.data.label;
             // an array with a single reporter is expected (corresponding to the current Node)
-            let singleReport: any =
-                Array.isArray(reportData) && reportData.length === 1
-                    ? reportData[0]
-                    : undefined;
+            let singleReport: any = Array.isArray(reportData) && reportData.length === 1 ? reportData[0] : undefined;
             if (nodeName && singleReport) {
-                singleReport.messageTemplate = nodeName;
+                singleReport.title = nodeName;
             }
             return singleReport;
         },
@@ -81,30 +70,12 @@ export const ComputationReportViewer: FunctionComponent<
         }
     }, [studyUuid, currentNode?.id, reportType, snackError, makeReport]);
 
-    const subReportPromise = (
-        reportId: string,
-        severityFilterList: string[]
-    ) => {
-        return fetchSubReport(
-            studyUuid.toString(),
-            currentNode.id.toString(),
-            reportId,
-            severityFilterList
-        );
+    const subReportPromise = (reportId: string, severityFilterList: string[]) => {
+        return fetchSubReport(studyUuid?.toString(), currentNode?.id.toString(), reportId, severityFilterList);
     };
 
-    const nodeReportPromise = (
-        nodeId: string,
-        reportId: string,
-        severityFilterList: string[]
-    ) => {
-        return fetchNodeReport(
-            studyUuid.toString(),
-            nodeId,
-            reportId,
-            severityFilterList,
-            reportType
-        );
+    const nodeReportPromise = (nodeId: string, reportId: string, severityFilterList: string[]) => {
+        return fetchNodeReport(studyUuid?.toString(), nodeId, reportId, severityFilterList, reportType);
     };
 
     return (

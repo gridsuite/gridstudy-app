@@ -13,13 +13,7 @@ import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 import { TextField } from '@mui/material';
 
-const LineModificationDialogHeader = ({
-    lineToModify,
-    tabIndexesWithError,
-    tabIndex,
-    setTabIndex,
-    equipmentId,
-}) => {
+const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIndex, setTabIndex, equipmentId }) => {
     const lineIdField = (
         <TextField
             size="small"

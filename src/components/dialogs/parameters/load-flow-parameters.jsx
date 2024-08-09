@@ -5,33 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { DirectoryItemSelector, ElementType, FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
+import { Autocomplete, Box, Chip, Grid, TextField } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Autocomplete, Chip, Grid, TextField, Box } from '@mui/material';
-import {
-    DropDown,
-    LabelledButton,
-    SwitchWithLabel,
-    useParameterState,
-    styles,
-} from './parameters';
-import { LineSeparator } from '../dialogUtils';
-import {
-    ElementType,
-    FlatParameters,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
+import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_LIMIT_REDUCTION,
-} from '../../../utils/config-params';
-import { ParameterType, ParamLine, ParameterGroup } from './widget';
-import { mergeSx } from '../../utils/functions';
+import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
-import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { DropDown, LabelledButton, SwitchWithLabel, styles, useParameterState } from './parameters';
+import { ParameterGroup } from './widget';
+import ParameterLineSlider from './widget/parameter-line-slider';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -45,20 +32,14 @@ const CountrySelector = ({ value, label, callback }) => {
                 <Autocomplete
                     size="small"
                     value={value}
-                    multiple={true}
+                    multiple
                     onChange={(event, newValues) => callback(newValues)}
                     options={countryCodes}
                     getOptionLabel={(countryCode) => translate(countryCode)}
                     renderInput={(props) => (
                         <TextField
                             label={
-                                <FormattedMessage
-                                    id={
-                                        value?.length === 0
-                                            ? 'descLfAllCountries'
-                                            : 'descLfCountries'
-                                    }
-                                />
+                                <FormattedMessage id={value?.length === 0 ? 'descLfAllCountries' : 'descLfCountries'} />
                             }
                             sx={styles.minWidthMedium}
                             {...props}
@@ -111,9 +92,7 @@ export const DoubleEditor = ({
 
     const checkValue = useCallback(
         (newValue) => {
-            const FloatRE = checkIsTwoDigitAfterDecimal
-                ? /^(\d*\.{0,1}\d{0,2}$)/
-                : /^-?\d*[.,]?\d*$/;
+            const FloatRE = checkIsTwoDigitAfterDecimal ? /^(\d*\.{0,1}\d{0,2}$)/ : /^-?\d*[.,]?\d*$/;
             const outputTransformFloatString = (value) => {
                 return value?.replace(',', '.') || '';
             };
@@ -165,29 +144,10 @@ const fusionSpecificWithOtherParams = (allParams, specificParams) => {
     return commitParameters;
 };
 
-function makeComponentsFor(
-    defParams,
-    localParams,
-    allParams,
-    setter,
-    provider
-) {
+function makeComponentsFor(defParams, localParams, allParams, setter, provider) {
     return Object.keys(defParams).map((key) => (
-        <Grid
-            container
-            spacing={1}
-            paddingTop={1}
-            key={key}
-            justifyContent={'space-between'}
-        >
-            {makeComponentFor(
-                defParams[key],
-                key,
-                localParams,
-                allParams,
-                setter,
-                provider
-            )}
+        <Grid container spacing={1} paddingTop={1} key={key} justifyContent={'space-between'}>
+            {makeComponentFor(defParams[key], key, localParams, allParams, setter, provider)}
             <LineSeparator />
         </Grid>
     ));
@@ -200,14 +160,7 @@ function getValue(param, key) {
     return param[key];
 }
 
-function makeComponentFor(
-    defParam,
-    key,
-    localParams,
-    allParams,
-    setter,
-    provider
-) {
+function makeComponentFor(defParam, key, localParams, allParams, setter, provider) {
     function updateValues(newval) {
         localParams = { ...localParams, [key]: newval }; // single value update made
         let newParams = { ...allParams }; // but we send/update all params to the back
@@ -324,12 +277,7 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
         },
     };
 
-    return makeComponentsFor(
-        defParams,
-        lfParams?.commonParameters || {},
-        lfParams,
-        commitLFParameter
-    );
+    return makeComponentsFor(defParams, lfParams?.commonParameters || {}, lfParams, commitLFParameter);
 };
 
 const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -382,17 +330,8 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     };
 
     return (
-        <ParameterGroup
-            label={'showAdvancedParameters'}
-            state={showAdvancedLfParams}
-            onClick={setShowAdvancedLfParams}
-        >
-            {makeComponentsFor(
-                defParams,
-                lfParams?.commonParameters || {},
-                lfParams,
-                commitLFParameter
-            )}
+        <ParameterGroup label={'showAdvancedParameters'} state={showAdvancedLfParams} onClick={setShowAdvancedLfParams}>
+            {makeComponentsFor(defParams, lfParams?.commonParameters || {}, lfParams, commitLFParameter)}
         </ParameterGroup>
     );
 };
@@ -457,20 +396,16 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         },
     ];
 
-    const [specificCurrentParams, setSpecificCurrentParams] = useState(
-        params['specificParametersPerProvider']
-    );
-    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
-        useState(false);
-    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
-        useState(false);
+    const [specificCurrentParams, setSpecificCurrentParams] = useState(params['specificParametersPerProvider']);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const onSpecificParamChange = (paramName, newValue) => {
-        const specificParamDescr = Object.values(
-            specificParamsDescrWithoutNanVals[provider]
-        ).find((descr) => descr.name === paramName);
+        const specificParamDescr = Object.values(specificParamsDescrWithoutNanVals[provider]).find(
+            (descr) => descr.name === paramName
+        );
 
         let specParamsToSave;
         if (specificParamDescr.defaultValue !== newValue) {
@@ -482,8 +417,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 },
             };
         } else {
-            const { [specificParamDescr.name]: value, ...otherProviderParams } =
-                specificCurrentParams[provider] || {};
+            const { [specificParamDescr.name]: value, ...otherProviderParams } = specificCurrentParams[provider] || {};
             specParamsToSave = {
                 ...specificCurrentParams,
                 [provider]: otherProviderParams,
@@ -492,10 +426,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
         setSpecificCurrentParams(specParamsToSave);
 
-        const commitParameters = fusionSpecificWithOtherParams(
-            params,
-            specParamsToSave
-        );
+        const commitParameters = fusionSpecificWithOtherParams(params, specParamsToSave);
         updateParameters(commitParameters);
     };
 
@@ -542,9 +473,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
     const LoadFlowProviders = Object.fromEntries(
-        Object.entries(providers).filter(
-            ([key]) => !key.includes('DynaFlow') || enableDeveloperMode
-        )
+        Object.entries(providers).filter(([key]) => !key.includes('DynaFlow') || enableDeveloperMode)
     );
     const handleLoadParameter = useCallback(
         (newParams) => {
@@ -552,21 +481,12 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 setOpenSelectParameterDialog(false);
                 fetchLoadFlowParameters(newParams[0].id)
                     .then((parameters) => {
-                        console.info(
-                            'loading the following loadflow parameters : ' +
-                                parameters.uuid
-                        );
+                        console.info('loading the following loadflow parameters : ' + parameters.uuid);
                         const provider = parameters['provider'];
                         const specParamsToSave = {
-                            [provider]:
-                                parameters?.specificParametersPerProvider[
-                                    provider
-                                ],
+                            [provider]: parameters?.specificParametersPerProvider[provider],
                         };
-                        const commitParameters = fusionSpecificWithOtherParams(
-                            parameters,
-                            specParamsToSave
-                        );
+                        const commitParameters = fusionSpecificWithOtherParams(parameters, specParamsToSave);
                         updateParameters(commitParameters);
                         setSpecificCurrentParams(specParamsToSave);
                     })
@@ -584,9 +504,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     );
     const formatNewParams = useCallback((newParams) => {
         const speceficParameters =
-            'specificParametersPerProvider' in newParams
-                ? newParams['specificParametersPerProvider']
-                : {};
+            'specificParametersPerProvider' in newParams ? newParams['specificParametersPerProvider'] : {};
 
         return {
             ...newParams,
@@ -638,32 +556,21 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     >
                         <LineSeparator />
                         <Grid container spacing={1} paddingTop={1}>
-                            <ParamLine
-                                type={ParameterType.Slider}
-                                param_name_id={PARAM_LIMIT_REDUCTION}
+                            <ParameterLineSlider
+                                paramNameId={PARAM_LIMIT_REDUCTION}
                                 label="LimitReduction"
                                 marks={alertThresholdMarks}
                                 minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                             />
                             <LineSeparator />
                         </Grid>
-                        <BasicLoadFlowParameters
-                            lfParams={params || {}}
-                            commitLFParameter={updateParameters}
-                        />
-                        <AdvancedLoadFlowParameters
-                            lfParams={params || {}}
-                            commitLFParameter={updateParameters}
-                        />
+                        <BasicLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
+                        <AdvancedLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
                         <SpecificLoadFlowParameters
                             disabled={!specificParamsDescriptions?.[provider]}
                             subText={provider}
-                            specificParamsDescription={
-                                specificParamsDescrWithoutNanVals[provider]
-                            }
-                            specificCurrentParams={
-                                specificCurrentParams[provider]
-                            }
+                            specificParamsDescription={specificParamsDescrWithoutNanVals[provider]}
+                            specificCurrentParams={specificCurrentParams[provider]}
                             onSpecificParamChange={onSpecificParamChange}
                         />
                     </Grid>
@@ -672,28 +579,15 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     <Grid
                         container
                         item
-                        sx={mergeSx(
-                            styles.controlParametersItem,
-                            styles.marginTopButton,
-                            { paddingBottom: 0 }
-                        )}
+                        sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
                     >
                         <LabelledButton
                             callback={() => setOpenSelectParameterDialog(true)}
                             label="settings.button.chooseSettings"
                         />
-                        <LabelledButton
-                            callback={() => setOpenCreateParameterDialog(true)}
-                            label="save"
-                        />
-                        <LabelledButton
-                            callback={resetLfParametersAndLfProvider}
-                            label="resetToDefault"
-                        />
-                        <LabelledButton
-                            callback={resetLfParameters}
-                            label="resetProviderValuesToDefault"
-                        />
+                        <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                        <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
+                        <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
                     </Grid>
                 </Box>
                 {openCreateParameterDialog && (

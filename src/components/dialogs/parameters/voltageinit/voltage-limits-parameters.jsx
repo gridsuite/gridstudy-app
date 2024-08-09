@@ -153,28 +153,16 @@ const VoltageLimitsParameters = () => {
 
     return (
         <Grid container>
-            <Typography
-                component="span"
-                variant="h6"
-                sx={{ alignSelf: 'center', marginRight: 2 }}
-            >
+            <Typography component="span" variant="h6" sx={{ alignSelf: 'center', marginRight: 2 }}>
                 <FormattedMessage id="AdjustExistingLimits" />
             </Typography>
-            <Alert
-                sx={styles.adjustExistingLimitsInfo}
-                severity="info"
-                variant="outlined"
-            >
+            <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="AdjustExistingLimitsInfo" />
             </Alert>
             <DndTable
                 arrayFormName={`${VOLTAGE_LIMITS_MODIFICATION}`}
-                columnsDefinition={
-                    VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS
-                }
-                useFieldArrayOutput={
-                    useVoltageLimitsModificationFieldArrayOutput
-                }
+                columnsDefinition={VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS}
+                useFieldArrayOutput={useVoltageLimitsModificationFieldArrayOutput}
                 createRows={createVoltageLimitModificationRows}
                 tableHeight={270}
                 withAddRowsDialog={false}
