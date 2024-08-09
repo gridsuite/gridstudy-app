@@ -1,4 +1,4 @@
-import { ElementType, FILTER_EQUIPMENTS, FormEquipment, SelectInput, UniqueNameInput } from '@gridsuite/commons-ui';
+import { ElementType, FILTER_EQUIPMENTS, FormEquipment, SelectInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { EQUIPMENT_TYPES, equipmentTypeToLabel } from 'components/utils/equipment-types';
 import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
@@ -7,6 +7,7 @@ import { SELECTION_TYPES } from '../selection-types';
 import { SelectionCreationPanelDirectorySelector } from './contingency-filter-creation-directory-selector';
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { useWatch } from 'react-hook-form';
+import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 
 interface ContingencyFilterCreationListProps {
     pendingState: boolean;
@@ -72,7 +73,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
                     name={NAME}
                     label={'Name'}
                     elementType={selectionTypeToElementType(selectionType)}
-                    activeDirectory={destinationFolderWatcher?.folderId}
+                    activeDirectory={destinationFolderWatcher?.folderId ?? null}
                     autoFocus
                     formProps={{
                         variant: 'standard',
