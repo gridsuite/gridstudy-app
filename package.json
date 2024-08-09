@@ -58,6 +58,8 @@
         "build": "tsc && vite build",
         "serve": "vite preview",
         "test": "jest",
+        "test:coverage": "jest --coverage",
+        "test:watch": "jest --watch",
         "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
         "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"$( jq -r .onlyAllow[] license-checker-config.json | tr '\n' ';')\" --excludePackages \"$( jq -r .excludePackages[] license-checker-config.json | tr '\n' ';')\""
     },
@@ -67,6 +69,8 @@
         "@babel/preset-env": "^7.24.3",
         "@babel/preset-react": "^7.24.1",
         "@babel/preset-typescript": "^7.24.1",
+        "@jest/globals": "^29.7.0",
+        "@testing-library/react": "^16.0.0",
         "@types/core-js": "^2.5.8",
         "@types/dagre": "^0.7.52",
         "@types/eslint": "^8.56.9",
