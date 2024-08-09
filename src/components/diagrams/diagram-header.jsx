@@ -22,6 +22,10 @@ const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme) => ({
+        // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
+        position: 'absolute',
+        width: '100%',
+        ////
         padding: '5px',
         display: 'flex',
         flexDirection: 'row',

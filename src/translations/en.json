@@ -1377,6 +1377,8 @@
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant":"Click on the map to start drawing a polygon.",
     "guidancePopUp.secondVariant":"Press Enter to finish or Esc to cancel.",
-    "guidancePopUp.action":"Close editor"
+    "guidancePopUp.action":"Close editor",
+    "generateNad": "Generate",
+    "nad": "NAD"
 
 }
