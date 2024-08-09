@@ -6,6 +6,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { SelectionCreationPanelFormSchema } from '../selection-creation-schema';
 import { DESTINATION_FOLDER, FOLDER_ID, FOLDER_NAME } from 'components/utils/field-constants';
 import { useState } from 'react';
+import { UUID } from 'crypto';
 
 export const SelectionCreationPanelDirectorySelector = (props: { pendingState: boolean }) => {
     const { pendingState } = props;
@@ -24,7 +25,7 @@ export const SelectionCreationPanelDirectorySelector = (props: { pendingState: b
         if (folder && folder.length > 0) {
             if (folder[0].id !== destinationFolderWatcher?.folderId) {
                 setValue(DESTINATION_FOLDER, {
-                    [FOLDER_ID]: folder[0].id,
+                    [FOLDER_ID]: folder[0].id as UUID,
                     [FOLDER_NAME]: folder[0].name,
                 });
             }

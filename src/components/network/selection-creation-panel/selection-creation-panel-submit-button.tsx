@@ -4,6 +4,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import { SELECTION_TYPES } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
+import { Nullable } from 'components/utils/ts-utils';
 
 interface SelectionCreationPanelSubmitButtonProps {
     handleValidate: (formData: SelectionCreationPaneFields) => void;
@@ -20,7 +21,7 @@ export const SelectionCreationPanelSubmitButton = (props: SelectionCreationPanel
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
 
-    const watchSelectionType = useWatch<SelectionCreationPaneFields, typeof SELECTION_TYPE>({
+    const watchSelectionType = useWatch<Nullable<SelectionCreationPaneFields>, typeof SELECTION_TYPE>({
         name: SELECTION_TYPE,
     });
 

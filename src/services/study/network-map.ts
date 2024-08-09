@@ -7,9 +7,8 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { NAME } from '../../components/utils/field-constants.js';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
-import { EquipmentInfos, EquipmentType, TreeViewFinderNodeProps, createFilter } from '@gridsuite/commons-ui';
+import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
+import { EquipmentInfos, EquipmentType, createFilter } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';

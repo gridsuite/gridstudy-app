@@ -7,6 +7,8 @@ import { FC } from 'react';
 import { useWatch } from 'react-hook-form';
 import { ContingencyFilterCreationFields } from './contingency-filter-creation/contingency-filter-creation-fields';
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
+import { SelectionCreationPaneFields } from './selection-creation-schema';
+import { Nullable } from 'components/utils/ts-utils';
 
 interface SelectionCreationPanelFormProps {
     pendingState: boolean;
@@ -14,7 +16,7 @@ interface SelectionCreationPanelFormProps {
 
 export const SelectionCreationPanelForm: FC<SelectionCreationPanelFormProps> = (props) => {
     const { pendingState } = props;
-    const watchSelectionType = useWatch({
+    const watchSelectionType = useWatch<Nullable<SelectionCreationPaneFields>, typeof SELECTION_TYPE>({
         name: SELECTION_TYPE,
     });
 

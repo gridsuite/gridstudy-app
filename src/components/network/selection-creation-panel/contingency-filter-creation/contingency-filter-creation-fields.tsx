@@ -1,7 +1,7 @@
 import { ElementType, FILTER_EQUIPMENTS, FormEquipment, SelectInput, UniqueNameInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { EQUIPMENT_TYPES, equipmentTypeToLabel } from 'components/utils/equipment-types';
-import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, FOLDER_ID, NAME } from 'components/utils/field-constants';
+import { DESTINATION_FOLDER, EQUIPMENT_TYPE_FIELD, NAME } from 'components/utils/field-constants';
 import { FC, useMemo } from 'react';
 import { SELECTION_TYPES } from '../selection-types';
 import { SelectionCreationPanelDirectorySelector } from './contingency-filter-creation-directory-selector';
@@ -23,8 +23,8 @@ const selectionTypeToElementType = (selectionType: SELECTION_TYPES.CONTIGENCY_LI
 
 export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListProps> = (props) => {
     const { selectionType, pendingState } = props;
-    const destinationFolderWatcher = useWatch<SelectionCreationPanelFormSchema, 'destinationFolder.folderId'>({
-        name: `${DESTINATION_FOLDER}.${FOLDER_ID}`,
+    const destinationFolderWatcher = useWatch<SelectionCreationPanelFormSchema, typeof DESTINATION_FOLDER>({
+        name: `${DESTINATION_FOLDER}`,
     });
 
     const equipmentTypesOptions = useMemo(() => {
@@ -72,7 +72,7 @@ export const ContingencyFilterCreationFields: FC<ContingencyFilterCreationListPr
                     name={NAME}
                     label={'Name'}
                     elementType={selectionTypeToElementType(selectionType)}
-                    activeDirectory={destinationFolderWatcher}
+                    activeDirectory={destinationFolderWatcher?.folderId}
                     autoFocus
                     formProps={{
                         variant: 'standard',
