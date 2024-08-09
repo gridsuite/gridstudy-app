@@ -82,7 +82,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 }
             });
         }
-    }, [studyUuid]);
+    }, [studyUuid, setValue]);
 
     useEffect(() => {
         fetchDefaultDirectoryForStudy();
