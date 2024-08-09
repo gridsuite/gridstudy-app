@@ -1244,7 +1244,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             }))
-        );;
+        );
     });
 
     builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {

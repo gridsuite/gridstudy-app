@@ -4,15 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import {
-    CustomFormProvider,
-    EquipmentType,
-    fetchDirectoryElementPath,
-    TreeViewFinderNodeProps,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
