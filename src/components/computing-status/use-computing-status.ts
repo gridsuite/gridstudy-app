@@ -11,12 +11,10 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { useParams } from 'react-router-dom';
-import { ReduxState, StudyUpdated } from 'redux/reducer.type';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
-import { AppDispatch } from '../../redux/store';
-import { AppState } from 'redux/reducer';
+import { AppState, StudyUpdated } from 'redux/reducer';
+import useStudyUuid from 'hooks/use-study-uuid';
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
@@ -104,14 +102,13 @@ export const useComputingStatus: UseComputingStatusProps = (
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
-    const nodeUuid = useSelector((state: ReduxState) => state.currentTreeNode?.id);
-    const studyUuid = decodeURIComponent(useParams().studyUuid ?? '') as UUID;
+    const nodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const studyUuid = useStudyUuid();
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch();
     const status = computingTypeToStatusMapper[computingType];
-
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
@@ -129,23 +126,24 @@ export const useComputingStatus: UseComputingStatusProps = (
         //upon changing node we reset the last completed computation to prevent results misredirection
         dispatch(setLastCompletedComputation());
 
-        nodeUuidRef.current = nodeUuid;
-        fetcher(studyUuid, nodeUuid)
-            .then((res: string) => {
-                if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
-                    const status = resultConversion(res);
-                    dispatch(setComputingStatus(computingType, status));
-                    if (isComputationCompleted(status)) {
-                        dispatch(setLastCompletedComputation(computingType));
+        nodeUuidRef.current = nodeUuid ?? null;
+        if (nodeUuid && studyUuid) {
+            fetcher(studyUuid, nodeUuid)
+                .then((res: string) => {
+                    if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
+                        const status = resultConversion(res);
+                        dispatch(setComputingStatus(computingType, status));
+                        if (isComputationCompleted(status)) {
+                            dispatch(setLastCompletedComputation(computingType));
+                        }
                     }
-                }
-            })
-            .catch(() => {
-                if (!canceledRequest) {
-                    dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
-                }
-            });
-
+                })
+                .catch(() => {
+                    if (!canceledRequest) {
+                        dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
+                    }
+                });
+        }
         return () => {
             canceledRequest = true;
         };
