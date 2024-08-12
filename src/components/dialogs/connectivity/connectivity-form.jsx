@@ -155,15 +155,9 @@ export const ConnectivityForm = ({
         if (!isEquipmentModification) {
             return null;
         }
-        if (previousValues?.terminalConnected) {
-            return intl.formatMessage({ id: 'connected' });
-        }
-        if (
-            previousValues?.terminalConnected === false ||
-            (previousValues && previousValues?.terminalConnected === undefined)
-        ) {
-            return intl.formatMessage({ id: 'disconnected' });
-        }
+        return previousValues?.terminalConnected
+            ? intl.formatMessage({ id: 'connected' })
+            : intl.formatMessage({ id: 'disconnected' });
     }, [intl, previousValues, isEquipmentModification]);
 
     const connectedField = isEquipmentModification ? (
