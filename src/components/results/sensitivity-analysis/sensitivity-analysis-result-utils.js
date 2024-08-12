@@ -49,17 +49,11 @@ export const DATA_KEY_TO_SORT_KEY = {
 export const mappingTabs = (sensiResultKind, nOrNkIndex) => {
     switch (sensiResultKind) {
         case SENSITIVITY_IN_DELTA_MW:
-            return nOrNkIndex === 0
-                ? SENSITIVITY_IN_DELTA_MW_N
-                : SENSITIVITY_IN_DELTA_MW_N_K;
+            return nOrNkIndex === 0 ? SENSITIVITY_IN_DELTA_MW_N : SENSITIVITY_IN_DELTA_MW_N_K;
         case SENSITIVITY_IN_DELTA_A:
-            return nOrNkIndex === 0
-                ? SENSITIVITY_IN_DELTA_A_N
-                : SENSITIVITY_IN_DELTA_A_N_K;
+            return nOrNkIndex === 0 ? SENSITIVITY_IN_DELTA_A_N : SENSITIVITY_IN_DELTA_A_N_K;
         case SENSITIVITY_AT_NODE:
-            return nOrNkIndex === 0
-                ? SENSITIVITY_AT_NODE_N
-                : SENSITIVITY_AT_NODE_N_K;
+            return nOrNkIndex === 0 ? SENSITIVITY_AT_NODE_N : SENSITIVITY_AT_NODE_N_K;
         default:
             return '';
     }

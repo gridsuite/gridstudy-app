@@ -36,11 +36,7 @@ const formatValues = (values, isDivision) => {
     Object.entries(values)?.forEach(([key, value]) => {
         result = {
             ...result,
-            [key]: isProportionalSAParam(key)
-                ? roundToDefaultPrecision(
-                      isDivision ? value / 100 : value * 100
-                  )
-                : value,
+            [key]: isProportionalSAParam(key) ? roundToDefaultPrecision(isDivision ? value / 100 : value * 100) : value,
         };
     });
     return result;
@@ -89,10 +85,7 @@ const SecurityAnalysisFields = ({
         [checkValue, positiveDoubleValue]
     );
 
-    const formatedValues = useCallback(
-        (values) => formatValues(values, true),
-        []
-    );
+    const formatedValues = useCallback((values) => formatValues(values, true), []);
 
     const updateValue = useCallback(
         (e) => {
@@ -123,11 +116,7 @@ const SecurityAnalysisFields = ({
                 item
                 container
                 xs={isSingleField ? 8 : 4}
-                sx={
-                    isSingleField
-                        ? styles.singleTextField
-                        : styles.firstTextField
-                }
+                sx={isSingleField ? styles.singleTextField : styles.firstTextField}
             >
                 <TextField
                     fullWidth
@@ -154,10 +143,7 @@ const SecurityAnalysisFields = ({
                     />
                 </Grid>
             )}
-            <Tooltip
-                title={<FormattedMessage id={tooltipInfoId} />}
-                placement="left-start"
-            >
+            <Tooltip title={<FormattedMessage id={tooltipInfoId} />} placement="left-start">
                 <InfoIcon />
             </Tooltip>
         </Grid>
@@ -165,26 +151,15 @@ const SecurityAnalysisFields = ({
 };
 
 export const SecurityAnalysisParameters = ({ parametersBackend }) => {
-    const [
-        providers,
-        provider,
-        updateProvider,
-        resetProvider,
-        params,
-        updateParameters,
-        resetParameters,
-    ] = parametersBackend;
+    const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
+        parametersBackend;
 
     const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
 
-    const updateProviderCallback = useCallback(handleUpdateProvider, [
-        updateProvider,
-    ]);
+    const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
     const intl = useIntl();
-    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
-        useState(false);
-    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
-        useState(false);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const { snackError } = useSnackMessage();
 
     const callBack = (data) => {
@@ -260,10 +235,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                 setOpenSelectParameterDialog(false);
                 fetchSecurityAnalysisParameters(newParams[0].id)
                     .then((parameters) => {
-                        console.info(
-                            'loading the following security analysis parameters : ' +
-                                parameters.uuid
-                        );
+                        console.info('loading the following security analysis parameters : ' + parameters.uuid);
                         updateParameters({ ...parameters });
                     })
                     .catch((error) => {
@@ -309,13 +281,7 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                             </Typography>
                             <Tooltip
                                 sx={styles.tooltip}
-                                title={
-                                    <FormattedMessage
-                                        id={
-                                            'securityAnalysis.toolTip.violationsHiding'
-                                        }
-                                    />
-                                }
+                                title={<FormattedMessage id={'securityAnalysis.toolTip.violationsHiding'} />}
                                 placement="left-start"
                             >
                                 <InfoIcon />
@@ -331,37 +297,17 @@ export const SecurityAnalysisParameters = ({ parametersBackend }) => {
                         );
                     })}
                 </Grid>
-                <Grid
-                    container
-                    key="secuAnalysisProvider"
-                    sx={styles.scrollableGrid}
-                    spacing={1}
-                ></Grid>
+                <Grid container key="secuAnalysisProvider" sx={styles.scrollableGrid} spacing={1}></Grid>
                 <LineSeparator />
             </Grid>
-            <Grid
-                container
-                sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
-                )}
-            >
+            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
                 <LabelledButton
                     callback={() => setOpenSelectParameterDialog(true)}
                     label="settings.button.chooseSettings"
                 />
-                <LabelledButton
-                    callback={() => setOpenCreateParameterDialog(true)}
-                    label="save"
-                />
-                <LabelledButton
-                    callback={resetSAParametersAndProvider}
-                    label="resetToDefault"
-                />
-                <LabelledButton
-                    label="resetProviderValuesToDefault"
-                    callback={resetSAParameters}
-                />
+                <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
+                <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog

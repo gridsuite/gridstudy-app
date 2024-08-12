@@ -9,13 +9,7 @@ import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    ADDITIONAL_PROPERTIES,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { ADDITIONAL_PROPERTIES, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -24,10 +18,7 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -132,8 +123,7 @@ const LoadModificationDialog = ({
                             setLoadToModify(load);
                             reset((formValues) => ({
                                 ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(load, getValues),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -188,18 +178,12 @@ const LoadModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -211,9 +195,7 @@ const LoadModificationDialog = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
@@ -227,12 +209,7 @@ const LoadModificationDialog = ({
                         fillerHeight={2}
                     />
                 )}
-                {selectedId != null && (
-                    <LoadModificationForm
-                        loadToModify={loadToModify}
-                        equipmentId={selectedId}
-                    />
-                )}
+                {selectedId != null && <LoadModificationForm loadToModify={loadToModify} equipmentId={selectedId} />}
             </ModificationDialog>
         </CustomFormProvider>
     );

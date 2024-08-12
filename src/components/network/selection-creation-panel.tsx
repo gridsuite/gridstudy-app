@@ -19,28 +19,18 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { useForm, useWatch } from 'react-hook-form';
-import {
-    NAME,
-    EQUIPMENT_TYPE_FIELD,
-    SELECTION_TYPE,
-} from 'components/utils/field-constants';
+import { NAME, EQUIPMENT_TYPE_FIELD, SELECTION_TYPE } from 'components/utils/field-constants';
 import { GridSection } from 'components/dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
 import { useSelector } from 'react-redux';
-import {
-    equipementTypeToLabel,
-    EQUIPMENT_TYPES,
-} from '../utils/equipment-types';
+import { equipmentTypeToLabel, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { UUID } from 'crypto';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import CircularProgress from '@mui/material/CircularProgress';
 import FolderOutlined from '@mui/icons-material/FolderOutlined';
-import { ReduxState } from 'redux/reducer.type';
-import {
-    SELECTION_TYPES,
-    selectionTypeToLabel,
-} from 'components/utils/selection-types';
+import { AppState } from 'redux/reducer';
+import { SELECTION_TYPES, selectionTypeToLabel } from 'components/utils/selection-types';
 import { useSaveMap } from './use-save-map';
 
 const formSchema = yup
@@ -70,7 +60,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     onCancel,
     nominalVoltages,
 }) => {
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [openDirectorySelector, setOpenDirectorySelector] = useState(false);
     const intl = useIntl();
     const { pendingState, onSaveSelection } = useSaveMap();
@@ -87,10 +77,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
         control: formMethods.control,
     });
 
-    const [destinationFolder, setDestinationFolder] =
-        useState<TreeViewFinderNodeProps>();
+    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
 
     const fetchDefaultDirectoryForStudy = useCallback(() => {
+        // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (res) {
                 const parentFolderIndex = res.length - 2;
@@ -124,14 +114,12 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     };
     const equipmentTypesOptions = useMemo(() => {
         if (watchSelectionType === SELECTION_TYPES.FILTER) {
-            return Object.values(FILTER_EQUIPMENTS).map(
-                (equipment: FormEquipment) => {
-                    return {
-                        id: equipment.id,
-                        label: equipment.label,
-                    };
-                }
-            );
+            return Object.values(FILTER_EQUIPMENTS).map((equipment: FormEquipment) => {
+                return {
+                    id: equipment.id,
+                    label: equipment.label,
+                };
+            });
         } else {
             // might be better to use CONTINGENCY_LIST_EQUIPMENTS from commons ui once the list is finalised
             const equipmentTypesToExclude = new Set([
@@ -140,14 +128,11 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                 EQUIPMENT_TYPES.HVDC_CONVERTER_STATION,
             ]);
             return Object.values(EQUIPMENT_TYPES)
-                .filter(
-                    (equipmentType) =>
-                        !equipmentTypesToExclude.has(equipmentType)
-                )
+                .filter((equipmentType) => !equipmentTypesToExclude.has(equipmentType))
                 .map((value) => {
                     return {
                         id: value,
-                        label: equipementTypeToLabel(value),
+                        label: equipmentTypeToLabel(value),
                     };
                 });
         }
@@ -176,29 +161,17 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     const nameError = errors[NAME];
     const isValidating = errors.root?.isValidating;
     return (
-        <CustomFormProvider
-            removeOptional={true}
-            validationSchema={formSchema}
-            {...formMethods}
-        >
-            <Box
-                p={4}
-                display="flex"
-                justifyContent="space-between"
-                flexDirection="column"
-                height="100%"
-            >
+        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
+            <Box p={4} display="flex" justifyContent="space-between" flexDirection="column" height="100%">
                 <Grid container rowGap={2}>
                     <GridSection title="createNewSelection" />
                     <Grid container>
                         <SelectInput
                             name={SELECTION_TYPE}
-                            options={Object.values(SELECTION_TYPES).map(
-                                (value) => ({
-                                    id: value,
-                                    label: selectionTypeToLabel(value),
-                                })
-                            )}
+                            options={Object.values(SELECTION_TYPES).map((value) => ({
+                                id: value,
+                                label: selectionTypeToLabel(value),
+                            }))}
                             label={SELECTION_TYPE}
                             fullWidth
                             size={'medium'}
@@ -224,14 +197,8 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                 <UniqueNameInput
                                     name={NAME}
                                     label={'Name'}
-                                    elementType={
-                                        filterSelected
-                                            ? ElementType.FILTER
-                                            : ElementType.CONTINGENCY_LIST
-                                    }
-                                    activeDirectory={
-                                        destinationFolder?.id as UUID
-                                    }
+                                    elementType={filterSelected ? ElementType.FILTER : ElementType.CONTINGENCY_LIST}
+                                    activeDirectory={destinationFolder?.id as UUID}
                                     autoFocus
                                     formProps={{
                                         variant: 'standard',
@@ -262,9 +229,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                                     size="small"
                                     disabled={pendingState}
                                 >
-                                    <FormattedMessage
-                                        id={'button.changeType'}
-                                    />
+                                    <FormattedMessage id={'button.changeType'} />
                                 </Button>
                             </Grid>
                         </>
@@ -295,18 +260,11 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     <Button
                         variant="outlined"
                         type={'submit'}
-                        disabled={
-                            !formMethods.formState.isDirty ||
-                            pendingState ||
-                            !!nameError ||
-                            !!isValidating
-                        }
+                        disabled={!formMethods.formState.isDirty || pendingState || !!nameError || !!isValidating}
                         onClick={handleSubmit}
                         size={'large'}
                     >
-                        {(pendingState && <CircularProgress size={24} />) || (
-                            <FormattedMessage id="save" />
-                        )}
+                        {(pendingState && <CircularProgress size={24} />) || <FormattedMessage id="save" />}
                     </Button>
                 </Grid>
             </Box>

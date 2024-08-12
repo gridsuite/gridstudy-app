@@ -8,10 +8,7 @@
 import { makeComponents, TYPES } from '../../util/make-component-utils';
 import React from 'react';
 import yup from '../../../../utils/yup-config';
-import {
-    commonDefParams,
-    getFormSchema as getCommonSolverFormSchema,
-} from './common-solver-parameters';
+import { commonDefParams, getFormSchema as getCommonSolverFormSchema } from './common-solver-parameters';
 
 const SIM_H_MIN = 'hMin';
 const SIM_H_MAX = 'hMax';
@@ -26,17 +23,13 @@ const SIM_MSBSET = 'msbset';
 const SIM_MX_ITER = 'mxIter';
 const SIM_PRINT_FL = 'printFl';
 
-const SIM_OPTIMIZE_ALGEBRAIC_RESIDUALS_EVALUATIONS =
-    'optimizeAlgebraicResidualsEvaluations';
+const SIM_OPTIMIZE_ALGEBRAIC_RESIDUALS_EVALUATIONS = 'optimizeAlgebraicResidualsEvaluations';
 const SIM_SKIP_NR_IF_INITIAL_GUESS_OK = 'skipNRIfInitialGuessOK';
 const SIM_ENABLE_SILENT_Z = 'enableSilentZ';
-const SIM_OPTIMIZE_RE_INIT_ALGEBRAIC_RESIDUALS_EVALUATIONS =
-    'optimizeReInitAlgebraicResidualsEvaluations';
+const SIM_OPTIMIZE_RE_INIT_ALGEBRAIC_RESIDUALS_EVALUATIONS = 'optimizeReInitAlgebraicResidualsEvaluations';
 
-const SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION =
-    'minimumModeChangeTypeForAlgebraicRestoration';
-const SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION_INIT =
-    'minimumModeChangeTypeForAlgebraicRestorationInit';
+const SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION = 'minimumModeChangeTypeForAlgebraicRestoration';
+const SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION_INIT = 'minimumModeChangeTypeForAlgebraicRestorationInit';
 
 export const getFormSchema = () => {
     return yup.object().shape({
@@ -52,20 +45,12 @@ export const getFormSchema = () => {
         [SIM_MSBSET]: yup.number().integer().required(),
         [SIM_MX_ITER]: yup.number().integer().required(),
         [SIM_PRINT_FL]: yup.number().integer().required(),
-        [SIM_OPTIMIZE_ALGEBRAIC_RESIDUALS_EVALUATIONS]: yup
-            .boolean()
-            .required(),
+        [SIM_OPTIMIZE_ALGEBRAIC_RESIDUALS_EVALUATIONS]: yup.boolean().required(),
         [SIM_SKIP_NR_IF_INITIAL_GUESS_OK]: yup.boolean().required(),
         [SIM_ENABLE_SILENT_Z]: yup.boolean().required(),
-        [SIM_OPTIMIZE_RE_INIT_ALGEBRAIC_RESIDUALS_EVALUATIONS]: yup
-            .boolean()
-            .required(),
-        [SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION]: yup
-            .string()
-            .required(),
-        [SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION_INIT]: yup
-            .string()
-            .required(),
+        [SIM_OPTIMIZE_RE_INIT_ALGEBRAIC_RESIDUALS_EVALUATIONS]: yup.boolean().required(),
+        [SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION]: yup.string().required(),
+        [SIM_MINIMUM_MODE_CHANGE_TYPE_FOR_ALGEBRAIC_RESTORATION_INIT]: yup.string().required(),
         ...getCommonSolverFormSchema(),
     });
 };

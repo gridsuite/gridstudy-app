@@ -35,98 +35,39 @@ import { fetchStateEstimationStatus } from '../../services/study/state-estimatio
 
 const loadFlowStatusInvalidations = ['loadflow_status', 'loadflow_failed'];
 
-const securityAnalysisStatusInvalidations = [
-    'securityAnalysis_status',
-    'securityAnalysis_failed',
-];
-const sensitivityAnalysisStatusInvalidations = [
-    'sensitivityAnalysis_status',
-    'sensitivityAnalysis_failed',
-];
-const nonEvacuatedEnergyStatusInvalidations = [
-    'nonEvacuatedEnergy_status',
-    'nonEvacuatedEnergy_failed',
-];
-const shortCircuitAnalysisStatusInvalidations = [
-    'shortCircuitAnalysis_status',
-    'shortCircuitAnalysis_failed',
-];
+const securityAnalysisStatusInvalidations = ['securityAnalysis_status', 'securityAnalysis_failed'];
+const sensitivityAnalysisStatusInvalidations = ['sensitivityAnalysis_status', 'sensitivityAnalysis_failed'];
+const nonEvacuatedEnergyStatusInvalidations = ['nonEvacuatedEnergy_status', 'nonEvacuatedEnergy_failed'];
+const shortCircuitAnalysisStatusInvalidations = ['shortCircuitAnalysis_status', 'shortCircuitAnalysis_failed'];
 const oneBusShortCircuitAnalysisStatusInvalidations = [
     'oneBusShortCircuitAnalysis_status',
     'oneBusShortCircuitAnalysis_failed',
 ];
-const dynamicSimulationStatusInvalidations = [
-    'dynamicSimulation_status',
-    'dynamicSimulation_failed',
-];
-const voltageInitStatusInvalidations = [
-    'voltageInit_status',
-    'voltageInit_failed',
-];
-const stateEstimationStatusInvalidations = [
-    'stateEstimation_status',
-    'stateEstimation_failed',
-];
+const dynamicSimulationStatusInvalidations = ['dynamicSimulation_status', 'dynamicSimulation_failed'];
+const voltageInitStatusInvalidations = ['voltageInit_status', 'voltageInit_failed'];
+const stateEstimationStatusInvalidations = ['stateEstimation_status', 'stateEstimation_failed'];
 const loadFlowStatusCompletions = ['loadflowResult', 'loadflow_failed'];
 
-const securityAnalysisStatusCompletions = [
-    'securityAnalysisResult',
-    'securityAnalysis_failed',
-];
-const sensitivityAnalysisStatusCompletions = [
-    'sensitivityAnalysisResult',
-    'sensitivityAnalysis_failed',
-];
-const nonEvacuatedEnergyStatusCompletions = [
-    'nonEvacuatedEnergyResult',
-    'nonEvacuatedEnergy_failed',
-];
-const shortCircuitAnalysisStatusCompletions = [
-    'shortCircuitAnalysisResult',
-    'shortCircuitAnalysis_failed',
-];
+const securityAnalysisStatusCompletions = ['securityAnalysisResult', 'securityAnalysis_failed'];
+const sensitivityAnalysisStatusCompletions = ['sensitivityAnalysisResult', 'sensitivityAnalysis_failed'];
+const nonEvacuatedEnergyStatusCompletions = ['nonEvacuatedEnergyResult', 'nonEvacuatedEnergy_failed'];
+const shortCircuitAnalysisStatusCompletions = ['shortCircuitAnalysisResult', 'shortCircuitAnalysis_failed'];
 const oneBusShortCircuitAnalysisStatusCompletions = [
     'oneBusShortCircuitAnalysisResult',
     'oneBusShortCircuitAnalysis_failed',
 ];
-const dynamicSimulationStatusCompletions = [
-    'dynamicSimulationResult',
-    'dynamicSimulation_failed',
-];
-const voltageInitStatusCompletions = [
-    'voltageInitResult',
-    'voltageInit_failed',
-];
-const stateEstimationStatusCompletions = [
-    'stateEstimationResult',
-    'stateEstimation_failed',
-];
+const dynamicSimulationStatusCompletions = ['dynamicSimulationResult', 'dynamicSimulation_failed'];
+const voltageInitStatusCompletions = ['voltageInitResult', 'voltageInit_failed'];
+const stateEstimationStatusCompletions = ['stateEstimationResult', 'stateEstimation_failed'];
 // this hook loads all current computation status into redux then keeps them up to date according to notifications
-export const useAllComputingStatus = (
-    studyUuid: UUID,
-    currentNodeUuid: UUID
-): void => {
-    const securityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SecurityAnalysis
-    );
-    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis
-    );
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis
-    );
-    const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation
-    );
-    const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit
-    );
-    const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit
-    );
-    const stateEstimationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.StateEstimation
-    );
+export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): void => {
+    const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
+    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+    const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
     useComputingStatus(
         studyUuid,

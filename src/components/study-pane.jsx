@@ -88,18 +88,13 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     view={props.view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}
-                    onTableEquipementChanged={(newTableEquipment) =>
-                        setTableEquipment(newTableEquipment)
-                    }
+                    onTableEquipementChanged={(newTableEquipment) => setTableEquipment(newTableEquipment)}
                     onChangeTab={props.onChangeTab}
                     setErrorMessage={setErrorMessage}
                 ></MapViewer>
             </div>
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
-            <TabPanelLazy
-                key={`spreadsheet-${currentNode?.id}`}
-                selected={props.view === StudyView.SPREADSHEET}
-            >
+            <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
                     <TableWrapper
                         studyUuid={studyUuid}
@@ -127,10 +122,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     display: props.view === StudyView.RESULTS ? 'flex' : 'none',
                 }}
             >
-                <TabPanelLazy
-                    key={`results-${currentNode?.id}`}
-                    selected={props.view === StudyView.RESULTS}
-                >
+                <TabPanelLazy key={`results-${currentNode?.id}`} selected={props.view === StudyView.RESULTS}>
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
@@ -140,10 +132,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     />
                 </TabPanelLazy>
             </Box>
-            <TabPanelLazy
-                selected={props.view === StudyView.LOGS}
-                key={`logs-${currentNode?.id}`}
-            >
+            <TabPanelLazy selected={props.view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
                 <ReportViewerTab
                     studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
@@ -151,10 +140,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                     disabled={disabled}
                 />
             </TabPanelLazy>
-            <TabPanelLazy
-                key={`parameters-${currentNode?.id}`}
-                selected={props.view === StudyView.PARAMETERS}
-            >
+            <TabPanelLazy key={`parameters-${currentNode?.id}`} selected={props.view === StudyView.PARAMETERS}>
                 <ParametersTabs studyId={studyUuid} />
             </TabPanelLazy>
         </>

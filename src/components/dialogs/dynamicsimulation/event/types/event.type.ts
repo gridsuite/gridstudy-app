@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
 export enum EventType {
     DISCONNECT = 'Disconnect',
@@ -15,10 +16,7 @@ type CommonEventPropertyName = 'staticId' | 'startTime';
 type DisconnectEventPropertyName = 'disconnectOnly';
 type NodeFaultEventPropertyName = 'faultTime' | 'rPu' | 'xPu';
 
-export type EventPropertyName =
-    | CommonEventPropertyName
-    | DisconnectEventPropertyName
-    | NodeFaultEventPropertyName;
+export type EventPropertyName = CommonEventPropertyName | DisconnectEventPropertyName | NodeFaultEventPropertyName;
 
 export enum PrimitiveTypes {
     ENUM = 'ENUM',
@@ -38,7 +36,7 @@ export type EventPropertyDefinition = {
         label: string;
     }[];
     unit?: string;
-    acceptOnly?: (equipmentType: string) => boolean;
+    acceptOnly?: (equipmentType: EQUIPMENT_TYPES) => boolean;
 };
 
 export type EventDefinition = {
@@ -56,7 +54,7 @@ export interface Event {
     uuid?: string;
     nodeId: string;
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: EQUIPMENT_TYPES;
     eventType?: EventType;
     properties: EventProperty[];
 }

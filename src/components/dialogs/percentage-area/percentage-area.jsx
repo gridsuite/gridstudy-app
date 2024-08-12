@@ -9,17 +9,9 @@ import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { percentageTextField, standardTextField } from '../dialogUtils';
 import { SliderInput } from '@gridsuite/commons-ui';
-import {
-    LEFT_SIDE_PERCENTAGE,
-    RIGHT_SIDE_PERCENTAGE,
-    SLIDER_PERCENTAGE,
-} from 'components/utils/field-constants';
+import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
-import {
-    formatPercentageValue,
-    isValidPercentage,
-    sanitizePercentageValue,
-} from './percentage-area-utils';
+import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
 import { TextInput } from '@gridsuite/commons-ui';
 
@@ -33,9 +25,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
 
     const handleLeftPercentageValueChange = (value) => {
         const leftPercentageValue = formatPercentageValue(value);
-        const rightPercentageValue = sanitizePercentageValue(
-            100 - leftPercentageValue
-        );
+        const rightPercentageValue = sanitizePercentageValue(100 - leftPercentageValue);
         setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
@@ -48,9 +38,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
 
     const handleRightPercentageValueChange = (value) => {
         const rightPercentageValue = formatPercentageValue(value);
-        const leftPercentageValue = sanitizePercentageValue(
-            100 - rightPercentageValue
-        );
+        const leftPercentageValue = sanitizePercentageValue(100 - rightPercentageValue);
         setValue(SLIDER_PERCENTAGE, parseFloat(leftPercentageValue));
         setValue(LEFT_SIDE_PERCENTAGE, leftPercentageValue, {
             shouldValidate: true,
@@ -93,13 +81,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     );
 
     const slider = (
-        <SliderInput
-            name={SLIDER_PERCENTAGE}
-            min={0.0}
-            max={100.0}
-            step={0.1}
-            onValueChange={onSliderChange}
-        />
+        <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChange={onSliderChange} />
     );
     return (
         <>
@@ -108,9 +90,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
                     {upperLeftText && (
                         <Grid item xs={5} align={'start'}>
                             <Typography>
-                                <FormattedMessage
-                                    id={upperLeftText}
-                                ></FormattedMessage>
+                                <FormattedMessage id={upperLeftText}></FormattedMessage>
                             </Typography>
                         </Grid>
                     )}
@@ -118,9 +98,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
                     {upperRightText && (
                         <Grid item xs={5} align={'end'}>
                             <Typography align="right">
-                                <FormattedMessage
-                                    id={upperRightText}
-                                ></FormattedMessage>
+                                <FormattedMessage id={upperRightText}></FormattedMessage>
                             </Typography>
                         </Grid>
                     )}

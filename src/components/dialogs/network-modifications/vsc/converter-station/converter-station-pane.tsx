@@ -25,7 +25,7 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
-import { CurrentTreeNode } from '../../../../../redux/reducer.type';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';
@@ -37,6 +37,7 @@ import {
     UpdateReactiveCapabilityCurveTable,
 } from './converter-station-utils';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import { useIntl } from 'react-intl';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -57,6 +58,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
     previousValues,
     updatePreviousReactiveCapabilityCurveTableConverterStation,
 }) => {
+    const intl = useIntl();
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
 
@@ -74,15 +76,9 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
     useEffect(() => {
         if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a: { id: string }, b: { id: string }) =>
-                            a.id.localeCompare(b.id)
-                        )
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
+                setVoltageLevelOptions(values.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id)));
+            });
         }
     }, [studyUuid, currentNodeUuid]);
 
@@ -91,17 +87,14 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
             size="small"
             fullWidth
             label={'ID'}
-            value={previousValues?.id || ''}
+            value={previousValues?.id}
             InputProps={{
                 readOnly: true,
             }}
             disabled
         />
     ) : (
-        <TextInput
-            name={`${id}.${CONVERTER_STATION_ID}`}
-            label={'converterStationId'}
-        />
+        <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />
     );
 
     const generatorNameField = (
@@ -140,20 +133,21 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         />
     );
 
-    const voltageRegulationOn = previousValues?.voltageRegulationOn ?? null;
+    const previousVoltageRegulatorOn = () => {
+        return intl.formatMessage({
+            id: previousValues?.voltageRegulatorOn ? 'On' : 'Off',
+        });
+    };
     const voltageRegulation = isModification ? (
         <CheckboxNullableInput
             name={`${id}.${VOLTAGE_REGULATION_ON}`}
             label={'VoltageRegulationText'}
-            previousValue={voltageRegulationOn}
+            previousValue={previousVoltageRegulatorOn()}
             id={undefined}
             formProps={undefined}
         />
     ) : (
-        <SwitchInput
-            name={`${id}.${VOLTAGE_REGULATION_ON}`}
-            label={'VoltageRegulationText'}
-        />
+        <SwitchInput name={`${id}.${VOLTAGE_REGULATION_ON}`} label={'VoltageRegulationText'} />
     );
 
     const voltageField = (

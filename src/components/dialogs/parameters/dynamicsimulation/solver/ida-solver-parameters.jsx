@@ -7,10 +7,7 @@
 
 import { makeComponents, TYPES } from '../../util/make-component-utils';
 import yup from '../../../../utils/yup-config';
-import {
-    commonDefParams,
-    getFormSchema as getCommonSolverFormSchema,
-} from './common-solver-parameters';
+import { commonDefParams, getFormSchema as getCommonSolverFormSchema } from './common-solver-parameters';
 
 const IDA_ORDER = 'order';
 const IDA_INIT_STEP = 'initStep';

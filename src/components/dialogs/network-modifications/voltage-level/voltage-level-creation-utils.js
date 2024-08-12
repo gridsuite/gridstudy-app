@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    COUPLING_OMNIBUS,
-    BUS_BAR_SECTION_ID1,
-    BUS_BAR_SECTION_ID2,
-} from 'components/utils/field-constants';
+import { COUPLING_OMNIBUS, BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
 const buildValidationError = (errors, field) => {
@@ -41,20 +37,8 @@ export const controlCouplingOmnibusBetweenSections = (values, message) => {
     const indexes = findBusBarSectionIndexesItSelf(values);
     if (indexes?.length > 0) {
         indexes.forEach((index) => {
-            errors.push(
-                new yup.ValidationError(
-                    message,
-                    null,
-                    `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID1}`
-                )
-            );
-            errors.push(
-                new yup.ValidationError(
-                    message,
-                    null,
-                    `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID2}`
-                )
-            );
+            errors.push(new yup.ValidationError(message, null, `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID1}`));
+            errors.push(new yup.ValidationError(message, null, `${COUPLING_OMNIBUS}[${index}].${BUS_BAR_SECTION_ID2}`));
         });
     }
 

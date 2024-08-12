@@ -14,16 +14,12 @@ import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import Divider from '@mui/material/Divider';
-import {
-    setModificationsDrawerOpen,
-    setStudyDisplayMode,
-    setEventScenarioDrawerOpen,
-} from '../redux/actions';
+import { setModificationsDrawerOpen, setStudyDisplayMode, setEventScenarioDrawerOpen } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { StudyDisplayMode } from 'redux/reducer.type';
+import { StudyDisplayMode } from './network-modification.type';
 
 const styles = {
     selected: (theme) => ({
@@ -48,13 +44,9 @@ export function HorizontalToolbar() {
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const isModificationsDrawerOpen = useSelector(
-        (state) => state.isModificationsDrawerOpen
-    );
+    const isModificationsDrawerOpen = useSelector((state) => state.isModificationsDrawerOpen);
 
-    const isEventScenarioDrawerOpen = useSelector(
-        (state) => state.isEventScenarioDrawerOpen
-    );
+    const isEventScenarioDrawerOpen = useSelector((state) => state.isEventScenarioDrawerOpen);
 
     const toggleModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(!isModificationsDrawerOpen));
@@ -108,11 +100,7 @@ export function HorizontalToolbar() {
                     <span>
                         <IconButton
                             size={'small'}
-                            sx={
-                                isEventScenarioDrawerOpen
-                                    ? styles.selected
-                                    : styles.notSelected
-                            }
+                            sx={isEventScenarioDrawerOpen ? styles.selected : styles.notSelected}
                             disabled={
                                 studyDisplayMode === StudyDisplayMode.MAP ||
                                 currentNode === null ||
@@ -145,11 +133,7 @@ export function HorizontalToolbar() {
                 <span>
                     <IconButton
                         size={'small'}
-                        sx={
-                            isModificationsDrawerOpen
-                                ? styles.selected
-                                : styles.notSelected
-                        }
+                        sx={isModificationsDrawerOpen ? styles.selected : styles.notSelected}
                         disabled={
                             studyDisplayMode === StudyDisplayMode.MAP ||
                             currentNode === null ||
@@ -182,11 +166,7 @@ export function HorizontalToolbar() {
             >
                 <IconButton
                     size={'small'}
-                    sx={
-                        studyDisplayMode === StudyDisplayMode.TREE
-                            ? styles.selected
-                            : styles.notSelected
-                    }
+                    sx={studyDisplayMode === StudyDisplayMode.TREE ? styles.selected : styles.notSelected}
                     onClick={setTreeDisplay}
                 >
                     <AccountTreeIcon />
@@ -212,11 +192,7 @@ export function HorizontalToolbar() {
             >
                 <IconButton
                     size={'small'}
-                    sx={
-                        studyDisplayMode === StudyDisplayMode.HYBRID
-                            ? styles.selected
-                            : styles.notSelected
-                    }
+                    sx={studyDisplayMode === StudyDisplayMode.HYBRID ? styles.selected : styles.notSelected}
                     onClick={setHybridDisplay}
                 >
                     <AccountTreeIcon />
@@ -243,11 +219,7 @@ export function HorizontalToolbar() {
             >
                 <IconButton
                     size={'small'}
-                    sx={
-                        studyDisplayMode === StudyDisplayMode.MAP
-                            ? styles.selected
-                            : styles.notSelected
-                    }
+                    sx={studyDisplayMode === StudyDisplayMode.MAP ? styles.selected : styles.notSelected}
                     onClick={setMapDisplay}
                 >
                     <PublicIcon />
