@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -26,6 +26,12 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     }, []);
+
+    useEffect(() => {
+        if (params.limitReductions == null) {
+            setTabValue(TAB_VALUES.General);
+        }
+    }, [params]);
 
     return (
         <>
@@ -53,7 +59,7 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                         {tabValue === TAB_VALUES.General && (
                             <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
                         )}
-                        {tabValue === TAB_VALUES.LimitReductions && (
+                        {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
                             <LimitReductionsTableForm limits={params.limitReductions} />
                         )}
                     </TabPanel>
