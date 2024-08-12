@@ -49,13 +49,9 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
 
     const [unfolded, setUnfolded] = React.useState(false);
 
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const nodeName = useMemo(
-        () =>
-            treeModel?.treeNodes.find((node) => node.id === nodeUuid)?.data
-                .label,
+        () => treeModel?.treeNodes.find((node) => node.id === nodeUuid)?.data.label,
         [treeModel, nodeUuid]
     );
 
@@ -64,8 +60,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
         if (studyUuid) {
             fetchDirectoryElementPath(studyUuid)
                 .then((response) => {
-                    const studyName =
-                        response[response.length - 1]?.elementName;
+                    const studyName = response[response.length - 1]?.elementName;
                     setFileName(`${studyName}_${nodeName}`);
                 })
                 .catch((error) => {
@@ -224,11 +219,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    onClick={handleExportClick}
-                    variant="outlined"
-                    disabled={!selectedFormat || !fileName}
-                >
+                <Button onClick={handleExportClick} variant="outlined" disabled={!selectedFormat || !fileName}>
                     <FormattedMessage id="export" />
                 </Button>
             </DialogActions>
