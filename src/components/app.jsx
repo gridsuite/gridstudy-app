@@ -8,18 +8,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    getOptionalServiceByServerName,
-    OptionalServicesStatus,
-} from './utils/optional-services';
-import {
-    Navigate,
-    Route,
-    Routes,
-    useLocation,
-    useMatch,
-    useNavigate,
-} from 'react-router-dom';
+import { getOptionalServiceByServerName, OptionalServicesStatus } from './utils/optional-services';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
 
 import { StudyView } from './study-pane';
 
@@ -68,14 +58,8 @@ import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
 import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
-import {
-    fetchConfigParameter,
-    fetchConfigParameters,
-} from '../services/config';
-import {
-    fetchDefaultParametersValues,
-    fetchIdpSettings,
-} from '../services/utils';
+import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
+import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study';
 import {
     changeDisplayedColumns,
@@ -122,15 +106,9 @@ const App = () => {
 
     const user = useSelector((state) => state.user);
 
-    const signInCallbackError = useSelector(
-        (state) => state.signInCallbackError
-    );
-    const authenticationRouterError = useSelector(
-        (state) => state.authenticationRouterError
-    );
-    const showAuthenticationRouterLogin = useSelector(
-        (state) => state.showAuthenticationRouterLogin
-    );
+    const signInCallbackError = useSelector((state) => state.signInCallbackError);
+    const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
+    const showAuthenticationRouterLogin = useSelector((state) => state.showAuthenticationRouterLogin);
 
     const [userManager, setUserManager] = useState(noUserManager);
 
@@ -159,21 +137,13 @@ const App = () => {
                         break;
                     case PARAM_LANGUAGE:
                         dispatch(selectLanguage(param.value));
-                        dispatch(
-                            selectComputedLanguage(
-                                getComputedLanguage(param.value)
-                            )
-                        );
+                        dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
                     case PARAM_CENTER_LABEL:
-                        dispatch(
-                            selectCenterLabelState(param.value === 'true')
-                        );
+                        dispatch(selectCenterLabelState(param.value === 'true'));
                         break;
                     case PARAM_DIAGONAL_LABEL:
-                        dispatch(
-                            selectDiagonalLabelState(param.value === 'true')
-                        );
+                        dispatch(selectDiagonalLabelState(param.value === 'true'));
                         break;
                     case PARAM_LIMIT_REDUCTION:
                         dispatch(selectLimitReduction(param.value));
@@ -191,19 +161,13 @@ const App = () => {
                         dispatch(selectFluxConvention(param.value));
                         break;
                     case PARAM_DEVELOPER_MODE:
-                        dispatch(
-                            selectEnableDeveloperMode(param.value === 'true')
-                        );
+                        dispatch(selectEnableDeveloperMode(param.value === 'true'));
                         break;
                     case PARAM_LINE_FULL_PATH:
-                        dispatch(
-                            selectLineFullPathState(param.value === 'true')
-                        );
+                        dispatch(selectLineFullPathState(param.value === 'true'));
                         break;
                     case PARAM_LINE_PARALLEL_PATH:
-                        dispatch(
-                            selectLineParallelPathState(param.value === 'true')
-                        );
+                        dispatch(selectLineParallelPathState(param.value === 'true'));
                         break;
                     case PARAM_SUBSTATION_LAYOUT:
                         dispatch(selectSubstationLayout(param.value));
@@ -212,9 +176,7 @@ const App = () => {
                         dispatch(selectComponentLibrary(param.value));
                         break;
                     case PARAM_MAP_MANUAL_REFRESH:
-                        dispatch(
-                            selectMapManualRefresh(param.value === 'true')
-                        );
+                        dispatch(selectMapManualRefresh(param.value === 'true'));
                         break;
                     case PARAM_MAP_BASEMAP:
                         dispatch(selectMapBaseMap(param.value));
@@ -223,22 +185,12 @@ const App = () => {
                         dispatch(selectUseName(param.value === 'true'));
                         break;
                     case PARAM_FAVORITE_CONTINGENCY_LISTS:
-                        dispatch(
-                            selectFavoriteContingencyLists(
-                                param.value.split(',').filter((list) => list)
-                            )
-                        );
+                        dispatch(selectFavoriteContingencyLists(param.value.split(',').filter((list) => list)));
                         break;
                     default:
-                        if (
-                            param.name.startsWith(
-                                DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
-                            )
-                        ) {
+                        if (param.name.startsWith(DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
                             let index = TABLES_NAMES_INDEXES.get(
-                                param.name.slice(
-                                    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
-                                )
+                                param.name.slice(DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
                             );
                             displayedColumnsParams[index] = {
                                 index: index,
@@ -246,15 +198,9 @@ const App = () => {
                             };
                             dispatchDisplayedColumns = true;
                         }
-                        if (
-                            param.name.startsWith(
-                                LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
-                            )
-                        ) {
+                        if (param.name.startsWith(LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
                             let index = TABLES_NAMES_INDEXES.get(
-                                param.name.slice(
-                                    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
-                                )
+                                param.name.slice(LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
                             );
                             lockedColumnsParams[index] = {
                                 index: index,
@@ -262,15 +208,9 @@ const App = () => {
                             };
                             dispatchLockedColumns = true;
                         }
-                        if (
-                            param.name.startsWith(
-                                REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE
-                            )
-                        ) {
+                        if (param.name.startsWith(REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
                             let index = TABLES_NAMES_INDEXES.get(
-                                param.name.slice(
-                                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length
-                                )
+                                param.name.slice(REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
                             );
                             reorderedColumnsParams[index] = {
                                 index: index,
@@ -282,28 +222,18 @@ const App = () => {
             });
             if (dispatchDisplayedColumns) {
                 if (dispatchReorderedColumns) {
-                    cleanEquipmentsColumnsParamsWithNewAndDeleted(
-                        displayedColumnsParams,
-                        reorderedColumnsParams
-                    );
+                    cleanEquipmentsColumnsParamsWithNewAndDeleted(displayedColumnsParams, reorderedColumnsParams);
                 }
                 dispatch(changeDisplayedColumns(displayedColumnsParams));
             }
             if (dispatchLockedColumns) {
                 if (dispatchReorderedColumns) {
-                    cleanEquipmentsColumnsParamsWithNewAndDeleted(
-                        lockedColumnsParams,
-                        reorderedColumnsParams,
-                        true
-                    );
+                    cleanEquipmentsColumnsParamsWithNewAndDeleted(lockedColumnsParams, reorderedColumnsParams, true);
                 }
                 dispatch(changeLockedColumns(lockedColumnsParams));
             }
             if (dispatchReorderedColumns) {
-                cleanEquipmentsColumnsParamsWithNewAndDeleted(
-                    reorderedColumnsParams,
-                    reorderedColumnsParams
-                );
+                cleanEquipmentsColumnsParamsWithNewAndDeleted(reorderedColumnsParams, reorderedColumnsParams);
                 dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
         },
@@ -322,34 +252,25 @@ const App = () => {
 
             let index = param.index;
 
-            const equipmentAllColumnsIds = TABLES_DEFINITION_INDEXES.get(
-                index
-            ).columns.map((item) => item.id);
+            const equipmentAllColumnsIds = TABLES_DEFINITION_INDEXES.get(index).columns.map((item) => item.id);
 
-            let equipmentReorderedColumnsIds = JSON.parse(
-                reorderedColumnsParams[index].value
-            );
+            let equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
             let equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
                 (item) => !equipmentReorderedColumnsIds.includes(item)
             );
 
-            let equipmentsParamColumnIds = JSON.parse(
-                equipmentsColumnsParams[index].value
-            );
+            let equipmentsParamColumnIds = JSON.parse(equipmentsColumnsParams[index].value);
 
             // Remove deleted ids
-            let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter(
-                (item) => equipmentAllColumnsIds.includes(item)
+            let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter((item) =>
+                equipmentAllColumnsIds.includes(item)
             );
 
             // Update columns
             if (deletedOnly) {
                 param.value = JSON.stringify([...equipmentsNewParamColumnIds]);
             } else {
-                param.value = JSON.stringify([
-                    ...equipmentsNewParamColumnIds,
-                    ...equipmentNewColumnsIds,
-                ]);
+                param.value = JSON.stringify([...equipmentsNewParamColumnIds, ...equipmentNewColumnsIds]);
             }
         }
     }
@@ -424,49 +345,37 @@ const App = () => {
             }
         })();
         // Note: initialMatchSilentRenewCallbackUrl and dispatch don't change
-    }, [
-        initialMatchSilentRenewCallbackUrl,
-        dispatch,
-        initialMatchSigninCallbackUrl,
-    ]);
+    }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
         if (user !== null) {
-            const fetchCommonConfigPromise = fetchConfigParameters(
-                COMMON_APP_NAME
-            ).then((params) => updateParams(params));
-
-            const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then(
-                (params) => {
-                    fetchDefaultParametersValues()
-                        .then((defaultValues) => {
-                            // Browsing defaultParametersValues entries
-                            Object.entries(defaultValues).forEach(
-                                ([key, defaultValue]) => {
-                                    // Checking if keys defined in defaultParametersValues file are already defined in config server
-                                    // If they are not defined, values are taken from default values file
-                                    if (
-                                        !params.find(
-                                            (param) => param.name === key
-                                        )
-                                    ) {
-                                        params.push({
-                                            name: key,
-                                            value: defaultValue,
-                                        });
-                                    }
-                                }
-                            );
-                            updateParams(params);
-                        })
-                        .catch((error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'paramsRetrievingError',
-                            });
-                        });
-                }
+            const fetchCommonConfigPromise = fetchConfigParameters(COMMON_APP_NAME).then((params) =>
+                updateParams(params)
             );
+
+            const fetchAppConfigPromise = fetchConfigParameters(APP_NAME).then((params) => {
+                fetchDefaultParametersValues()
+                    .then((defaultValues) => {
+                        // Browsing defaultParametersValues entries
+                        Object.entries(defaultValues).forEach(([key, defaultValue]) => {
+                            // Checking if keys defined in defaultParametersValues file are already defined in config server
+                            // If they are not defined, values are taken from default values file
+                            if (!params.find((param) => param.name === key)) {
+                                params.push({
+                                    name: key,
+                                    value: defaultValue,
+                                });
+                            }
+                        });
+                        updateParams(params);
+                    })
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsRetrievingError',
+                        });
+                    });
+            });
 
             const fetchOptionalServices = getOptionalServices()
                 .then((services) => {
@@ -477,19 +386,14 @@ const App = () => {
                         };
                     });
                     // get all potentially optional services
-                    const optionalServicesNames =
-                        defaultOptionalServicesState.map(
-                            (service) => service.name
-                        );
+                    const optionalServicesNames = defaultOptionalServicesState.map((service) => service.name);
 
                     // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
                     // in that case, we consider it is UP
                     optionalServicesNames
                         .filter(
                             (serviceName) =>
-                                !retrieveOptionalServices
-                                    .map((service) => service.name)
-                                    .includes(serviceName)
+                                !retrieveOptionalServices.map((service) => service.name).includes(serviceName)
                         )
                         .forEach((serviceName) =>
                             retrieveOptionalServices.push({
@@ -510,11 +414,7 @@ const App = () => {
             // This might not be necessary but allows to gradually migrate parts
             // of the code that don't subscribe to exactly the parameters they need.
             // Code that depends on this could be rewritten to depend on what it acually needs.
-            Promise.all([
-                fetchCommonConfigPromise,
-                fetchAppConfigPromise,
-                fetchOptionalServices,
-            ])
+            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise, fetchOptionalServices])
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })
@@ -530,13 +430,7 @@ const App = () => {
                 ws.close();
             };
         }
-    }, [
-        user,
-        dispatch,
-        updateParams,
-        connectNotificationsUpdateConfig,
-        snackError,
-    ]);
+    }, [user, dispatch, updateParams, connectNotificationsUpdateConfig, snackError]);
 
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
@@ -550,12 +444,7 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar
-                user={user}
-                tabIndex={tabIndex}
-                onChangeTab={onChangeTab}
-                userManager={userManager}
-            />
+            <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
             <CardErrorBoundary>
                 <div
                     className="singlestretch-parent"
@@ -577,52 +466,27 @@ const App = () => {
                         <Routes>
                             <Route
                                 path="/studies/:studyUuid"
-                                element={
-                                    <StudyContainer
-                                        view={STUDY_VIEWS[tabIndex]}
-                                        onChangeTab={onChangeTab}
-                                    />
-                                }
+                                element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
                             />
                             <Route
                                 path="/sign-in-callback"
-                                element={
-                                    <Navigate
-                                        replace
-                                        to={getPreLoginPath() || '/'}
-                                    />
-                                }
+                                element={<Navigate replace to={getPreLoginPath() || '/'} />}
                             />
                             <Route
                                 path="/logout-callback"
-                                element={
-                                    <h1>
-                                        Error: logout failed; you are still
-                                        logged in.
-                                    </h1>
-                                }
+                                element={<h1>Error: logout failed; you are still logged in.</h1>}
                             />
                             <Route
                                 path="*"
-                                element={
-                                    <PageNotFound
-                                        message={
-                                            <FormattedMessage id="PageNotFound" />
-                                        }
-                                    />
-                                }
+                                element={<PageNotFound message={<FormattedMessage id="PageNotFound" />} />}
                             />
                         </Routes>
                     ) : (
                         <AuthenticationRouter
                             userManager={userManager}
                             signInCallbackError={signInCallbackError}
-                            authenticationRouterError={
-                                authenticationRouterError
-                            }
-                            showAuthenticationRouterLogin={
-                                showAuthenticationRouterLogin
-                            }
+                            authenticationRouterError={authenticationRouterError}
+                            showAuthenticationRouterLogin={showAuthenticationRouterLogin}
                             dispatch={dispatch}
                             navigate={navigate}
                             location={location}
