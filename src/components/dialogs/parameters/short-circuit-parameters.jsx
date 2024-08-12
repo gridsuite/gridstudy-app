@@ -24,10 +24,7 @@ import {
     invalidateShortCircuitStatus,
     setShortCircuitParameters,
 } from '../../../services/study/short-circuit-analysis';
-import {
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../../utils/optional-services';
+import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
 import { mergeSx } from '../../utils/functions';
 import yup from '../../utils/yup-config';
@@ -51,15 +48,10 @@ export const useGetShortCircuitParameters = () => {
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
-    const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit
-    );
+    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
     useEffect(() => {
-        if (
-            studyUuid &&
-            shortCircuitAvailability === OptionalServicesStatus.Up
-        ) {
+        if (studyUuid && shortCircuitAvailability === OptionalServicesStatus.Up) {
             getShortCircuitParameters(studyUuid)
                 .then((params) => {
                     setShortCircuitParams(params);
@@ -113,19 +105,13 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
     };
 };
 
-export const ShortCircuitParameters = ({
-    useShortCircuitParameters,
-    setHaveDirtyFields,
-}) => {
+export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirtyFields }) => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const intl = useIntl();
-    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
-        useState(false);
-    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
-        useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
 
-    const [shortCircuitParams, setShortCircuitParams] =
-        useShortCircuitParameters;
+    const [shortCircuitParams, setShortCircuitParams] = useShortCircuitParameters;
 
     const { snackError } = useSnackMessage();
 
@@ -136,15 +122,11 @@ export const ShortCircuitParameters = ({
             [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters.withFeederResult,
             [SHORT_CIRCUIT_PREDEFINED_PARAMS]: predefinedParameters,
             [SHORT_CIRCUIT_WITH_LOADS]: parameters.withLoads,
-            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]:
-                parameters.withVSCConverterStations,
-            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]:
-                parameters.withShuntCompensators,
-            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]:
-                !parameters.withNeutralPosition,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: parameters.withVSCConverterStations,
+            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: parameters.withShuntCompensators,
+            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: !parameters.withNeutralPosition,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                parameters.initialVoltageProfileMode ===
-                INITIAL_VOLTAGE.CONFIGURED
+                parameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
                     ? INITIAL_VOLTAGE.CEI909
                     : parameters.initialVoltageProfileMode,
         };
@@ -194,13 +176,7 @@ export const ShortCircuitParameters = ({
                     });
                 });
         },
-        [
-            setShortCircuitParams,
-            shortCircuitParams,
-            snackError,
-            studyUuid,
-            reset,
-        ]
+        [setShortCircuitParams, shortCircuitParams, snackError, studyUuid, reset]
     );
 
     // when ever the predefined parameter is manually changed, we need to reset all parameters
@@ -211,28 +187,18 @@ export const ShortCircuitParameters = ({
             setValue(SHORT_CIRCUIT_WITH_LOADS, false, dirty);
             setValue(
                 SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
-                predefinedParameter !==
-                    PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP,
+                predefinedParameter !== PREDEFINED_PARAMETERS.ICC_MIN_WITH_NOMINAL_VOLTAGE_MAP,
                 dirty
             );
             setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, false, dirty);
             setValue(SHORT_CIRCUIT_WITH_NEUTRAL_POSITION, false, dirty);
             const initialVoltageProfileMode =
-                predefinedParameter ===
-                PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909
+                predefinedParameter === PREDEFINED_PARAMETERS.ICC_MAX_WITH_CEI909
                     ? INITIAL_VOLTAGE.CEI909
                     : INITIAL_VOLTAGE.NOMINAL;
 
-            setValue(
-                SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
-                initialVoltageProfileMode,
-                dirty
-            );
-            setValue(
-                SHORT_CIRCUIT_PREDEFINED_PARAMS,
-                predefinedParameter,
-                dirty
-            );
+            setValue(SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE, initialVoltageProfileMode, dirty);
+            setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, predefinedParameter, dirty);
         },
         [setValue]
     );
@@ -244,40 +210,15 @@ export const ShortCircuitParameters = ({
     const replaceFormValues = useCallback(
         (param) => {
             const dirty = { shouldDirty: true };
-            setValue(
-                SHORT_CIRCUIT_WITH_FEEDER_RESULT,
-                param.parameters.withFeederResult,
-                dirty
-            );
-            setValue(
-                SHORT_CIRCUIT_PREDEFINED_PARAMS,
-                param.predefinedParameters,
-                dirty
-            );
-            setValue(
-                SHORT_CIRCUIT_WITH_LOADS,
-                param.parameters.withLoads,
-                dirty
-            );
-            setValue(
-                SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
-                param.parameters.withVSCConverterStations,
-                dirty
-            );
-            setValue(
-                SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
-                param.parameters.withShuntCompensators,
-                dirty
-            );
-            setValue(
-                SHORT_CIRCUIT_WITH_NEUTRAL_POSITION,
-                !param.parameters.withNeutralPosition,
-                dirty
-            );
+            setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, param.parameters.withFeederResult, dirty);
+            setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, param.predefinedParameters, dirty);
+            setValue(SHORT_CIRCUIT_WITH_LOADS, param.parameters.withLoads, dirty);
+            setValue(SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS, param.parameters.withVSCConverterStations, dirty);
+            setValue(SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS, param.parameters.withShuntCompensators, dirty);
+            setValue(SHORT_CIRCUIT_WITH_NEUTRAL_POSITION, !param.parameters.withNeutralPosition, dirty);
             setValue(
                 SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
-                param.parameters.initialVoltageProfileMode ===
-                    INITIAL_VOLTAGE.CONFIGURED
+                param.parameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
                     ? INITIAL_VOLTAGE.CEI909
                     : param.parameters.initialVoltageProfileMode,
                 dirty
@@ -293,10 +234,7 @@ export const ShortCircuitParameters = ({
                 const paramUuid = newParams[0].id;
                 fetchShortCircuitParameters(paramUuid)
                     .then((parameters) => {
-                        console.info(
-                            'loading the following shortcircuit parameters : ' +
-                                paramUuid
-                        );
+                        console.info('loading the following shortcircuit parameters : ' + paramUuid);
                         // Replace form data with fetched data
                         replaceFormValues(parameters);
                     })
@@ -329,13 +267,7 @@ export const ShortCircuitParameters = ({
                     <ShortCircuitFields resetAll={resetAll} />
                 </Grid>
             </Grid>
-            <Grid
-                container
-                sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton
-                )}
-            >
+            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
                 <Button onClick={() => setOpenSelectParameterDialog(true)}>
                     <FormattedMessage id="settings.button.chooseSettings" />
                 </Button>

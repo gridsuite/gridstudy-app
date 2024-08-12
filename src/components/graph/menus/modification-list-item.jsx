@@ -62,16 +62,14 @@ export const ModificationListItem = ({
     isDragging,
     isOneNodeBuilding,
     listSize,
+    deleteInProgress,
     ...props
 }) => {
     const intl = useIntl();
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
     const { computeLabel } = useModificationLabelComputer();
 
-    const toggle = useCallback(
-        () => handleToggle(modif),
-        [modif, handleToggle]
-    );
+    const toggle = useCallback(() => handleToggle(modif), [modif, handleToggle]);
     const getLabel = useCallback(() => {
         if (!modif) {
             return null;
@@ -91,9 +89,7 @@ export const ModificationListItem = ({
         <Draggable
             draggableId={modif.uuid}
             index={index}
-            isDragDisabled={
-                isOneNodeBuilding || isRestorationDialog || mapDataLoading
-            }
+            isDragDisabled={isOneNodeBuilding || isRestorationDialog || mapDataLoading || deleteInProgress}
         >
             {(provided) => (
                 <div
@@ -113,7 +109,8 @@ export const ModificationListItem = ({
                                     !isDragging &&
                                     !isOneNodeBuilding &&
                                     !isRestorationDialog &&
-                                    !mapDataLoading
+                                    !mapDataLoading &&
+                                    !deleteInProgress
                                         ? '1'
                                         : '0',
                             }}
@@ -121,13 +118,7 @@ export const ModificationListItem = ({
                             <DragIndicatorIcon edge="start" spacing={0} />
                         </IconButton>
                         <ListItemIcon sx={styles.icon}>
-                            <Checkbox
-                                color={'primary'}
-                                edge="start"
-                                checked={checked}
-                                onClick={toggle}
-                                disableRipple
-                            />
+                            <Checkbox color={'primary'} edge="start" checked={checked} onClick={toggle} disableRipple />
                         </ListItemIcon>
                         <OverflowableText sx={styles.label} text={getLabel()} />
                         {!isOneNodeBuilding &&
@@ -137,9 +128,7 @@ export const ModificationListItem = ({
                             !isRestorationDialog &&
                             isEditableModification(modif) && (
                                 <IconButton
-                                    onClick={() =>
-                                        onEdit(modif.uuid, modif.type)
-                                    }
+                                    onClick={() => onEdit(modif.uuid, modif.type)}
                                     size={'small'}
                                     sx={styles.iconEdit}
                                 >

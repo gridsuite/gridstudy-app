@@ -4,13 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -49,11 +43,8 @@ export default function ReportViewer({
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [selectedSeverity, setSelectedSeverity] = useState(
-        LogReportItem.getDefaultSeverityFilter()
-    );
-    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] =
-        useState(undefined);
+    const [selectedSeverity, setSelectedSeverity] = useState(LogReportItem.getDefaultSeverityFilter());
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
 
     const { snackError } = useSnackMessage();
 
@@ -84,9 +75,7 @@ export default function ReportViewer({
                     sx={styles.treeItem}
                     nodeId={logReport.getUniqueId().toString()}
                 >
-                    {logReport
-                        .getChildren()
-                        .map((value) => createReporterItem(value))}
+                    {logReport.getChildren().map((value) => createReporterItem(value))}
                 </ReportItem>
             );
         },
@@ -113,25 +102,12 @@ export default function ReportViewer({
 
     const getFetchPromise = useCallback(
         (nodeId, severityList) => {
-            if (
-                reportTreeData.current[nodeId].getType() ===
-                LogReportType.NodeReport
-            ) {
-                return nodeReportPromise(
-                    nodeId,
-                    reportTreeData.current[nodeId].getId(),
-                    severityList
-                );
-            } else if (
-                reportTreeData.current[nodeId].getType() ===
-                LogReportType.GlobalReport
-            ) {
+            if (reportTreeData.current[nodeId].getType() === LogReportType.NodeReport) {
+                return nodeReportPromise(nodeId, reportTreeData.current[nodeId].getId(), severityList);
+            } else if (reportTreeData.current[nodeId].getType() === LogReportType.GlobalReport) {
                 return globalReportPromise(severityList);
             }
-            return subReportPromise(
-                reportTreeData.current[nodeId].getId(),
-                severityList
-            );
+            return subReportPromise(reportTreeData.current[nodeId].getId(), severityList);
         },
         [nodeReportPromise, globalReportPromise, subReportPromise]
     );
@@ -187,20 +163,14 @@ export default function ReportViewer({
 
     useEffect(() => {
         const reportType =
-            jsonReportTree.message === GLOBAL_NODE_TASK_KEY
-                ? LogReportType.GlobalReport
-                : LogReportType.NodeReport;
+            jsonReportTree.message === GLOBAL_NODE_TASK_KEY ? LogReportType.GlobalReport : LogReportType.NodeReport;
         rootReport.current = new LogReport(reportType, jsonReportTree);
         let rootId = rootReport.current.getUniqueId().toString();
         treeView.current = createReporterItem(rootReport.current);
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);
         setLogs(rootReport.current.getAllLogs());
-        setSelectedSeverity(
-            LogReportItem.getDefaultSeverityFilter(
-                rootReport.current.getAllSeverityList()
-            )
-        );
+        setSelectedSeverity(LogReportItem.getDefaultSeverityFilter(rootReport.current.getAllSeverityList()));
     }, [jsonReportTree, createReporterItem]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -247,8 +217,7 @@ export default function ReportViewer({
             let nodesToExpand = [];
             let reportId = data.reportId;
             while (reportTreeData.current[reportId]?.parentReportId) {
-                let parentReportId =
-                    reportTreeData.current[reportId].parentReportId;
+                let parentReportId = reportTreeData.current[reportId].parentReportId;
                 if (!previouslyExpandedNodes.includes(parentReportId)) {
                     nodesToExpand.push(parentReportId);
                 }
@@ -310,10 +279,7 @@ export default function ReportViewer({
                     </ReportTreeViewContext.Provider>
                 </Grid>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
-                    <WaitingLoader
-                        loading={waitingLoadReport}
-                        message={'loadingReport'}
-                    >
+                    <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
                         <LogTable
                             logs={logs}
                             onRowClick={onRowClick}

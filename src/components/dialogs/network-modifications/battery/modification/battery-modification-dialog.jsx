@@ -44,10 +44,7 @@ import {
     REMOVE,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import {
     getFrequencyRegulationEmptyFormData,
@@ -86,10 +83,7 @@ const formSchema = yup
             .when([MAXIMUM_ACTIVE_POWER], {
                 is: (maximumActivePower) => maximumActivePower != null,
                 then: (schema) =>
-                    schema.max(
-                        yup.ref(MAXIMUM_ACTIVE_POWER),
-                        'MinActivePowerMustBeLessOrEqualToMaxActivePower'
-                    ),
+                    schema.max(yup.ref(MAXIMUM_ACTIVE_POWER), 'MinActivePowerMustBeLessOrEqualToMaxActivePower'),
             }),
         [ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [REACTIVE_POWER_SET_POINT]: yup.number().nullable(),
@@ -135,17 +129,12 @@ const BatteryModificationDialog = ({
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
                 ...getReactiveLimitsFormData({
-                    reactiveCapabilityCurveChoice: editData
-                        ?.reactiveCapabilityCurve?.value
-                        ? 'CURVE'
-                        : 'MINMAX',
+                    reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
                     maximumReactivePower: editData?.maxQ?.value ?? null,
                     minimumReactivePower: editData?.minQ?.value ?? null,
                     reactiveCapabilityCurveTable:
                         editData?.reactiveCapabilityCurvePoints?.length > 0
-                            ? completeReactiveCapabilityCurvePointsData(
-                                  editData?.reactiveCapabilityCurvePoints
-                              )
+                            ? completeReactiveCapabilityCurvePointsData(editData?.reactiveCapabilityCurvePoints)
                             : [getRowEmptyFormData(), getRowEmptyFormData()],
                 }),
                 ...getPropertiesFromModification(editData.properties),
@@ -163,10 +152,7 @@ const BatteryModificationDialog = ({
     //this method empties the form, and let us pass custom data that we want to set
     const setValuesAndEmptyOthers = useCallback(
         (customData = {}, keepDefaultValues = false) => {
-            reset(
-                { ...emptyFormData, ...customData },
-                { keepDefaultValues: keepDefaultValues }
-            );
+            reset({ ...emptyFormData, ...customData }, { keepDefaultValues: keepDefaultValues });
         },
         [reset]
     );
@@ -204,15 +190,13 @@ const BatteryModificationDialog = ({
                         if (value) {
                             // when editing modification form, first render should not trigger this reset
                             // which would empty the form instead of displaying data of existing form
-                            const previousReactiveCapabilityCurveTable =
-                                value.reactiveCapabilityCurvePoints;
+                            const previousReactiveCapabilityCurveTable = value.reactiveCapabilityCurvePoints;
                             // on first render, we need to adjust the UI for the reactive capability curve table
                             // we need to check if the battery we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
-                                const currentReactiveCapabilityCurveTable =
-                                    getValues(
-                                        `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
-                                    );
+                                const currentReactiveCapabilityCurveTable = getValues(
+                                    `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
+                                );
 
                                 const sizeDiff =
                                     previousReactiveCapabilityCurveTable.length -
@@ -221,9 +205,7 @@ const BatteryModificationDialog = ({
                                 // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
                                 if (sizeDiff > 0) {
                                     for (let i = 0; i < sizeDiff; i++) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            currentReactiveCapabilityCurveTable
-                                        );
+                                        insertEmptyRowAtSecondToLastIndex(currentReactiveCapabilityCurveTable);
                                     }
                                     setValue(
                                         `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
@@ -232,9 +214,7 @@ const BatteryModificationDialog = ({
                                 } else if (sizeDiff < 0) {
                                     // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
                                     for (let i = 0; i > sizeDiff; i--) {
-                                        insertEmptyRowAtSecondToLastIndex(
-                                            previousReactiveCapabilityCurveTable
-                                        );
+                                        insertEmptyRowAtSecondToLastIndex(previousReactiveCapabilityCurveTable);
                                     }
                                 }
                             }
@@ -244,13 +224,11 @@ const BatteryModificationDialog = ({
                             );
                             setBatteryToModify({
                                 ...value,
-                                reactiveCapabilityCurveTable:
-                                    previousReactiveCapabilityCurveTable,
+                                reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable,
                             });
                             reset((formValues) => ({
                                 ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(value, getValues),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(value, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -267,15 +245,7 @@ const BatteryModificationDialog = ({
                 setBatteryToModify(null);
             }
         },
-        [
-            studyUuid,
-            currentNodeUuid,
-            getValues,
-            setValue,
-            setValuesAndEmptyOthers,
-            reset,
-            editData,
-        ]
+        [studyUuid, currentNodeUuid, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
     );
 
     useEffect(() => {
@@ -292,8 +262,7 @@ const BatteryModificationDialog = ({
                 batteryToModify
             );
 
-            const isReactiveCapabilityCurveOn =
-                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
             modifyBattery(
                 studyUuid,
@@ -310,12 +279,8 @@ const BatteryModificationDialog = ({
                 battery[FREQUENCY_REGULATION],
                 battery[DROOP],
                 isReactiveCapabilityCurveOn,
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : reactiveLimits[MINIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
                 isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null,
                 toModificationProperties(battery)
             ).catch((error) => {
@@ -325,32 +290,19 @@ const BatteryModificationDialog = ({
                 });
             });
         },
-        [
-            selectedId,
-            batteryToModify,
-            studyUuid,
-            currentNodeUuid,
-            editData?.uuid,
-            snackError,
-        ]
+        [selectedId, batteryToModify, studyUuid, currentNodeUuid, editData?.uuid, snackError]
     );
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: 2000, // Change to 200 ms when fetchEquipmentInfos occurs in BatteryModificationForm and right after receiving the editData without waiting
     });
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={setValuesAndEmptyOthers}
@@ -362,9 +314,7 @@ const BatteryModificationDialog = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
@@ -382,9 +332,7 @@ const BatteryModificationDialog = ({
                     <BatteryModificationForm
                         equipmentId={selectedId}
                         batteryToModify={batteryToModify}
-                        updatePreviousReactiveCapabilityCurveTable={
-                            updatePreviousReactiveCapabilityCurveTable
-                        }
+                        updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
                     />
                 )}
             </ModificationDialog>

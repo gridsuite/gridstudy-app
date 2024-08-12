@@ -45,9 +45,7 @@ const useHvdcLccDeletion = () => {
                 const dynamicIds = dynamicList.map((obj) => obj.id);
                 for (let editObj of editList.values()) {
                     if (dynamicIds.includes(editObj.id)) {
-                        const mergedObj = mergedList.find(
-                            (obj) => obj.id === editObj.id
-                        );
+                        const mergedObj = mergedList.find((obj) => obj.id === editObj.id);
                         if (mergedObj) {
                             mergedObj.connectedToHvdc = editObj.connectedToHvdc;
                         }
@@ -65,21 +63,12 @@ const useHvdcLccDeletion = () => {
                 editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1 ||
                 editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2
             ) {
-                setValue(
-                    `${DELETION_SPECIFIC_DATA}.${DELETION_SPECIFIC_TYPE}`,
-                    HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE
-                );
+                setValue(`${DELETION_SPECIFIC_DATA}.${DELETION_SPECIFIC_TYPE}`, HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE);
                 replaceMcsList1(
-                    mergeMcsLists(
-                        hvdcLineData?.mcsOnSide1,
-                        editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1
-                    )
+                    mergeMcsLists(hvdcLineData?.mcsOnSide1, editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide1)
                 );
                 replaceMcsList2(
-                    mergeMcsLists(
-                        hvdcLineData?.mcsOnSide2,
-                        editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2
-                    )
+                    mergeMcsLists(hvdcLineData?.mcsOnSide2, editData?.[DELETION_SPECIFIC_DATA]?.mcsOnSide2)
                 );
             } else {
                 setValue(DELETION_SPECIFIC_DATA, null);

@@ -28,8 +28,7 @@ const COMMON_MX_NEW_T_STEP_ALG_INIT = 'mxNewTStepAlgInit';
 const COMMON_MSBSET_ALG_INIT = 'msbsetAlgInit';
 const COMMON_MX_ITER_ALG_INIT = 'mxIterAlgInit';
 const COMMON_PRINT_FL_ALG_INIT = 'printFlAlgInit';
-const COMMON_MAXIMUM_NUMBER_SLOW_STEP_INCREASE =
-    'maximumNumberSlowStepIncrease';
+const COMMON_MAXIMUM_NUMBER_SLOW_STEP_INCREASE = 'maximumNumberSlowStepIncrease';
 const COMMON_MINIMAL_ACCEPTABLE_STEP = 'minimalAcceptableStep';
 
 export const getFormSchema = () => {
@@ -55,10 +54,7 @@ export const getFormSchema = () => {
         [COMMON_MSBSET_ALG_INIT]: yup.number().integer().required(),
         [COMMON_MX_ITER_ALG_INIT]: yup.number().integer().required(),
         [COMMON_PRINT_FL_ALG_INIT]: yup.number().integer().required(),
-        [COMMON_MAXIMUM_NUMBER_SLOW_STEP_INCREASE]: yup
-            .number()
-            .integer()
-            .required(),
+        [COMMON_MAXIMUM_NUMBER_SLOW_STEP_INCREASE]: yup.number().integer().required(),
         [COMMON_MINIMAL_ACCEPTABLE_STEP]: yup.number().required(),
     };
 };

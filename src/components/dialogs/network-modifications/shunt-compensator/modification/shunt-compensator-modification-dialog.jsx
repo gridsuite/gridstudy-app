@@ -31,10 +31,7 @@ import ShuntCompensatorModificationForm from './shunt-compensator-modification-f
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialogUtils';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
 import { modifyShuntCompensator } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
@@ -97,15 +94,11 @@ const ShuntCompensatorModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
                 ...getCharacteristicsFormData({
-                    maxSusceptance:
-                        shuntCompensator.maxSusceptance?.value ?? null,
-                    maxQAtNominalV:
-                        shuntCompensator.maxQAtNominalV?.value ?? null,
-                    shuntCompensatorType:
-                        shuntCompensator.shuntCompensatorType?.value ?? null,
+                    maxSusceptance: shuntCompensator.maxSusceptance?.value ?? null,
+                    maxQAtNominalV: shuntCompensator.maxQAtNominalV?.value ?? null,
+                    shuntCompensatorType: shuntCompensator.shuntCompensatorType?.value ?? null,
                     sectionCount: shuntCompensator.sectionCount?.value ?? null,
-                    maximumSectionCount:
-                        shuntCompensator.maximumSectionCount?.value ?? null,
+                    maximumSectionCount: shuntCompensator.maximumSectionCount?.value ?? null,
                 }),
                 ...getPropertiesFromModification(shuntCompensator.properties),
             });
@@ -118,8 +111,7 @@ const ShuntCompensatorModificationDialog = ({
     // "susceptance per section", and if we choose "Q at nominal voltage", we have to add a value for
     // "shunt compensator type" or for "Q at nominal voltage" numeric field
     const disableSave =
-        (Object.keys(dirtyFields).length === 1 &&
-            dirtyFields[CHARACTERISTICS_CHOICE]) ||
+        (Object.keys(dirtyFields).length === 1 && dirtyFields[CHARACTERISTICS_CHOICE]) ||
         Object.keys(dirtyFields).length === 0;
 
     useEffect(() => {
@@ -134,10 +126,8 @@ const ShuntCompensatorModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
 
@@ -166,11 +156,7 @@ const ShuntCompensatorModificationDialog = ({
                                 setDataFetchStatus(FetchStatus.SUCCEED);
                                 reset((formValues) => ({
                                     ...formValues,
-                                    [ADDITIONAL_PROPERTIES]:
-                                        getConcatenatedProperties(
-                                            shuntCompensator,
-                                            getValues
-                                        ),
+                                    [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(shuntCompensator, getValues),
                                 }));
                             }
                         }
@@ -213,16 +199,13 @@ const ShuntCompensatorModificationDialog = ({
                 sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
                 shuntCompensator[MAXIMUM_SECTION_COUNT],
                 shuntCompensator[SECTION_COUNT],
-                shuntCompensator[CHARACTERISTICS_CHOICE] ===
-                    CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+                shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
                     ? shuntCompensator[MAX_SUSCEPTANCE]
                     : null,
-                shuntCompensator[CHARACTERISTICS_CHOICE] ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
                     ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
                     : null,
-                shuntCompensator[CHARACTERISTICS_CHOICE] ===
-                    CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
                     ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
                     : null,
                 shuntCompensatorInfos?.voltageLevelId,
@@ -236,22 +219,11 @@ const ShuntCompensatorModificationDialog = ({
                 });
             });
         },
-        [
-            currentNodeUuid,
-            studyUuid,
-            editData,
-            shuntCompensatorInfos?.voltageLevelId,
-            snackError,
-            selectedId,
-        ]
+        [currentNodeUuid, studyUuid, editData, shuntCompensatorInfos?.voltageLevelId, snackError, selectedId]
     );
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            {...formMethods}
-            removeOptional={true}
-        >
+        <CustomFormProvider validationSchema={formSchema} {...formMethods} removeOptional={true}>
             <ModificationDialog
                 fullWidth
                 maxWidth="md"
@@ -263,9 +235,7 @@ const ShuntCompensatorModificationDialog = ({
                 disabledSave={disableSave}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >

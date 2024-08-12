@@ -6,11 +6,13 @@
  */
 
 import { EQUIPMENT_TYPES } from './equipment-types';
+import { ValueOf } from 'type-fest';
 
 export const FEEDER_TYPES = {
     ...EQUIPMENT_TYPES,
     /**
-     * these are ComponentTypeNames from powsybl-single-line-diagram but we put them here because some ComponentTypeNames are also EquipmentsNames
+     * these are ComponentTypeNames from powsybl-single-line-diagram,
+     * but we put them here because some ComponentTypeNames are also EquipmentsNames
      */
     CAPACITOR: 'CAPACITOR',
     INDUCTOR: 'INDUCTOR',
@@ -18,3 +20,4 @@ export const FEEDER_TYPES = {
     PHASE_SHIFT_TRANSFORMER: 'PHASE_SHIFT_TRANSFORMER',
     THREE_WINDINGS_TRANSFORMER_LEG: 'THREE_WINDINGS_TRANSFORMER_LEG',
 };
+export type FeederTypes = ValueOf<typeof FEEDER_TYPES>;

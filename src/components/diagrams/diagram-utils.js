@@ -33,14 +33,8 @@ const sortByAlign = (a, b) => {
  */
 const sortByIndex = (a, b, diagramStates) => {
     return (
-        diagramStates.findIndex(
-            (diagramState) =>
-                diagramState.id === a?.id && diagramState.svgType === a?.svgType
-        ) -
-        diagramStates.findIndex(
-            (diagramState) =>
-                diagramState.id === b?.id && diagramState.svgType === b?.svgType
-        )
+        diagramStates.findIndex((diagramState) => diagramState.id === a?.id && diagramState.svgType === a?.svgType) -
+        diagramStates.findIndex((diagramState) => diagramState.id === b?.id && diagramState.svgType === b?.svgType)
     );
 };
 
@@ -61,11 +55,7 @@ export const makeDiagramSorter = (diagramStates) => {
 // we want this estimation to be slightly pessimistic to avoid bad UX of going to far
 // and not being able to do the same thing step by step.
 const VL_DEPTH_GROWTH_RATE = 2;
-export function getEstimatedNbVoltageLevels(
-    currentDepth,
-    requestedDepth,
-    previousVoltagesNB
-) {
+export function getEstimatedNbVoltageLevels(currentDepth, requestedDepth, previousVoltagesNB) {
     // We assume that the number of vl grows exponentially
     // real world example :
     // depth : number of voltage levels
@@ -78,8 +68,5 @@ export function getEstimatedNbVoltageLevels(
     // 7     : 80
     // 8     : 138
     // 9     : 221
-    return (
-        previousVoltagesNB *
-        Math.pow(VL_DEPTH_GROWTH_RATE, requestedDepth - currentDepth)
-    );
+    return previousVoltagesNB * Math.pow(VL_DEPTH_GROWTH_RATE, requestedDepth - currentDepth);
 }

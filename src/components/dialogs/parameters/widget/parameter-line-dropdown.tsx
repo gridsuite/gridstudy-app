@@ -28,8 +28,7 @@ const ParameterLineDropdown = ({
     values,
     disabled = false,
 }: DropDownParameterLineProps) => {
-    const [parameterValue, handleChangeParameterValue] =
-        useParameterState(paramNameId);
+    const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
 
     return (
         <>
@@ -39,11 +38,7 @@ const ParameterLineDropdown = ({
             <Grid item container xs={4} sx={styles.controlItem}>
                 <Select
                     labelId={labelValue}
-                    value={
-                        defaultValueIfNull && !parameterValue
-                            ? Object.entries<string>(values)[0]
-                            : parameterValue
-                    }
+                    value={defaultValueIfNull && !parameterValue ? Object.entries<string>(values)[0] : parameterValue}
                     onChange={(event, child) => {
                         onPreChange?.(event, child);
                         handleChangeParameterValue(event.target.value);

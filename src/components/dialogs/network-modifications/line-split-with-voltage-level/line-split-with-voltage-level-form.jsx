@@ -6,12 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import {
-    LINE1_ID,
-    LINE1_NAME,
-    LINE2_ID,
-    LINE2_NAME,
-} from 'components/utils/field-constants';
+import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
 import React, { useMemo, useState } from 'react';
 import { gridItem, GridSection } from '../../dialogUtils';
 import AddIcon from '@mui/icons-material/ControlPoint';
@@ -22,11 +17,7 @@ import { Button, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
-import {
-    CONNECTIVITY,
-    ID,
-    VOLTAGE_LEVEL,
-} from '../../../utils/field-constants';
+import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 
 const LineSplitWithVoltageLevelForm = ({
@@ -51,27 +42,18 @@ const LineSplitWithVoltageLevelForm = ({
     };
 
     const lineToSplitForm = (
-        <LineToAttachOrSplitForm
-            label={'LineToSplit'}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-        />
+        <LineToAttachOrSplitForm label={'LineToSplit'} studyUuid={studyUuid} currentNode={currentNode} />
     );
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
 
-    const newLine1NameField = (
-        <TextInput name={LINE1_NAME} label={'Line1Name'} />
-    );
+    const newLine1NameField = <TextInput name={LINE1_NAME} label={'Line1Name'} />;
 
     const newLine2IdField = <TextInput name={LINE2_ID} label={'Line2ID'} />;
 
-    const newLine2NameField = (
-        <TextInput name={LINE2_NAME} label={'Line2Name'} />
-    );
+    const newLine2NameField = <TextInput name={LINE2_NAME} label={'Line2Name'} />;
 
-    const isVoltageLevelEdit =
-        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
+    const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const busbarSectionOptions = useMemo(() => {
         if (isVoltageLevelEdit) {
@@ -101,9 +83,7 @@ const LineSplitWithVoltageLevelForm = ({
                 {gridItem(
                     <Button
                         onClick={openVoltageLevelDialog}
-                        startIcon={
-                            isVoltageLevelEdit ? <EditIcon /> : <AddIcon />
-                        }
+                        startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
                     >
                         <Typography align="left">
                             <FormattedMessage id="NewVoltageLevel" />

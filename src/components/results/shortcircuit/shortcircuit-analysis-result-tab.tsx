@@ -6,12 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import React, {
-    FunctionComponent,
-    useCallback,
-    useMemo,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,
@@ -22,7 +17,7 @@ import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../../../redux/reducer.type';
+import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
@@ -41,23 +36,22 @@ interface ShortCircuitAnalysisResultTabProps {
 }
 
 function getDisplayedColumns(params: any) {
-    return params.api.columnModel.columnDefs
-        .filter((c: any) => !c.hide)
-        .map((c: any) => c.headerName);
+    return params.api.columnModel.columnDefs.filter((c: any) => !c.hide).map((c: any) => c.headerName);
 }
 
-export const ShortCircuitAnalysisResultTab: FunctionComponent<
-    ShortCircuitAnalysisResultTabProps
-> = ({ studyUuid, nodeUuid, view }) => {
-    const lastCompletedComputation = useSelector(
-        (state: ReduxState) => state.lastCompletedComputation
-    );
+export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalysisResultTabProps> = ({
+    studyUuid,
+    nodeUuid,
+    view,
+}) => {
+    const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
 
     const [csvHeaders, setCsvHeaders] = useState([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
         () =>
+            // @ts-expect-error TODO: manage null case
             computingTypeToShortcircuitTabRedirection(lastCompletedComputation),
         [lastCompletedComputation]
     );
@@ -67,19 +61,13 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
     const OneBusShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const setRedirectionLock = useResultsTab(
-        resultTabIndexRedirection,
-        setTabIndex,
-        view
-    );
+    const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex, view);
 
     const handleTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {
@@ -137,20 +125,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
     return (
         <>
             <Tabs value={tabIndex} onChange={handleTabChange}>
-                <Tab
-                    label={
-                        <FormattedMessage
-                            id={'ShortCircuitAnalysisTabAllBuses'}
-                        />
-                    }
-                />
-                <Tab
-                    label={
-                        <FormattedMessage
-                            id={'ShortCircuitAnalysisTabOneBus'}
-                        />
-                    }
-                />
+                <Tab label={<FormattedMessage id={'ShortCircuitAnalysisTabAllBuses'} />} />
+                <Tab label={<FormattedMessage id={'ShortCircuitAnalysisTabOneBus'} />} />
             </Tabs>
             <Box
                 sx={{
@@ -161,16 +137,11 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
             >
                 <Tabs value={resultOrLogIndex} onChange={handleSubTabChange}>
                     <Tab label={<FormattedMessage id={'Results'} />} />
-                    <Tab
-                        label={
-                            <FormattedMessage id={'ComputationResultsLogs'} />
-                        }
-                    />
+                    <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
                 </Tabs>
                 {resultOrLogIndex === RESULTS_TAB_INDEX &&
                     (tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES ||
-                        tabIndex ===
-                            ShortCircuitAnalysisResultTabs.ONE_BUS) && (
+                        tabIndex === ShortCircuitAnalysisResultTabs.ONE_BUS) && (
                         <ShortCircuitExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
@@ -194,14 +165,11 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<
                 ))}
             {resultOrLogIndex === LOGS_TAB_INDEX && (
                 <>
-                    <Box sx={{ height: '4px' }}>
-                        {openLoader && <LinearProgress />}
-                    </Box>
+                    <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                     {shortCircuitTabResultStatusSucceedOrFailed && (
                         <ComputationReportViewer
                             reportType={
-                                tabIndex ===
-                                ShortCircuitAnalysisResultTabs.ALL_BUSES
+                                tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES
                                     ? REPORT_TYPES.SHORT_CIRCUIT
                                     : REPORT_TYPES.SHORT_CIRCUIT_ONE_BUS
                             }
