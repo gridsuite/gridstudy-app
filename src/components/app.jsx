@@ -88,7 +88,6 @@ import {
     setOptionalServices,
     setParamsLoaded,
 } from '../redux/actions';
-import { defaultOptionalServicesState } from '../redux/reducer';
 
 const noUserManager = { instance: null, error: null };
 
@@ -386,7 +385,7 @@ const App = () => {
                         };
                     });
                     // get all potentially optional services
-                    const optionalServicesNames = defaultOptionalServicesState.map((service) => service.name);
+                    const optionalServicesNames = Object.keys(OptionalServicesNames);
 
                     // if one of those services was not returned by "getOptionalServices", it means it was defined as "not optional"
                     // in that case, we consider it is UP
