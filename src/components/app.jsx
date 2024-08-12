@@ -8,7 +8,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { getOptionalServiceByServerName, OptionalServicesStatus } from './utils/optional-services';
+import {
+  getOptionalServiceByServerName,
+  OptionalServicesNames,
+  OptionalServicesStatus,
+} from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
 
 import { StudyView } from './study-pane';
