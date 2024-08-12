@@ -20,7 +20,8 @@ import { fetchAllEquipments } from 'services/study/network-map';
 
 export const useSpreadsheetEquipments = (
     equipment,
-    formatFetchedEquipments
+    formatFetchedEquipments,
+    selectedNodeId
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state) => state.spreadsheetNetwork);
@@ -76,10 +77,11 @@ export const useSpreadsheetEquipments = (
             resetImpactedElementTypes();
         }
         if (impactedSubstationsIds.length > 0) {
+            console.log('######### - DEBUG TAG - #########');
             // The formatting of the fetched equipments is done in the reducer
             fetchAllEquipments(
                 studyUuid,
-                currentNode.id,
+                selectedNodeId ?? currentNode.id,
                 impactedSubstationsIds
             ).then((values) => {
                 dispatch(updateEquipments(values));
@@ -120,6 +122,7 @@ export const useSpreadsheetEquipments = (
         resetImpactedSubstationsIds,
         resetDeletedEquipments,
         resetImpactedElementTypes,
+        selectedNodeId,
     ]);
 
     useEffect(() => {
@@ -128,7 +131,7 @@ export const useSpreadsheetEquipments = (
             setIsFetching(true);
             Promise.all(
                 equipment.fetchers.map((fetcher) =>
-                    fetcher(studyUuid, currentNode.id)
+                    fetcher(studyUuid, selectedNodeId ?? currentNode.id)
                 )
             )
                 .then((results) => {
@@ -152,6 +155,7 @@ export const useSpreadsheetEquipments = (
         currentNode.id,
         dispatch,
         formatFetchedEquipments,
+        selectedNodeId,
     ]);
 
     return { equipments, errorMessage, isFetching };

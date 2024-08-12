@@ -15,6 +15,22 @@ import { registerAllModules } from 'handsontable/registry';
 import { useIntl } from 'react-intl';
 import { HyperFormula } from 'hyperformula';
 import { ChangeSource } from 'handsontable/common';
+import { GlobalFilterHandsontable } from './global-filter-handsontable';
+import { FilterTableDialog } from './table-filter';
+import Button from '@mui/material/Button';
+import {
+    DirectoryItemSelector,
+    DirectoryItemsInput,
+    ElementType,
+    TreeViewFinderNodeProps,
+} from '@gridsuite/commons-ui';
+import {
+    evaluateFilter,
+    evaluateJsonFilter,
+} from '../../services/study/filter';
+import { useSelector } from 'react-redux';
+import { ReduxState } from '../../redux/reducer.type';
+import { UUID } from 'crypto';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -50,46 +66,27 @@ function toLetters(num: number): string {
 }
 
 const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
+    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const currentNode = useSelector(
+        (state: ReduxState) => state.currentTreeNode
+    );
+
     const intl = useIntl();
     const hotTableComponent = useRef<HotTableClass>(null);
     const [customColumnsIndexes, setCustomColumnsIndexes] = useState<number[]>(
         []
     );
 
+    const [openFilterDialog, setOpenFilterDialog] = useState<boolean>(false);
+
     const equipmentDefinition = useMemo(
         () => ({
-            type: TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)?.type,
+            type: TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)
+                ?.type as string,
             fetchers: TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)?.fetchers,
         }),
         []
     );
-
-    const getColHeaders = useCallback(() => {
-        const headers = isDataAltered(hotTableComponent)
-            ? (hotTableComponent.current?.hotInstance?.getColHeader() as string[])
-            : TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)?.columns.map(
-                  (column, index) => intl.formatMessage({ id: column.id })
-              ) ?? [];
-
-        const columnLabel = 'Custom column';
-        customColumnsIndexes.forEach((customColumnIndex, index) => {
-            if (headers[customColumnIndex] !== columnLabel) {
-                headers.splice(customColumnIndex, 0, columnLabel);
-            }
-        });
-        return headers ?? [];
-    }, [customColumnsIndexes, intl]);
-
-    const getNestedHeaders = useCallback(() => {
-        const letters =
-            hotTableComponent.current?.hotInstance
-                ?.getColHeader()
-                ?.map((column, index) => {
-                    return toLetters(index + 1);
-                }) ?? [];
-
-        return [letters, getColHeaders()];
-    }, [getColHeaders]);
 
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
@@ -109,6 +106,41 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
     const hyperformulaInstance = HyperFormula.buildEmpty({
         licenseKey: 'internal-use-in-handsontable',
     });
+
+    const getColHeaders = useCallback(() => {
+        const headers = isDataAltered(hotTableComponent)
+            ? (hotTableComponent.current?.hotInstance?.getColHeader() as string[])
+            : TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)?.columns.map(
+                  (column, index) => intl.formatMessage({ id: column.id })
+              ) ?? [];
+
+        const columnLabel = 'Custom column';
+        hotTableComponent.current?.hotInstance
+            ?.getCellMetaAtRow(0)
+            .filter(
+                (cellMeta) =>
+                    cellMeta?.hasOwnProperty('addedColumn') &&
+                    cellMeta?.hasOwnProperty('col')
+            )
+            .map((cellMeta) => cellMeta?.col)
+            .forEach((customColumnIndex, index) => {
+                if (headers[customColumnIndex] !== columnLabel) {
+                    headers.splice(customColumnIndex, 0, columnLabel);
+                }
+            });
+        return headers ?? [];
+    }, [intl]);
+
+    const getNestedHeaders = useCallback(() => {
+        const letters =
+            hotTableComponent.current?.hotInstance
+                ?.getColHeader()
+                ?.map((column, index) => {
+                    return toLetters(index + 1);
+                }) ?? [];
+
+        return [letters, getColHeaders()];
+    }, [getColHeaders]);
 
     const data = useMemo(() => {
         let initialData = equipments
@@ -146,22 +178,29 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
             : [];
 
         if (isDataAltered(hotTableComponent)) {
-            console.log(customColumnsIndexes);
-            customColumnsIndexes.forEach((index) => {
-                initialData.map((row: any[], rowIndex: number) => {
-                    row.splice(
-                        index,
-                        0,
-                        hotTableComponent.current?.hotInstance?.getDataAtCell(
-                            rowIndex,
-                            index
-                        )
-                    );
+            hotTableComponent.current?.hotInstance
+                ?.getCellMetaAtRow(0)
+                .filter(
+                    (cellMeta) =>
+                        cellMeta?.hasOwnProperty('addedColumn') &&
+                        cellMeta?.hasOwnProperty('col')
+                )
+                .map((cellMeta) => cellMeta?.col)
+                .forEach((index) => {
+                    initialData.map((row: any[], rowIndex: number) => {
+                        return row.splice(
+                            index,
+                            0,
+                            hotTableComponent.current?.hotInstance?.getDataAtCell(
+                                rowIndex,
+                                index
+                            )
+                        );
+                    });
                 });
-            });
         }
         return initialData;
-    }, [customColumnsIndexes, equipments]);
+    }, [equipments]);
 
     const tagCustomColumn = useCallback(
         (index: number, amount: number, source?: ChangeSource) => {
@@ -182,8 +221,71 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
         []
     );
 
+    const handleOpenFilterDialog = useCallback(() => {
+        setOpenFilterDialog(true);
+    }, []);
+
+    const filtersPlugin =
+        hotTableComponent.current?.hotInstance?.getPlugin('filters');
+
+    const applyFilter = useCallback(
+        (filter: any) => {
+            console.log(filter);
+            evaluateFilter(studyUuid, currentNode.id, filter.id).then(
+                (response) => {
+                    filtersPlugin?.clearConditions();
+                    const filterIds = response.map(
+                        (equipment: any) => equipment.id
+                    );
+                    filtersPlugin?.addCondition(0, 'by_value', [filterIds]);
+                    filtersPlugin?.filter();
+                }
+            );
+        },
+        [currentNode.id, filtersPlugin, studyUuid]
+    );
+
+    const handleCloseFilterDialog = useCallback(
+        (nodes: any) => {
+            if (nodes.length === 1) {
+                const filterData = nodes[0];
+                applyFilter(filterData);
+            }
+            setOpenFilterDialog(false);
+        },
+        [applyFilter]
+    );
+
     return (
         <Box sx={styles.table}>
+            {/*<NodePicker
+                value={selectedCompareNodeId ?? ''}
+                handleSelectedNode={handleSelectedNode}
+            />*/}
+            <Button onClick={handleOpenFilterDialog} variant="text">
+                Open filter configuration
+            </Button>
+
+            <DirectoryItemSelector
+                open={openFilterDialog}
+                onClose={handleCloseFilterDialog}
+                types={[ElementType.FILTER]}
+                equipmentTypes={[equipmentDefinition.type]}
+                onlyLeaves={true}
+                multiSelect={false}
+                validationButtonText={intl.formatMessage({
+                    id: 'validate',
+                })}
+                title={intl.formatMessage({
+                    id: 'showSelectDirectoryDialog',
+                })}
+            />
+
+            {/*            <FilterTableDialog
+                open={openFilterDialog}
+                onClose={handleCloseFilterDialog}
+            />*/}
+            <GlobalFilterHandsontable hotTableComponent={hotTableComponent} />
             <HotTable
                 ref={hotTableComponent}
                 height="auto"
@@ -191,7 +293,6 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 rowHeaders={true}
                 filters={true}
                 dropdownMenu={true}
-                //colHeaders={getColHeaders()}
                 nestedHeaders={getNestedHeaders()}
                 formulas={{
                     engine: hyperformulaInstance,
@@ -201,6 +302,7 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 autoWrapCol={true}
                 contextMenu={true}
                 allowInsertColumn={true}
+                allowRemoveColumn={true}
                 afterCreateCol={tagCustomColumn}
                 afterSetCellMeta={(row, column, key, value) => {
                     const previousIndexes =
@@ -220,7 +322,6 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 }}
                 licenseKey="non-commercial-and-evaluation"
                 viewportRowRenderingOffset={10}
-                viewportColumnRenderingOffset={2}
                 /*beforeOnCellMouseDown={(event, coords, TD, controller) => {
 const activeEditor =
 hotTableComponent.current?.hotInstance?.getActiveEditor();
@@ -246,13 +347,8 @@ if (activeEditor && activeEditor.isOpened()) {
 console.log(activeEditor.getValue());
 }
 activeEditor?.focus();*/
-                    console.log(
-                        hotTableComponent.current?.hotInstance?.getCellMeta(
-                            coords.row,
-                            coords.col
-                        )
-                    );
                 }}
+                fillHandle={'vertical'}
             />
         </Box>
     );
