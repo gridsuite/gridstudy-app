@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -20,27 +20,36 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: Record<string, any>;
     updateParameters: (value: Record<string, any>) => void;
 }> = ({ params, updateParameters }) => {
-    const [tabValue, setTabValue] = useState(TAB_VALUES.General);
+    const [tabSelected, setTabSelected] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
-        setTabValue(newValue);
+        setTabSelected(newValue);
     }, []);
+
+    const tabValue = useMemo(() => {
+        return tabSelected === TAB_VALUES.LimitReductions && params.limitReductions === null
+            ? TAB_VALUES.General
+            : tabSelected;
+    }, [params, tabSelected]);
 
     return (
         <>
             <Grid sx={{ width: '100%' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
-                    {TAB_INFO.map((tab, index) => (
-                        <Tab
-                            key={tab.label}
-                            label={<FormattedMessage id={tab.label} />}
-                            value={index}
-                            sx={{
-                                fontSize: 17,
-                                fontWeight: 'bold',
-                                textTransform: 'capitalize',
-                            }}
-                        />
-                    ))}
+                    {TAB_INFO.map(
+                        (tab, index) =>
+                            (tab.label !== TAB_VALUES[TAB_VALUES.LimitReductions] || params.limitReductions) && (
+                                <Tab
+                                    key={tab.label}
+                                    label={<FormattedMessage id={tab.label} />}
+                                    value={index}
+                                    sx={{
+                                        fontSize: 17,
+                                        fontWeight: 'bold',
+                                        textTransform: 'capitalize',
+                                    }}
+                                />
+                            )
+                    )}
                 </Tabs>
 
                 {TAB_INFO.map((tab, index) => (
@@ -48,7 +57,7 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                         {tabValue === TAB_VALUES.General && (
                             <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
                         )}
-                        {tabValue === TAB_VALUES.LimitReductions && (
+                        {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
                             <LimitReductionsTableForm limits={params.limitReductions} />
                         )}
                     </TabPanel>

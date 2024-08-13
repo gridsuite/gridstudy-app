@@ -535,7 +535,9 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         setTabValue(newValue);
     }, []);
 
-    const formSchema = getLimitReductionsFormSchema(params.limitReductions);
+    const formSchema = getLimitReductionsFormSchema(
+        params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
+    );
     const formMethods = useForm({
         defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
         resolver: yupResolver(formSchema),
@@ -675,10 +677,9 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                     paddingLeft={2}
                                                     sx={{ width: '100%' }}
                                                 >
-                                                    {provider === 'OpenLoadFlow' && (
+                                                    {params.limitReductions !== null ? (
                                                         <LimitReductionsTableForm limits={params?.limitReductions} />
-                                                    )}
-                                                    {provider === 'DynaFlow' && (
+                                                    ) : (
                                                         <ParameterLineSlider
                                                             paramNameId={PARAM_LIMIT_REDUCTION}
                                                             label="LimitReduction"
