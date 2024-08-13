@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import React, { FunctionComponent, SyntheticEvent, useCallback, useMemo, useState } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 
@@ -22,16 +22,16 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: Record<string, any>;
     updateParameters: (value: Record<string, any>) => void;
 }> = ({ params, updateParameters }) => {
-    const [tabValue, setTabValue] = useState(TAB_VALUES.General);
+    const [tabSelected, setTabSelected] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
-        setTabValue(newValue);
+        setTabSelected(newValue);
     }, []);
 
-    useEffect(() => {
-        if (params.limitReductions == null) {
-            setTabValue(TAB_VALUES.General);
-        }
-    }, [params]);
+    const tabValue = useMemo(() => {
+        return tabSelected === TAB_VALUES.LimitReductions && params.limitReductions === null
+            ? TAB_VALUES.General
+            : tabSelected;
+    }, [params, tabSelected]);
 
     return (
         <>
