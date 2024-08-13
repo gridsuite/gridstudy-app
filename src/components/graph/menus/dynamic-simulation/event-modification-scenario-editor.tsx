@@ -239,6 +239,7 @@ const EventModificationScenarioEditor = () => {
                 getItemId={(v) => v.equipmentId}
                 getItemLabel={getItemLabel}
                 secondaryAction={handleSecondaryAction}
+                enableSecondaryActionOnHover
                 isDisabled={() => isLoading()}
             />
         );

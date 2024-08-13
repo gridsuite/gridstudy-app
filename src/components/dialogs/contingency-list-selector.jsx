@@ -205,6 +205,7 @@ const ContingencyListSelector = (props) => {
                                 selectedItems={checkedContingencyList}
                                 onSelectionChange={setCheckedContingencyList}
                                 secondaryAction={handleSecondaryAction}
+                                enableSecondaryActionOnHover
                             />
                         </Grid>
                         <Grid item>

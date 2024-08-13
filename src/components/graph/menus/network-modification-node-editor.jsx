@@ -882,6 +882,8 @@ const NetworkModificationNodeEditor = () => {
                 isDndDragAndDropActive
                 isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
                 secondaryAction={handleSecondaryAction}
+                enableSecondaryActionOnHover
+                isCheckboxClickableOnly
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
                 divider
