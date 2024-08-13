@@ -29,12 +29,13 @@ export const GlobalFilterHandsontable: FunctionComponent<GlobalFilterHandsontabl
         const applyQuickFilter = useCallback(() => {
             const idColumnRange = hyperformulaInstance.simpleCellRangeToString(
                 {
-                    start: { sheet: 0, col: 0, row: 1 },
-                    end: { sheet: 0, col: 0, row: hotTableComponent.current?.hotInstance?.countRows()! },
+                    start: { sheet: 0, col: 0, row: 0 },
+                    end: { sheet: 0, col: 0, row: hotTableComponent.current?.hotInstance?.countRows()! - 1 },
                 },
                 hyperformulaInstance.getSheetId('Sheet1')!
             );
 
+            console.log('=FILTER(' + idColumnRange + ', ' + inputRef.current.value + ')');
             const res = hyperformulaInstance.calculateFormula(
                 '=FILTER(' + idColumnRange + ', ' + inputRef.current.value + ')',
                 hyperformulaInstance.getSheetId('Sheet1')!
