@@ -203,13 +203,19 @@ const useDisplayView = (studyUuid, currentNode) => {
                     return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
                         let nadTitle = '';
                         let substationsIds = [];
-                        svg.additionalMetadata?.voltageLevels.forEach((voltageLevel) => {
-                            const name = getNameOrId(voltageLevel);
-                            if (name !== null) {
-                                nadTitle += (nadTitle !== '' ? ', ' : '') + name;
-                            }
-                            substationsIds.push(voltageLevel.substationId);
-                        });
+                        svg.additionalMetadata?.voltageLevels
+                            .map((vl) => ({
+                                name: getNameOrId(vl),
+                                substationId: vl.substationId,
+                            }))
+                            .sort((vlA, vlB) => vlA.name.toLowerCase().localeCompare(vlB.name.toLowerCase()))
+                            .forEach((voltageLevel) => {
+                                const name = voltageLevel.name;
+                                if (name !== null) {
+                                    nadTitle += (nadTitle !== '' ? ', ' : '') + name;
+                                }
+                                substationsIds.push(voltageLevel.substationId);
+                            });
                         if (nadTitle === '') {
                             nadTitle = ids.toString();
                         }
@@ -234,7 +240,7 @@ const useDisplayView = (studyUuid, currentNode) => {
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(diagramState.id, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                return createNetworkAreaDiagramView(diagramState.ids.sort(), diagramState.state, diagramState.depth);
+                return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
             }
         },
         [
