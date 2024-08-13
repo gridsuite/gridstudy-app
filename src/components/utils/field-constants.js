@@ -26,7 +26,7 @@ export const BUS_OR_BUSBAR_SECTION_ID = 'busOrBusbarSectionId';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
-export const CONNECTED = 'connected';
+export const CONNECTED = 'terminalConnected';
 export const CONNECTED1 = 'connected1';
 export const CONNECTED2 = 'connected2';
 
