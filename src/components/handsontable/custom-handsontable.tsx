@@ -43,7 +43,7 @@ const isDataAltered = (hotTableComponent: RefObject<HotTableClass>) => {
     return (hotTableComponent?.current?.hotInstance?.countCols() as number) > initialColumnCount;
 };
 
-function toLetters(num: number): string {
+export function toLetters(num: number): string {
     var mod = num % 26,
         pow = (num / 26) | 0,
         out = mod ? String.fromCharCode(64 + mod) : (--pow, 'Z');
@@ -76,10 +76,6 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
     );
 
     const { equipments } = useSpreadsheetEquipments(equipmentDefinition, formatFetchedEquipmentsHandler);
-
-    const hyperformulaInstance = HyperFormula.buildEmpty({
-        licenseKey: 'internal-use-in-handsontable',
-    });
 
     const getColHeaders = useCallback(() => {
         const headers = isDataAltered(hotTableComponent)
@@ -161,6 +157,11 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
         return initialData;
     }, [equipments]);
 
+    const hyperformulaInstance = HyperFormula.buildFromArray(data, {
+        licenseKey: 'internal-use-in-handsontable',
+        useArrayArithmetic: true,
+    });
+
     const tagCustomColumn = useCallback((index: number, amount: number, source?: ChangeSource) => {
         if (source && ['ContextMenu.columnLeft', 'ContextMenu.columnRight'].includes(source)) {
             hotTableComponent.current?.hotInstance?.setCellMeta(0, index, 'addedColumn', true);
@@ -203,8 +204,14 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 value={selectedCompareNodeId ?? ''}
                 handleSelectedNode={handleSelectedNode}
             />*/}
-            <Button onClick={handleOpenFilterDialog} variant="text">
-                Open filter configuration
+            <Button onClick={handleOpenFilterDialog}>Open filter configuration</Button>
+            <Button
+                onClick={() => {
+                    filtersPlugin?.clearConditions();
+                    filtersPlugin?.filter();
+                }}
+            >
+                Clear filters
             </Button>
 
             <DirectoryItemSelector
@@ -226,7 +233,11 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 open={openFilterDialog}
                 onClose={handleCloseFilterDialog}
             />*/}
-            <GlobalFilterHandsontable hotTableComponent={hotTableComponent} />
+            <GlobalFilterHandsontable
+                hotTableComponent={hotTableComponent}
+                hyperformulaInstance={hyperformulaInstance}
+                filtersPlugin={filtersPlugin}
+            />
             <HotTable
                 ref={hotTableComponent}
                 height="auto"
@@ -245,6 +256,7 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
                 allowInsertColumn={true}
                 allowRemoveColumn={true}
                 afterCreateCol={tagCustomColumn}
+                afterInit={() => {}}
                 afterSetCellMeta={(row, column, key, value) => {
                     const previousIndexes =
                         hotTableComponent.current?.hotInstance
@@ -288,6 +300,7 @@ console.log(activeEditor.getValue());
 activeEditor?.focus();*/
                 }}
                 fillHandle={'vertical'}
+                outsideClickDeselects={false}
             />
         </Box>
     );
