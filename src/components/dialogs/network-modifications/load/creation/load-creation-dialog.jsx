@@ -90,7 +90,7 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
                 busbarSectionId: load.busOrBusbarSectionId,
                 connectionDirection: load.connectablePosition.connectionDirection,
                 connectionName: load.connectablePosition.connectionName,
-                // connected is not copied on purpose: we use the default value (true) in all cases
+                // terminalConnected is not copied on purpose: we use the default value (true) in all cases
             }),
             ...copyEquipmentPropertiesForCreation(load),
         });
@@ -110,7 +110,7 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
                     connectionPosition: load.connectionPosition,
-                    connected: load.connected,
+                    terminalConnected: load.terminalConnected,
                 }),
                 ...getPropertiesFromModification(load.properties),
             });
@@ -149,7 +149,7 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
                 load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.connected,
+                load.connectivity?.terminalConnected,
                 toModificationProperties(load)
             ).catch((error) => {
                 snackError({
