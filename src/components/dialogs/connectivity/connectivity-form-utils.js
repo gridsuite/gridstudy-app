@@ -15,22 +15,29 @@ import {
     ID,
     NAME,
     VOLTAGE_LEVEL,
+    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-export const getConnectivityPropertiesValidationSchema = () => {
+export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()
-            .required()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            })
             .shape({
                 [ID]: yup.string(),
             }),
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
             .nullable()
-            .required()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            })
             .shape({
                 [ID]: yup.string(),
                 [NAME]: yup.string(),
@@ -50,7 +57,7 @@ export const getConnectivityWithPositionValidationSchema = (isEquipmentModificat
                 is: () => !isEquipmentModification,
                 then: (schema) => schema.required(),
             }),
-        ...getConnectivityPropertiesValidationSchema(),
+        ...getConnectivityPropertiesValidationSchema(isEquipmentModification),
     }),
 });
 
