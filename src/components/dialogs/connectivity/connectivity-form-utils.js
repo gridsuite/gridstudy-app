@@ -7,15 +7,14 @@
 
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    CONNECTED,
     ID,
     NAME,
     VOLTAGE_LEVEL,
-    FREQUENCY_REGULATION,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
