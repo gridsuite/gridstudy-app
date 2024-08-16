@@ -580,7 +580,7 @@ const initialState: AppState = {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
-    [PARAM_INIT_NAD_WITH_GEO_DATA]: false,
+    [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
 
     recentGlobalFilters: [],
