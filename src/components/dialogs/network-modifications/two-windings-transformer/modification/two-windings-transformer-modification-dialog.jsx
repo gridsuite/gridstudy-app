@@ -100,7 +100,7 @@ import {
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import RatioTapChangerPane from '../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import { fetchNetworkElementInfos, fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
+import { fetchNetworkElementInfos } from '../../../../../services/study/network';
 import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
@@ -109,6 +109,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -164,13 +165,13 @@ const TwoWindingsTransformerModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
     const { reset, getValues } = formMethods;
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
         if (ratioTapChangerFormValues?.[REGULATING]?.value == null) {
@@ -278,14 +279,6 @@ const TwoWindingsTransformerModificationDialog = ({
         },
         [reset, twtToModify, isRatioTapChangerEnabled, isPhaseTapChangerEnabled]
     );
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then((values) => {
-                setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
-            });
-        }
-    }, [studyUuid, currentNodeUuid]);
 
     useEffect(() => {
         if (editData) {
