@@ -192,9 +192,9 @@ const EventModificationScenarioEditor = () => {
         setSelectedItems((oldVals: Event[]) => (oldVals.length === 0 ? events : []));
     }, [events]);
 
-    const isLoading = () => {
+    const isLoading = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
-    };
+    }, [currentNode?.id, notificationIdList]);
 
     const getItemLabel = (item) => {
         if (!studyUuid || !currentNode || !item) {
@@ -223,11 +223,16 @@ const EventModificationScenarioEditor = () => {
     const handleSecondaryAction = useCallback(
         (item) =>
             isAnyNodeBuilding && (
-                <IconButton onClick={() => doEditEvent(item)} size={'small'} sx={styles.iconEdit}>
+                <IconButton
+                    onClick={() => doEditEvent(item)}
+                    size={'small'}
+                    sx={styles.iconEdit}
+                    disabled={isLoading()}
+                >
                     <EditIcon />
                 </IconButton>
             ),
-        [isAnyNodeBuilding]
+        [isAnyNodeBuilding, isLoading]
     );
     const renderEventList = () => {
         return (
