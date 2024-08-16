@@ -34,14 +34,14 @@ export const fetchStudyExists = (studyUuid) => {
     return backendFetch(fetchStudiesUrl, { method: 'head' });
 };
 
-export function getNetworkAreaDiagramUrl(studyUuid, currentNodeUuid, voltageLevelsIds, depth, initGeoData) {
+export function getNetworkAreaDiagramUrl(studyUuid, currentNodeUuid, voltageLevelsIds, depth, withGeoData) {
     console.info(`Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`);
     return (
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
             depth: depth,
-            initGeoData: initGeoData,
+            withGeoData: withGeoData,
         }) +
         '&' +
         getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()

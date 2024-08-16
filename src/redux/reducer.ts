@@ -69,7 +69,7 @@ import {
     FluxConventionAction,
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
-    INIT_NAD_GEO_DAtA,
+    INIT_NAD_WITH_GEO_DATA,
     LIMIT_REDUCTION,
     LIMIT_REDUCTION_MODIFIED,
     LimitReductionAction,
@@ -204,7 +204,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_INIT_NAD_GEO_DATA,
+    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -268,7 +268,7 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { InitNadGeoDataAction } from './actions';
+import { InitNadWithGeoDataAction } from './actions';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -453,7 +453,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: UnknownArray;
     [PARAM_FLUX_CONVENTION]: FluxConventions;
     [PARAM_DEVELOPER_MODE]: boolean;
-    [PARAM_INIT_NAD_GEO_DATA]: boolean;
+    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
@@ -580,7 +580,7 @@ const initialState: AppState = {
     [PARAM_FAVORITE_CONTINGENCY_LISTS]: [],
     [PARAM_FLUX_CONVENTION]: FluxConventions.IIDM,
     [PARAM_DEVELOPER_MODE]: false,
-    [PARAM_INIT_NAD_GEO_DATA]: false,
+    [PARAM_INIT_NAD_WITH_GEO_DATA]: false,
     [PARAMS_LOADED]: false,
 
     recentGlobalFilters: [],
@@ -940,8 +940,8 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
     });
 
-    builder.addCase(INIT_NAD_GEO_DAtA, (state, action: InitNadGeoDataAction) => {
-        state[PARAM_INIT_NAD_GEO_DATA] = action[PARAM_INIT_NAD_GEO_DATA];
+    builder.addCase(INIT_NAD_WITH_GEO_DATA, (state, action: InitNadWithGeoDataAction) => {
+        state[PARAM_INIT_NAD_WITH_GEO_DATA] = action[PARAM_INIT_NAD_WITH_GEO_DATA];
     });
 
     builder.addCase(LINE_FLOW_COLOR_MODE, (state, action: LineFlowColorModeAction) => {

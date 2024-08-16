@@ -5,24 +5,22 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid } from '@mui/material';
-import { PARAM_INIT_NAD_GEO_DATA } from '../../../utils/config-params';
+import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { styles } from './parameters';
 import ParameterLineSwitch from './widget/parameter-line-switch';
 
 export const NetworkAreaDiagramParameters = () => {
     return (
-        <>
-            <Grid
-                xl={6}
-                container
-                spacing={1}
-                sx={styles.scrollableGrid}
-                key={'networkAreaDiagramParameters'}
-                marginTop={-3}
-                justifyContent={'space-between'}
-            >
-                <ParameterLineSwitch paramNameId={PARAM_INIT_NAD_GEO_DATA} label="initNadGeoData" />
-            </Grid>
-        </>
+        <Grid
+            xl={6}
+            container
+            spacing={1}
+            sx={styles.scrollableGrid}
+            key={'networkAreaDiagramParameters'}
+            marginTop={-3}
+            justifyContent={'space-between'}
+        >
+            <ParameterLineSwitch paramNameId={PARAM_INIT_NAD_WITH_GEO_DATA} label="initNadWithGeoData" />
+        </Grid>
     );
 };

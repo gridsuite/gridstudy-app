@@ -37,7 +37,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_INIT_NAD_GEO_DATA,
+    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -78,7 +78,7 @@ import {
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
     selectFluxConvention,
-    selectInitNadGeoData,
+    selectInitNadWithGeoData,
     selectLanguage,
     selectLimitReduction,
     selectLineFlowAlertThreshold,
@@ -161,8 +161,8 @@ const App = () => {
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(param.value === 'true'));
                         break;
-                    case PARAM_INIT_NAD_GEO_DATA:
-                        dispatch(selectInitNadGeoData(param.value === 'true'));
+                    case PARAM_INIT_NAD_WITH_GEO_DATA:
+                        dispatch(selectInitNadWithGeoData(param.value === 'true'));
                         break;
                     case PARAM_LINE_FULL_PATH:
                         dispatch(selectLineFullPathState(param.value === 'true'));

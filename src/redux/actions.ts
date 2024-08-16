@@ -15,7 +15,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_INIT_NAD_GEO_DATA,
+    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
@@ -480,14 +480,14 @@ export function selectEnableDeveloperMode(enableDeveloperMode: boolean): EnableD
     };
 }
 
-export const INIT_NAD_GEO_DAtA = 'INIT_NAD_GEO_DAtA';
-export type InitNadGeoDataAction = Readonly<Action<typeof INIT_NAD_GEO_DAtA>> & {
-    [PARAM_INIT_NAD_GEO_DATA]: boolean;
+export const INIT_NAD_WITH_GEO_DATA = 'INIT_NAD_GEO_WITH_DATA';
+export type InitNadWithGeoDataAction = Readonly<Action<typeof INIT_NAD_WITH_GEO_DATA>> & {
+    [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
 };
-export function selectInitNadGeoData(initNadGeoData: boolean): InitNadGeoDataAction {
+export function selectInitNadWithGeoData(initNadWithGeoData: boolean): InitNadWithGeoDataAction {
     return {
-        type: INIT_NAD_GEO_DAtA,
-        [PARAM_INIT_NAD_GEO_DATA]: initNadGeoData,
+        type: INIT_NAD_WITH_GEO_DATA,
+        [PARAM_INIT_NAD_WITH_GEO_DATA]: initNadWithGeoData,
     };
 }
 
