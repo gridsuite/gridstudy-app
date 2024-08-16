@@ -75,6 +75,7 @@ import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filte
 import { createCompositeModifications } from '../../../services/explore';
 import { areUuidsEqual } from 'components/utils/utils';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
+import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog.jsx';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -283,6 +284,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
                     label: 'ShuntCompensator',
                     action: () => adapt(ShuntCompensatorCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
+                    label: 'StaticVarCompensator',
+                    action: () => adapt(StaticVarCompensatorCreationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,

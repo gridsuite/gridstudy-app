@@ -714,6 +714,60 @@ export function modifyShuntCompensator(
     });
 }
 
+export function createStaticCompensator(
+    studyUuid,
+    currentNodeUuid,
+    staticCompensatorId,
+    staticCompensatorName,
+    maxSusceptance,
+    maxQAtNominalV,
+    staticCompensatorType,
+    sectionCount,
+    maximumSectionCount,
+    connectivity,
+    isUpdate,
+    modificationUuid,
+    connectionDirection,
+    connectionName,
+    connectionPosition,
+    connected,
+    properties
+) {
+    let createShuntUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+
+    if (isUpdate) {
+        createShuntUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating static compensator creation');
+    } else {
+        console.info('Creating static compensator creation');
+    }
+
+    return backendFetchText(createShuntUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
+            equipmentId: staticCompensatorId,
+            equipmentName: staticCompensatorName,
+            maxSusceptance: maxSusceptance,
+            maxQAtNominalV: maxQAtNominalV,
+            shuntCompensatorType: staticCompensatorType,
+            sectionCount: sectionCount,
+            maximumSectionCount: maximumSectionCount,
+            voltageLevelId: connectivity.voltageLevel.id,
+            busOrBusbarSectionId: connectivity.busOrBusbarSection.id,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
+            connectionPosition: connectionPosition,
+            connected: connected,
+            properties,
+        }),
+    });
+}
+
 export function createLine(
     studyUuid,
     currentNodeUuid,

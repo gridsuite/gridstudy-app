@@ -697,6 +697,7 @@
     "MaximumActivePowerText": "Maximum active power",
     "RatedNominalPowerText": "Rated nominal power",
     "VoltageRegulationText": "Voltage regulation",
+    "ReactivePowerRegulationText": "Reactive regulation",
     "ResetRegulationRule": "Reset regulation rules",
     "RegulationTypeText": "Regulation type",
     "RatioRegulationTypeText": "Ratio regulation",
@@ -787,6 +788,7 @@
     "ShuntCurrentNumberOfSections": "Current number of sections",
     "ShuntMaximumNumberOfSections": "Maximum number of sections",
     "CreateShuntCompensator": "Create shunt compensator (Linear)",
+    "CreateStaticVarCompensator": "Create CSPR",
     "ShuntCompensatorErrorMaximumLessThanOne": "Maximum number of sections should be greater than 0",
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater than or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less than or equal to the maximum",
@@ -798,8 +800,10 @@
     "sectionCount": "Current number of sections",
     "SwitchedOnMaxQAtNominalV": "Switch-on Q at nominal voltage",
     "SwitchedOnMaxSusceptance": "Switch-on susceptance",
-    "maxQAtNominalV": "Qmax available at nominal voltage",
-    "maxSusceptance": "Maximal susceptance available",
+    "maxQAtNominalV": "Q max at nominal voltage",
+    "minQAtNominalV": "Q min at nominal voltage",
+    "maxSusceptance": "Susceptance max",
+    "minSusceptance": "Susceptance min",
     "shuntCompensatorType": "Type",
     "CreateSubstation": "Create substation",
     "SubstationCreationError": "Error while creating substation",
@@ -879,7 +883,10 @@
     "DeleteVoltageLevelOnLineError": "Error while deleting a voltage level on a line",
     "DeleteAttachingLineError": "Error while deleting an attaching line",
     "GenerationDispatchError": "Error while creating a generation dispatch",
-
+    "StaticVarCompensatorConnectivityTab": "Connectivity",
+    "StaticVarCompensatorSetPointsAndLimitsTab": "Set points",
+    "StaticVarCompensatorAutomatonTab": "Automaton (Optional)",
+    "StaticVarCompensatorAdditionalInfosTab": "Additional information",
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
 
@@ -1178,6 +1185,7 @@
     "menu.createMultiple": "Create multiple equipment",
     "menu.modifyMultiple": "Modify multiple equipment",
     "ShuntCompensator": "Shunt compensator",
+    "StaticVarCompensator": "CSPR",
     "AttachingAndSplittingLines": "Attaching and splitting lines",
     "GenerationAndLoad": "Generation and load",
     "InsertModificationFrom": "Insert from GridExplore",
@@ -1377,6 +1385,6 @@
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant":"Click on the map to start drawing a polygon.",
     "guidancePopUp.secondVariant":"Press Enter to finish or Esc to cancel.",
-    "guidancePopUp.action":"Close editor"
-
+    "guidancePopUp.action":"Close editor",
+    "AddAutomaton": "Add an automaton"
 }
