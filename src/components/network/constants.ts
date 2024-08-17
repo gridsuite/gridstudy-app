@@ -179,9 +179,3 @@ export const VSC_CONVERTER_MODE = {
         label: 'side1InverterSide2Rectifier',
     },
 };
-
-export const VOLTAGE_REGULATION_MODE = {
-    VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
-    REACTIF_POWER: { id: 'REACTIF_POWER', label: 'ReactivePowerRegulationText' },
-    OFF: { id: 'OFF', label: 'off' },
-};

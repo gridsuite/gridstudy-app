@@ -9,6 +9,9 @@ export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
 export const LOAD_TYPE = 'loadType';
 export const CONNECTIVITY = 'connectivity';
+export const SETPOINTS_LIMITS = 'Set points';
+export const AUTOMATE = 'Automaton (Optional)';
+export const ADDIONAL_INFOS = 'Additional information)';
 export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
@@ -123,6 +126,12 @@ export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
     SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
 };
+export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
+export const VOLTAGE_REGULATION_MODES = {
+    VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
+    REACTIF_POWER: { id: 'REACTIF_POWER', label: 'ReactivePowerRegulationText' },
+    OFF: { id: 'OFF', label: 'OffRegulationText' },
+};
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
@@ -132,6 +141,7 @@ export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 export const MIN_Q_AT_NOMINAL_V = 'minQAtNominalV';
 //line
 export const G1 = 'g1';
+export const B0 = 'b0';
 export const B1 = 'b1';
 export const G2 = 'g2';
 export const B2 = 'b2';
@@ -203,6 +213,8 @@ export const PERCENTAGE_AREA = 'percentageArea';
 export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
 export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
 export const SLIDER_PERCENTAGE = 'sliderPercentage';
+export const SLIDER_SUSCEPTANCE = 'sliderSusceptance';
+export const SLIDER_Q_NOMINAL = 'sliderQatNominal';
 
 // voltage-level-on-line, attach line to another line, etc
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
@@ -356,9 +368,8 @@ export const STAGES_DEFINITION_GENERATORS = 'generators';
 export const PMAX_PERCENTS = 'pMaxPercents';
 export const GENERATORS_LIMIT = 'generatorsCappings';
 export const ADD_AUTOMATE = 'addAutomate';
-export const LOW_VOLTAGE_SET_LIMIT = 'LowVoltageSetLimit';
-export const HIGH_VOLTAGE_SET_POINT = 'HighVoltageSetLimit';
+export const LOW_VOLTAGE_SET_LIMIT = 'lowVoltageSetLimit';
+export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetLimit';
 export const LOW_VOLTAGE_THRESHOLD = 'lowVoltageThreshold';
 export const HIGH_VOLTAGE_THRESHOLD = 'highVoltageThreshold';
-export const MODE_AUTOMATE = 'ModeAutomate';
 export const STAND_BY_AUTOMATE = 'StandByAutomate';

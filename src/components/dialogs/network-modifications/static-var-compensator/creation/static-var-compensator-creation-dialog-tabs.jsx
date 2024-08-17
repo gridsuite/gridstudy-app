@@ -19,31 +19,26 @@ export const StaticVarCompensatorCreationDialogTab = {
 
 const StaticVarCompensatorCreationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
     return (
-        <>
-            <Grid container item>
-                <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
-                    <Tab
-                        label={<FormattedMessage id="StaticVarCompensatorConnectivityTab" />}
-                        sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB)}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="StaticVarCompensatorSetPointsAndLimitsTab" />}
-                        sx={getTabStyle(
-                            tabIndexesWithError,
-                            StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB
-                        )}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="StaticVarCompensatorAutomatonTab" />}
-                        sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB)}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="StaticVarCompensatorAdditionalInfosTab" />}
-                        sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB)}
-                    />
-                </Tabs>
-            </Grid>
-        </>
+        <Grid container item>
+            <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>
+                <Tab
+                    label={<FormattedMessage id="StaticVarCompensatorConnectivityTab" />}
+                    sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StaticVarCompensatorSetPointsAndLimitsTab" />}
+                    sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StaticVarCompensatorAutomatonTab" />}
+                    sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB)}
+                />
+                <Tab
+                    label={<FormattedMessage id="StaticVarCompensatorAdditionalInfosTab" />}
+                    sx={getTabStyle(tabIndexesWithError, StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB)}
+                />
+            </Tabs>
+        </Grid>
     );
 };
 

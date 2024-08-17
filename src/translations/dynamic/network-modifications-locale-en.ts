@@ -34,6 +34,7 @@ const network_modifications_locale_en = {
         '{action, select, TRIP {Trip {computedLabel}} LOCKOUT {Lock out {computedLabel}} ENERGISE_END_ONE {Energise {computedLabel} on {energizedEnd}} ENERGISE_END_TWO {Energise {computedLabel} on {energizedEnd}} SWITCH_ON {Switch on {computedLabel}} other {Equipment operating status modification {computedLabel}}}',
     'network_modifications.SHUNT_COMPENSATOR_CREATION': 'Creating shunt compensator {computedLabel}',
     'network_modifications.SHUNT_COMPENSATOR_MODIFICATION': 'Modifying shunt compensator {computedLabel}',
+    'network_modifications.STATIC_VAR_COMPENSATOR_CREATION': 'Creating cspr {computedLabel}',
     'network_modifications.GENERATOR_SCALING': 'Generator scaling {computedLabel}',
     'network_modifications.VSC_CREATION': 'Creating HVDC (VSC) {computedLabel}',
     'network_modifications.VSC_MODIFICATION': 'Modifing HVDC (VSC) {computedLabel}',

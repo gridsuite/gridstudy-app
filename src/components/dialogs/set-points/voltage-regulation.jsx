@@ -22,7 +22,8 @@ const VoltageRegulation = ({
     currentNodeUuid,
     voltageLevelOptions,
     previousValues,
-    isEquipmentModification,
+    isEquipmentModification = false,
+    onlyRegulationTypes = false,
 }) => {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
@@ -103,7 +104,7 @@ const VoltageRegulation = ({
 
     return (
         <>
-            {gridItem(voltageSetPointField, 4)}
+            {!onlyRegulationTypes && gridItem(voltageSetPointField, 4)}
             {gridItem(voltageRegulationTypeField, 4)}
             <Box sx={{ width: '100%' }} />
             <Grid item xs={4} justifySelf={'end'} />
@@ -116,7 +117,7 @@ const VoltageRegulation = ({
                     </Grid>
                     {gridItem(regulatingTerminalField, 8)}
                     <Grid item xs={4} justifySelf={'end'} />
-                    {gridItem(qPercentField, 4)}
+                    {!onlyRegulationTypes && gridItem(qPercentField, 4)}
                 </>
             )}
         </>

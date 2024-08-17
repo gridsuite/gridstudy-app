@@ -14,14 +14,15 @@ import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
 import { AutomateForm } from './automate-form';
-import { SetPointsLimitsForm } from './set-points-limits-form.jsx';
-import { useGetVoltageInitParameters } from '../../../parameters/voltageinit/use-get-voltage-init-parameters';
+import { SetPointsLimitsForm } from './set-points-limits-form';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const StaticVarCompensatorCreationForm = ({ studyUuid, currentNode, tabIndex }) => {
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
     const connectivityForm = (
         <ConnectivityForm
             withPosition={true}
-            voltageLevelOptions={useGetVoltageInitParameters()}
+            voltageLevelOptions={voltageLevelOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
         />
@@ -35,7 +36,11 @@ const StaticVarCompensatorCreationForm = ({ studyUuid, currentNode, tabIndex }) 
                 </Grid>
             </Box>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB}>
-                <SetPointsLimitsForm studyUuid={studyUuid} currentNode={currentNode} />
+                <SetPointsLimitsForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    voltageLevelOptions={voltageLevelOptions}
+                />
             </Box>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB}>
                 <AutomateForm />
