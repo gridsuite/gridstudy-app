@@ -7,8 +7,7 @@
 
 import { backendFetchJson, getRequestParamFromList } from './utils';
 
-const PREFIX_DIRECTORY_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/directory';
+const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
 
 export function fetchContingencyAndFiltersLists(listIds) {
     console.info('Fetching contingency and filters lists');

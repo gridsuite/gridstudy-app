@@ -45,9 +45,7 @@ export const SensitivityResultTabs = [
 ];
 
 function getDisplayedColumns(params) {
-    return params.api.columnModel.columnDefs.map(
-        (c) => c.headerComponentParams.displayName
-    );
+    return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);
 }
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
@@ -58,9 +56,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
@@ -97,11 +93,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const sensiResultKind = [
-        SENSITIVITY_IN_DELTA_MW,
-        SENSITIVITY_IN_DELTA_A,
-        SENSITIVITY_AT_NODE,
-    ];
+    const sensiResultKind = [SENSITIVITY_IN_DELTA_MW, SENSITIVITY_IN_DELTA_A, SENSITIVITY_AT_NODE];
 
     const [csvHeaders, setCsvHeaders] = useState([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
@@ -142,22 +134,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        snackError,
-        studyUuid,
-        nodeUuid,
-        intl,
-        nOrNkIndex,
-        sensiKind,
-        csvHeaders,
-    ]);
+    }, [snackError, studyUuid, nodeUuid, intl, nOrNkIndex, sensiKind, csvHeaders]);
 
     return (
         <>
-            <SensitivityAnalysisTabs
-                sensiKind={sensiKind}
-                setSensiKind={handleSensiKindChange}
-            />
+            <SensitivityAnalysisTabs sensiKind={sensiKind} setSensiKind={handleSensiKindChange} />
             {sensiResultKind.includes(sensiKind) && (
                 <>
                     <Box
@@ -167,10 +148,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             alignItems: 'flex-end',
                         }}
                     >
-                        <Tabs
-                            value={nOrNkIndex}
-                            onChange={handleSensiNOrNkIndexChange}
-                        >
+                        <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
                             {SensitivityResultTabs.map((tab) => (
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
@@ -204,14 +182,10 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             )}
             {sensiKind === COMPUTATION_RESULTS_LOGS && (
                 <>
-                    <Box sx={{ height: '4px' }}>
-                        {openLoader && <LinearProgress />}
-                    </Box>
+                    <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                     {(sensitivityAnalysisStatus === RunningStatus.SUCCEED ||
                         sensitivityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer
-                            reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS}
-                        />
+                        <ComputationReportViewer reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS} />
                     )}
                 </>
             )}

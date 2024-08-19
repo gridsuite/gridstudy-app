@@ -15,10 +15,7 @@ export default function useGetLabelEquipmentTypes() {
     return useMemo(
         () => (equipmentType: Option) =>
             intl.formatMessage({
-                id:
-                    equipmentType === EQUIPMENT_TYPES.HVDC_LINE
-                        ? 'Hvdc'
-                        : getIdOrValue(equipmentType),
+                id: equipmentType === EQUIPMENT_TYPES.HVDC_LINE ? 'Hvdc' : getIdOrValue(equipmentType),
             }),
         [intl]
     );

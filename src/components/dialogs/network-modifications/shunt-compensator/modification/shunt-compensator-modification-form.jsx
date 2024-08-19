@@ -13,11 +13,9 @@ import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
 
-const ShuntCompensatorModificationForm = ({
-    shuntCompensatorInfos,
-    equipmentId,
-}) => {
+const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompensatorInfos, equipmentId }) => {
     const shuntCompensatorIdField = (
         <TextField
             size="small"
@@ -41,10 +39,15 @@ const ShuntCompensatorModificationForm = ({
         />
     );
 
-    const characteristicsForm = (
-        <CharacteristicsForm
+    const characteristicsForm = <CharacteristicsForm previousValues={shuntCompensatorInfos} isModification={true} />;
+
+    const connectivityForm = (
+        <ConnectivityForm
+            withPosition={true}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            isEquipmentModification={true}
             previousValues={shuntCompensatorInfos}
-            isModification={true}
         />
     );
 
@@ -54,14 +57,16 @@ const ShuntCompensatorModificationForm = ({
                 {gridItem(shuntCompensatorIdField, 4)}
                 {gridItem(shuntCompensatorNameField, 4)}
             </Grid>
+            {/* Connectivity part */}
+            <GridSection title="Connectivity" />
+            <Grid container spacing={2}>
+                {gridItem(connectivityForm, 12)}
+            </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
                 {gridItem(characteristicsForm, 12)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'shuntCompensator'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>
     );
 };
