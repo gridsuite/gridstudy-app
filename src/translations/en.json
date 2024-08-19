@@ -574,7 +574,7 @@
     "FluxConvention.target": "Target",
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
-    "initNadWithGeoData": "Initialize with geographical data", 
+    "initNadWithGeoData": "Initialize with geographical data",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
     "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
@@ -1377,7 +1377,8 @@
     "EquipmentSearchPlaceholder": "Search",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
-    "guidancePopUp.firstVariant": "Click on the map to start drawing a polygon.",
-    "guidancePopUp.secondVariant": "Press Enter to finish or Esc to cancel.",
-    "guidancePopUp.action": "Close editor"
+    "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
+    "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
+    "guidancePopUp.action":"Close editor"
+
 }
