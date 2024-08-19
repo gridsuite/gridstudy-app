@@ -242,6 +242,7 @@ const getMuiTheme = (theme) => {
 const messages = {
     en: {
         ...treeview_finder_en,
+        ...spreadsheet_locale_fr,
         ...messages_en,
         ...network_modifications_locale_en,
         ...exportParameters_en,
