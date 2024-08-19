@@ -1376,8 +1376,8 @@
     "EquipmentSearchPlaceholder": "Search",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
-    "guidancePopUp.firstVariant":"Click on the map to start drawing a polygon.",
-    "guidancePopUp.secondVariant":"Press Enter to finish or Esc to cancel.",
+    "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
+    "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
     "guidancePopUp.action":"Close editor"
 
 }
