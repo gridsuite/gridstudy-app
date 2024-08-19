@@ -23,7 +23,7 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
 
     const applyQuickFilter = useCallback(
         (filterValue) => {
-            gridRef.current?.api?.setQuickFilter(filterValue);
+            gridRef.current?.api?.updateGridOptions({ quickFilterText: filterValue });
         },
         [gridRef]
     );
