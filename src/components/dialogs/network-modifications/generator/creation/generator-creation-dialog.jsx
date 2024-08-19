@@ -57,15 +57,8 @@ import {
 import GeneratorCreationForm from './generator-creation-form';
 import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import { sanitizeString } from '../../../dialogUtils';
-import {
-    FORM_LOADING_DELAY,
-    REGULATION_TYPES,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from 'components/network/constants';
-import {
-    getSetPointsEmptyFormData,
-    getSetPointsSchema,
-} from '../../../set-points/set-points-utils';
+import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -121,16 +114,8 @@ const formSchema = yup
             }),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
-        [PLANNED_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage'),
-        [FORCED_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage'),
+        [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
+        [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         ...getSetPointsSchema(),
         ...getReactiveLimitsSchema(),
         ...getConnectivityWithPositionValidationSchema(),
@@ -167,49 +152,34 @@ const GeneratorCreationDialog = ({
             [VOLTAGE_REGULATION]: generator.voltageRegulatorOn,
             [VOLTAGE_SET_POINT]: generator.targetV,
             [REACTIVE_POWER_SET_POINT]: generator.targetQ,
-            [PLANNED_ACTIVE_POWER_SET_POINT]:
-                generator.generatorStartup?.plannedActivePowerSetPoint,
+            [PLANNED_ACTIVE_POWER_SET_POINT]: generator.generatorStartup?.plannedActivePowerSetPoint,
             [MARGINAL_COST]: generator.generatorStartup?.marginalCost,
-            [PLANNED_OUTAGE_RATE]:
-                generator.generatorStartup?.plannedOutageRate,
+            [PLANNED_OUTAGE_RATE]: generator.generatorStartup?.plannedOutageRate,
             [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
             [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
             [DROOP]: generator.activePowerControl?.droop,
-            [TRANSIENT_REACTANCE]:
-                generator.generatorShortCircuit?.directTransX,
-            [TRANSFORMER_REACTANCE]:
-                generator.generatorShortCircuit?.stepUpTransformerX,
+            [TRANSIENT_REACTANCE]: generator.generatorShortCircuit?.directTransX,
+            [TRANSFORMER_REACTANCE]: generator.generatorShortCircuit?.stepUpTransformerX,
             [VOLTAGE_REGULATION_TYPE]:
-                generator?.regulatingTerminalId ||
-                generator?.regulatingTerminalConnectableId
+                generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
                     ? REGULATION_TYPES.DISTANT.id
                     : REGULATION_TYPES.LOCAL.id,
-            [Q_PERCENT]: isNaN(generator?.[Q_PERCENT])
-                ? null
-                : generator?.[Q_PERCENT],
+            [Q_PERCENT]: isNaN(generator?.[Q_PERCENT]) ? null : generator?.[Q_PERCENT],
             ...getReactiveLimitsFormData({
-                reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits
-                    ? 'MINMAX'
-                    : 'CURVE',
-                minimumReactivePower:
-                    generator?.minMaxReactiveLimits?.minQ ?? null,
-                maximumReactivePower:
-                    generator?.minMaxReactiveLimits?.maxQ ?? null,
-                reactiveCapabilityCurveTable:
-                    generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
+                minimumReactivePower: generator?.minMaxReactiveLimits?.minQ ?? null,
+                maximumReactivePower: generator?.minMaxReactiveLimits?.maxQ ?? null,
+                reactiveCapabilityCurveTable: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
             ...getRegulatingTerminalFormData({
-                equipmentId:
-                    generator.regulatingTerminalConnectableId ||
-                    generator.regulatingTerminalId,
+                equipmentId: generator.regulatingTerminalConnectableId || generator.regulatingTerminalId,
                 equipmentType: generator.regulatingTerminalConnectableType,
                 voltageLevelId: generator.regulatingTerminalVlId,
             }),
             ...getConnectivityFormData({
                 voltageLevelId: generator.voltageLevelId,
                 busbarSectionId: generator.busOrBusbarSectionId,
-                connectionDirection:
-                    generator.connectablePosition.connectionDirection,
+                connectionDirection: generator.connectablePosition.connectionDirection,
                 connectionName: generator.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
@@ -238,8 +208,7 @@ const GeneratorCreationDialog = ({
                 [VOLTAGE_REGULATION]: editData.voltageRegulationOn,
                 [VOLTAGE_SET_POINT]: editData.targetV,
                 [REACTIVE_POWER_SET_POINT]: editData.targetQ,
-                [PLANNED_ACTIVE_POWER_SET_POINT]:
-                    editData.plannedActivePowerSetPoint,
+                [PLANNED_ACTIVE_POWER_SET_POINT]: editData.plannedActivePowerSetPoint,
                 [MARGINAL_COST]: editData.marginalCost,
                 [PLANNED_OUTAGE_RATE]: editData.plannedOutageRate,
                 [FORCED_OUTAGE_RATE]: editData.forcedOutageRate,
@@ -252,14 +221,12 @@ const GeneratorCreationDialog = ({
                     : REGULATION_TYPES.LOCAL.id,
                 [Q_PERCENT]: editData.qPercent,
                 ...getReactiveLimitsFormData({
-                    reactiveCapabilityCurveChoice:
-                        editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
+                    reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
                     minimumReactivePower: editData?.minQ,
                     maximumReactivePower: editData?.maxQ,
-                    reactiveCapabilityCurveTable:
-                        editData?.reactiveCapabilityCurve
-                            ? editData?.reactiveCapabilityCurvePoints
-                            : [{}, {}],
+                    reactiveCapabilityCurveTable: editData?.reactiveCapabilityCurve
+                        ? editData?.reactiveCapabilityCurvePoints
+                        : [{}, {}],
                 }),
                 ...getRegulatingTerminalFormData({
                     equipmentId: editData.regulatingTerminalId,
@@ -272,7 +239,7 @@ const GeneratorCreationDialog = ({
                     connectionDirection: editData.connectionDirection,
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
-                    connected: editData.connected,
+                    terminalConnected: editData.terminalConnected,
                 }),
                 ...getPropertiesFromModification(editData.properties),
             });
@@ -286,11 +253,8 @@ const GeneratorCreationDialog = ({
     const onSubmit = useCallback(
         (generator) => {
             const reactiveLimits = generator[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn =
-                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
-            const isDistantRegulation =
-                generator[VOLTAGE_REGULATION_TYPE] ===
-                REGULATION_TYPES.DISTANT.id;
+            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isDistantRegulation = generator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
 
             createGenerator(
                 studyUuid,
@@ -322,17 +286,10 @@ const GeneratorCreationDialog = ({
                 isReactiveCapabilityCurveOn,
                 generator[FREQUENCY_REGULATION],
                 generator[DROOP] ?? null,
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
-                    : null,
-                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
+                isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] : null,
+                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
                 generator[CONNECTIVITY]?.[CONNECTION_POSITION],
                 generator[CONNECTIVITY]?.[CONNECTED],
@@ -349,9 +306,7 @@ const GeneratorCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -365,15 +320,10 @@ const GeneratorCreationDialog = ({
                 titleId="CreateGenerator"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <GeneratorCreationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                />
+                <GeneratorCreationForm studyUuid={studyUuid} currentNode={currentNode} />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

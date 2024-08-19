@@ -51,33 +51,20 @@ export const addSelectedFieldToRows = (rows) => {
     });
 };
 
-function MultiCheckbox({
-    arrayFormName,
-    handleClickCheck,
-    handleClickUncheck,
-    ...props
-}) {
+function MultiCheckbox({ arrayFormName, handleClickCheck, handleClickUncheck, ...props }) {
     const arrayToWatch = useWatch({
         name: arrayFormName,
     });
 
-    const allRowSelected = useMemo(
-        () => arrayToWatch.every((row) => row[SELECTED]),
-        [arrayToWatch]
-    );
-    const someRowSelected = useMemo(
-        () => arrayToWatch.some((row) => row[SELECTED]),
-        [arrayToWatch]
-    );
+    const allRowSelected = useMemo(() => arrayToWatch.every((row) => row[SELECTED]), [arrayToWatch]);
+    const someRowSelected = useMemo(() => arrayToWatch.some((row) => row[SELECTED]), [arrayToWatch]);
 
     return (
         <Checkbox
             checked={arrayToWatch.length > 0 && allRowSelected}
             indeterminate={someRowSelected && !allRowSelected}
             onChange={(event) => {
-                event.target.checked
-                    ? handleClickCheck()
-                    : handleClickUncheck();
+                event.target.checked ? handleClickCheck() : handleClickUncheck();
             }}
             {...props}
         />
@@ -87,22 +74,12 @@ function MultiCheckbox({
 function DefaultTableCell({ arrayFormName, rowIndex, column, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 1 }}>
-            <RawReadOnlyInput
-                name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                {...props}
-            />
+            <RawReadOnlyInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
         </TableCell>
     );
 }
 
-function EditableTableCell({
-    arrayFormName,
-    rowIndex,
-    column,
-    previousValue,
-    valueModified,
-    ...props
-}) {
+function EditableTableCell({ arrayFormName, rowIndex, column, previousValue, valueModified, ...props }) {
     return (
         <TableCell key={column.dataKey} sx={{ padding: 0.5 }}>
             {column.numeric && (
@@ -119,10 +96,7 @@ function EditableTableCell({
                 />
             )}
             {!column.numeric && !column.directoryItems && !column.chipItems && (
-                <TableTextInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    {...props}
-                />
+                <TableTextInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} {...props} />
             )}
             {column.directoryItems && (
                 <DirectoryItemsInput
@@ -134,10 +108,7 @@ function EditableTableCell({
                 />
             )}
             {column.chipItems && (
-                <ChipItemsInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    hideErrorMessage={true}
-                />
+                <ChipItemsInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} hideErrorMessage={true} />
             )}
         </TableCell>
     );
@@ -179,9 +150,7 @@ const DndTable = ({
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
     function renderTableCell(rowId, rowIndex, column) {
-        let CustomTableCell = column.editable
-            ? EditableTableCell
-            : DefaultTableCell;
+        let CustomTableCell = column.editable ? EditableTableCell : DefaultTableCell;
         return (
             <CustomTableCell
                 key={rowId + column.dataKey}
@@ -189,30 +158,12 @@ const DndTable = ({
                 rowIndex={rowIndex}
                 column={column}
                 disabled={
-                    disableTableCell
-                        ? disableTableCell(
-                              rowIndex,
-                              column,
-                              arrayFormName,
-                              previousValues
-                          )
-                        : disabled
+                    disableTableCell ? disableTableCell(rowIndex, column, arrayFormName, previousValues) : disabled
                 }
                 previousValue={
-                    getPreviousValue
-                        ? getPreviousValue(
-                              rowIndex,
-                              column,
-                              arrayFormName,
-                              previousValues
-                          )
-                        : undefined
+                    getPreviousValue ? getPreviousValue(rowIndex, column, arrayFormName, previousValues) : undefined
                 }
-                valueModified={
-                    isValueModified
-                        ? isValueModified(rowIndex, arrayFormName)
-                        : false
-                }
+                valueModified={isValueModified ? isValueModified(rowIndex, arrayFormName) : false}
             />
         );
     }
@@ -324,9 +275,7 @@ const DndTable = ({
         return (
             <TableHead>
                 <TableRow>
-                    <TableCell sx={{ width: '3%' }}>
-                        {/* empty cell for the drag and drop column */}
-                    </TableCell>
+                    <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
                     <TableCell sx={{ width: '5%', textAlign: 'center' }}>
                         <MultiCheckbox
                             arrayFormName={arrayFormName}
@@ -352,16 +301,9 @@ const DndTable = ({
         return (
             <TableBody>
                 {currentRows.map((row, index) => (
-                    <Draggable
-                        key={row.id}
-                        draggableId={row.id.toString()}
-                        index={index}
-                    >
+                    <Draggable key={row.id} draggableId={row.id.toString()} index={index}>
                         {(provided, snapshot) => (
-                            <TableRow
-                                ref={provided.innerRef}
-                                {...provided.draggableProps}
-                            >
+                            <TableRow ref={provided.innerRef} {...provided.draggableProps}>
                                 <Tooltip
                                     title={intl.formatMessage({
                                         id: 'DragAndDrop',
@@ -370,9 +312,7 @@ const DndTable = ({
                                 >
                                     <TableCell
                                         sx={{ textAlign: 'center' }}
-                                        {...(disabled
-                                            ? {}
-                                            : { ...provided.dragHandleProps })}
+                                        {...(disabled ? {} : { ...provided.dragHandleProps })}
                                     >
                                         <DragIndicatorIcon />
                                     </TableCell>
@@ -383,9 +323,7 @@ const DndTable = ({
                                         formProps={{ disabled }}
                                     />
                                 </TableCell>
-                                {columnsDefinition.map((column) =>
-                                    renderTableCell(row.id, index, column)
-                                )}
+                                {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
                             </TableRow>
                         )}
                     </Draggable>

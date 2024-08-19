@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ENERGY_SOURCE,
     EQUIPMENT_ID,
@@ -29,48 +29,24 @@ import {
     MVAPowerAdornment,
     OhmAdornment,
 } from '../../../dialogUtils';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { ENERGY_SOURCES } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { FloatInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
     const currentNodeUuid = currentNode?.id;
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     const generatorIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const generatorNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const generatorNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const energySourceField = (
         <SelectInput
@@ -94,43 +70,23 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     );
 
     const maximumActivePowerField = (
-        <FloatInput
-            name={MAXIMUM_ACTIVE_POWER}
-            label={'MaximumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MAXIMUM_ACTIVE_POWER} label={'MaximumActivePowerText'} adornment={ActivePowerAdornment} />
     );
 
     const minimumActivePowerField = (
-        <FloatInput
-            name={MINIMUM_ACTIVE_POWER}
-            label={'MinimumActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
+        <FloatInput name={MINIMUM_ACTIVE_POWER} label={'MinimumActivePowerText'} adornment={ActivePowerAdornment} />
     );
 
     const ratedNominalPowerField = (
-        <FloatInput
-            name={RATED_NOMINAL_POWER}
-            label={'RatedNominalPowerText'}
-            adornment={MVAPowerAdornment}
-        />
+        <FloatInput name={RATED_NOMINAL_POWER} label={'RatedNominalPowerText'} adornment={MVAPowerAdornment} />
     );
 
     const transientReactanceField = (
-        <FloatInput
-            name={TRANSIENT_REACTANCE}
-            label={'TransientReactanceForm'}
-            adornment={OhmAdornment}
-        />
+        <FloatInput name={TRANSIENT_REACTANCE} label={'TransientReactanceForm'} adornment={OhmAdornment} />
     );
 
     const transformerReactanceField = (
-        <FloatInput
-            name={TRANSFORMER_REACTANCE}
-            label={'TransformerReactanceForm'}
-            adornment={OhmAdornment}
-        />
+        <FloatInput name={TRANSFORMER_REACTANCE} label={'TransformerReactanceForm'} adornment={OhmAdornment} />
     );
 
     const plannedActivePowerSetPointField = (
@@ -141,17 +97,11 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const marginalCostField = (
-        <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />
-    );
+    const marginalCostField = <FloatInput name={MARGINAL_COST} label={'MarginalCost'} />;
 
-    const plannedOutageRateField = (
-        <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />
-    );
+    const plannedOutageRateField = <FloatInput name={PLANNED_OUTAGE_RATE} label={'plannedOutageRate'} />;
 
-    const forcedOutageRateField = (
-        <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />
-    );
+    const forcedOutageRateField = <FloatInput name={FORCED_OUTAGE_RATE} label={'forcedOutageRate'} />;
 
     return (
         <>

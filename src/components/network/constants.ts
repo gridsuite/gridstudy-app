@@ -84,6 +84,13 @@ export function getEnergySourceLabel(energySourceId: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
+export function getConnectionDirectionLabel(connectionDirectionId: string) {
+    if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
+        return 'Undefined';
+    }
+    return CONNECTION_DIRECTIONS.find(({ id }) => id === connectionDirectionId)?.label;
+}
+
 export const REACTIVE_LIMIT_TYPES = [
     { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
@@ -149,12 +156,13 @@ export const VOLTAGE_LEVEL_COMPONENTS = {
     BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
 };
 
-export const BUILD_STATUS = {
-    NOT_BUILT: 'NOT_BUILT',
-    BUILT: 'BUILT',
-    BUILT_WITH_WARNING: 'BUILT_WITH_WARNING',
-    BUILT_WITH_ERROR: 'BUILT_WITH_ERROR',
-};
+export enum BUILD_STATUS {
+    NOT_BUILT = 'NOT_BUILT',
+    BUILDING = 'BUILDING',
+    BUILT = 'BUILT',
+    BUILT_WITH_WARNING = 'BUILT_WITH_WARNING',
+    BUILT_WITH_ERROR = 'BUILT_WITH_ERROR',
+}
 
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },

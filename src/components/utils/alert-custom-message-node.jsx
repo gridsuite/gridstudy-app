@@ -23,10 +23,7 @@ const AlertCustomMessageNode = (props) => {
     const { noMargin, message } = props;
 
     return (
-        <Alert
-            sx={mergeSx(!noMargin && styles.customMessageNode)}
-            severity="warning"
-        >
+        <Alert sx={mergeSx(!noMargin && styles.customMessageNode)} severity="warning">
             <FormattedMessage id={message} />
         </Alert>
     );

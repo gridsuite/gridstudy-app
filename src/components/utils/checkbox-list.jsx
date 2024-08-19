@@ -9,22 +9,12 @@ import PropTypes from 'prop-types';
 import { List } from '@mui/material';
 import { areIdsEqual } from './utils';
 
-const CheckboxList = ({
-    itemRenderer,
-    values,
-    onChecked,
-    checkedValues,
-    itemComparator = areIdsEqual,
-    ...props
-}) => {
-    const isChecked = (item) =>
-        checkedValues.some((checkedItem) => itemComparator(checkedItem, item));
+const CheckboxList = ({ itemRenderer, values, onChecked, checkedValues, itemComparator = areIdsEqual, ...props }) => {
+    const isChecked = (item) => checkedValues.some((checkedItem) => itemComparator(checkedItem, item));
 
     const handleToggle = (clickedItem) => {
         const newCheckedValues = [...checkedValues];
-        const valueToDeleteIndex = checkedValues.findIndex((item) =>
-            itemComparator(item, clickedItem)
-        );
+        const valueToDeleteIndex = checkedValues.findIndex((item) => itemComparator(item, clickedItem));
 
         if (valueToDeleteIndex > -1) {
             newCheckedValues.splice(valueToDeleteIndex, 1);

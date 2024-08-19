@@ -47,9 +47,7 @@ const PagedSensitivityAnalysisResult = ({
     const [result, setResult] = useState(null);
     const [options, setOptions] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const sensiStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensiStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
@@ -59,10 +57,7 @@ const PagedSensitivityAnalysisResult = ({
             {
                 field: 'funcId',
                 label: intl.formatMessage({
-                    id:
-                        sensiKind === SENSITIVITY_AT_NODE
-                            ? 'BusBarBus'
-                            : 'SupervisedBranches',
+                    id: sensiKind === SENSITIVITY_AT_NODE ? 'BusBarBus' : 'SupervisedBranches',
                 }),
                 options: options?.allFunctionIds || [],
             },
@@ -135,8 +130,7 @@ const PagedSensitivityAnalysisResult = ({
                   sortKeysWithWeightAndDirection: sortConfig.reduce(
                       (acc, value) => ({
                           ...acc,
-                          [DATA_KEY_TO_SORT_KEY[value.colId]]:
-                              value.sort === SortWay.DESC ? -1 : 1,
+                          [DATA_KEY_TO_SORT_KEY[value.colId]]: value.sort === SortWay.DESC ? -1 : 1,
                       }),
                       {}
                   ),
@@ -174,18 +168,7 @@ const PagedSensitivityAnalysisResult = ({
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [
-        nOrNkIndex,
-        sensiKind,
-        page,
-        rowsPerPage,
-        filterSelector,
-        sortConfig,
-        studyUuid,
-        nodeUuid,
-        snackError,
-        intl,
-    ]);
+    }, [nOrNkIndex, sensiKind, page, rowsPerPage, filterSelector, sortConfig, studyUuid, nodeUuid, snackError, intl]);
 
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {

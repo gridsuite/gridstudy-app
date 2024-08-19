@@ -5,50 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CHARACTERISTICS,
-    G,
-    B,
-    RATED_S,
-    RATED_U1,
-    RATED_U2,
-    R,
-    X,
-} from 'components/utils/field-constants';
+import { CHARACTERISTICS, G, B, RATED_S, RATED_U1, RATED_U2, R, X } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 
 const characteristicsValidationSchema = (isModification, additionalFields) => ({
     [CHARACTERISTICS]: yup.object().shape({
-        [R]: isModification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
-        [X]: isModification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
-        [G]: isModification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
-        [B]: isModification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
-        [RATED_S]: yup
-            .number()
-            .nullable()
-            .positive('RatedNominalPowerMustBeGreaterThanZero'),
-        [RATED_U1]: isModification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
-        [RATED_U2]: isModification
-            ? yup.number().nullable()
-            : yup.number().nullable().required(),
+        [R]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [X]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [G]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [B]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [RATED_S]: yup.number().nullable().positive('RatedNominalPowerMustBeGreaterThanZero'),
+        [RATED_U1]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
+        [RATED_U2]: isModification ? yup.number().nullable() : yup.number().nullable().required(),
         ...additionalFields,
     }),
 });
 
-export const getCharacteristicsValidationSchema = (
-    isModification = false,
-    additionalFields = {}
-) => {
+export const getCharacteristicsValidationSchema = (isModification = false, additionalFields = {}) => {
     return characteristicsValidationSchema(isModification, additionalFields);
 };
 
@@ -70,15 +43,7 @@ export const getCharacteristicsEmptyFormData = (additionalFields = {}) => {
 };
 
 export const getCharacteristicsFormData = (
-    {
-        r = null,
-        x = null,
-        g = null,
-        b = null,
-        ratedS = null,
-        ratedU1 = null,
-        ratedU2 = null,
-    },
+    { r = null, x = null, g = null, b = null, ratedS = null, ratedU1 = null, ratedU2 = null },
     additionalFields = {}
 ) => {
     return {

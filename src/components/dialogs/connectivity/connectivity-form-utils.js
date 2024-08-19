@@ -38,49 +38,46 @@ export const getConnectivityPropertiesValidationSchema = () => {
     };
 };
 
-export const getConnectivityWithPositionValidationSchema = (
-    id = CONNECTIVITY
-) => ({
+export const getConnectivityWithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
-        [CONNECTED]: yup.bool().required(),
+        [CONNECTED]: yup
+            .bool()
+            .nullable()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            }),
         ...getConnectivityPropertiesValidationSchema(),
     }),
 });
 
-export const getConnectivityWithoutPositionValidationSchema = (
-    id = CONNECTIVITY
-) => {
+export const getConnectivityWithoutPositionValidationSchema = (id = CONNECTIVITY) => {
     return {
         [id]: yup.object().shape(getConnectivityPropertiesValidationSchema()),
     };
 };
 
-export const getConnectivityPropertiesEmptyFormData = () => {
+export const getConnectivityPropertiesEmptyFormData = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
-        [CONNECTED]: true,
+        [CONNECTED]: isEquipmentModification ? null : true,
     };
 };
 
-export const getConnectivityWithPositionEmptyFormData = (
-    id = CONNECTIVITY
-) => ({
+export const getConnectivityWithPositionEmptyFormData = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: {
-        ...getConnectivityPropertiesEmptyFormData(),
+        ...getConnectivityPropertiesEmptyFormData(isEquipmentModification),
         [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
         [CONNECTION_POSITION]: null,
-        [CONNECTED]: true,
     },
 });
 
-export const getConnectivityWithoutPositionEmptyFormData = (
-    id = CONNECTIVITY
-) => ({
+export const getConnectivityWithoutPositionEmptyFormData = (id = CONNECTIVITY) => ({
     [id]: getConnectivityPropertiesEmptyFormData(),
 });
 
@@ -94,10 +91,7 @@ export const getConnectivityVoltageLevelData = ({ voltageLevelId }) => {
     };
 };
 
-export const getConnectivityBusBarSectionData = ({
-    busbarSectionId,
-    busbarSectionName = '',
-}) => {
+export const getConnectivityBusBarSectionData = ({ busbarSectionId, busbarSectionName = '' }) => {
     if (!busbarSectionId) {
         return null;
     }
@@ -108,11 +102,7 @@ export const getConnectivityBusBarSectionData = ({
     };
 };
 
-export const getConnectivityPropertiesData = ({
-    voltageLevelId,
-    busbarSectionId,
-    busbarSectionName,
-}) => {
+export const getConnectivityPropertiesData = ({ voltageLevelId, busbarSectionId, busbarSectionName }) => {
     return {
         [VOLTAGE_LEVEL]: getConnectivityVoltageLevelData({
             voltageLevelId,
@@ -131,10 +121,7 @@ export const getNewVoltageLevelData = (newVoltageLevel) => ({
     topologyKind: newVoltageLevel.topologyKind,
 });
 
-export const getConnectivityData = (
-    { voltageLevelId, busbarSectionId, busbarSectionName },
-    id = CONNECTIVITY
-) => {
+export const getConnectivityData = ({ voltageLevelId, busbarSectionId, busbarSectionName }, id = CONNECTIVITY) => {
     return {
         [id]: getConnectivityPropertiesData({
             voltageLevelId,
@@ -152,7 +139,8 @@ export const getConnectivityFormData = (
         connectionDirection,
         connectionName,
         connectionPosition,
-        connected,
+        terminalConnected,
+        isEquipmentModification = false,
     },
     id = CONNECTIVITY
 ) => {
@@ -166,7 +154,7 @@ export const getConnectivityFormData = (
             [CONNECTION_DIRECTION]: connectionDirection ?? null,
             [CONNECTION_NAME]: connectionName ?? '',
             [CONNECTION_POSITION]: connectionPosition ?? null,
-            [CONNECTED]: connected ?? true,
+            [CONNECTED]: isEquipmentModification ? terminalConnected : true,
         },
     };
 };

@@ -85,21 +85,15 @@ export default class LogReport {
     }
 
     getAllLogs() {
-        return this.getLogs().concat(
-            this.getChildren().flatMap((r) => r.getAllLogs())
-        );
+        return this.getLogs().concat(this.getChildren().flatMap((r) => r.getAllLogs()));
     }
 
     init(reportType, jsonReporter) {
         const childType =
-            reportType === LogReportType.GlobalReport
-                ? LogReportType.NodeReport
-                : LogReportType.SubReport;
+            reportType === LogReportType.GlobalReport ? LogReportType.NodeReport : LogReportType.SubReport;
         jsonReporter.subReports.forEach((value) => {
             if (value.subReports.length > 0 || value.id) {
-                this.children.push(
-                    new LogReport(childType, value, this.uniqueId)
-                );
+                this.children.push(new LogReport(childType, value, this.uniqueId));
             } else {
                 this.logs.push(new LogReportItem(value, this.uniqueId));
             }

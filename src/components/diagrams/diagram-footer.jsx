@@ -43,37 +43,18 @@ const styles = {
 };
 
 const DiagramFooter = (props) => {
-    const {
-        onStopFullScreen,
-        onStartFullScreen,
-        onIncrementCounter,
-        onDecrementCounter,
-    } = props;
-    const handleStopFullScreen = useCallback(
-        () => onStopFullScreen && onStopFullScreen(),
-        [onStopFullScreen]
-    );
-    const handleStartFullScreen = useCallback(
-        () => onStartFullScreen && onStartFullScreen(),
-        [onStartFullScreen]
-    );
-    const handleIncrementCounter = useCallback(
-        () => onIncrementCounter && onIncrementCounter(),
-        [onIncrementCounter]
-    );
-    const handleDecrementCounter = useCallback(
-        () => onDecrementCounter && onDecrementCounter(),
-        [onDecrementCounter]
-    );
+    const { onStopFullScreen, onStartFullScreen, onIncrementCounter, onDecrementCounter } = props;
+    const handleStopFullScreen = useCallback(() => onStopFullScreen && onStopFullScreen(), [onStopFullScreen]);
+    const handleStartFullScreen = useCallback(() => onStartFullScreen && onStartFullScreen(), [onStartFullScreen]);
+    const handleIncrementCounter = useCallback(() => onIncrementCounter && onIncrementCounter(), [onIncrementCounter]);
+    const handleDecrementCounter = useCallback(() => onDecrementCounter && onDecrementCounter(), [onDecrementCounter]);
 
     return (
         <div style={{ display: 'flex' }}>
             {props.showCounterControls && (
                 <>
                     {props.showCounterValue && (
-                        <Typography sx={styles.counterText}>
-                            {props.counterText + props.counterValue}
-                        </Typography>
+                        <Typography sx={styles.counterText}>{props.counterText + props.counterValue}</Typography>
                     )}
                     <IconButton
                         onClick={handleIncrementCounter}
@@ -94,16 +75,10 @@ const DiagramFooter = (props) => {
             {props.showFullscreenControl && (
                 <>
                     {props.fullScreenActive && (
-                        <FullscreenExitIcon
-                            onClick={handleStopFullScreen}
-                            sx={styles.fullScreenIcon}
-                        />
+                        <FullscreenExitIcon onClick={handleStopFullScreen} sx={styles.fullScreenIcon} />
                     )}
                     {!props.fullScreenActive && (
-                        <FullscreenIcon
-                            onClick={handleStartFullScreen}
-                            sx={styles.fullScreenIcon}
-                        />
+                        <FullscreenIcon onClick={handleStartFullScreen} sx={styles.fullScreenIcon} />
                     )}
                 </>
             )}

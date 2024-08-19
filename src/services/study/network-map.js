@@ -7,21 +7,14 @@
 
 import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { NAME } from '../../components/utils/field-constants.js';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../components/utils/equipment-types';
+import { NAME } from '../../components/utils/field-constants';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { createFilter } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
 import { createContingencyList } from 'services/explore';
 import { createIdentifierContingencyList } from './contingency-list';
 
-export function fetchHvdcLineWithShuntCompensators(
-    studyUuid,
-    currentNodeUuid,
-    hvdcLineId
-) {
+export function fetchHvdcLineWithShuntCompensators(studyUuid, currentNodeUuid, hvdcLineId) {
     console.info(
         `Fetching HVDC Line '${hvdcLineId}' with Shunt Compensators of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
@@ -64,10 +57,7 @@ export function fetchVoltageLevelEquipments(
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
+        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode);
     }
 
     const fetchEquipmentsUrl =
@@ -99,14 +89,8 @@ export function fetchEquipmentsIds(
     );
     let urlSearchParams = new URLSearchParams();
 
-    const nominalVoltagesParams = getQueryParamsList(
-        nominalVoltages,
-        'nominalVoltages'
-    );
-    const nominalVoltagesParamsList =
-        nominalVoltages && nominalVoltages.length > 0
-            ? '&' + nominalVoltagesParams
-            : '';
+    const nominalVoltagesParams = getQueryParamsList(nominalVoltages, 'nominalVoltages');
+    const nominalVoltagesParamsList = nominalVoltages && nominalVoltages.length > 0 ? '&' + nominalVoltagesParams : '';
 
     let fetchEquipmentsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
@@ -117,12 +101,8 @@ export function fetchEquipmentsIds(
         equipmentType +
         nominalVoltagesParamsList;
     if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append(
-            'inUpstreamBuiltParentNode',
-            inUpstreamBuiltParentNode
-        );
-        fetchEquipmentsUrl =
-            fetchEquipmentsUrl + '&' + urlSearchParams.toString();
+        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode);
+        fetchEquipmentsUrl = fetchEquipmentsUrl + '&' + urlSearchParams.toString();
     }
     console.debug(fetchEquipmentsUrl);
     return backendFetchJson(fetchEquipmentsUrl, {
@@ -132,11 +112,7 @@ export function fetchEquipmentsIds(
     });
 }
 
-export function fetchLineOrTransformer(
-    studyUuid,
-    currentNodeUuid,
-    equipmentId
-) {
+export function fetchLineOrTransformer(studyUuid, currentNodeUuid, equipmentId) {
     console.info(
         `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`
     );
@@ -153,13 +129,10 @@ export function fetchLineOrTransformer(
 }
 
 export function fetchAllCountries(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
+    console.info(`Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const fetchCountriesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/countries?inUpstreamBuiltParentNode=true';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
 }
@@ -197,10 +170,7 @@ export async function createMapFilter(
     switch (filter.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
-            equipmentFilters = createEquipmentIdentifierList(
-                filter.equipmentType,
-                selectedEquipmentsIds
-            );
+            equipmentFilters = createEquipmentIdentifierList(filter.equipmentType, selectedEquipmentsIds);
             break;
 
         default:
@@ -217,10 +187,7 @@ export async function createMapFilter(
                 nominalVoltages
             );
 
-            equipmentFilters = createEquipmentIdentifierList(
-                filter.equipmentType,
-                elementsIds
-            );
+            equipmentFilters = createEquipmentIdentifierList(filter.equipmentType, elementsIds);
             break;
     }
     if (
@@ -230,12 +197,7 @@ export async function createMapFilter(
         throw new Error('EmptySelection');
     }
 
-    return createFilter(
-        equipmentFilters,
-        filter[NAME],
-        '',
-        distDir.id?.toString() ?? ''
-    );
+    return createFilter(equipmentFilters, filter[NAME], '', distDir.id?.toString() ?? '');
 }
 
 export async function createMapContingencyList(
@@ -250,10 +212,7 @@ export async function createMapContingencyList(
     switch (contingencyList.equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
         case EQUIPMENT_TYPES.LINE:
-            equipmentContingencyList = createIdentifierContingencyList(
-                contingencyList.name,
-                selectedEquipments
-            );
+            equipmentContingencyList = createIdentifierContingencyList(contingencyList.name, selectedEquipments);
 
             break;
 
@@ -262,9 +221,7 @@ export async function createMapContingencyList(
                 throw new Error('EmptySelection');
             }
 
-            const selectedEquipmentsIds = selectedEquipments.map(
-                (element) => element.id
-            );
+            const selectedEquipmentsIds = selectedEquipments.map((element) => element.id);
             const elementsIds = await fetchNetworkElementsInfos(
                 studyUuid,
                 currentNodeUuid,
@@ -278,31 +235,18 @@ export async function createMapContingencyList(
             if (elementsIds?.length === 0) {
                 throw new Error('EmptySelection');
             }
-            equipmentContingencyList = createIdentifierContingencyList(
-                contingencyList.name,
-                elementsIds
-            );
+            equipmentContingencyList = createIdentifierContingencyList(contingencyList.name, elementsIds);
             break;
     }
-    if (
-        equipmentContingencyList === undefined ||
-        equipmentContingencyList?.length === 0
-    ) {
+    if (equipmentContingencyList === undefined || equipmentContingencyList?.length === 0) {
         throw new Error('EmptySelection');
     }
 
-    return createContingencyList(
-        equipmentContingencyList,
-        contingencyList[NAME],
-        '',
-        distDir.id?.toString() ?? ''
-    );
+    return createContingencyList(equipmentContingencyList, contingencyList[NAME], '', distDir.id?.toString() ?? '');
 }
 
 export function fetchAllNominalVoltages(studyUuid, currentNodeUuid) {
-    console.info(
-        `Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
+    console.info(`Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const fetchNominalVoltagesUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +

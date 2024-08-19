@@ -39,22 +39,19 @@ const styles = {
             color: 'var(--tree-view-color)',
         },
         // same as mui v4 behavior on label text only right after clicking in contrast to after moving away with arrow keys.
-        '&.Mui-selected .MuiTreeItem-label:hover, &.Mui-selected.Mui-focused .MuiTreeItem-label':
-            {
-                borderRadius: theme.spacing(2),
-                backgroundColor: alpha(
-                    theme.palette.primary.main,
-                    theme.palette.action.selectedOpacity +
-                        theme.palette.action.hoverOpacity
-                ),
-            },
+        '&.Mui-selected .MuiTreeItem-label:hover, &.Mui-selected.Mui-focused .MuiTreeItem-label': {
+            borderRadius: theme.spacing(2),
+            backgroundColor: alpha(
+                theme.palette.primary.main,
+                theme.palette.action.selectedOpacity + theme.palette.action.hoverOpacity
+            ),
+        },
         '&.Mui-focused': {
             backgroundColor: 'transparent',
         },
-        '&.Mui-focused .MuiTreeItem-label, &:hover .MuiTreeItem-label, &Mui-selected .MuiTreeItem-label':
-            {
-                backgroundColor: 'transparent',
-            },
+        '&.Mui-focused .MuiTreeItem-label, &:hover .MuiTreeItem-label, &Mui-selected .MuiTreeItem-label': {
+            backgroundColor: 'transparent',
+        },
     }),
     group: (theme) => ({
         marginLeft: '10px',
@@ -108,13 +105,7 @@ const ReportItem = (props) => {
                 '& .MuiTreeItem-label': styles.label,
             }}
             label={
-                <Box
-                    sx={
-                        highlighted
-                            ? styles.labelRootHighlighted
-                            : styles.labelRoot
-                    }
-                >
+                <Box sx={highlighted ? styles.labelRootHighlighted : styles.labelRoot}>
                     <Label htmlColor={labelIconColor} sx={styles.labelIcon} />
                     <Typography variant="body2" sx={styles.labelText}>
                         {labelText}
