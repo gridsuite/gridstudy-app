@@ -8,7 +8,7 @@
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Theme, Typography } from '@mui/material';
+import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Theme, Typography } from '@mui/material';
 
 import { useParametersBackend, useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -58,6 +58,7 @@ import {
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
+import GlassPane from './results/common/glass-pane';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -112,11 +113,16 @@ const styles = {
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
         height: '100%',
+        position: 'relative',
+        padding: 0,
+    }),
+    contentBox: {
         paddingTop: 6,
         paddingBottom: 2,
         paddingLeft: 8,
         paddingRight: 8,
-    }),
+        height: '100%',
+    },
 };
 
 enum TAB_VALUES {
@@ -365,7 +371,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item xs={10} sx={styles.parametersBox}>
-                    {displayTab()}
+                    <GlassPane
+                        active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
+                    >
+                        <Box sx={styles.contentBox}>{displayTab()}</Box>
+                    </GlassPane>
                 </Grid>
             </Grid>
             <SelectOptionsDialog
