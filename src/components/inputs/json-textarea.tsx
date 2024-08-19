@@ -6,10 +6,12 @@
  */
 
 import EditorTextarea, { EditorTextareaProps } from './editor-textarea';
-import 'ace-builds/src-noconflict/mode-json'; // /!\ muste be AFTER import of EditorTextarea
+import 'ace-builds/src-noconflict/mode-json'; // /!\ must be AFTER import of EditorTextarea
+import { useId } from 'react';
 
-export type JsonTextareaProps = Exclude<EditorTextareaProps, 'mode'>;
+export type JsonTextareaProps = Exclude<EditorTextareaProps, 'mode' | 'name'>;
 
 export function JsonTextarea(props: Readonly<JsonTextareaProps>) {
-    return <EditorTextarea placeholder="{}" showPrintMargin={false} {...props} mode="json" name="UNIQUE_ID_OF_DIV" />;
+    const id = useId();
+    return <EditorTextarea placeholder="{}" showPrintMargin={false} {...props} mode="json" name={id} />;
 }

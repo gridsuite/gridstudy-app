@@ -6,7 +6,7 @@
  */
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { useStateBoolean, UseStateBooleanReturn } from '../../../hooks/use-states';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
@@ -15,18 +15,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { JsonTextarea } from '../../inputs/json-textarea';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
     indexTab: number;
+    //TODO: validateElement(...) => boolean  to validate content and (de)activate button
     onImport: (content: unknown) => void;
 };
 
 //TODO const JsonTextArea = styled(JsonTextarea);
 
 export default function CustomColumnsImExPort({ open, indexTab, onImport }: Readonly<CustomColumnDialogProps>) {
-    const intl = useIntl();
     const { snackError } = useSnackMessage();
     const contentModified = useStateBoolean(false);
     const resetContentModified = contentModified.setFalse;
@@ -54,8 +52,18 @@ export default function CustomColumnsImExPort({ open, indexTab, onImport }: Read
         [definitionsJson, setContentModified]
     );
     const importAction = useCallback(() => {
-        onImport(currentJson);
-    }, [currentJson, onImport]);
+        //TODO validation isJson + json valide? isArray? is array of colDefs?
+        try {
+            onImport(JSON.stringify(currentJson));
+            open.setFalse();
+        } catch (error: unknown) {
+            console.error(error);
+            snackError({
+                messageTxt: (error as Error).message,
+                headerId: 'spreadsheet/custom_column/dialog/import_err',
+            });
+        }
+    }, [currentJson, onImport, open, snackError]);
 
     const copyToClipboard = useCallback(() => {
         navigator.clipboard.writeText(currentJson);
@@ -82,7 +90,6 @@ export default function CustomColumnsImExPort({ open, indexTab, onImport }: Read
                     debounceChangePeriod={1000}
                     onChange={onContentChange}
                     //TODO width+height 100%
-                    //TODO validation isJson + json valide? yup?
                 />
             </DialogContent>
             <DialogActions>

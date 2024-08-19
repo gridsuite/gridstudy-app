@@ -53,6 +53,8 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
+    CUSTOM_COLUMNS_DEFINITIONS,
+    CustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -693,7 +695,22 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce((acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }), {}),
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName, idx, arr) => ({
+            ...acc,
+            [columnName]: [
+                {
+                    name: `test of ${columnName}`,
+                    formula: '=$col1+$col2/3.141',
+                },
+                {
+                    name: 'test2',
+                    formula: '=1+2+3',
+                },
+            ],
+        }),
+        {}
+    ),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1521,6 +1538,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
+        state.allCustomColumnsDefinitions[action.table] = action.definitions;
     });
 });
 

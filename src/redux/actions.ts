@@ -64,6 +64,8 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
+import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
 
 type MutableUnknownArray = unknown[];
 
@@ -149,7 +151,8 @@ export type AppActions =
     | SensitivityAnalysisResultFilterAction
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
-    | SpreadsheetFilterAction;
+    | SpreadsheetFilterAction
+    | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1098,5 +1101,25 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
+    };
+}
+
+//TODO create type in config-tables when passed to typescript
+type TableDefKeys = keyof typeof TABLES_DEFINITIONS;
+type TableDefNames = (typeof TABLES_DEFINITIONS)[TableDefKeys]['name'];
+
+export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
+export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
+    table: TableDefNames;
+    definitions: ColumnWithFormula[];
+};
+export function setCustomColumDefinitions(
+    table: TableDefNames,
+    customColumNS: ColumnWithFormula[]
+): CustomColumnsDefinitionsAction {
+    return {
+        type: CUSTOM_COLUMNS_DEFINITIONS,
+        table,
+        definitions: customColumNS.sort((a, b) => a.name.localeCompare(b.name)),
     };
 }

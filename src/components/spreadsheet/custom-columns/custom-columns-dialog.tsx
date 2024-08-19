@@ -32,16 +32,20 @@ import {
 } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useStateBoolean, UseStateBooleanReturn } from '../../../hooks/use-states';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { TABLES_NAMES } from '../utils/config-tables';
-import { useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
 import { ColumnWithFormula } from './custom-columns.types';
 import CustomColumnsImExPort from './custom-columns-port';
+import { AppDispatch } from '../../../redux/store';
+import { setCustomColumDefinitions } from '../../../redux/actions';
+import CustomColumnDialog from './custom-column-dialog';
 
 type CustomColumnItemProps = {
-    key: string;
     data: ColumnWithFormula;
+    onDelete: () => void;
+    onEdit: () => void;
 };
 
 const styles: Record<string, SxProps<Theme>> = {
@@ -50,11 +54,9 @@ const styles: Record<string, SxProps<Theme>> = {
     },
 };
 
-function CustomColumnItem({ key, data }: Readonly<CustomColumnItemProps>) {
-    console.log('CustomColumnItem', key, data);
+function CustomColumnItem({ data, onDelete, onEdit }: Readonly<CustomColumnItemProps>) {
     return (
         <ListItem
-            key={`item-${key}`}
             sx={{
                 '&.MuiListItem-secondaryAction': {
                     //default of 48px
@@ -65,18 +67,54 @@ function CustomColumnItem({ key, data }: Readonly<CustomColumnItemProps>) {
             //TODO: maybe use a horizontal grid?
             secondaryAction={
                 <>
-                    <IconButton aria-label="modify" onClick={undefined /*TODO*/} color="primary">
+                    <IconButton aria-label="modify" onClick={onEdit} color="primary">
                         <EditIcon />
                     </IconButton>
-                    <IconButton aria-label="delete" onClick={undefined /*TODO*/} color="secondary" edge="end">
+                    <IconButton aria-label="delete" onClick={onDelete} color="secondary" edge="end">
                         <DeleteForeverIcon />
                     </IconButton>
                 </>
             }
         >
-            <ListItemText id={`custom-column-line-${key}`} primary={data.name} secondary={data.formula} />
+            <ListItemText primary={data.name} secondary={data.formula} />
         </ListItem>
     );
+}
+
+function someCheckOnDefs(columns: ColumnWithFormula[]) {
+    //help some checks with yup?
+    if (!(columns instanceof Array)) {
+        throw new Error("Column definitions isn't a list of columns");
+    }
+    const names = new Set<string>();
+    for (const column of columns) {
+        if (typeof column !== 'object') {
+            throw new Error('Column definition must be an object', { cause: column });
+        }
+        const objKeys = Object.keys(column);
+        if (
+            objKeys.length !== 2 ||
+            (objKeys[0] !== 'name' && objKeys[1] !== 'name') ||
+            (objKeys[0] !== 'formula' && objKeys[1] !== 'formula')
+        ) {
+            throw new Error('Invalid column definition', { cause: column });
+        }
+        if (!column.name) {
+            throw new Error(`Invalid column name "${column.name}"`);
+        }
+        column.name = column.name.trim();
+        if (!column.formula) {
+            throw new Error(`Invalid formula "${column.formula}"`);
+        }
+        column.formula = column.formula.trim();
+        if (names.has(column.name)) {
+            throw new Error('Formula names not unique');
+        } else {
+            names.add(column.name);
+        }
+        //TODO found how to validate formula
+    }
+    return columns;
 }
 
 export type CustomColumnsDialogProps = {
@@ -84,23 +122,77 @@ export type CustomColumnsDialogProps = {
     indexTab: number;
 };
 
-function onImport(content: unknown) {
-    //TODO
-}
-
 export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomColumnsDialogProps>) {
     const intl = useIntl();
+    const dispatch = useDispatch<AppDispatch>();
+
     const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
     const [columnsDefinitions, setColumnsDefinitions] = useState<ColumnWithFormula[]>([]);
-    const contentModified = useStateBoolean(false); //TODO
+    const contentModified = useStateBoolean(false);
     const resetContentModified = contentModified.setFalse;
+    const contentIsModified = contentModified.setTrue;
     useEffect(() => {
         if (open.value) {
             setColumnsDefinitions(allDefinitions.map((def) => ({ ...def })));
             resetContentModified();
+            setDialogColumnWorkingOn(undefined);
         }
     }, [open.value, allDefinitions, resetContentModified]);
+
+    const onImportJson = useCallback((content: unknown) => {
+        setColumnsDefinitions(someCheckOnDefs((content ?? []) as ColumnWithFormula[]));
+        return true;
+    }, []);
     const dialogImportOpen = useStateBoolean(false);
+
+    const dialogColumnOpen = useStateBoolean(false);
+    const [dialogColumnWorkingOn, setDialogColumnWorkingOn] = useState<ColumnWithFormula | undefined>(undefined);
+    const onListItemDelete = useCallback(
+        (itemIdx: number) => {
+            setColumnsDefinitions((prevState) => {
+                let tmp = [...prevState];
+                tmp.splice(itemIdx, 1);
+                return tmp;
+            });
+            contentIsModified();
+        },
+        [contentIsModified]
+    );
+    const onListItemEdit = useCallback(
+        (itemIdx: number) => {
+            setDialogColumnWorkingOn(columnsDefinitions[itemIdx]);
+            dialogColumnOpen.setTrue();
+        },
+        [columnsDefinitions, dialogColumnOpen]
+    );
+    const onAddColumnClick = useCallback(() => {
+        setDialogColumnWorkingOn(undefined);
+        dialogColumnOpen.setTrue();
+    }, [dialogColumnOpen]);
+    const onImportColumn = useCallback(
+        (columnDef: ColumnWithFormula) => {
+            let newDefs: ColumnWithFormula[];
+            if (dialogColumnWorkingOn === undefined) {
+                newDefs = [...columnsDefinitions, columnDef];
+            } else {
+                newDefs = [...columnsDefinitions];
+                newDefs.splice(
+                    columnsDefinitions.findIndex((value, index, arr) => value.name === dialogColumnWorkingOn.name),
+                    1,
+                    columnDef
+                );
+                setDialogColumnWorkingOn(undefined); //clean memory
+            }
+            setColumnsDefinitions(someCheckOnDefs(newDefs));
+            contentIsModified();
+        },
+        [columnsDefinitions, contentIsModified, dialogColumnWorkingOn]
+    );
+
+    const onSaveClick = useCallback(() => {
+        dispatch(setCustomColumDefinitions(TABLES_NAMES[indexTab], columnsDefinitions));
+        open.setFalse();
+    }, [columnsDefinitions, dispatch, indexTab, open]);
     return (
         <Dialog
             open={open.value}
@@ -144,7 +236,7 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
                         <FormattedMessage id="spreadsheet/custom_column/dialog/title" />
                     </Typography>
                     <Button
-                        onClick={undefined /*TODO*/}
+                        onClick={onAddColumnClick}
                         color="secondary"
                         variant="outlined"
                         startIcon={<AddCircleIcon />}
@@ -162,7 +254,7 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
                         <FormattedMessage id="spreadsheet/custom_column/dialog/import_export" />
                     </Button>
                     <Button
-                        onClick={open.setFalse}
+                        onClick={onSaveClick}
                         variant="outlined"
                         disabled={!contentModified.value}
                         color="primary"
@@ -174,14 +266,23 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
                 </Toolbar>
             </AppBar>
             <List>
-                {columnsDefinitions.map((data, idx, arr) => (
-                    <>
-                        <CustomColumnItem key={data.name} data={data} />
-                        {idx >= arr.length - 1 ? undefined : <Divider />}
-                    </>
-                ))}
+                {useMemo(
+                    () =>
+                        columnsDefinitions.map((data, idx, arr) => (
+                            <Fragment key={`table-${indexTab}-item-${data.name}`}>
+                                <CustomColumnItem
+                                    data={data}
+                                    onDelete={() => onListItemDelete(idx)}
+                                    onEdit={() => onListItemEdit(idx)}
+                                />
+                                {idx >= arr.length - 1 ? undefined : <Divider />}
+                            </Fragment>
+                        )),
+                    [columnsDefinitions, indexTab, onListItemDelete, onListItemEdit]
+                )}
             </List>
-            <CustomColumnsImExPort indexTab={indexTab} open={dialogImportOpen} onImport={onImport} />
+            <CustomColumnsImExPort indexTab={indexTab} open={dialogImportOpen} onImport={onImportJson} />
+            <CustomColumnDialog open={dialogColumnOpen} baseData={dialogColumnWorkingOn} onSubmit={onImportColumn} />
         </Dialog>
     );
 }
