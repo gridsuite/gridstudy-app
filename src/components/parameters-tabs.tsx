@@ -59,6 +59,7 @@ import {
 import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
+import { NetworkAreaDiagramParameters } from './dialogs/parameters/network-area-diagram-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -127,6 +128,7 @@ const styles = {
 
 enum TAB_VALUES {
     sldParamsTabValue = 'SingleLineDiagram',
+    networkAreaDiagram = 'NetworkAreaDiagram',
     mapParamsTabValue = 'Map',
     lfParamsTabValue = 'LoadFlow',
     securityAnalysisParamsTabValue = 'SecurityAnalysis',
@@ -257,6 +259,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         switch (tabValue) {
             case TAB_VALUES.sldParamsTabValue:
                 return <SingleLineDiagramParameters componentLibraries={componentLibraries} />;
+            case TAB_VALUES.networkAreaDiagram:
+                return <NetworkAreaDiagramParameters />;
             case TAB_VALUES.mapParamsTabValue:
                 return <MapParameters />;
             case TAB_VALUES.lfParamsTabValue:
@@ -364,6 +368,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             <Tab
                                 label={<FormattedMessage id="SingleLineDiagram" />}
                                 value={TAB_VALUES.sldParamsTabValue}
+                            />
+                            <Tab
+                                label={<FormattedMessage id="NetworkAreaDiagram" />}
+                                value={TAB_VALUES.networkAreaDiagram}
                             />
                             <Tab label={<FormattedMessage id="Map" />} value={TAB_VALUES.mapParamsTabValue} />
                             <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />
