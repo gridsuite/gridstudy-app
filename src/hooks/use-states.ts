@@ -16,9 +16,7 @@ export type UseStateBooleanReturn = {
 };
 
 //TODO move in commons-ui
-export function useStateBoolean(
-    initialState: boolean | (() => boolean)
-): UseStateBooleanReturn {
+export function useStateBoolean(initialState: boolean | (() => boolean)): UseStateBooleanReturn {
     const [value, setValue] = useState<boolean>(initialState);
     const setTrue = useCallback(() => setValue(true), []);
     const setFalse = useCallback(() => setValue(false), []);
@@ -35,18 +33,10 @@ export type UseStateNumberReturn = {
 };
 
 //TODO move in commons-ui
-export function useStateNumber(
-    initialState: number | (() => number) = 0
-): UseStateNumberReturn {
+export function useStateNumber(initialState: number | (() => number) = 0): UseStateNumberReturn {
     const [value, setValue] = useState<number>(initialState);
-    const increment = useCallback(
-        (n: number = 1) => setValue((prevState) => prevState + n),
-        []
-    );
-    const decrement = useCallback(
-        (n: number = 1) => setValue((prevState) => prevState - n),
-        []
-    );
+    const increment = useCallback((n: number = 1) => setValue((prevState) => prevState + n), []);
+    const decrement = useCallback((n: number = 1) => setValue((prevState) => prevState - n), []);
     const reset = useCallback(() => setValue(initialState), [initialState]);
     return { value, increment, decrement, reset, setValue };
 }

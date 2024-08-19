@@ -79,11 +79,7 @@ export const ReactiveCapabilityCurveTable = ({
                             <IconButton
                                 key={value.id}
                                 onClick={() => handleRemoveRow(index)}
-                                disabled={
-                                    disabled ||
-                                    index === 0 ||
-                                    index === displayedValues.length - 1
-                                }
+                                disabled={disabled || index === 0 || index === displayedValues.length - 1}
                             >
                                 <DeleteIcon />
                             </IconButton>

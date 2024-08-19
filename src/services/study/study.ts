@@ -39,14 +39,8 @@ export const recreateStudyNetworkFromExistingCase = (
     });
 };
 
-export const recreateStudyNetwork = (
-    studyUuid: UUID
-): Promise<BasicStudyInfos> => {
-    const recreateStudyNetworkUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/network';
+export const recreateStudyNetwork = (studyUuid: UUID): Promise<BasicStudyInfos> => {
+    const recreateStudyNetworkUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid) + '/network';
 
     console.debug(recreateStudyNetworkUrl);
 
@@ -57,11 +51,7 @@ export const recreateStudyNetwork = (
 };
 
 export const reindexAllStudy = (studyUuid: UUID): Promise<void> => {
-    const reindexAllStudyUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/reindex-all';
+    const reindexAllStudyUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid) + '/reindex-all';
 
     console.debug(reindexAllStudyUrl);
 

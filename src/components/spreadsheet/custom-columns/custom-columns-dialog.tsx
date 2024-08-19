@@ -31,10 +31,7 @@ import {
     Warning as WarningIcon,
 } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    useStateBoolean,
-    UseStateBooleanReturn,
-} from '../../../hooks/use-states';
+import { useStateBoolean, UseStateBooleanReturn } from '../../../hooks/use-states';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { TABLES_NAMES } from '../utils/config-tables';
@@ -68,29 +65,16 @@ function CustomColumnItem({ key, data }: Readonly<CustomColumnItemProps>) {
             //TODO: maybe use a horizontal grid?
             secondaryAction={
                 <>
-                    <IconButton
-                        aria-label="modify"
-                        onClick={undefined /*TODO*/}
-                        color="primary"
-                    >
+                    <IconButton aria-label="modify" onClick={undefined /*TODO*/} color="primary">
                         <EditIcon />
                     </IconButton>
-                    <IconButton
-                        aria-label="delete"
-                        onClick={undefined /*TODO*/}
-                        color="secondary"
-                        edge="end"
-                    >
+                    <IconButton aria-label="delete" onClick={undefined /*TODO*/} color="secondary" edge="end">
                         <DeleteForeverIcon />
                     </IconButton>
                 </>
             }
         >
-            <ListItemText
-                id={`custom-column-line-${key}`}
-                primary={data.name}
-                secondary={data.formula}
-            />
+            <ListItemText id={`custom-column-line-${key}`} primary={data.name} secondary={data.formula} />
         </ListItem>
     );
 }
@@ -104,18 +88,10 @@ function onImport(content: unknown) {
     //TODO
 }
 
-export default function CustomColumnsDialog({
-    indexTab,
-    open,
-}: Readonly<CustomColumnsDialogProps>) {
+export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomColumnsDialogProps>) {
     const intl = useIntl();
-    const allDefinitions = useSelector(
-        (state: AppState) =>
-            state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
-    );
-    const [columnsDefinitions, setColumnsDefinitions] = useState<
-        ColumnWithFormula[]
-    >([]);
+    const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
+    const [columnsDefinitions, setColumnsDefinitions] = useState<ColumnWithFormula[]>([]);
     const contentModified = useStateBoolean(false); //TODO
     const resetContentModified = contentModified.setFalse;
     useEffect(() => {
@@ -154,11 +130,7 @@ export default function CustomColumnsDialog({
                             }}
                         >
                             <Badge
-                                badgeContent={
-                                    contentModified.value ? (
-                                        <WarningIcon color="warning" />
-                                    ) : null
-                                }
+                                badgeContent={contentModified.value ? <WarningIcon color="warning" /> : null}
                                 anchorOrigin={{
                                     vertical: 'bottom',
                                     horizontal: 'right',
@@ -168,11 +140,7 @@ export default function CustomColumnsDialog({
                             </Badge>
                         </IconButton>
                     </Tooltip>
-                    <Typography
-                        sx={{ ml: 2, flex: 1 }}
-                        variant="h6"
-                        component="div"
-                    >
+                    <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                         <FormattedMessage id="spreadsheet/custom_column/dialog/title" />
                     </Typography>
                     <Button
@@ -213,11 +181,7 @@ export default function CustomColumnsDialog({
                     </>
                 ))}
             </List>
-            <CustomColumnsImExPort
-                indexTab={indexTab}
-                open={dialogImportOpen}
-                onImport={onImport}
-            />
+            <CustomColumnsImExPort indexTab={indexTab} open={dialogImportOpen} onImport={onImport} />
         </Dialog>
     );
 }

@@ -11,13 +11,5 @@ import 'ace-builds/src-noconflict/mode-json'; // /!\ muste be AFTER import of Ed
 export type JsonTextareaProps = Exclude<EditorTextareaProps, 'mode'>;
 
 export function JsonTextarea(props: Readonly<JsonTextareaProps>) {
-    return (
-        <EditorTextarea
-            placeholder="{}"
-            showPrintMargin={false}
-            {...props}
-            mode="json"
-            name="UNIQUE_ID_OF_DIV"
-        />
-    );
+    return <EditorTextarea placeholder="{}" showPrintMargin={false} {...props} mode="json" name="UNIQUE_ID_OF_DIV" />;
 }

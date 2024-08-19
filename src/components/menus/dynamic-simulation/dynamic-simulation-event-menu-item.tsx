@@ -26,24 +26,13 @@ const styles = {
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
     equipmentType: string;
-    onOpenDynamicSimulationEventDialog: (
-        equipmentId: string,
-        equipmentType: string,
-        dialogTitle: string
-    ) => void;
+    onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
     disabled: boolean;
 }
 
-const DynamicSimulationEventMenuItem = (
-    props: DynamicSimulationEventMenuItemProps
-) => {
+const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemProps) => {
     const intl = useIntl();
-    const {
-        equipmentId,
-        equipmentType,
-        onOpenDynamicSimulationEventDialog,
-        disabled,
-    } = props;
+    const { equipmentId, equipmentType, onOpenDynamicSimulationEventDialog, disabled } = props;
     return (
         <CustomMenuItem
             sx={styles.menuItem}

@@ -5,13 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextInput } from '@gridsuite/commons-ui';
-import {
-    P0,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    Q0,
-} from 'components/utils/field-constants';
+import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
+import { EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -19,16 +14,15 @@ import {
     GridSection,
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
-import { SelectInput } from '@gridsuite/commons-ui';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import { useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
 
-const LoadModificationForm = ({ loadToModify, equipmentId }) => {
+const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentId }) => {
     const intl = useIntl();
 
     const loadIdField = (
@@ -93,12 +87,27 @@ const LoadModificationForm = ({ loadToModify, equipmentId }) => {
         />
     );
 
+    const connectivityForm = (
+        <ConnectivityForm
+            withPosition={true}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            isEquipmentModification={true}
+            previousValues={loadToModify}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
                 {gridItem(loadIdField, 4)}
                 {gridItem(loadNameField, 4)}
                 {gridItem(loadTypeField, 4)}
+            </Grid>
+            {/* Connectivity part */}
+            <GridSection title="Connectivity" />
+            <Grid container spacing={2}>
+                {gridItem(connectivityForm, 12)}
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>

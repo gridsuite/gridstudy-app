@@ -25,9 +25,7 @@ export const NodeActions = {
 };
 
 export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
-    const children = treeModel.treeNodes.filter((node) =>
-        sourceNodeIds.includes(node.data.parentNodeUuid)
-    );
+    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid));
     if (children.length > 0) {
         children.forEach((item) => {
             allChildren?.push({ ...item });
@@ -41,9 +39,7 @@ export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
 export const getNodesFromSubTree = (treeModel, id) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
-        const activeNodeDirectChildren = treeModel.treeNodes.filter(
-            (item) => item.data.parentNodeUuid === id
-        );
+        const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.data.parentNodeUuid === id);
         const allChildren = [];
         activeNodeDirectChildren.forEach((child) => {
             allChildren.push(child);
@@ -76,13 +72,9 @@ const CreateNodeMenu = ({
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const isModificationsInProgress = useSelector(
-        (state) => state.isModificationsInProgress
-    );
+    const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
     const mapDataLoading = useSelector((state) => state.mapDataLoading);
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
@@ -162,8 +154,7 @@ const CreateNodeMenu = ({
     function isNodePastingAllowed() {
         return (
             !mapDataLoading &&
-            ((selectionForCopy.nodeId !== activeNode.id &&
-                selectionForCopy.copyType === CopyType.NODE_CUT) ||
+            ((selectionForCopy.nodeId !== activeNode.id && selectionForCopy.copyType === CopyType.NODE_CUT) ||
                 selectionForCopy.copyType === CopyType.NODE_COPY)
         );
     }
@@ -183,11 +174,7 @@ const CreateNodeMenu = ({
     }
 
     function isNodeUnbuildingAllowed() {
-        return (
-            !isAnyNodeBuilding &&
-            !mapDataLoading &&
-            activeNode?.data?.globalBuildStatus?.startsWith('BUILT')
-        );
+        return !isAnyNodeBuilding && !mapDataLoading && activeNode?.data?.globalBuildStatus?.startsWith('BUILT');
     }
 
     function isNodeRestorationAllowed() {
@@ -195,30 +182,18 @@ const CreateNodeMenu = ({
     }
 
     function isNodeAlreadySelectedForCut() {
-        return (
-            selectionForCopy?.nodeId === activeNode.id &&
-            selectionForCopy?.copyType === CopyType.NODE_CUT
-        );
+        return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.NODE_CUT;
     }
 
     function isSubtreeAlreadySelectedForCut() {
-        return (
-            selectionForCopy?.nodeId === activeNode.id &&
-            selectionForCopy?.copyType === CopyType.SUBTREE_CUT
-        );
+        return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
     function isNodeHasChildren(node, treeModel) {
-        return treeModel.treeNodes.some(
-            (item) => item.data.parentNodeUuid === node.id
-        );
+        return treeModel.treeNodes.some((item) => item.data.parentNodeUuid === node.id);
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
-        return (
-            !isAnyNodeBuilding &&
-            !mapDataLoading &&
-            isNodeHasChildren(activeNode, treeModel)
-        );
+        return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel);
     }
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
@@ -236,22 +211,17 @@ const CreateNodeMenu = ({
             subMenuItems: {
                 CREATE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () =>
-                        createNetworkModificationNode(
-                            NodeInsertModes.NewBranch
-                        ),
+                    action: () => createNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'createNetworkModificationNodeInNewBranch',
                 },
                 INSERT_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () =>
-                        createNetworkModificationNode(NodeInsertModes.Before),
+                    action: () => createNetworkModificationNode(NodeInsertModes.Before),
                     id: 'insertNetworkModificationNodeAbove',
                 },
                 INSERT_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () =>
-                        createNetworkModificationNode(NodeInsertModes.After),
+                    action: () => createNetworkModificationNode(NodeInsertModes.After),
                     id: 'insertNetworkModificationNodeBelow',
                 },
             },
@@ -264,12 +234,8 @@ const CreateNodeMenu = ({
         CUT_MODIFICATION_NODE: {
             onRoot: false,
             action: () =>
-                isNodeAlreadySelectedForCut()
-                    ? cancelCutNetworkModificationNode()
-                    : cutNetworkModificationNode(),
-            id: isNodeAlreadySelectedForCut()
-                ? 'cancelCutNetworkModificationNode'
-                : 'cutNetworkModificationNode',
+                isNodeAlreadySelectedForCut() ? cancelCutNetworkModificationNode() : cutNetworkModificationNode(),
+            id: isNodeAlreadySelectedForCut() ? 'cancelCutNetworkModificationNode' : 'cutNetworkModificationNode',
         },
         PASTE_MODIFICATION_NODE: {
             onRoot: true,
@@ -278,22 +244,19 @@ const CreateNodeMenu = ({
             subMenuItems: {
                 PASTE_MODIFICATION_NODE: {
                     onRoot: true,
-                    action: () =>
-                        pasteNetworkModificationNode(NodeInsertModes.NewBranch),
+                    action: () => pasteNetworkModificationNode(NodeInsertModes.NewBranch),
                     id: 'pasteNetworkModificationNodeInNewBranch',
                     disabled: !isNodePastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_BEFORE: {
                     onRoot: false,
-                    action: () =>
-                        pasteNetworkModificationNode(NodeInsertModes.Before),
+                    action: () => pasteNetworkModificationNode(NodeInsertModes.Before),
                     id: 'pasteNetworkModificationNodeAbove',
                     disabled: !isNodePastingAllowed(),
                 },
                 PASTE_MODIFICATION_NODE_AFTER: {
                     onRoot: true,
-                    action: () =>
-                        pasteNetworkModificationNode(NodeInsertModes.After),
+                    action: () => pasteNetworkModificationNode(NodeInsertModes.After),
                     id: 'pasteNetworkModificationNodeBelow',
                     disabled: !isNodePastingAllowed(),
                 },
@@ -316,20 +279,15 @@ const CreateNodeMenu = ({
             onRoot: false,
             action: () => copySubtree(),
             id: 'copyNetworkModificationSubtree',
-            disabled:
-                isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
+            disabled: isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
         },
         CUT_SUBTREE: {
             onRoot: false,
-            action: () =>
-                isSubtreeAlreadySelectedForCut()
-                    ? cancelCutSubtree()
-                    : cutSubtree(),
+            action: () => (isSubtreeAlreadySelectedForCut() ? cancelCutSubtree() : cutSubtree()),
             id: isSubtreeAlreadySelectedForCut()
                 ? 'cancelCutNetworkModificationSubtree'
                 : 'cutNetworkModificationSubtree',
-            disabled:
-                isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
+            disabled: isAnyNodeBuilding || !isNodeHasChildren(activeNode, treeModel),
             sectionEnd: true,
         },
         PASTE_SUBTREE: {
@@ -354,9 +312,7 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => exportCaseOnNode(),
             id: 'exportCaseOnNode',
-            disabled:
-                activeNode?.type !== 'ROOT' &&
-                !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
+            disabled: activeNode?.type !== 'ROOT' && !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
         },
     };
 
@@ -385,10 +341,7 @@ const CreateNodeMenu = ({
 
     const content = intl.formatMessage(
         {
-            id:
-                nodeAction === NodeActions.REMOVE_SUBTREE
-                    ? 'deleteSubTreeConfirmation'
-                    : 'deleteNodeConfirmation',
+            id: nodeAction === NodeActions.REMOVE_SUBTREE ? 'deleteSubTreeConfirmation' : 'deleteNodeConfirmation',
         },
         {
             nodeName: activeNode?.data?.label,
@@ -407,13 +360,7 @@ const CreateNodeMenu = ({
             handleRemovalSubtree(activeNode);
         }
         handleOnClose();
-    }, [
-        handleOnClose,
-        handleNodeRemoval,
-        handleRemovalSubtree,
-        activeNode,
-        nodeAction,
-    ]);
+    }, [handleOnClose, handleNodeRemoval, handleRemovalSubtree, activeNode, nodeAction]);
 
     return (
         <>

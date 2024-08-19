@@ -36,29 +36,21 @@ interface TopBarEquipmentSearchDialogProps {
     setIsDialogSearchOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const TopBarEquipmentSearchDialog: FunctionComponent<
-    TopBarEquipmentSearchDialogProps
-> = (props) => {
-    const {
-        isDialogSearchOpen,
-        setIsDialogSearchOpen,
-        showVoltageLevelDiagram,
-    } = props;
+export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearchDialogProps> = (props) => {
+    const { isDialogSearchOpen, setIsDialogSearchOpen, showVoltageLevelDiagram } = props;
     const intl = useIntl();
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [equipmentTypeFilter, setEquipmentTypeFilter] =
-        useState<EquipmentType | null>(null);
+    const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | null>(null);
 
-    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
-        useTopBarSearchMatchingEquipment({
-            // @ts-expect-error TODO: manage null case
-            studyUuid: studyUuid,
-            // @ts-expect-error TODO: manage null case
-            nodeUuid: currentNode?.id,
-            equipmentType: equipmentTypeFilter ?? undefined,
-        });
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useTopBarSearchMatchingEquipment({
+        // @ts-expect-error TODO: manage null case
+        studyUuid: studyUuid,
+        // @ts-expect-error TODO: manage null case
+        nodeUuid: currentNode?.id,
+        equipmentType: equipmentTypeFilter ?? undefined,
+    });
     const disabledSearchReason = useDisabledSearchReason();
 
     const enableSearchDialog = useCallback(() => {
@@ -101,20 +93,11 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
                     });
                 });
         },
-        [
-            updateSearchTerm,
-            closeDialog,
-            showVoltageLevelDiagram,
-            studyUuid,
-            snackWarning,
-            currentNode,
-        ]
+        [updateSearchTerm, closeDialog, showVoltageLevelDiagram, studyUuid, snackWarning, currentNode]
     );
 
     const suffixRenderer = useCallback(
-        (props: TagRendererProps) => (
-            <CustomSuffixRenderer {...props} onClose={closeDialog} />
-        ),
+        (props: TagRendererProps) => <CustomSuffixRenderer {...props} onClose={closeDialog} />,
         [closeDialog]
     );
 
@@ -123,10 +106,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
     return (
         <ElementSearchDialog
             open={isDialogSearchOpen}
-            showResults={
-                disabledSearchReason === '' &&
-                (equipmentsFound.length > 0 || isLoading)
-            }
+            showResults={disabledSearchReason === '' && (equipmentsFound.length > 0 || isLoading)}
             onClose={closeDialog}
             searchTerm={searchTerm}
             onSearchTermChange={updateSearchTerm}
@@ -146,9 +126,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<
             loading={isLoading}
             loadingText={intl.formatMessage({ id: 'equipmentsLoading' })}
             getOptionLabel={(equipment) => equipment.label}
-            isOptionEqualToValue={(equipment1, equipment2) =>
-                equipment1.id === equipment2.id
-            }
+            isOptionEqualToValue={(equipment1, equipment2) => equipment1.id === equipment2.id}
             renderInput={(displayedValue, params) => (
                 <TopBarEquipmentSearchInput
                     displayedValue={displayedValue}

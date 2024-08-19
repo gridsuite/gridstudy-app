@@ -33,17 +33,12 @@ export type CustomColumnsConfigProps = {
     - add type with formula for render in aggrid (enum types)
 */
 
-export default function CustomColumnsConfig({
-    indexTab,
-}: Readonly<CustomColumnsConfigProps>) {
+export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
     const formulaCalculating = useStateBoolean(false); //TODO
     const formulaError = useStateBoolean(false); //TODO
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
-    const allDefinitions = useSelector(
-        (state: AppState) =>
-            state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
-    );
+    const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
     const uEffectNumberColumnsSetValue = numberColumns.setValue; // eslint detection
     useEffect(() => {
         uEffectNumberColumnsSetValue(allDefinitions.length);

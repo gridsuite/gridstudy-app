@@ -5,18 +5,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ExpandCircleDown,
-    ExpandMore,
-    Settings as SettingsIcon,
-} from '@mui/icons-material';
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Grid,
-    Typography,
-} from '@mui/material';
+import { ExpandCircleDown, ExpandMore, Settings as SettingsIcon } from '@mui/icons-material';
+import { Accordion, AccordionDetails, AccordionSummary, Grid, Typography } from '@mui/material';
 import { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { styles } from '../parameters';
@@ -30,9 +20,7 @@ type ParameterGroupProps = {
     unmountOnExit?: boolean;
 };
 
-export const ParameterGroup: FunctionComponent<
-    PropsWithChildren<ParameterGroupProps>
-> = (props, context) => {
+export const ParameterGroup: FunctionComponent<PropsWithChildren<ParameterGroupProps>> = (props, context) => {
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
@@ -52,9 +40,7 @@ export const ParameterGroup: FunctionComponent<
                 >
                     <AccordionSummary
                         sx={styles.subgroupParametersAccordionSummary}
-                        expandIcon={
-                            mouseHover ? <ExpandCircleDown /> : <ExpandMore />
-                        }
+                        expandIcon={mouseHover ? <ExpandCircleDown /> : <ExpandMore />}
                         onMouseEnter={(event) => setMouseHover(true)}
                         onMouseLeave={(event) => setMouseHover(false)}
                     >
@@ -73,11 +59,7 @@ export const ParameterGroup: FunctionComponent<
                             </Typography>
                         )}
                     </AccordionSummary>
-                    <AccordionDetails
-                        sx={styles.subgroupParametersAccordionDetails}
-                    >
-                        {props.children}
-                    </AccordionDetails>
+                    <AccordionDetails sx={styles.subgroupParametersAccordionDetails}>{props.children}</AccordionDetails>
                 </Accordion>
             </Grid>
         </>

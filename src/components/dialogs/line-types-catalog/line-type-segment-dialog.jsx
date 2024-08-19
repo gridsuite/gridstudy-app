@@ -55,11 +55,7 @@ const formSchema = yup.object().shape({
                     .moreThan(0, 'SegmentDistanceMustBeGreaterThanZero'),
                 [SEGMENT_TYPE_VALUE]: yup
                     .string()
-                    .test(
-                        'empty-check',
-                        'SegmentTypeMissing',
-                        (value) => value.length > 0
-                    ),
+                    .test('empty-check', 'SegmentTypeMissing', (value) => value.length > 0),
                 [SEGMENT_TYPE_ID]: yup.string(),
                 [SEGMENT_RESISTANCE]: yup.number(),
                 [SEGMENT_REACTANCE]: yup.number(),

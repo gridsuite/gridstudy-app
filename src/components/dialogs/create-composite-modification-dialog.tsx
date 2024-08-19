@@ -20,12 +20,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { UniqueNameInput } from './commons/unique-name-input';
-import {
-    DESCRIPTION,
-    FOLDER_ID,
-    FOLDER_NAME,
-    NAME,
-} from '../utils/field-constants';
+import { DESCRIPTION, FOLDER_ID, FOLDER_NAME, NAME } from '../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
@@ -63,9 +58,11 @@ const emptyFormData = {
     [FOLDER_ID]: '',
 };
 
-const CreateCompositeModificationDialog: React.FC<
-    CreateCompositeModificationDialogProps
-> = ({ open, onSave, onClose }) => {
+const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDialogProps> = ({
+    open,
+    onSave,
+    onClose,
+}) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
@@ -74,8 +71,7 @@ const CreateCompositeModificationDialog: React.FC<
         resolver: yupResolver(formSchema),
     });
     const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);
-    const [destinationFolder, setDestinationFolder] =
-        useState<TreeViewFinderNodeProps>();
+    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((res) => {
@@ -132,9 +128,7 @@ const CreateCompositeModificationDialog: React.FC<
     const handleSave = useCallback(() => {
         formMethods.trigger().then((isValid) => {
             if (isValid && destinationFolder) {
-                onSave(
-                    formMethods.getValues() as ICompositeCreateModificationDialog
-                );
+                onSave(formMethods.getValues() as ICompositeCreateModificationDialog);
             }
         });
 
@@ -142,21 +136,10 @@ const CreateCompositeModificationDialog: React.FC<
     }, [formMethods, destinationFolder, onSave, onClose]);
 
     return (
-        <Dialog
-            fullWidth
-            maxWidth="md"
-            open={open}
-            aria-labelledby="dialog-save-modifications"
-        >
-            <DialogTitle>
-                {intl.formatMessage({ id: 'CreateCompositeModification' })}
-            </DialogTitle>
+        <Dialog fullWidth maxWidth="md" open={open} aria-labelledby="dialog-save-modifications">
+            <DialogTitle>{intl.formatMessage({ id: 'CreateCompositeModification' })}</DialogTitle>
             <DialogContent>
-                <CustomFormProvider
-                    removeOptional={true}
-                    validationSchema={formSchema}
-                    {...formMethods}
-                >
+                <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
                     <Grid container>
                         <Grid container paddingTop={2}>
                             <UniqueNameInput
@@ -168,27 +151,15 @@ const CreateCompositeModificationDialog: React.FC<
                             />
                         </Grid>
                         <Grid container paddingTop={2}>
-                            <ExpandingTextField
-                                name={DESCRIPTION}
-                                label={'descriptionProperty'}
-                                minRows={3}
-                                rows={5}
-                            />
+                            <ExpandingTextField name={DESCRIPTION} label={'descriptionProperty'} minRows={3} rows={5} />
                         </Grid>
                         <Grid container paddingTop={2}>
-                            <Button
-                                onClick={handleChangeFolder}
-                                variant="contained"
-                            >
-                                <FormattedMessage
-                                    id={'showSelectDirectoryDialog'}
-                                />
+                            <Button onClick={handleChangeFolder} variant="contained">
+                                <FormattedMessage id={'showSelectDirectoryDialog'} />
                             </Button>
 
                             <Typography m={1} component="span">
-                                <Box fontWeight={'fontWeightBold'}>
-                                    {destinationFolder?.name}
-                                </Box>
+                                <Box fontWeight={'fontWeightBold'}>{destinationFolder?.name}</Box>
                             </Typography>
                         </Grid>
                         <Grid container paddingTop={2}>
@@ -214,12 +185,7 @@ const CreateCompositeModificationDialog: React.FC<
                             })}
                         </Button>
                         <Box m={1} />
-                        <Button
-                            variant="contained"
-                            type={'submit'}
-                            onClick={handleSave}
-                            size={'large'}
-                        >
+                        <Button variant="contained" type={'submit'} onClick={handleSave} size={'large'}>
                             {intl.formatMessage({
                                 id: 'validate',
                             })}

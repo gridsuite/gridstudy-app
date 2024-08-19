@@ -136,20 +136,14 @@ const NetworkModificationNode = (props) => {
 
     const isSelectedForCut = () => {
         return (
-            (props.id === selectionForCopy?.nodeId &&
-                selectionForCopy?.copyType === CopyType.NODE_CUT) ||
-            ((props.id === selectionForCopy?.nodeId ||
-                selectionForCopy.allChildrenIds?.includes(props.id)) &&
+            (props.id === selectionForCopy?.nodeId && selectionForCopy?.copyType === CopyType.NODE_CUT) ||
+            ((props.id === selectionForCopy?.nodeId || selectionForCopy.allChildrenIds?.includes(props.id)) &&
                 selectionForCopy?.copyType === CopyType.SUBTREE_CUT)
         );
     };
 
     const getNodeOpacity = () => {
-        return isSelectedForCut()
-            ? getLocalStorageTheme() === LIGHT_THEME
-                ? 0.3
-                : 0.6
-            : 'unset';
+        return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
     };
 
     function getStyleForBanner(buildStatus) {
@@ -180,40 +174,20 @@ const NetworkModificationNode = (props) => {
 
     return (
         <>
-            <Handle
-                type="source"
-                position="bottom"
-                style={{ background: '#555' }}
-                isConnectable={false}
-            />
-            <Handle
-                type="target"
-                position="top"
-                style={{ background: '#555' }}
-                isConnectable={false}
-            />
+            <Handle type="source" position="bottom" style={{ background: '#555' }} isConnectable={false} />
+            <Handle type="target" position="top" style={{ background: '#555' }} isConnectable={false} />
             <Button
                 style={{
                     opacity: getNodeOpacity(),
                 }}
-                sx={
-                    isSelectedNode()
-                        ? styles.networkModificationSelected
-                        : styles.networkModification
-                }
+                sx={isSelectedNode() ? styles.networkModificationSelected : styles.networkModification}
             >
                 <Box sx={getStyleForBanner(props.data.localBuildStatus)}>
                     {props.data.localBuildStatus === BUILD_STATUS.BUILDING && (
-                        <CircularProgress
-                            size={20}
-                            color="primary"
-                            style={{ margin: 'auto' }}
-                        />
+                        <CircularProgress size={20} color="primary" style={{ margin: 'auto' }} />
                     )}
                 </Box>
-                <Box
-                    sx={getStyleForBottomBanner(props.data.globalBuildStatus)}
-                ></Box>
+                <Box sx={getStyleForBottomBanner(props.data.globalBuildStatus)}></Box>
 
                 <Box sx={styles.labelWrapper}>
                     <span
@@ -235,9 +209,7 @@ const NetworkModificationNode = (props) => {
                 </Box>
             </Button>
 
-            <Box sx={styles.outOfBoundIcons}>
-                {props.data.readOnly && <LockIcon />}
-            </Box>
+            <Box sx={styles.outOfBoundIcons}>{props.data.readOnly && <LockIcon />}</Box>
         </>
     );
 };

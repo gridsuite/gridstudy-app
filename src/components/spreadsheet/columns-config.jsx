@@ -6,15 +6,7 @@
  */
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    Button,
-    Checkbox,
-    IconButton,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-} from '@mui/material';
+import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -67,15 +59,9 @@ export const ColumnsConfig = ({
 }) => {
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
 
-    const allDisplayedColumnsNames = useSelector(
-        (state) => state.allDisplayedColumnsNames
-    );
-    const allLockedColumnsNames = useSelector(
-        (state) => state.allLockedColumnsNames
-    );
-    const allReorderedTableDefinitionIndexes = useSelector(
-        (state) => state.allReorderedTableDefinitionIndexes
-    );
+    const allDisplayedColumnsNames = useSelector((state) => state.allDisplayedColumnsNames);
+    const allLockedColumnsNames = useSelector((state) => state.allLockedColumnsNames);
+    const allReorderedTableDefinitionIndexes = useSelector((state) => state.allReorderedTableDefinitionIndexes);
 
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -90,17 +76,11 @@ export const ColumnsConfig = ({
 
     const handleCancelPopupSelectColumnNames = useCallback(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-        setSelectedColumnsNames(
-            new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
-        );
+        setSelectedColumnsNames(new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []));
         const allLockedTemp = allLockedColumnsNames[tabIndex];
-        setLockedColumnsNames(
-            new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
-        );
+        setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
         const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
-        setReorderedTableDefinitionIndexes(
-            allReorderedTemp ? JSON.parse(allReorderedTemp) : []
-        );
+        setReorderedTableDefinitionIndexes(allReorderedTemp ? JSON.parse(allReorderedTemp) : []);
         handleCloseColumnsSettingDialog();
     }, [
         allDisplayedColumnsNames,
@@ -115,31 +95,23 @@ export const ColumnsConfig = ({
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
-            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
-                TABLES_NAMES[tabIndex],
+            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify([...selectedColumnsNames])
         ).catch((error) => {
             const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-            setSelectedColumnsNames(
-                new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : [])
-            );
+            setSelectedColumnsNames(new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []));
             snackError({
                 messageTxt: error.message,
                 headerId: 'paramsChangingError',
             });
         });
-        let lockedColumnsToSave = [...lockedColumnsNames].filter((name) =>
-            selectedColumnsNames.has(name)
-        );
+        let lockedColumnsToSave = [...lockedColumnsNames].filter((name) => selectedColumnsNames.has(name));
         updateConfigParameter(
-            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
-                TABLES_NAMES[tabIndex],
+            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify(lockedColumnsToSave)
         ).catch((error) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
-            setLockedColumnsNames(
-                new Set(allLockedTemp ? JSON.parse(allLockedTemp) : [])
-            );
+            setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
             snackError({
                 messageTxt: error.message,
                 headerId: 'paramsChangingError',
@@ -148,8 +120,7 @@ export const ColumnsConfig = ({
         setLockedColumnsNames(lockedColumnsNames);
 
         updateConfigParameter(
-            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE +
-                TABLES_NAMES[tabIndex],
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
             JSON.stringify(reorderedTableDefinitionIndexes)
         ).catch((error) => {
             snackError({
@@ -188,12 +159,9 @@ export const ColumnsConfig = ({
     };
 
     const handleToggleAll = () => {
-        let isAllChecked =
-            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isAllChecked = selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         // If all columns are selected/checked, then we hide all of them.
-        setSelectedColumnsNames(
-            isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]
-        );
+        setSelectedColumnsNames(isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]);
         if (isAllChecked) {
             setLockedColumnsNames(new Set());
         }
@@ -214,19 +182,10 @@ export const ColumnsConfig = ({
     const handleDrag = useCallback(
         ({ source, destination }) => {
             if (destination) {
-                let reorderedTableDefinitionIndexesTemp = [
-                    ...reorderedTableDefinitionIndexes,
-                ];
-                const [reorderedItem] =
-                    reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
-                reorderedTableDefinitionIndexesTemp.splice(
-                    destination.index,
-                    0,
-                    reorderedItem
-                );
-                setReorderedTableDefinitionIndexes(
-                    reorderedTableDefinitionIndexesTemp
-                );
+                let reorderedTableDefinitionIndexesTemp = [...reorderedTableDefinitionIndexes];
+                const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(destination.index, 0, reorderedItem);
+                setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexesTemp);
             }
         },
         [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes]
@@ -245,23 +204,14 @@ export const ColumnsConfig = ({
     };
 
     const checkListColumnsNames = () => {
-        let isAllChecked =
-            selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isAllChecked = selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
 
         return (
             <>
                 <ListItem sx={styles.checkboxSelectAll}>
-                    <ListItemButton
-                        role={undefined}
-                        onClick={handleToggleAll}
-                        dense
-                    >
-                        <Checkbox
-                            style={{ marginLeft: '21px' }}
-                            checked={isAllChecked}
-                            indeterminate={isSomeChecked}
-                        />
+                    <ListItemButton role={undefined} onClick={handleToggleAll} dense>
+                        <Checkbox style={{ marginLeft: '21px' }} checked={isAllChecked} indeterminate={isSomeChecked} />
                         <FormattedMessage id="CheckAll" />
                     </ListItemButton>
                 </ListItem>
@@ -269,78 +219,48 @@ export const ColumnsConfig = ({
                 <DragDropContext onDragEnd={handleDrag}>
                     <Droppable droppableId="network-table-columns-list">
                         {(provided) => (
-                            <div
-                                ref={provided.innerRef}
-                                {...provided.droppableProps}
-                            >
-                                {[...reorderedTableDefinitionIndexes].map(
-                                    (value, index) => (
-                                        <Draggable
-                                            draggableId={tabIndex + '-' + index}
-                                            index={index}
-                                            key={tabIndex + '-' + index}
-                                        >
-                                            {(provided) => (
-                                                <div
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
+                            <div ref={provided.innerRef} {...provided.droppableProps}>
+                                {[...reorderedTableDefinitionIndexes].map((value, index) => (
+                                    <Draggable
+                                        draggableId={tabIndex + '-' + index}
+                                        index={index}
+                                        key={tabIndex + '-' + index}
+                                    >
+                                        {(provided) => (
+                                            <div ref={provided.innerRef} {...provided.draggableProps}>
+                                                <ListItem
+                                                    sx={styles.checkboxItem}
+                                                    style={{
+                                                        padding: '0 16px',
+                                                    }}
                                                 >
-                                                    <ListItem
-                                                        sx={styles.checkboxItem}
+                                                    <IconButton {...provided.dragHandleProps} size={'small'}>
+                                                        <DragIndicatorIcon edge="start" spacing={0} />
+                                                    </IconButton>
+
+                                                    <ListItemIcon
+                                                        onClick={handleClickOnLock(value)}
                                                         style={{
-                                                            padding: '0 16px',
+                                                            minWidth: 0,
+                                                            width: '20px',
                                                         }}
                                                     >
-                                                        <IconButton
-                                                            {...provided.dragHandleProps}
-                                                            size={'small'}
-                                                        >
-                                                            <DragIndicatorIcon
-                                                                edge="start"
-                                                                spacing={0}
-                                                            />
-                                                        </IconButton>
-
-                                                        <ListItemIcon
-                                                            onClick={handleClickOnLock(
-                                                                value
-                                                            )}
-                                                            style={{
-                                                                minWidth: 0,
-                                                                width: '20px',
-                                                            }}
-                                                        >
-                                                            {renderColumnConfigLockIcon(
-                                                                value
-                                                            )}
-                                                        </ListItemIcon>
-                                                        <ListItemIcon
-                                                            onClick={handleToggle(
-                                                                value
-                                                            )}
-                                                        >
-                                                            <Checkbox
-                                                                checked={selectedColumnsNames.has(
-                                                                    value
-                                                                )}
-                                                            />
-                                                        </ListItemIcon>
-                                                        <ListItemText
-                                                            onClick={handleToggle(
-                                                                value
-                                                            )}
-                                                            primary={intl.formatMessage(
-                                                                {
-                                                                    id: `${value}`,
-                                                                }
-                                                            )}
-                                                        />
-                                                    </ListItem>
-                                                </div>
-                                            )}
-                                        </Draggable>
-                                    )
-                                )}
+                                                        {renderColumnConfigLockIcon(value)}
+                                                    </ListItemIcon>
+                                                    <ListItemIcon onClick={handleToggle(value)}>
+                                                        <Checkbox checked={selectedColumnsNames.has(value)} />
+                                                    </ListItemIcon>
+                                                    <ListItemText
+                                                        onClick={handleToggle(value)}
+                                                        primary={intl.formatMessage({
+                                                            id: `${value}`,
+                                                        })}
+                                                    />
+                                                </ListItem>
+                                            </div>
+                                        )}
+                                    </Draggable>
+                                ))}
                                 {provided.placeholder}
                             </div>
                         )}

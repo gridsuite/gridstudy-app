@@ -27,24 +27,15 @@ export enum SortWay {
     DESC = 'desc',
 }
 
-export const useAgGridSort = (
-    table: TableSortKeysType,
-    tab: string
-): SortPropsType => {
-    const sortConfig = useSelector(
-        (state: AppState) => state.tableSort[table][tab]
-    );
+export const useAgGridSort = (table: TableSortKeysType, tab: string): SortPropsType => {
+    const sortConfig = useSelector((state: AppState) => state.tableSort[table][tab]);
 
     const dispatch = useDispatch();
 
     const onSortChanged = useCallback(
         (newSortConfig: SortConfigType) => {
             const updatedSortConfig = sortConfig
-                .filter(
-                    (sort) =>
-                        (sort.children ?? false) !==
-                        (newSortConfig.children ?? false)
-                )
+                .filter((sort) => (sort.children ?? false) !== (newSortConfig.children ?? false))
                 .concat(newSortConfig);
 
             dispatch(setTableSort(table, tab, updatedSortConfig));

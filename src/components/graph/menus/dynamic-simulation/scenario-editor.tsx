@@ -34,9 +34,7 @@ export interface ScenarioEditorProps {}
 
 const ScenarioEditor = (props: ScenarioEditorProps) => {
     const dispatch = useDispatch<AppDispatch>();
-    const currentTreeNode = useSelector(
-        (state: AppState) => state.currentTreeNode
-    );
+    const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const intl = useIntl();
     const closeEventScenarioDrawer = () => {

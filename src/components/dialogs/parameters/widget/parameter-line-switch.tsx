@@ -14,13 +14,8 @@ type SwitchParameterLineProps = {
     disabled?: boolean;
     label?: string;
 };
-const ParameterLineSwitch = ({
-    paramNameId,
-    label,
-    disabled = false,
-}: SwitchParameterLineProps) => {
-    const [parameterValue, handleChangeParameterValue] =
-        useParameterState(paramNameId);
+const ParameterLineSwitch = ({ paramNameId, label, disabled = false }: SwitchParameterLineProps) => {
+    const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
 
     return (
         <>

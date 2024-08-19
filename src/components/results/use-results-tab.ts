@@ -26,9 +26,7 @@ export enum ResultsTabsRootLevel {
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)
 type ResultsTabsLevelOne = ShortCircuitAnalysisResultTabs;
 
-export type ResultTabIndexRedirection =
-    | ResultsTabsRootLevel
-    | ResultsTabsLevelOne;
+export type ResultTabIndexRedirection = ResultsTabsRootLevel | ResultsTabsLevelOne;
 
 /**
  * handles redirection to specific tab
@@ -41,8 +39,7 @@ export const useResultsTab = (
     setTabIndex: React.Dispatch<React.SetStateAction<number>>,
     view: string
 ): Dispatch<SetStateAction<boolean>> => {
-    const [redirectionLock, setRedirectionLock] =
-        useResultsTabRedirectionLock();
+    const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();
 
     useEffect(() => {
         if (view !== StudyView.RESULTS && !redirectionLock) {
@@ -53,13 +50,8 @@ export const useResultsTab = (
     return setRedirectionLock;
 };
 
-const useResultsTabRedirectionLock = (): [
-    boolean,
-    Dispatch<SetStateAction<boolean>>
-] => {
-    const lastCompletedComputation = useSelector(
-        (state: AppState) => state.lastCompletedComputation
-    );
+const useResultsTabRedirectionLock = (): [boolean, Dispatch<SetStateAction<boolean>>] => {
+    const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
     const [redirectionLock, setRedirectionLock] = useState<boolean>(false);
 
     useEffect(() => {

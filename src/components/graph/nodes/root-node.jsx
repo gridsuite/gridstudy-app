@@ -54,19 +54,11 @@ const RootNode = (props) => {
                 }}
                 isConnectable={false}
             />
-            <Tooltip
-                title={props.data.caseName}
-                placement="top"
-                disableHoverListener={!props.data.caseName}
-            >
-                <IconButton
-                    variant="outlined"
-                    sx={isSelectedNode() ? styles.rootSelected : styles.root}
-                >
-                    {(props.data.globalBuildStatus ===
-                        BUILD_STATUS.BUILDING && (
-                        <CircularProgress size={24} />
-                    )) || <PhotoIcon />}
+            <Tooltip title={props.data.caseName} placement="top" disableHoverListener={!props.data.caseName}>
+                <IconButton variant="outlined" sx={isSelectedNode() ? styles.rootSelected : styles.root}>
+                    {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (
+                        <PhotoIcon />
+                    )}
                 </IconButton>
             </Tooltip>
         </>

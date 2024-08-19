@@ -224,21 +224,13 @@ import {
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
-import {
-    DiagramType,
-    SubstationLayout,
-    ViewState,
-} from '../components/diagrams/diagram-common';
+import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import {
-    IOptionalService,
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from '../components/utils/optional-services';
+import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import {
     ALL_BUSES,
@@ -271,11 +263,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
-import {
-    LineFlowColorMode,
-    LineFlowMode,
-    MapEquipments,
-} from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
 import { IEquipment } from '../services/study/contingency-list';
 import { Node } from 'react-flow-renderer';
@@ -382,14 +370,8 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<
-    EQUIPMENT_TYPES,
-    'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'
->;
-export type SpreadsheetFilterState = Record<
-    SpreadsheetEquipmentType,
-    UnknownArray
->;
+export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'>;
+export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
 
 export type DiagramState = {
     id: string;
@@ -440,10 +422,7 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allCustomColumnsDefinitions: Record<
-        /*typeof TABLES_NAMES*/ string,
-        ColumnWithFormula[]
-    >;
+    allCustomColumnsDefinitions: Record</*typeof TABLES_NAMES*/ string, ColumnWithFormula[]>;
     allDisplayedColumnsNames: UnknownArray;
     allLockedColumnsNames: UnknownArray;
     allReorderedTableDefinitionIndexes: UnknownArray;
@@ -467,10 +446,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_LINE_PARALLEL_PATH]: boolean;
     [PARAM_LINE_FLOW_ALERT_THRESHOLD]: number;
     [PARAM_MAP_MANUAL_REFRESH]: boolean;
-    [PARAM_MAP_BASEMAP]:
-        | typeof MAP_BASEMAP_MAPBOX
-        | typeof MAP_BASEMAP_CARTO
-        | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
+    [PARAM_MAP_BASEMAP]: typeof MAP_BASEMAP_MAPBOX | typeof MAP_BASEMAP_CARTO | typeof MAP_BASEMAP_CARTO_NOLABEL; //TODO enum
     [PARAM_LINE_FLOW_MODE]: LineFlowMode;
     [PARAM_LINE_FLOW_COLOR_MODE]: LineFlowColorMode;
     [PARAM_CENTER_LABEL]: boolean;
@@ -510,10 +486,7 @@ export interface AppState extends CommonStoreState {
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 }
 
-export type SpreadsheetNetworkState = Record<
-    SpreadsheetEquipmentType,
-    IEquipment[] | null
->;
+export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, IEquipment[] | null>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SUBSTATION]: null,
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: null,
@@ -582,9 +555,7 @@ const initialState: AppState = {
         [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },
     computationStarting: false,
-    optionalServices: (
-        Object.keys(OptionalServicesNames) as OptionalServicesNames[]
-    ).map((key) => ({
+    optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
         name: key,
         status: OptionalServicesStatus.Pending,
     })),
@@ -603,8 +574,7 @@ const initialState: AppState = {
     [PARAM_MAP_MANUAL_REFRESH]: false,
     [PARAM_MAP_BASEMAP]: MAP_BASEMAP_MAPBOX,
     [PARAM_LINE_FLOW_MODE]: 'feeders' as LineFlowMode.FEEDERS, // because jest not support enum
-    [PARAM_LINE_FLOW_COLOR_MODE]:
-        'nominalVoltage' as LineFlowColorMode.NOMINAL_VOLTAGE, // because jest not support enum
+    [PARAM_LINE_FLOW_COLOR_MODE]: 'nominalVoltage' as LineFlowColorMode.NOMINAL_VOLTAGE, // because jest not support enum
     [PARAM_CENTER_LABEL]: false,
     [PARAM_DIAGONAL_LABEL]: false,
     [PARAM_SUBSTATION_LAYOUT]: SubstationLayout.HORIZONTAL,
@@ -664,18 +634,15 @@ const initialState: AppState = {
     },
 
     [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(TABLES_DEFINITIONS).reduce(
-            (acc, current) => {
-                acc[current.type] = [
-                    {
-                        colId: 'id',
-                        sort: SortWay.ASC,
-                    },
-                ];
-                return acc;
-            },
-            {} as TableSortConfig
-        ),
+        [SPREADSHEET_SORT_STORE]: Object.values(TABLES_DEFINITIONS).reduce((acc, current) => {
+            acc[current.type] = [
+                {
+                    colId: 'id',
+                    sort: SortWay.ASC,
+                },
+            ];
+            return acc;
+        }, {} as TableSortConfig),
         [LOADFLOW_RESULT_SORT_STORE]: {
             [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
                 {
@@ -697,9 +664,7 @@ const initialState: AppState = {
             ],
         },
         [SECURITY_ANALYSIS_RESULT_SORT_STORE]: {
-            [SECURITY_ANALYSIS_RESULT_N]: [
-                { colId: 'subjectId', sort: SortWay.ASC },
-            ],
+            [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sort: SortWay.ASC }],
             [SECURITY_ANALYSIS_RESULT_N_K]: [
                 {
                     colId: 'contingencyId',
@@ -708,20 +673,12 @@ const initialState: AppState = {
             ],
         },
         [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: {
-            [SENSITIVITY_IN_DELTA_MW_N]: [
-                { colId: 'value', sort: SortWay.ASC },
-            ],
-            [SENSITIVITY_IN_DELTA_MW_N_K]: [
-                { colId: 'valueAfter', sort: SortWay.ASC },
-            ],
+            [SENSITIVITY_IN_DELTA_MW_N]: [{ colId: 'value', sort: SortWay.ASC }],
+            [SENSITIVITY_IN_DELTA_MW_N_K]: [{ colId: 'valueAfter', sort: SortWay.ASC }],
             [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sort: SortWay.ASC }],
-            [SENSITIVITY_IN_DELTA_A_N_K]: [
-                { colId: 'valueAfter', sort: SortWay.ASC },
-            ],
+            [SENSITIVITY_IN_DELTA_A_N_K]: [{ colId: 'valueAfter', sort: SortWay.ASC }],
             [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sort: SortWay.ASC }],
-            [SENSITIVITY_AT_NODE_N_K]: [
-                { colId: 'valueAfter', sort: SortWay.ASC },
-            ],
+            [SENSITIVITY_AT_NODE_N_K]: [{ colId: 'valueAfter', sort: SortWay.ASC }],
         },
         [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: {
             [TIMELINE]: [
@@ -736,10 +693,7 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }),
-        {}
-    ),
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce((acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }), {}),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -751,9 +705,7 @@ export const reducer = createReducer(initialState, (builder) => {
         state.studyUuid = action.studyRef[0];
 
         if (action.studyRef[0] != null) {
-            state.diagramStates = loadDiagramStateFromSessionStorage(
-                action.studyRef[0]
-            );
+            state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
         }
     });
 
@@ -763,149 +715,119 @@ export const reducer = createReducer(initialState, (builder) => {
         state.networkModificationTreeModel = null;
     });
 
-    builder.addCase(
-        MAP_EQUIPMENTS_CREATED,
-        (state, action: MapEquipmentsCreatedAction) => {
-            let newMapEquipments;
-            //if it's not initialised yet we take the empty one given in action
-            if (!state.mapEquipments) {
-                newMapEquipments =
-                    action.mapEquipments.newMapEquipmentForUpdate();
-            } else {
-                newMapEquipments =
-                    state.mapEquipments.newMapEquipmentForUpdate();
-            }
-            if (action.newLines) {
-                newMapEquipments.lines = action.newLines;
-                // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-                newMapEquipments.completeLinesInfos();
-            }
-            if (action.newTieLines) {
-                newMapEquipments.tieLines = action.newTieLines;
-                // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-                newMapEquipments.completeTieLinesInfos();
-            }
-            if (action.newSubstations) {
-                newMapEquipments.substations = action.newSubstations;
-                // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-                newMapEquipments.completeSubstationsInfos();
-            }
-            if (action.newHvdcLines) {
-                newMapEquipments.hvdcLines = action.newHvdcLines;
-                // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-                newMapEquipments.completeHvdcLinesInfos();
-            }
-            state.mapEquipments = newMapEquipments;
+    builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
+        let newMapEquipments;
+        //if it's not initialised yet we take the empty one given in action
+        if (!state.mapEquipments) {
+            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
+        } else {
+            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
         }
-    );
+        if (action.newLines) {
+            newMapEquipments.lines = action.newLines;
+            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            newMapEquipments.completeLinesInfos();
+        }
+        if (action.newTieLines) {
+            newMapEquipments.tieLines = action.newTieLines;
+            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            newMapEquipments.completeTieLinesInfos();
+        }
+        if (action.newSubstations) {
+            newMapEquipments.substations = action.newSubstations;
+            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            newMapEquipments.completeSubstationsInfos();
+        }
+        if (action.newHvdcLines) {
+            newMapEquipments.hvdcLines = action.newHvdcLines;
+            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            newMapEquipments.completeHvdcLinesInfos();
+        }
+        state.mapEquipments = newMapEquipments;
+    });
 
     builder.addCase(
         LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
-            state.networkModificationTreeModel =
-                action.networkModificationTreeModel;
+            state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
         }
     );
 
-    builder.addCase(
-        NETWORK_MODIFICATION_TREE_NODE_ADDED,
-        (state, action: NetworkModificationTreeNodeAddedAction) => {
-            if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate();
-                newModel.addChild(
-                    action.networkModificationTreeNode,
-                    action.parentNodeId,
-                    action.insertMode,
-                    action.referenceNodeId
-                );
-                newModel.updateLayout();
-                state.networkModificationTreeModel = newModel;
-                // check if added node is the new parent of the current Node
-                if (
-                    // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                    action.networkModificationTreeNode?.childrenIds.includes(
-                        state.currentTreeNode?.id
-                    )
-                ) {
-                    // Then must overwrite currentTreeNode to set new parentNodeUuid
-                    // @ts-expect-error TODO: what to do if current node null?
-                    synchCurrentTreeNode(state, state.currentTreeNode?.id);
-                }
+    builder.addCase(NETWORK_MODIFICATION_TREE_NODE_ADDED, (state, action: NetworkModificationTreeNodeAddedAction) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.addChild(
+                action.networkModificationTreeNode,
+                action.parentNodeId,
+                action.insertMode,
+                action.referenceNodeId
+            );
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
+                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // @ts-expect-error TODO: what to do if current node null?
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
-    );
+    });
 
-    builder.addCase(
-        NETWORK_MODIFICATION_TREE_NODE_MOVED,
-        (state, action: NetworkModificationTreeNodeMovedAction) => {
-            if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate();
-                newModel.removeNodes([action.networkModificationTreeNode.id]);
-                newModel.addChild(
-                    action.networkModificationTreeNode,
-                    action.parentNodeId,
-                    action.insertMode,
-                    action.referenceNodeId
-                );
-                newModel.updateLayout();
-                state.networkModificationTreeModel = newModel;
-                // check if added node is the new parent of the current Node
-                if (
-                    // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                    action.networkModificationTreeNode?.childrenIds.includes(
-                        state.currentTreeNode?.id
-                    )
-                ) {
-                    // Then must overwrite currentTreeNode to set new parentNodeUuid
-                    // @ts-expect-error TODO: what to do if current node null?
-                    synchCurrentTreeNode(state, state.currentTreeNode?.id);
-                }
+    builder.addCase(NETWORK_MODIFICATION_TREE_NODE_MOVED, (state, action: NetworkModificationTreeNodeMovedAction) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            newModel.removeNodes([action.networkModificationTreeNode.id]);
+            newModel.addChild(
+                action.networkModificationTreeNode,
+                action.parentNodeId,
+                action.insertMode,
+                action.referenceNodeId
+            );
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
+            // check if added node is the new parent of the current Node
+            if (
+                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
+                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+            ) {
+                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // @ts-expect-error TODO: what to do if current node null?
+                synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
-    );
+    });
 
-    builder.addCase(
-        NETWORK_MODIFICATION_HANDLE_SUBTREE,
-        (state, action: NetworkModificationHandleSubtreeAction) => {
-            if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate();
-                unravelSubTree(
-                    newModel,
-                    action.parentNodeId,
-                    // @ts-expect-error TODO problem: we receive an array of node but func await 1 node
-                    action.networkModificationTreeNodes
-                );
+    builder.addCase(NETWORK_MODIFICATION_HANDLE_SUBTREE, (state, action: NetworkModificationHandleSubtreeAction) => {
+        if (state.networkModificationTreeModel) {
+            let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+            unravelSubTree(
+                newModel,
+                action.parentNodeId,
+                // @ts-expect-error TODO problem: we receive an array of node but func await 1 node
+                action.networkModificationTreeNodes
+            );
 
-                newModel.updateLayout();
-                state.networkModificationTreeModel = newModel;
-            }
+            newModel.updateLayout();
+            state.networkModificationTreeModel = newModel;
         }
-    );
+    });
 
     builder.addCase(
         NETWORK_MODIFICATION_TREE_NODES_REMOVED,
         (state, action: NetworkModificationTreeNodesRemovedAction) => {
             if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate() as NetworkModificationTreeModel;
+                let newModel = state.networkModificationTreeModel.newSharedForUpdate() as NetworkModificationTreeModel;
 
                 //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
                 const nextCurrentNodeUuid = newModel.treeNodes
-                    .filter((node) =>
-                        action.networkModificationTreeNodes.includes(node.id)
-                    )
+                    .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
-                    .find(
-                        (parentNodeUuid) =>
-                            !action.networkModificationTreeNodes.includes(
-                                parentNodeUuid
-                            )
-                    );
+                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 newModel.updateLayout();
@@ -938,17 +860,12 @@ export const reducer = createReducer(initialState, (builder) => {
         NETWORK_MODIFICATION_TREE_NODES_UPDATED,
         (state, action: NetworkModificationTreeNodesUpdatedAction) => {
             if (state.networkModificationTreeModel) {
-                let newModel =
-                    state.networkModificationTreeModel.newSharedForUpdate();
+                let newModel = state.networkModificationTreeModel.newSharedForUpdate();
                 newModel.updateNodes(action.networkModificationTreeNodes);
                 state.networkModificationTreeModel = newModel;
                 state.networkModificationTreeModel?.setBuildingStatus();
                 // check if current node is in the nodes updated list
-                if (
-                    action.networkModificationTreeNodes.find(
-                        (node) => node.id === state.currentTreeNode?.id
-                    )
-                ) {
+                if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
                     // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                     // current node has changed, then will need to reload Geo Data
@@ -981,19 +898,13 @@ export const reducer = createReducer(initialState, (builder) => {
         saveLocalStorageLanguage(state[PARAM_LANGUAGE]);
     });
 
-    builder.addCase(
-        SELECT_COMPUTED_LANGUAGE,
-        (state, action: SelectComputedLanguageAction) => {
-            state.computedLanguage = action.computedLanguage;
-        }
-    );
+    builder.addCase(SELECT_COMPUTED_LANGUAGE, (state, action: SelectComputedLanguageAction) => {
+        state.computedLanguage = action.computedLanguage;
+    });
 
-    builder.addCase(
-        SET_PARAMS_LOADED,
-        (state, action: SetParamsLoadedAction) => {
-            state[PARAMS_LOADED] = action[PARAMS_LOADED];
-        }
-    );
+    builder.addCase(SET_PARAMS_LOADED, (state, action: SetParamsLoadedAction) => {
+        state[PARAMS_LOADED] = action[PARAMS_LOADED];
+    });
 
     builder.addCase(USE_NAME, (state, action: UseNameAction) => {
         state[PARAM_USE_NAME] = action[PARAM_USE_NAME];
@@ -1015,12 +926,9 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAM_LINE_FULL_PATH] = action[PARAM_LINE_FULL_PATH];
     });
 
-    builder.addCase(
-        LINE_PARALLEL_PATH,
-        (state, action: LineParallelPathAction) => {
-            state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
-        }
-    );
+    builder.addCase(LINE_PARALLEL_PATH, (state, action: LineParallelPathAction) => {
+        state[PARAM_LINE_PARALLEL_PATH] = action[PARAM_LINE_PARALLEL_PATH];
+    });
 
     builder.addCase(LINE_FLOW_MODE, (state, action: LineFlowModeAction) => {
         state[PARAM_LINE_FLOW_MODE] = action[PARAM_LINE_FLOW_MODE];
@@ -1030,288 +938,181 @@ export const reducer = createReducer(initialState, (builder) => {
         state[PARAM_FLUX_CONVENTION] = action[PARAM_FLUX_CONVENTION];
     });
 
-    builder.addCase(
-        ENABLE_DEVELOPER_MODE,
-        (state, action: EnableDeveloperModeAction) => {
-            state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
-        }
-    );
+    builder.addCase(ENABLE_DEVELOPER_MODE, (state, action: EnableDeveloperModeAction) => {
+        state[PARAM_DEVELOPER_MODE] = action[PARAM_DEVELOPER_MODE];
+    });
 
-    builder.addCase(
-        LINE_FLOW_COLOR_MODE,
-        (state, action: LineFlowColorModeAction) => {
-            state[PARAM_LINE_FLOW_COLOR_MODE] =
-                action[PARAM_LINE_FLOW_COLOR_MODE];
-        }
-    );
+    builder.addCase(LINE_FLOW_COLOR_MODE, (state, action: LineFlowColorModeAction) => {
+        state[PARAM_LINE_FLOW_COLOR_MODE] = action[PARAM_LINE_FLOW_COLOR_MODE];
+    });
 
     builder.addCase(LIMIT_REDUCTION, (state, action: LimitReductionAction) => {
         state[PARAM_LIMIT_REDUCTION] = action[PARAM_LIMIT_REDUCTION];
     });
 
-    builder.addCase(
-        LIMIT_REDUCTION_MODIFIED,
-        (state, action: LimitReductionModifiedAction) => {
-            state.limitReductionModified = action.limitReductionModified;
-        }
-    );
+    builder.addCase(LIMIT_REDUCTION_MODIFIED, (state, action: LimitReductionModifiedAction) => {
+        state.limitReductionModified = action.limitReductionModified;
+    });
 
-    builder.addCase(
-        LINE_FLOW_ALERT_THRESHOLD,
-        (state, action: LineFlowAlertThresholdAction) => {
-            state[PARAM_LINE_FLOW_ALERT_THRESHOLD] =
-                action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
-        }
-    );
+    builder.addCase(LINE_FLOW_ALERT_THRESHOLD, (state, action: LineFlowAlertThresholdAction) => {
+        state[PARAM_LINE_FLOW_ALERT_THRESHOLD] = action[PARAM_LINE_FLOW_ALERT_THRESHOLD];
+    });
 
-    builder.addCase(
-        UNAUTHORIZED_USER_INFO,
-        (state, action: UnauthorizedUserAction) => {
-            state.authenticationRouterError = action.authenticationRouterError;
-        }
-    );
+    builder.addCase(UNAUTHORIZED_USER_INFO, (state, action: UnauthorizedUserAction) => {
+        state.authenticationRouterError = action.authenticationRouterError;
+    });
 
     builder.addCase(LOGOUT_ERROR, (state, action: LogoutErrorAction) => {
         state.authenticationRouterError = action.authenticationRouterError;
     });
 
-    builder.addCase(
-        USER_VALIDATION_ERROR,
-        (state, action: UserValidationErrorAction) => {
-            state.authenticationRouterError = action.authenticationRouterError;
-        }
-    );
+    builder.addCase(USER_VALIDATION_ERROR, (state, action: UserValidationErrorAction) => {
+        state.authenticationRouterError = action.authenticationRouterError;
+    });
 
-    builder.addCase(
-        RESET_AUTHENTICATION_ROUTER_ERROR,
-        (state, action: AuthenticationRouterErrorAction) => {
-            state.authenticationRouterError = null;
-        }
-    );
+    builder.addCase(RESET_AUTHENTICATION_ROUTER_ERROR, (state, action: AuthenticationRouterErrorAction) => {
+        state.authenticationRouterError = null;
+    });
 
-    builder.addCase(
-        SHOW_AUTH_INFO_LOGIN,
-        (state, action: ShowAuthenticationRouterLoginAction) => {
-            state.showAuthenticationRouterLogin =
-                action.showAuthenticationRouterLogin;
-        }
-    );
+    builder.addCase(SHOW_AUTH_INFO_LOGIN, (state, action: ShowAuthenticationRouterLoginAction) => {
+        state.showAuthenticationRouterLogin = action.showAuthenticationRouterLogin;
+    });
 
-    builder.addCase(
-        MAP_MANUAL_REFRESH,
-        (state, action: MapManualRefreshAction) => {
-            state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
-        }
-    );
+    builder.addCase(MAP_MANUAL_REFRESH, (state, action: MapManualRefreshAction) => {
+        state[PARAM_MAP_MANUAL_REFRESH] = action[PARAM_MAP_MANUAL_REFRESH];
+    });
 
     builder.addCase(MAP_BASEMAP, (state, action: MapBasemapAction) => {
         state[PARAM_MAP_BASEMAP] = action[PARAM_MAP_BASEMAP];
     });
 
-    builder.addCase(
-        RESET_MAP_RELOADED,
-        (state, action: ResetMapReloadedAction) => {
-            state.reloadMap = false;
-        }
-    );
+    builder.addCase(RESET_MAP_RELOADED, (state, action: ResetMapReloadedAction) => {
+        state.reloadMap = false;
+    });
 
-    builder.addCase(
-        MAP_EQUIPMENTS_INITIALIZED,
-        (state, action: MapEquipmentsInitializedAction) => {
-            state.isMapEquipmentsInitialized = action.newValue;
-        }
-    );
+    builder.addCase(MAP_EQUIPMENTS_INITIALIZED, (state, action: MapEquipmentsInitializedAction) => {
+        state.isMapEquipmentsInitialized = action.newValue;
+    });
 
-    builder.addCase(
-        SUBSTATION_LAYOUT,
-        (state, action: SubstationLayoutAction) => {
-            state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
-        }
-    );
+    builder.addCase(SUBSTATION_LAYOUT, (state, action: SubstationLayoutAction) => {
+        state[PARAM_SUBSTATION_LAYOUT] = action[PARAM_SUBSTATION_LAYOUT];
+    });
 
-    builder.addCase(
-        COMPONENT_LIBRARY,
-        (state, action: ComponentLibraryAction) => {
-            state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
-        }
-    );
+    builder.addCase(COMPONENT_LIBRARY, (state, action: ComponentLibraryAction) => {
+        state[PARAM_COMPONENT_LIBRARY] = action[PARAM_COMPONENT_LIBRARY];
+    });
 
-    builder.addCase(
-        SET_FULLSCREEN_DIAGRAM,
-        (state, action: SetFullscreenDiagramAction) => {
-            state.fullScreenDiagram = action.diagramId
-                ? {
-                      id: action.diagramId,
-                      svgType: action.svgType,
-                  }
-                : null;
-        }
-    );
+    builder.addCase(SET_FULLSCREEN_DIAGRAM, (state, action: SetFullscreenDiagramAction) => {
+        state.fullScreenDiagram = action.diagramId
+            ? {
+                  id: action.diagramId,
+                  svgType: action.svgType,
+              }
+            : null;
+    });
 
-    builder.addCase(
-        CHANGE_DISPLAYED_COLUMNS_NAMES,
-        (state, action: ChangeDisplayedColumnsNamesAction) => {
-            const newDisplayedColumnsNames = [
-                ...state.allDisplayedColumnsNames,
-            ];
-            action.displayedColumnsNamesParams.forEach((param) => {
-                if (param) {
-                    newDisplayedColumnsNames[param.index] = param.value;
-                }
-            });
-            state.allDisplayedColumnsNames = newDisplayedColumnsNames;
-        }
-    );
-
-    builder.addCase(
-        CHANGE_LOCKED_COLUMNS_NAMES,
-        (state, action: ChangeLockedColumnsNamesAction) => {
-            let newLockedColumnsNames = [...state.allLockedColumnsNames];
-            action.lockedColumnsNamesParams.forEach((param) => {
-                if (param) {
-                    newLockedColumnsNames[param.index] = param.value;
-                }
-            });
-            state.allLockedColumnsNames = newLockedColumnsNames;
-        }
-    );
-
-    builder.addCase(
-        CHANGE_REORDERED_COLUMNS,
-        (state, action: ChangeReorderedColumnsAction) => {
-            let newReorderedColumns = [
-                ...state.allReorderedTableDefinitionIndexes,
-            ];
-            action.reorderedColumnsParams.forEach((param) => {
-                if (param) {
-                    newReorderedColumns[param.index] = param.value;
-                }
-            });
-            state.allReorderedTableDefinitionIndexes = newReorderedColumns;
-        }
-    );
-
-    builder.addCase(
-        FAVORITE_CONTINGENCY_LISTS,
-        (state, action: FavoriteContingencyListsAction) => {
-            state[PARAM_FAVORITE_CONTINGENCY_LISTS] =
-                action[PARAM_FAVORITE_CONTINGENCY_LISTS];
-        }
-    );
-
-    builder.addCase(
-        CURRENT_TREE_NODE,
-        (state, action: CurrentTreeNodeAction) => {
-            state.currentTreeNode = action.currentTreeNode;
-            state.reloadMap = true;
-        }
-    );
-
-    builder.addCase(
-        SELECTION_FOR_COPY,
-        (state, action: SelectionForCopyAction) => {
-            const selectionForCopy = action.selectionForCopy;
-            if (
-                selectionForCopy.sourceStudyUuid === state.studyUuid &&
-                selectionForCopy.nodeId &&
-                (selectionForCopy.copyType === CopyType.SUBTREE_COPY ||
-                    selectionForCopy.copyType === CopyType.SUBTREE_CUT)
-            ) {
-                selectionForCopy.allChildrenIds = getAllChildren(
-                    state.networkModificationTreeModel,
-                    selectionForCopy.nodeId
-                ).map((child) => child.id);
+    builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
+        const newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        action.displayedColumnsNamesParams.forEach((param) => {
+            if (param) {
+                newDisplayedColumnsNames[param.index] = param.value;
             }
-            state.selectionForCopy = selectionForCopy;
-        }
-    );
+        });
+        state.allDisplayedColumnsNames = newDisplayedColumnsNames;
+    });
 
-    builder.addCase(
-        SET_MODIFICATIONS_DRAWER_OPEN,
-        (state, action: SetModificationsDrawerOpenAction) => {
-            state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
-
-            // exclusively open between two components
-            if (
-                action.isModificationsDrawerOpen &&
-                state.isEventScenarioDrawerOpen
-            ) {
-                state.isEventScenarioDrawerOpen =
-                    !state.isEventScenarioDrawerOpen;
+    builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {
+        let newLockedColumnsNames = [...state.allLockedColumnsNames];
+        action.lockedColumnsNamesParams.forEach((param) => {
+            if (param) {
+                newLockedColumnsNames[param.index] = param.value;
             }
-        }
-    );
+        });
+        state.allLockedColumnsNames = newLockedColumnsNames;
+    });
 
-    builder.addCase(
-        SET_EVENT_SCENARIO_DRAWER_OPEN,
-        (state, action: SetEventScenarioDrawerOpenAction) => {
-            state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
-
-            // exclusively open between two components
-            if (
-                action.isEventScenarioDrawerOpen &&
-                state.isModificationsDrawerOpen
-            ) {
-                state.isModificationsDrawerOpen =
-                    !state.isModificationsDrawerOpen;
+    builder.addCase(CHANGE_REORDERED_COLUMNS, (state, action: ChangeReorderedColumnsAction) => {
+        let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
+        action.reorderedColumnsParams.forEach((param) => {
+            if (param) {
+                newReorderedColumns[param.index] = param.value;
             }
+        });
+        state.allReorderedTableDefinitionIndexes = newReorderedColumns;
+    });
+
+    builder.addCase(FAVORITE_CONTINGENCY_LISTS, (state, action: FavoriteContingencyListsAction) => {
+        state[PARAM_FAVORITE_CONTINGENCY_LISTS] = action[PARAM_FAVORITE_CONTINGENCY_LISTS];
+    });
+
+    builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
+        state.currentTreeNode = action.currentTreeNode;
+        state.reloadMap = true;
+    });
+
+    builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
+        const selectionForCopy = action.selectionForCopy;
+        if (
+            selectionForCopy.sourceStudyUuid === state.studyUuid &&
+            selectionForCopy.nodeId &&
+            (selectionForCopy.copyType === CopyType.SUBTREE_COPY || selectionForCopy.copyType === CopyType.SUBTREE_CUT)
+        ) {
+            selectionForCopy.allChildrenIds = getAllChildren(
+                state.networkModificationTreeModel,
+                selectionForCopy.nodeId
+            ).map((child) => child.id);
         }
-    );
+        state.selectionForCopy = selectionForCopy;
+    });
 
-    builder.addCase(
-        CENTER_ON_SUBSTATION,
-        (state, action: CenterOnSubstationAction) => {
-            state.centerOnSubstation = action.centerOnSubstation;
+    builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, action: SetModificationsDrawerOpenAction) => {
+        state.isModificationsDrawerOpen = action.isModificationsDrawerOpen;
+
+        // exclusively open between two components
+        if (action.isModificationsDrawerOpen && state.isEventScenarioDrawerOpen) {
+            state.isEventScenarioDrawerOpen = !state.isEventScenarioDrawerOpen;
         }
-    );
+    });
 
-    builder.addCase(
-        ADD_NOTIFICATION,
-        (state, action: AddNotificationAction) => {
-            state.notificationIdList = [
-                ...state.notificationIdList,
-                ...action.notificationIds,
-            ];
+    builder.addCase(SET_EVENT_SCENARIO_DRAWER_OPEN, (state, action: SetEventScenarioDrawerOpenAction) => {
+        state.isEventScenarioDrawerOpen = action.isEventScenarioDrawerOpen;
+
+        // exclusively open between two components
+        if (action.isEventScenarioDrawerOpen && state.isModificationsDrawerOpen) {
+            state.isModificationsDrawerOpen = !state.isModificationsDrawerOpen;
         }
-    );
+    });
 
-    builder.addCase(
-        REMOVE_NOTIFICATION_BY_NODE,
-        (state, action: RemoveNotificationByNodeAction) => {
-            state.notificationIdList = [
-                ...state.notificationIdList.filter(
-                    (nodeId) => !action.notificationIds.includes(nodeId)
-                ),
-            ];
-        }
-    );
+    builder.addCase(CENTER_ON_SUBSTATION, (state, action: CenterOnSubstationAction) => {
+        state.centerOnSubstation = action.centerOnSubstation;
+    });
 
-    builder.addCase(
-        SET_MODIFICATIONS_IN_PROGRESS,
-        (state, action: SetModificationsInProgressAction) => {
-            state.isModificationsInProgress = action.isModificationsInProgress;
-        }
-    );
+    builder.addCase(ADD_NOTIFICATION, (state, action: AddNotificationAction) => {
+        state.notificationIdList = [...state.notificationIdList, ...action.notificationIds];
+    });
 
-    builder.addCase(
-        SET_STUDY_DISPLAY_MODE,
-        (state, action: SetStudyDisplayModeAction) => {
-            if (
-                Object.values(StudyDisplayMode).includes(
-                    action.studyDisplayMode
-                )
-            ) {
-                // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
-                // Some actions in the TREE display mode could change this value after that
-                // ex: change current Node, current Node updated ...
-                if (action.studyDisplayMode === StudyDisplayMode.TREE) {
-                    state.reloadMap = false;
-                }
+    builder.addCase(REMOVE_NOTIFICATION_BY_NODE, (state, action: RemoveNotificationByNodeAction) => {
+        state.notificationIdList = [
+            ...state.notificationIdList.filter((nodeId) => !action.notificationIds.includes(nodeId)),
+        ];
+    });
 
-                state.studyDisplayMode = action.studyDisplayMode;
+    builder.addCase(SET_MODIFICATIONS_IN_PROGRESS, (state, action: SetModificationsInProgressAction) => {
+        state.isModificationsInProgress = action.isModificationsInProgress;
+    });
+
+    builder.addCase(SET_STUDY_DISPLAY_MODE, (state, action: SetStudyDisplayModeAction) => {
+        if (Object.values(StudyDisplayMode).includes(action.studyDisplayMode)) {
+            // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
+            // Some actions in the TREE display mode could change this value after that
+            // ex: change current Node, current Node updated ...
+            if (action.studyDisplayMode === StudyDisplayMode.TREE) {
+                state.reloadMap = false;
             }
+
+            state.studyDisplayMode = action.studyDisplayMode;
         }
-    );
+    });
 
     /*
      * The following functions' goal are to update state.diagramStates with nodes of the following type :
@@ -1325,15 +1126,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(OPEN_DIAGRAM, (state, action: OpenDiagramAction) => {
         const diagramStates = state.diagramStates;
         const diagramToOpenIndex = diagramStates.findIndex(
-            (diagram) =>
-                diagram.id === action.id && diagram.svgType === action.svgType
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
         );
 
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // First, we check if there is already a Network Area Diagram in the diagramStates.
             const firstNadIndex = diagramStates.findIndex(
-                (diagram) =>
-                    diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
+                (diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
             );
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
@@ -1352,13 +1151,9 @@ export const reducer = createReducer(initialState, (builder) => {
                 }
             } else {
                 // If there is already at least one NAD, and if it is minimized, then we change all of them to opened.
-                if (
-                    diagramStates[firstNadIndex].state === ViewState.MINIMIZED
-                ) {
+                if (diagramStates[firstNadIndex].state === ViewState.MINIMIZED) {
                     diagramStates.forEach((diagram) => {
-                        if (
-                            diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                        ) {
+                        if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                             diagram.state = ViewState.OPENED;
                         }
                     });
@@ -1376,8 +1171,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // Because it is the first NAD displayed that counts for the fullscreen status, we put the fist nad's id there.
                 if (
                     state.fullScreenDiagram?.svgType &&
-                    state.fullScreenDiagram?.svgType !==
-                        DiagramType.NETWORK_AREA_DIAGRAM
+                    state.fullScreenDiagram?.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
                 ) {
                     state.fullScreenDiagram = {
                         id: diagramStates[firstNadIndex].id,
@@ -1389,15 +1183,11 @@ export const reducer = createReducer(initialState, (builder) => {
             // We check if the SLD to open is already in the diagramStates.
             if (diagramToOpenIndex >= 0) {
                 // If the SLD to open is already in the diagramStates and it is minimized, then we change it to opened.
-                if (
-                    diagramStates[diagramToOpenIndex].state ===
-                    ViewState.MINIMIZED
-                ) {
+                if (diagramStates[diagramToOpenIndex].state === ViewState.MINIMIZED) {
                     // We minimize all the other OPENED SLD.
                     diagramStates.forEach((diagram) => {
                         if (
-                            diagram.svgType !==
-                                DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagram.state === ViewState.OPENED
                         ) {
                             diagram.state = ViewState.MINIMIZED;
@@ -1422,10 +1212,7 @@ export const reducer = createReducer(initialState, (builder) => {
             } else {
                 // We minimize all the other OPENED SLD.
                 diagramStates.forEach((diagram) => {
-                    if (
-                        diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagram.state === ViewState.OPENED
-                    ) {
+                    if (diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagram.state === ViewState.OPENED) {
                         diagram.state = ViewState.MINIMIZED;
                     }
                 });
@@ -1448,110 +1235,82 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = diagramStates;
     });
 
-    builder.addCase(
-        MINIMIZE_DIAGRAM,
-        (state, action: MinimizeDiagramAction) => {
-            const diagramStates = state.diagramStates;
+    builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
+        const diagramStates = state.diagramStates;
 
+        if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+            // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
+            diagramStates.forEach((diagram) => {
+                if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                    diagram.state = ViewState.MINIMIZED;
+                }
+            });
+        } else {
+            // For single line diagram, we will update the corresponding diagram.
+            const diagramToMinimizeIndex = diagramStates.findIndex(
+                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
+            );
+            if (diagramToMinimizeIndex >= 0) {
+                diagramStates[diagramToMinimizeIndex].state = ViewState.MINIMIZED;
+            }
+        }
+        state.diagramStates = diagramStates;
+    });
+
+    builder.addCase(TOGGLE_PIN_DIAGRAM, (state, action: TogglePinDiagramAction) => {
+        const diagramStates = state.diagramStates;
+
+        // search targeted diagram among the diagramStates
+        const diagramToPinToggleIndex = diagramStates.findIndex(
+            (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
+        );
+        if (diagramToPinToggleIndex >= 0) {
             if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                // For network area diagrams, the ID is irrelevant, we will minimize all the NAD in the state.diagramStates.
+                // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
+                const newStateForNads =
+                    diagramStates[diagramToPinToggleIndex].state === ViewState.PINNED
+                        ? ViewState.OPENED
+                        : ViewState.PINNED;
                 diagramStates.forEach((diagram) => {
                     if (diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                        diagram.state = ViewState.MINIMIZED;
+                        diagram.state = newStateForNads;
                     }
                 });
             } else {
-                // For single line diagram, we will update the corresponding diagram.
-                const diagramToMinimizeIndex = diagramStates.findIndex(
-                    (diagram) =>
-                        diagram.id === action.id &&
-                        diagram.svgType === action.svgType
-                );
-                if (diagramToMinimizeIndex >= 0) {
-                    diagramStates[diagramToMinimizeIndex].state =
-                        ViewState.MINIMIZED;
-                }
-            }
-            state.diagramStates = diagramStates;
-        }
-    );
-
-    builder.addCase(
-        TOGGLE_PIN_DIAGRAM,
-        (state, action: TogglePinDiagramAction) => {
-            const diagramStates = state.diagramStates;
-
-            // search targeted diagram among the diagramStates
-            const diagramToPinToggleIndex = diagramStates.findIndex(
-                (diagram) =>
-                    diagram.id === action.id &&
-                    diagram.svgType === action.svgType
-            );
-            if (diagramToPinToggleIndex >= 0) {
-                if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                    // If the current NAD is PINNED, we set all NAD to OPENED. Otherwise, we set them to PINNED.
-                    const newStateForNads =
-                        diagramStates[diagramToPinToggleIndex].state ===
-                        ViewState.PINNED
-                            ? ViewState.OPENED
-                            : ViewState.PINNED;
-                    diagramStates.forEach((diagram) => {
-                        if (
-                            diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                        ) {
-                            diagram.state = newStateForNads;
-                        }
-                    });
+                if (diagramStates[diagramToPinToggleIndex].state !== ViewState.PINNED) {
+                    // If the current SLD is minimized or opened, we pin it.
+                    diagramStates[diagramToPinToggleIndex].state = ViewState.PINNED;
                 } else {
-                    if (
-                        diagramStates[diagramToPinToggleIndex].state !==
-                        ViewState.PINNED
-                    ) {
-                        // If the current SLD is minimized or opened, we pin it.
-                        diagramStates[diagramToPinToggleIndex].state =
-                            ViewState.PINNED;
+                    // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
+                    // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
+                    const currentlyOpenedDiagramIndex = diagramStates.findIndex(
+                        (diagram) =>
+                            diagram.state === ViewState.OPENED &&
+                            (diagram.svgType === DiagramType.SUBSTATION ||
+                                diagram.svgType === DiagramType.VOLTAGE_LEVEL)
+                    );
+                    if (currentlyOpenedDiagramIndex >= 0) {
+                        diagramStates[diagramToPinToggleIndex].state = ViewState.MINIMIZED;
                     } else {
-                        // If the current SLD is pinned, we check if there is already another SLD opened (there can only be one
-                        // SLD opened -not pinned- at a time). If there is, then we minimize the current SLD. If none, we open it.
-                        const currentlyOpenedDiagramIndex =
-                            diagramStates.findIndex(
-                                (diagram) =>
-                                    diagram.state === ViewState.OPENED &&
-                                    (diagram.svgType ===
-                                        DiagramType.SUBSTATION ||
-                                        diagram.svgType ===
-                                            DiagramType.VOLTAGE_LEVEL)
-                            );
-                        if (currentlyOpenedDiagramIndex >= 0) {
-                            diagramStates[diagramToPinToggleIndex].state =
-                                ViewState.MINIMIZED;
-                        } else {
-                            diagramStates[diagramToPinToggleIndex].state =
-                                ViewState.OPENED;
-                        }
+                        diagramStates[diagramToPinToggleIndex].state = ViewState.OPENED;
                     }
                 }
             }
-
-            state.diagramStates = diagramStates;
         }
-    );
+
+        state.diagramStates = diagramStates;
+    });
 
     builder.addCase(CLOSE_DIAGRAM, (state, action: CloseDiagramAction) => {
         let diagramStates = state.diagramStates;
 
         if (action.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             // If we close a NAD, we close all of them.
-            diagramStates = diagramStates.filter(
-                (diagram) =>
-                    diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-            );
+            diagramStates = diagramStates.filter((diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
         } else {
             // If we close a SLD, we only remove one.
             const diagramToCloseIndex = diagramStates.findIndex(
-                (diagram) =>
-                    diagram.id === action.id &&
-                    diagram.svgType === action.svgType
+                (diagram) => diagram.id === action.id && diagram.svgType === action.svgType
             );
             if (diagramToCloseIndex >= 0) {
                 diagramStates.splice(diagramToCloseIndex, 1);
@@ -1563,45 +1322,30 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CLOSE_DIAGRAMS, (state, action: CloseDiagramsAction) => {
         const idsToClose = new Set(action.ids);
-        state.diagramStates = state.diagramStates.filter(
-            (diagram) => !idsToClose.has(diagram.id)
-        );
+        state.diagramStates = state.diagramStates.filter((diagram) => !idsToClose.has(diagram.id));
     });
 
-    builder.addCase(
-        STOP_DIAGRAM_BLINK,
-        (state, action: StopDiagramBlinkAction) => {
-            state.diagramStates.forEach((diagram) => {
-                if (diagram.needsToBlink) {
-                    diagram.needsToBlink = undefined;
-                }
-            });
-        }
-    );
-
-    builder.addCase(
-        RESET_NETWORK_AREA_DIAGRAM_DEPTH,
-        (state, action: ResetNetworkAreaDiagramDepthAction) => {
-            state.networkAreaDiagramDepth = 0;
-        }
-    );
-
-    builder.addCase(
-        INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-        (state, action: IncrementNetworkAreaDiagramDepthAction) => {
-            state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
-        }
-    );
-
-    builder.addCase(
-        DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
-        (state, action: DecrementNetworkAreaDiagramDepthAction) => {
-            if (state.networkAreaDiagramDepth > 0) {
-                state.networkAreaDiagramDepth =
-                    state.networkAreaDiagramDepth - 1;
+    builder.addCase(STOP_DIAGRAM_BLINK, (state, action: StopDiagramBlinkAction) => {
+        state.diagramStates.forEach((diagram) => {
+            if (diagram.needsToBlink) {
+                diagram.needsToBlink = undefined;
             }
+        });
+    });
+
+    builder.addCase(RESET_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: ResetNetworkAreaDiagramDepthAction) => {
+        state.networkAreaDiagramDepth = 0;
+    });
+
+    builder.addCase(INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: IncrementNetworkAreaDiagramDepthAction) => {
+        state.networkAreaDiagramDepth = state.networkAreaDiagramDepth + 1;
+    });
+
+    builder.addCase(DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH, (state, action: DecrementNetworkAreaDiagramDepthAction) => {
+        if (state.networkAreaDiagramDepth > 0) {
+            state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
-    );
+    });
 
     builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
@@ -1614,157 +1358,106 @@ export const reducer = createReducer(initialState, (builder) => {
         state.spreadsheetNetwork[action.equipmentType] = action.equipments;
     });
 
-    builder.addCase(
-        UPDATE_EQUIPMENTS,
-        (state, action: UpdateEquipmentsAction) => {
-            // for now, this action receives an object containing all equipments from a substation
-            // it will be modified when the notifications received after a network modification will be more precise
-            const updatedEquipments = action.equipments;
+    builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {
+        // for now, this action receives an object containing all equipments from a substation
+        // it will be modified when the notifications received after a network modification will be more precise
+        const updatedEquipments = action.equipments;
 
-            // equipmentType : type of equipment updated
-            // equipments : list of updated equipments of type <equipmentType>
-            for (const [updateType, equipments] of Object.entries(
-                updatedEquipments
-            ) as [EquipmentUpdateType, IEquipment[]][]) {
-                const equipmentType =
-                    getEquipmentTypeFromUpdateType(updateType);
-                const currentEquipment: IEquipment[] | null =
+        // equipmentType : type of equipment updated
+        // equipments : list of updated equipments of type <equipmentType>
+        for (const [updateType, equipments] of Object.entries(updatedEquipments) as [
+            EquipmentUpdateType,
+            IEquipment[]
+        ][]) {
+            const equipmentType = getEquipmentTypeFromUpdateType(updateType);
+            const currentEquipment: IEquipment[] | null =
+                // @ts-expect-error TODO manage undefined value case
+                state.spreadsheetNetwork[equipmentType];
+
+            // Format the updated equipments to match the table format
+            const formattedEquipments = formatFetchedEquipments(
+                // @ts-expect-error TODO manage undefined value case
+                equipmentType,
+                equipments
+            );
+
+            // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
+            if (currentEquipment != null) {
+                //since substations data contains voltage level ones, they have to be treated separatly
+                if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
+                    const [updatedSubstations, updatedVoltageLevels] = updateSubstationsAndVoltageLevels(
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] as Substation[],
+                        // @ts-expect-error TODO manage null value case
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+                        formattedEquipments
+                    );
+
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] = updatedSubstations;
+                    state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL] = updatedVoltageLevels;
+                } else {
                     // @ts-expect-error TODO manage undefined value case
-                    state.spreadsheetNetwork[equipmentType];
-
-                // Format the updated equipments to match the table format
-                const formattedEquipments = formatFetchedEquipments(
-                    // @ts-expect-error TODO manage undefined value case
-                    equipmentType,
-                    equipments
-                );
-
-                // if the <equipmentType> equipments are not loaded into the store yet, we don't have to update them
-                if (currentEquipment != null) {
-                    //since substations data contains voltage level ones, they have to be treated separatly
-                    if (equipmentType === EQUIPMENT_TYPES.SUBSTATION) {
-                        const [updatedSubstations, updatedVoltageLevels] =
-                            updateSubstationsAndVoltageLevels(
-                                state.spreadsheetNetwork[
-                                    EQUIPMENT_TYPES.SUBSTATION
-                                ] as Substation[],
-                                // @ts-expect-error TODO manage null value case
-                                state.spreadsheetNetwork[
-                                    EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                                ],
-                                formattedEquipments
-                            );
-
-                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] =
-                            updatedSubstations;
-                        state.spreadsheetNetwork[
-                            EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                        ] = updatedVoltageLevels;
-                    } else {
-                        // @ts-expect-error TODO manage undefined value case
-                        state.spreadsheetNetwork[equipmentType] =
-                            updateEquipments(
-                                currentEquipment,
-                                formattedEquipments
-                            );
-                    }
+                    state.spreadsheetNetwork[equipmentType] = updateEquipments(currentEquipment, formattedEquipments);
                 }
             }
         }
-    );
+    });
 
-    builder.addCase(
-        DELETE_EQUIPMENTS,
-        (state, action: DeleteEquipmentsAction) => {
-            action.equipments.forEach(
-                ({
-                    equipmentType: equipmentToDeleteType,
-                    equipmentId: equipmentToDeleteId,
-                }) => {
-                    const currentEquipments =
-                        state.spreadsheetNetwork[equipmentToDeleteType];
-                    if (currentEquipments != null) {
-                        // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
-                        if (
-                            equipmentToDeleteType ===
-                            EQUIPMENT_TYPES.VOLTAGE_LEVEL
-                        ) {
-                            const currentSubstations = state.spreadsheetNetwork[
-                                EQUIPMENT_TYPES.SUBSTATION
-                            ] as Substation[] | null;
-                            if (currentSubstations != null) {
-                                state.spreadsheetNetwork[
-                                    EQUIPMENT_TYPES.SUBSTATION
-                                ] = updateSubstationAfterVLDeletion(
-                                    currentSubstations,
-                                    equipmentToDeleteId
-                                );
-                            }
-                        }
-
-                        state.spreadsheetNetwork[equipmentToDeleteType] =
-                            deleteEquipment(
-                                currentEquipments,
-                                equipmentToDeleteId
-                            );
+    builder.addCase(DELETE_EQUIPMENTS, (state, action: DeleteEquipmentsAction) => {
+        action.equipments.forEach(({ equipmentType: equipmentToDeleteType, equipmentId: equipmentToDeleteId }) => {
+            const currentEquipments = state.spreadsheetNetwork[equipmentToDeleteType];
+            if (currentEquipments != null) {
+                // in case of voltage level deletion, we need to update the linked substation which contains a list of its voltage levels
+                if (equipmentToDeleteType === EQUIPMENT_TYPES.VOLTAGE_LEVEL) {
+                    const currentSubstations = state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] as
+                        | Substation[]
+                        | null;
+                    if (currentSubstations != null) {
+                        state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION] = updateSubstationAfterVLDeletion(
+                            currentSubstations,
+                            equipmentToDeleteId
+                        );
                     }
                 }
-            );
-        }
-    );
 
-    builder.addCase(
-        RESET_EQUIPMENTS,
-        (state, action: ResetEquipmentsAction) => {
-            state.spreadsheetNetwork = {
-                ...initialSpreadsheetNetworkState,
-            };
-        }
-    );
-    builder.addCase(
-        RESET_EQUIPMENTS_BY_TYPES,
-        (state, action: ResetEquipmentsByTypesAction) => {
-            action.equipmentTypes.forEach((equipmentType) => {
-                state.spreadsheetNetwork[equipmentType] = null;
-            });
-        }
-    );
+                state.spreadsheetNetwork[equipmentToDeleteType] = deleteEquipment(
+                    currentEquipments,
+                    equipmentToDeleteId
+                );
+            }
+        });
+    });
 
-    builder.addCase(
-        RESET_EQUIPMENTS_POST_LOADFLOW,
-        (state, action: ResetEquipmentsPostLoadflowAction) => {
-            state.spreadsheetNetwork = {
-                ...initialSpreadsheetNetworkState,
-                [EQUIPMENT_TYPES.SUBSTATION]:
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
-                [EQUIPMENT_TYPES.VOLTAGE_LEVEL]:
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
-                [EQUIPMENT_TYPES.HVDC_LINE]:
-                    state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
-            };
-        }
-    );
+    builder.addCase(RESET_EQUIPMENTS, (state, action: ResetEquipmentsAction) => {
+        state.spreadsheetNetwork = {
+            ...initialSpreadsheetNetworkState,
+        };
+    });
+    builder.addCase(RESET_EQUIPMENTS_BY_TYPES, (state, action: ResetEquipmentsByTypesAction) => {
+        action.equipmentTypes.forEach((equipmentType) => {
+            state.spreadsheetNetwork[equipmentType] = null;
+        });
+    });
 
-    builder.addCase(
-        SET_COMPUTING_STATUS,
-        (state, action: SetComputingStatusAction) => {
-            state.computingStatus[action.computingType] = action.runningStatus;
-        }
-    );
+    builder.addCase(RESET_EQUIPMENTS_POST_LOADFLOW, (state, action: ResetEquipmentsPostLoadflowAction) => {
+        state.spreadsheetNetwork = {
+            ...initialSpreadsheetNetworkState,
+            [EQUIPMENT_TYPES.SUBSTATION]: state.spreadsheetNetwork[EQUIPMENT_TYPES.SUBSTATION],
+            [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: state.spreadsheetNetwork[EQUIPMENT_TYPES.VOLTAGE_LEVEL],
+            [EQUIPMENT_TYPES.HVDC_LINE]: state.spreadsheetNetwork[EQUIPMENT_TYPES.HVDC_LINE],
+        };
+    });
 
-    builder.addCase(
-        SET_COMPUTATION_STARTING,
-        (state, action: SetComputationStartingAction) => {
-            state.computationStarting = action.computationStarting;
-        }
-    );
+    builder.addCase(SET_COMPUTING_STATUS, (state, action: SetComputingStatusAction) => {
+        state.computingStatus[action.computingType] = action.runningStatus;
+    });
 
-    builder.addCase(
-        SET_OPTIONAL_SERVICES,
-        (state, action: SetOptionalServicesAction) => {
-            state.optionalServices = action.optionalServices;
-        }
-    );
+    builder.addCase(SET_COMPUTATION_STARTING, (state, action: SetComputationStartingAction) => {
+        state.computationStarting = action.computationStarting;
+    });
+
+    builder.addCase(SET_OPTIONAL_SERVICES, (state, action: SetOptionalServicesAction) => {
+        state.optionalServices = action.optionalServices;
+    });
 
     builder.addCase(
         SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
@@ -1778,104 +1471,67 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
-    builder.addCase(
-        SET_STUDY_INDEXATION_STATUS,
-        (state, action: SetStudyIndexationStatusAction) => {
-            state.studyIndexationStatus = action.studyIndexationStatus;
-        }
-    );
+    builder.addCase(SET_STUDY_INDEXATION_STATUS, (state, action: SetStudyIndexationStatusAction) => {
+        state.studyIndexationStatus = action.studyIndexationStatus;
+    });
 
-    builder.addCase(
-        ADD_TO_RECENT_GLOBAL_FILTERS,
-        (state, action: AddToRecentGlobalFiltersAction) => {
-            let newRecentGlobalFilters = [...state.recentGlobalFilters];
-            action.globalFilters.forEach((filter) => {
-                if (
-                    !newRecentGlobalFilters.some(
-                        (obj) =>
-                            obj.label === filter.label &&
-                            obj.filterType === filter.filterType
-                    )
-                ) {
-                    newRecentGlobalFilters.push(filter);
-                }
-            });
-            state.recentGlobalFilters = newRecentGlobalFilters;
-        }
-    );
+    builder.addCase(ADD_TO_RECENT_GLOBAL_FILTERS, (state, action: AddToRecentGlobalFiltersAction) => {
+        let newRecentGlobalFilters = [...state.recentGlobalFilters];
+        action.globalFilters.forEach((filter) => {
+            if (
+                !newRecentGlobalFilters.some(
+                    (obj) => obj.label === filter.label && obj.filterType === filter.filterType
+                )
+            ) {
+                newRecentGlobalFilters.push(filter);
+            }
+        });
+        state.recentGlobalFilters = newRecentGlobalFilters;
+    });
 
-    builder.addCase(
-        SET_LAST_COMPLETED_COMPUTATION,
-        (state, action: SetLastCompletedComputationAction) => {
-            state.lastCompletedComputation = action.lastCompletedComputation;
-        }
-    );
+    builder.addCase(SET_LAST_COMPLETED_COMPUTATION, (state, action: SetLastCompletedComputationAction) => {
+        state.lastCompletedComputation = action.lastCompletedComputation;
+    });
 
-    builder.addCase(
-        LOADFLOW_RESULT_FILTER,
-        (state, action: LoadflowResultFilterAction) => {
-            state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] =
-                action[LOADFLOW_RESULT_STORE_FIELD];
-        }
-    );
+    builder.addCase(LOADFLOW_RESULT_FILTER, (state, action: LoadflowResultFilterAction) => {
+        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] = action[LOADFLOW_RESULT_STORE_FIELD];
+    });
 
-    builder.addCase(
-        SECURITY_ANALYSIS_RESULT_FILTER,
-        (state, action: SecurityAnalysisResultFilterAction) => {
-            state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-                action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-        }
-    );
+    builder.addCase(SECURITY_ANALYSIS_RESULT_FILTER, (state, action: SecurityAnalysisResultFilterAction) => {
+        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
+    });
 
-    builder.addCase(
-        SENSITIVITY_ANALYSIS_RESULT_FILTER,
-        (state, action: SensitivityAnalysisResultFilterAction) => {
-            state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-                action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-        }
-    );
+    builder.addCase(SENSITIVITY_ANALYSIS_RESULT_FILTER, (state, action: SensitivityAnalysisResultFilterAction) => {
+        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
+    });
 
-    builder.addCase(
-        SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-        (state, action: ShortcircuitAnalysisResultFilterAction) => {
-            state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-                action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-        }
-    );
+    builder.addCase(SHORTCIRCUIT_ANALYSIS_RESULT_FILTER, (state, action: ShortcircuitAnalysisResultFilterAction) => {
+        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
+            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
+    });
 
-    builder.addCase(
-        DYNAMIC_SIMULATION_RESULT_FILTER,
-        (state, action: DynamicSimulationResultFilterAction) => {
-            state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] =
-                action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-        }
-    );
+    builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
+        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
+    });
 
-    builder.addCase(
-        SPREADSHEET_FILTER,
-        (state, action: SpreadsheetFilterAction) => {
-            state[SPREADSHEET_STORE_FIELD][action.filterTab] =
-                action[SPREADSHEET_STORE_FIELD];
-        }
-    );
+    builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
+        state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
+    });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
     });
 });
 
-function updateSubstationAfterVLDeletion(
-    currentSubstations: Substation[],
-    VLToDeleteId: string
-): Substation[] {
+function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToDeleteId: string): Substation[] {
     const substationToUpdateIndex = currentSubstations.findIndex((sub) =>
         sub.voltageLevels.some((vl) => vl.id === VLToDeleteId)
     );
     if (substationToUpdateIndex >= 0) {
-        currentSubstations[substationToUpdateIndex].voltageLevels =
-            currentSubstations[substationToUpdateIndex].voltageLevels.filter(
-                (vl) => vl.id !== VLToDeleteId
-            );
+        currentSubstations[substationToUpdateIndex].voltageLevels = currentSubstations[
+            substationToUpdateIndex
+        ].voltageLevels.filter((vl) => vl.id !== VLToDeleteId);
     }
 
     return currentSubstations;
@@ -1900,9 +1556,7 @@ export enum EquipmentUpdateType {
     BUSES = 'buses',
 }
 
-function getEquipmentTypeFromUpdateType(
-    updateType: EquipmentUpdateType
-): EQUIPMENT_TYPES | undefined {
+function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
     switch (updateType) {
         case 'lines':
             return EQUIPMENT_TYPES.LINE;
@@ -1941,13 +1595,8 @@ function getEquipmentTypeFromUpdateType(
     }
 }
 
-function deleteEquipment(
-    currentEquipments: IEquipment[],
-    equipmentToDeleteId: string
-) {
-    const equipmentToDeleteIndex = currentEquipments.findIndex(
-        (eq) => eq.id === equipmentToDeleteId
-    );
+function deleteEquipment(currentEquipments: IEquipment[], equipmentToDeleteId: string) {
+    const equipmentToDeleteIndex = currentEquipments.findIndex((eq) => eq.id === equipmentToDeleteId);
     if (equipmentToDeleteIndex >= 0) {
         currentEquipments.splice(equipmentToDeleteIndex, 1);
     }
@@ -1963,39 +1612,25 @@ function updateSubstationsAndVoltageLevels(
     currentVoltageLevels: IEquipment[],
     newOrUpdatedSubstations: Substation[]
 ) {
-    const updatedSubstations = updateEquipments(
-        currentSubstations,
-        newOrUpdatedSubstations
-    );
+    const updatedSubstations = updateEquipments(currentSubstations, newOrUpdatedSubstations);
 
     let updatedVoltageLevels = null;
 
     // if voltage levels are not loaded yet, we don't need to update them
     if (currentVoltageLevels != null) {
-        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce(
-            (acc, currentSub) => {
-                return acc.concat([...currentSub.voltageLevels]);
-            },
-            [] as IEquipment[]
-        );
+        const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce((acc, currentSub) => {
+            return acc.concat([...currentSub.voltageLevels]);
+        }, [] as IEquipment[]);
 
-        updatedVoltageLevels = updateEquipments(
-            currentVoltageLevels,
-            newOrUpdatedVoltageLevels
-        );
+        updatedVoltageLevels = updateEquipments(currentVoltageLevels, newOrUpdatedVoltageLevels);
     }
 
     return [updatedSubstations, updatedVoltageLevels];
 }
 
-function updateEquipments(
-    currentEquipments: IEquipment[],
-    newOrUpdatedEquipments: IEquipment[]
-) {
+function updateEquipments(currentEquipments: IEquipment[], newOrUpdatedEquipments: IEquipment[]) {
     newOrUpdatedEquipments.forEach((equipment) => {
-        const existingEquipmentIndex = currentEquipments.findIndex(
-            (equip) => equip.id === equipment.id
-        );
+        const existingEquipmentIndex = currentEquipments.findIndex((equip) => equip.id === equipment.id);
 
         if (existingEquipmentIndex >= 0) {
             currentEquipments[existingEquipmentIndex] = equipment;
@@ -2015,11 +1650,7 @@ function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: string) {
     state.currentTreeNode = { ...nextCurrentNode };
 }
 
-function unravelSubTree(
-    treeModel: NetworkModificationTreeModel,
-    subtreeParentId: string,
-    node: Node<TreeNodeData>
-) {
+function unravelSubTree(treeModel: NetworkModificationTreeModel, subtreeParentId: string, node: Node<TreeNodeData>) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);

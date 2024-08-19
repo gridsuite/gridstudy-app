@@ -5,24 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {
-    useStateBoolean,
-    UseStateBooleanReturn,
-} from '../../../hooks/use-states';
+import { useStateBoolean, UseStateBooleanReturn } from '../../../hooks/use-states';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { useCallback, useEffect, useState } from 'react';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { JsonTextarea } from '../../inputs/json-textarea';
+
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -32,20 +25,13 @@ export type CustomColumnDialogProps = {
 
 //TODO const JsonTextArea = styled(JsonTextarea);
 
-export default function CustomColumnsImExPort({
-    open,
-    indexTab,
-    onImport,
-}: Readonly<CustomColumnDialogProps>) {
+export default function CustomColumnsImExPort({ open, indexTab, onImport }: Readonly<CustomColumnDialogProps>) {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
     const contentModified = useStateBoolean(false);
     const resetContentModified = contentModified.setFalse;
     const setContentModified = contentModified.setValue;
-    const definitions = useSelector(
-        (state: ReduxState) =>
-            state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
-    );
+    const definitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
     const [definitionsJson, setDefinitionsJson] = useState('');
     const [currentJson, setCurrentJson] = useState('');
 
@@ -100,26 +86,13 @@ export default function CustomColumnsImExPort({
                 />
             </DialogContent>
             <DialogActions>
-                <Button
-                    onClick={copyToClipboard}
-                    variant="contained"
-                    color="secondary"
-                >
+                <Button onClick={copyToClipboard} variant="contained" color="secondary">
                     <FormattedMessage id="spreadsheet/custom_column/copy" />
                 </Button>
-                <Button
-                    onClick={pasteFromClipboard}
-                    variant="contained"
-                    color="secondary"
-                >
+                <Button onClick={pasteFromClipboard} variant="contained" color="secondary">
                     <FormattedMessage id="spreadsheet/custom_column/paste" />
                 </Button>
-                <Button
-                    onClick={resetAction}
-                    variant="contained"
-                    color="warning"
-                    disabled={!contentModified.value}
-                >
+                <Button onClick={resetAction} variant="contained" color="warning" disabled={!contentModified.value}>
                     <FormattedMessage id="spreadsheet/custom_column/reset" />
                 </Button>
                 <Button
