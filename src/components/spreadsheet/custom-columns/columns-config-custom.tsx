@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Badge, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -13,7 +13,15 @@ import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useStateBoolean, useStateNumber } from '../../../hooks/use-states';
 import CustomColumnsDialog from './custom-columns-dialog';
-import { TABLES_NAMES } from '../utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES,
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITION_INDEXES,
+    TABLES_DEFINITION_TYPES,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+    TABLES_NAMES_INDEXES,
+} from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
 
 export type CustomColumnsConfigProps = {
@@ -43,6 +51,36 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
     useEffect(() => {
         uEffectNumberColumnsSetValue(allDefinitions.length);
     }, [allDefinitions.length, uEffectNumberColumnsSetValue]);
+
+    const allCustomColumnsDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions);
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state: AppState) => state.allReorderedTableDefinitionIndexes
+    );
+    const [d, setD] = useState(true);
+    useEffect(() => {
+        if (d) {
+            console.info('TABLES_NAMES', TABLES_NAMES);
+            console.info('TABLES_COLUMNS_NAMES', TABLES_COLUMNS_NAMES);
+            console.info('TABLES_NAMES_INDEXES', TABLES_NAMES_INDEXES);
+            console.info('TABLES_COLUMNS_NAMES_JSON', TABLES_COLUMNS_NAMES_JSON);
+            console.info('TABLES_DEFINITIONS', TABLES_DEFINITIONS);
+            console.info('TABLES_DEFINITION_INDEXES', TABLES_DEFINITION_INDEXES);
+            console.info('TABLES_DEFINITION_TYPES', TABLES_DEFINITION_TYPES);
+            console.info('allCustomColumnsDefinitions', allCustomColumnsDefinitions);
+            console.info('allDisplayedColumnsNames', allDisplayedColumnsNames);
+            console.info('allLockedColumnsNames', allLockedColumnsNames);
+            console.info('allReorderedTableDefinitionIndexes', allReorderedTableDefinitionIndexes);
+            setD(false);
+        }
+    }, [
+        allCustomColumnsDefinitions,
+        allDisplayedColumnsNames,
+        allLockedColumnsNames,
+        allReorderedTableDefinitionIndexes,
+        d,
+    ]);
 
     return (
         <>
