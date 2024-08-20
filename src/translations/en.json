@@ -22,6 +22,7 @@
     "CopiedModificationInvalidationMessage": "Following a modification of the hypothesis, the content of the clipboard has been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
+    "download.fileName": "File name",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
 
@@ -43,7 +44,7 @@
     "centerLabel": "Center name",
     "topologicalColoring": "Topological coloring",
     "SingleLineDiagram": "Single line diagram",
-
+    "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
@@ -209,8 +210,6 @@
 
     "SelectAll": "All",
     "UnselectAll": "None",
-
-    "DrawingPolygonInstruction": "Click on the map to start drawing a polygon. Press Enter to finish or Esc to cancel.",
 
     "noOption": "No options",
     "maxSelection": "selections maximum",
@@ -576,6 +575,7 @@
     "FluxConvention.target": "Target",
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
+    "initNadWithGeoData": "Initialize with geographical data",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
     "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
@@ -620,6 +620,7 @@
     "EmptySelection": "No equipment is selected",
     "Connectivity": "Connectivity",
     "connected": "Connected",
+    "disconnected": "Disconnected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
@@ -1375,5 +1376,10 @@
     "stateEstimationError": "An error occured when executing the state estimation",
     "NoFilter": "No filter",
     "EquipmentSearchPlaceholder": "Search",
-    "GeneratedModification": "Generated-modification"
+    "GeneratedModification": "Generated-modification",
+    "guidancePopUp.title": "Selection on the map",
+    "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
+    "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
+    "guidancePopUp.action":"Close editor"
+
 }
