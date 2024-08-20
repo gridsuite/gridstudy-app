@@ -193,7 +193,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
         ];
     }, [intl]);
 
-    // Tries to find the preselected row to highlight it.
+    // Tries to find the selected row to highlight it, then scroll to it if needed
     const highlightSelectedRow = useCallback(() => {
         const rowIdToHighlight = selectedRow?.id ?? preselectedRowId;
         if (rowIdToHighlight && rowData) {
@@ -201,6 +201,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 node.setSelected(node.data?.id === rowIdToHighlight);
             });
         }
+        selectedRow && gridRef.current.api?.ensureNodeVisible(selectedRow);
     }, [selectedRow, preselectedRowId, rowData]);
 
     // Select the correct tab when opening the dialog, if a row is preselected
