@@ -75,39 +75,43 @@ export const ConnectivityForm = ({
     });
 
     useEffect(() => {
-        if (!isEquipmentModification) {
-            if (watchVoltageLevelId) {
-                const voltageLevelTopologyKind = voltageLevelOptions.find(
-                    (vl) => vl.id === watchVoltageLevelId
-                )?.topologyKind;
-                switch (voltageLevelTopologyKind) {
-                    case 'NODE_BREAKER':
-                        fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
-                            (busbarSections) => {
-                                setBusOrBusbarSectionOptions(busbarSections);
-                            }
-                        );
-                        break;
+        if (isEquipmentModification) {
+            return;
+        }
+        if (watchVoltageLevelId) {
+            const voltageLevelTopologyKind = voltageLevelOptions.find(
+                (vl) => vl.id === watchVoltageLevelId
+            )?.topologyKind;
+            switch (voltageLevelTopologyKind) {
+                case 'NODE_BREAKER':
+                    fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
+                        (busbarSections) => {
+                            setBusOrBusbarSectionOptions(busbarSections);
+                        }
+                    );
+                    break;
 
-                    case 'BUS_BREAKER':
-                        fetchBusesForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then((buses) =>
-                            setBusOrBusbarSectionOptions(buses)
-                        );
-                        break;
+                case 'BUS_BREAKER':
+                    fetchBusesForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then((buses) =>
+                        setBusOrBusbarSectionOptions(buses)
+                    );
+                    break;
 
-                    default:
-                        setBusOrBusbarSectionOptions([]);
-                        break;
-                }
-            } else {
-                setBusOrBusbarSectionOptions([]);
-                setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
+                default:
+                    setBusOrBusbarSectionOptions([]);
+                    break;
             }
+        } else {
+            setBusOrBusbarSectionOptions([]);
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
     }, [watchVoltageLevelId, studyUuid, currentNodeUuid, voltageLevelOptions, setValue, id, isEquipmentModification]);
 
     useEffect(() => {
-        if (!isEquipmentModification && newBusOrBusbarSectionOptions?.length > 0) {
+        if (isEquipmentModification) {
+            return;
+        }
+        if (newBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
         }
     }, [newBusOrBusbarSectionOptions, isEquipmentModification]);
@@ -117,9 +121,11 @@ export const ConnectivityForm = ({
     }, [onVoltageLevelChangeCallback]);
 
     useEffect(() => {
+        if (isEquipmentModification) {
+            return;
+        }
         const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}`);
         if (
-            !isEquipmentModification &&
             busOrBusbarSectionOptions?.length > 0 &&
             !busOrBusbarSectionOptions.find(
                 (busOrBusbarSection) => busOrBusbarSection.id === currentBusOrBusbarSection?.id
