@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../parameters.jsx';
@@ -22,7 +22,7 @@ import {
 import { inputAdornment } from '../util/make-component-utils.jsx';
 import { roundToDefaultPrecision } from '../../../../utils/rounding.js';
 
-const formatValues = (values, isDivision) => {
+const formatValues = (values: Record<string, any>, isDivision: boolean) => {
     let result = {};
     if (!values) {
         return result;
@@ -36,7 +36,17 @@ const formatValues = (values, isDivision) => {
     return result;
 };
 
-const SecurityAnalysisFields = ({
+interface FieldToShow {
+    label: string;
+    firstField: { name: string; label: string };
+    secondField?: { name: string; label: string };
+    tooltipInfoId: string;
+    initValue: Record<string, any>;
+    callback: (param: Record<string, any>) => void;
+    isSingleField?: boolean;
+}
+
+const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
     label,
     firstField,
     secondField,
@@ -45,44 +55,43 @@ const SecurityAnalysisFields = ({
     callback,
     isSingleField,
 }) => {
-    const [values, setValues] = useState(initValue);
+    const [values, setValues] = useState<Record<string, any>>(initValue);
     const positiveDoubleValue = useMemo(() => /^\d*[.,]?\d?\d?$/, []);
 
-    useEffect(() => {
-        setValues(initValue);
-    }, [initValue]);
-
-    const checkValue = useCallback((e, allowedRE, isPercentage) => {
-        const outputTransformToString = (value) => {
-            return value?.replace(',', '.') || '';
-        };
-        const newValue = outputTransformToString(e.target.value);
-        const isValid = allowedRE.exec(newValue);
-        const isAllValid = isPercentage ? isValid && newValue <= 100 : isValid;
-        if (isAllValid || newValue === '') {
-            setValues((prevState) => ({
-                ...prevState,
-                [e.target.name]: outputTransformToString(newValue),
-            }));
-        }
-    }, []);
+    const checkValue = useCallback(
+        (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, allowedRE: RegExp, isPercentage: boolean) => {
+            const outputTransformToString = (value: string) => {
+                return value?.replace(',', '.') || '';
+            };
+            const newValue = outputTransformToString(e.target.value);
+            const isValid = allowedRE.exec(newValue);
+            const isAllValid = isPercentage ? isValid && Number(newValue) <= 100 : isValid;
+            if (isAllValid || newValue === '') {
+                setValues((prevState) => ({
+                    ...prevState,
+                    [e.target.name]: outputTransformToString(newValue),
+                }));
+            }
+        },
+        []
+    );
     const checkPerPercentageValue = useCallback(
-        (e) => {
+        (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             checkValue(e, positiveDoubleValue, true);
         },
         [checkValue, positiveDoubleValue]
     );
     const checkDoubleValue = useCallback(
-        (e) => {
+        (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             checkValue(e, positiveDoubleValue, false);
         },
         [checkValue, positiveDoubleValue]
     );
 
-    const formatedValues = useCallback((values) => formatValues(values, true), []);
+    const formatedValues = useCallback((values: Record<string, any>) => formatValues(values, true), []);
 
     const updateValue = useCallback(
-        (e) => {
+        (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
             const name = e.target.name;
             const value = e.target.value;
             // if the field is left empty then show the initial value.
@@ -123,13 +132,13 @@ const SecurityAnalysisFields = ({
                     InputProps={inputAdornment(firstField?.label)}
                 />
             </Grid>
-            {!isSingleField && (
+            {!isSingleField && secondField && (
                 <Grid item container xs={4} sx={styles.secondTextField}>
                     <TextField
                         fullWidth
                         sx={{ input: { textAlign: 'right' } }}
-                        value={values[secondField?.name]}
-                        name={secondField?.name}
+                        value={values[secondField.name]}
+                        name={secondField.name}
                         onBlur={updateValue}
                         onChange={checkDoubleValue}
                         size="small"
@@ -144,15 +153,18 @@ const SecurityAnalysisFields = ({
     );
 };
 
-const ViolationsHidingParameters = ({ params, updateParameters }) => {
+const ViolationsHidingParameters: FunctionComponent<{
+    params: Record<string, any>;
+    updateParameters: (value: Record<string, any>) => void;
+}> = ({ params, updateParameters }) => {
     const intl = useIntl();
 
-    const callBack = (data) => {
+    const callBack = (data: Record<string, any>) => {
         updateParameters({ ...data });
     };
 
     // create fields with the proper data
-    const fieldsToShow = [
+    const fieldsToShow: FieldToShow[] = [
         {
             label: intl.formatMessage({
                 id: 'securityAnalysis.current',
