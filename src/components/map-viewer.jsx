@@ -102,7 +102,7 @@ const guidancePopupStyle = {
         maxWidth: '200px',
     },
     header: (theme) => ({
-        paddingBottom: theme.spacing(1),
+        paddingBottom: theme.spacing(1.4),
     }),
     actionsContainer: {
         display: 'flex',
