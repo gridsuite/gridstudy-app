@@ -12,7 +12,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import InputLabel from '@mui/material/InputLabel';
 import Alert from '@mui/material/Alert';
 import FormControl from '@mui/material/FormControl';
@@ -24,6 +24,8 @@ import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessag
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import TextField from '@mui/material/TextField';
+import { useSelector } from 'react-redux';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -42,30 +44,33 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
     const [selectedFormat, setSelectedFormat] = React.useState('');
     const [loading, setLoading] = React.useState(false);
     const [exportStudyErr, setExportStudyErr] = React.useState('');
-    const [studyName, setStudyName] = useState(null);
     const { snackError } = useSnackMessage();
+    const [fileName, setFileName] = useState();
 
     const [unfolded, setUnfolded] = React.useState(false);
 
-    const fetchStudyName = useCallback(() => {
-        fetchDirectoryElementPath(studyUuid)
-            .then((response) => {
-                const studyName = response[response.length - 1]?.elementName;
-                setStudyName(studyName);
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'LoadStudyAndParentsInfoError',
-                });
-            });
-    }, [studyUuid, snackError]);
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const nodeName = useMemo(
+        () => treeModel?.treeNodes.find((node) => node.id === nodeUuid)?.data.label,
+        [treeModel, nodeUuid]
+    );
 
+    // fetch study name to build default file name
     useEffect(() => {
         if (studyUuid) {
-            fetchStudyName(studyUuid);
+            fetchDirectoryElementPath(studyUuid)
+                .then((response) => {
+                    const studyName = response[response.length - 1]?.elementName;
+                    setFileName(`${studyName}_${nodeName}`);
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'LoadStudyAndParentsInfoError',
+                    });
+                });
         }
-    }, [fetchStudyName, studyUuid]);
+    }, [studyUuid, nodeName, snackError]);
 
     useEffect(() => {
         if (open) {
@@ -112,8 +117,8 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
                 const jsoned = JSON.stringify(currentParameters);
                 urlSearchParams.append('formatParameters', jsoned);
             }
-            if (!isBlankOrEmpty(studyName)) {
-                urlSearchParams.append('studyName', studyName);
+            if (!isBlankOrEmpty(fileName)) {
+                urlSearchParams.append('fileName', fileName);
             }
 
             // we have already as parameters, the access tokens, so use '&' instead of '?'
@@ -142,9 +147,20 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
 
     return (
         <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="dialog-title-export">
-            <DialogTitle>
-                {title}
-                <div style={{ marginTop: '0.8em' }} />
+            <DialogTitle>{title}</DialogTitle>
+            <DialogContent>
+                <TextField
+                    key="fileName"
+                    margin="dense"
+                    label={<FormattedMessage id="download.fileName" />}
+                    id="fileName"
+                    value={fileName}
+                    sx={{ width: '100%', marginBottom: 1 }}
+                    fullWidth
+                    variant="filled"
+                    InputLabelProps={{ shrink: true }}
+                    onChange={(event) => setFileName(event.target.value)}
+                />
                 <FormControl fullWidth size="small">
                     <InputLabel id="select-format-label" margin={'dense'} variant={'filled'}>
                         <FormattedMessage id="exportFormat" />
@@ -170,7 +186,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
                         <Typography
                             component="span"
                             color={selectedFormat ? 'text.main' : 'text.disabled'}
-                            style={{ fontWeight: 'bold' }}
+                            sx={{ fontWeight: 'bold' }}
                         >
                             <FormattedMessage id="parameters" />
                         </Typography>
@@ -179,8 +195,6 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
                         </IconButton>
                     </Stack>
                 </FormControl>
-            </DialogTitle>
-            <DialogContent>
                 <Collapse in={unfolded}>
                     <FlatParameters
                         paramsAsArray={metasAsArray}
@@ -205,7 +219,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button onClick={handleExportClick} variant="outlined" disabled={!selectedFormat}>
+                <Button onClick={handleExportClick} variant="outlined" disabled={!selectedFormat || !fileName}>
                     <FormattedMessage id="export" />
                 </Button>
             </DialogActions>
