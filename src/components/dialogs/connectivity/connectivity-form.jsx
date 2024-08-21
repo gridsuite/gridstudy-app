@@ -75,6 +75,9 @@ export const ConnectivityForm = ({
     });
 
     useEffect(() => {
+        if (isEquipmentModification) {
+            return;
+        }
         if (watchVoltageLevelId) {
             const voltageLevelTopologyKind = voltageLevelOptions.find(
                 (vl) => vl.id === watchVoltageLevelId
@@ -102,19 +105,25 @@ export const ConnectivityForm = ({
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
-    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, voltageLevelOptions, setValue, id]);
+    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, voltageLevelOptions, setValue, id, isEquipmentModification]);
 
     useEffect(() => {
+        if (isEquipmentModification) {
+            return;
+        }
         if (newBusOrBusbarSectionOptions?.length > 0) {
             setBusOrBusbarSectionOptions(newBusOrBusbarSectionOptions);
         }
-    }, [newBusOrBusbarSectionOptions]);
+    }, [newBusOrBusbarSectionOptions, isEquipmentModification]);
 
     const handleChange = useCallback(() => {
         onVoltageLevelChangeCallback?.();
     }, [onVoltageLevelChangeCallback]);
 
     useEffect(() => {
+        if (isEquipmentModification) {
+            return;
+        }
         const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}`);
         if (
             busOrBusbarSectionOptions?.length > 0 &&
@@ -124,7 +133,7 @@ export const ConnectivityForm = ({
         ) {
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, busOrBusbarSectionOptions[0]);
         }
-    }, [busOrBusbarSectionOptions, setValue, id, getValues]);
+    }, [busOrBusbarSectionOptions, setValue, id, getValues, isEquipmentModification]);
 
     const newVoltageLevelField = isEquipmentModification ? (
         <AutocompleteInput
