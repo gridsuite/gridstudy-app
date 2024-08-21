@@ -58,7 +58,9 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                             <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
                         )}
                         {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
-                            <LimitReductionsTableForm limits={params.limitReductions} />
+                            <Grid sx={{ width: '85%' }}>
+                                <LimitReductionsTableForm limits={params.limitReductions} />
+                            </Grid>
                         )}
                     </TabPanel>
                 ))}
