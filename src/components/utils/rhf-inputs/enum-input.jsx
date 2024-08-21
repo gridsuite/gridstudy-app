@@ -7,13 +7,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    FormHelperText,
-} from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, FormHelperText } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import { useController } from 'react-hook-form';
@@ -28,13 +22,7 @@ const EnumInput = ({ options, name, label, size, labelValues }) => {
             <InputLabel id="enum-type-label">
                 <FieldLabel label={label} values={labelValues} />
             </InputLabel>
-            <Select
-                label={label}
-                id={label}
-                value={value}
-                fullWidth
-                onChange={onChange}
-            >
+            <Select label={label} id={label} value={value} fullWidth onChange={onChange}>
                 {options.map((e) => (
                     <MenuItem value={e.id} key={e.label}>
                         <em>

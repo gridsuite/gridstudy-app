@@ -47,12 +47,7 @@ const voltageLevelComparator = (vl1, vl2) => {
     return vl1.nominalV < vl2.nominalV;
 };
 
-const VoltageLevelChoice = ({
-    handleClose,
-    onClickHandler,
-    substation,
-    position,
-}) => {
+const VoltageLevelChoice = ({ handleClose, onClickHandler, substation, position }) => {
     const { getNameOrId } = useNameOrId();
 
     return (
@@ -69,53 +64,37 @@ const VoltageLevelChoice = ({
                 onClose={handleClose}
             >
                 {substation !== undefined &&
-                    substation.voltageLevels
-                        .sort(voltageLevelComparator)
-                        .map((voltageLevel) => {
-                            let color = getNominalVoltageColor(
-                                voltageLevel.nominalV
-                            );
-                            let colorString =
-                                'rgb(' +
-                                color[0].toString() +
-                                ',' +
-                                color[1].toString() +
-                                ',' +
-                                color[2].toString() +
-                                ')';
+                    substation.voltageLevels.sort(voltageLevelComparator).map((voltageLevel) => {
+                        let color = getNominalVoltageColor(voltageLevel.nominalV);
+                        let colorString =
+                            'rgb(' + color[0].toString() + ',' + color[1].toString() + ',' + color[2].toString() + ')';
 
-                            return (
-                                <MenuItem
-                                    sx={styles.nominalVoltageItem}
-                                    id={voltageLevel.id}
-                                    key={voltageLevel.id}
-                                    onClick={() =>
-                                        onClickHandler(voltageLevel.id)
-                                    }
-                                >
-                                    <ListItemIcon>
-                                        <Button
-                                            sx={styles.nominalVoltageButton}
-                                            variant="contained"
-                                            style={{
-                                                backgroundColor: colorString,
-                                            }}
-                                        >
-                                            {voltageLevel.nominalV}
-                                        </Button>
-                                    </ListItemIcon>
+                        return (
+                            <MenuItem
+                                sx={styles.nominalVoltageItem}
+                                id={voltageLevel.id}
+                                key={voltageLevel.id}
+                                onClick={() => onClickHandler(voltageLevel.id)}
+                            >
+                                <ListItemIcon>
+                                    <Button
+                                        sx={styles.nominalVoltageButton}
+                                        variant="contained"
+                                        style={{
+                                            backgroundColor: colorString,
+                                        }}
+                                    >
+                                        {voltageLevel.nominalV}
+                                    </Button>
+                                </ListItemIcon>
 
-                                    <ListItemText
-                                        sx={styles.nominalVoltageText}
-                                        primary={
-                                            <Typography noWrap>
-                                                {getNameOrId(voltageLevel)}
-                                            </Typography>
-                                        }
-                                    />
-                                </MenuItem>
-                            );
-                        })}
+                                <ListItemText
+                                    sx={styles.nominalVoltageText}
+                                    primary={<Typography noWrap>{getNameOrId(voltageLevel)}</Typography>}
+                                />
+                            </MenuItem>
+                        );
+                    })}
             </Menu>
         </Box>
     );

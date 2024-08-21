@@ -11,6 +11,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
@@ -34,33 +35,23 @@ import {
     useDiagram,
     ViewState,
 } from './diagram-common';
-import {
-    getEstimatedNbVoltageLevels,
-    makeDiagramSorter,
-} from './diagram-utils';
-import {
-    isNodeBuilt,
-    isNodeInNotificationList,
-} from '../graph/util/model-functions';
+import { getEstimatedNbVoltageLevels, makeDiagramSorter } from './diagram-utils';
+import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-functions';
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage';
+import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
-import {
-    getSubstationSingleLineDiagram,
-    getVoltageLevelSingleLineDiagram,
-} from '../../services/study/network';
+import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { UpdateTypes } from '../../redux/reducer.type';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid, currentNode) => {
@@ -69,12 +60,8 @@ const useDisplayView = (studyUuid, currentNode) => {
     const { getNameOrId } = useNameOrId();
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
-    const substationLayout = useSelector(
-        (state) => state[PARAM_SUBSTATION_LAYOUT]
-    );
-    const componentLibrary = useSelector(
-        (state) => state[PARAM_COMPONENT_LIBRARY]
-    );
+    const substationLayout = useSelector((state) => state[PARAM_SUBSTATION_LAYOUT]);
+    const componentLibrary = useSelector((state) => state[PARAM_COMPONENT_LIBRARY]);
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
@@ -92,15 +79,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                       language
                   )
                 : null,
-        [
-            currentNode,
-            studyUuid,
-            paramUseName,
-            centerName,
-            diagonalName,
-            componentLibrary,
-            language,
-        ]
+        [currentNode, studyUuid, paramUseName, centerName, diagonalName, componentLibrary, language]
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
@@ -118,29 +97,15 @@ const useDisplayView = (studyUuid, currentNode) => {
                       language
                   )
                 : null,
-        [
-            centerName,
-            componentLibrary,
-            diagonalName,
-            studyUuid,
-            substationLayout,
-            paramUseName,
-            currentNode,
-            language,
-        ]
+        [centerName, componentLibrary, diagonalName, studyUuid, substationLayout, paramUseName, currentNode, language]
     );
-
+    const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds, depth) =>
             isNodeBuilt(currentNode)
-                ? getNetworkAreaDiagramUrl(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelsIds,
-                      depth
-                  )
+                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id, voltageLevelsIds, depth, initNadWithGeoData)
                 : null,
-        [studyUuid, currentNode]
+        [studyUuid, currentNode, initNadWithGeoData]
     );
 
     // this callback returns a promise
@@ -161,10 +126,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                         }
                     })
                     .catch((error) => {
-                        console.error(
-                            'Error while fetching SVG',
-                            error.message
-                        );
+                        console.error('Error while fetching SVG', error.message);
                         let errorMessage;
                         if (error.status === 404) {
                             if (svgType === DiagramType.SUBSTATION) {
@@ -202,65 +164,53 @@ const useDisplayView = (studyUuid, currentNode) => {
 
             function createSubstationDiagramView(id, state) {
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
-                return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then(
-                    (svg) => {
-                        let label = getNameOrId(svg.additionalMetadata) ?? id;
-                        return {
-                            id: id,
-                            nodeId: currentNode.id,
-                            state: state,
-                            name: label,
-                            country: svg.additionalMetadata?.country,
-                            fetchSvg: () =>
-                                fetchSvgData(svgUrl, DiagramType.SUBSTATION),
-                            svgType: DiagramType.SUBSTATION,
-                            ...svg,
-                        };
-                    }
-                );
+                return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then((svg) => {
+                    let label = getNameOrId(svg.additionalMetadata) ?? id;
+                    return {
+                        id: id,
+                        nodeId: currentNode.id,
+                        state: state,
+                        name: label,
+                        country: svg.additionalMetadata?.country,
+                        fetchSvg: () => fetchSvgData(svgUrl, DiagramType.SUBSTATION),
+                        svgType: DiagramType.SUBSTATION,
+                        ...svg,
+                    };
+                });
             }
 
             function createVoltageLevelDiagramView(id, state) {
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
-                return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then(
-                    (svg) => {
-                        let label = getNameOrId(svg.additionalMetadata) ?? id;
-                        let substationId = svg.additionalMetadata?.substationId;
-                        return {
-                            id: id,
-                            nodeId: currentNode.id,
-                            state: state,
-                            name: label,
-                            country: svg.additionalMetadata?.country,
-                            fetchSvg: () =>
-                                fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL),
-                            svgType: DiagramType.VOLTAGE_LEVEL,
-                            substationId: substationId,
-                            ...svg,
-                        };
-                    }
-                );
+                return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then((svg) => {
+                    let label = getNameOrId(svg.additionalMetadata) ?? id;
+                    let substationId = svg.additionalMetadata?.substationId;
+                    return {
+                        id: id,
+                        nodeId: currentNode.id,
+                        state: state,
+                        name: label,
+                        country: svg.additionalMetadata?.country,
+                        fetchSvg: () => fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL),
+                        svgType: DiagramType.VOLTAGE_LEVEL,
+                        substationId: substationId,
+                        ...svg,
+                    };
+                });
             }
 
             function createNetworkAreaDiagramView(ids, state, depth = 0) {
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
-                    return fetchSvgData(
-                        svgUrl,
-                        DiagramType.NETWORK_AREA_DIAGRAM
-                    ).then((svg) => {
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth, initNadWithGeoData);
+                    return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
                         let nadTitle = '';
                         let substationsIds = [];
-                        svg.additionalMetadata?.voltageLevels.forEach(
-                            (voltageLevel) => {
-                                const name = getNameOrId(voltageLevel);
-                                if (name !== null) {
-                                    nadTitle +=
-                                        (nadTitle !== '' ? ' + ' : '') + name;
-                                }
-                                substationsIds.push(voltageLevel.substationId);
+                        svg.additionalMetadata?.voltageLevels.forEach((voltageLevel) => {
+                            const name = getNameOrId(voltageLevel);
+                            if (name !== null) {
+                                nadTitle += (nadTitle !== '' ? ' + ' : '') + name;
                             }
-                        );
+                            substationsIds.push(voltageLevel.substationId);
+                        });
                         if (nadTitle === '') {
                             nadTitle = ids.toString();
                         }
@@ -270,8 +220,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                             nodeId: currentNode.id,
                             state: state,
                             name: nadTitle,
-                            fetchSvg: () =>
-                                createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
+                            fetchSvg: () => createNetworkAreaDiagramView(ids, state, depth), // here 'name' and 'substationsIds' can change so we can't use fetchSvgData
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
@@ -282,23 +231,11 @@ const useDisplayView = (studyUuid, currentNode) => {
             }
 
             if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
-                return createVoltageLevelDiagramView(
-                    diagramState.id,
-                    diagramState.state
-                );
+                return createVoltageLevelDiagramView(diagramState.id, diagramState.state);
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
-                return createSubstationDiagramView(
-                    diagramState.id,
-                    diagramState.state
-                );
-            } else if (
-                diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-            ) {
-                return createNetworkAreaDiagramView(
-                    diagramState.ids,
-                    diagramState.state,
-                    diagramState.depth
-                );
+                return createSubstationDiagramView(diagramState.id, diagramState.state);
+            } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
             }
         },
         [
@@ -309,6 +246,7 @@ const useDisplayView = (studyUuid, currentNode) => {
             studyUuid,
             currentNode,
             fetchSvgData,
+            initNadWithGeoData,
         ]
     );
 };
@@ -334,13 +272,7 @@ const styles = {
     },
 };
 
-export function DiagramPane({
-    studyUuid,
-    showInSpreadsheet,
-    currentNode,
-    visible,
-    oneBusShortCircuitStatus,
-}) {
+export function DiagramPane({ studyUuid, showInSpreadsheet, currentNode, visible, oneBusShortCircuitStatus }) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
@@ -348,14 +280,10 @@ export function DiagramPane({
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
     const createView = useDisplayView(studyUuid, currentNode);
     const diagramStates = useSelector((state) => state.diagramStates);
-    const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
-    );
+    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
 
-    const networkAreaDiagramNbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
-    );
+    const networkAreaDiagramNbVoltageLevels = useSelector((state) => state.networkAreaDiagramNbVoltageLevels);
 
     const { translate } = useLocalizedCountries();
 
@@ -366,8 +294,7 @@ export function DiagramPane({
         syncDiagramStateWithSessionStorage(diagramStates, studyUuid);
     }, [diagramStates, studyUuid]);
 
-    const { openDiagramView, closeDiagramView, closeDiagramViews } =
-        useDiagram();
+    const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
     const viewsRef = useRef([]);
@@ -391,17 +318,13 @@ export function DiagramPane({
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                     const diagramAlreadyPresentInViews = viewsRef.current.find(
                         (diagramView) =>
-                            diagramView.svgType !==
-                                DiagramType.NETWORK_AREA_DIAGRAM &&
+                            diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagramView.id === diagramState.id
                     );
                     if (!diagramAlreadyPresentInViews) {
                         diagramsToAdd.push({
                             ...diagramState,
-                            name: intl.formatMessage(
-                                { id: 'LoadingOf' },
-                                { value: diagramState.id }
-                            ),
+                            name: intl.formatMessage({ id: 'LoadingOf' }, { value: diagramState.id }),
                             align: 'left',
                             loadingState: true,
                         });
@@ -423,9 +346,7 @@ export function DiagramPane({
                         setViews((views) => {
                             const diagramViewId = views.findIndex(
                                 (view) =>
-                                    view.svgType !==
-                                        DiagramType.NETWORK_AREA_DIAGRAM &&
-                                    view.id === diagramState.id
+                                    view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && view.id === diagramState.id
                             );
                             const updatedViews = views.slice();
                             // we update the SLD with the fetched data
@@ -451,9 +372,7 @@ export function DiagramPane({
             if (diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramStillPresentInRedux = diagramStates.find(
                     (diagramState) =>
-                        diagramState.svgType !==
-                            DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagramState.id === diagramView.id
+                        diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagramState.id === diagramView.id
                 );
                 if (!diagramStillPresentInRedux) {
                     diagramIdsToRemove.push(diagramView.id);
@@ -465,9 +384,7 @@ export function DiagramPane({
         if (diagramIdsToRemove?.length) {
             setViews((views) => {
                 const updatedViews = views.filter(
-                    (view) =>
-                        view.svgType === DiagramType.NETWORK_AREA_DIAGRAM ||
-                        !diagramIdsToRemove.includes(view.id)
+                    (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM || !diagramIdsToRemove.includes(view.id)
                 );
                 return updatedViews;
             });
@@ -491,10 +408,7 @@ export function DiagramPane({
                 const newDiagram = {
                     id: networkAreaIds[0],
                     ids: networkAreaIds,
-                    name: intl.formatMessage(
-                        { id: 'LoadingOf' },
-                        { value: networkAreaIds.toString() }
-                    ),
+                    name: intl.formatMessage({ id: 'LoadingOf' }, { value: networkAreaIds.toString() }),
                     state: networkAreaViewState,
                     svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     align: 'right',
@@ -502,9 +416,7 @@ export function DiagramPane({
                 };
                 const updatedViews = views.slice();
                 // if we already have a NAD, we replace it but keep the same object to avoid resizing
-                const nadViewId = views.findIndex(
-                    (view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                );
+                const nadViewId = views.findIndex((view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM);
                 if (nadViewId >= 0) {
                     updatedViews[nadViewId] = {
                         ...updatedViews[nadViewId], // trick to avoid resizing
@@ -527,20 +439,14 @@ export function DiagramPane({
             }).then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
-                    const nadViewId = views.findIndex(
-                        (view) =>
-                            view.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                    );
+                    const nadViewId = views.findIndex((view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM);
                     updatedViews[nadViewId] = {
                         ...updatedViews[nadViewId],
                         ...networkAreaDiagramView,
                         loadingState: false,
                     };
                     dispatch(
-                        setNetworkAreaDiagramNbVoltageLevels(
-                            networkAreaDiagramView.additionalMetadata
-                                ?.nbVoltageLevels
-                        )
+                        setNetworkAreaDiagramNbVoltageLevels(networkAreaDiagramView.additionalMetadata?.nbVoltageLevels)
                     );
                     return updatedViews;
                 });
@@ -551,9 +457,7 @@ export function DiagramPane({
 
     const removeNAD = useCallback(() => {
         setViews((views) => {
-            const updatedViews = views.filter(
-                (view) => view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-            );
+            const updatedViews = views.filter((view) => view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM);
             return updatedViews;
         });
     }, []);
@@ -572,24 +476,15 @@ export function DiagramPane({
             if (networkAreaIds.length > 0) {
                 const isSameNadAlreadyPresentInViews = viewsRef.current.find(
                     (diagramView) =>
-                        diagramView.svgType ===
-                            DiagramType.NETWORK_AREA_DIAGRAM &&
-                        diagramView.ids?.toString() ===
-                            networkAreaIds.toString() &&
+                        diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM &&
+                        diagramView.ids?.toString() === networkAreaIds.toString() &&
                         diagramView.depth === networkAreaDiagramDepth
                 );
                 if (!isSameNadAlreadyPresentInViews) {
-                    addOrReplaceNAD(
-                        networkAreaIds,
-                        networkAreaViewState,
-                        networkAreaDiagramDepth
-                    );
+                    addOrReplaceNAD(networkAreaIds, networkAreaViewState, networkAreaDiagramDepth);
                 }
             } else if (
-                viewsRef.current.find(
-                    (diagramView) =>
-                        diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM
-                )
+                viewsRef.current.find((diagramView) => diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
             ) {
                 // no more NAD, remove it from the views
                 removeNAD();
@@ -607,8 +502,7 @@ export function DiagramPane({
             if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramIndex = viewsRef.current.findIndex(
                     (diagramView) =>
-                        diagramView.svgType !==
-                            DiagramType.NETWORK_AREA_DIAGRAM &&
+                        diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagramView.id === diagramState.id &&
                         diagramView.state !== diagramState.state
                 );
@@ -626,17 +520,14 @@ export function DiagramPane({
                 // diagramIndex can only be -1 (if no match) or viewsRef.current.length - 1 (if match)
                 const diagramIndex = viewsRef.current.findIndex(
                     (diagramView) =>
-                        diagramView.svgType ===
-                            DiagramType.NETWORK_AREA_DIAGRAM &&
+                        diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagramView.state !== diagramState.state
                 );
                 // if the NAD has a new state (all NAD are supposed to have the same state)
                 if (
                     diagramIndex > -1 &&
                     // we don't want to add it twice
-                    !diagramsToUpdate.find(
-                        (diagram) => diagram.index === diagramIndex
-                    )
+                    !diagramsToUpdate.find((diagram) => diagram.index === diagramIndex)
                 ) {
                     diagramsToUpdate.push({
                         index: diagramIndex,
@@ -674,10 +565,8 @@ export function DiagramPane({
                 networkAreaDiagramNbVoltageLevels
             );
             return (
-                estimatedNbVoltageLevels <
-                    NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
-                previousNetworkAreaDiagramDepth.current >
-                    networkAreaDiagramDepth
+                estimatedNbVoltageLevels < NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS ||
+                previousNetworkAreaDiagramDepth.current > networkAreaDiagramDepth
             );
         },
         [networkAreaDiagramNbVoltageLevels]
@@ -685,11 +574,7 @@ export function DiagramPane({
 
     // UPDATE DIAGRAM VIEWS
     useEffect(() => {
-        if (
-            !visible ||
-            !currentNode ||
-            isNodeInNotificationList(currentNode, notificationIdList)
-        ) {
+        if (!visible || !currentNode || isNodeInNotificationList(currentNode, notificationIdList)) {
             return;
         }
         // UPDATING DIAGRAM STATES (before removing or adding new diagrams, for both SLDs and NAD)
@@ -721,13 +606,9 @@ export function DiagramPane({
     ]);
 
     const displayedDiagrams = views
-        .filter((view) =>
-            [ViewState.OPENED, ViewState.PINNED].includes(view.state)
-        )
+        .filter((view) => [ViewState.OPENED, ViewState.PINNED].includes(view.state))
         .sort(makeDiagramSorter(diagramStates));
-    const minimizedDiagrams = views.filter((view) =>
-        [ViewState.MINIMIZED].includes(view.state)
-    );
+    const minimizedDiagrams = views.filter((view) => [ViewState.MINIMIZED].includes(view.state));
 
     /**
      * MINIMIZED DIAGRAMS' CONTROLS
@@ -759,9 +640,7 @@ export function DiagramPane({
         (ids, fromScratch) => {
             if (ids?.length) {
                 // we remove duplicates (because of NAD)
-                let uniqueIds = ids.filter(
-                    (id, index) => ids.indexOf(id) === index
-                );
+                let uniqueIds = ids.filter((id, index) => ids.indexOf(id) === index);
                 // Before we get the results, we set loadingState = true
                 setViews((views) => {
                     const updatedViews = views.slice();
@@ -794,16 +673,9 @@ export function DiagramPane({
                                     ...svg,
                                     loadingState: false,
                                 };
-                                if (
-                                    fromScratch &&
-                                    svg.svgType ===
-                                        DiagramType.NETWORK_AREA_DIAGRAM
-                                ) {
+                                if (fromScratch && svg.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                                     dispatch(
-                                        setNetworkAreaDiagramNbVoltageLevels(
-                                            svg.additionalMetadata
-                                                ?.nbVoltageLevels
-                                        )
+                                        setNetworkAreaDiagramNbVoltageLevels(svg.additionalMetadata?.nbVoltageLevels)
                                     );
                                 }
                                 return updatedViews;
@@ -842,37 +714,19 @@ export function DiagramPane({
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'loadflowResult'
-            ) {
+            if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                UpdateTypes.STUDY
-            ) {
-                // FM if we want to reload data more precisely we need more information from notifications
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'study') {
+                // FM if we want to reload data more precisely, we need more information from notifications
                 updateDiagramsByCurrentNode();
-            } else if (
-                studyUpdatedForce.eventData.headers['updateType'] ===
-                'buildCompleted'
-            ) {
-                if (
-                    studyUpdatedForce.eventData.headers['node'] ===
-                    currentNodeRef.current?.id
-                ) {
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'buildCompleted') {
+                if (studyUpdatedForce.eventData.headers['node'] === currentNodeRef.current?.id) {
                     updateDiagramsByCurrentNode();
                 }
             }
         }
-    }, [
-        studyUpdatedForce,
-        studyUuid,
-        updateDiagramsByCurrentNode,
-        updateDiagramsByIds,
-        closeDiagramViews,
-    ]);
+    }, [studyUpdatedForce, studyUuid, updateDiagramsByCurrentNode, updateDiagramsByIds, closeDiagramViews]);
 
     /**
      * DIAGRAM SIZE CALCULATION
@@ -882,11 +736,7 @@ export function DiagramPane({
     const setDiagramSize = (diagramId, diagramType, width, height) => {
         // Let's update the stored values if they are new
         const storedValues = diagramContentSizes?.get(diagramType + diagramId);
-        if (
-            !storedValues ||
-            storedValues.width !== width ||
-            storedValues.height !== height
-        ) {
+        if (!storedValues || storedValues.width !== width || storedValues.height !== height) {
             let newDiagramContentSizes = new Map(diagramContentSizes);
             newDiagramContentSizes.set(diagramType + diagramId, {
                 width: width,
@@ -927,8 +777,7 @@ export function DiagramPane({
     const getDiagramOrDefaultHeight = useCallback(
         (diagramId, diagramType) => {
             return (
-                diagramContentSizes.get(diagramType + diagramId)?.height ??
-                getDefaultHeightByDiagramType(diagramType)
+                diagramContentSizes.get(diagramType + diagramId)?.height ?? getDefaultHeightByDiagramType(diagramType)
             );
         },
         [diagramContentSizes]
@@ -936,10 +785,7 @@ export function DiagramPane({
 
     const getDiagramOrDefaultWidth = useCallback(
         (diagramId, diagramType) => {
-            return (
-                diagramContentSizes.get(diagramType + diagramId)?.width ??
-                getDefaultWidthByDiagramType(diagramType)
-            );
+            return diagramContentSizes.get(diagramType + diagramId)?.width ?? getDefaultWidthByDiagramType(diagramType);
         },
         [diagramContentSizes]
     );
@@ -965,25 +811,18 @@ export function DiagramPane({
                     (diagram) =>
                         svgType === diagram.svgType ||
                         (svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
-                            diagram.svgType !==
-                                DiagramType.NETWORK_AREA_DIAGRAM)
+                            diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM)
                 )
-                .filter((diagram) =>
-                    diagramContentSizes.has(diagram.svgType + diagram.id)
-                );
+                .filter((diagram) => diagramContentSizes.has(diagram.svgType + diagram.id));
 
             // Then, we find the maximum height from these diagrams
             if (matchingDiagrams.length > 0) {
                 return matchingDiagrams.reduce(
                     (maxFoundHeight, currentDiagram) =>
                         (maxFoundHeight || 1) >
-                        diagramContentSizes.get(
-                            currentDiagram.svgType + currentDiagram.id
-                        ).height
+                        diagramContentSizes.get(currentDiagram.svgType + currentDiagram.id).height
                             ? maxFoundHeight
-                            : diagramContentSizes.get(
-                                  currentDiagram.svgType + currentDiagram.id
-                              ).height,
+                            : diagramContentSizes.get(currentDiagram.svgType + currentDiagram.id).height,
                     1
                 );
             }
@@ -1000,26 +839,13 @@ export function DiagramPane({
      */
     const getWidthForPaneDisplay = useCallback(
         (diagramId, diagramType) => {
-            const diagramWidth = getDiagramOrDefaultWidth(
-                diagramId,
-                diagramType
-            );
+            const diagramWidth = getDiagramOrDefaultWidth(diagramId, diagramType);
 
-            const diagramHeight = getDiagramOrDefaultHeight(
-                diagramId,
-                diagramType
-            );
+            const diagramHeight = getDiagramOrDefaultHeight(diagramId, diagramType);
 
-            return (
-                getRatioWidthByHeight(diagramWidth, diagramHeight) *
-                getMaxHeightFromDisplayedDiagrams(diagramType)
-            );
+            return getRatioWidthByHeight(diagramWidth, diagramHeight) * getMaxHeightFromDisplayedDiagrams(diagramType);
         },
-        [
-            getMaxHeightFromDisplayedDiagrams,
-            getDiagramOrDefaultWidth,
-            getDiagramOrDefaultHeight,
-        ]
+        [getMaxHeightFromDisplayedDiagrams, getDiagramOrDefaultWidth, getDiagramOrDefaultHeight]
     );
 
     /*
@@ -1030,8 +856,7 @@ export function DiagramPane({
         (diagramType, availableWidth, availableHeight) => {
             let result;
 
-            const maxHeightFromDisplayedDiagrams =
-                getMaxHeightFromDisplayedDiagrams(diagramType);
+            const maxHeightFromDisplayedDiagrams = getMaxHeightFromDisplayedDiagrams(diagramType);
 
             // let's check if the total width of the displayed diagrams is greater than the
             // available space in the pane.
@@ -1040,15 +865,12 @@ export function DiagramPane({
             const totalWidthOfDiagrams = displayedDiagrams.reduce(
                 (sum, currentDiagram) =>
                     sum +
-                    (diagramContentSizes.get(
-                        currentDiagram.svgType + currentDiagram.id
-                    )?.width ?? getDefaultWidthByDiagramType(diagramType)),
+                    (diagramContentSizes.get(currentDiagram.svgType + currentDiagram.id)?.width ??
+                        getDefaultWidthByDiagramType(diagramType)),
                 1
             );
             if (totalWidthOfDiagrams > availableWidth) {
-                result =
-                    maxHeightFromDisplayedDiagrams *
-                    (availableWidth / totalWidthOfDiagrams);
+                result = maxHeightFromDisplayedDiagrams * (availableWidth / totalWidthOfDiagrams);
             } else {
                 result = maxHeightFromDisplayedDiagrams;
             }
@@ -1073,11 +895,7 @@ export function DiagramPane({
             }
             return result;
         },
-        [
-            displayedDiagrams,
-            diagramContentSizes,
-            getMaxHeightFromDisplayedDiagrams,
-        ]
+        [displayedDiagrams, diagramContentSizes, getMaxHeightFromDisplayedDiagrams]
     );
 
     const getDiagramTitle = (diagramView) => {
@@ -1106,10 +924,7 @@ export function DiagramPane({
         <AutoSizer>
             {({ width, height }) => (
                 <Box
-                    sx={mergeSx(
-                        styles.availableDiagramSurfaceArea,
-                        fullScreenDiagram?.id && styles.fullscreen
-                    )}
+                    sx={mergeSx(styles.availableDiagramSurfaceArea, fullScreenDiagram?.id && styles.fullscreen)}
                     style={{
                         width: width + 'px',
                         height: height + 'px',
@@ -1117,9 +932,7 @@ export function DiagramPane({
                     }}
                 >
                     {displayedDiagrams.map((diagramView, index, array) => (
-                        <React.Fragment
-                            key={diagramView.svgType + diagramView.id}
-                        >
+                        <React.Fragment key={diagramView.svgType + diagramView.id}>
                             {
                                 /*
                                 We put a space (a separator) before the first right aligned diagram.
@@ -1127,8 +940,7 @@ export function DiagramPane({
                                 diagrams to the right of the screen.
                                 */
                                 array[index]?.align === 'right' &&
-                                    (index === 0 ||
-                                        array[index - 1]?.align === 'left') && (
+                                    (index === 0 || array[index - 1]?.align === 'left') && (
                                         <Box sx={styles.separator}></Box>
                                     )
                             }
@@ -1136,32 +948,19 @@ export function DiagramPane({
                                 align={diagramView.align}
                                 diagramId={diagramView.id}
                                 diagramTitle={getDiagramTitle(diagramView)}
-                                warningToDisplay={handleWarningToDisplay(
-                                    diagramView
-                                )}
+                                warningToDisplay={handleWarningToDisplay(diagramView)}
                                 pinned={diagramView.state === ViewState.PINNED}
                                 svgType={diagramView.svgType}
-                                width={getWidthForPaneDisplay(
-                                    diagramView.id,
-                                    diagramView.svgType
-                                )}
-                                height={getHeightForPaneDisplay(
-                                    diagramView.svgType,
-                                    width,
-                                    height
-                                )}
+                                width={getWidthForPaneDisplay(diagramView.id, diagramView.svgType)}
+                                height={getHeightForPaneDisplay(diagramView.svgType, width, height)}
                                 fullscreenWidth={width}
                                 fullscreenHeight={height}
                                 loadingState={diagramView.loadingState}
                             >
-                                {(diagramView.svgType ===
-                                    DiagramType.VOLTAGE_LEVEL ||
-                                    diagramView.svgType ===
-                                        DiagramType.SUBSTATION) && (
+                                {(diagramView.svgType === DiagramType.VOLTAGE_LEVEL ||
+                                    diagramView.svgType === DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
-                                        oneBusShortCircuitStatus={
-                                            oneBusShortCircuitStatus
-                                        }
+                                        oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}
@@ -1172,8 +971,7 @@ export function DiagramPane({
                                         diagramSizeSetter={setDiagramSize}
                                     />
                                 )}
-                                {diagramView.svgType ===
-                                    DiagramType.NETWORK_AREA_DIAGRAM && (
+                                {diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM && (
                                     <NetworkAreaDiagramContent
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
@@ -1197,8 +995,7 @@ export function DiagramPane({
                             <Chip
                                 key={diagramView.svgType + diagramView.id}
                                 icon={
-                                    diagramView.svgType ===
-                                    DiagramType.NETWORK_AREA_DIAGRAM ? (
+                                    diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM ? (
                                         <>
                                             <ArrowUpwardIcon />
                                             <TimelineIcon />
@@ -1208,18 +1005,8 @@ export function DiagramPane({
                                     )
                                 }
                                 label={getDiagramTitle(diagramView)}
-                                onClick={() =>
-                                    handleOpenDiagramView(
-                                        diagramView.id,
-                                        diagramView.svgType
-                                    )
-                                }
-                                onDelete={() =>
-                                    handleCloseDiagramView(
-                                        diagramView.id,
-                                        diagramView.svgType
-                                    )
-                                }
+                                onClick={() => handleOpenDiagramView(diagramView.id, diagramView.svgType)}
+                                onDelete={() => handleCloseDiagramView(diagramView.id, diagramView.svgType)}
                             />
                         ))}
                     </Stack>

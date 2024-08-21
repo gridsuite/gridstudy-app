@@ -8,13 +8,7 @@
 import { makeDiagramSorter } from './diagram-utils';
 
 test('diagram-common.sortDiagrams', () => {
-    const diagramStates = [
-        { id: 4 },
-        { id: 3 },
-        { id: 2 },
-        { id: 1 },
-        { id: 0 },
-    ];
+    const diagramStates = [{ id: 4 }, { id: 3 }, { id: 2 }, { id: 1 }, { id: 0 }];
 
     const table = [
         {},

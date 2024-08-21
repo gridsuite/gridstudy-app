@@ -22,6 +22,7 @@
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
+    "download.fileName": "Nom de fichier",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
 
@@ -43,6 +44,7 @@
     "centerLabel": "Centrer les noms d'ouvrages",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
+    "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
@@ -209,8 +211,6 @@
 
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
-
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Appuyez sur Entrée pour terminer ou Échap pour annuler.",
 
     "noOption": "Pas d'options",
     "maxSelection": "sélections maximum",
@@ -542,7 +542,6 @@
     "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
-
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
@@ -550,8 +549,6 @@
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
     "Default": "Défaut",
-
-
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
@@ -580,6 +577,7 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
+    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques", 
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
@@ -1237,7 +1235,7 @@
     "ConnectedT3WSide1": "Connecté 1",
     "ConnectedT3WSide2": "Connecté 2",
     "ConnectedT3WSide3": "Connecté 3",
-
+    "disconnected": "Disconnecté",
     "converterStationId": "ID de la station",
     "converterStationName": "Nom de la station",
     "converterStation1": "Station 1",
@@ -1381,5 +1379,9 @@
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
     "EquipmentSearchPlaceholder": "Recherche",
-    "GeneratedModification": "Modification-générée"
+    "GeneratedModification": "Modification-générée",
+    "guidancePopUp.title": "Sélection sur la carte",
+    "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.action":"Fermer l'éditeur"
 }

@@ -24,20 +24,18 @@ export const PARAM_SUBSTATION_LAYOUT = 'substationLayout';
 export const PARAM_COMPONENT_LIBRARY = 'componentLibrary';
 export const PARAM_FLUX_CONVENTION = 'fluxConvention';
 export const PARAM_LANGUAGE = 'language';
+export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
 export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
+export const PARAM_INIT_NAD_WITH_GEO_DATA = 'initNadWithGeoData';
 export const PARAMS_LOADED = 'paramsLoaded';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 
 export const PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD = 'flowProportionalThreshold';
-export const PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD =
-    'lowVoltageProportionalThreshold';
-export const PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD =
-    'lowVoltageAbsoluteThreshold';
-export const PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD =
-    'highVoltageProportionalThreshold';
-export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD =
-    'highVoltageAbsoluteThreshold';
+export const PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD = 'lowVoltageProportionalThreshold';
+export const PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD = 'lowVoltageAbsoluteThreshold';
+export const PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD = 'highVoltageProportionalThreshold';
+export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD = 'highVoltageAbsoluteThreshold';
 
 export const MAP_BASEMAP_MAPBOX = 'mapbox';
 export const MAP_BASEMAP_CARTO = 'carto';
@@ -47,9 +45,7 @@ export const basemap_style_theme_key = (basemap) => basemap + 'Style';
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 
 export function getAppName(paramName) {
-    return COMMON_CONFIG_PARAMS_NAMES.has(paramName)
-        ? COMMON_APP_NAME
-        : APP_NAME;
+    return COMMON_CONFIG_PARAMS_NAMES.has(paramName) ? COMMON_APP_NAME : APP_NAME;
 }
 
 const PARAM_SA_PROPORTIONAL_THRESHOLD = new Set([

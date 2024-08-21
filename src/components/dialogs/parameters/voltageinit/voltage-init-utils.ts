@@ -33,10 +33,7 @@ import {
     TabValue,
     VoltageInitParametersForm,
 } from './voltage-init-parameters-form';
-import {
-    REACTIVE_SLACKS_THRESHOLD,
-    SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
-} from './voltage-init-constants';
+import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
 
 type FilterIdentifier = {
     [FILTER_ID]: UUID;
@@ -63,35 +60,22 @@ export type VoltageInitParam = {
     };
 };
 
-export const fromVoltageInitParametersFormToParamValues = (
-    newParams: VoltageInitParametersForm
-): VoltageInitParam => {
+export const fromVoltageInitParametersFormToParamValues = (newParams: VoltageInitParametersForm): VoltageInitParam => {
     return {
-        applyModifications:
-            newParams?.[GENERAL]?.[GENERAL_APPLY_MODIFICATIONS] ??
-            DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+        applyModifications: newParams?.[GENERAL]?.[GENERAL_APPLY_MODIFICATIONS] ?? DEFAULT_GENERAL_APPLY_MODIFICATIONS,
         computationParameters: {
-            [UPDATE_BUS_VOLTAGE]:
-                newParams?.[GENERAL]?.[UPDATE_BUS_VOLTAGE] ??
-                DEFAULT_UPDATE_BUS_VOLTAGE,
+            [UPDATE_BUS_VOLTAGE]: newParams?.[GENERAL]?.[UPDATE_BUS_VOLTAGE] ?? DEFAULT_UPDATE_BUS_VOLTAGE,
             [REACTIVE_SLACKS_THRESHOLD]:
-                newParams?.[GENERAL]?.[REACTIVE_SLACKS_THRESHOLD] ??
-                DEFAULT_REACTIVE_SLACKS_THRESHOLD,
+                newParams?.[GENERAL]?.[REACTIVE_SLACKS_THRESHOLD] ?? DEFAULT_REACTIVE_SLACKS_THRESHOLD,
             [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]:
-                newParams?.[GENERAL]?.[
-                    SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD
-                ] ?? DEFAULT_SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
+                newParams?.[GENERAL]?.[SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD] ??
+                DEFAULT_SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD,
             [VOLTAGE_LIMITS_MODIFICATION]:
                 newParams.voltageLimitsModification?.map((voltageLimit) => {
                     return {
-                        [PRIORITY]:
-                            newParams.voltageLimitsModification?.indexOf(
-                                voltageLimit
-                            ),
-                        [LOW_VOLTAGE_LIMIT]:
-                            voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
-                        [HIGH_VOLTAGE_LIMIT]:
-                            voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
+                        [PRIORITY]: newParams.voltageLimitsModification?.indexOf(voltageLimit),
+                        [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
+                        [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
                         [FILTERS]:
                             voltageLimit[FILTERS]?.map((filter) => {
                                 return {
@@ -104,14 +88,9 @@ export const fromVoltageInitParametersFormToParamValues = (
             [VOLTAGE_LIMITS_DEFAULT]:
                 newParams.voltageLimitsDefault?.map((voltageLimit) => {
                     return {
-                        [PRIORITY]:
-                            newParams.voltageLimitsDefault?.indexOf(
-                                voltageLimit
-                            ),
-                        [LOW_VOLTAGE_LIMIT]:
-                            voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
-                        [HIGH_VOLTAGE_LIMIT]:
-                            voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
+                        [PRIORITY]: newParams.voltageLimitsDefault?.indexOf(voltageLimit),
+                        [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT] ?? 0,
+                        [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT] ?? 0,
                         [FILTERS]:
                             voltageLimit[FILTERS]?.map((filter) => {
                                 return {
@@ -154,8 +133,7 @@ export const fromVoltageInitParamsDataToFormValues = (
             [GENERAL_APPLY_MODIFICATIONS]: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
             [UPDATE_BUS_VOLTAGE]: parameters[UPDATE_BUS_VOLTAGE],
             [REACTIVE_SLACKS_THRESHOLD]: parameters.reactiveSlacksThreshold,
-            [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]:
-                parameters.shuntCompensatorActivationThreshold,
+            [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]: parameters.shuntCompensatorActivationThreshold,
         },
         [VOLTAGE_LIMITS_MODIFICATION]:
             parameters?.voltageLimitsModification?.map((voltageLimit) => {
@@ -191,17 +169,13 @@ export const fromVoltageInitParamsDataToFormValues = (
                 [NAME]: filter[FILTER_NAME],
             };
         }),
-        [VARIABLE_TRANSFORMERS]: parameters?.[VARIABLE_TRANSFORMERS]?.map(
-            (filter) => {
-                return {
-                    [ID]: filter[FILTER_ID],
-                    [NAME]: filter[FILTER_NAME],
-                };
-            }
-        ),
-        [VARIABLE_SHUNT_COMPENSATORS]: parameters?.[
-            VARIABLE_SHUNT_COMPENSATORS
-        ]?.map((filter) => {
+        [VARIABLE_TRANSFORMERS]: parameters?.[VARIABLE_TRANSFORMERS]?.map((filter) => {
+            return {
+                [ID]: filter[FILTER_ID],
+                [NAME]: filter[FILTER_NAME],
+            };
+        }),
+        [VARIABLE_SHUNT_COMPENSATORS]: parameters?.[VARIABLE_SHUNT_COMPENSATORS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
@@ -210,76 +184,62 @@ export const fromVoltageInitParamsDataToFormValues = (
     };
 };
 
-export const fromStudyVoltageInitParamsDataToFormValues = (
-    parameters: VoltageInitParam
-): VoltageInitParametersForm => {
+export const fromStudyVoltageInitParamsDataToFormValues = (parameters: VoltageInitParam): VoltageInitParametersForm => {
     return {
         [TabValue.GENERAL]: {
             [GENERAL_APPLY_MODIFICATIONS]: parameters.applyModifications,
-            [UPDATE_BUS_VOLTAGE]:
-                parameters?.computationParameters?.[UPDATE_BUS_VOLTAGE] ??
-                DEFAULT_UPDATE_BUS_VOLTAGE,
-            [REACTIVE_SLACKS_THRESHOLD]:
-                parameters?.computationParameters?.reactiveSlacksThreshold,
+            [UPDATE_BUS_VOLTAGE]: parameters?.computationParameters?.[UPDATE_BUS_VOLTAGE] ?? DEFAULT_UPDATE_BUS_VOLTAGE,
+            [REACTIVE_SLACKS_THRESHOLD]: parameters?.computationParameters?.reactiveSlacksThreshold,
             [SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD]:
-                parameters?.computationParameters
-                    ?.shuntCompensatorActivationThreshold,
+                parameters?.computationParameters?.shuntCompensatorActivationThreshold,
         },
         [VOLTAGE_LIMITS_MODIFICATION]:
-            parameters?.computationParameters?.voltageLimitsModification?.map(
-                (voltageLimit) => {
-                    return {
-                        // [SELECTED]: false,
-                        [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
-                            return {
-                                [ID]: filter[FILTER_ID],
-                                [NAME]: filter[FILTER_NAME],
-                            };
-                        }),
-                        [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
-                        [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
-                    };
-                }
-            ) ?? [],
+            parameters?.computationParameters?.voltageLimitsModification?.map((voltageLimit) => {
+                return {
+                    // [SELECTED]: false,
+                    [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
+                };
+            }) ?? [],
         [VOLTAGE_LIMITS_DEFAULT]:
-            parameters?.computationParameters?.voltageLimitsDefault?.map(
-                (voltageLimit) => {
-                    return {
-                        [SELECTED]: false,
-                        [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
-                            return {
-                                [ID]: filter[FILTER_ID],
-                                [NAME]: filter[FILTER_NAME],
-                            };
-                        }),
-                        [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
-                        [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
-                    };
-                }
-            ) ?? [],
-        [FIXED_GENERATORS]: parameters?.computationParameters?.[
-            FIXED_GENERATORS
-        ]?.map((filter) => {
+            parameters?.computationParameters?.voltageLimitsDefault?.map((voltageLimit) => {
+                return {
+                    [SELECTED]: false,
+                    [FILTERS]: voltageLimit[FILTERS]?.map((filter) => {
+                        return {
+                            [ID]: filter[FILTER_ID],
+                            [NAME]: filter[FILTER_NAME],
+                        };
+                    }),
+                    [LOW_VOLTAGE_LIMIT]: voltageLimit[LOW_VOLTAGE_LIMIT],
+                    [HIGH_VOLTAGE_LIMIT]: voltageLimit[HIGH_VOLTAGE_LIMIT],
+                };
+            }) ?? [],
+        [FIXED_GENERATORS]: parameters?.computationParameters?.[FIXED_GENERATORS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
             };
         }),
-        [VARIABLE_TRANSFORMERS]: parameters?.computationParameters?.[
-            VARIABLE_TRANSFORMERS
-        ]?.map((filter) => {
+        [VARIABLE_TRANSFORMERS]: parameters?.computationParameters?.[VARIABLE_TRANSFORMERS]?.map((filter) => {
             return {
                 [ID]: filter[FILTER_ID],
                 [NAME]: filter[FILTER_NAME],
             };
         }),
-        [VARIABLE_SHUNT_COMPENSATORS]: parameters?.computationParameters?.[
-            VARIABLE_SHUNT_COMPENSATORS
-        ]?.map((filter) => {
-            return {
-                [ID]: filter[FILTER_ID],
-                [NAME]: filter[FILTER_NAME],
-            };
-        }),
+        [VARIABLE_SHUNT_COMPENSATORS]: parameters?.computationParameters?.[VARIABLE_SHUNT_COMPENSATORS]?.map(
+            (filter) => {
+                return {
+                    [ID]: filter[FILTER_ID],
+                    [NAME]: filter[FILTER_NAME],
+                };
+            }
+        ),
     };
 };

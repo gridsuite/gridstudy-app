@@ -8,7 +8,7 @@
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTableSort } from '../redux/actions';
-import { ReduxState, TableSortKeysType } from '../redux/reducer.type';
+import { AppState, TableSortKeysType } from '../redux/reducer';
 
 export type SortConfigType = {
     colId: string;
@@ -27,33 +27,18 @@ export enum SortWay {
     DESC = 'desc',
 }
 
-export const useAgGridSort = (
-    table: TableSortKeysType,
-    tab: string
-): SortPropsType => {
-    const sortConfig = useSelector(
-        (state: ReduxState) => state.tableSort[table][tab]
-    );
+export const useAgGridSort = (table: TableSortKeysType, tab: string): SortPropsType => {
+    const sortConfig = useSelector((state: AppState) => state.tableSort[table][tab]);
 
     const dispatch = useDispatch();
 
     const onSortChanged = useCallback(
         (newSortConfig: SortConfigType) => {
             const updatedSortConfig = sortConfig
-                .filter(
-                    (sort) =>
-                        (sort.children ?? false) !==
-                        (newSortConfig.children ?? false)
-                )
+                .filter((sort) => (sort.children ?? false) !== (newSortConfig.children ?? false))
                 .concat(newSortConfig);
 
-            dispatch(
-                setTableSort({
-                    table: table,
-                    tab: tab,
-                    sort: updatedSortConfig,
-                })
-            );
+            dispatch(setTableSort(table, tab, updatedSortConfig));
         },
         [dispatch, table, tab, sortConfig]
     );

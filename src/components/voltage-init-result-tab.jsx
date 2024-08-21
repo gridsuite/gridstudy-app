@@ -18,9 +18,7 @@ const voltageInitResultInvalidations = ['voltageInitResult'];
 
 export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
-    const voltageInitStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
-    );
+    const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
 
     const [voltageInitResult, isWaiting] = useNodeData(
         studyUuid,
@@ -30,9 +28,7 @@ export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
     );
 
     const voltageInitResultToShow =
-        (voltageInitStatus === RunningStatus.SUCCEED ||
-            voltageInitStatus === RunningStatus.FAILED) &&
-        voltageInitResult
+        (voltageInitStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED) && voltageInitResult
             ? voltageInitResult
             : null;
 

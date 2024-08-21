@@ -10,19 +10,10 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerCreationDialogTab } from './two-windings-transformer-creation-dialog';
 import { useWatch } from 'react-hook-form';
-import {
-    ENABLED,
-    PHASE_TAP_CHANGER,
-    RATIO_TAP_CHANGER,
-} from 'components/utils/field-constants';
+import { ENABLED, PHASE_TAP_CHANGER, RATIO_TAP_CHANGER } from 'components/utils/field-constants';
 import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 
-const TwoWindingsTransformerCreationDialogTabs = ({
-    tabIndex,
-    tabIndexesWithError,
-    setTabIndex,
-    setDialogWidth,
-}) => {
+const TwoWindingsTransformerCreationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex, setDialogWidth }) => {
     const ratioTapChangerEnabledWatch = useWatch({
         name: `${RATIO_TAP_CHANGER}.${ENABLED}`,
     });
@@ -42,43 +33,25 @@ const TwoWindingsTransformerCreationDialogTabs = ({
                 }}
             >
                 <Tab
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />
-                    }
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB
-                    )}
+                    label={<FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB)}
                     onClick={() => setDialogWidth('xl')}
                 />
                 <Tab
                     label={<FormattedMessage id="LimitsTab" />}
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.LIMITS_TAB
-                    )}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerCreationDialogTab.LIMITS_TAB)}
                     onClick={() => setDialogWidth('xl')}
                 />
                 <Tab
                     onClick={() => setDialogWidth('xl')}
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />
-                    }
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB
-                    )}
+                    label={<FormattedMessage id="TwoWindingsTransformerRatioTapChangerTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB)}
                     disabled={!ratioTapChangerEnabledWatch}
                 />
                 <Tab
                     onClick={() => setDialogWidth('xl')}
-                    label={
-                        <FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />
-                    }
-                    sx={getTabStyle(
-                        tabIndexesWithError,
-                        TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB
-                    )}
+                    label={<FormattedMessage id="TwoWindingsTransformerPhaseTapChangerTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB)}
                     disabled={!phaseTapChangerEnabledWatch}
                 />
             </Tabs>

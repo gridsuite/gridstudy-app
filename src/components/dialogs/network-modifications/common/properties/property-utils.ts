@@ -36,19 +36,9 @@ type Equipment = {
     properties: Record<string, string> | undefined;
 };
 
-export const fetchPredefinedProperties = (
-    networkElementType: string
-): Promise<PredefinedProperties | undefined> => {
+export const fetchPredefinedProperties = (networkElementType: string): Promise<PredefinedProperties | undefined> => {
     return fetchStudyMetadata().then((studyMetadata) => {
-        return studyMetadata.predefinedEquipmentProperties?.[
-            networkElementType
-        ];
-    });
-};
-
-export const fetchDefaultCountry = (): Promise<string | undefined> => {
-    return fetchStudyMetadata().then((studyMetadata) => {
-        return studyMetadata.defaultCountry;
+        return studyMetadata.predefinedEquipmentProperties?.[networkElementType];
     });
 };
 
@@ -66,9 +56,7 @@ export const initializedProperty = (): Property => {
     };
 };
 
-export const getPropertiesFromModification = (
-    properties: Property[] | undefined
-): Properties => {
+export const getPropertiesFromModification = (properties: Property[] | undefined): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: properties
             ? properties.map((p) => {
@@ -84,9 +72,7 @@ export const getPropertiesFromModification = (
     };
 };
 
-export const copyEquipmentPropertiesForCreation = (
-    equipmentInfos: Equipment
-): Properties => {
+export const copyEquipmentPropertiesForCreation = (equipmentInfos: Equipment): Properties => {
     return {
         [ADDITIONAL_PROPERTIES]: equipmentInfos.properties
             ? Object.entries(equipmentInfos.properties).map(([name, value]) => {
@@ -102,16 +88,10 @@ export const copyEquipmentPropertiesForCreation = (
     };
 };
 
-export function getConcatenatedProperties(
-    equipment: Equipment,
-    getValues: (name: string) => any
-): any {
+export function getConcatenatedProperties(equipment: Equipment, getValues: (name: string) => any): any {
     // ex: current Array [ {Object {  name: "p1", value: "v2", previousValue: undefined, added: true, deletionMark: false } }, {...} ]
     const modificationProperties = getValues(ADDITIONAL_PROPERTIES);
-    return mergeModificationAndEquipmentProperties(
-        modificationProperties,
-        equipment
-    );
+    return mergeModificationAndEquipmentProperties(modificationProperties, equipment);
 }
 
 /*
@@ -176,9 +156,7 @@ export const creationPropertiesSchema = yup.object({
                 [ADDED]: yup.boolean().required(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) =>
-            checkUniquePropertyNames(values)
-        ),
+        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) => checkUniquePropertyNames(values)),
 });
 
 export const modificationPropertiesSchema = yup.object({
@@ -191,10 +169,8 @@ export const modificationPropertiesSchema = yup.object({
                     .string()
                     .nullable()
                     .when([PREVIOUS_VALUE, DELETION_MARK], {
-                        is: (
-                            previousValue: string | null,
-                            deletionMark: boolean
-                        ) => previousValue === null && !deletionMark,
+                        is: (previousValue: string | null, deletionMark: boolean) =>
+                            previousValue === null && !deletionMark,
                         then: (schema) => schema.required(),
                     }),
                 [PREVIOUS_VALUE]: yup.string().nullable(),
@@ -202,9 +178,7 @@ export const modificationPropertiesSchema = yup.object({
                 [ADDED]: yup.boolean().required(),
             })
         )
-        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) =>
-            checkUniquePropertyNames(values)
-        ),
+        .test('checkUniqueProperties', 'DuplicatedPropsError', (values) => checkUniquePropertyNames(values)),
 });
 
 const checkUniquePropertyNames = (
