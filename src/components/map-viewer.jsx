@@ -36,6 +36,8 @@ import GuidancePopup from './network/guidance-popup';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
+import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
+import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
 
 const styles = {
     map: {
@@ -83,6 +85,10 @@ const styles = {
         fontSize: 15,
         fontFamily: theme.typography.fontFamily,
     }),
+    symbol: (theme) => ({
+        width: theme.spacing(2),
+        height: theme.spacing(2),
+    }),
 };
 //define guidancePopup style
 const guidancePopupStyle = {
@@ -110,10 +116,20 @@ export const Title = () => (
 export const Content = () => (
     <>
         <Typography variant="body2" sx={styles.popUpContent}>
-            <FormattedMessage id="guidancePopUp.firstVariant" />
+            <FormattedMessage
+                id="guidancePopUp.firstVariant"
+                values={{
+                    symbol: <BackHandOutlinedIcon sx={styles.symbol} />,
+                }}
+            />
         </Typography>
         <Typography variant="body2" sx={styles.popUpContent}>
-            <FormattedMessage id="guidancePopUp.secondVariant" />
+            <FormattedMessage
+                id={'guidancePopUp.secondVariant'}
+                values={{
+                    symbol: <KeyboardReturnOutlinedIcon sx={styles.symbol} />,
+                }}
+            />
         </Typography>
     </>
 );
