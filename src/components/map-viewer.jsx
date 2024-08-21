@@ -89,6 +89,9 @@ const styles = {
         width: theme.spacing(2),
         height: theme.spacing(2),
     }),
+    title: {
+        lineHeight: 1,
+    },
 };
 //define guidancePopup style
 const guidancePopupStyle = {
@@ -98,9 +101,9 @@ const guidancePopupStyle = {
         bottom: '150px',
         maxWidth: '200px',
     },
-    header: {
-        paddingBottom: 'inherit',
-    },
+    header: (theme) => ({
+        paddingBottom: theme.spacing(1),
+    }),
     actionsContainer: {
         display: 'flex',
         justifyContent: 'center',
@@ -109,7 +112,7 @@ const guidancePopupStyle = {
 
 // define the guidancePopup title and content
 export const Title = () => (
-    <Typography variant="h6" component="span">
+    <Typography variant="h6" component="div" sx={styles.title}>
         <FormattedMessage id="guidancePopUp.title" />
     </Typography>
 );
