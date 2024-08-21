@@ -89,18 +89,19 @@ const styles = {
         width: theme.spacing(2),
         height: theme.spacing(2),
     }),
-    title: {
+    title: (theme) => ({
         lineHeight: 1,
-    },
+        maxWidth: theme.spacing(17.5),
+    }),
 };
 //define guidancePopup style
 const guidancePopupStyle = {
-    card: {
+    card: (theme) => ({
         position: 'absolute',
-        left: '10px',
-        bottom: '150px',
-        maxWidth: '200px',
-    },
+        left: theme.spacing(1.25),
+        bottom: theme.spacing(18.75),
+        maxWidth: theme.spacing(25),
+    }),
     header: (theme) => ({
         paddingBottom: theme.spacing(1.4),
     }),
