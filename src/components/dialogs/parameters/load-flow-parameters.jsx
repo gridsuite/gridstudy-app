@@ -515,7 +515,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <Grid item sx={{ height: '100%', position: 'relative' }} xl={9} lg={11} md={12}>
+        <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
             <Box
                 sx={{
                     height: '100%',
