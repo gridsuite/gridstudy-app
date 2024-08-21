@@ -24,17 +24,17 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
         <TableContainer
             sx={{
                 height: tableHeight,
+                width: '70%',
                 border: 'solid 0px rgba(0,0,0,0.1)',
             }}
         >
             <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
                     <TableRow>
-                        {columnsDefinition.map((column: IColumnsDef) => (
+                        {columnsDefinition.map((column) => (
                             <TableCell
                                 key={column.dataKey}
                                 sx={{
-                                    width: column.width,
                                     textAlign: 'center',
                                 }}
                             >
@@ -44,7 +44,7 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.map((row: Record<'id', string>, index: number) => (
+                    {rows.map((row, index) => (
                         <LimitReductionTableRow key={`${row.id}`} columnsDefinition={columnsDefinition} index={index} />
                     ))}
                 </TableBody>

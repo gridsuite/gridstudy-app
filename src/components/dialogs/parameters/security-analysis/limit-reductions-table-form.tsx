@@ -78,7 +78,7 @@ const LimitReductionsTableForm: FunctionComponent<{
         reset(toFormValues());
     }, [reset, toFormValues]);
 
-    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={367} />;
+    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
 };
 
 export default LimitReductionsTableForm;

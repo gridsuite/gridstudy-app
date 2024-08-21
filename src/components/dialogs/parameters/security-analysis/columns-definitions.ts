@@ -51,7 +51,6 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
     {
         label: 'VoltageLevels',
         dataKey: VOLTAGE_LEVELS_FORM,
-        width: '40%',
     },
     {
         label: 'IST',
