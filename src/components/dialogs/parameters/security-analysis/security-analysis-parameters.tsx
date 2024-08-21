@@ -12,6 +12,7 @@ import React, {
     SetStateAction,
     useCallback,
     useEffect,
+    useMemo,
     useState,
 } from 'react';
 import { Grid } from '@mui/material';
@@ -92,9 +93,12 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         [snackError, updateParameters]
     );
 
-    const formSchema = getLimitReductionsFormSchema(
-        params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
-    );
+    const formSchema = useMemo(() => {
+        return getLimitReductionsFormSchema(
+            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
+        );
+    }, [params]);
+
     const formMethods = useForm({
         defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
         resolver: yupResolver(formSchema),
