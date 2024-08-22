@@ -136,7 +136,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const updateLimitReductions = useCallback(
         (formLimits: Record<string, any>) => {
-            const newParams = {
+            updateParameters({
                 ...params,
                 [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formLimits[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
                 [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
@@ -146,8 +146,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                     formLimits[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
                 [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
                 limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
-            };
-            updateParameters(newParams);
+            });
         },
         [params, updateParameters, toLimitReductions]
     );
