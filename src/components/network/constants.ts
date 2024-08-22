@@ -5,9 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export const SUBSTATION_RADIUS = 500;
-export const SUBSTATION_RADIUS_MAX_PIXEL = 5;
-export const SUBSTATION_RADIUS_MIN_PIXEL = 1;
+import { Option as OptionCUI } from '@gridsuite/commons-ui';
+
+export type Option = Exclude<OptionCUI, string> /*{
+    label: string; //TODO translation key
+}*/;
+
 export const FORM_LOADING_DELAY = 200;
 export const RESULTS_LOADING_DELAY = 500;
 
@@ -15,7 +18,7 @@ export const RESULTS_LOADING_DELAY = 500;
 export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
-];
+] as const satisfies Readonly<Option[]>;
 // and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
@@ -27,18 +30,20 @@ export const ENERGY_SOURCES = [
     { id: 'THERMAL', label: 'Thermal' },
     { id: 'SOLAR', label: 'Solar' },
     { id: 'OTHER', label: 'Other' },
-];
+] as const satisfies Readonly<Option[]>;
 
 export const SHUNT_COMPENSATOR_TYPES = {
     REACTOR: { id: 'REACTOR', label: 'Reactor' },
     CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-};
+} as const satisfies Record<string, Option>;
 
 export const REGULATION_TYPES = {
     DISTANT: { id: 'DISTANT', label: 'Distant' },
     LOCAL: { id: 'LOCAL', label: 'Local' },
-};
+} as const satisfies Record<string, Option>;
 
+//TODO move study-container.UPDATE_TYPE_HEADER here, or this type in study-container
+// update type for modifications
 export const UPDATE_TYPE = [
     'creatingInProgress',
     'updatingInProgress',
@@ -54,7 +59,7 @@ export const PHASE_REGULATION_MODES = {
         id: 'ACTIVE_POWER_CONTROL',
         label: 'PhaseActivePowerControl',
     },
-};
+} as const satisfies Record<string, Option>;
 
 export const RATIO_REGULATION_MODES = {
     FIXED_RATIO: {
@@ -65,18 +70,18 @@ export const RATIO_REGULATION_MODES = {
         id: 'VOLTAGE_REGULATION',
         label: 'VoltageRegulation',
     },
-};
+} as const satisfies Record<string, Option>;
 
 export const SIDE = {
     SIDE1: { id: 'SIDE1', label: 'RegulatedSide1' },
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
-};
+} as const satisfies Record<string, Option>;
 
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },
     { id: 'BOTTOM', label: 'Bottom' },
-];
+] as const satisfies Readonly<Option[]>;
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
@@ -94,7 +99,7 @@ export function getConnectionDirectionLabel(connectionDirectionId: string) {
 export const REACTIVE_LIMIT_TYPES = [
     { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
-];
+] as const satisfies Readonly<Option[]>;
 
 const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' };
 const REGULAR_DISTRIBUTION = {
@@ -106,8 +111,7 @@ export const ACTIVE_VARIATION_MODES = {
     PROPORTIONAL,
     REGULAR_DISTRIBUTION,
     VENTILATION,
-};
-
+} as const satisfies Record<string, Option>;
 export const VARIATION_MODES = {
     PROPORTIONAL,
     PROPORTIONAL_TO_PMAX: {
@@ -117,44 +121,39 @@ export const VARIATION_MODES = {
     REGULAR_DISTRIBUTION,
     STACKING_UP: { id: 'STACKING_UP', label: 'StackingUp' },
     VENTILATION,
-};
+} as const satisfies Record<string, Option>;
 
 export const REACTIVE_VARIATION_MODES = {
     CONSTANT_Q: { id: 'CONSTANT_Q', label: 'ConstantQWithoutUnit' },
     TAN_PHI_FIXED: { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
-};
+} as const satisfies Record<string, Option>;
 
 export function getLoadTypeLabel(loadTypeId: string) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
 }
 
-export const SLD_DISPLAY_MODE = {
-    FEEDER_POSITION: 'FEEDER_POSITION',
-    STATE_VARIABLE: 'STATE_VARIABLE',
-};
+export enum SLD_DISPLAY_MODE {
+    FEEDER_POSITION = 'FEEDER_POSITION',
+    STATE_VARIABLE = 'STATE_VARIABLE',
+}
 
-export const BRANCH_SIDE = {
-    ONE: 'ONE',
-    TWO: 'TWO',
-};
+export enum BRANCH_SIDE {
+    ONE = 'ONE',
+    TWO = 'TWO',
+}
 
-export const OPERATING_STATUS_ACTION = {
-    LOCKOUT: 'LOCKOUT',
-    TRIP: 'TRIP',
-    ENERGISE_END_ONE: 'ENERGISE_END_ONE',
-    ENERGISE_END_TWO: 'ENERGISE_END_TWO',
-    SWITCH_ON: 'SWITCH_ON',
-};
+export enum OPERATING_STATUS_ACTION {
+    LOCKOUT = 'LOCKOUT',
+    TRIP = 'TRIP',
+    ENERGISE_END_ONE = 'ENERGISE_END_ONE',
+    ENERGISE_END_TWO = 'ENERGISE_END_TWO',
+    SWITCH_ON = 'SWITCH_ON',
+}
 
 export const VARIATION_TYPES = {
     DELTA_P: { id: 'DELTA_P', label: 'DeltaP' },
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
-};
-
-export const VOLTAGE_LEVEL_COMPONENTS = {
-    BUS_BAR_SECTION_CREATION: 'BusBarSectionCreation',
-    BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
-};
+} as const satisfies Record<string, Option>;
 
 export enum BUILD_STATUS {
     NOT_BUILT = 'NOT_BUILT',
@@ -167,7 +166,7 @@ export enum BUILD_STATUS {
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
-};
+} as const satisfies Record<string, Option>;
 
 export const VSC_CONVERTER_MODE = {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER: {
@@ -178,4 +177,4 @@ export const VSC_CONVERTER_MODE = {
         id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
         label: 'side1InverterSide2Rectifier',
     },
-};
+} as const satisfies Record<string, Option>;

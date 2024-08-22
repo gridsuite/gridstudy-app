@@ -304,13 +304,13 @@ export interface StudyUpdatedEventDataHeader {
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: SpreadsheetEquipmentType; //string;
 }
 
 export interface NetworkImpactsInfos {
     impactedSubstationsIds: UUID[];
     deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
+    impactedElementTypes: SpreadsheetEquipmentType[];
 }
 
 // EventData

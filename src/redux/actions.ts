@@ -40,6 +40,7 @@ import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram
 import {
     AppState,
     CurrentTreeNode,
+    DeletedEquipment,
     EquipmentUpdateType,
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
@@ -64,7 +65,12 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_DEFINITIONS,
+    TablesDefinitionsKeys,
+    TablesDefinitionsNames,
+    TablesDefinitionsType,
+} from '../components/spreadsheet/utils/config-tables';
 import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
 
 type MutableUnknownArray = unknown[];
@@ -182,15 +188,11 @@ export function updateEquipments(equipments: Record<EquipmentUpdateType, IEquipm
     };
 }
 
-type EquipmentToDelete = {
-    equipmentType: SpreadsheetEquipmentType;
-    equipmentId: string;
-};
 export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export type DeleteEquipmentsAction = Readonly<Action<typeof DELETE_EQUIPMENTS>> & {
-    equipments: EquipmentToDelete[];
+    equipments: DeletedEquipment[];
 };
-export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipmentsAction {
+export function deleteEquipments(equipments: DeletedEquipment[]): DeleteEquipmentsAction {
     return {
         type: DELETE_EQUIPMENTS,
         equipments,
@@ -1104,17 +1106,13 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
     };
 }
 
-//TODO create type in config-tables when passed to typescript
-type TableDefKeys = keyof typeof TABLES_DEFINITIONS;
-type TableDefNames = (typeof TABLES_DEFINITIONS)[TableDefKeys]['name'];
-
 export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
 export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
-    table: TableDefNames;
+    table: TablesDefinitionsNames;
     definitions: ColumnWithFormula[];
 };
 export function setCustomColumDefinitions(
-    table: TableDefNames,
+    table: TablesDefinitionsNames,
     customColumNS: ColumnWithFormula[]
 ): CustomColumnsDefinitionsAction {
     return {
