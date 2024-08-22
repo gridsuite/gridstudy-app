@@ -700,22 +700,7 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName, idx, arr) => ({
-            ...acc,
-            [columnName]: [
-                {
-                    name: `test of ${columnName}`,
-                    formula: '=$col1+$col2/3.141',
-                },
-                {
-                    name: 'test2',
-                    formula: '=1+2+3',
-                },
-            ],
-        }),
-        {}
-    ),
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce((acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }), {}),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode

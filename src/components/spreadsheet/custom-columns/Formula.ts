@@ -11,6 +11,6 @@ export interface Formula {
     calc(formula: string, data: object): unknown;
 
     formulaToString(x: unknown): string;
-    serialize(x: unknown): string;
-    deserialize(json: string): unknown;
+    formulaSerialize(x: unknown): string;
+    formulaDeserialize(json: string): unknown;
 }

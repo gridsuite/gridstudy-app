@@ -32,8 +32,8 @@ export default class FormulaMathJs implements Formula {
             //TODO relTol: 000,
         });
         this.math.import(numbers, { wrap: true, silent: true });
-        this.math.import(numeric, { wrap: true, silent: true });
-        this.math.import(mathjsSimpleIntegral);
+        this.math.import(numeric, { wrap: true, silent: true }); // Vite warning: "node_modules/numeric/numeric-x.x.x.js: Use of eval in "node_modules/numeric/numeric-x.x.x.js" is strongly discouraged as it poses security risks and may cause issues with minification."
+        //this.math.import(mathjsSimpleIntegral);
 
         //TODO https://github.com/josdejong/mathjs/blob/HEAD/types/EXPLANATION.md
         //https://github.com/josdejong/typed-function
@@ -58,12 +58,12 @@ export default class FormulaMathJs implements Formula {
                 createUnit: function () {
                     throw new Error('Function createUnit is disabled');
                 },
-                evaluate: function () {
+                /*evaluate: function () {
                     throw new Error('Function evaluate is disabled');
                 },
                 parse: function () {
                     throw new Error('Function parse is disabled');
-                },
+                },*/
                 simplify: function () {
                     throw new Error('Function simplify is disabled');
                 },
@@ -80,12 +80,12 @@ export default class FormulaMathJs implements Formula {
     }
 
     // https://mathjs.org/docs/core/serialization.html
-    serialize(x: unknown): string {
+    formulaSerialize(x: unknown): string {
         return JSON.stringify(x, this.math.replacer);
     }
 
     // https://mathjs.org/docs/core/serialization.html
-    deserialize(json: string): unknown {
+    formulaDeserialize(json: string): unknown {
         return JSON.parse(json, this.math.reviver);
     }
 

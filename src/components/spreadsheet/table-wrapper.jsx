@@ -78,7 +78,7 @@ import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import CustomColumnsConfig from './custom-columns/columns-config-custom';
-import { FormulaContext } from './custom-columns/FormulaContext';
+import { useFormula } from './custom-columns/FormulaContext';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -169,6 +169,25 @@ const TableWrapper = (props) => {
     const globalFilterRef = useRef();
 
     const [columnData, setColumnData] = useState([]);
+    const [customColumnData, setCustomColumnData] = useState([]);
+    const [mergedColumnData, setMergedColumnData] = useState([]);
+    useEffect(() => {
+        setMergedColumnData([...columnData, ...customColumnData]);
+    }, [columnData, customColumnData]);
+
+    const formula = useFormula();
+    const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
+    useEffect(() => {
+        setCustomColumnData(
+            customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
+                coldId: `custom-${tabIndex}-${idx}`,
+                headerName: colWithFormula.name,
+                valueGetter: () => formula.calc(colWithFormula.formula, {}),
+                editable: false,
+                cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
+            }))
+        );
+    }, [formula, tabIndex, customColumnsDefinitions]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
@@ -383,9 +402,9 @@ const TableWrapper = (props) => {
     }, [equipments, props.disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
-    //is reinstanciated in order to notify components using it.
+    //is re-instantiated in order to notify components using it.
     //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
-    //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
+    //it is necessary since we currently lack the system to detect changes done to it after receiving a notification
     const rowData = getRows();
 
     const handleSwitchTab = useCallback(
@@ -1092,7 +1111,7 @@ const TableWrapper = (props) => {
         }
     }, [editingData]);
     return (
-        <FormulaContext>
+        <>
             <Grid container justifyContent={'space-between'}>
                 <EquipmentTabs
                     disabled={!!(props.disabled || editingData)}
@@ -1145,7 +1164,7 @@ const TableWrapper = (props) => {
                         studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
-                        columnData={columnData}
+                        columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
                         visible={props.visible}
@@ -1158,7 +1177,7 @@ const TableWrapper = (props) => {
                     />
                 </Box>
             )}
-        </FormulaContext>
+        </>
     );
 };
 

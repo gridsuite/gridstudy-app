@@ -19,7 +19,7 @@ class DummyFormula implements Formula {
         throw DummyFormula.error;
     }
 
-    deserialize(json: string): unknown {
+    formulaDeserialize(json: string): unknown {
         throw DummyFormula.error;
     }
 
@@ -27,7 +27,7 @@ class DummyFormula implements Formula {
         throw DummyFormula.error;
     }
 
-    serialize(x: unknown): string {
+    formulaSerialize(x: unknown): string {
         throw DummyFormula.error;
     }
 }
