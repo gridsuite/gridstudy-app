@@ -43,7 +43,6 @@ import {
 } from './dialogs/parameters/single-line-diagram-parameters';
 import { MapParameters } from './dialogs/parameters/map-parameters';
 import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
-import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -56,6 +55,8 @@ import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import { NetworkAreaDiagramParameters } from './dialogs/parameters/network-area-diagram-parameters';
+import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -119,6 +120,7 @@ const styles = {
 
 enum TAB_VALUES {
     sldParamsTabValue = 'SingleLineDiagram',
+    networkAreaDiagram = 'NetworkAreaDiagram',
     mapParamsTabValue = 'Map',
     lfParamsTabValue = 'LoadFlow',
     securityAnalysisParamsTabValue = 'SecurityAnalysis',
@@ -131,6 +133,7 @@ enum TAB_VALUES {
 }
 
 const hasValidationTabs = [
+    TAB_VALUES.securityAnalysisParamsTabValue,
     TAB_VALUES.sensitivityAnalysisParamsTabValue,
     TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
     TAB_VALUES.shortCircuitParamsTabValue,
@@ -248,12 +251,19 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         switch (tabValue) {
             case TAB_VALUES.sldParamsTabValue:
                 return <SingleLineDiagramParameters componentLibraries={componentLibraries} />;
+            case TAB_VALUES.networkAreaDiagram:
+                return <NetworkAreaDiagramParameters />;
             case TAB_VALUES.mapParamsTabValue:
                 return <MapParameters />;
             case TAB_VALUES.lfParamsTabValue:
                 return <LoadFlowParameters parametersBackend={loadFlowParametersBackend} />;
             case TAB_VALUES.securityAnalysisParamsTabValue:
-                return <SecurityAnalysisParameters parametersBackend={securityAnalysisParametersBackend} />;
+                return (
+                    <SecurityAnalysisParameters
+                        parametersBackend={securityAnalysisParametersBackend}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                    />
+                );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
                 return (
                     <SensitivityAnalysisParameters
@@ -351,6 +361,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             <Tab
                                 label={<FormattedMessage id="SingleLineDiagram" />}
                                 value={TAB_VALUES.sldParamsTabValue}
+                            />
+                            <Tab
+                                label={<FormattedMessage id="NetworkAreaDiagram" />}
+                                value={TAB_VALUES.networkAreaDiagram}
                             />
                             <Tab label={<FormattedMessage id="Map" />} value={TAB_VALUES.mapParamsTabValue} />
                             <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />

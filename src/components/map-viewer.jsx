@@ -36,6 +36,8 @@ import GuidancePopup from './network/guidance-popup';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
+import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
+import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
 
 const styles = {
     map: {
@@ -83,18 +85,26 @@ const styles = {
         fontSize: 15,
         fontFamily: theme.typography.fontFamily,
     }),
+    symbol: (theme) => ({
+        width: theme.spacing(2),
+        height: theme.spacing(2),
+    }),
+    title: (theme) => ({
+        lineHeight: 1,
+        maxWidth: theme.spacing(17.5),
+    }),
 };
 //define guidancePopup style
 const guidancePopupStyle = {
-    card: {
+    card: (theme) => ({
         position: 'absolute',
-        left: '10px',
-        bottom: '150px',
-        maxWidth: '200px',
-    },
-    header: {
-        paddingBottom: 'inherit',
-    },
+        left: theme.spacing(1.25),
+        bottom: theme.spacing(18.75),
+        maxWidth: theme.spacing(25),
+    }),
+    header: (theme) => ({
+        paddingBottom: theme.spacing(1.4),
+    }),
     actionsContainer: {
         display: 'flex',
         justifyContent: 'center',
@@ -103,17 +113,27 @@ const guidancePopupStyle = {
 
 // define the guidancePopup title and content
 export const Title = () => (
-    <Typography variant="h6" component="span">
+    <Typography variant="h6" component="div" sx={styles.title}>
         <FormattedMessage id="guidancePopUp.title" />
     </Typography>
 );
 export const Content = () => (
     <>
         <Typography variant="body2" sx={styles.popUpContent}>
-            <FormattedMessage id="guidancePopUp.firstVariant" />
+            <FormattedMessage
+                id="guidancePopUp.firstVariant"
+                values={{
+                    symbol: <BackHandOutlinedIcon sx={styles.symbol} />,
+                }}
+            />
         </Typography>
         <Typography variant="body2" sx={styles.popUpContent}>
-            <FormattedMessage id="guidancePopUp.secondVariant" />
+            <FormattedMessage
+                id={'guidancePopUp.secondVariant'}
+                values={{
+                    symbol: <KeyboardReturnOutlinedIcon sx={styles.symbol} />,
+                }}
+            />
         </Typography>
     </>
 );
