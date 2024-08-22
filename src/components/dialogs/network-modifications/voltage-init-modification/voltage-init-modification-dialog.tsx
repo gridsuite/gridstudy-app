@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
 import { DefaultCellRenderer, BooleanCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -27,8 +27,8 @@ import {
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+import { SuppressKeyboardEventParams } from 'ag-grid-community';
+import { suppressKeyEvent } from '../../../utils/keys-utils';
 
 export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
@@ -362,10 +362,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
         </Box>
     );
 
-    const suppressKeyEvent = (params: any) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
-
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -375,7 +371,7 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             wrapHeaderText: true,
             autoHeaderHeight: true,
             cellRenderer: DefaultCellRenderer,
-            suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
+            suppressKeyboardEvent: (params: SuppressKeyboardEventParams) => suppressKeyEvent(params),
         }),
         []
     );

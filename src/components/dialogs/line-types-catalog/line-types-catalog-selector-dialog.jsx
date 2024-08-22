@@ -5,15 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useRef, useMemo, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../commons/basicModificationDialog';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+import { suppressKeyEvent } from '../../utils/keys-utils';
 
 export const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
@@ -236,10 +235,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
             </Grid>
         </Box>
     );
-
-    const suppressKeyEvent = (params) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
 
     const defaultColDef = useMemo(
         () => ({

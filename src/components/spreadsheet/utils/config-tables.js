@@ -3875,5 +3875,3 @@ function generateTapRequest(type, leg) {
         ' }\n'
     );
 }
-
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
