@@ -199,6 +199,7 @@ import {
     TABLES_COLUMNS_NAMES_JSON,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
+    TablesDefinitionsNames,
 } from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -427,7 +428,7 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allCustomColumnsDefinitions: Record</*typeof TABLES_NAMES*/ string, ColumnWithFormula[]>;
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, ColumnWithFormula[]>;
     allDisplayedColumnsNames: UnknownArray;
     allLockedColumnsNames: UnknownArray;
     allReorderedTableDefinitionIndexes: UnknownArray;
@@ -700,7 +701,10 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce((acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }), {}),
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }),
+        {} as AppState['allCustomColumnsDefinitions']
+    ),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode

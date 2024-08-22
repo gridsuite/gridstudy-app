@@ -3929,7 +3929,7 @@ export const TABLES_COLUMNS_NAMES: TablesColumnsNamesType = Object.values(TABLES
 
 export const TABLES_COLUMNS_NAMES_JSON = TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify(cols));
 
-export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map((table) => table.name);
+export const TABLES_NAMES: TablesDefinitionsNames[] = Object.values(TABLES_DEFINITIONS).map((table) => table.name);
 
 type TablesNamesIndexesType = {
     [key in TablesDefinitionsKeys as TablesDefinitionsType[key]['name']]: TablesDefinitionsType[key]['index'];
