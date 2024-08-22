@@ -412,7 +412,7 @@ export interface AppState extends CommonStoreState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
-    tableSort: TableSort;
+    [TABLE_SORT_STORE]: TableSort;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -1541,7 +1541,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
-        state.allCustomColumnsDefinitions[action.table] = action.definitions;
+        state.allCustomColumnsDefinitions[action.table] = action.definitions.sort((a, b) =>
+            a.name.localeCompare(b.name)
+        );
     });
 });
 

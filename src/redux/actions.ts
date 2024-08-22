@@ -65,12 +65,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import {
-    TABLES_DEFINITIONS,
-    TablesDefinitionsKeys,
-    TablesDefinitionsNames,
-    TablesDefinitionsType,
-} from '../components/spreadsheet/utils/config-tables';
+import { TablesDefinitionsNames } from '../components/spreadsheet/utils/config-tables';
 import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
 
 type MutableUnknownArray = unknown[];
@@ -1118,6 +1113,6 @@ export function setCustomColumDefinitions(
     return {
         type: CUSTOM_COLUMNS_DEFINITIONS,
         table,
-        definitions: customColumNS.sort((a, b) => a.name.localeCompare(b.name)),
+        definitions: customColumNS,
     };
 }
