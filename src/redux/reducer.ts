@@ -72,6 +72,7 @@ import {
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
     INIT_NAD_WITH_GEO_DATA,
+    InitNadWithGeoDataAction,
     LIMIT_REDUCTION,
     LIMIT_REDUCTION_MODIFIED,
     LimitReductionAction,
@@ -275,7 +276,6 @@ import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
-import { InitNadWithGeoDataAction } from './actions';
 
 export enum NotificationType {
     STUDY = 'study',

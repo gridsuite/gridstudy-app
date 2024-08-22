@@ -72,7 +72,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
