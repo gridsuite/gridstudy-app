@@ -10,7 +10,7 @@ import React, { FunctionComponent, SyntheticEvent, useCallback, useMemo, useStat
 import { FormattedMessage } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
-import { Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { TAB_VALUES } from './columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
@@ -56,12 +56,12 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
 
                 {TAB_INFO.map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
-                        {tabValue === TAB_VALUES.General && (
-                            <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
-                        )}
-                        {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
+                        <Box display={tabValue === TAB_VALUES.General ? 'block' : 'none'}>
+                            <ViolationsHidingParameters />
+                        </Box>
+                        <Box display={tabValue === TAB_VALUES.LimitReductions ? 'block' : 'none'}>
                             <LimitReductionsTableForm limits={params.limitReductions} />
-                        )}
+                        </Box>
                     </TabPanel>
                 ))}
             </Grid>

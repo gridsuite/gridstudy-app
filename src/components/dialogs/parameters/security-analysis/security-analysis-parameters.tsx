@@ -36,9 +36,18 @@ import {
     getLimitReductionsFormSchema,
     ILimitReductionsByVoltageLevel,
     IST_FORM,
+    ITemporaryLimitReduction,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
+    VOLTAGE_LEVELS_FORM,
 } from './columns-definitions';
+import {
+    PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+} from 'utils/config-params.js';
 
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
@@ -123,14 +132,22 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         [params]
     );
 
-    const { handleSubmit, formState } = formMethods;
+    const { handleSubmit, formState, reset } = formMethods;
 
     const updateLimitReductions = useCallback(
         (formLimits: Record<string, any>) => {
-            updateParameters({
+            const newParams = {
                 ...params,
+                [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formLimits[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formLimits[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
+                [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formLimits[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
                 limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
-            });
+            };
+            updateParameters(newParams);
         },
         [params, updateParameters, toLimitReductions]
     );
@@ -138,6 +155,36 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
+
+    const toFormValues = useCallback(() => {
+        const limits = params.limitReductions;
+        return {
+            [LIMIT_REDUCTIONS_FORM]: limits.map((vlLimits: ILimitReductionsByVoltageLevel) => {
+                return {
+                    [VOLTAGE_LEVELS_FORM]: vlLimits.voltageLevel.nominalV + ' (kV)',
+                    [IST_FORM]: vlLimits.permanentLimitReduction,
+                    ...toFormValuesFromTemporaryLimits(vlLimits.temporaryLimitReductions),
+                };
+            }),
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] * 100,
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] * 100,
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: params[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] * 100,
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: params[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
+        };
+    }, [params]);
+
+    const toFormValuesFromTemporaryLimits = (limits: ITemporaryLimitReduction[]) => {
+        let formValues: Record<string, number> = {};
+        limits.forEach((limit, index) => {
+            formValues[LIMIT_DURATION_FORM + index] = limit.reduction;
+        });
+        return formValues;
+    };
+
+    useEffect(() => {
+        reset(toFormValues());
+    }, [reset, toFormValues]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
