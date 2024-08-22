@@ -6,12 +6,11 @@
  */
 
 import { SuppressKeyboardEventParams } from 'ag-grid-community';
-import type { Key } from 'ts-key-enum';
 
-// @ts-expect-error TS2748: Cannot access ambient const enums when `isolatedModules` is enabled.
-export const ALLOWED_KEYS = [Key.Escape, Key.ArrowDown, Key.ArrowUp, Key.ArrowLeft, Key.ArrowRight];
+export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'] as const;
 
 // we filter enter key event to prevent closing or opening edit mode
 export function suppressKeyEvent(params: SuppressKeyboardEventParams<unknown, unknown>) {
-    return !ALLOWED_KEYS.includes(params.event.key as Key);
+    // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type union
+    return !ALLOWED_KEYS.includes(params.event.key);
 }
