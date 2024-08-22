@@ -248,7 +248,7 @@ return initialData;
         hotTableComponent.current?.hotInstance?.loadData(equipmentData ?? []);
     }, [columns, equipments]);
 
-    const customColumnName = useRef();
+    const customColumnName = useRef<any>();
     const onChange = (event: any) => {
         customColumnName.current = event.target.value;
     };
@@ -297,8 +297,7 @@ return initialData;
                             id="customColumnName"
                             label="customColumnName"
                             fullWidth
-                            value={customColumnName.current}
-                            onChange={onChange}
+                            inputRef={customColumnName}
                         />
                     </Grid>
                     <Grid item xs={1}>
@@ -308,8 +307,8 @@ return initialData;
                                     return [
                                         ...prevColumns,
                                         {
-                                            data: customColumnName.current,
-                                            header: customColumnName.current,
+                                            data: customColumnName.current?.value,
+                                            header: customColumnName.current?.value,
                                             readOnly: false,
                                             width: 100,
                                             height: 40,
