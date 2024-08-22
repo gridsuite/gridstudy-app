@@ -511,18 +511,20 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
             specificParametersPerProvider: speceficParameters,
         };
     }, []);
+
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <Grid item sx={{ height: '100%' }} xl={8} lg={10} md={12}>
+        <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
             <Box
                 sx={{
                     height: '100%',
+                    position: 'relative',
                     display: 'flex',
                     flexDirection: 'column',
                 }}
             >
-                <Box sx={{ flexGrow: 0 }}>
+                <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
                     <Grid
                         container
                         spacing={1}
@@ -545,6 +547,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                     sx={{
                         flexGrow: 1,
                         overflow: 'auto',
+                        paddingLeft: 1,
                     }}
                 >
                     <Grid
@@ -575,7 +578,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                         />
                     </Grid>
                 </Box>
-                <Box sx={{ flexGrow: 0 }}>
+                <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
                     <Grid
                         container
                         item
