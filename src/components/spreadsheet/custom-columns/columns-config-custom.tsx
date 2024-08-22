@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Badge, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { useStateBoolean, useStateNumber } from '../../../hooks/use-states';
 import CustomColumnsDialog from './custom-columns-dialog';
 import {
+    getTableDefinitionByIndex,
     TABLES_COLUMNS_NAMES,
     TABLES_COLUMNS_NAMES_JSON,
     TABLES_DEFINITION_INDEXES,
@@ -23,6 +24,9 @@ import {
     TABLES_NAMES_INDEXES,
 } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
+import { useSpreadsheetEquipments } from '../../network/use-spreadsheet-equipments';
+import { IEquipment } from '../../../services/study/contingency-list';
+import { formatFetchedEquipments } from '../utils/equipment-table-utils';
 
 export type CustomColumnsConfigProps = {
     indexTab: number;
@@ -52,36 +56,65 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
         uEffectNumberColumnsSetValue(allDefinitions.length);
     }, [allDefinitions.length, uEffectNumberColumnsSetValue]);
 
-    const allCustomColumnsDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions);
-    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
-    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
-    const allReorderedTableDefinitionIndexes = useSelector(
-        (state: AppState) => state.allReorderedTableDefinitionIndexes
-    );
-    const [d, setD] = useState(true);
-    useEffect(() => {
-        if (d) {
-            console.info('TABLES_NAMES', TABLES_NAMES);
-            console.info('TABLES_COLUMNS_NAMES', TABLES_COLUMNS_NAMES);
-            console.info('TABLES_NAMES_INDEXES', TABLES_NAMES_INDEXES);
-            console.info('TABLES_COLUMNS_NAMES_JSON', TABLES_COLUMNS_NAMES_JSON);
-            console.info('TABLES_DEFINITIONS', TABLES_DEFINITIONS);
-            console.info('TABLES_DEFINITION_INDEXES', TABLES_DEFINITION_INDEXES);
-            console.info('TABLES_DEFINITION_TYPES', TABLES_DEFINITION_TYPES);
+    /* eslint-disable react-hooks/rules-of-hooks -- the order of hooks is preserved because it's a vite env var  */
+    if (import.meta.env.DEV) {
+        const [d, setD] = useState(true);
+        useEffect(() => {
+            if (d) {
+                console.info('TABLES_NAMES', TABLES_NAMES);
+                console.info('TABLES_COLUMNS_NAMES', TABLES_COLUMNS_NAMES);
+                console.info('TABLES_NAMES_INDEXES', TABLES_NAMES_INDEXES);
+                console.info('TABLES_COLUMNS_NAMES_JSON', TABLES_COLUMNS_NAMES_JSON);
+                console.info('TABLES_DEFINITIONS', TABLES_DEFINITIONS);
+                console.info('TABLES_DEFINITION_INDEXES', TABLES_DEFINITION_INDEXES);
+                console.info('TABLES_DEFINITION_TYPES', TABLES_DEFINITION_TYPES);
+                setD(false);
+            }
+        }, [d]);
+        const allCustomColumnsDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions);
+        useEffect(() => {
             console.info('allCustomColumnsDefinitions', allCustomColumnsDefinitions);
+        }, [allCustomColumnsDefinitions]);
+        const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+        useEffect(() => {
             console.info('allDisplayedColumnsNames', allDisplayedColumnsNames);
+        }, [allDisplayedColumnsNames]);
+        const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
+        useEffect(() => {
             console.info('allLockedColumnsNames', allLockedColumnsNames);
+        }, [allLockedColumnsNames]);
+        const allReorderedTableDefinitionIndexes = useSelector(
+            (state: AppState) => state.allReorderedTableDefinitionIndexes
+        );
+        useEffect(() => {
             console.info('allReorderedTableDefinitionIndexes', allReorderedTableDefinitionIndexes);
-            setD(false);
-        }
-    }, [
-        allCustomColumnsDefinitions,
-        allDisplayedColumnsNames,
-        allLockedColumnsNames,
-        allReorderedTableDefinitionIndexes,
-        d,
-    ]);
-
+        }, [allReorderedTableDefinitionIndexes]);
+        const equipmentDefinition = useMemo(
+            () => ({
+                type: getTableDefinitionByIndex(indexTab)?.type!,
+                fetchers: getTableDefinitionByIndex(indexTab)?.fetchers!,
+            }),
+            [indexTab]
+        );
+        const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
+            equipmentDefinition,
+            useCallback(
+                (fetchedEquipments: IEquipment[]) => {
+                    //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
+                    return formatFetchedEquipments(equipmentDefinition.type, fetchedEquipments);
+                },
+                [equipmentDefinition.type]
+            )
+        );
+        useEffect(() => {
+            console.info(`useSpreadsheetEquipments(${equipmentDefinition.type}) =>`, {
+                equipments,
+                errorMessage,
+                isFetching,
+            });
+        }, [equipmentDefinition.type, equipments, errorMessage, isFetching]);
+    }
+    /* eslint-enable react-hooks/rules-of-hooks */
     return (
         <>
             <LoadingButton
