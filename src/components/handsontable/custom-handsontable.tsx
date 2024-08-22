@@ -18,6 +18,7 @@ import { UUID } from 'crypto';
 import { RawCellContent } from 'hyperformula/typings/CellContentParser';
 import ColumnConfig1 from './column_config1.json';
 import ColumnConfig2 from './column_config2.json';
+import ColumnConfig3 from './column_config3.json';
 
 import { CellCoords, CellRange } from 'handsontable';
 import TextField from '@mui/material/TextField';
@@ -56,7 +57,6 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
 
     const intl = useIntl();
     const hotTableComponent = useRef<HotTableClass>(null);
-    const [customColumnsIndexes, setCustomColumnsIndexes] = useState<number[]>([]);
 
     const [openFilterDialog, setOpenFilterDialog] = useState<boolean>(false);
 
@@ -91,7 +91,7 @@ return typeof rowData[column.field] === 'object'
 },
 };
 })*/
-        ColumnConfig1
+        ColumnConfig3
     );
 
     const getColHeaders = useCallback(() => {
@@ -99,27 +99,17 @@ return typeof rowData[column.field] === 'object'
             ? (hotTableComponent.current?.hotInstance?.getColHeader() as string[])
             : columns.map((column: any, index: any) => intl.formatMessage({ id: column.header })) ?? [];
 
-        /*const columnLabel = 'Custom column';
-hotTableComponent.current?.hotInstance
-?.getCellMetaAtRow(0)
-.filter((cellMeta) => cellMeta?.hasOwnProperty('addedColumn') && cellMeta?.hasOwnProperty('col'))
-.map((cellMeta) => cellMeta?.col)
-.forEach((customColumnIndex, index) => {
-if (headers[customColumnIndex] !== columnLabel) {
-headers.splice(customColumnIndex, 0, columnLabel);
-}
-});*/
         return headers ?? [];
     }, [columns, intl]);
 
     const getNestedHeaders = useCallback(() => {
         const letters =
-            hotTableComponent.current?.hotInstance?.getColHeader()?.map((column, index) => {
+            columns?.map((column: any, index: any) => {
                 return toLetters(index + 1);
             }) ?? [];
 
         return [letters, getColHeaders()];
-    }, [getColHeaders]);
+    }, [columns, getColHeaders]);
 
     //NEEDED IF WE KEEP CUSTOM COLUMN ADDITION THROUGH COLUMN CONTEXT MENU
     /*    const data = useMemo(() => {
@@ -189,7 +179,6 @@ return initialData;
     }, []);
 
     const filtersPlugin = hotTableComponent.current?.hotInstance?.getPlugin('filters');
-    const autoFillPlugin = hotTableComponent.current?.hotInstance?.getPlugin('autoFill');
 
     const applyFilter = useCallback(
         (filter: any) => {
@@ -249,9 +238,19 @@ return initialData;
     }, [columns, equipments]);
 
     const customColumnName = useRef<any>();
-    const onChange = (event: any) => {
-        customColumnName.current = event.target.value;
-    };
+
+    const saveConfiguration = useCallback(() => {
+        const columnConfiguration = JSON.stringify(columns);
+        const blob = new Blob([columnConfiguration], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'column_config3.json';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }, [columns]);
 
     return (
         <>
@@ -315,13 +314,16 @@ return initialData;
                                         },
                                     ];
                                 });
+                                hotTableComponent.current?.hotInstance?.updateSettings({
+                                    nestedHeaders: getNestedHeaders(),
+                                });
                             }}
                         >
                             Add custom column
                         </Button>
                     </Grid>
                     <Grid item xs={1}>
-                        <Button onClick={() => {}}>Save configuration</Button>
+                        <Button onClick={saveConfiguration}>Save configuration</Button>
                     </Grid>
                 </Grid>
             </Box>
@@ -352,7 +354,7 @@ return initialData;
                     allowInsertColumn={true}
                     allowRemoveColumn={true}
                     afterCreateCol={tagCustomColumn}
-                    afterUpdateData={(sourceData, initialLoad, source) => {
+                    afterChange={(changes, source) => {
                         const sheetId = hyperformulaInstance.getSheetId('Sheet1');
                         if (!Number.isInteger(sheetId)) {
                             hyperformulaInstance.addSheet('Sheet1');
@@ -364,9 +366,6 @@ return initialData;
                                 data as RawCellContent[][]
                             );
                         }
-                    }}
-                    afterChange={(changes, source) => {
-                        console.log(changes, source);
                     }}
                     afterLoadData={(sourceData, initialLoad, source) => {
                         columns
@@ -390,8 +389,6 @@ return initialData;
                                     ),
                                     'down'
                                 );
-                                console.log('HMA', autofillRes);
-
                                 if (autofillRes) {
                                     hotTableComponent.current?.hotInstance?.populateFromArray(
                                         1,
@@ -401,66 +398,10 @@ return initialData;
                                 }
                             });
                     }}
-                    afterSetCellMeta={(row, column, key, value) => {
-                        const previousIndexes =
-                            hotTableComponent.current?.hotInstance
-                                ?.getCellMetaAtRow(0)
-                                .filter(
-                                    (cellMeta) =>
-                                        cellMeta?.hasOwnProperty('addedColumn') && cellMeta?.hasOwnProperty('col')
-                                )
-                                .map((cellMeta) => {
-                                    console.log(cellMeta);
-                                    return cellMeta?.col;
-                                }) ?? [];
-
-                        setCustomColumnsIndexes(() => [...previousIndexes, column]);
-                    }}
                     licenseKey="non-commercial-and-evaluation"
                     fillHandle={'vertical'}
                     outsideClickDeselects={false}
-                    /*beforeOnCellMouseDown={(event, coords, TD, controller) => {
-
-const activeEditor = hotTableComponent.current?.hotInstance?.getActiveEditor();
-hotTableComponent.current?.hotInstance?.getFocusManager().setFocusMode('cell');
-if (activeEditor && activeEditor.isOpened()) {
-controller.cell = true;
-activeEditor.setValue(
-activeEditor.getValue() +
-hotTableComponent.current?.hotInstance?.getColHeader(coords.col) +
-(coords.row + 1)
-);
-activeEditor.focus();
-}
-}}*/
-                    afterOnCellMouseDown={(event, coords, TD) => {
-                        console.log(hotTableComponent.current?.hotInstance?.getSourceData(0));
-                        //console.log(hyperformulaInstance.getCellType({ sheet: 0, col: 4, row: 0 }));
-
-                        const autofillRes = hotTableComponent.current?.hotInstance?.runHooks(
-                            'beforeAutofill',
-                            hotTableComponent?.current?.hotInstance?.getData(0, coords.col),
-                            new CellRange(
-                                /*new CellCoords(0, 5), new CellCoords(0, 5), new CellCoords(0, 5)*/ coords,
-                                coords,
-                                coords
-                            ),
-                            new CellRange(
-                                new CellCoords(1, coords.col),
-                                new CellCoords(hotTableComponent.current?.hotInstance?.countRows() - 1, coords.col),
-                                new CellCoords(1, coords.col)
-                            ),
-                            'down'
-                        );
-
-                        /*                        hotTableComponent.current?.hotInstance?.populateFromArray(
-coords.row + 1,
-coords.col,
-autofillRes
-);*/
-
-                        console.log(autofillRes);
-                    }}
+                    afterOnCellMouseDown={(event, coords, TD) => {}}
                 />
             </Box>
         </>
