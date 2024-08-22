@@ -1,0 +1,164 @@
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { all, create, MathJsInstance } from 'mathjs';
+// @ts-expect-error: no @types available for this library
+import * as mathjsSimpleIntegral from 'mathjs-simple-integral';
+// @ts-expect-error: no @types available for this library
+import * as numbers from 'numbers';
+import * as numeric from 'numeric';
+import { Formula } from './Formula';
+
+export default class FormulaMathJs implements Formula {
+    private math: MathJsInstance;
+
+    constructor() {
+        // https://mathjs.org/docs/core/configuration.html
+        this.math = create(all, {
+            number: 'BigNumber',
+            numberFallback: 'number',
+            // The maximum number of significant digits for BigNumbers. This setting only applies to BigNumbers, not to numbers. Default value is 64, only applicable for BigNumbers.
+            //TODO precision: GRIDSUITE_DEFAULT_PRECISION,
+            matrix: 'Matrix',
+            //TODO predictable: true,
+            //epsilon: Deprecated: Use relTol and absTol instead
+            // The minimum absolute difference used to test equality between two compared values. This value is used by all relational functions. Default value is 1e-15.
+            //TODO absTol: 000,
+            // The minimum relative difference used to test equality between two compared values. This value is used by all relational functions. Default value is 1e-12.
+            //TODO relTol: 000,
+        });
+        this.math.import(numbers, { wrap: true, silent: true });
+        this.math.import(numeric, { wrap: true, silent: true });
+        this.math.import(mathjsSimpleIntegral);
+
+        //TODO https://github.com/josdejong/mathjs/blob/HEAD/types/EXPLANATION.md
+        //https://github.com/josdejong/typed-function
+
+        //TODO https://mathjs.org/docs/core/extension.html
+        //add custom functions (other tabs, node, studies...
+        //add custom types
+
+        /* Expression parser security (https://mathjs.org/examples/advanced/more_secure_eval.js.html & https://mathjs.org/docs/expressions/security.html)
+         * Executing arbitrary expressions like enabled by the expression parser of mathjs involves a risk in general. When you're using mathjs to let users
+         * execute arbitrary expressions, it's good to take a moment to think about possible security and stability implications, especially when running the
+         * code server side.
+         * There is a small number of functions which yield the biggest security risk in the expression parser of math.js:
+         *   - `import` and `createUnit` which alter the built-in functionality and allow overriding existing functions and units.
+         *   - `evaluate`, `parse`, `simplify`, and `derivative` which parse arbitrary input into a manipulable expression tree.
+         */
+        this.math.import(
+            {
+                import: function () {
+                    throw new Error('Function import is disabled');
+                },
+                createUnit: function () {
+                    throw new Error('Function createUnit is disabled');
+                },
+                evaluate: function () {
+                    throw new Error('Function evaluate is disabled');
+                },
+                parse: function () {
+                    throw new Error('Function parse is disabled');
+                },
+                simplify: function () {
+                    throw new Error('Function simplify is disabled');
+                },
+                derivative: function () {
+                    throw new Error('Function derivative is disabled');
+                },
+            },
+            { override: true }
+        );
+    }
+
+    calc(formula: string, data: object): unknown {
+        return this.math.evaluate(formula /*, data*/);
+    }
+
+    // https://mathjs.org/docs/core/serialization.html
+    serialize(x: unknown): string {
+        return JSON.stringify(x, this.math.replacer);
+    }
+
+    // https://mathjs.org/docs/core/serialization.html
+    deserialize(json: string): unknown {
+        return JSON.parse(json, this.math.reviver);
+    }
+
+    formulaToString(x: unknown): string {
+        const precision = 14; //GRIDSUITE_DEFAULT_PRECISION
+        return this.math.format(x, precision);
+    }
+
+    destroy(): void {}
+
+    example() {
+        const print = (value: unknown) => console.log(this.formulaToString(value));
+        print(this.math.round(this.math.e, 3)); // 2.718
+        print(this.math.atan2(3, -3) / this.math.pi); // 0.75
+        print(this.math.log(10000, 10)); // 4
+        print(this.math.sqrt(-4)); // 2i
+        print(
+            this.math.pow(
+                [
+                    [-1, 2],
+                    [3, 1],
+                ],
+                2
+            )
+        ); // [[7, 0], [0, 7]]
+        print(this.math.derivative('x^2 + x', 'x')); // 2 * x + 1
+        // expressions
+        print(this.math.evaluate('12 / (2.3 + 0.7)')); // 4
+        print(this.math.evaluate('12.7 cm to inch')); // 5 inch
+        print(this.math.evaluate('9 / 3 + 2i')); // 3 + 2i
+        print(this.math.evaluate('det([-1, 2; 3, 1])')); // -7
+        // chained operations
+        print(this.math.chain(3).add(4).multiply(2).done()); // 14
+
+        console.log(this.math.evaluate('sqrt(16)')); // Ok, 4
+        console.log(this.math.evaluate('parse("2+3")')); // Error: Function parse is disabled
+
+        // Operators `add` and `divide` do have support for Fractions, so the result will simply be a Fraction (default behavior of math.js).
+        const ans1 = this.math.evaluate('1/3 + 1/4');
+        console.log(this.math.typeOf(ans1), this.math.format(ans1)); // outputs "Fraction 7/12"
+        // Function sqrt doesn't have Fraction support, will now fall back to BigNumber instead of number.
+        const ans2 = this.math.evaluate('sqrt(4)');
+        console.log(this.math.typeOf(ans2), this.math.format(ans2)); // outputs "BigNumber 2"
+        // We can now do operations with mixed Fractions and BigNumbers
+        const ans3 = this.math.add(this.math.fraction(2, 5), this.math.bignumber(3));
+        console.log(this.math.typeOf(ans3), this.math.format(ans3)); // outputs "BigNumber 3.4"
+    }
+}
+
+/* https://mathjs.org/examples/advanced/convert_fraction_to_bignumber.js.html
+ * When `Fraction` is configured, one may want to fallback to `BigNumber` instead of `number`. Also, one may want to be able to mix `Fraction` and
+ * `BigNumber` in operations like summing them up. This can be achieved by adding an extra conversion to the list of conversions as demonstrated in
+ * this example.
+ */
+// Create an empty math.js instance, with only typed (every instance contains `import` and `config` also out of the box)
+//TODO look in https://github.com/josdejong/typed-function/  node_modules/mathjs/types/EXPLANATION.md
+//const math = create({
+//    typedDependencies,
+//});
+//const allExceptLoaded = Object.keys(all)
+//    .map((key) => all[key])
+//    .filter((factory) => math[factory.fn] === undefined);
+//math.config({ number: 'Fraction' }); // Configure to use fractions by default
+///* Add a conversion from Faction -> BigNumber
+// * This conversion will to override the existing conversion from Fraction to BigNumber.
+// * It must be added *after* the default conversions are loaded and *before* the actual functions are imported into math.js.
+// */
+//math.typed.addConversion(
+//    {
+//        from: 'Fraction',
+//        to: 'BigNumber',
+//        convert: (fraction: Fraction) => math.bignumber(fraction.n).div(fraction.d),
+//    },
+//    { override: true }
+//);
+//math.import(allExceptLoaded); // Import all data types, functions, constants, the expression parser, etc.

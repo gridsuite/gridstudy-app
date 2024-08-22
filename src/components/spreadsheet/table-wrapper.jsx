@@ -9,8 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box } from '@mui/system';
-import { Alert, Grid } from '@mui/material';
+import { Alert, Box, Grid } from '@mui/material';
 import {
     EDIT_COLUMN,
     MIN_COLUMN_WIDTH,
@@ -79,6 +78,7 @@ import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import CustomColumnsConfig from './custom-columns/columns-config-custom';
+import { FormulaContext } from './custom-columns/FormulaContext';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -1092,7 +1092,7 @@ const TableWrapper = (props) => {
         }
     }, [editingData]);
     return (
-        <>
+        <FormulaContext>
             <Grid container justifyContent={'space-between'}>
                 <EquipmentTabs
                     disabled={!!(props.disabled || editingData)}
@@ -1158,7 +1158,7 @@ const TableWrapper = (props) => {
                     />
                 </Box>
             )}
-        </>
+        </FormulaContext>
     );
 };
 
