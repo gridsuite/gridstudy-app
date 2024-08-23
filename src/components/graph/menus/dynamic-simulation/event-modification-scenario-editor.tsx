@@ -237,7 +237,13 @@ const EventModificationScenarioEditor = () => {
     const renderEventList = () => {
         return (
             <CheckboxList<Event>
-                sx={{ checkboxList: styles.list, label: { flexGrow: '1' } }}
+                sx={{
+                    label: styles.checkBoxLabel,
+                    checkBoxIcon: styles.checkBoxIcon,
+                    checkboxButton: styles.checkboxButton,
+                    checkbox: styles.checkbox,
+                    checkboxList: styles.list,
+                }}
                 items={events}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
@@ -246,6 +252,7 @@ const EventModificationScenarioEditor = () => {
                 secondaryAction={handleSecondaryAction}
                 enableSecondaryActionOnHover
                 isDisabled={() => isLoading()}
+                divider
             />
         );
     };
