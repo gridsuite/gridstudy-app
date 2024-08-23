@@ -82,11 +82,7 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    list: (theme) => ({
-        padding: theme.spacing(0),
-        flexGrow: 1,
-        margin: 0,
-    }),
+    list: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
     checkBoxIcon: { minWidth: 0, padding: 0 },
     checkboxButton: {
@@ -95,7 +91,7 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    checkbox: { minWidth: 0, paddingLeft: 0 },
+    checkbox: { minWidth: 0, padding: 0 },
     modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -868,11 +864,11 @@ const NetworkModificationNodeEditor = () => {
         return (
             <CheckboxList
                 sx={{
-                    checkboxList: styles.list,
                     label: styles.checkBoxLabel,
                     checkBoxIcon: styles.checkBoxIcon,
                     checkboxButton: styles.checkboxButton,
                     checkbox: styles.checkbox,
+                    checkboxList: styles.list,
                 }}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
@@ -887,7 +883,6 @@ const NetworkModificationNodeEditor = () => {
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
                 divider
-                disablePadding
             />
         );
     };

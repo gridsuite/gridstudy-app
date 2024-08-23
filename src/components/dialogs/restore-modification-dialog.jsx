@@ -112,7 +112,6 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
                     </DialogContentText>
                 </Box>
                 <CheckboxList
-                    sx={{ checkboxList: styles.list, label: { flexGrow: '1' } }}
                     items={stashedModifications}
                     selectedItems={selectedItems}
                     onSelectionChange={setSelectedItems}
