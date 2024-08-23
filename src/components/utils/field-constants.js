@@ -368,6 +368,7 @@ export const STAGES_DEFINITION_GENERATORS = 'generators';
 export const PMAX_PERCENTS = 'pMaxPercents';
 export const GENERATORS_LIMIT = 'generatorsCappings';
 export const ADD_AUTOMATE = 'addAutomate';
+export const CHARACTERISTICS_CHOICE_AUTOMATE = 'characteristicsChoiceAutomate';
 export const LOW_VOLTAGE_SET_LIMIT = 'lowVoltageSetLimit';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetLimit';
 export const LOW_VOLTAGE_THRESHOLD = 'lowVoltageThreshold';

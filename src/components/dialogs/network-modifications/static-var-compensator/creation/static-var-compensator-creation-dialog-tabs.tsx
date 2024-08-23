@@ -6,7 +6,7 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getTabStyle } from '../../../../utils/tab-utils';
 
@@ -17,7 +17,17 @@ export const StaticVarCompensatorCreationDialogTab = {
     ADDITIONAL_INFO_TAB: 3,
 };
 
-const StaticVarCompensatorCreationDialogTabs = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
+export interface StaticVarCompensatorCreationDialogTabsProps {
+    tabIndex: number;
+    tabIndexesWithError: any[];
+    setTabIndex: (newValue: any) => void;
+}
+
+const StaticVarCompensatorCreationDialogTabs: FunctionComponent<StaticVarCompensatorCreationDialogTabsProps> = ({
+    tabIndex,
+    tabIndexesWithError,
+    setTabIndex,
+}) => {
     return (
         <Grid container item>
             <Tabs value={tabIndex} onChange={(event, newValue) => setTabIndex(newValue)}>

@@ -810,6 +810,8 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Current number of sections should be greater than or equal to 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Current number of sections should be less than or equal to the maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "Q at nominal voltage value should be greater than or equal to 0",
+    "StaticVarCompensatorErrorQMaxAtNominalVoltageGreaterThanQMin": "Q at nominal voltage maximum value should be greater than or equal to Q minimum",
+    "StaticVarCompensatorErrorQMinAtNominalVoltageLessThanQMax": "Q at nominal voltage minimum value should be less than or equal to Q maximum",
     "ModifyShuntCompensator": "Modify shunt compensator (Linear)",
     "MaximumSectionCountMustBeGreaterOrEqualToOne": "Maximum section count must be greater than or equal to 1",
     "SectionCountMustBeBetweenZeroAndMaximumSectionCount": "Section count must be between 0 and and Maximum section count",

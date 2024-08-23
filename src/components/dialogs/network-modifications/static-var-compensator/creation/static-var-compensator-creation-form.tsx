@@ -6,25 +6,37 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { gridItem } from '../../../dialogUtils';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
-import { AutomateForm } from './automate-form';
-import { SetPointsLimitsForm } from './set-points-limits-form';
+import { AutomateForm } from './automate-form.js';
+import { SetPointsLimitsForm } from './set-points-limits-form.js';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { UUID } from 'crypto';
 
-const StaticVarCompensatorCreationForm = ({ studyUuid, currentNode, tabIndex }) => {
+export interface StaticVarCompensatorCreationFormProps {
+    studyUuid: UUID;
+    currentNode: { id: UUID };
+    tabIndex: number;
+}
+
+const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCreationFormProps> = ({
+    studyUuid,
+    currentNode,
+    tabIndex,
+}) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
     const connectivityForm = (
         <ConnectivityForm
-            withPosition={true}
             voltageLevelOptions={voltageLevelOptions}
+            withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            previousValues={null}
         />
     );
 
