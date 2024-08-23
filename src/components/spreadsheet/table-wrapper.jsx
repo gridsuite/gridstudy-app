@@ -182,7 +182,8 @@ const TableWrapper = (props) => {
             customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
                 coldId: `custom-${tabIndex}-${idx}`,
                 headerName: colWithFormula.name,
-                valueGetter: () => formula.calc(colWithFormula.formula, {}),
+                valueGetter: (params) =>
+                    formula.calcColumnValue(colWithFormula.formula, params.data, null, params.getValue),
                 editable: false,
                 cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
             }))

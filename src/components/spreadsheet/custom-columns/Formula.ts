@@ -5,10 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export interface Formula {
+export interface Formula /*<TData>*/ {
     destroy(): void;
 
-    calc(formula: string, data: object): unknown;
+    //calc(formula: string, scope: TData): unknown;
+    calcColumnValue(
+        formula: string,
+        lineData: Record<string, unknown>,
+        currentNode: unknown,
+        colGetter: (field: string) => unknown
+    ): unknown;
 
     formulaToString(x: unknown): string;
     formulaSerialize(x: unknown): string;

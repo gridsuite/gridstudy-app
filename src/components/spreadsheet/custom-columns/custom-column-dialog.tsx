@@ -150,6 +150,11 @@ export default function CustomColumnDialog({ open, baseData, onSubmit }: Readonl
                             title={intl.formatMessage({
                                 id: 'spreadsheet/custom_column/dialog_edit/functions_tooltip',
                             })}
+                            //TODO onclick show popup help
+                            // columns available + node struct
+                            // https://mathjs.org/docs/reference/functions.html
+                            // https://mathjs.org/docs/reference/constants.html
+                            // idea: maybe show instead a side-view tree/list
                         >
                             <IconButton aria-label="functions-list-btn" onClick={undefined /*TODO*/}>
                                 <FunctionsIcon />

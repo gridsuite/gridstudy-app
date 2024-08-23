@@ -26,7 +26,7 @@ export const useSpreadsheetEquipments = (
         type: SpreadsheetEquipmentType;
         fetchers: Readonly<EquipmentFetcher[]>;
     },
-    formatFetchedEquipments: (e: unknown) => IEquipment[]
+    formatFetchedEquipments: (equipments: IEquipment[]) => IEquipment[]
 ) => {
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);

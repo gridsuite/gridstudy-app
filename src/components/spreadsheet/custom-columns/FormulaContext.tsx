@@ -11,7 +11,16 @@ import FormulaMathJs from './FormulaMathJs';
 
 class DummyFormula implements Formula {
     private static error = new Error('No provider passed for context');
+
     calc(formula: string, data: object): void {
+        throw DummyFormula.error;
+    }
+    calcColumnValue(
+        formula: string,
+        lineData: Record<string, unknown>,
+        currentNode: unknown,
+        colGetter: (field: string) => unknown
+    ): unknown {
         throw DummyFormula.error;
     }
 

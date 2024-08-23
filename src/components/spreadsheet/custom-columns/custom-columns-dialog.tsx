@@ -122,6 +122,7 @@ export type CustomColumnsDialogProps = {
     indexTab: number;
 };
 
+//TODO idea: we can eval formulas with first line to detect common errors in advance and letting the user correcting it
 export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomColumnsDialogProps>) {
     const intl = useIntl();
     const dispatch = useDispatch<AppDispatch>();

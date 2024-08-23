@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { all, create, MathJsInstance } from 'mathjs';
+import { all, create, MathJsInstance, ParseFunction } from 'mathjs';
 // @ts-expect-error: no @types available for this library
 import * as mathjsSimpleIntegral from 'mathjs-simple-integral';
 // @ts-expect-error: no @types available for this library
@@ -13,8 +13,10 @@ import * as numbers from 'numbers';
 import * as numeric from 'numeric';
 import { Formula } from './Formula';
 
-export default class FormulaMathJs implements Formula {
+export default class FormulaMathJs implements Formula /*<Record<string, unknown> | Map<string, unknown>>*/ {
     private math: MathJsInstance;
+    private mathEvaluate: MathJsInstance['evaluate'];
+    private mathParse: ParseFunction;
 
     constructor() {
         // https://mathjs.org/docs/core/configuration.html
@@ -33,7 +35,8 @@ export default class FormulaMathJs implements Formula {
         });
         this.math.import(numbers, { wrap: true, silent: true });
         this.math.import(numeric, { wrap: true, silent: true }); // Vite warning: "node_modules/numeric/numeric-x.x.x.js: Use of eval in "node_modules/numeric/numeric-x.x.x.js" is strongly discouraged as it poses security risks and may cause issues with minification."
-        //this.math.import(mathjsSimpleIntegral);
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+        mathjsSimpleIntegral; //this.math.import(mathjsSimpleIntegral);
 
         //TODO https://github.com/josdejong/mathjs/blob/HEAD/types/EXPLANATION.md
         //https://github.com/josdejong/typed-function
@@ -50,6 +53,8 @@ export default class FormulaMathJs implements Formula {
          *   - `import` and `createUnit` which alter the built-in functionality and allow overriding existing functions and units.
          *   - `evaluate`, `parse`, `simplify`, and `derivative` which parse arbitrary input into a manipulable expression tree.
          */
+        this.mathEvaluate = this.math.evaluate;
+        this.mathParse = this.math.parse;
         this.math.import(
             {
                 import: function () {
@@ -58,12 +63,12 @@ export default class FormulaMathJs implements Formula {
                 createUnit: function () {
                     throw new Error('Function createUnit is disabled');
                 },
-                /*evaluate: function () {
+                evaluate: function () {
                     throw new Error('Function evaluate is disabled');
                 },
                 parse: function () {
                     throw new Error('Function parse is disabled');
-                },*/
+                },
                 simplify: function () {
                     throw new Error('Function simplify is disabled');
                 },
@@ -75,8 +80,35 @@ export default class FormulaMathJs implements Formula {
         );
     }
 
-    calc(formula: string, data: object): unknown {
-        return this.math.evaluate(formula /*, data*/);
+    calc(formula: string, scope: Record<string, unknown> | Map<string, unknown>): unknown {
+        console.log(scope);
+        try {
+            return this.mathEvaluate(formula, scope);
+        } catch (e) {
+            return '#ERR'; //TODO have a cellRender custom in aggrid to better handling, and have debugger to help
+        }
+    }
+
+    // https://mathjs.org/examples/advanced/custom_scope_objects.js.html
+    public calcColumnValue(
+        formula: string,
+        lineData: Record<string, unknown>,
+        currentNode: unknown, //TODO !! where is the current node data?
+        colGetter: (field: string) => unknown
+    ): unknown {
+        const scope = new Map<string, unknown>();
+        scope.set('column', colGetter);
+        scope.set('$$', /*currentNode*/ null);
+        //TODO inject lazied proxy for all nodes of the tree, named '$'+node_name
+        for (const field in lineData) {
+            scope.set(`var_${field}`, lineData[field]);
+            //TODO "@" isn't supported in expressions? or is it already used by a function?
+        }
+        //TODO look how to inject others column
+        // idea: eval all formula in form of "f1 = ..." to store in scope?
+        // idea: store all formula in function in scope?
+        //TODO create a function to load another study following this example: https://mathjs.org/examples/advanced/custom_argument_parsing.js.html
+        return this.calc(formula, scope);
     }
 
     // https://mathjs.org/docs/core/serialization.html
