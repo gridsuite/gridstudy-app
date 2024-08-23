@@ -256,11 +256,11 @@ export function getConverterStationModificationData(
 export function getConverterStationFormEditData(id: string, converterStation: ConverterStationInterfaceEditData) {
     return {
         [id]: {
-            [CONVERTER_STATION_ID]: converterStation.equipmentId,
+            [CONVERTER_STATION_ID]: converterStation?.equipmentId,
             [CONVERTER_STATION_NAME]: converterStation?.equipmentName ?? '',
-            [LOSS_FACTOR]: converterStation.lossFactor,
+            [LOSS_FACTOR]: converterStation?.lossFactor,
             [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
-            [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulationOn,
+            [VOLTAGE_REGULATION_ON]: converterStation?.voltageRegulationOn,
             [VOLTAGE]: converterStation?.voltageSetpoint,
             ...getConnectivityFormData({
                 voltageLevelId: converterStation?.voltageLevelId,
