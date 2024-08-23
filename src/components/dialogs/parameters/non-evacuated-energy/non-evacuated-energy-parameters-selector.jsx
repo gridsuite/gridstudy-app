@@ -25,10 +25,7 @@ import {
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
 
-const NonEvacuatedEnergyParametersSelector = ({
-    onFormChanged,
-    onChangeParams,
-}) => {
+const NonEvacuatedEnergyParametersSelector = ({ onFormChanged, onChangeParams }) => {
     const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.GenerationStages);
@@ -43,32 +40,25 @@ const NonEvacuatedEnergyParametersSelector = ({
         { label: 'Contingencies' },
     ];
 
-    const [rowDataGenerationStages, useFieldArrayOutputGenerationStages] =
-        useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyGenerationStages
-        );
+    const [rowDataGenerationStages, useFieldArrayOutputGenerationStages] = useCreateRowDataSensi(
+        nonEvacuatedEnergyParam.NonEvacuatedEnergyGenerationStages
+    );
 
-    const [
-        rowDataGenerationStagesSelection,
-        useFieldArrayOutputGenerationStagesSelection,
-    ] = useCreateRowDataSensi(
+    const [rowDataGenerationStagesSelection, useFieldArrayOutputGenerationStagesSelection] = useCreateRowDataSensi(
         nonEvacuatedEnergyParam.NonEvacuatedEnergyStagesSelection
     );
 
-    const [rowDataGeneratorsCappings, useFieldArrayOutputGeneratorsCappings] =
-        useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyGeneratorsCappings
-        );
+    const [rowDataGeneratorsCappings, useFieldArrayOutputGeneratorsCappings] = useCreateRowDataSensi(
+        nonEvacuatedEnergyParam.NonEvacuatedEnergyGeneratorsCappings
+    );
 
-    const [rowDataMonitoredBranches, useFieldArrayOutputMonitoredBranches] =
-        useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyMonitoredBranches
-        );
+    const [rowDataMonitoredBranches, useFieldArrayOutputMonitoredBranches] = useCreateRowDataSensi(
+        nonEvacuatedEnergyParam.NonEvacuatedEnergyMonitoredBranches
+    );
 
-    const [rowDataContingencies, useFieldArrayOutputContingencies] =
-        useCreateRowDataSensi(
-            nonEvacuatedEnergyParam.NonEvacuatedEnergyContingencies
-        );
+    const [rowDataContingencies, useFieldArrayOutputContingencies] = useCreateRowDataSensi(
+        nonEvacuatedEnergyParam.NonEvacuatedEnergyContingencies
+    );
 
     const getColumnsDefinition = useCallback(
         (columns) => {
@@ -109,9 +99,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                                 columnsDefinition={getColumnsDefinition(
                                     nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES
                                 )}
-                                useFieldArrayOutput={
-                                    useFieldArrayOutputGenerationStages
-                                }
+                                useFieldArrayOutput={useFieldArrayOutputGenerationStages}
                                 createRows={rowDataGenerationStages}
                                 tableHeight={295}
                                 disableAdd={true}
@@ -127,9 +115,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                                 columnsDefinition={getColumnsDefinition(
                                     nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES_SELECTION
                                 )}
-                                useFieldArrayOutput={
-                                    useFieldArrayOutputGenerationStagesSelection
-                                }
+                                useFieldArrayOutput={useFieldArrayOutputGenerationStagesSelection}
                                 createRows={rowDataGenerationStagesSelection}
                                 tableHeight={367}
                                 disableAdd={true}
@@ -139,9 +125,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                             />
                         )}
 
-                        {tabValue === TAB_VALUES.GeneratorsCappings && (
-                            <GeneratorsCappingsThreshold />
-                        )}
+                        {tabValue === TAB_VALUES.GeneratorsCappings && <GeneratorsCappingsThreshold />}
 
                         {tabValue === TAB_VALUES.GeneratorsCappings && (
                             <SensitivityTable
@@ -149,9 +133,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                                 columnsDefinition={getColumnsDefinition(
                                     nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS
                                 )}
-                                useFieldArrayOutput={
-                                    useFieldArrayOutputGeneratorsCappings
-                                }
+                                useFieldArrayOutput={useFieldArrayOutputGeneratorsCappings}
                                 createRows={rowDataGeneratorsCappings}
                                 tableHeight={367}
                                 onFormChanged={onFormChanged}
@@ -165,9 +147,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                                 columnsDefinition={getColumnsDefinition(
                                     nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_MONITORED_BRANCHES
                                 )}
-                                useFieldArrayOutput={
-                                    useFieldArrayOutputMonitoredBranches
-                                }
+                                useFieldArrayOutput={useFieldArrayOutputMonitoredBranches}
                                 createRows={rowDataMonitoredBranches}
                                 tableHeight={367}
                                 onFormChanged={onFormChanged}
@@ -181,9 +161,7 @@ const NonEvacuatedEnergyParametersSelector = ({
                                 columnsDefinition={getColumnsDefinition(
                                     nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_CONTINGENCIES
                                 )}
-                                useFieldArrayOutput={
-                                    useFieldArrayOutputContingencies
-                                }
+                                useFieldArrayOutput={useFieldArrayOutputContingencies}
                                 createRows={rowDataContingencies}
                                 tableHeight={367}
                                 onFormChanged={onFormChanged}

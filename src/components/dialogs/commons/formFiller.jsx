@@ -28,11 +28,7 @@ export const FormFiller = ({
     const theme = useTheme();
 
     return (
-        <Grid
-            container
-            spacing={2}
-            sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}
-        >
+        <Grid container spacing={2} sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}>
             <Grid
                 item
                 xs={size}
@@ -43,9 +39,7 @@ export const FormFiller = ({
             >
                 <Box
                     sx={mergeSx(styles.filler, {
-                        height: lineHeight
-                            ? theme.spacing(7 * lineHeight)
-                            : '100%',
+                        height: lineHeight ? theme.spacing(7 * lineHeight) : '100%',
                     })}
                 >
                     {children}

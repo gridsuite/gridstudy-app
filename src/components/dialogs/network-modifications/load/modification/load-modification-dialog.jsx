@@ -11,10 +11,18 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import {
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     EQUIPMENT_NAME,
+    ID,
     LOAD_TYPE,
     P0,
     Q0,
+    VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -24,10 +32,7 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
 import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { modifyLoad } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
 import {
@@ -38,12 +43,18 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import {
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils.js';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
     [LOAD_TYPE]: null,
     [P0]: null,
     [Q0]: null,
+    ...getConnectivityWithPositionEmptyFormData(true),
     ...emptyProperties,
 };
 
@@ -54,6 +65,7 @@ const formSchema = yup
         [LOAD_TYPE]: yup.string().nullable(),
         [P0]: yup.number().nullable(),
         [Q0]: yup.number().nullable(),
+        ...getConnectivityWithPositionValidationSchema(true),
     })
     .concat(modificationPropertiesSchema)
     .required();
@@ -88,7 +100,7 @@ const LoadModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const { reset, getValues } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
         (load) => {
@@ -100,6 +112,15 @@ const LoadModificationDialog = ({
                 [LOAD_TYPE]: load.loadType?.value ?? null,
                 [P0]: load.p0?.value ?? null,
                 [Q0]: load.q0?.value ?? null,
+                ...getConnectivityFormData({
+                    voltageLevelId: load?.voltageLevelId.value ?? null,
+                    busbarSectionId: load?.busOrBusbarSectionId.value ?? null,
+                    connectionName: load?.connectionName?.value ?? '',
+                    connectionDirection: load?.connectionDirection?.value ?? null,
+                    connectionPosition: load?.connectionPosition?.value ?? null,
+                    terminalConnected: load?.terminalConnected?.value ?? null,
+                    isEquipmentModification: true,
+                }),
                 ...getPropertiesFromModification(load.properties),
             });
         },
@@ -129,11 +150,12 @@ const LoadModificationDialog = ({
                 )
                     .then((load) => {
                         if (load) {
+                            setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, load?.voltageLevelId);
+                            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, load?.busOrBusbarSectionId);
                             setLoadToModify(load);
                             reset((formValues) => ({
                                 ...formValues,
-                                [ADDITIONAL_PROPERTIES]:
-                                    getConcatenatedProperties(load, getValues),
+                                [ADDITIONAL_PROPERTIES]: getConcatenatedProperties(load, getValues),
                             }));
                         }
                         setDataFetchStatus(FetchStatus.SUCCEED);
@@ -147,7 +169,7 @@ const LoadModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, editData]
+        [studyUuid, currentNodeUuid, reset, getValues, setValue, editData]
     );
 
     useEffect(() => {
@@ -166,8 +188,12 @@ const LoadModificationDialog = ({
                 load?.loadType,
                 load?.p0,
                 load?.q0,
-                undefined,
-                undefined,
+                load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
+                load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
+                load[CONNECTIVITY]?.[CONNECTION_POSITION],
+                load[CONNECTIVITY]?.[CONNECTED],
                 !!editData,
                 editData ? editData.uuid : undefined,
                 toModificationProperties(load)
@@ -188,18 +214,12 @@ const LoadModificationDialog = ({
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate ||
-            ((editDataFetchStatus === FetchStatus.SUCCEED ||
-                editDataFetchStatus === FetchStatus.FAILED) &&
-                (dataFetchStatus === FetchStatus.SUCCEED ||
-                    dataFetchStatus === FetchStatus.FAILED)),
+            ((editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED) &&
+                (dataFetchStatus === FetchStatus.SUCCEED || dataFetchStatus === FetchStatus.FAILED)),
         delay: FORM_LOADING_DELAY,
     });
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -211,9 +231,7 @@ const LoadModificationDialog = ({
                 keepMounted={true}
                 showNodeNotBuiltWarning={selectedId != null}
                 isDataFetching={
-                    isUpdate &&
-                    (editDataFetchStatus === FetchStatus.RUNNING ||
-                        dataFetchStatus === FetchStatus.RUNNING)
+                    isUpdate && (editDataFetchStatus === FetchStatus.RUNNING || dataFetchStatus === FetchStatus.RUNNING)
                 }
                 {...dialogProps}
             >
@@ -229,6 +247,8 @@ const LoadModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <LoadModificationForm
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
                         loadToModify={loadToModify}
                         equipmentId={selectedId}
                     />

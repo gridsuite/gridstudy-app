@@ -5,33 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    useCallback,
-    useEffect,
-    useState,
-    useRef,
-    useMemo,
-} from 'react';
+import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    Grid,
-    Box,
-    Button,
-    Typography,
-    Switch,
-    Select,
-    MenuItem,
-} from '@mui/material';
+import { Grid, Box, Button, Typography, Switch, Select, MenuItem } from '@mui/material';
 
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
 import { updateConfigParameter } from 'services/config';
 
 export const CloseButton = ({ hideParameters, ...props }) => {
-    return (
-        <LabelledButton callback={hideParameters} label={'close'} {...props} />
-    );
+    return <LabelledButton callback={hideParameters} label={'close'} {...props} />;
 };
 
 export const LabelledButton = ({ callback, label, ...props }) => {
@@ -67,12 +51,7 @@ export const DropDown = ({ value, label, values, callback }) => {
                 <FormattedMessage id={label} />
             </Grid>
             <Grid item container xs={4} sx={styles.controlItem}>
-                <Select
-                    labelId={label}
-                    value={value}
-                    onChange={callback}
-                    size="small"
-                >
+                <Select labelId={label} value={value} onChange={callback} size="small">
                     {Object.entries(values).map(([key, value]) => (
                         <MenuItem key={key} value={key}>
                             <FormattedMessage id={value} />
@@ -231,9 +210,7 @@ export const TabPanel = (props) => {
             style={{ flexGrow: 1 }}
             {...other}
         >
-            {(value === index || keepState) && (
-                <Box sx={styles.panel}>{children}</Box>
-            )}
+            {(value === index || keepState) && <Box sx={styles.panel}>{children}</Box>}
         </Typography>
     );
 };
@@ -275,8 +252,7 @@ export const useParametersBackend = (
         return params;
     }, [params, provider]);
 
-    const [specificParamsDescription, setSpecificParamsDescription] =
-        useState(null);
+    const [specificParamsDescription, setSpecificParamsDescription] = useState(null);
 
     const backendUpdateParametersCb = useCallback(
         (studyUuid, newParams, oldParams) => {
@@ -291,16 +267,23 @@ export const useParametersBackend = (
         [backendUpdateParameters, snackError, type]
     );
 
-    const debouncedBackendUpdateParameters = useDebounce(
-        backendUpdateParametersCb,
-        1000
-    );
+    const debouncedBackendUpdateParameters = useDebounce(backendUpdateParametersCb, 1000);
 
     const updateProvider = useCallback(
         (newProvider) => {
             backendUpdateProvider(studyUuid, newProvider)
                 .then(() => {
                     setProvider(newProvider);
+                    backendFetchParameters(studyUuid)
+                        .then((params) => {
+                            setParams(params);
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'fetch' + type + 'ParametersError',
+                            });
+                        });
                 })
                 .catch((error) => {
                     snackError({
@@ -309,7 +292,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [type, backendUpdateProvider, studyUuid, snackError]
+        [type, backendUpdateProvider, backendFetchParameters, studyUuid, snackError]
     );
 
     const resetProvider = useCallback(() => {
@@ -317,10 +300,7 @@ export const useParametersBackend = (
             .then((defaultProvider) => {
                 const providerNames = Object.keys(providersRef.current);
                 if (providerNames.length > 0) {
-                    const newProvider =
-                        defaultProvider in providersRef.current
-                            ? defaultProvider
-                            : providerNames[0];
+                    const newProvider = defaultProvider in providersRef.current ? defaultProvider : providerNames[0];
                     if (newProvider !== provider) {
                         updateProvider(newProvider);
                     }
@@ -332,13 +312,7 @@ export const useParametersBackend = (
                     headerId: 'fetchDefault' + type + 'ProviderError',
                 });
             });
-    }, [
-        backendFetchDefaultProvider,
-        provider,
-        updateProvider,
-        snackError,
-        type,
-    ]);
+    }, [backendFetchDefaultProvider, provider, updateProvider, snackError, type]);
 
     const updateParameter = useCallback(
         (newParams) => {
@@ -346,11 +320,7 @@ export const useParametersBackend = (
                 let oldParams = { ...currentParams };
                 setParams(newParams);
                 setProvider(newParams['provider']);
-                debouncedBackendUpdateParameters(
-                    studyUuid,
-                    newParams,
-                    oldParams
-                );
+                debouncedBackendUpdateParameters(studyUuid, newParams, oldParams);
             }
         },
         [debouncedBackendUpdateParameters, currentParams, studyUuid]
@@ -386,22 +356,11 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [
-            studyUuid,
-            type,
-            backendUpdateParameters,
-            backendFetchParameters,
-            snackError,
-            snackWarning,
-            setParams,
-        ]
+        [studyUuid, type, backendUpdateParameters, backendFetchParameters, snackError, snackWarning, setParams]
     );
 
     useEffect(() => {
-        if (
-            user !== null &&
-            optionalServiceStatus === OptionalServicesStatus.Up
-        ) {
+        if (user !== null && optionalServiceStatus === OptionalServicesStatus.Up) {
             setFetching(FETCHING_STATUS.FETCHING);
             backendFetchProviders()
                 .then((providers) => {
@@ -425,11 +384,7 @@ export const useParametersBackend = (
 
     useEffect(() => {
         if (studyUuid && optionalServiceStatus === OptionalServicesStatus.Up) {
-            if (
-                fetching === FETCHING_STATUS.FINISHED &&
-                !provider &&
-                backendFetchProvider
-            ) {
+            if (fetching === FETCHING_STATUS.FINISHED && !provider && backendFetchProvider) {
                 backendFetchProvider(studyUuid)
                     .then((provider) => {
                         // if provider is not defined or not among allowed values, it's set to default value
@@ -447,23 +402,10 @@ export const useParametersBackend = (
                     });
             }
         }
-    }, [
-        optionalServiceStatus,
-        backendFetchProvider,
-        fetching,
-        provider,
-        resetProvider,
-        snackError,
-        studyUuid,
-        type,
-    ]);
+    }, [optionalServiceStatus, backendFetchProvider, fetching, provider, resetProvider, snackError, studyUuid, type]);
 
     useEffect(() => {
-        if (
-            studyUuid &&
-            backendFetchSpecificParameters &&
-            optionalServiceStatus === OptionalServicesStatus.Up
-        ) {
+        if (studyUuid && backendFetchSpecificParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
             backendFetchSpecificParameters()
                 .then((specificParams) => {
                     setSpecificParamsDescription(specificParams);
@@ -475,20 +417,10 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [
-        optionalServiceStatus,
-        backendFetchSpecificParameters,
-        snackError,
-        studyUuid,
-        type,
-    ]);
+    }, [optionalServiceStatus, backendFetchSpecificParameters, snackError, studyUuid, type]);
 
     useEffect(() => {
-        if (
-            studyUuid &&
-            backendFetchParameters &&
-            optionalServiceStatus === OptionalServicesStatus.Up
-        ) {
+        if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
@@ -503,13 +435,7 @@ export const useParametersBackend = (
                     });
                 });
         }
-    }, [
-        optionalServiceStatus,
-        backendFetchParameters,
-        snackError,
-        studyUuid,
-        type,
-    ]);
+    }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type]);
 
     return [
         providersRef.current,
@@ -547,10 +473,7 @@ export function useParameterState(paramName) {
         [paramGlobalState, snackError]
     );
 
-    const debouncedBackendupdateConfigParameterCb = useDebounce(
-        backendupdateConfigParameterCb,
-        1000
-    );
+    const debouncedBackendupdateConfigParameterCb = useDebounce(backendupdateConfigParameterCb, 1000);
 
     const handleChangeParamLocalState = useCallback(
         (value) => {

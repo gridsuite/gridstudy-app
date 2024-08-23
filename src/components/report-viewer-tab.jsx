@@ -16,11 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    fetchNodeReport,
-    fetchParentNodesReport,
-    fetchSubReport,
-} from '../services/study';
+import { fetchNodeReport, fetchParentNodesReport, fetchSubReport } from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
 import LogReportItem from './report-viewer/log-report-item';
@@ -44,17 +40,10 @@ const styles = {
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerTab = ({
-    studyId,
-    visible,
-    currentNode,
-    disabled,
-}) => {
+export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => {
     const intl = useIntl();
 
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     const [report, setReport] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
@@ -66,24 +55,21 @@ export const ReportViewerTab = ({
     }, []);
 
     const nodesNames = useMemo(() => {
-        return new Map(
-            treeModel.treeNodes.map((node) => [node.id, node.data.label])
-        );
+        return new Map(treeModel.treeNodes.map((node) => [node.id, node.data.label]));
     }, [treeModel]);
 
     const rootNodeId = useMemo(() => {
-        const rootNode = treeModel.treeNodes.find(
-            (node) => node?.data?.label === 'Root'
-        );
+        const rootNode = treeModel.treeNodes.find((node) => node?.data?.label === 'Root');
         return rootNode?.id;
     }, [treeModel]);
 
     const setNodeName = useCallback(
         (report) => {
-            if (report.messageKey === 'Root') {
-                report.messageKey = rootNodeId;
+            if (report.message === 'Root') {
+                report.title = 'Root';
+                report.message = rootNodeId;
             } else {
-                report.messageTemplate = nodesNames.get(report.messageKey);
+                report.title = nodesNames.get(report.message);
             }
             return report;
         },
@@ -99,9 +85,8 @@ export const ReportViewerTab = ({
                     return setNodeName(reportData[0]);
                 }
                 return {
-                    messageKey: GLOBAL_NODE_TASK_KEY,
-                    messageTemplate: GLOBAL_NODE_TASK_KEY,
-                    children: reportData.map((r) => setNodeName(r)),
+                    message: GLOBAL_NODE_TASK_KEY,
+                    subReports: reportData.map((r) => setNodeName(r)),
                 };
             }
         },
@@ -152,13 +137,7 @@ export const ReportViewerTab = ({
     }, [visible, studyId, currentNode, disabled, fetchAndProcessReport]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchNodeReport(
-            studyId,
-            nodeId,
-            reportId,
-            severityFilterList,
-            REPORT_TYPES.NETWORK_MODIFICATION
-        );
+        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
     };
 
     const globalReportPromise = (severityFilterList) => {
@@ -172,12 +151,7 @@ export const ReportViewerTab = ({
     };
 
     const subReportPromise = (reportId, severityFilterList) => {
-        return fetchSubReport(
-            studyId,
-            currentNode.id,
-            reportId,
-            severityFilterList
-        );
+        return fetchSubReport(studyId, currentNode.id, reportId, severityFilterList);
     };
 
     return (
@@ -193,18 +167,14 @@ export const ReportViewerTab = ({
                                     'aria-label': 'primary checkbox',
                                 }}
                                 onChange={(e) => handleChangeNodeOnlySwitch(e)}
-                                disabled={
-                                    disabled || rootNodeId === currentNode?.id
-                                }
+                                disabled={disabled || rootNodeId === currentNode?.id}
                             />
                         }
                         label={intl.formatMessage({
                             id: 'LogOnlySingleNode',
                         })}
                     />
-                    {disabled && (
-                        <AlertCustomMessageNode message={'InvalidNode'} />
-                    )}
+                    {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
                 </Box>
                 {!!report && !disabled && (
                     <ReportViewer

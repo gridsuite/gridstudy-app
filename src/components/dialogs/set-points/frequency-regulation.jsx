@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    gridItem,
-    gridItemWithTooltip,
-    percentageTextField,
-} from '../dialogUtils';
+import { gridItem, gridItemWithTooltip, percentageTextField } from '../dialogUtils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
@@ -31,8 +27,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             return intl.formatMessage({ id: 'On' });
         } else if (
             previousValues?.activePowerControl?.participate === false ||
-            (previousValues &&
-                previousValues?.activePowerControl?.participate === undefined)
+            (previousValues && previousValues?.activePowerControl?.participate === undefined)
         ) {
             return intl.formatMessage({ id: 'Off' });
         }
@@ -49,10 +44,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
         </Box>
     ) : (
         <Box>
-            <SwitchInput
-                name={FREQUENCY_REGULATION}
-                label={'FrequencyRegulation'}
-            />
+            <SwitchInput name={FREQUENCY_REGULATION} label={'FrequencyRegulation'} />
         </Box>
     );
 
@@ -62,9 +54,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             label={'Droop'}
             adornment={percentageTextField}
             previousValue={
-                !isNaN(previousValues?.activePowerControl?.droop)
-                    ? previousValues?.activePowerControl?.droop
-                    : null
+                !isNaN(previousValues?.activePowerControl?.droop) ? previousValues?.activePowerControl?.droop : null
             }
             clearable={true}
         />
@@ -75,11 +65,7 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
             {isEquipmentModification
                 ? gridItemWithTooltip(
                       frequencyRegulationField,
-                      watchFrequencyRegulation !== null ? (
-                          ''
-                      ) : (
-                          <FormattedMessage id={'NoModification'} />
-                      ),
+                      watchFrequencyRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />,
                       4
                   )
                 : gridItem(frequencyRegulationField, 4)}

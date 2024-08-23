@@ -39,28 +39,19 @@ import EquipmentPopover from '../../tooltips/equipment-popover';
 import TwoWindingsTransformerModificationDialog from 'components/dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
-import {
-    deleteEquipment,
-    updateSwitchState,
-} from '../../../services/study/network-modifications';
+import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import {
-    setComputationStarting,
-    setComputingStatus,
-} from '../../../redux/actions';
+import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
 
 function SingleLineDiagramContent(props) {
     const { diagramSizeSetter, studyUuid } = props;
@@ -79,17 +70,12 @@ function SingleLineDiagramContent(props) {
     const [equipmentToModify, setEquipmentToModify] = useState();
     const [equipmentToDelete, setEquipmentToDelete] = useState();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] =
-        useState(null);
+    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const computationStarting = useSelector(
-        (state) => state.computationStarting
-    );
-    const loadFlowStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const computationStarting = useSelector((state) => state.computationStarting);
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -99,14 +85,8 @@ function SingleLineDiagramContent(props) {
     ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode.id);
 
     // dynamic simulation event configuration states
-    const [
-        equipmentToConfigDynamicSimulationEvent,
-        setEquipmentToConfigDynamicSimulationEvent,
-    ] = useState();
-    const [
-        dynamicSimulationEventDialogTitle,
-        setDynamicSimulationEventDialogTitle,
-    ] = useState('');
+    const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] = useState();
+    const [dynamicSimulationEventDialogTitle, setDynamicSimulationEventDialogTitle] = useState('');
 
     /**
      * DIAGRAM INTERACTIVITY
@@ -161,12 +141,7 @@ function SingleLineDiagramContent(props) {
                 setModificationInProgress(true);
                 setLocallySwitchedBreaker(switchElement);
 
-                updateSwitchState(
-                    studyUuid,
-                    currentNode?.id,
-                    breakerId,
-                    newSwitchState
-                ).catch((error) => {
+                updateSwitchState(studyUuid, currentNode?.id, breakerId, newSwitchState).catch((error) => {
                     console.error(error.message);
                     setErrorMessage(error.message);
                 });
@@ -242,13 +217,7 @@ function SingleLineDiagramContent(props) {
 
     const removeEquipment = useCallback(
         (equipmentType, equipmentId) => {
-            deleteEquipment(
-                studyUuid,
-                currentNode?.id,
-                equipmentType,
-                equipmentId,
-                undefined
-            ).catch((error) => {
+            deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'UnableToDeleteEquipment',
@@ -261,12 +230,7 @@ function SingleLineDiagramContent(props) {
 
     const handleRunShortcircuitAnalysis = useCallback(
         (busId) => {
-            dispatch(
-                setComputingStatus(
-                    ComputingType.SHORT_CIRCUIT_ONE_BUS,
-                    RunningStatus.RUNNING
-                )
-            );
+            dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
@@ -275,12 +239,7 @@ function SingleLineDiagramContent(props) {
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
-                    dispatch(
-                        setComputingStatus(
-                            ComputingType.SHORT_CIRCUIT_ONE_BUS,
-                            RunningStatus.FAILED
-                        )
-                    );
+                    dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
                 .finally(() => dispatch(setComputationStarting(false)));
@@ -299,12 +258,8 @@ function SingleLineDiagramContent(props) {
         return (
             busMenu.display && (
                 <BusMenu
-                    handleRunShortcircuitAnalysis={
-                        handleRunShortcircuitAnalysis
-                    }
-                    onOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    handleRunShortcircuitAnalysis={handleRunShortcircuitAnalysis}
+                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     busId={busMenu.busId}
                     position={busMenu.position}
                     onClose={closeBusMenu}
@@ -330,10 +285,7 @@ function SingleLineDiagramContent(props) {
                     .then((hvdcInfos) => {
                         if (hvdcInfos?.hvdcType === 'LCC') {
                             // only hvdc line with LCC requires a Dialog (to select MCS)
-                            handleOpenDeletionDialog(
-                                equipmentId,
-                                EQUIPMENT_TYPES.HVDC_LINE
-                            );
+                            handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
                         } else {
                             removeEquipment(equipmentType, equipmentId);
                         }
@@ -346,25 +298,16 @@ function SingleLineDiagramContent(props) {
                     });
             }
         },
-        [
-            studyUuid,
-            currentNode?.id,
-            snackError,
-            handleOpenDeletionDialog,
-            removeEquipment,
-        ]
+        [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, removeEquipment]
     );
 
-    const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId, equipmentType, dialogTitle) => {
-            setDynamicSimulationEventDialogTitle(dialogTitle);
-            setEquipmentToConfigDynamicSimulationEvent({
-                equipmentId,
-                equipmentType,
-            });
-        },
-        []
-    );
+    const handleOpenDynamicSimulationEventDialog = useCallback((equipmentId, equipmentType, dialogTitle) => {
+        setDynamicSimulationEventDialogTitle(dialogTitle);
+        setEquipmentToConfigDynamicSimulationEvent({
+            equipmentId,
+            equipmentType,
+        });
+    }, []);
 
     const handleCloseDynamicSimulationEventDialog = useCallback(() => {
         setEquipmentToConfigDynamicSimulationEvent(undefined);
@@ -387,9 +330,7 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleDeleteEquipment={handleDeleteEquipment}
                     handleOpenModificationDialog={handleOpenModificationDialog}
-                    onOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
@@ -400,11 +341,7 @@ function SingleLineDiagramContent(props) {
     };
 
     const displayMenu = (equipmentType, menuId) => {
-        const Menu = withEquipmentMenu(
-            BaseEquipmentMenu,
-            menuId,
-            equipmentType
-        );
+        const Menu = withEquipmentMenu(BaseEquipmentMenu, menuId, equipmentType);
         return (
             equipmentMenu.display &&
             equipmentMenu.equipmentType === equipmentType && (
@@ -415,9 +352,7 @@ function SingleLineDiagramContent(props) {
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     handleDeleteEquipment={handleDeleteEquipment}
-                    onOpenDynamicSimulationEventDialog={
-                        handleOpenDynamicSimulationEventDialog
-                    }
+                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                 />
             )
         );
@@ -448,8 +383,7 @@ function SingleLineDiagramContent(props) {
                 CurrentModificationDialog = LoadModificationDialog;
                 break;
             case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                CurrentModificationDialog =
-                    TwoWindingsTransformerModificationDialog;
+                CurrentModificationDialog = TwoWindingsTransformerModificationDialog;
                 break;
             case EQUIPMENT_TYPES.LINE:
                 CurrentModificationDialog = LineModificationDialog;
@@ -497,10 +431,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const isReadyForInteraction =
-                !computationStarting &&
-                !isAnyNodeBuilding &&
-                !modificationInProgress &&
-                !props.loadingState;
+                !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !props.loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
@@ -511,22 +442,16 @@ function SingleLineDiagramContent(props) {
                 MIN_HEIGHT, // minHeight
 
                 // maxWidth
-                props.svgType === DiagramType.VOLTAGE_LEVEL
-                    ? MAX_WIDTH_VOLTAGE_LEVEL
-                    : MAX_WIDTH_SUBSTATION,
+                props.svgType === DiagramType.VOLTAGE_LEVEL ? MAX_WIDTH_VOLTAGE_LEVEL : MAX_WIDTH_SUBSTATION,
 
                 // maxHeight
-                props.svgType === DiagramType.VOLTAGE_LEVEL
-                    ? MAX_HEIGHT_VOLTAGE_LEVEL
-                    : MAX_HEIGHT_SUBSTATION,
+                props.svgType === DiagramType.VOLTAGE_LEVEL ? MAX_HEIGHT_VOLTAGE_LEVEL : MAX_HEIGHT_SUBSTATION,
 
                 // callback on the next voltage arrows
                 isReadyForInteraction ? handleNextVoltageLevelClick : null,
 
                 // callback on the breakers
-                isReadyForInteraction && !isNodeReadOnly(currentNode)
-                    ? handleBreakerClick
-                    : null,
+                isReadyForInteraction && !isNodeReadOnly(currentNode) ? handleBreakerClick : null,
 
                 // callback on the feeders
                 isReadyForInteraction ? showEquipmentMenu : null,
@@ -542,30 +467,15 @@ function SingleLineDiagramContent(props) {
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(
-                props.diagramId,
-                props.svgType,
-                diagramViewer.getWidth(),
-                diagramViewer.getHeight()
-            );
+            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker?.id) {
-                const breakerToSwitchDom = document.getElementById(
-                    locallySwitchedBreaker.id
-                );
+                const breakerToSwitchDom = document.getElementById(locallySwitchedBreaker.id);
                 if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
-                    breakerToSwitchDom.classList.replace(
-                        'sld-closed',
-                        'sld-open'
-                    );
-                } else if (
-                    breakerToSwitchDom.classList.value.includes('sld-open')
-                ) {
-                    breakerToSwitchDom.classList.replace(
-                        'sld-open',
-                        'sld-closed'
-                    );
+                    breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
+                } else if (breakerToSwitchDom.classList.value.includes('sld-open')) {
+                    breakerToSwitchDom.classList.replace('sld-open', 'sld-closed');
                 }
             }
 
@@ -573,10 +483,8 @@ function SingleLineDiagramContent(props) {
             // the user's zoom and scoll state for the current render.
             if (
                 diagramViewerRef.current &&
-                diagramViewer.getWidth() ===
-                    diagramViewerRef.current.getWidth() &&
-                diagramViewer.getHeight() ===
-                    diagramViewerRef.current.getHeight()
+                diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
+                diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
             ) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
@@ -625,9 +533,7 @@ function SingleLineDiagramContent(props) {
     return (
         <>
             <Box height={2}>
-                {(props.loadingState ||
-                    modificationInProgress ||
-                    isDiagramRunningOneBusShortcircuitAnalysis) && (
+                {(props.loadingState || modificationInProgress || isDiagramRunningOneBusShortcircuitAnalysis) && (
                     <LinearProgress />
                 )}
                 {oneBusShortcircuitAnalysisLoaderMessage}
@@ -638,8 +544,7 @@ function SingleLineDiagramContent(props) {
                 sx={mergeSx(
                     styles.divDiagram,
                     styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED &&
-                        styles.divDiagramInvalid
+                    loadFlowStatus !== RunningStatus.SUCCEED && styles.divDiagramInvalid
                 )}
                 style={{ height: '100%' }}
             />
@@ -650,34 +555,18 @@ function SingleLineDiagramContent(props) {
             {displayMenu(EQUIPMENT_TYPES.BATTERY, 'battery-menus')}
             {displayMenu(EQUIPMENT_TYPES.DANGLING_LINE, 'dangling-line-menus')}
             {displayMenu(EQUIPMENT_TYPES.GENERATOR, 'generator-menus')}
-            {displayMenu(
-                EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-                'static-var-compensator-menus'
-            )}
-            {displayMenu(
-                EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-                'shunt-compensator-menus'
-            )}
-            {displayMenu(
-                EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-                'lcc-converter-station-menus'
-            )}
-            {displayMenu(
-                EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-                'vsc-converter-station-menus'
-            )}
+            {displayMenu(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR, 'static-var-compensator-menus')}
+            {displayMenu(EQUIPMENT_TYPES.SHUNT_COMPENSATOR, 'shunt-compensator-menus')}
+            {displayMenu(EQUIPMENT_TYPES.LCC_CONVERTER_STATION, 'lcc-converter-station-menus')}
+            {displayMenu(EQUIPMENT_TYPES.VSC_CONVERTER_STATION, 'vsc-converter-station-menus')}
             {equipmentToModify && displayModificationDialog()}
             {equipmentToDelete && displayDeletionDialog()}
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
                     studyUuid={studyUuid}
                     currentNodeId={currentNode?.id}
-                    equipmentId={
-                        equipmentToConfigDynamicSimulationEvent.equipmentId
-                    }
-                    equipmentType={
-                        equipmentToConfigDynamicSimulationEvent.equipmentType
-                    }
+                    equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
+                    equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}
                     title={dynamicSimulationEventDialogTitle}
                 />

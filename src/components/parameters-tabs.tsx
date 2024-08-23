@@ -5,41 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import {
-    darken,
-    DialogContentText,
-    Divider,
-    Grid,
-    lighten,
-    Tab,
-    Tabs,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Theme, Typography } from '@mui/material';
 
-import {
-    useParametersBackend,
-    useParameterState,
-} from './dialogs/parameters/parameters';
+import { useParametersBackend, useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
-import {
-    OptionalServicesNames,
-    OptionalServicesStatus,
-} from './utils/optional-services';
-import { ReduxState } from 'redux/reducer.type';
-import {
-    getLoadFlowProviders,
-    getLoadFlowSpecificParametersDescription,
-} from 'services/loadflow';
+import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
+import { AppState } from 'redux/reducer';
+import { getLoadFlowProviders, getLoadFlowSpecificParametersDescription } from 'services/loadflow';
 import {
     getDefaultLoadFlowProvider,
     getLoadFlowParameters,
@@ -59,10 +35,7 @@ import {
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
-import {
-    ShortCircuitParameters,
-    useGetShortCircuitParameters,
-} from './dialogs/parameters/short-circuit-parameters';
+import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import {
     SingleLineDiagramParameters,
@@ -70,7 +43,6 @@ import {
 } from './dialogs/parameters/single-line-diagram-parameters';
 import { MapParameters } from './dialogs/parameters/map-parameters';
 import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
-import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -83,6 +55,11 @@ import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import ComputingType from './computing-status/computing-type';
+import RunningStatus from './utils/running-status';
+import GlassPane from './results/common/glass-pane';
+import { NetworkAreaDiagramParameters } from './dialogs/parameters/network-area-diagram-parameters';
+import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -137,15 +114,21 @@ const styles = {
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
         height: '100%',
+        position: 'relative',
+        padding: 0,
+    }),
+    contentBox: {
         paddingTop: 6,
         paddingBottom: 2,
         paddingLeft: 8,
         paddingRight: 8,
-    }),
+        height: '100%',
+    },
 };
 
 enum TAB_VALUES {
     sldParamsTabValue = 'SingleLineDiagram',
+    networkAreaDiagram = 'NetworkAreaDiagram',
     mapParamsTabValue = 'Map',
     lfParamsTabValue = 'LoadFlow',
     securityAnalysisParamsTabValue = 'SecurityAnalysis',
@@ -158,6 +141,7 @@ enum TAB_VALUES {
 }
 
 const hasValidationTabs = [
+    TAB_VALUES.securityAnalysisParamsTabValue,
     TAB_VALUES.sensitivityAnalysisParamsTabValue,
     TAB_VALUES.nonEvacuatedEnergyParamsTabValue,
     TAB_VALUES.shortCircuitParamsTabValue,
@@ -170,38 +154,22 @@ type OwnProps = {
 };
 
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
-    const user = useSelector((state: ReduxState) => state.user);
+    const user = useSelector((state: AppState) => state.user);
 
-    const [tabValue, setTabValue] = useState<string>(
-        TAB_VALUES.sldParamsTabValue
-    );
-    const [nextTabValue, setNextTabValue] = useState<string | undefined>(
-        undefined
-    );
+    const [tabValue, setTabValue] = useState<string>(TAB_VALUES.sldParamsTabValue);
+    const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
 
     const [isPopupOpen, setIsPopupOpen] = useState<boolean>(false);
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
-    const securityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SecurityAnalysis
-    );
-    const sensitivityAnalysisAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis
-    );
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.SensitivityAnalysis
-    );
-    const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation
-    );
-    const voltageInitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.VoltageInit
-    );
-    const shortCircuitAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.ShortCircuit
-    );
+    const securityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SecurityAnalysis);
+    const sensitivityAnalysisAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
+    const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
+    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
@@ -249,18 +217,14 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         updateNonEvacuatedEnergyProvider
     );
 
-    const useNonEvacuatedEnergyParameters =
-        useGetNonEvacuatedEnergyParameters();
+    const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
     const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const handleChangeTab = (newValue: string) => {
-        if (
-            hasValidationTabs.includes(tabValue as TAB_VALUES) &&
-            haveDirtyFields
-        ) {
+        if (hasValidationTabs.includes(tabValue as TAB_VALUES) && haveDirtyFields) {
             setNextTabValue(newValue);
             setIsPopupOpen(true);
         } else {
@@ -291,26 +255,22 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.sldParamsTabValue:
-                return (
-                    <SingleLineDiagramParameters
-                        componentLibraries={componentLibraries}
-                    />
-                );
+                return <SingleLineDiagramParameters componentLibraries={componentLibraries} />;
+            case TAB_VALUES.networkAreaDiagram:
+                return <NetworkAreaDiagramParameters />;
             case TAB_VALUES.mapParamsTabValue:
                 return <MapParameters />;
             case TAB_VALUES.lfParamsTabValue:
-                return (
-                    <LoadFlowParameters
-                        parametersBackend={loadFlowParametersBackend}
-                    />
-                );
+                return <LoadFlowParameters parametersBackend={loadFlowParametersBackend} />;
             case TAB_VALUES.securityAnalysisParamsTabValue:
                 return (
                     <SecurityAnalysisParameters
                         parametersBackend={securityAnalysisParametersBackend}
+                        setHaveDirtyFields={setHaveDirtyFields}
                     />
                 );
             case TAB_VALUES.sensitivityAnalysisParamsTabValue:
@@ -324,9 +284,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return (
                     <NonEvacuatedEnergyParameters
                         parametersBackend={nonEvacuatedEnergyBackend}
-                        useNonEvacuatedEnergyParameters={
-                            useNonEvacuatedEnergyParameters
-                        }
+                        useNonEvacuatedEnergyParameters={useNonEvacuatedEnergyParameters}
                     />
                 );
             case TAB_VALUES.shortCircuitParamsTabValue:
@@ -337,18 +295,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                     />
                 );
             case TAB_VALUES.dynamicSimulationParamsTabValue:
-                return (
-                    <DynamicSimulationParameters
-                        user={user}
-                        setHaveDirtyFields={setHaveDirtyFields}
-                    />
-                );
+                return <DynamicSimulationParameters user={user} setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.voltageInitParamsTabValue:
-                return (
-                    <VoltageInitParameters
-                        setHaveDirtyFields={setHaveDirtyFields}
-                    />
-                );
+                return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.advancedParamsTabValue:
                 return <NetworkParameters />;
         }
@@ -367,18 +316,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     return (
         <>
             <Grid container spacing={0} sx={stylesLayout.rootContainer}>
-                <Grid
-                    container
-                    item
-                    xs={2}
-                    direction="column"
-                    sx={stylesLayout.columnContainer}
-                >
+                <Grid container item xs={2} direction="column" sx={stylesLayout.columnContainer}>
                     <Grid item>
-                        <Typography
-                            variant="subtitle1"
-                            sx={styles.listTitleDisplay}
-                        >
+                        <Typography variant="subtitle1" sx={styles.listTitleDisplay}>
                             <FormattedMessage id="parameters" />
                         </Typography>
                     </Grid>
@@ -386,105 +326,70 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                         <Tabs
                             value={tabValue}
                             variant="scrollable"
-                            onChange={(event, newValue) =>
-                                handleChangeTab(newValue)
-                            }
+                            onChange={(event, newValue) => handleChangeTab(newValue)}
                             aria-label="parameters"
                             orientation="vertical"
                             sx={styles.listDisplay}
                         >
                             <Tab
                                 label={<FormattedMessage id="LoadFlow" />}
+                                disabled={loadFlowStatus === RunningStatus.RUNNING}
                                 value={TAB_VALUES.lfParamsTabValue}
                             />
                             <Tab
-                                disabled={
-                                    securityAnalysisAvailability !==
-                                    OptionalServicesStatus.Up
-                                }
-                                label={
-                                    <FormattedMessage id="SecurityAnalysis" />
-                                }
-                                value={
-                                    TAB_VALUES.securityAnalysisParamsTabValue
-                                }
+                                disabled={securityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                label={<FormattedMessage id="SecurityAnalysis" />}
+                                value={TAB_VALUES.securityAnalysisParamsTabValue}
                             />
                             <Tab
-                                disabled={
-                                    sensitivityAnalysisAvailability !==
-                                    OptionalServicesStatus.Up
-                                }
-                                label={
-                                    <FormattedMessage id="SensitivityAnalysis" />
-                                }
-                                value={
-                                    TAB_VALUES.sensitivityAnalysisParamsTabValue
-                                }
+                                disabled={sensitivityAnalysisAvailability !== OptionalServicesStatus.Up}
+                                label={<FormattedMessage id="SensitivityAnalysis" />}
+                                value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                             />
                             {enableDeveloperMode && (
                                 <Tab
-                                    disabled={
-                                        nonEvacuatedEnergyAvailability !==
-                                        OptionalServicesStatus.Up
-                                    }
-                                    label={
-                                        <FormattedMessage id="NonEvacuatedEnergyAnalysis" />
-                                    }
-                                    value={
-                                        TAB_VALUES.nonEvacuatedEnergyParamsTabValue
-                                    }
+                                    disabled={nonEvacuatedEnergyAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="NonEvacuatedEnergyAnalysis" />}
+                                    value={TAB_VALUES.nonEvacuatedEnergyParamsTabValue}
                                 />
                             )}
                             <Tab
-                                disabled={
-                                    shortCircuitAvailability !==
-                                    OptionalServicesStatus.Up
-                                }
+                                disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
                             {enableDeveloperMode && (
                                 <Tab
-                                    disabled={
-                                        dynamicSimulationAvailability !==
-                                        OptionalServicesStatus.Up
-                                    }
-                                    label={
-                                        <FormattedMessage id="DynamicSimulation" />
-                                    }
-                                    value={
-                                        TAB_VALUES.dynamicSimulationParamsTabValue
-                                    }
+                                    disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
+                                    label={<FormattedMessage id="DynamicSimulation" />}
+                                    value={TAB_VALUES.dynamicSimulationParamsTabValue}
                                 />
                             )}
                             <Tab
-                                disabled={
-                                    voltageInitAvailability !==
-                                    OptionalServicesStatus.Up
-                                }
+                                disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
                             <Divider />
                             <Tab
-                                label={
-                                    <FormattedMessage id="SingleLineDiagram" />
-                                }
+                                label={<FormattedMessage id="SingleLineDiagram" />}
                                 value={TAB_VALUES.sldParamsTabValue}
                             />
                             <Tab
-                                label={<FormattedMessage id="Map" />}
-                                value={TAB_VALUES.mapParamsTabValue}
+                                label={<FormattedMessage id="NetworkAreaDiagram" />}
+                                value={TAB_VALUES.networkAreaDiagram}
                             />
-                            <Tab
-                                label={<FormattedMessage id="Advanced" />}
-                                value={TAB_VALUES.advancedParamsTabValue}
-                            />
+                            <Tab label={<FormattedMessage id="Map" />} value={TAB_VALUES.mapParamsTabValue} />
+                            <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />
                         </Tabs>
                     </Grid>
                 </Grid>
                 <Grid item xs={10} sx={styles.parametersBox}>
-                    {displayTab()}
+                    <GlassPane
+                        active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
+                    >
+                        <Box sx={styles.contentBox}>{displayTab()}</Box>
+                    </GlassPane>
                 </Grid>
             </Grid>
             <SelectOptionsDialog

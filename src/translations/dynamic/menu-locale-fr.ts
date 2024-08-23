@@ -27,8 +27,7 @@ const menu_locale_fr = {
     UnableToTrip2WTransformer: 'Impossible de déclencher le transformateur',
     UnableToTrip3WTransformer: 'Impossible de déclencher le transformateur',
     UnableToTripLine: 'Impossible de déclencher la ligne',
-    UnableToTripBusbarSection:
-        'Impossible de déclencher la section de jeu de barre',
+    UnableToTripBusbarSection: 'Impossible de déclencher la section de jeu de barre',
     UnableToTripHvdcLine: 'Impossible de déclencher la ligne HVDC',
 
     // Dynamic simulation events with format {eventType}{equipmentType}`

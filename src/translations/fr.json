@@ -1,4 +1,10 @@
 {
+    "General": "General",
+
+    "LimitReductions" : "Abattements de limites",
+    "IST" : "IST",
+    "LimitDuration" : "Surcharge {sign} {value}min",
+
     "button.delete": "Supprimer",
     "button.changeType": "Modifier",
     "filter": "Filtre",
@@ -22,6 +28,7 @@
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
+    "download.fileName": "Nom de fichier",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
 
@@ -43,6 +50,7 @@
     "centerLabel": "Centrer les noms d'ouvrages",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
+    "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
@@ -209,8 +217,6 @@
 
     "SelectAll": "Tous",
     "UnselectAll": "Aucun",
-
-    "DrawingPolygonInstruction": "Cliquez sur la carte pour commencer à dessiner un polygone. Appuyez sur Entrée pour terminer ou Échap pour annuler.",
 
     "noOption": "Pas d'options",
     "maxSelection": "sélections maximum",
@@ -542,7 +548,6 @@
     "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
-
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
     "DeleteFromMenu": "Supprimer",
     "ModifyFromMenu": "Modifier",
@@ -550,8 +555,6 @@
     "Provider": "Simulateur",
     "LimitReduction": "Abattement des seuils",
     "Default": "Défaut",
-
-
 
     "SubstationList": "Liste des postes",
     "NetworkModificationTree": "Arbre décisionnel",
@@ -580,12 +583,14 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
+    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques", 
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
     "Optional": " (optionnel)",
     "loadingOptions": "Chargement...",
     "buildNode": "Réaliser le nœud",
+    "maxBuiltNodeExceededError": "Vous avez atteint votre quota utilisateur en termes de réalisations par étude, vous ne pouvez donc plus réaliser de nœuds dans cette étude pour le moment. Merci de déréaliser des nœuds afin de redescendre sous le seuil de {limit} réalisations.",
     "createNetworkModificationNode": "Créer un nouveau nœud",
     "createNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
     "pasteNetworkModificationNodeInNewBranch": "dans une nouvelle branche",
@@ -1234,7 +1239,7 @@
     "ConnectedT3WSide1": "Connecté 1",
     "ConnectedT3WSide2": "Connecté 2",
     "ConnectedT3WSide3": "Connecté 3",
-
+    "disconnected": "Disconnecté",
     "converterStationId": "ID de la station",
     "converterStationName": "Nom de la station",
     "converterStation1": "Station 1",
@@ -1368,10 +1373,19 @@
     "ReactiveSlacksThreshold": "Seuil d'alerte sur les investissements réactifs",
     "ReactiveSlacksThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
     "TieLines": "Interconnexions",
+    "ShuntCompensatorActivationThreshold": "Seuil d'alerte sur l'enclenchement des MCS",
+    "ShuntCompensatorActivationThresholdMustBeGreaterOrEqualToZero": "Le seuil doit être supérieur ou égal à 0",
+    "ShuntCompensatorActivationThresholdDescription": "Seuil (en MVar) au-dessus duquel on considère qu'il y a un écart significatif (et donc tracé dans les logs fonctionnels) entre valeur arrondie et valeur théorique pour l'enclenchement d'un MCS",
     "StateEstimation": "Estimation d'état",
     "startStateEstimationError": "Une erreur est survenue lors du lancement de l'estimation d'état",
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
     "EquipmentSearchPlaceholder": "Recherche",
-    "GeneratedModification": "Modification-générée"
+    "GeneratedModification": "Modification-générée",
+    "guidancePopUp.title": "Sélection sur la carte",
+    "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.action":"Fermer l'éditeur",
+    "generateNad": "Générer",
+    "nad": "NAD"
 }

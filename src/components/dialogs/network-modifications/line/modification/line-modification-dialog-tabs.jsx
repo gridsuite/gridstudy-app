@@ -10,19 +10,10 @@ import { Box } from '@mui/material';
 import LimitsPane from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 
-const LineModificationDialogTabs = ({
-    studyUuid,
-    currentNode,
-    lineToModify,
-    tabIndex,
-}) => {
+const LineModificationDialogTabs = ({ studyUuid, currentNode, lineToModify, tabIndex }) => {
     return (
         <>
-            <Box
-                hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB}
-                p={1}
-                sx={{ marginTop: -2 }}
-            >
+            <Box hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB} p={1} sx={{ marginTop: -2 }}>
                 <LineCharacteristicsPane
                     displayConnectivity={false}
                     studyUuid={studyUuid}
@@ -34,11 +25,7 @@ const LineModificationDialogTabs = ({
             </Box>
 
             <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
-                <LimitsPane
-                    currentNode={currentNode}
-                    equipmentToModify={lineToModify}
-                    clearableFields={true}
-                />
+                <LimitsPane currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
             </Box>
         </>
     );

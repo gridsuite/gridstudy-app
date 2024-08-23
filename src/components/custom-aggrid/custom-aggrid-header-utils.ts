@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomColDef,
-    FilterSelectorType,
-    FILTER_DATA_TYPES,
-} from './custom-aggrid-header.type';
+import { CustomColDef, FilterSelectorType, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
@@ -25,14 +21,11 @@ export const makeAgGridCustomHeaderColumn = ({
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
 
-    const customFilterOptions =
-        filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
+    const customFilterOptions = filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
-    const isCurrentColumnSorted = !!sortConfig?.find(
-        (value) => value.colId === field
-    );
+    const isCurrentColumnSorted = !!sortConfig?.find((value) => value.colId === field);
 
     let minWidth = 75;
     if (isSortable && isCurrentColumnSorted) {

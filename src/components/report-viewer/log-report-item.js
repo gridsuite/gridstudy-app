@@ -79,31 +79,10 @@ export default class LogReportItem {
             .map((s) => s.name);
     }
 
-    static resolveTemplateMessage(templateMessage, templateValues) {
-        if (!templateMessage) {
-            return '';
-        }
-        if (!templateValues) {
-            return templateMessage;
-        }
-        const templateVars = {};
-        for (const [key, value] of Object.entries(templateValues)) {
-            templateVars[key] = value.value;
-        }
-        return templateMessage.replace(/\${([^{}]*)}/g, function (a, b) {
-            let r = templateVars[b];
-            return typeof r === 'string' || typeof r === 'number' ? r : a;
-        });
-    }
-
     constructor(jsonReport, reportId) {
-        this.key = jsonReport.message;
-        this.log = LogReportItem.resolveTemplateMessage(
-            jsonReport.messageTemplate,
-            jsonReport.values
-        );
+        this.log = jsonReport.message;
         this.reportId = reportId;
-        this.severity = this.initSeverity(jsonReport.values.reportSeverity);
+        this.severity = this.initSeverity(jsonReport.severities[0]);
     }
 
     getLog() {
@@ -112,10 +91,6 @@ export default class LogReportItem {
 
     getReportId() {
         return this.reportId;
-    }
-
-    getSeverity() {
-        return this.severity;
     }
 
     getSeverityName() {
@@ -135,15 +110,14 @@ export default class LogReportItem {
         if (!jsonSeverity) {
             return severity;
         }
-
+        // check jsonSeverity string is a valid SEVERITY value
         Object.values(LogReportItem.SEVERITY).some((value) => {
-            let severityFound = jsonSeverity.value.includes(value.name);
+            let severityFound = jsonSeverity === value.name;
             if (severityFound) {
                 severity = value;
             }
             return severityFound;
         });
-
         return severity;
     }
 }

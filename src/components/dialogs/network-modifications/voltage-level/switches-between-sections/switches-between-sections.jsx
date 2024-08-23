@@ -8,12 +8,7 @@
 import { IconButton } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { TextInput } from '@gridsuite/commons-ui';
-import {
-    SECTION_COUNT,
-    SWITCHES_BETWEEN_SECTIONS,
-    SWITCH_KINDS,
-    SWITCH_KIND,
-} from 'components/utils/field-constants';
+import { SECTION_COUNT, SWITCHES_BETWEEN_SECTIONS, SWITCH_KINDS, SWITCH_KIND } from 'components/utils/field-constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
@@ -22,8 +17,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export const SwitchesBetweenSections = () => {
     const { getValues, setValue } = useFormContext();
-    const [openCreateSwitchesDialog, setOpenCreateSwitchesDialog] =
-        useState(false);
+    const [openCreateSwitchesDialog, setOpenCreateSwitchesDialog] = useState(false);
 
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
     const watchSwitchesBetweenSections = useWatch({
@@ -77,9 +71,7 @@ export const SwitchesBetweenSections = () => {
             const initialKindDisconnector = { switchKind: 'DISCONNECTOR' };
             let list = [];
             if (watchSectionCount) {
-                list = Array(watchSectionCount - 1).fill(
-                    initialKindDisconnector
-                );
+                list = Array(watchSectionCount - 1).fill(initialKindDisconnector);
             }
             const data = { switchKinds: list };
             setSwitchesKinds(data);
@@ -111,9 +103,7 @@ export const SwitchesBetweenSections = () => {
                 {openCreateSwitchesDialog && (
                     <CreateSwitchesDialog
                         openCreateSwitchesDialog={openCreateSwitchesDialog}
-                        setOpenCreateSwitchesDialog={
-                            setOpenCreateSwitchesDialog
-                        }
+                        setOpenCreateSwitchesDialog={setOpenCreateSwitchesDialog}
                         handleCreateSwitchesDialog={handleCreateSwitchesDialog}
                         sectionCount={getValues(SECTION_COUNT)}
                         switchKinds={getValues(SWITCH_KINDS)}

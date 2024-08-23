@@ -19,7 +19,7 @@ import {
     SENSITIVITY_IN_DELTA_A,
     SENSITIVITY_IN_DELTA_MW,
 } from './sensitivity-analysis-result-utils';
-import { SortWay, useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -34,7 +34,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
-import { SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD } from 'utils/store-filter-fields';
+import {
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+} from 'utils/store-sort-filter-fields';
 
 export const SensitivityResultTabs = [
     { id: 'N', label: 'N' },
@@ -42,9 +45,7 @@ export const SensitivityResultTabs = [
 ];
 
 function getDisplayedColumns(params) {
-    return params.api.columnModel.columnDefs.map(
-        (c) => c.headerComponentParams.displayName
-    );
+    return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);
 }
 
 const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
@@ -55,9 +56,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
@@ -65,16 +64,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         filterStoreAction: setSensitivityAnalysisResultFilter,
     });
 
-    // Add default sort on sensitivity col
-    const defaultSortColumn = nOrNkIndex ? 'valueAfter' : 'value';
-    const defaultSortOrder = SortWay.ASC;
-    const { onSortChanged, sortConfig, initSort } = useAgGridSort({
-        colId: defaultSortColumn,
-        sort: defaultSortOrder,
-    });
-    const initTable = (nOrNkIndex) => {
-        initSort(nOrNkIndex ? 'valueAfter' : 'value');
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
 
+    const initTable = () => {
         /* set page to 0 to avoid being in out of range (0 to 0, but page is > 0)
            for the page prop of MUI TablePagination if was not on the first page
            for the prev sensiKind */
@@ -84,12 +79,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     };
 
     const handleSensiKindChange = (newSensiKind) => {
-        initTable(nOrNkIndex);
+        initTable();
         setSensiKind(newSensiKind);
     };
 
     const handleSensiNOrNkIndexChange = (event, newNOrNKIndex) => {
-        initTable(newNOrNKIndex);
+        initTable();
         setNOrNkIndex(newNOrNKIndex);
     };
 
@@ -98,11 +93,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const sensiResultKind = [
-        SENSITIVITY_IN_DELTA_MW,
-        SENSITIVITY_IN_DELTA_A,
-        SENSITIVITY_AT_NODE,
-    ];
+    const sensiResultKind = [SENSITIVITY_IN_DELTA_MW, SENSITIVITY_IN_DELTA_A, SENSITIVITY_AT_NODE];
 
     const [csvHeaders, setCsvHeaders] = useState([]);
     const [isCsvButtonDisabled, setIsCsvButtonDisabled] = useState(true);
@@ -143,22 +134,11 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        snackError,
-        studyUuid,
-        nodeUuid,
-        intl,
-        nOrNkIndex,
-        sensiKind,
-        csvHeaders,
-    ]);
+    }, [snackError, studyUuid, nodeUuid, intl, nOrNkIndex, sensiKind, csvHeaders]);
 
     return (
         <>
-            <SensitivityAnalysisTabs
-                sensiKind={sensiKind}
-                setSensiKind={handleSensiKindChange}
-            />
+            <SensitivityAnalysisTabs sensiKind={sensiKind} setSensiKind={handleSensiKindChange} />
             {sensiResultKind.includes(sensiKind) && (
                 <>
                     <Box
@@ -168,10 +148,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                             alignItems: 'flex-end',
                         }}
                     >
-                        <Tabs
-                            value={nOrNkIndex}
-                            onChange={handleSensiNOrNkIndexChange}
-                        >
+                        <Tabs value={nOrNkIndex} onChange={handleSensiNOrNkIndexChange}>
                             {SensitivityResultTabs.map((tab) => (
                                 <Tab key={tab.label} label={tab.label} />
                             ))}
@@ -205,14 +182,10 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
             )}
             {sensiKind === COMPUTATION_RESULTS_LOGS && (
                 <>
-                    <Box sx={{ height: '4px' }}>
-                        {openLoader && <LinearProgress />}
-                    </Box>
+                    <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                     {(sensitivityAnalysisStatus === RunningStatus.SUCCEED ||
                         sensitivityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer
-                            reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS}
-                        />
+                        <ComputationReportViewer reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS} />
                     )}
                 </>
             )}

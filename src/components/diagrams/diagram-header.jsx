@@ -22,16 +22,17 @@ const BLINK_LENGTH_MS = 1800;
 
 const styles = {
     header: (theme) => ({
+        // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
+        position: 'absolute',
+        width: '100%',
+        ////
         padding: '5px',
         display: 'flex',
         flexDirection: 'row',
         wordBreak: 'break-all',
         backgroundColor: theme.palette.background.default,
         borderBottom: 'solid 1px',
-        borderBottomColor:
-            theme.palette.mode === 'light'
-                ? theme.palette.action.selected
-                : 'transparent',
+        borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
     }),
     actionIcon: (theme) => ({
         padding: 0,
@@ -52,9 +53,7 @@ const styles = {
             // This adds a global css rule, so we keep the rule's name specific.
             '0%, 25%': {
                 backgroundColor:
-                    theme.palette.mode === 'light'
-                        ? theme.palette.action.disabled
-                        : theme.palette.action.selected,
+                    theme.palette.mode === 'light' ? theme.palette.action.disabled : theme.palette.action.selected,
             },
             '100%': {
                 backgroundColor: theme.palette.background.default,
@@ -67,14 +66,8 @@ const DiagramHeader = (props) => {
     const dispatch = useDispatch();
 
     const { onMinimize, onTogglePin, onClose } = props;
-    const handleMinimize = useCallback(
-        () => onMinimize && onMinimize(),
-        [onMinimize]
-    );
-    const handleTogglePin = useCallback(
-        () => onTogglePin && onTogglePin(),
-        [onTogglePin]
-    );
+    const handleMinimize = useCallback(() => onMinimize && onMinimize(), [onMinimize]);
+    const handleTogglePin = useCallback(() => onTogglePin && onTogglePin(), [onTogglePin]);
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
 
     /**
@@ -84,11 +77,8 @@ const DiagramHeader = (props) => {
     const [blinking, setBlinking] = useState(false);
     const needsToBlink = useSelector(
         (state) =>
-            state.diagramStates.find(
-                (diagram) =>
-                    diagram.svgType === props?.svgType &&
-                    diagram.id === props?.diagramId
-            )?.needsToBlink
+            state.diagramStates.find((diagram) => diagram.svgType === props?.svgType && diagram.id === props?.diagramId)
+                ?.needsToBlink
     );
 
     useEffect(() => {
@@ -109,10 +99,7 @@ const DiagramHeader = (props) => {
 
     return (
         <Box sx={mergeSx(styles.header, blinking && styles.blink)}>
-            <OverflowableText
-                sx={{ flexGrow: '1' }}
-                text={props.diagramTitle}
-            />
+            <OverflowableText sx={{ flexGrow: '1' }} text={props.diagramTitle} />
             <Box>
                 <Box
                     sx={{
@@ -121,27 +108,13 @@ const DiagramHeader = (props) => {
                     }}
                 >
                     {props.showMinimizeControl && (
-                        <IconButton
-                            sx={styles.actionIcon}
-                            onClick={handleMinimize}
-                        >
+                        <IconButton sx={styles.actionIcon} onClick={handleMinimize}>
                             <MinimizeIcon />
                         </IconButton>
                     )}
                     {props.showTogglePinControl && (
-                        <IconButton
-                            sx={
-                                props.pinned
-                                    ? styles.actionIcon
-                                    : styles.pinRotate
-                            }
-                            onClick={handleTogglePin}
-                        >
-                            {props.pinned ? (
-                                <PushPinIcon />
-                            ) : (
-                                <PushPinOutlinedIcon />
-                            )}
+                        <IconButton sx={props.pinned ? styles.actionIcon : styles.pinRotate} onClick={handleTogglePin}>
+                            {props.pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
                         </IconButton>
                     )}
                     {props.showCloseControl && (

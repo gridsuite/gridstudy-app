@@ -13,6 +13,7 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
 export const DESCRIPTION = 'description';
@@ -25,7 +26,7 @@ export const BUS_OR_BUSBAR_SECTION_ID = 'busOrBusbarSectionId';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
-export const CONNECTED = 'connected';
+export const CONNECTED = 'terminalConnected';
 export const CONNECTED1 = 'connected1';
 export const CONNECTED2 = 'connected2';
 
@@ -238,8 +239,7 @@ export const ADDITIONAL_PROPERTIES = 'AdditionalProperties';
 export const LOSS_COEFFICIENT = 'lossCoefficient';
 export const DEFAULT_OUTAGE_RATE = 'defaultOutageRate';
 export const GENERATORS_WITHOUT_OUTAGE = 'generatorsWithoutOutage';
-export const GENERATORS_WITH_FIXED_ACTIVE_POWER =
-    'generatorsWithFixedActivePower';
+export const GENERATORS_WITH_FIXED_ACTIVE_POWER = 'generatorsWithFixedActivePower';
 export const GENERATORS_FREQUENCY_RESERVES = 'generatorsFrequencyReserve';
 export const GENERATORS_FILTERS = 'generatorsFilters';
 export const FREQUENCY_RESERVE = 'frequencyReserve';
@@ -275,12 +275,9 @@ export const SHUNT_COMPENSATOR_SIDE_1 = 'mcsOnSide1';
 export const SHUNT_COMPENSATOR_SIDE_2 = 'mcsOnSide2';
 export const MCS_SELECTED = 'connectedToHvdc';
 export const PROVIDER = 'provider';
-export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD =
-    'flowFlowSensitivityValueThreshold';
-export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD =
-    'angleFlowSensitivityValueThreshold';
-export const FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD =
-    'flowVoltageSensitivityValueThreshold';
+export const FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'flowFlowSensitivityValueThreshold';
+export const ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD = 'angleFlowSensitivityValueThreshold';
+export const FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD = 'flowVoltageSensitivityValueThreshold';
 export const PARAMETER_SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
 export const SENSI_INJECTIONS_SET = 'sensitivityInjectionsSet';
 export const SENSI_INJECTION = 'sensiInjection';
@@ -301,10 +298,8 @@ export const PSTS = 'psts';
 // VSC
 export const ACTIVE_POWER_SETPOINT = 'activePowerSetpoint';
 export const REACTIVE_POWER = 'reactivePower';
-export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 =
-    'operatorActivePowerLimitSide1';
-export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 =
-    'operatorActivePowerLimitSide2';
+export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE1 = 'operatorActivePowerLimitSide1';
+export const OPERATOR_ACTIVE_POWER_LIMIT_SIDE2 = 'operatorActivePowerLimitSide2';
 export const CONVERTERS_MODE = 'convertersMode';
 export const ANGLE_DROOP_ACTIVE_POWER_CONTROL = 'angleDroopActivePowerControl';
 export const P0 = 'p0';
@@ -319,12 +314,10 @@ export const CONVERTER_STATION_2 = 'converterStation2';
 export const SHORT_CIRCUIT_WITH_FEEDER_RESULT = 'withFeederResult';
 export const SHORT_CIRCUIT_PREDEFINED_PARAMS = 'predefinedParameters';
 export const SHORT_CIRCUIT_WITH_LOADS = 'withLoads';
-export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS =
-    'withVSCConverterStations';
+export const SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS = 'withVSCConverterStations';
 export const SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS = 'withShuntCompensators';
 export const SHORT_CIRCUIT_WITH_NEUTRAL_POSITION = 'withNeutralPosition';
-export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE =
-    'initialVoltageProfileMode';
+export const SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE = 'initialVoltageProfileMode';
 
 // By formula
 export const EQUIPMENT_TYPE_FIELD = 'equipmentType';

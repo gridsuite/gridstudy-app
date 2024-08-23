@@ -5,19 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
-import { SubstationLayout } from '../../diagrams/diagram-common';
+import { useEffect, useMemo, useState } from 'react';
+import { getAvailableComponentLibraries } from '../../../services/study';
 import {
     PARAM_CENTER_LABEL,
+    PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
-    PARAM_COMPONENT_LIBRARY,
 } from '../../../utils/config-params';
-import { styles } from './parameters';
+import { SubstationLayout } from '../../diagrams/diagram-common';
 import { LineSeparator } from '../dialogUtils';
-import { getAvailableComponentLibraries } from '../../../services/study';
-import { ParamLine, ParameterType } from './widget';
+import { styles } from './parameters';
+import ParameterLineDropdown from './widget/parameter-line-dropdown';
+import ParameterLineSwitch from './widget/parameter-line-switch';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);
@@ -35,11 +36,7 @@ export const useGetAvailableComponentLibraries = (user) => {
 
 export const SingleLineDiagramParameters = ({ componentLibraries }) => {
     const componentLibsRenderCache = useMemo(
-        () =>
-            Array.from(componentLibraries).reduce(
-                (prev, val, idx) => ({ ...prev, [val]: val }),
-                {}
-            ),
+        () => Array.from(componentLibraries).reduce((prev, val, idx) => ({ ...prev, [val]: val }), {}),
         [componentLibraries]
     );
 
@@ -53,27 +50,17 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
                 marginTop={-3}
                 justifyContent={'space-between'}
             >
-                <ParamLine
-                    type={ParameterType.Switch}
-                    param_name_id={PARAM_DIAGONAL_LABEL}
-                    label="diagonalLabel"
-                />
+                <ParameterLineSwitch paramNameId={PARAM_DIAGONAL_LABEL} label="diagonalLabel" />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.Switch}
-                    param_name_id={PARAM_CENTER_LABEL}
-                    label="centerLabel"
-                />
+                <ParameterLineSwitch paramNameId={PARAM_CENTER_LABEL} label="centerLabel" />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_SUBSTATION_LAYOUT}
+                <ParameterLineDropdown
+                    paramNameId={PARAM_SUBSTATION_LAYOUT}
                     labelTitle="SubstationLayout"
                     labelValue="substation-layout-select-label"
                     defaultValueIfNull={true}
                     values={{
-                        [SubstationLayout.HORIZONTAL]:
-                            'HorizontalSubstationLayout',
+                        [SubstationLayout.HORIZONTAL]: 'HorizontalSubstationLayout',
                         [SubstationLayout.VERTICAL]: 'VerticalSubstationLayout',
                         // the following layouts are not yet supported
                         //[SubstationLayout.SMART]: 'SmartSubstationLayout',
@@ -84,9 +71,8 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
                     }}
                 />
                 <LineSeparator />
-                <ParamLine
-                    type={ParameterType.DropDown}
-                    param_name_id={PARAM_COMPONENT_LIBRARY}
+                <ParameterLineDropdown
+                    paramNameId={PARAM_COMPONENT_LIBRARY}
                     labelTitle="ComponentLibrary"
                     labelValue="component-library-select-label"
                     values={componentLibsRenderCache}

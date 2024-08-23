@@ -28,13 +28,7 @@ import MappingParameters, {
     MAPPING,
 } from './mapping-parameters';
 import { LineSeparator } from '../../dialogUtils';
-import {
-    DropDown,
-    LabelledButton,
-    styles,
-    TabPanel,
-    useParametersBackend,
-} from '../parameters';
+import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
     formSchema as networkFormSchema,
@@ -70,29 +64,20 @@ const TAB_VALUES = {
 };
 
 const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
-    const dynamicSimulationAvailability = useOptionalServiceStatus(
-        OptionalServicesNames.DynamicSimulation
-    );
+    const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
 
-    const [
-        providers,
-        provider,
-        updateProvider,
-        resetProvider,
-        parameters,
-        updateParameters,
-        resetParameters,
-    ] = useParametersBackend(
-        user,
-        'DynamicSimulation',
-        dynamicSimulationAvailability,
-        fetchDynamicSimulationProviders,
-        fetchDynamicSimulationProvider,
-        fetchDefaultDynamicSimulationProvider,
-        updateDynamicSimulationProvider,
-        fetchDynamicSimulationParameters,
-        updateDynamicSimulationParameters
-    );
+    const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
+        useParametersBackend(
+            user,
+            'DynamicSimulation',
+            dynamicSimulationAvailability,
+            fetchDynamicSimulationProviders,
+            fetchDynamicSimulationProvider,
+            fetchDefaultDynamicSimulationProvider,
+            updateDynamicSimulationProvider,
+            fetchDynamicSimulationParameters,
+            updateDynamicSimulationParameters
+        );
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
 
@@ -139,25 +124,16 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
         (errors) => {
             const tabsInError = [];
             // do not show error when being in the current tab
-            if (
-                errors?.[TAB_VALUES.TIME_DELAY] &&
-                TAB_VALUES.TIME_DELAY !== tabValue
-            ) {
+            if (errors?.[TAB_VALUES.TIME_DELAY] && TAB_VALUES.TIME_DELAY !== tabValue) {
                 tabsInError.push(TAB_VALUES.TIME_DELAY);
             }
             if (errors?.[TAB_VALUES.SOLVER] && TAB_VALUES.SOLVER !== tabValue) {
                 tabsInError.push(TAB_VALUES.SOLVER);
             }
-            if (
-                errors?.[TAB_VALUES.MAPPING] &&
-                TAB_VALUES.MAPPING !== tabValue
-            ) {
+            if (errors?.[TAB_VALUES.MAPPING] && TAB_VALUES.MAPPING !== tabValue) {
                 tabsInError.push(TAB_VALUES.MAPPING);
             }
-            if (
-                errors?.[TAB_VALUES.NETWORK] &&
-                TAB_VALUES.NETWORK !== tabValue
-            ) {
+            if (errors?.[TAB_VALUES.NETWORK] && TAB_VALUES.NETWORK !== tabValue) {
                 tabsInError.push(TAB_VALUES.NETWORK);
             }
             if (errors?.[TAB_VALUES.CURVE] && TAB_VALUES.CURVE !== tabValue) {
@@ -186,8 +162,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                 [SOLVERS]: parameters[SOLVERS].reduce(
                     (arr, curr, index) => [
                         ...arr,
-                        newParams[TAB_VALUES.SOLVER][SOLVERS][index].id ===
-                        newParams[TAB_VALUES.SOLVER][SOLVER_ID]
+                        newParams[TAB_VALUES.SOLVER][SOLVERS][index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
                             ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
                             : curr,
                     ],
@@ -256,87 +231,45 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                             <DropDown
                                 value={provider}
                                 label="Provider"
-                                values={Object.entries(providers).reduce(
-                                    (obj, [key, value]) => {
-                                        obj[
-                                            key
-                                        ] = `DynamicSimulationProvider${value}`;
-                                        return obj;
-                                    },
-                                    {}
-                                )}
+                                values={Object.entries(providers).reduce((obj, [key, value]) => {
+                                    obj[key] = `DynamicSimulationProvider${value}`;
+                                    return obj;
+                                }, {})}
                                 callback={handleUpdateProvider}
                             />
                         )}
                     </Grid>
 
-                    <Grid
-                        container
-                        paddingTop={1}
-                        xl={tabValue === TAB_VALUES.CURVE ? 12 : 6.01}
-                    >
+                    <Grid container paddingTop={1} xl={tabValue === TAB_VALUES.CURVE ? 12 : 6.01}>
                         <LineSeparator />
                     </Grid>
 
                     <Grid item width="100%">
-                        <Tabs
-                            value={tabValue}
-                            variant="scrollable"
-                            onChange={handleTabChange}
-                            aria-label="parameters"
-                        >
+                        <Tabs value={tabValue} variant="scrollable" onChange={handleTabChange} aria-label="parameters">
                             <Tab
-                                label={
-                                    <FormattedMessage id="DynamicSimulationTimeDelay" />
-                                }
+                                label={<FormattedMessage id="DynamicSimulationTimeDelay" />}
                                 value={TAB_VALUES.TIME_DELAY}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TAB_VALUES.TIME_DELAY
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.TIME_DELAY)}
                             />
                             <Tab
-                                label={
-                                    <FormattedMessage id="DynamicSimulationSolver" />
-                                }
+                                label={<FormattedMessage id="DynamicSimulationSolver" />}
                                 value={TAB_VALUES.SOLVER}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TAB_VALUES.SOLVER
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.SOLVER)}
                             />
                             <Tab
-                                label={
-                                    <FormattedMessage id="DynamicSimulationMapping" />
-                                }
+                                label={<FormattedMessage id="DynamicSimulationMapping" />}
                                 value={TAB_VALUES.MAPPING}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TAB_VALUES.MAPPING
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.MAPPING)}
                             />
                             <Tab
-                                label={
-                                    <FormattedMessage id="DynamicSimulationNetwork" />
-                                }
+                                label={<FormattedMessage id="DynamicSimulationNetwork" />}
                                 value={TAB_VALUES.NETWORK}
-                                sx={getTabStyle(
-                                    tabIndexesWithError,
-                                    TAB_VALUES.NETWORK
-                                )}
+                                sx={getTabStyle(tabIndexesWithError, TAB_VALUES.NETWORK)}
                             />
-                            <Tab
-                                label={
-                                    <FormattedMessage id="DynamicSimulationCurve" />
-                                }
-                                value={TAB_VALUES.CURVE}
-                            />
+                            <Tab label={<FormattedMessage id="DynamicSimulationCurve" />} value={TAB_VALUES.CURVE} />
                         </Tabs>
 
-                        <TabPanel
-                            value={tabValue}
-                            index={TAB_VALUES.TIME_DELAY}
-                        >
+                        <TabPanel value={tabValue} index={TAB_VALUES.TIME_DELAY}>
                             <TimeDelayParameters path={TAB_VALUES.TIME_DELAY} />
                         </TabPanel>
                         <TabPanel value={tabValue} index={TAB_VALUES.SOLVER}>
@@ -376,22 +309,9 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                     </Grid>
                 </Grid>
             </Grid>
-            <Grid
-                container
-                sx={mergeSx(
-                    styles.controlParametersItem,
-                    styles.marginTopButton,
-                    { paddingTop: 4 }
-                )}
-            >
-                <LabelledButton
-                    callback={handleResetParametersAndProvider}
-                    label="resetToDefault"
-                />
-                <SubmitButton
-                    variant="outlined"
-                    onClick={handleSubmit(onSubmit)}
-                >
+            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingTop: 4 })}>
+                <LabelledButton callback={handleResetParametersAndProvider} label="resetToDefault" />
+                <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit)}>
                     <FormattedMessage id={'validate'} />
                 </SubmitButton>
             </Grid>
