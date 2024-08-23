@@ -70,6 +70,7 @@ import {
     INCREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     IncrementNetworkAreaDiagramDepthAction,
     INIT_NAD_WITH_GEO_DATA,
+    InitNadWithGeoDataAction,
     LIMIT_REDUCTION,
     LIMIT_REDUCTION_MODIFIED,
     LimitReductionAction,
@@ -115,8 +116,10 @@ import {
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
     OPEN_DIAGRAM,
+    OPEN_NAD_LIST,
     OPEN_STUDY,
     OpenDiagramAction,
+    OpenNadListAction,
     OpenStudyAction,
     REMOVE_NOTIFICATION_BY_NODE,
     RemoveNotificationByNodeAction,
@@ -263,12 +266,11 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { IEquipment } from '../services/study/contingency-list';
 import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { InitNadWithGeoDataAction } from './actions';
+import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -484,7 +486,7 @@ export interface AppState extends CommonStoreState {
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 }
 
-export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, IEquipment[] | null>;
+export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, Identifiable[] | null>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SUBSTATION]: null,
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: null,
@@ -1237,6 +1239,23 @@ export const reducer = createReducer(initialState, (builder) => {
         state.diagramStates = diagramStates;
     });
 
+    builder.addCase(OPEN_NAD_LIST, (state, action: OpenNadListAction) => {
+        const diagramStates = state.diagramStates;
+        const uniqueIds = [...new Set(action.ids)];
+        // remove all existing NAD from store, we replace them with lists passed as param
+        const diagramStatesWithoutNad = diagramStates.filter(
+            (diagram) => diagram.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
+        );
+
+        state.diagramStates = diagramStatesWithoutNad.concat(
+            uniqueIds.map((id) => ({
+                id: id,
+                svgType: DiagramType.NETWORK_AREA_DIAGRAM,
+                state: ViewState.OPENED,
+            }))
+        );
+    });
+
     builder.addCase(MINIMIZE_DIAGRAM, (state, action: MinimizeDiagramAction) => {
         const diagramStates = state.diagramStates;
 
@@ -1369,10 +1388,10 @@ export const reducer = createReducer(initialState, (builder) => {
         // equipments : list of updated equipments of type <equipmentType>
         for (const [updateType, equipments] of Object.entries(updatedEquipments) as [
             EquipmentUpdateType,
-            IEquipment[]
+            Identifiable[]
         ][]) {
             const equipmentType = getEquipmentTypeFromUpdateType(updateType);
-            const currentEquipment: IEquipment[] | null =
+            const currentEquipment: Identifiable[] | null =
                 // @ts-expect-error TODO manage undefined value case
                 state.spreadsheetNetwork[equipmentType];
 
@@ -1597,7 +1616,7 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPM
     }
 }
 
-function deleteEquipment(currentEquipments: IEquipment[], equipmentToDeleteId: string) {
+function deleteEquipment(currentEquipments: Identifiable[], equipmentToDeleteId: string) {
     const equipmentToDeleteIndex = currentEquipments.findIndex((eq) => eq.id === equipmentToDeleteId);
     if (equipmentToDeleteIndex >= 0) {
         currentEquipments.splice(equipmentToDeleteIndex, 1);
@@ -1605,13 +1624,13 @@ function deleteEquipment(currentEquipments: IEquipment[], equipmentToDeleteId: s
     return currentEquipments;
 }
 
-export type Substation = IEquipment & {
-    voltageLevels: IEquipment[];
+export type Substation = Identifiable & {
+    voltageLevels: Identifiable[];
 };
 
 function updateSubstationsAndVoltageLevels(
     currentSubstations: Substation[],
-    currentVoltageLevels: IEquipment[],
+    currentVoltageLevels: Identifiable[],
     newOrUpdatedSubstations: Substation[]
 ) {
     const updatedSubstations = updateEquipments(currentSubstations, newOrUpdatedSubstations);
@@ -1622,7 +1641,7 @@ function updateSubstationsAndVoltageLevels(
     if (currentVoltageLevels != null) {
         const newOrUpdatedVoltageLevels = newOrUpdatedSubstations.reduce((acc, currentSub) => {
             return acc.concat([...currentSub.voltageLevels]);
-        }, [] as IEquipment[]);
+        }, [] as Identifiable[]);
 
         updatedVoltageLevels = updateEquipments(currentVoltageLevels, newOrUpdatedVoltageLevels);
     }
@@ -1630,7 +1649,7 @@ function updateSubstationsAndVoltageLevels(
     return [updatedSubstations, updatedVoltageLevels];
 }
 
-function updateEquipments(currentEquipments: IEquipment[], newOrUpdatedEquipments: IEquipment[]) {
+function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipments: Identifiable[]) {
     newOrUpdatedEquipments.forEach((equipment) => {
         const existingEquipmentIndex = currentEquipments.findIndex((equip) => equip.id === equipment.id);
 
