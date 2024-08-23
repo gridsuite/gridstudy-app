@@ -60,7 +60,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 }) => {
     const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     // to check is node editable
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
