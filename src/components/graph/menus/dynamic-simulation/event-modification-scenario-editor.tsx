@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Theme, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -237,7 +237,13 @@ const EventModificationScenarioEditor = () => {
     const renderEventList = () => {
         return (
             <CheckboxList<Event>
-                sx={{ checkboxList: { paddingLeft: '10px', paddingBottom: 'unset', paddingTop: 'unset' } }}
+                sx={{
+                    checkboxList: {
+                        paddingLeft: (theme: Theme) => theme.spacing(2),
+                        paddingBottom: 'unset',
+                        paddingTop: 'unset',
+                    },
+                }}
                 items={events}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
