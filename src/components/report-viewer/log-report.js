@@ -21,84 +21,42 @@ export const LogReportType = {
     NodeReport: 'NodeReport',
 };
 
+export const getHighestSeverity = (severityList) => {
+    // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
+    // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
+    let reduceFct = (p, c) => (c.level > p.level ? c : p);
+    let highestSeverity = LogReportItem.SEVERITY.UNKNOWN;
+    return Object.values(LogReportItem.SEVERITY)
+        .filter((s) => severityList.includes(s.name))
+        .reduce(reduceFct, highestSeverity);
+};
+
 export default class LogReport {
-    constructor(reportType, jsonReporter, parentReportId) {
+    constructor(reportType, jsonReporter) {
         this.type = reportType;
         this.id = jsonReporter.id ?? uuid4();
-        this.title = jsonReporter?.title ?? jsonReporter.message;
-        this.children = [];
+        this.message = jsonReporter.message;
+        this.subReports = [];
         this.logs = [];
-        this.parentReportId = parentReportId;
+        this.parentReportId = jsonReporter.parentId;
         // The different severities available (in the back) for this report (not including the subreports)
-        this.severityList = [];
-        // Represent all the different severities of this report and it's subreports
-        this.allSeverityList = [];
+        this.severityList =
+            jsonReporter.severities ?? jsonReporter.subReports.flatMap((subReport) => subReport.severities);
+        this.highestSeverity = getHighestSeverity(this.severityList);
         this.init(jsonReporter);
     }
 
-    getId() {
-        return this.id;
-    }
-
-    getType() {
-        return this.type;
-    }
-
-    getTitle() {
-        return this.title;
-    }
-
-    getChildren() {
-        return this.children;
-    }
-
-    getLogs() {
-        return this.logs;
-    }
-
-    getSeverityList() {
-        return this.severityList;
-    }
-
-    getAllSeverityList() {
-        return this.allSeverityList;
-    }
-
     getAllLogs() {
-        return this.getLogs().concat(this.getChildren().flatMap((r) => r.getAllLogs()));
+        return this.logs.concat(this.subReports.flatMap((r) => r.getAllLogs()));
     }
 
     init(jsonReporter) {
         jsonReporter.subReports.forEach((value) => {
             if (value.subReports.length > 0 || value.id) {
-                this.children.push(new LogReport(LogReportType.NodeReport, value, this.id));
+                this.subReports.push(new LogReport(LogReportType.NodeReport, value));
             } else {
-                this.logs.push(new LogReportItem(value, this.id));
+                this.logs.push(new LogReportItem(value));
             }
         });
-        this.severityList = jsonReporter.severities ?? []; // local value
-        this.initAllSeverityList().map((e) => this.allSeverityList.push(e)); // computed tree value
-    }
-
-    getHighestSeverity() {
-        // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
-        // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
-        let reduceFct = (p, c) => (c.level > p.level ? c : p);
-        let highestSeverity = LogReportItem.SEVERITY.UNKNOWN;
-        return Object.values(LogReportItem.SEVERITY)
-            .filter((s) => this.allSeverityList.includes(s.name))
-            .reduce(reduceFct, highestSeverity);
-    }
-
-    initAllSeverityList() {
-        let logSeverityList = this.getSeverityList();
-
-        this.getChildren()
-            .map((e) => e.initAllSeverityList())
-            .forEach((e) => {
-                logSeverityList = [...new Set([...logSeverityList, ...e])];
-            });
-
-        return logSeverityList;
     }
 }

@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { getHighestSeverity } from './log-report.js';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -79,45 +80,9 @@ export default class LogReportItem {
             .map((s) => s.name);
     }
 
-    constructor(jsonReport, reportId) {
-        this.log = jsonReport.message;
-        this.reportId = reportId;
-        this.severity = this.initSeverity(jsonReport.severities[0]);
-    }
-
-    getLog() {
-        return this.log;
-    }
-
-    getReportId() {
-        return this.reportId;
-    }
-
-    getSeverityName() {
-        return this.severity.name;
-    }
-
-    getColorName() {
-        return this.severity.colorName;
-    }
-
-    displayedByDefault() {
-        return this.severity.displayedByDefault();
-    }
-
-    initSeverity(jsonSeverity) {
-        let severity = LogReportItem.SEVERITY.UNKNOWN;
-        if (!jsonSeverity) {
-            return severity;
-        }
-        // check jsonSeverity string is a valid SEVERITY value
-        Object.values(LogReportItem.SEVERITY).some((value) => {
-            let severityFound = jsonSeverity === value.name;
-            if (severityFound) {
-                severity = value;
-            }
-            return severityFound;
-        });
-        return severity;
+    constructor(jsonReport) {
+        this.message = jsonReport.message;
+        this.reportId = jsonReport.parentId;
+        this.severity = getHighestSeverity(jsonReport.severities);
     }
 }

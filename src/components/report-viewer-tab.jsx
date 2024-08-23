@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer from './report-viewer/report-viewer';
+import ReportViewer, { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -18,7 +18,6 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { fetchNodeReport, fetchParentNodesReport } from '../services/study';
 import { Box } from '@mui/system';
-import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
 import LogReportItem from './report-viewer/log-report-item';
 import { REPORT_TYPES } from './utils/report-type';
 
@@ -65,15 +64,12 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
 
     const setNodeName = useCallback(
         (report) => {
-            if (report.message === 'Root') {
-                report.title = 'Root';
-                report.message = rootNodeId;
-            } else {
-                report.title = nodesNames.get(report.message);
+            if (report.message !== 'Root') {
+                report.message = nodesNames.get(report.message);
             }
             return report;
         },
-        [nodesNames, rootNodeId]
+        [nodesNames]
     );
 
     const makeSingleReport = useCallback(

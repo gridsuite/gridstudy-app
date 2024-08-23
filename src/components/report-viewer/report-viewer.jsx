@@ -37,8 +37,8 @@ export default function ReportViewer({
     globalReportPromise = undefined,
     maxSubReports = MAX_SUB_REPORTS,
 }) {
-    const [selectedNode, setSelectedNode] = useState(null);
-    const [expandedNodes, setExpandedNodes] = useState([]);
+    const [selectedReportId, setSelectedReportId] = useState(null);
+    const [expandedTreeReports, setExpandedTreeReports] = useState([]);
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
@@ -56,25 +56,25 @@ export default function ReportViewer({
      * @type {Function}
      */
     const createReporterItem = useCallback(
-        (logReport) => {
-            reportTreeData.current[logReport.getId()] = logReport;
-            if (logReport.getChildren().length > maxSubReports) {
+        (report) => {
+            reportTreeData.current[report.id] = report;
+            if (report.subReports.length > maxSubReports) {
                 console.warn(
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
-                    logReport.getChildren().length,
+                    report.subReports.length,
                     maxSubReports,
                     maxSubReports
                 );
             }
             return (
                 <ReportItem
-                    labelText={logReport.getTitle()}
-                    labelIconColor={logReport.getHighestSeverity().colorName}
-                    key={logReport.getId().toString()}
+                    labelText={report.message}
+                    labelIconColor={report.highestSeverity.colorName}
+                    key={report.id}
                     sx={styles.treeItem}
-                    nodeId={logReport.getId().toString()}
+                    nodeId={report.id}
                 >
-                    {logReport.getChildren().map((value) => createReporterItem(value))}
+                    {report.subReports.map((value) => createReporterItem(value))}
                 </ReportItem>
             );
         },
@@ -100,9 +100,9 @@ export default function ReportViewer({
     };
 
     const getFetchPromise = useCallback(
-        (nodeId, severityList) => {
-            if (reportTreeData.current[nodeId].getType() === LogReportType.NodeReport) {
-                return nodeReportPromise(reportTreeData.current[nodeId].getId(), severityList);
+        (reportId, severityList) => {
+            if (reportTreeData.current[reportId].type === LogReportType.NodeReport) {
+                return nodeReportPromise(reportTreeData.current[reportId].id, severityList);
             } else {
                 return globalReportPromise(severityList);
             }
@@ -116,8 +116,8 @@ export default function ReportViewer({
             : new LogReport(LogReportType.NodeReport, jsonData);
     }, []);
 
-    const refreshNode = useCallback(
-        (nodeId, severityFilter) => {
+    const refreshLogsOnSelectedReport = useCallback(
+        (reportId, severityFilter) => {
             let severityList = [];
             for (const [severity, selected] of Object.entries(severityFilter)) {
                 if (selected) {
@@ -127,7 +127,7 @@ export default function ReportViewer({
 
             if (severityList.length === 0) {
                 // no severity => there is no log to fetch, no need to request the back-end
-                setSelectedNode(nodeId);
+                setSelectedReportId(reportId);
                 setLogs([]);
                 setHighlightedReportId(null);
                 return;
@@ -138,10 +138,10 @@ export default function ReportViewer({
                 setWaitingLoadReport(true);
             }, 700);
 
-            Promise.resolve(getFetchPromise(nodeId, severityList))
+            Promise.resolve(getFetchPromise(reportId, severityList))
                 .then((fetchedData) => {
                     const logReporter = buildLogReport(makeReport(fetchedData));
-                    setSelectedNode(nodeId);
+                    setSelectedReportId(reportId);
                     setLogs(logReporter.getAllLogs());
                     setHighlightedReportId(null);
                 })
@@ -163,12 +163,12 @@ export default function ReportViewer({
         const reportType =
             jsonReportTree.message === GLOBAL_NODE_TASK_KEY ? LogReportType.GlobalReport : LogReportType.NodeReport;
         rootReport.current = new LogReport(reportType, jsonReportTree);
-        let rootId = rootReport.current.getId().toString();
+        let rootId = rootReport.current.id;
         treeView.current = createReporterItem(rootReport.current);
-        setSelectedNode(rootId);
-        setExpandedNodes([rootId]);
+        setSelectedReportId(rootId);
+        setExpandedTreeReports([rootId]);
         setLogs(rootReport.current.getAllLogs());
-        setSelectedSeverity(LogReportItem.getDefaultSeverityFilter(rootReport.current.getAllSeverityList()));
+        setSelectedSeverity(LogReportItem.getDefaultSeverityFilter(rootReport.current.severityList));
     }, [jsonReportTree, createReporterItem]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -179,26 +179,22 @@ export default function ReportViewer({
         event.persist();
         let iconClicked = event.target.closest('.MuiTreeItem-iconContainer');
         if (iconClicked) {
-            setExpandedNodes(nodeIds);
+            setExpandedTreeReports(nodeIds);
         }
     };
 
-    const handleSelectNode = (event, nodeId) => {
-        selectNode(nodeId);
-    };
-
-    const selectNode = (nodeId) => {
-        if (selectedNode !== nodeId) {
+    const handleSelectNode = (_, reportId) => {
+        if (selectedReportId !== reportId) {
             const updatedSeverityList = LogReportItem.getDefaultSeverityFilter(
-                reportTreeData.current[nodeId].getAllSeverityList()
+                reportTreeData.current[reportId].severityList
             );
             setSelectedSeverity(updatedSeverityList);
-            refreshNode(nodeId, updatedSeverityList);
+            refreshLogsOnSelectedReport(reportId, updatedSeverityList);
         }
     };
 
     const onSeverityChange = (newSeverityFilter) => {
-        refreshNode(selectedNode, newSeverityFilter);
+        refreshLogsOnSelectedReport(selectedReportId, newSeverityFilter);
         setSelectedSeverity(newSeverityFilter);
     };
 
@@ -210,22 +206,22 @@ export default function ReportViewer({
         [highlightedReportId]
     );
 
-    const onRowClick = (data) => {
-        setExpandedNodes((previouslyExpandedNodes) => {
+    const onLogRowClick = (data) => {
+        setExpandedTreeReports((previouslyExpandedTreeReports) => {
             console.log(`row data ${JSON.stringify(data)}`);
-            let nodesToExpand = [];
+            let treeReportsToExpand = [];
             let reportId = data.reportId;
             while (reportTreeData.current[reportId]?.parentReportId) {
                 let parentReportId = reportTreeData.current[reportId].parentReportId;
-                if (!previouslyExpandedNodes.includes(parentReportId)) {
-                    nodesToExpand.push(parentReportId);
+                if (!previouslyExpandedTreeReports.includes(parentReportId)) {
+                    treeReportsToExpand.push(parentReportId);
                 }
                 reportId = parentReportId;
             }
-            if (nodesToExpand.length > 0) {
-                return nodesToExpand.concat(previouslyExpandedNodes);
+            if (treeReportsToExpand.length > 0) {
+                return treeReportsToExpand.concat(previouslyExpandedTreeReports);
             } else {
-                return previouslyExpandedNodes;
+                return previouslyExpandedTreeReports;
             }
         });
         setHighlightedReportId(data.reportId);
@@ -270,8 +266,8 @@ export default function ReportViewer({
                             defaultEndIcon={<div style={{ width: 24 }} />}
                             onNodeToggle={handleToggleNode}
                             onNodeSelect={handleSelectNode}
-                            selected={selectedNode}
-                            expanded={expandedNodes}
+                            selected={selectedReportId}
+                            expanded={expandedTreeReports}
                         >
                             {treeView.current}
                         </TreeView>
@@ -281,7 +277,7 @@ export default function ReportViewer({
                     <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
                         <LogTable
                             logs={logs}
-                            onRowClick={onRowClick}
+                            onRowClick={onLogRowClick}
                             selectedSeverity={selectedSeverity}
                             setSelectedSeverity={onSeverityChange}
                         />

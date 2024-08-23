@@ -32,7 +32,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
             // an array with a single reporter is expected (corresponding to the current Node)
             let singleReport: any = Array.isArray(reportData) && reportData.length === 1 ? reportData[0] : undefined;
             if (nodeName && singleReport) {
-                singleReport.title = nodeName;
+                singleReport.message = nodeName;
             }
             return singleReport;
         },
