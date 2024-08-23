@@ -97,7 +97,14 @@ import {
 
 const noUserManager = { instance: null, error: null };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
+const STUDY_VIEWS = [
+    StudyView.MAP,
+    StudyView.SPREADSHEET,
+    StudyView.EXPERIMENTAL_SPREADSHEET,
+    StudyView.RESULTS,
+    StudyView.LOGS,
+    StudyView.PARAMETERS,
+];
 
 const App = () => {
     const { snackError } = useSnackMessage();

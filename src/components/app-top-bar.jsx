@@ -59,7 +59,14 @@ const styles = {
     },
 };
 
-const STUDY_VIEWS = [StudyView.MAP, StudyView.SPREADSHEET, StudyView.RESULTS, StudyView.LOGS, StudyView.PARAMETERS];
+const STUDY_VIEWS = [
+    StudyView.MAP,
+    StudyView.SPREADSHEET,
+    StudyView.EXPERIMENTAL_SPREADSHEET,
+    StudyView.RESULTS,
+    StudyView.LOGS,
+    StudyView.PARAMETERS,
+];
 
 const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     const dispatch = useDispatch();
