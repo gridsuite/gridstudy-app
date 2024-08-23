@@ -1385,5 +1385,7 @@
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
     "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
-    "guidancePopUp.action":"Fermer l'éditeur"
+    "guidancePopUp.action":"Fermer l'éditeur",
+    "generateNad": "Générer",
+    "nad": "NAD"
 }
