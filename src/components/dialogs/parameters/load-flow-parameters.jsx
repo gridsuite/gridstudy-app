@@ -5,8 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DirectoryItemSelector, ElementType, FlatParameters, useSnackMessage } from '@gridsuite/commons-ui';
-import { Autocomplete, Box, Chip, Grid, TextField } from '@mui/material';
+import {
+    CustomFormProvider,
+    DirectoryItemSelector,
+    ElementType,
+    FlatParameters,
+    SubmitButton,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
+import { Autocomplete, Box, Chip, Grid, Tab, Tabs, TextField } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
@@ -16,9 +23,20 @@ import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { DropDown, LabelledButton, SwitchWithLabel, styles, useParameterState } from './parameters';
+import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParameterState } from './parameters';
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
+import {
+    IST_FORM,
+    LIMIT_DURATION_FORM,
+    LIMIT_REDUCTIONS_FORM,
+    TAB_INFO,
+    TAB_VALUES,
+    getLimitReductionsFormSchema,
+} from './common/limitreductions/columns-definitions';
+import LimitReductionsTableForm from './common/limitreductions/limit-reductions-table-form';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -370,7 +388,7 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
-export const LoadFlowParameters = ({ parametersBackend }) => {
+export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) => {
     const [
         providers,
         provider,
@@ -512,112 +530,221 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         };
     }, []);
 
+    const [tabValue, setTabValue] = useState(TAB_VALUES.General);
+    const handleTabChange = useCallback((event, newValue) => {
+        setTabValue(newValue);
+    }, []);
+
+    const formSchema = useMemo(() => {
+        return getLimitReductionsFormSchema(
+            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
+        );
+    }, [params]);
+
+    const formMethods = useForm({
+        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        resolver: yupResolver(formSchema),
+    });
+
+    const toLimitReductions = useCallback(
+        (formLimits) => {
+            return params.limitReductions.map((vlLimits, indexVl) => {
+                let vlLNewLimits = {
+                    ...vlLimits,
+                    permanentLimitReduction: formLimits[indexVl][IST_FORM],
+                };
+                vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+                    vlLNewLimits.temporaryLimitReductions[index] = {
+                        ...temporaryLimit,
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+                    };
+                });
+                return vlLNewLimits;
+            });
+        },
+        [params]
+    );
+
+    const { handleSubmit, formState } = formMethods;
+
+    const updateLimitReductions = useCallback(
+        (formLimits) => {
+            updateParameters({
+                ...params,
+                limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
+            });
+        },
+        [params, updateParameters, toLimitReductions]
+    );
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
-            <Box
-                sx={{
-                    height: '100%',
-                    position: 'relative',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
-                    <Grid
-                        container
-                        spacing={1}
-                        sx={{
-                            paddingLeft: 0,
-                            paddingRight: 2,
-                            height: 'fit-content',
-                        }}
-                        justifyContent={'space-between'}
-                    >
-                        <DropDown
-                            value={provider}
-                            label="Provider"
-                            values={LoadFlowProviders}
-                            callback={updateLfProviderCallback}
-                        />
-                    </Grid>
-                </Box>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+            <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
                 <Box
                     sx={{
-                        flexGrow: 1,
-                        overflow: 'auto',
-                        paddingLeft: 1,
+                        height: '100%',
+                        display: 'flex',
+                        position: 'relative',
+                        flexDirection: 'column',
                     }}
                 >
-                    <Grid
-                        container
-                        sx={mergeSx(styles.scrollableGrid, {
-                            maxHeight: '100%',
-                        })}
-                        key="lfParameters"
-                    >
-                        <LineSeparator />
-                        <Grid container spacing={1} paddingTop={1}>
-                            <ParameterLineSlider
-                                paramNameId={PARAM_LIMIT_REDUCTION}
-                                label="LimitReduction"
-                                marks={alertThresholdMarks}
-                                minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            spacing={1}
+                            sx={{
+                                paddingLeft: 0,
+                                paddingRight: 2,
+                                height: 'fit-content',
+                            }}
+                            justifyContent={'space-between'}
+                        >
+                            <DropDown
+                                value={provider}
+                                label="Provider"
+                                values={LoadFlowProviders}
+                                callback={updateLfProviderCallback}
                             />
                             <LineSeparator />
                         </Grid>
-                        <BasicLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
-                        <AdvancedLoadFlowParameters lfParams={params || {}} commitLFParameter={updateParameters} />
-                        <SpecificLoadFlowParameters
-                            disabled={!specificParamsDescriptions?.[provider]}
-                            subText={provider}
-                            specificParamsDescription={specificParamsDescrWithoutNanVals[provider]}
-                            specificCurrentParams={specificCurrentParams[provider]}
-                            onSpecificParamChange={onSpecificParamChange}
-                        />
-                    </Grid>
-                </Box>
-                <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
-                    <Grid
-                        container
-                        item
-                        sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                    </Box>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            overflow: 'auto',
+                            paddingLeft: 1,
+                        }}
                     >
-                        <LabelledButton
-                            callback={() => setOpenSelectParameterDialog(true)}
-                            label="settings.button.chooseSettings"
+                        <Grid
+                            container
+                            sx={mergeSx(styles.scrollableGrid, {
+                                maxHeight: '100%',
+                            })}
+                            key="lfParameters"
+                        >
+                            <Grid sx={{ width: '100%' }}>
+                                <Tabs value={tabValue} onChange={handleTabChange}>
+                                    {TAB_INFO.map((tab, index) => (
+                                        <Tab
+                                            key={tab.label}
+                                            label={<FormattedMessage id={tab.label} />}
+                                            value={index}
+                                            sx={{
+                                                fontSize: 17,
+                                                fontWeight: 'bold',
+                                                textTransform: 'capitalize',
+                                            }}
+                                        />
+                                    ))}
+                                </Tabs>
+
+                                {TAB_INFO.map((tab, index) => (
+                                    <TabPanel key={tab.label} value={tabValue} index={index}>
+                                        {tabValue === TAB_VALUES.General && (
+                                            <>
+                                                <BasicLoadFlowParameters
+                                                    lfParams={params || {}}
+                                                    commitLFParameter={updateParameters}
+                                                />
+                                                <AdvancedLoadFlowParameters
+                                                    lfParams={params || {}}
+                                                    commitLFParameter={updateParameters}
+                                                />
+                                                <SpecificLoadFlowParameters
+                                                    disabled={!specificParamsDescriptions?.[provider]}
+                                                    subText={provider}
+                                                    specificParamsDescription={
+                                                        specificParamsDescrWithoutNanVals[provider]
+                                                    }
+                                                    specificCurrentParams={specificCurrentParams[provider]}
+                                                    onSpecificParamChange={onSpecificParamChange}
+                                                />
+                                            </>
+                                        )}
+                                        {tabValue === TAB_VALUES.LimitReductions && (
+                                            <Grid
+                                                container
+                                                sx={mergeSx(styles.scrollableGrid, {
+                                                    maxHeight: '100%',
+                                                })}
+                                                key="lfParameters"
+                                            >
+                                                <Grid
+                                                    container
+                                                    spacing={1}
+                                                    paddingTop={1}
+                                                    paddingLeft={2}
+                                                    sx={{ width: '100%' }}
+                                                >
+                                                    {params.limitReductions !== null ? (
+                                                        <LimitReductionsTableForm limits={params?.limitReductions} />
+                                                    ) : (
+                                                        <ParameterLineSlider
+                                                            paramNameId={PARAM_LIMIT_REDUCTION}
+                                                            label="LimitReduction"
+                                                            marks={alertThresholdMarks}
+                                                            minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                                        />
+                                                    )}
+                                                    <LineSeparator />
+                                                </Grid>
+                                            </Grid>
+                                        )}
+                                    </TabPanel>
+                                ))}
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <Grid
+                            container
+                            item
+                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                        >
+                            <LabelledButton
+                                callback={() => setOpenSelectParameterDialog(true)}
+                                label="settings.button.chooseSettings"
+                            />
+                            <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                            <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
+                            <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
+                            <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </Grid>
+                    </Box>
+                    {openCreateParameterDialog && (
+                        <CreateParameterDialog
+                            open={openCreateParameterDialog}
+                            onClose={() => setOpenCreateParameterDialog(false)}
+                            parameterValues={() => formatNewParams(params)}
+                            parameterFormatter={(newParams) => newParams}
+                            parameterType={ElementType.LOADFLOW_PARAMETERS}
                         />
-                        <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
-                        <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
-                        <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
-                    </Grid>
+                    )}
+                    {openSelectParameterDialog && (
+                        <DirectoryItemSelector
+                            open={openSelectParameterDialog}
+                            onClose={handleLoadParameter}
+                            types={[ElementType.LOADFLOW_PARAMETERS]}
+                            title={intl.formatMessage({
+                                id: 'showSelectParameterDialog',
+                            })}
+                            onlyLeaves={true}
+                            multiselect={false}
+                            validationButtonText={intl.formatMessage({
+                                id: 'validate',
+                            })}
+                        />
+                    )}
                 </Box>
-                {openCreateParameterDialog && (
-                    <CreateParameterDialog
-                        open={openCreateParameterDialog}
-                        onClose={() => setOpenCreateParameterDialog(false)}
-                        parameterValues={() => formatNewParams(params)}
-                        parameterFormatter={(newParams) => newParams}
-                        parameterType={ElementType.LOADFLOW_PARAMETERS}
-                    />
-                )}
-                {openSelectParameterDialog && (
-                    <DirectoryItemSelector
-                        open={openSelectParameterDialog}
-                        onClose={handleLoadParameter}
-                        types={[ElementType.LOADFLOW_PARAMETERS]}
-                        title={intl.formatMessage({
-                            id: 'showSelectParameterDialog',
-                        })}
-                        onlyLeaves={true}
-                        multiselect={false}
-                        validationButtonText={intl.formatMessage({
-                            id: 'validate',
-                        })}
-                    />
-                )}
-            </Box>
-        </Grid>
+            </Grid>
+        </CustomFormProvider>
     );
 };
