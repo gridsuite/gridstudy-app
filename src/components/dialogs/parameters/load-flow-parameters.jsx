@@ -594,7 +594,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                         flexDirection: 'column',
                     }}
                 >
-                                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
                         <Grid
                             container
                             spacing={1}
