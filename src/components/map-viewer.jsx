@@ -29,9 +29,8 @@ import ComputingType from './computing-status/computing-type';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import SelectionCreationPanel from './network/selection-creation-panel';
+import SelectionCreationPanel from './network/selection-creation-panel/selection-creation-panel';
 import { StudyDisplayMode } from './network-modification.type';
-
 import GuidancePopup from './network/guidance-popup';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -89,18 +88,22 @@ const styles = {
         width: theme.spacing(2),
         height: theme.spacing(2),
     }),
+    title: (theme) => ({
+        lineHeight: 1,
+        maxWidth: theme.spacing(17.5),
+    }),
 };
 //define guidancePopup style
 const guidancePopupStyle = {
-    card: {
+    card: (theme) => ({
         position: 'absolute',
-        left: '10px',
-        bottom: '150px',
-        maxWidth: '200px',
-    },
-    header: {
-        paddingBottom: 'inherit',
-    },
+        left: theme.spacing(1.25),
+        bottom: theme.spacing(18.75),
+        maxWidth: theme.spacing(25),
+    }),
+    header: (theme) => ({
+        paddingBottom: theme.spacing(1.4),
+    }),
     actionsContainer: {
         display: 'flex',
         justifyContent: 'center',
@@ -109,7 +112,7 @@ const guidancePopupStyle = {
 
 // define the guidancePopup title and content
 export const Title = () => (
-    <Typography variant="h6" component="span">
+    <Typography variant="h6" component="div" sx={styles.title}>
         <FormattedMessage id="guidancePopUp.title" />
     </Typography>
 );
@@ -371,6 +374,7 @@ const MapViewer = ({
                                         onCancel={() => {
                                             setShouldOpenSelectionCreationPanel(false);
                                         }}
+                                        leaveDrawingMode={leaveDrawingMode}
                                         nominalVoltages={nominalVoltages}
                                     />
                                 )}

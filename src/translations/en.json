@@ -1,4 +1,10 @@
 {
+    "General": "General",
+
+    "LimitReductions" : "Limit reductions",
+    "IST" : "IST",
+    "LimitDuration" : "Limit duration {sign} {value}min",
+
     "button.delete": "Delete",
     "button.changeType": "Change",
     "filter": "Filter",
@@ -1380,6 +1386,8 @@
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
     "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
-    "guidancePopUp.action":"Close editor"
+    "guidancePopUp.action":"Close editor",
+    "generateNad": "Generate",
+    "nad": "NAD"
 
 }
