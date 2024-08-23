@@ -193,7 +193,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
         ];
     }, [intl]);
 
-    // Tries to find the selected row to highlight it, then scroll to it if needed
+    // Tries to find the selected row to highlight it
     const highlightSelectedRow = useCallback(() => {
         const rowIdToHighlight = selectedRow?.id ?? preselectedRowId;
         if (rowIdToHighlight && rowData) {
@@ -201,8 +201,13 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                 node.setSelected(node.data?.id === rowIdToHighlight);
             });
         }
-        selectedRow && gridRef.current.api?.ensureNodeVisible(selectedRow);
     }, [selectedRow, preselectedRowId, rowData]);
+
+    const scrollToPreselectedElement = useCallback(() => {
+        const preselectedRow = rowData?.find((entry) => entry.id === preselectedRowId);
+        preselectedRow && gridRef.current.api?.ensureNodeVisible(preselectedRow, 'middle');
+        highlightSelectedRow();
+    }, [preselectedRowId, highlightSelectedRow, rowData]);
 
     // Select the correct tab when opening the dialog, if a row is preselected
     useEffect(() => {
@@ -273,7 +278,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
                     columnDefs={columnDefs}
                     rowSelection="single"
                     onSelectionChanged={onSelectionChanged}
-                    onGridReady={highlightSelectedRow} // Highlights the preselected row when AGGrid is ready
+                    onGridReady={scrollToPreselectedElement} // Highlights the preselected row when AGGrid is ready
                 />
             );
         },
@@ -281,7 +286,7 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
             aerialColumnDefs,
             undergroundColumnDefs,
             defaultColDef,
-            highlightSelectedRow,
+            scrollToPreselectedElement,
             onSelectionChanged,
             rowDataAerialTab,
             rowDataUndergroundTab,
