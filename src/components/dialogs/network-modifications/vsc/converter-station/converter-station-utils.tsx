@@ -263,8 +263,8 @@ export function getConverterStationFormEditData(id: string, converterStation: Co
             [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulationOn,
             [VOLTAGE]: converterStation?.voltageSetpoint,
             ...getConnectivityFormData({
-                voltageLevelId: converterStation.voltageLevelId,
-                busbarSectionId: converterStation.busOrBusbarSectionId,
+                voltageLevelId: converterStation?.voltageLevelId,
+                busbarSectionId: converterStation?.busOrBusbarSectionId,
                 connectionDirection: converterStation?.connectionDirection,
                 connectionName: converterStation?.connectionName,
                 connectionPosition: converterStation?.connectionPosition,
@@ -344,8 +344,8 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
             [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulatorOn,
             [VOLTAGE]: converterStation?.voltageSetpoint,
             ...getConnectivityFormData({
-                voltageLevelId: converterStation.voltageLevelId,
-                busbarSectionId: converterStation.busOrBusbarSectionId,
+                voltageLevelId: converterStation?.voltageLevelId,
+                busbarSectionId: converterStation?.busOrBusbarSectionId,
                 connectionDirection: converterStation?.connectablePositionInfos?.connectionDirection,
                 connectionName: converterStation?.connectablePositionInfos?.connectionName,
                 connectionPosition: null,
