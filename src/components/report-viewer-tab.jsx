@@ -16,7 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchNodeReport, fetchParentNodesReport, fetchSubReport } from '../services/study';
+import { fetchNodeReport, fetchParentNodesReport } from '../services/study';
 import { Box } from '@mui/system';
 import { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
 import LogReportItem from './report-viewer/log-report-item';
@@ -136,8 +136,8 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
         // apparent that they are used) to trigger the update of reports when a notification happens.
     }, [visible, studyId, currentNode, disabled, fetchAndProcessReport]);
 
-    const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
+    const nodeReportPromise = (reportId, severityFilterList) => {
+        return fetchNodeReport(studyId, currentNode.id, reportId, severityFilterList);
     };
 
     const globalReportPromise = (severityFilterList) => {
@@ -148,10 +148,6 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
             severityFilterList,
             REPORT_TYPES.NETWORK_MODIFICATION
         );
-    };
-
-    const subReportPromise = (reportId, severityFilterList) => {
-        return fetchSubReport(studyId, currentNode.id, reportId, severityFilterList);
     };
 
     return (
@@ -179,7 +175,6 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
                 {!!report && !disabled && (
                     <ReportViewer
                         jsonReportTree={report}
-                        subReportPromise={subReportPromise}
                         nodeReportPromise={nodeReportPromise}
                         globalReportPromise={globalReportPromise}
                     />

@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { fetchNodeReport, fetchParentNodesReport, fetchSubReport } from '../../../services/study';
+import { fetchNodeReport, fetchParentNodesReport } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ReportViewer from '../../report-viewer/report-viewer';
 import LogReportItem from '../../report-viewer/log-report-item';
@@ -70,23 +70,13 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
         }
     }, [studyUuid, currentNode?.id, reportType, snackError, makeReport]);
 
-    const subReportPromise = (reportId: string, severityFilterList: string[]) => {
-        return fetchSubReport(studyUuid?.toString(), currentNode?.id.toString(), reportId, severityFilterList);
-    };
-
     const nodeReportPromise = (nodeId: string, reportId: string, severityFilterList: string[]) => {
         return fetchNodeReport(studyUuid?.toString(), nodeId, reportId, severityFilterList);
     };
 
     return (
         <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
-            {report && (
-                <ReportViewer
-                    jsonReportTree={report}
-                    subReportPromise={subReportPromise}
-                    nodeReportPromise={nodeReportPromise}
-                />
-            )}
+            {report && <ReportViewer jsonReportTree={report} nodeReportPromise={nodeReportPromise} />}
         </WaitingLoader>
     );
 };

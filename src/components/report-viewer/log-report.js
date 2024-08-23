@@ -19,28 +19,12 @@ import { v4 as uuid4 } from 'uuid';
 export const LogReportType = {
     GlobalReport: 'GlobalReport',
     NodeReport: 'NodeReport',
-    SubReport: 'SubReport',
 };
 
 export default class LogReport {
     constructor(reportType, jsonReporter, parentReportId) {
         this.type = reportType;
-        // id : An ID provided by the back to be used to fetch reports from the back
-        // uniqueId : A unique ID to identify a node in the tree view
-        //
-        // Remark: uniqueId must be the same when we fetch data N times from the back
-        // (because of the reverse link when we click on a report Item in the right pane)
-        if (reportType === LogReportType.GlobalReport) {
-            // no ID coming from the back for this kind of report, we have to create one
-            this.id = undefined;
-            this.uniqueId = uuid4();
-        } else if (reportType === LogReportType.NodeReport) {
-            this.id = jsonReporter.id; // not unique for all nodes
-            this.uniqueId = jsonReporter.message; // then use message/nodeId as unique Id
-        } else {
-            this.id = jsonReporter.id; // unique for all subreports
-            this.uniqueId = this.id;
-        }
+        this.id = jsonReporter.id ?? uuid4();
         this.title = jsonReporter?.title ?? jsonReporter.message;
         this.children = [];
         this.logs = [];
@@ -49,11 +33,7 @@ export default class LogReport {
         this.severityList = [];
         // Represent all the different severities of this report and it's subreports
         this.allSeverityList = [];
-        this.init(reportType, jsonReporter);
-    }
-
-    getUniqueId() {
-        return this.uniqueId;
+        this.init(jsonReporter);
     }
 
     getId() {
@@ -88,14 +68,12 @@ export default class LogReport {
         return this.getLogs().concat(this.getChildren().flatMap((r) => r.getAllLogs()));
     }
 
-    init(reportType, jsonReporter) {
-        const childType =
-            reportType === LogReportType.GlobalReport ? LogReportType.NodeReport : LogReportType.SubReport;
+    init(jsonReporter) {
         jsonReporter.subReports.forEach((value) => {
             if (value.subReports.length > 0 || value.id) {
-                this.children.push(new LogReport(childType, value, this.uniqueId));
+                this.children.push(new LogReport(LogReportType.NodeReport, value, this.id));
             } else {
-                this.logs.push(new LogReportItem(value, this.uniqueId));
+                this.logs.push(new LogReportItem(value, this.id));
             }
         });
         this.severityList = jsonReporter.severities ?? []; // local value

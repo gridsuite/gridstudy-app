@@ -33,7 +33,6 @@ const styles = {
 
 export default function ReportViewer({
     jsonReportTree,
-    subReportPromise,
     nodeReportPromise,
     globalReportPromise = undefined,
     maxSubReports = MAX_SUB_REPORTS,
@@ -58,7 +57,7 @@ export default function ReportViewer({
      */
     const createReporterItem = useCallback(
         (logReport) => {
-            reportTreeData.current[logReport.getUniqueId()] = logReport;
+            reportTreeData.current[logReport.getId()] = logReport;
             if (logReport.getChildren().length > maxSubReports) {
                 console.warn(
                     'The number (%s) being greater than %s only the first %s subreports will be displayed',
@@ -71,9 +70,9 @@ export default function ReportViewer({
                 <ReportItem
                     labelText={logReport.getTitle()}
                     labelIconColor={logReport.getHighestSeverity().colorName}
-                    key={logReport.getUniqueId().toString()}
+                    key={logReport.getId().toString()}
                     sx={styles.treeItem}
-                    nodeId={logReport.getUniqueId().toString()}
+                    nodeId={logReport.getId().toString()}
                 >
                     {logReport.getChildren().map((value) => createReporterItem(value))}
                 </ReportItem>
@@ -103,13 +102,12 @@ export default function ReportViewer({
     const getFetchPromise = useCallback(
         (nodeId, severityList) => {
             if (reportTreeData.current[nodeId].getType() === LogReportType.NodeReport) {
-                return nodeReportPromise(nodeId, reportTreeData.current[nodeId].getId(), severityList);
-            } else if (reportTreeData.current[nodeId].getType() === LogReportType.GlobalReport) {
+                return nodeReportPromise(reportTreeData.current[nodeId].getId(), severityList);
+            } else {
                 return globalReportPromise(severityList);
             }
-            return subReportPromise(reportTreeData.current[nodeId].getId(), severityList);
         },
-        [nodeReportPromise, globalReportPromise, subReportPromise]
+        [nodeReportPromise, globalReportPromise]
     );
 
     const buildLogReport = useCallback((jsonData) => {
@@ -165,7 +163,7 @@ export default function ReportViewer({
         const reportType =
             jsonReportTree.message === GLOBAL_NODE_TASK_KEY ? LogReportType.GlobalReport : LogReportType.NodeReport;
         rootReport.current = new LogReport(reportType, jsonReportTree);
-        let rootId = rootReport.current.getUniqueId().toString();
+        let rootId = rootReport.current.getId().toString();
         treeView.current = createReporterItem(rootReport.current);
         setSelectedNode(rootId);
         setExpandedNodes([rootId]);
@@ -214,6 +212,7 @@ export default function ReportViewer({
 
     const onRowClick = (data) => {
         setExpandedNodes((previouslyExpandedNodes) => {
+            console.log(`row data ${JSON.stringify(data)}`);
             let nodesToExpand = [];
             let reportId = data.reportId;
             while (reportTreeData.current[reportId]?.parentReportId) {
