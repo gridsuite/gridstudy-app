@@ -222,7 +222,7 @@ const EventModificationScenarioEditor = () => {
 
     const handleSecondaryAction = useCallback(
         (item) =>
-            isAnyNodeBuilding && (
+            !isAnyNodeBuilding && (
                 <IconButton
                     onClick={() => doEditEvent(item)}
                     size={'small'}
@@ -237,13 +237,7 @@ const EventModificationScenarioEditor = () => {
     const renderEventList = () => {
         return (
             <CheckboxList<Event>
-                sx={{
-                    label: styles.checkBoxLabel,
-                    checkBoxIcon: styles.checkBoxIcon,
-                    checkboxButton: styles.checkboxButton,
-                    checkbox: styles.checkbox,
-                    checkboxList: styles.list,
-                }}
+                sx={{ checkboxList: { paddingLeft: '10px', paddingBottom: 'unset', paddingTop: 'unset' } }}
                 items={events}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
@@ -252,6 +246,7 @@ const EventModificationScenarioEditor = () => {
                 secondaryAction={handleSecondaryAction}
                 enableSecondaryActionOnHover
                 isDisabled={() => isLoading()}
+                isCheckboxClickableOnly
                 divider
             />
         );
