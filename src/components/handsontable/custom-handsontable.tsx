@@ -51,6 +51,8 @@ export function toLetters(num: number): string {
     return pow ? toLetters(pow) + out : out;
 }
 
+const pick = (obj: any, arr: any) => Object.fromEntries(Object.entries(obj).filter(([k]) => arr.includes(k)));
+
 const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -77,22 +79,23 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
 
     const { equipments } = useSpreadsheetEquipments(equipmentDefinition, formatFetchedEquipmentsHandler);
 
-    const [columns, setColumns] = useState<any>(
-        /*                TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)!.columns.map((column) => {
-return {
-header: column.header ?? column.id,
-readOnly: true,
-width: 100,
-height: 40,
-data: (rowData: any) => {
-return typeof rowData[column.field] === 'object'
-? propertiesGetter(rowData)
-: rowData[column.field];
-},
-};
-})*/
-        ColumnConfig3
-    );
+    /*    const initialConfiguration = useMemo(() => {
+  return TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)!.columns.map((column) => {
+      return {
+          header: column.header ?? column.id,
+          readOnly: true,
+          width: 100,
+          height: 40,
+          data: (rowData: any) => {
+              return typeof rowData[column.field] === 'object'
+                  ? propertiesGetter(rowData)
+                  : rowData[column.field];
+          },
+      };
+  });
+}, []);*/
+
+    const [columns, setColumns] = useState<any>(ColumnConfig1);
 
     const getColHeaders = useCallback(() => {
         const headers = isDataAltered(hotTableComponent)
@@ -207,8 +210,6 @@ return initialData;
     const swapColumnConfiguration = useCallback((columnConfig: any) => {
         setColumns(columnConfig);
     }, []);
-
-    const pick = (obj: any, arr: any) => Object.fromEntries(Object.entries(obj).filter(([k]) => arr.includes(k)));
 
     useEffect(() => {
         const equipmentData = equipments?.map((equipment: any) => {
@@ -354,47 +355,58 @@ return initialData;
                     allowInsertColumn={true}
                     allowRemoveColumn={true}
                     afterCreateCol={tagCustomColumn}
-                    afterChange={(changes, source) => {
+                    afterLoadData={(sourceData, initialLoad, source) => {
                         const sheetId = hyperformulaInstance.getSheetId('Sheet1');
                         if (!Number.isInteger(sheetId)) {
                             hyperformulaInstance.addSheet('Sheet1');
                         }
-                        const data = hotTableComponent.current?.hotInstance?.getData();
-                        if (data) {
-                            hyperformulaInstance.setSheetContent(
-                                hyperformulaInstance.getSheetId('Sheet1')!,
-                                data as RawCellContent[][]
-                            );
-                        }
-                    }}
-                    afterLoadData={(sourceData, initialLoad, source) => {
+                        /*const data = hotTableComponent.current?.hotInstance?.getData();
+            if (data && initialLoad) {
+                console.log('HMA', '######### - DEBUG TAG 3- #########', data);
+                hyperformulaInstance.setSheetContent(hyperformulaInstance.getSheetId('Sheet1')!, data);
+            }*/
+
                         columns
                             .filter((column: any) => column.formula)
                             .forEach((column: any) => {
-                                const autofillRes = hotTableComponent.current?.hotInstance?.runHooks(
-                                    'beforeAutofill',
-                                    hotTableComponent?.current?.hotInstance?.getData(0, columns.indexOf(column)),
-                                    new CellRange(
-                                        new CellCoords(0, 6),
-                                        new CellCoords(0, 6),
-                                        new CellCoords(0, columns.indexOf(column))
-                                    ),
-                                    new CellRange(
-                                        new CellCoords(1, columns.indexOf(column)),
-                                        new CellCoords(
-                                            hotTableComponent.current?.hotInstance?.countRows() - 1,
-                                            columns.indexOf(column)
-                                        ),
-                                        new CellCoords(1, columns.indexOf(column))
-                                    ),
-                                    'down'
+                                const initialFormula = hotTableComponent?.current?.hotInstance?.getData(
+                                    0,
+                                    columns.indexOf(column)
                                 );
-                                if (autofillRes) {
-                                    hotTableComponent.current?.hotInstance?.populateFromArray(
-                                        1,
-                                        columns.indexOf(column),
-                                        autofillRes
+                                if (initialFormula) {
+                                    const autofillRes = hotTableComponent.current?.hotInstance?.runHooks(
+                                        'beforeAutofill',
+                                        initialFormula,
+                                        new CellRange(
+                                            new CellCoords(0, 6),
+                                            new CellCoords(0, 6),
+                                            new CellCoords(0, columns.indexOf(column))
+                                        ),
+                                        new CellRange(
+                                            new CellCoords(1, columns.indexOf(column)),
+                                            new CellCoords(
+                                                hotTableComponent.current?.hotInstance?.countRows() - 1,
+                                                columns.indexOf(column)
+                                            ),
+                                            new CellCoords(1, columns.indexOf(column))
+                                        ),
+                                        'down'
                                     );
+                                    if (autofillRes) {
+                                        hotTableComponent.current?.hotInstance?.populateFromArray(
+                                            1,
+                                            columns.indexOf(column),
+                                            autofillRes
+                                        );
+                                        hyperformulaInstance.setCellContents(
+                                            {
+                                                sheet: 0,
+                                                row: 1,
+                                                col: columns.indexOf(column),
+                                            },
+                                            autofillRes
+                                        );
+                                    }
                                 }
                             });
                     }}
