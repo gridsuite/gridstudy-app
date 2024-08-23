@@ -274,6 +274,16 @@ export const useParametersBackend = (
             backendUpdateProvider(studyUuid, newProvider)
                 .then(() => {
                     setProvider(newProvider);
+                    backendFetchParameters(studyUuid)
+                        .then((params) => {
+                            setParams(params);
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'fetch' + type + 'ParametersError',
+                            });
+                        });
                 })
                 .catch((error) => {
                     snackError({
@@ -282,7 +292,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [type, backendUpdateProvider, studyUuid, snackError]
+        [type, backendUpdateProvider, backendFetchParameters, studyUuid, snackError]
     );
 
     const resetProvider = useCallback(() => {

@@ -82,7 +82,7 @@ export default class LogReportItem {
     constructor(jsonReport, reportId) {
         this.log = jsonReport.message;
         this.reportId = reportId;
-        this.severity = this.initSeverity(jsonReport.severity);
+        this.severity = this.initSeverity(jsonReport.severities[0]);
     }
 
     getLog() {

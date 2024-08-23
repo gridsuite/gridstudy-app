@@ -1,4 +1,10 @@
 {
+    "General": "General",
+
+    "LimitReductions" : "Abattements de limites",
+    "IST" : "IST",
+    "LimitDuration" : "Surcharge {sign} {value}min",
+
     "button.delete": "Supprimer",
     "button.changeType": "Modifier",
     "filter": "Filtre",
@@ -22,6 +28,7 @@
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
+    "download.fileName": "Nom de fichier",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
 
@@ -43,6 +50,7 @@
     "centerLabel": "Centrer les noms d'ouvrages",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
+    "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
@@ -575,6 +583,7 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
+    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques", 
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
@@ -1374,8 +1383,8 @@
     "EquipmentSearchPlaceholder": "Recherche",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
-    "guidancePopUp.firstVariant":"Cliquez sur la carte pour commencer à dessiner un polygone.",
-    "guidancePopUp.secondVariant":"Appuyez sur Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
     "guidancePopUp.action":"Fermer l'éditeur",
     "generateNad": "Générer",
     "nad": "NAD"

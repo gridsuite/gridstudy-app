@@ -11,6 +11,7 @@ import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
+    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
@@ -98,13 +99,13 @@ const useDisplayView = (studyUuid, currentNode) => {
                 : null,
         [centerName, componentLibrary, diagonalName, studyUuid, substationLayout, paramUseName, currentNode, language]
     );
-
+    const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds, depth) =>
             isNodeBuilt(currentNode)
-                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id, voltageLevelsIds, depth)
+                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id, voltageLevelsIds, depth, initNadWithGeoData)
                 : null,
-        [studyUuid, currentNode]
+        [studyUuid, currentNode, initNadWithGeoData]
     );
 
     // this callback returns a promise
@@ -199,7 +200,7 @@ const useDisplayView = (studyUuid, currentNode) => {
 
             function createNetworkAreaDiagramView(ids, state, depth = 0) {
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth, initNadWithGeoData);
                     return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
                         let nadTitle = '';
                         let substationsIds = [];
@@ -251,6 +252,7 @@ const useDisplayView = (studyUuid, currentNode) => {
             studyUuid,
             currentNode,
             fetchSvgData,
+            initNadWithGeoData,
         ]
     );
 };
