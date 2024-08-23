@@ -34,7 +34,6 @@ import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { UnknownArray } from 'type-fest';
-import { IEquipment } from '../services/study/contingency-list';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
@@ -65,6 +64,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 type MutableUnknownArray = unknown[];
 
@@ -129,6 +129,7 @@ export type AppActions =
     | SetModificationsInProgressAction
     | SetStudyDisplayModeAction
     | OpenDiagramAction
+    | OpenNadListAction
     | MinimizeDiagramAction
     | TogglePinDiagramAction
     | CloseDiagramAction
@@ -155,12 +156,12 @@ export type AppActions =
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
     equipmentType: SpreadsheetEquipmentType;
-    equipments: IEquipment[];
+    equipments: Identifiable[];
 };
 
 export function loadEquipments(
     equipmentType: SpreadsheetEquipmentType,
-    equipments: IEquipment[]
+    equipments: Identifiable[]
 ): LoadEquipmentsAction {
     return {
         type: LOAD_EQUIPMENTS,
@@ -171,9 +172,9 @@ export function loadEquipments(
 
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
-    equipments: Record<EquipmentUpdateType, IEquipment[]>;
+    equipments: Record<EquipmentUpdateType, Identifiable[]>;
 };
-export function updateEquipments(equipments: Record<EquipmentUpdateType, IEquipment[]>): UpdateEquipmentsAction {
+export function updateEquipments(equipments: Record<EquipmentUpdateType, Identifiable[]>): UpdateEquipmentsAction {
     return {
         type: UPDATE_EQUIPMENTS,
         equipments: equipments,
@@ -808,6 +809,18 @@ export function openDiagram(id: string, svgType: DiagramType): OpenDiagramAction
         type: OPEN_DIAGRAM,
         id: id,
         svgType: svgType,
+    };
+}
+
+export const OPEN_NAD_LIST = 'OPEN_NAD_LIST';
+export type OpenNadListAction = Readonly<Action<typeof OPEN_NAD_LIST>> & {
+    ids: string[];
+};
+
+export function openNadList(ids: string[]): OpenNadListAction {
+    return {
+        type: OPEN_NAD_LIST,
+        ids: ids,
     };
 }
 

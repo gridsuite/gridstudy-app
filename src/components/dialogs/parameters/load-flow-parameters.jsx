@@ -585,15 +585,16 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     // only specifics parameters are dependents of simulator type
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid item sx={{ height: '100%' }} xl={8} lg={10} md={12}>
+            <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
                 <Box
                     sx={{
                         height: '100%',
                         display: 'flex',
+                        position: 'relative',
                         flexDirection: 'column',
                     }}
                 >
-                    <Box sx={{ flexGrow: 0 }}>
+                                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
                         <Grid
                             container
                             spacing={1}
@@ -617,6 +618,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                         sx={{
                             flexGrow: 1,
                             overflow: 'auto',
+                            paddingLeft: 1,
                         }}
                     >
                         <Grid
