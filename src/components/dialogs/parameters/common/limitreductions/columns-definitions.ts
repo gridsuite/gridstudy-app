@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import yup from '../../../utils/yup-config';
+import yup from '../../../../utils/yup-config';
 import { NumberSchema } from 'yup';
 
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
@@ -40,6 +40,8 @@ export enum TAB_VALUES {
     'General' = 0,
     'LimitReductions' = 1,
 }
+
+export const TAB_INFO = [{ label: TAB_VALUES[TAB_VALUES.General] }, { label: TAB_VALUES[TAB_VALUES.LimitReductions] }];
 
 export interface IColumnsDef {
     label: string;
