@@ -13,7 +13,7 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
-import { AutomateForm } from './automate-form.js';
+import { AutomateForm } from './automate-form';
 import { SetPointsLimitsForm } from './set-points-limits-form.js';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
