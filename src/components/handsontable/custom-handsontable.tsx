@@ -408,8 +408,6 @@ return initialData;
                                     }
                                 }
                             });
-                        setOpenFilterDialog(false);
-
                     }}
                     licenseKey="non-commercial-and-evaluation"
                     fillHandle={'vertical'}
