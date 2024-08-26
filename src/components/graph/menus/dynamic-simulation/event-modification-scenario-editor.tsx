@@ -8,7 +8,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, SxProps, Theme, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -21,19 +21,12 @@ import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types
 import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-import { isChecked, isPartial } from '../network-modification-node-editor';
+import { isChecked, isPartial, styles } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
-
-const styles = {
-    checkboxList: {
-        paddingLeft: (theme: Theme) => theme.spacing(2),
-        paddingBottom: 'unset',
-        paddingTop: 'unset',
-    },
-};
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -206,7 +199,7 @@ const EventModificationScenarioEditor = () => {
 
     const getItemLabel = (item: Event) => {
         if (!studyUuid || !currentNode || !item) {
-            return;
+            return '';
         }
 
         const computedValues = {
@@ -218,9 +211,11 @@ const EventModificationScenarioEditor = () => {
             ),
         } as {};
 
+        const equipmentTypeLabelKeys = EQUIPMENT_TYPE_LABEL_KEYS as Record<EQUIPMENT_TYPES, string>;
+
         return intl.formatMessage(
             {
-                id: `Event${item.eventType}${EQUIPMENT_TYPE_LABEL_KEYS[item.equipmentType]}`,
+                id: `Event${item.eventType}${equipmentTypeLabelKeys[item.equipmentType as EQUIPMENT_TYPES]}`,
             },
             {
                 ...computedValues,
@@ -230,7 +225,7 @@ const EventModificationScenarioEditor = () => {
 
     const handleSecondaryAction = useCallback(
         (item: Event) =>
-            !isAnyNodeBuilding && (
+            !isAnyNodeBuilding ? (
                 <IconButton
                     onClick={() => doEditEvent(item)}
                     size={'small'}
@@ -239,14 +234,19 @@ const EventModificationScenarioEditor = () => {
                 >
                     <EditIcon />
                 </IconButton>
-            ),
+            ) : null,
         [isAnyNodeBuilding, isLoading]
     );
+
     const renderEventList = () => {
         return (
             <CheckboxList
                 sx={{
-                    checkboxList: styles.checkboxList,
+                    checkboxList: {
+                        paddingLeft: (theme: Theme) => theme.spacing(2),
+                        paddingBottom: 'unset',
+                        paddingTop: 'unset',
+                    } as SxProps,
                 }}
                 items={events}
                 selectedItems={selectedItems}

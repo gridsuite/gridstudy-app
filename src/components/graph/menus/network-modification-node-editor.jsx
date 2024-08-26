@@ -143,9 +143,6 @@ export const styles = {
     icon: (theme) => ({
         width: theme.spacing(3),
     }),
-    listItem: (theme) => ({
-        padding: theme.spacing(0),
-    }),
     iconEdit: (theme) => ({
         marginRight: theme.spacing(1),
     }),
