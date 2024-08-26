@@ -185,7 +185,6 @@ return initialData;
 
     const applyFilter = useCallback(
         (filter: any) => {
-            console.log(filter);
             evaluateFilter(studyUuid as UUID, currentNode?.id as UUID, filter.id).then((response) => {
                 filtersPlugin?.clearConditions();
                 const filterIds = response.map((equipment: any) => equipment.id);
@@ -356,15 +355,15 @@ return initialData;
                     allowRemoveColumn={true}
                     afterCreateCol={tagCustomColumn}
                     afterLoadData={(sourceData, initialLoad, source) => {
-                        const sheetId = hyperformulaInstance.getSheetId('Sheet1');
+                        let sheetId = hyperformulaInstance.getSheetId('Sheet1');
                         if (!Number.isInteger(sheetId)) {
-                            hyperformulaInstance.addSheet('Sheet1');
+                            const sheetName = hyperformulaInstance.addSheet('Sheet1');
+                            sheetId = hyperformulaInstance.getSheetId(sheetName);
                         }
-                        /*const data = hotTableComponent.current?.hotInstance?.getData();
-            if (data && initialLoad) {
-                console.log('HMA', '######### - DEBUG TAG 3- #########', data);
-                hyperformulaInstance.setSheetContent(hyperformulaInstance.getSheetId('Sheet1')!, data);
-            }*/
+                        const data = hotTableComponent.current?.hotInstance?.getData();
+                        if (data) {
+                            hyperformulaInstance.setSheetContent(sheetId!, data);
+                        }
 
                         columns
                             .filter((column: any) => column.formula)
@@ -409,6 +408,8 @@ return initialData;
                                     }
                                 }
                             });
+                        setOpenFilterDialog(false);
+
                     }}
                     licenseKey="non-commercial-and-evaluation"
                     fillHandle={'vertical'}
