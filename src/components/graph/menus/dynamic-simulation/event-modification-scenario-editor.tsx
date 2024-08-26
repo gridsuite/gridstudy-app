@@ -21,11 +21,19 @@ import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types
 import { deleteDynamicSimulationEvents, fetchDynamicSimulationEvents } from '../../../../services/dynamic-simulation';
 import { DynamicSimulationEventDialog } from '../../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulation/event/model/event.model';
-import { isChecked, isPartial, styles } from '../network-modification-node-editor';
+import { isChecked, isPartial } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
+
+const styles = {
+    checkboxList: {
+        paddingLeft: (theme: Theme) => theme.spacing(2),
+        paddingBottom: 'unset',
+        paddingTop: 'unset',
+    },
+};
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
@@ -196,7 +204,7 @@ const EventModificationScenarioEditor = () => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     }, [currentNode?.id, notificationIdList]);
 
-    const getItemLabel = (item) => {
+    const getItemLabel = (item: Event) => {
         if (!studyUuid || !currentNode || !item) {
             return;
         }
@@ -221,7 +229,7 @@ const EventModificationScenarioEditor = () => {
     };
 
     const handleSecondaryAction = useCallback(
-        (item) =>
+        (item: Event) =>
             !isAnyNodeBuilding && (
                 <IconButton
                     onClick={() => doEditEvent(item)}
@@ -238,16 +246,12 @@ const EventModificationScenarioEditor = () => {
         return (
             <CheckboxList
                 sx={{
-                    checkboxList: {
-                        paddingLeft: (theme: Theme) => theme.spacing(2),
-                        paddingBottom: 'unset',
-                        paddingTop: 'unset',
-                    },
+                    checkboxList: styles.checkboxList,
                 }}
                 items={events}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
-                getItemId={(v) => v.equipmentId}
+                getItemId={(v: Event) => v.equipmentId}
                 getItemLabel={getItemLabel}
                 secondaryAction={handleSecondaryAction}
                 enableSecondaryActionOnHover
