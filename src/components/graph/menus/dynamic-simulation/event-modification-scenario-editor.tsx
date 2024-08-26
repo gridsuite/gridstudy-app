@@ -236,7 +236,7 @@ const EventModificationScenarioEditor = () => {
     );
     const renderEventList = () => {
         return (
-            <CheckboxList<Event>
+            <CheckboxList
                 sx={{
                     checkboxList: {
                         paddingLeft: (theme: Theme) => theme.spacing(2),
