@@ -75,7 +75,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
     };
 
     const nodeReportPromise = (nodeId: string, reportId: string, severityFilterList: string[]) => {
-        return fetchNodeReport(studyUuid?.toString(), nodeId, reportId, severityFilterList, reportType);
+        return fetchNodeReport(studyUuid?.toString(), nodeId, reportId, severityFilterList);
     };
 
     return (

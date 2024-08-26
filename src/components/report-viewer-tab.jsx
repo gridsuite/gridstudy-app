@@ -137,7 +137,7 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
     }, [visible, studyId, currentNode, disabled, fetchAndProcessReport]);
 
     const nodeReportPromise = (nodeId, reportId, severityFilterList) => {
-        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList, REPORT_TYPES.NETWORK_MODIFICATION);
+        return fetchNodeReport(studyId, nodeId, reportId, severityFilterList);
     };
 
     const globalReportPromise = (severityFilterList) => {
