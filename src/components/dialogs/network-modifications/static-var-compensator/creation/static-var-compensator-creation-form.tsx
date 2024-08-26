@@ -14,7 +14,7 @@ import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
 import { AutomateForm } from './automate-form';
-import { SetPointsLimitsForm } from './set-points-limits-form.js';
+import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
 
