@@ -98,7 +98,7 @@ export default class LogReport {
                 this.logs.push(new LogReportItem(value, this.uniqueId));
             }
         });
-        this.severityList = jsonReporter.subReportsSeverities ?? []; // local value
+        this.severityList = jsonReporter.severities ?? []; // local value
         this.initAllSeverityList().map((e) => this.allSeverityList.push(e)); // computed tree value
     }
 

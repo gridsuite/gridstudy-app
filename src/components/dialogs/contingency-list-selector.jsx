@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -13,20 +13,20 @@ import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
-import CheckboxList from 'components/utils/checkbox-list';
 import Button from '@mui/material/Button';
 import Alert from '@mui/material/Alert';
 import Grid from '@mui/material/Grid';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import ListItemWithDeleteButton from '../utils/list-item-with-delete-button';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
+import DeleteIcon from '@mui/icons-material/Delete.js';
+import IconButton from '@mui/material/IconButton';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -64,16 +64,19 @@ const ContingencyListSelector = (props) => {
         props.onStart(checkedContingencyList.map((c) => c.id));
     };
 
-    const saveFavorites = (newList) => {
-        updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
-            .then()
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
+    const saveFavorites = useCallback(
+        (newList) => {
+            updateConfigParameter(PARAM_FAVORITE_CONTINGENCY_LISTS, newList)
+                .then()
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsChangingError',
+                    });
                 });
-            });
-    };
+        },
+        [snackError]
+    );
 
     useEffect(() => {
         setSimulatedContingencyCount(null);
@@ -131,12 +134,15 @@ const ContingencyListSelector = (props) => {
         setFavoriteSelectorOpen(true);
     };
 
-    const removeFromFavorites = (toRemove) => {
-        const toRemoveIdsSet = new Set(toRemove.map((e) => e.id));
-        saveFavorites(contingencyList.map((e) => e.id).filter((id) => !toRemoveIdsSet.has(id)));
+    const removeFromFavorites = useCallback(
+        (toRemove) => {
+            const toRemoveIdsSet = new Set(toRemove.map((e) => e.id));
+            saveFavorites(contingencyList.map((e) => e.id).filter((id) => !toRemoveIdsSet.has(id)));
 
-        setCheckedContingencyList((oldChecked) => oldChecked.filter((item) => !toRemoveIdsSet.has(item.id)));
-    };
+            setCheckedContingencyList((oldChecked) => oldChecked.filter((item) => !toRemoveIdsSet.has(item.id)));
+        },
+        [contingencyList, saveFavorites]
+    );
 
     const addFavorites = (favorites) => {
         if (favorites && favorites.length > 0) {
@@ -162,6 +168,25 @@ const ContingencyListSelector = (props) => {
         );
     };
 
+    const handleSecondaryAction = useCallback(
+        (item) => (
+            <IconButton
+                style={{
+                    alignItems: 'end',
+                }}
+                edge="end"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    removeFromFavorites([item]);
+                }}
+                size={'small'}
+            >
+                <DeleteIcon />
+            </IconButton>
+        ),
+        [removeFromFavorites]
+    );
+
     return (
         <>
             <Dialog open={props.open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
@@ -174,22 +199,13 @@ const ContingencyListSelector = (props) => {
                     <Grid container spacing={1} direction="column" item xs={12}>
                         <Grid item>
                             <CheckboxList
-                                values={contingencyList || []}
-                                onChecked={setCheckedContingencyList}
-                                checkedValues={checkedContingencyList}
-                                itemRenderer={({ item, checked, handleToggle }) => (
-                                    <ListItemWithDeleteButton
-                                        key={item.id}
-                                        value={item.id}
-                                        checked={checked}
-                                        primary={item.name}
-                                        onClick={() => handleToggle(item)}
-                                        removeFromList={(e) => {
-                                            e.stopPropagation();
-                                            removeFromFavorites([item]);
-                                        }}
-                                    />
-                                )}
+                                items={contingencyList || []}
+                                getItemId={(v) => v.id}
+                                getItemLabel={(v) => v.name}
+                                selectedItems={checkedContingencyList}
+                                onSelectionChange={setCheckedContingencyList}
+                                secondaryAction={handleSecondaryAction}
+                                enableSecondaryActionOnHover
                             />
                         </Grid>
                         <Grid item>

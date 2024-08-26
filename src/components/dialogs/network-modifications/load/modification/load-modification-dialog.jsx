@@ -113,8 +113,8 @@ const LoadModificationDialog = ({
                 [P0]: load.p0?.value ?? null,
                 [Q0]: load.q0?.value ?? null,
                 ...getConnectivityFormData({
-                    voltageLevelId: load?.voltageLevelId.value ?? null,
-                    busbarSectionId: load?.busOrBusbarSectionId.value ?? null,
+                    voltageLevelId: load?.voltageLevelId?.value ?? null,
+                    busbarSectionId: load?.busOrBusbarSectionId?.value ?? null,
                     connectionName: load?.connectionName?.value ?? '',
                     connectionDirection: load?.connectionDirection?.value ?? null,
                     connectionPosition: load?.connectionPosition?.value ?? null,

@@ -5,18 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export interface IEquipment {
-    id: string;
-    name: string;
-}
+import { EquipmentInfos } from '@gridsuite/commons-ui';
 
 interface Identifier {
-    id: string;
-    name: string;
+    type: string;
+    contingencyId: string;
+    identifierList: { type: string; identifier: string }[];
 }
 
 interface IdentifierContingencyList {
-    type: 'identifier';
+    type: string;
     version: string;
     name: string;
     identifiers: Identifier[];
@@ -24,10 +22,10 @@ interface IdentifierContingencyList {
 
 export interface ContingencyList {
     identifierContingencyList: IdentifierContingencyList;
-    type: 'IDENTIFIERS';
+    type: string;
 }
 
-function createIdentifiersList(selectedEquipments: IEquipment[]) {
+function createIdentifiersList(selectedEquipments: EquipmentInfos[]) {
     const identifierLists = selectedEquipments.map((eq) => {
         return {
             type: 'LIST',
@@ -43,7 +41,7 @@ function createIdentifiersList(selectedEquipments: IEquipment[]) {
     return identifierLists;
 }
 
-export function createIdentifierContingencyList(contingencyListName: string, equipmentList: IEquipment[]) {
+export function createIdentifierContingencyList(contingencyListName: string, equipmentList: EquipmentInfos[]) {
     const identifiersList = createIdentifiersList(equipmentList);
     return {
         identifierContingencyList: {

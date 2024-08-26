@@ -144,8 +144,8 @@ const BatteryModificationDialog = ({
                 [FREQUENCY_REGULATION]: editData?.participate?.value ?? null,
                 [DROOP]: editData?.droop?.value ?? null,
                 ...getConnectivityFormData({
-                    voltageLevelId: editData?.voltageLevelId.value ?? null,
-                    busbarSectionId: editData?.busOrBusbarSectionId.value ?? null,
+                    voltageLevelId: editData?.voltageLevelId?.value ?? null,
+                    busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
                     connectionName: editData?.connectionName?.value ?? '',
                     connectionDirection: editData?.connectionDirection?.value ?? null,
                     connectionPosition: editData?.connectionPosition?.value ?? null,
