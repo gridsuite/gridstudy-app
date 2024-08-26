@@ -181,8 +181,8 @@ const GeneratorModificationDialog = ({
                 [VOLTAGE_REGULATION_TYPE]: editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
                 ...getConnectivityFormData({
-                    voltageLevelId: editData?.voltageLevelId.value ?? null,
-                    busbarSectionId: editData?.busOrBusbarSectionId.value ?? null,
+                    voltageLevelId: editData?.voltageLevelId?.value ?? null,
+                    busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
                     connectionName: editData?.connectionName?.value ?? '',
                     connectionDirection: editData?.connectionDirection?.value ?? null,
                     connectionPosition: editData?.connectionPosition?.value ?? null,
