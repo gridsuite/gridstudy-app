@@ -873,7 +873,7 @@ const NetworkModificationNodeEditor = () => {
                 getItemId={(val) => val.uuid}
                 getItemLabel={getModificationLabel}
                 isDndDragAndDropActive
-                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading}
+                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
                 secondaryAction={handleSecondaryAction}
                 enableSecondaryActionOnHover
                 isCheckboxClickableOnly
