@@ -10,7 +10,6 @@ import TableCell from '@mui/material/TableCell';
 import { styled } from '@mui/system';
 import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { FilterButton } from './filter-button';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -35,7 +34,7 @@ const styles = {
 
 const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
 
-const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) => {
+const LogTable = ({ logs, onRowClick, filterButton }) => {
     const intl = useIntl();
 
     const theme = useTheme();
@@ -59,6 +58,8 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) =
         );
     };
 
+    console.log(`render log table`);
+
     const COLUMNS_DEFINITIONS = [
         {
             label: intl.formatMessage({ id: 'report_viewer/severity' }).toUpperCase(),
@@ -67,7 +68,7 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) =
             maxWidth: SEVERITY_COLUMN_FIXED_WIDTH,
             minWidth: SEVERITY_COLUMN_FIXED_WIDTH,
             cellRenderer: severityCellRender,
-            extra: <FilterButton selectedItems={selectedSeverity} setSelectedItems={setSelectedSeverity} />,
+            extra: filterButton,
         },
         {
             label: intl.formatMessage({ id: 'report_viewer/message' }).toUpperCase(),

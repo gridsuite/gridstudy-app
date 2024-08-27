@@ -87,7 +87,7 @@ const styles = {
 
 const ReportItem = (props) => {
     // using a context because TreeItem uses useMemo on this. See report-viewer.js for the provider
-    const { isHighlighted } = useContext(ReportTreeViewContext);
+    const isHighlighted = useContext(ReportTreeViewContext);
 
     const highlighted = isHighlighted ? isHighlighted(props.nodeId) : false;
 
