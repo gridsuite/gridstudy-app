@@ -147,6 +147,7 @@ const hasValidationTabs = [
     TAB_VALUES.shortCircuitParamsTabValue,
     TAB_VALUES.dynamicSimulationParamsTabValue,
     TAB_VALUES.voltageInitParamsTabValue,
+    TAB_VALUES.lfParamsTabValue,
 ];
 
 type OwnProps = {
@@ -265,7 +266,12 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             case TAB_VALUES.mapParamsTabValue:
                 return <MapParameters />;
             case TAB_VALUES.lfParamsTabValue:
-                return <LoadFlowParameters parametersBackend={loadFlowParametersBackend} />;
+                return (
+                    <LoadFlowParameters
+                        parametersBackend={loadFlowParametersBackend}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                    />
+                );
             case TAB_VALUES.securityAnalysisParamsTabValue:
                 return (
                     <SecurityAnalysisParameters

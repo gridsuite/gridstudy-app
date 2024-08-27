@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -12,15 +12,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Checkbox, DialogContentText } from '@mui/material';
-import CheckboxList from 'components/utils/checkbox-list';
-import { ModificationListItem } from 'components/graph/menus/modification-list-item';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { Box, DialogContentText } from '@mui/material';
+import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
-import { CancelButton, OverflowableText } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
-import { isPartial } from 'components/graph/menus/network-modification-node-editor';
-import { areUuidsEqual } from 'components/utils/utils';
+import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
 
 const styles = {
     text: (theme) => ({
@@ -61,6 +57,8 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
     const [selectedItems, setSelectedItems] = useState([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
+    const { computeLabel } = useModificationLabelComputer();
+
     const handleClose = () => {
         setSelectedItems([]);
         onClose();
@@ -80,14 +78,22 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
         handleClose();
     };
 
-    const handleSelectAll = useCallback(() => {
-        setSelectedItems((oldValues) => (oldValues.length === 0 ? stashedModifications : []));
-    }, [stashedModifications]);
-
     useEffect(() => {
         setStashedModifications(modifToRestore);
     }, [modifToRestore]);
 
+    const getLabel = (modif) => {
+        if (!modif) {
+            return null;
+        }
+        return intl.formatMessage(
+            { id: 'network_modifications.' + modif.messageType },
+            {
+                ...modif,
+                ...computeLabel(modif),
+            }
+        );
+    };
     return (
         <Dialog
             fullWidth
@@ -105,48 +111,16 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
                         })}
                     </DialogContentText>
                 </Box>
-                <DragDropContext>
-                    <Droppable droppableId="restore-modification-list" isDropDisabled={true}>
-                        {(provided) => (
-                            <Box sx={styles.listContainer} ref={provided.innerRef} {...provided.droppableProps}>
-                                <Box sx={styles.selectAll}>
-                                    <Checkbox
-                                        color={'primary'}
-                                        edge="start"
-                                        checked={selectedItems.length === stashedModifications.length}
-                                        indeterminate={isPartial(selectedItems.length, stashedModifications?.length)}
-                                        onClick={handleSelectAll}
-                                        disableRipple
-                                    />
-                                    <OverflowableText
-                                        text={intl.formatMessage({
-                                            id: 'SelectAll',
-                                        })}
-                                    />
-                                </Box>
-                                <CheckboxList
-                                    sx={styles.list}
-                                    onChecked={setSelectedItems}
-                                    checkedValues={selectedItems}
-                                    values={stashedModifications}
-                                    itemComparator={areUuidsEqual}
-                                    itemRenderer={(props) => (
-                                        <ModificationListItem
-                                            key={props.item.uuid}
-                                            isRestorationDialog
-                                            isDragging={false}
-                                            isOneNodeBuilding={false}
-                                            disabled={false}
-                                            listSize={stashedModifications.length}
-                                            {...props}
-                                        />
-                                    )}
-                                />
-                                {provided.placeholder}
-                            </Box>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                <CheckboxList
+                    items={stashedModifications}
+                    selectedItems={selectedItems}
+                    onSelectionChange={setSelectedItems}
+                    getItemId={(v) => v.uuid}
+                    getItemLabel={getLabel}
+                    addSelectAllCheckbox
+                    selectAllCheckBoxLabel={'SelectAll'}
+                    divider
+                />
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
