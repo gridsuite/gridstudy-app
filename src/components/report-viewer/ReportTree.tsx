@@ -14,6 +14,8 @@ interface ReportTreeProps {
 }
 
 export const ReportTree = ({ report }: ReportTreeProps) => {
+    console.log(`haha ${JSON.stringify(report)}`);
+    console.log(`subreports ${JSON.stringify(report?.subReports)}`);
     return (
         report && (
             <ReportItem
@@ -24,7 +26,7 @@ export const ReportTree = ({ report }: ReportTreeProps) => {
                 nodeId={report.id}
             >
                 {report.subReports.map((value) => {
-                    // console.log(`value ${JSON.stringify(value)}`);
+                    console.log(`value ${JSON.stringify(value)}`);
                     return <ReportTree report={value} />;
                 })}
             </ReportItem>

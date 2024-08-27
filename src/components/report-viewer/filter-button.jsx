@@ -8,7 +8,6 @@ import React, { useMemo, useState } from 'react';
 import { Box, IconButton } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { MultiSelectList } from './multi-select-list';
-import PropTypes from 'prop-types';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -76,9 +75,4 @@ export const FilterButton = ({ selectedItems, setSelectedItems }) => {
             />
         </Box>
     );
-};
-
-FilterButton.propTypes = {
-    selectedItems: PropTypes.object.isRequired,
-    setSelectedItems: PropTypes.func.isRequired,
 };
