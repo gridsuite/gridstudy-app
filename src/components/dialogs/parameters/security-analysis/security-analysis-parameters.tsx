@@ -38,7 +38,7 @@ import {
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
-} from './columns-definitions';
+} from '../common/limitreductions/columns-definitions.js';
 
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
