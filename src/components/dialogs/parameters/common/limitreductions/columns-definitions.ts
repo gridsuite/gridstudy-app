@@ -111,4 +111,3 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
         })
         .required();
 };
-export { PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD, PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD };
