@@ -109,7 +109,14 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     }, [params]);
 
     const formMethods = useForm({
-        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        defaultValues: {
+            [LIMIT_REDUCTIONS_FORM]: [],
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: 0,
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: 0,
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: 0,
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: 0,
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: 0,
+        },
         resolver: yupResolver(formSchema),
     });
 

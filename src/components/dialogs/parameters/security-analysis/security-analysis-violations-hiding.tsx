@@ -18,7 +18,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../../utils/config-params.js';
-import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput } from '@gridsuite/commons-ui';
 
 interface FieldToShow {
     label: string;
@@ -57,7 +57,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
             </Grid>
             {!isSingleField && secondField && (
                 <Grid item container xs={4} sx={styles.secondTextField}>
-                    <TextInput
+                    <FloatInput
                         name={secondField.name}
                         adornment={{
                             position: 'end',
