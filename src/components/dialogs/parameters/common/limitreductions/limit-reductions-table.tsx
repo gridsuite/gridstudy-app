@@ -24,7 +24,7 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
         <TableContainer
             sx={{
                 height: tableHeight,
-                width: '70%',
+                width: 'inherit',
                 border: 'solid 0px rgba(0,0,0,0.1)',
             }}
         >

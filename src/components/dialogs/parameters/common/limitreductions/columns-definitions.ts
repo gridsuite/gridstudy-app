@@ -11,7 +11,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
-import yup from '../../../utils/yup-config';
+import yup from '../../../../utils/yup-config';
 import { NumberSchema } from 'yup';
 
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
@@ -47,6 +47,8 @@ export enum TAB_VALUES {
     'General' = 0,
     'LimitReductions' = 1,
 }
+
+export const TAB_INFO = [{ label: TAB_VALUES[TAB_VALUES.General] }, { label: TAB_VALUES[TAB_VALUES.LimitReductions] }];
 
 export interface IColumnsDef {
     label: string;
@@ -109,3 +111,4 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
         })
         .required();
 };
+export { PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD, PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD };

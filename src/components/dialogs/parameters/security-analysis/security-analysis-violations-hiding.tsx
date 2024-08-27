@@ -51,7 +51,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
                     name={firstField.name}
                     adornment={{
                         position: 'end',
-                        text: intl.formatMessage({ id: firstField.label }),
+                        text: firstField.label,
                     }}
                 />
             </Grid>
@@ -61,7 +61,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
                         name={secondField.name}
                         adornment={{
                             position: 'end',
-                            text: intl.formatMessage({ id: secondField.label }),
+                            text: secondField.label,
                         }}
                     />
                 </Grid>

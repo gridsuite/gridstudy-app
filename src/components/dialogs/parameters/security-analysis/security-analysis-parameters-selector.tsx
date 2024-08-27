@@ -12,11 +12,9 @@ import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import { Box, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
-import { TAB_VALUES } from './columns-definitions';
+import { TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
-import LimitReductionsTableForm from './limit-reductions-table-form';
-
-const TAB_INFO = [{ label: TAB_VALUES[TAB_VALUES.General] }, { label: TAB_VALUES[TAB_VALUES.LimitReductions] }];
+import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: Record<string, any>;
@@ -59,7 +57,16 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                         <Box display={tabValue === TAB_VALUES.General ? 'block' : 'none'}>
                             <ViolationsHidingParameters />
                         </Box>
-                        <Box display={tabValue === TAB_VALUES.LimitReductions ? 'block' : 'none'}>
+
+                        <Box
+                            sx={{
+                                width: '85%',
+                                display:
+                                    tabValue === TAB_VALUES.LimitReductions && params.limitReductions
+                                        ? 'block'
+                                        : 'none',
+                            }}
+                        >
                             <LimitReductionsTableForm limits={params.limitReductions} />
                         </Box>
                     </TabPanel>
