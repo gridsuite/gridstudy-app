@@ -9,11 +9,11 @@ import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchNodeReport, fetchParentNodesReport } from '../../../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import ReportViewer from '../../report-viewer/report-viewer';
-import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
+import { getDefaultSeverityList } from '../../report-viewer/severity.utils';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
@@ -50,7 +50,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
                 studyUuid.toString(),
                 currentNode.id.toString(),
                 true,
-                LogReportItem.getDefaultSeverityList(),
+                getDefaultSeverityList(),
                 reportType
             )
                 .then((fetchedReport) => {
@@ -70,8 +70,8 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
         }
     }, [studyUuid, currentNode?.id, reportType, snackError, makeReport]);
 
-    const nodeReportPromise = (nodeId: string, reportId: string, severityFilterList: string[]) => {
-        return fetchNodeReport(studyUuid?.toString(), nodeId, reportId, severityFilterList);
+    const nodeReportPromise = (reportId: string, severityFilterList: string[]) => {
+        return fetchNodeReport(studyUuid?.toString(), currentNode?.id, reportId, severityFilterList);
     };
 
     return (

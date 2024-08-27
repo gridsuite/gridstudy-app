@@ -18,8 +18,8 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { fetchNodeReport, fetchParentNodesReport } from '../services/study';
 import { Box } from '@mui/system';
-import LogReportItem from './report-viewer/log-report-item';
 import { REPORT_TYPES } from './utils/report-type';
+import { getDefaultSeverityList } from './report-viewer/severity.utils';
 
 const styles = {
     div: {
@@ -100,7 +100,7 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
                 studyId,
                 currentNode.id,
                 nodeOnlyReport,
-                LogReportItem.getDefaultSeverityList(),
+                getDefaultSeverityList(),
                 REPORT_TYPES.NETWORK_MODIFICATION
             )
                 .then((fetchedReport) => {

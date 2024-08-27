@@ -8,14 +8,16 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import ReportItem from './report-item';
-import LogReport, { LogReportType } from './log-report';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import WaitingLoader from '../utils/waiting-loader';
-import LogReportItem from './log-report-item';
+import { mapReportToReportItems } from './reportItemMapper';
+import { mapReportToReportTree } from './reportTreeMapper';
+import { getDefaultSeverityFilter } from './severity.utils';
+import { REPORT_TYPE } from './reportType.constant';
+import { ReportTree } from './ReportTree';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -42,14 +44,13 @@ export default function ReportViewer({
     const [logs, setLogs] = useState(null);
     const [waitingLoadReport, setWaitingLoadReport] = useState(false);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [selectedSeverity, setSelectedSeverity] = useState(LogReportItem.getDefaultSeverityFilter());
+    const [selectedSeverity, setSelectedSeverity] = useState(getDefaultSeverityFilter());
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
 
     const { snackError } = useSnackMessage();
 
     const rootReport = useRef(null);
     const reportTreeData = useRef({});
-    const treeView = useRef(null);
 
     /**
      * Build the tree view (left pane) creating all ReportItem from json data
@@ -66,42 +67,13 @@ export default function ReportViewer({
                     maxSubReports
                 );
             }
-            return (
-                <ReportItem
-                    labelText={report.message}
-                    labelIconColor={report.highestSeverity.colorName}
-                    key={report.id}
-                    sx={styles.treeItem}
-                    nodeId={report.id}
-                >
-                    {report.subReports.map((value) => createReporterItem(value))}
-                </ReportItem>
-            );
         },
         [maxSubReports]
     );
 
-    /**
-     * Check the json data, and possibly create an extra top-level reporter called 'Logs' for the GlobalNode
-     * @param reportData incoming Json data
-     */
-    const makeReport = (reportData) => {
-        if (!Array.isArray(reportData)) {
-            return reportData;
-        } else {
-            if (reportData.length === 1) {
-                return reportData[0];
-            }
-            return {
-                message: GLOBAL_NODE_TASK_KEY,
-                subReports: reportData,
-            };
-        }
-    };
-
     const getFetchPromise = useCallback(
         (reportId, severityList) => {
-            if (reportTreeData.current[reportId].type === LogReportType.NodeReport) {
+            if (reportTreeData.current[reportId].type === REPORT_TYPE.NODE) {
                 return nodeReportPromise(reportTreeData.current[reportId].id, severityList);
             } else {
                 return globalReportPromise(severityList);
@@ -109,12 +81,6 @@ export default function ReportViewer({
         },
         [nodeReportPromise, globalReportPromise]
     );
-
-    const buildLogReport = useCallback((jsonData) => {
-        return jsonData.message === GLOBAL_NODE_TASK_KEY
-            ? new LogReport(LogReportType.GlobalReport, jsonData)
-            : new LogReport(LogReportType.NodeReport, jsonData);
-    }, []);
 
     const refreshLogsOnSelectedReport = useCallback(
         (reportId, severityFilter) => {
@@ -140,9 +106,9 @@ export default function ReportViewer({
 
             Promise.resolve(getFetchPromise(reportId, severityList))
                 .then((fetchedData) => {
-                    const logReporter = buildLogReport(makeReport(fetchedData));
+                    const fetchedLogs = mapReportToReportItems(fetchedData);
                     setSelectedReportId(reportId);
-                    setLogs(logReporter.getAllLogs());
+                    setLogs(fetchedLogs);
                     setHighlightedReportId(null);
                 })
                 .catch((error) => {
@@ -156,19 +122,18 @@ export default function ReportViewer({
                     setWaitingLoadReport(false);
                 });
         },
-        [snackError, getFetchPromise, buildLogReport]
+        [snackError, getFetchPromise]
     );
 
     useEffect(() => {
-        const reportType =
-            jsonReportTree.message === GLOBAL_NODE_TASK_KEY ? LogReportType.GlobalReport : LogReportType.NodeReport;
-        rootReport.current = new LogReport(reportType, jsonReportTree);
+        const reportType = jsonReportTree.message === GLOBAL_NODE_TASK_KEY ? REPORT_TYPE.GLOBAL : REPORT_TYPE.NODE;
+        rootReport.current = mapReportToReportTree(jsonReportTree, reportType);
         let rootId = rootReport.current.id;
-        treeView.current = createReporterItem(rootReport.current);
+        createReporterItem(rootReport.current);
         setSelectedReportId(rootId);
         setExpandedTreeReports([rootId]);
-        setLogs(rootReport.current.getAllLogs());
-        setSelectedSeverity(LogReportItem.getDefaultSeverityFilter(rootReport.current.severityList));
+        setLogs(mapReportToReportItems(jsonReportTree));
+        setSelectedSeverity(getDefaultSeverityFilter(rootReport.current.severityList));
     }, [jsonReportTree, createReporterItem]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -185,9 +150,7 @@ export default function ReportViewer({
 
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
-            const updatedSeverityList = LogReportItem.getDefaultSeverityFilter(
-                reportTreeData.current[reportId].severityList
-            );
+            const updatedSeverityList = getDefaultSeverityFilter(reportTreeData.current[reportId].severityList);
             setSelectedSeverity(updatedSeverityList);
             refreshLogsOnSelectedReport(reportId, updatedSeverityList);
         }
@@ -269,7 +232,7 @@ export default function ReportViewer({
                             selected={selectedReportId}
                             expanded={expandedTreeReports}
                         >
-                            {treeView.current}
+                            <ReportTree report={rootReport.current} />
                         </TreeView>
                     </ReportTreeViewContext.Provider>
                 </Grid>
