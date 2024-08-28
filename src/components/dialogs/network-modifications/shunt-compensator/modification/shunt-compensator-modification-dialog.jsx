@@ -113,12 +113,12 @@ const ShuntCompensatorModificationDialog = ({
             reset({
                 [EQUIPMENT_NAME]: shuntCompensator?.equipmentName?.value ?? '',
                 ...getConnectivityFormData({
-                    voltageLevelId: shuntCompensator.voltageLevelId?.value ?? null,
+                    voltageLevelId: shuntCompensator?.voltageLevelId?.value ?? null,
                     busbarSectionId: shuntCompensator?.busOrBusbarSectionId?.value ?? null,
-                    connectionName: shuntCompensator.connectionName?.value ?? '',
-                    connectionDirection: shuntCompensator.connectionDirection?.value ?? null,
-                    connectionPosition: shuntCompensator.connectionPosition?.value ?? null,
-                    terminalConnected: shuntCompensator.terminalConnected?.value ?? null,
+                    connectionName: shuntCompensator?.connectionName?.value ?? '',
+                    connectionDirection: shuntCompensator?.connectionDirection?.value ?? null,
+                    connectionPosition: shuntCompensator?.connectionPosition?.value ?? null,
+                    terminalConnected: shuntCompensator?.terminalConnected?.value ?? null,
                     isEquipmentModification: true,
                 }),
                 ...getCharacteristicsFormData({
