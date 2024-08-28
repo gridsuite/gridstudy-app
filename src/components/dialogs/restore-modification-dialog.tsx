@@ -4,8 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -17,9 +16,9 @@ import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
-import { NetworkModificationMetadata } from 'components/graph/menus/network-modification/network-modification.type.js';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.js';
+import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type.js';
 
 const styles = {
     text: (theme: Theme) => ({

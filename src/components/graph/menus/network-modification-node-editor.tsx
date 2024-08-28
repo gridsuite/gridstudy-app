@@ -5,88 +5,86 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { Component, FC, useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
-import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
-import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
-import { Checkbox, CircularProgress, Switch, Toolbar, Tooltip, Typography } from '@mui/material';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
-import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
-import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
-import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
-import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
-import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
-import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import ContentCutIcon from '@mui/icons-material/ContentCut';
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
-import ContentCutIcon from '@mui/icons-material/ContentCut';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
+import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
-import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
-import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
-import GeneratorCreationDialog from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
-import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
-import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
-import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
-import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
-import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
-import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
-import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
-import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
-import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
-import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
-import { UPDATE_TYPE } from 'components/network/constants';
-import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
-import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
+import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
+import DeleteVoltageLevelOnLineDialog from 'components/dialogs/network-modifications/delete-voltage-level-on-line/delete-voltage-level-on-line-dialog';
+import EquipmentDeletionDialog from 'components/dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
+import GenerationDispatchDialog from 'components/dialogs/network-modifications/generation-dispatch/generation-dispatch-dialog';
+import GeneratorScalingDialog from 'components/dialogs/network-modifications/generator-scaling/generator-scaling-dialog';
+import GeneratorCreationDialog from 'components/dialogs/network-modifications/generator/creation/generator-creation-dialog';
+import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
+import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
+import LineSplitWithVoltageLevelDialog from 'components/dialogs/network-modifications/line-split-with-voltage-level/line-split-with-voltage-level-dialog';
+import LineCreationDialog from 'components/dialogs/network-modifications/line/creation/line-creation-dialog';
+import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
+import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
+import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
+import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
+import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
+import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
-import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
-import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
-import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
-import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
-import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
+import SubstationCreationDialog from 'components/dialogs/network-modifications/substation/creation/substation-creation-dialog';
+import SubstationModificationDialog from 'components/dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
+import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
+import TwoWindingsTransformerCreationDialog from 'components/dialogs/network-modifications/two-windings-transformer/creation/two-windings-transformer-creation-dialog';
+import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
+import VoltageLevelModificationDialog from 'components/dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
+import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
+import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
+import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
+import { UPDATE_TYPE } from 'components/network/constants';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { useDispatch, useSelector } from 'react-redux';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
+import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
+import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
+import { RestoreFromTrash } from '@mui/icons-material';
+import EditIcon from '@mui/icons-material/Edit.js';
+import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
+import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
+import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import { UUID } from 'crypto';
+import { DropResult } from 'react-beautiful-dnd';
+import { AppState, StudyUpdated } from 'redux/reducer';
+import { createCompositeModifications } from '../../../services/explore';
 import { fetchNetworkModification } from '../../../services/network-modification';
+import { copyOrMoveModifications } from '../../../services/study';
 import {
     changeNetworkModificationOrder,
     fetchNetworkModifications,
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import { copyOrMoveModifications } from '../../../services/study';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
-import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
-import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
-import { Box } from '@mui/system';
-import { RestoreFromTrash } from '@mui/icons-material';
-import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
-import { createCompositeModifications } from '../../../services/explore';
-import EditIcon from '@mui/icons-material/Edit.js';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog, {
     ICompositeCreateModificationDialog,
 } from '../../dialogs/create-composite-modification-dialog';
-import { AppState, StudyUpdated } from 'redux/reducer';
-import { UUID } from 'crypto';
+import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import {
-    NetworkModificationCopyInfo,
-    NetworkModificationCopyType,
     MenuDefinition,
-    NetworkModificationMetadata,
-    NetworkModificationData,
     MenuDefinitionSubItem,
     MenuDefinitionWithoutSubItem,
-} from './network-modification/network-modification.type';
-import { DropResult } from 'react-beautiful-dnd';
+    NetworkModificationCopyInfo,
+    NetworkModificationCopyType,
+    NetworkModificationData,
+    NetworkModificationMetadata,
+} from './network-modification-menu.type';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -144,7 +142,7 @@ export const styles = {
         justifyContent: 'center',
         marginLeft: theme.spacing(1.25),
         marginRight: theme.spacing(2),
-        color: theme.palette.secondary,
+        color: theme.palette.secondary.main,
     }),
     notification: (theme: Theme) => ({
         flex: 1,
@@ -218,7 +216,7 @@ const NetworkModificationNodeEditor = () => {
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
-    const buttonAddRef = useRef();
+    const buttonAddRef = useRef<HTMLButtonElement>(null);
 
     const cleanClipboard = useCallback(() => {
         setCopyInfos(null);

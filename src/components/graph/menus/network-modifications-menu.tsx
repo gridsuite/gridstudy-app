@@ -11,14 +11,14 @@ import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
-import { MenuDefinition } from './network-modification/network-modification.type';
+import { MenuDefinition } from './network-modification-menu.type';
 
 interface NetworkModificationMenuProps {
     open: boolean;
     onClose: () => void;
     onItemClick: (id: string) => void;
     menuDefinition: MenuDefinition[];
-    anchorEl?: Element;
+    anchorEl?: HTMLElement | null;
 }
 
 /**

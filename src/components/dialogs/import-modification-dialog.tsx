@@ -8,11 +8,10 @@
 import { useIntl } from 'react-intl';
 import { ElementType, useSnackMessage, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { copyOrMoveModifications } from '../../services/study';
-import { UUID } from 'crypto';
 import { FunctionComponent } from 'react';
-import { NetworkModificationCopyType } from 'components/graph/menus/network-modification/network-modification.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import { NetworkModificationCopyType } from 'components/graph/menus/network-modification-menu.type';
 
 /**
  * Dialog to select some network modifications and append them in the current node
