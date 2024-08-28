@@ -7,8 +7,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
-import { useSnackMessage } from '@gridsuite/commons-ui';
-import ReportViewer, { GLOBAL_NODE_TASK_KEY } from './report-viewer/report-viewer';
+import ReportViewer from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -16,10 +15,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { fetchNodeReport, fetchParentNodesReport } from '../services/study';
 import { Box } from '@mui/system';
 import { REPORT_TYPES } from './utils/report-type';
-import { getDefaultSeverityList } from './report-viewer/severity.utils';
+import { useReportFetcher } from '../hooks/useReportFetcher';
 
 const styles = {
     div: {
@@ -39,115 +37,39 @@ const styles = {
  * @returns {*} node
  * @constructor
  */
-export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => {
-    const intl = useIntl();
-
-    const treeModel = useSelector((state) => state.networkModificationTreeModel);
-
-    const [report, setReport] = useState(null);
-    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
-    const { snackError } = useSnackMessage();
+export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
+    const [report, setReport] = useState();
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const intl = useIntl();
+    const [reportsLoading, reportsFetcher] = useReportFetcher(REPORT_TYPES.NETWORK_MODIFICATION);
 
     const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
     }, []);
-
-    const nodesNames = useMemo(() => {
-        return new Map(treeModel.treeNodes.map((node) => [node.id, node.data.label]));
-    }, [treeModel]);
 
     const rootNodeId = useMemo(() => {
         const rootNode = treeModel.treeNodes.find((node) => node?.data?.label === 'Root');
         return rootNode?.id;
     }, [treeModel]);
 
-    const setNodeName = useCallback(
-        (report) => {
-            if (report.message !== 'Root') {
-                report.message = nodesNames.get(report.message);
-            }
-            return report;
-        },
-        [nodesNames]
-    );
-
-    const makeSingleReport = useCallback(
-        (reportData) => {
-            if (!Array.isArray(reportData)) {
-                return setNodeName(reportData);
-            } else {
-                if (reportData.length === 1) {
-                    return setNodeName(reportData[0]);
-                }
-                return {
-                    message: GLOBAL_NODE_TASK_KEY,
-                    subReports: reportData.map((r) => setNodeName(r)),
-                };
-            }
-        },
-        [setNodeName]
-    );
-
-    const fetchAndProcessReport = useCallback(
-        (studyId, currentNode) => {
-            // use a timout to avoid having a loader in case of fast promise return (avoid blink)
-            const timer = setTimeout(() => {
-                setWaitingLoadReport(true);
-            }, 700);
-
-            fetchParentNodesReport(
-                studyId,
-                currentNode.id,
-                nodeOnlyReport,
-                getDefaultSeverityList(),
-                REPORT_TYPES.NETWORK_MODIFICATION
-            )
-                .then((fetchedReport) => {
-                    setReport(makeSingleReport(fetchedReport));
-                })
-                .catch((error) => {
-                    setReport();
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'ReportFetchError',
-                    });
-                })
-                .finally(() => {
-                    clearTimeout(timer);
-                    setWaitingLoadReport(false);
-                });
-        },
-        [nodeOnlyReport, snackError, makeSingleReport]
-    );
-
     // This useEffect is responsible for updating the reports when the user goes to the LOGS tab
     // and when the application receives a notification.
     useEffect(() => {
         // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
-            fetchAndProcessReport(studyId, currentNode);
+            reportsFetcher(nodeOnlyReport).then((r) => {
+                if (r !== undefined) {
+                    setReport(r);
+                }
+            });
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.
-    }, [visible, studyId, currentNode, disabled, fetchAndProcessReport]);
-
-    const nodeReportPromise = (reportId, severityFilterList) => {
-        return fetchNodeReport(studyId, currentNode.id, reportId, severityFilterList);
-    };
-
-    const globalReportPromise = (severityFilterList) => {
-        return fetchParentNodesReport(
-            studyId,
-            currentNode.id,
-            false,
-            severityFilterList,
-            REPORT_TYPES.NETWORK_MODIFICATION
-        );
-    };
+    }, [visible, currentNode, disabled, reportsFetcher, nodeOnlyReport]);
 
     return (
-        <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
+        <WaitingLoader loading={reportsLoading} message={'loadingReport'}>
             <Paper className={'singlestretch-child'}>
                 <Box sx={styles.div}>
                     <FormControlLabel
@@ -168,20 +90,13 @@ export const ReportViewerTab = ({ studyId, visible, currentNode, disabled }) => 
                     />
                     {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
                 </Box>
-                {!!report && !disabled && (
-                    <ReportViewer
-                        jsonReportTree={report}
-                        nodeReportPromise={nodeReportPromise}
-                        globalReportPromise={globalReportPromise}
-                    />
-                )}
+                {!!report && !disabled && <ReportViewer reportsTree={report} />}
             </Paper>
         </WaitingLoader>
     );
 };
 
 ReportViewerTab.propTypes = {
-    studyId: PropTypes.string,
     visible: PropTypes.bool,
     currentNode: PropTypes.object,
     disabled: PropTypes.bool,

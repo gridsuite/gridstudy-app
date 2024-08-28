@@ -1,35 +1,63 @@
-import ReportItem from './report-item';
-import React from 'react';
-
-import { ReportTree as ReportTreeData } from './reportTreeMapper';
+import React, { MutableRefObject, ReactNode, SyntheticEvent } from 'react';
+import { Grid } from '@mui/material';
+import { TreeView } from '@mui/x-tree-view/TreeView';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 const styles = {
-    treeItem: {
-        whiteSpace: 'nowrap',
+    treeView: {
+        height: '100%',
     },
 };
 
 interface ReportTreeProps {
-    report?: ReportTreeData;
+    selectedReportId: string;
+    treeView: MutableRefObject<ReactNode>;
+    expandedTreeReports: string[];
+    setExpandedTreeReports: (reeReportsIds: string[]) => void;
+    handleSelectNode: (event: SyntheticEvent, reportId: string) => void;
 }
 
-export const ReportTree = ({ report }: ReportTreeProps) => {
-    console.log(`haha ${JSON.stringify(report)}`);
-    console.log(`subreports ${JSON.stringify(report?.subReports)}`);
+export const ReportTree = ({
+    selectedReportId,
+    treeView,
+    expandedTreeReports,
+    setExpandedTreeReports,
+    handleSelectNode,
+}: ReportTreeProps) => {
+    const handleToggleNode = (event: SyntheticEvent, nodeIds: string[]) => {
+        event.persist();
+        //@ts-ignore
+        let iconClicked = event.target.closest('.MuiTreeItem-iconContainer');
+        if (iconClicked) {
+            setExpandedTreeReports(nodeIds);
+        }
+    };
+
     return (
-        report && (
-            <ReportItem
-                labelText={report.message}
-                labelIconColor={report.highestSeverity.colorName}
-                key={report.id}
-                sx={styles.treeItem}
-                nodeId={report.id}
+        <Grid
+            item
+            xs={12}
+            sm={3}
+            sx={{
+                height: '100%',
+                overflow: 'auto',
+                borderRight: '1px solid rgba(81, 81, 81, 1)',
+            }}
+        >
+            {/*TODO do we need to useMemo/useCallback these props to avoid rerenders ?*/}
+            <TreeView
+                sx={styles.treeView}
+                defaultCollapseIcon={<ArrowDropDownIcon />}
+                defaultExpandIcon={<ArrowRightIcon />}
+                defaultEndIcon={<div style={{ width: 24 }} />}
+                onNodeToggle={handleToggleNode}
+                onNodeSelect={handleSelectNode}
+                selected={selectedReportId}
+                expanded={expandedTreeReports}
             >
-                {report.subReports.map((value) => {
-                    console.log(`value ${JSON.stringify(value)}`);
-                    return <ReportTree report={value} />;
-                })}
-            </ReportItem>
-        )
+                {treeView.current}
+            </TreeView>
+        </Grid>
     );
 };
