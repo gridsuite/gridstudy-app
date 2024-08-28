@@ -132,19 +132,13 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
 
     const onLogRowClick = (data) => {
         setExpandedTreeReports((previouslyExpandedTreeReports) => {
-            let treeReportsToExpand = [];
+            let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
             let parentId = data.parentId;
             while (reportTreeData.current[parentId]?.parentId) {
                 parentId = reportTreeData.current[parentId].parentId;
-                if (!previouslyExpandedTreeReports.includes(parentId)) {
-                    treeReportsToExpand.push(parentId);
-                }
+                treeReportsToExpand.add(parentId);
             }
-            if (treeReportsToExpand.length > 0) {
-                return treeReportsToExpand.concat(previouslyExpandedTreeReports);
-            } else {
-                return previouslyExpandedTreeReports;
-            }
+            return Array.from(treeReportsToExpand);
         });
         setHighlightedReportId(data.parentId);
     };
