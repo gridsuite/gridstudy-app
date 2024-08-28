@@ -31,7 +31,7 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
     const [expandedTreeReports, setExpandedTreeReports] = useState([]);
     const [logs, setLogs] = useState(null);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [selectedSeverity, setSelectedSeverity] = useState(getDefaultSeverityFilter());
+    const [severityFilter, setSeverityFilter] = useState(getDefaultSeverityFilter());
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
     const [isLogLoading, , fetchLogs] = useReportFetcher(reportType);
 
@@ -86,7 +86,7 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
             }
 
             fetchLogs(reportId, severityList, reportTreeData.current[reportId].type).then((logs) => {
-                if (logs) {
+                if (logs !== undefined) {
                     setLogs(logs);
                     setSelectedReportId(reportId);
                     setHighlightedReportId(null);
@@ -102,7 +102,7 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
         setSelectedReportId(report.id);
         setExpandedTreeReports([report.id]);
         setLogs(mapReportLog(report));
-        setSelectedSeverity(getDefaultSeverityFilter(reportTree.severities));
+        setSeverityFilter(getDefaultSeverityFilter(reportTree.severities));
     }, [report, initializeTreeDataAndComponent, refreshLogsOnSelectedReport]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -111,15 +111,15 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
 
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
-            const updatedSeverityList = getDefaultSeverityFilter(reportTreeData.current[reportId].severities);
-            setSelectedSeverity(updatedSeverityList);
-            refreshLogsOnSelectedReport(reportId, updatedSeverityList);
+            const updatedSeverityFilter = getDefaultSeverityFilter(reportTreeData.current[reportId].severities);
+            setSeverityFilter(updatedSeverityFilter);
+            refreshLogsOnSelectedReport(reportId, updatedSeverityFilter);
         }
     };
 
     const onSeverityChange = (newSeverityFilter) => {
         refreshLogsOnSelectedReport(selectedReportId, newSeverityFilter);
-        setSelectedSeverity(newSeverityFilter);
+        setSeverityFilter(newSeverityFilter);
     };
 
     // The MUI TreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
@@ -179,7 +179,7 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
                         <LogTable
                             logs={logs}
                             onRowClick={onLogRowClick}
-                            selectedSeverity={selectedSeverity}
+                            selectedSeverity={severityFilter}
                             setSelectedSeverity={onSeverityChange}
                         />
                     </WaitingLoader>

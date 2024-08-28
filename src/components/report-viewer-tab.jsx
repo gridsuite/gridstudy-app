@@ -16,8 +16,8 @@ import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/system';
-import { REPORT_TYPES } from './utils/report-type';
 import { useReportFetcher } from '../hooks/use-report-fetcher';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../constants/report.constant';
 
 const styles = {
     div: {
@@ -42,7 +42,9 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const intl = useIntl();
-    const [isReportLoading, fetchReport] = useReportFetcher(REPORT_TYPES.NETWORK_MODIFICATION);
+    const [isReportLoading, fetchReport] = useReportFetcher(
+        COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION
+    );
 
     const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
@@ -91,7 +93,10 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
                 </Box>
                 {!!report && !disabled && (
-                    <ReportViewer report={report} reportType={REPORT_TYPES.NETWORK_MODIFICATION} />
+                    <ReportViewer
+                        report={report}
+                        reportType={COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION}
+                    />
                 )}
             </Paper>
         </WaitingLoader>

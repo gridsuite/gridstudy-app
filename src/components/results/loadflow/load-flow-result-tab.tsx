@@ -14,7 +14,6 @@ import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
-import { REPORT_TYPES } from 'components/utils/report-type';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
@@ -23,6 +22,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import {
+    convertFilterValues,
     FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT,
     loadFlowCurrentViolationsColumnsDefinition,
     loadFlowResultColumnsDefinition,
@@ -30,7 +30,6 @@ import {
     makeData,
     mappingFields,
     mappingTabs,
-    convertFilterValues,
     useFetchFiltersEnums,
 } from './load-flow-result-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
@@ -321,7 +320,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             )}
             {tabIndex === 3 &&
                 (loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={REPORT_TYPES.LOAD_FLOW} />
+                    <ComputationReportViewer reportType={ComputingType.LOAD_FLOW} />
                 )}
         </>
     );

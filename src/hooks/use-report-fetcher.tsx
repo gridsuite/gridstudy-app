@@ -9,14 +9,17 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReport, fetchParentNodesReport } from '../services/study';
-import { REPORT_TYPES } from '../components/utils/report-type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Log, Report } from '../types/report.type';
 import { getDefaultSeverityList } from '../utils/report-severity.utils';
 import { mapReportLog } from '../utils/report-log.mapper';
-import { GLOBAL_NODE_TASK_KEY, REPORT_TYPE } from '../constants/report.constant';
+import {
+    COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
+    GLOBAL_NODE_TASK_KEY,
+    REPORT_TYPE,
+} from '../constants/report.constant';
 
-function makeSingleReportAndMapNames(report: Report | Report[], nodesNames?: Map<string, string>): Report {
+function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
     if (!Array.isArray(report)) {
         return setNodeName(report, nodesNames);
     } else {
@@ -31,7 +34,7 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames?: Map
     }
 }
 
-function setNodeName(report: Report, nodesNames?: Map<string, string>) {
+function setNodeName(report: Report, nodesNames: Map<string, string>) {
     if (report.message !== 'Root') {
         report.message = nodesNames?.get(report.message) ?? report.message;
     }
@@ -39,7 +42,7 @@ function setNodeName(report: Report, nodesNames?: Map<string, string>) {
 }
 
 export const useReportFetcher = (
-    reportType: keyof typeof REPORT_TYPES
+    computingAndNetworkModificationType: keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
@@ -90,30 +93,36 @@ export const useReportFetcher = (
                         currentNode.id,
                         nodeOnlyReport ?? true,
                         getDefaultSeverityList(),
-                        reportType
+                        computingAndNetworkModificationType
                     )
                 );
             }
             return Promise.resolve(undefined);
         },
-        [currentNode, fetch, reportType, studyUuid]
+        [currentNode, fetch, computingAndNetworkModificationType, studyUuid]
     );
 
     const fetchLogs = useCallback(
-        (reportId: string, severityList: string[], reportTType: keyof typeof REPORT_TYPE) => {
+        (reportId: string, severityList: string[], reportType: keyof typeof REPORT_TYPE) => {
             let fetchPromise: (severityList: string[], reportId: string) => Promise<Report | Report[]>;
-            if (reportTType === REPORT_TYPE.NODE) {
+            if (reportType === REPORT_TYPE.NODE) {
                 fetchPromise = (severityList: string[], reportId: string) =>
                     fetchNodeReport(studyUuid, currentNode!.id, reportId, severityList);
             } else {
                 fetchPromise = (severityList: string[], _: string) =>
-                    fetchParentNodesReport(studyUuid, currentNode!.id, false, severityList, reportType);
+                    fetchParentNodesReport(
+                        studyUuid,
+                        currentNode!.id,
+                        false,
+                        severityList,
+                        computingAndNetworkModificationType
+                    );
             }
             return fetch(() => fetchPromise(severityList, reportId)).then((r) =>
                 r === undefined ? undefined : mapReportLog(r)
             );
         },
-        [currentNode, fetch, reportType, studyUuid]
+        [currentNode, fetch, computingAndNetworkModificationType, studyUuid]
     );
 
     return [isLoading, fetchRawParentReport, fetchLogs];
