@@ -1,4 +1,11 @@
-import React, { MutableRefObject, ReactNode, SyntheticEvent } from 'react';
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import React, { PropsWithChildren, SyntheticEvent } from 'react';
 import { Grid } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -12,19 +19,18 @@ const styles = {
 
 interface ReportTreeProps {
     selectedReportId: string;
-    treeView: MutableRefObject<ReactNode>;
     expandedTreeReports: string[];
     setExpandedTreeReports: (reeReportsIds: string[]) => void;
     handleSelectNode: (event: SyntheticEvent, reportId: string) => void;
 }
 
-export const ReportTree = ({
+export default function ReportTree({
     selectedReportId,
-    treeView,
     expandedTreeReports,
     setExpandedTreeReports,
     handleSelectNode,
-}: ReportTreeProps) => {
+    children,
+}: PropsWithChildren<ReportTreeProps>) {
     const handleToggleNode = (event: SyntheticEvent, nodeIds: string[]) => {
         event.persist();
         //@ts-ignore
@@ -56,8 +62,8 @@ export const ReportTree = ({
                 selected={selectedReportId}
                 expanded={expandedTreeReports}
             >
-                {treeView.current}
+                {children}
             </TreeView>
         </Grid>
     );
-};
+}

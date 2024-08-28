@@ -12,30 +12,33 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
-import { ReportTree } from '../../report-viewer/reportTreeMapper';
-import { useReportFetcher } from '../../../hooks/useReportFetcher';
+import { useReportFetcher } from '../../../hooks/use-report-fetcher';
+import { Report } from '../../../types/report.type';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
 }
 
 export const ComputationReportViewer: FunctionComponent<ComputationReportViewerProps> = ({ reportType }) => {
-    const [report, setReport] = useState<ReportTree>();
-    const { snackError } = useSnackMessage();
+    const [report, setReport] = useState<Report>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-
-    const [isLoading, fetchAndProcessReport] = useReportFetcher(reportType);
+    const { snackError } = useSnackMessage();
+    const [isReportLoading, fetchReport] = useReportFetcher(reportType);
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchAndProcessReport().then((report) => setReport(report));
+            fetchReport().then((report) => {
+                if (report !== undefined) {
+                    setReport(report);
+                }
+            });
         }
-    }, [studyUuid, currentNode?.id, reportType, snackError, fetchAndProcessReport]);
+    }, [studyUuid, currentNode?.id, reportType, snackError, fetchReport]);
 
     return (
-        <WaitingLoader loading={isLoading} message={'loadingReport'}>
-            {report && <ReportViewer reportsTree={report} />}
+        <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
+            {report && <ReportViewer report={report} reportType={reportType} />}
         </WaitingLoader>
     );
 };

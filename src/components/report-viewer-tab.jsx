@@ -17,7 +17,7 @@ import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box } from '@mui/system';
 import { REPORT_TYPES } from './utils/report-type';
-import { useReportFetcher } from '../hooks/useReportFetcher';
+import { useReportFetcher } from '../hooks/use-report-fetcher';
 
 const styles = {
     div: {
@@ -42,7 +42,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     const [nodeOnlyReport, setNodeOnlyReport] = useState(true);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const intl = useIntl();
-    const [reportsLoading, reportsFetcher] = useReportFetcher(REPORT_TYPES.NETWORK_MODIFICATION);
+    const [isReportLoading, fetchReport] = useReportFetcher(REPORT_TYPES.NETWORK_MODIFICATION);
 
     const handleChangeNodeOnlySwitch = useCallback((event) => {
         setNodeOnlyReport(event.target.checked);
@@ -58,7 +58,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     useEffect(() => {
         // Visible and !disabled ensure that the user has the LOGS tab open and the current node is built.
         if (visible && !disabled) {
-            reportsFetcher(nodeOnlyReport).then((r) => {
+            fetchReport(nodeOnlyReport).then((r) => {
                 if (r !== undefined) {
                     setReport(r);
                 }
@@ -66,10 +66,10 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.
-    }, [visible, currentNode, disabled, reportsFetcher, nodeOnlyReport]);
+    }, [visible, currentNode, disabled, fetchReport, nodeOnlyReport]);
 
     return (
-        <WaitingLoader loading={reportsLoading} message={'loadingReport'}>
+        <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
             <Paper className={'singlestretch-child'}>
                 <Box sx={styles.div}>
                     <FormControlLabel
@@ -90,7 +90,9 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     />
                     {disabled && <AlertCustomMessageNode message={'InvalidNode'} />}
                 </Box>
-                {!!report && !disabled && <ReportViewer reportsTree={report} />}
+                {!!report && !disabled && (
+                    <ReportViewer report={report} reportType={REPORT_TYPES.NETWORK_MODIFICATION} />
+                )}
             </Paper>
         </WaitingLoader>
     );

@@ -9,35 +9,31 @@ import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
 import WaitingLoader from '../utils/waiting-loader';
-import { mapReportToReportItems } from './reportItemMapper';
-import { getDefaultSeverityFilter } from './severity.utils';
-import { ReportTree } from './ReportTree';
+import ReportTree from './report-tree';
 import ReportItem from './report-item';
-import { useReportFetcher } from '../../hooks/useReportFetcher';
-import { REPORT_TYPES } from '../utils/report-type';
+import { getDefaultSeverityFilter } from '../../utils/report-severity.utils';
+import { useReportFetcher } from '../../hooks/use-report-fetcher';
+import { mapReportLog } from '../../utils/report-log.mapper';
+import { mapReportsTree } from '../../utils/report-tree.mapper';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const MAX_SUB_REPORTS = 500;
-export const GLOBAL_NODE_TASK_KEY = 'Logs';
 
 const styles = {
-    treeView: {
-        height: '100%',
-    },
     treeItem: {
         whiteSpace: 'nowrap',
     },
 };
 
-export default function ReportViewer({ reportsTree, maxSubReports = MAX_SUB_REPORTS }) {
+export default function ReportViewer({ report, reportType, maxSubReports = MAX_SUB_REPORTS }) {
     const [selectedReportId, setSelectedReportId] = useState(null);
     const [expandedTreeReports, setExpandedTreeReports] = useState([]);
     const [logs, setLogs] = useState(null);
     const [highlightedReportId, setHighlightedReportId] = useState();
     const [selectedSeverity, setSelectedSeverity] = useState(getDefaultSeverityFilter());
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
-    const [isLoading, , fetchLogs] = useReportFetcher(REPORT_TYPES.NETWORK_MODIFICATION);
+    const [isLogLoading, , fetchLogs] = useReportFetcher(reportType);
 
     const reportTreeData = useRef({});
     const treeView = useRef(null);
@@ -101,12 +97,13 @@ export default function ReportViewer({ reportsTree, maxSubReports = MAX_SUB_REPO
     );
 
     useEffect(() => {
-        treeView.current = initializeTreeDataAndComponent(reportsTree);
-        setSelectedReportId(reportsTree.id);
-        setExpandedTreeReports([reportsTree.id]);
-        setLogs(mapReportToReportItems(reportsTree));
-        setSelectedSeverity(getDefaultSeverityFilter(reportsTree.severities));
-    }, [reportsTree, initializeTreeDataAndComponent]);
+        const reportTree = mapReportsTree(report);
+        treeView.current = initializeTreeDataAndComponent(reportTree);
+        setSelectedReportId(report.id);
+        setExpandedTreeReports([report.id]);
+        setLogs(mapReportLog(report));
+        setSelectedSeverity(getDefaultSeverityFilter(reportTree.severities));
+    }, [report, initializeTreeDataAndComponent, refreshLogsOnSelectedReport]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
@@ -136,13 +133,12 @@ export default function ReportViewer({ reportsTree, maxSubReports = MAX_SUB_REPO
     const onLogRowClick = (data) => {
         setExpandedTreeReports((previouslyExpandedTreeReports) => {
             let treeReportsToExpand = [];
-            let reportId = data.reportId;
-            while (reportTreeData.current[reportId]?.parentId) {
-                let parentId = reportTreeData.current[reportId].parentId;
+            let parentId = data.parentId;
+            while (reportTreeData.current[parentId]?.parentId) {
+                parentId = reportTreeData.current[parentId].parentId;
                 if (!previouslyExpandedTreeReports.includes(parentId)) {
                     treeReportsToExpand.push(parentId);
                 }
-                reportId = parentId;
             }
             if (treeReportsToExpand.length > 0) {
                 return treeReportsToExpand.concat(previouslyExpandedTreeReports);
@@ -150,11 +146,11 @@ export default function ReportViewer({ reportsTree, maxSubReports = MAX_SUB_REPO
                 return previouslyExpandedTreeReports;
             }
         });
-        setHighlightedReportId(data.reportId);
+        setHighlightedReportId(data.parentId);
     };
 
     return (
-        reportsTree && (
+        report && (
             <Grid
                 container
                 ref={handleReportVerticalPositionFromTop}
@@ -177,14 +173,15 @@ export default function ReportViewer({ reportsTree, maxSubReports = MAX_SUB_REPO
                     {/*TODO do we need to useMemo/useCallback these props to avoid rerenders ?*/}
                     <ReportTree
                         selectedReportId={selectedReportId}
-                        treeView={treeView}
                         expandedTreeReports={expandedTreeReports}
                         setExpandedTreeReports={setExpandedTreeReports}
                         handleSelectNode={handleSelectNode}
-                    />
+                    >
+                        {treeView.current}
+                    </ReportTree>
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
-                    <WaitingLoader loading={isLoading} message={'loadingReport'}>
+                    <WaitingLoader loading={isLogLoading} message={'loadingReport'}>
                         <LogTable
                             logs={logs}
                             onRowClick={onLogRowClick}

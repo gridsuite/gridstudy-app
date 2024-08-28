@@ -90,7 +90,7 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) =
                       severity: log.severity.name,
                       message: log.message,
                       backgroundColor: log.severity.colorName,
-                      reportId: log.reportId,
+                      parentId: log.parentId,
                   };
               });
     };

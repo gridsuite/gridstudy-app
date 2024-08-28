@@ -1,6 +1,13 @@
-import { LogSeverity, SeverityLevel } from './severity.type';
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 
-export const LOG_SEVERITY: Record<SeverityLevel, LogSeverity> = {
+import { ReportSeverity, SeverityLevel } from '../types/report.type';
+
+export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     UNKNOWN: {
         name: 'UNKNOWN',
         level: 0,
@@ -51,3 +58,10 @@ export const LOG_SEVERITY: Record<SeverityLevel, LogSeverity> = {
         displayedByDefault: true,
     },
 };
+
+export const REPORT_TYPE = {
+    GLOBAL: 'GlobalReport',
+    NODE: 'NodeReport',
+};
+
+export const GLOBAL_NODE_TASK_KEY = 'Logs';
