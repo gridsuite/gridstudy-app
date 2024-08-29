@@ -256,15 +256,15 @@ export function getConverterStationModificationData(
 export function getConverterStationFormEditData(id: string, converterStation: ConverterStationInterfaceEditData) {
     return {
         [id]: {
-            [CONVERTER_STATION_ID]: converterStation.equipmentId,
+            [CONVERTER_STATION_ID]: converterStation?.equipmentId,
             [CONVERTER_STATION_NAME]: converterStation?.equipmentName ?? '',
-            [LOSS_FACTOR]: converterStation.lossFactor,
+            [LOSS_FACTOR]: converterStation?.lossFactor,
             [REACTIVE_POWER]: converterStation?.reactivePowerSetpoint,
-            [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulationOn,
+            [VOLTAGE_REGULATION_ON]: converterStation?.voltageRegulationOn,
             [VOLTAGE]: converterStation?.voltageSetpoint,
             ...getConnectivityFormData({
-                voltageLevelId: converterStation.voltageLevelId,
-                busbarSectionId: converterStation.busOrBusbarSectionId,
+                voltageLevelId: converterStation?.voltageLevelId,
+                busbarSectionId: converterStation?.busOrBusbarSectionId,
                 connectionDirection: converterStation?.connectionDirection,
                 connectionName: converterStation?.connectionName,
                 connectionPosition: converterStation?.connectionPosition,
@@ -344,8 +344,8 @@ export function getConverterStationFromSearchCopy(id: string, converterStation: 
             [VOLTAGE_REGULATION_ON]: converterStation.voltageRegulatorOn,
             [VOLTAGE]: converterStation?.voltageSetpoint,
             ...getConnectivityFormData({
-                voltageLevelId: converterStation.voltageLevelId,
-                busbarSectionId: converterStation.busOrBusbarSectionId,
+                voltageLevelId: converterStation?.voltageLevelId,
+                busbarSectionId: converterStation?.busOrBusbarSectionId,
                 connectionDirection: converterStation?.connectablePositionInfos?.connectionDirection,
                 connectionName: converterStation?.connectablePositionInfos?.connectionName,
                 connectionPosition: null,

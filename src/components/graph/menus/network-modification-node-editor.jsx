@@ -6,13 +6,12 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
-import { ModificationListItem } from './modification-list-item';
 import { Checkbox, CircularProgress, Toolbar, Tooltip, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
@@ -27,9 +26,7 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import CheckboxList from '../../utils/checkbox-list';
 import IconButton from '@mui/material/IconButton';
-import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
 import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
@@ -73,7 +70,8 @@ import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 import { createCompositeModifications } from '../../../services/explore';
-import { areUuidsEqual } from 'components/utils/utils';
+import EditIcon from '@mui/icons-material/Edit.js';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
 import ByFilterModificationDialog from '../../dialogs/network-modifications/by-filter-modification/by-filter-modification-dialog';
 
@@ -85,10 +83,16 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    list: (theme) => ({
-        paddingTop: theme.spacing(0),
-        flexGrow: 1,
-    }),
+    list: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
+    checkBoxLabel: { flexGrow: '1' },
+    checkBoxIcon: { minWidth: 0, padding: 0 },
+    checkboxButton: {
+        padding: 0,
+        margin: 0,
+        display: 'flex',
+        alignItems: 'center',
+    },
+    checkbox: { minWidth: 0, padding: 0 },
     modificationsTitle: (theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -140,6 +144,22 @@ export const styles = {
     icon: (theme) => ({
         width: theme.spacing(3),
     }),
+    iconEdit: (theme) => ({
+        marginRight: theme.spacing(1),
+    }),
+};
+
+const nonEditableModificationTypes = new Set([
+    'EQUIPMENT_ATTRIBUTE_MODIFICATION',
+    'GROOVY_SCRIPT',
+    'OPERATING_STATUS_MODIFICATION',
+]);
+
+const isEditableModification = (modif) => {
+    if (!modif) {
+        return false;
+    }
+    return !nonEditableModificationTypes.has(modif.type);
 };
 
 export function isChecked(s1) {
@@ -747,7 +767,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copiedModifications, currentNode?.id, copyInfos, snackError, studyUuid]);
 
-    function removeNullFields(data) {
+    const removeNullFields = useCallback((data) => {
         let dataTemp = data;
         if (dataTemp) {
             Object.keys(dataTemp).forEach((key) => {
@@ -761,28 +781,31 @@ const NetworkModificationNodeEditor = () => {
             });
         }
         return dataTemp;
-    }
+    }, []);
 
-    const doEditModification = (modificationUuid, type) => {
-        setIsUpdate(true);
-        setEditDialogOpen(type);
-        setEditDataFetchStatus(FetchStatus.RUNNING);
-        const modification = fetchNetworkModification(modificationUuid);
-        modification
-            .then((res) => {
-                return res.json().then((data) => {
-                    //remove all null values to avoid showing a "null" in the forms
-                    setEditData(removeNullFields(data));
-                    setEditDataFetchStatus(FetchStatus.SUCCEED);
+    const doEditModification = useCallback(
+        (modificationUuid, type) => {
+            setIsUpdate(true);
+            setEditDialogOpen(type);
+            setEditDataFetchStatus(FetchStatus.RUNNING);
+            const modification = fetchNetworkModification(modificationUuid);
+            modification
+                .then((res) => {
+                    return res.json().then((data) => {
+                        //remove all null values to avoid showing a "null" in the forms
+                        setEditData(removeNullFields(data));
+                        setEditDataFetchStatus(FetchStatus.SUCCEED);
+                    });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
+                    setEditDataFetchStatus(FetchStatus.FAILED);
                 });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                });
-                setEditDataFetchStatus(FetchStatus.FAILED);
-            });
-    };
+        },
+        [removeNullFields, snackError]
+    );
 
     const onItemClick = (id) => {
         setOpenNetworkModificationsMenu(false);
@@ -827,39 +850,61 @@ const NetworkModificationNodeEditor = () => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     };
 
+    const intl = useIntl();
+    const { computeLabel } = useModificationLabelComputer();
+    const getModificationLabel = (modif) => {
+        if (!modif) {
+            return null;
+        }
+        return intl.formatMessage(
+            { id: 'network_modifications.' + modif.messageType },
+            {
+                ...modif,
+                ...computeLabel(modif),
+            }
+        );
+    };
+
+    const handleSecondaryAction = useCallback(
+        (modification) =>
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            !isDragging &&
+            isEditableModification(modification) && (
+                <IconButton
+                    onClick={() => doEditModification(modification.uuid, modification.type)}
+                    size={'small'}
+                    sx={styles.iconEdit}
+                >
+                    <EditIcon />
+                </IconButton>
+            ),
+        [doEditModification, isAnyNodeBuilding, isDragging, mapDataLoading]
+    );
     const renderNetworkModificationsList = () => {
         return (
-            <DragDropContext onDragEnd={commit} onDragStart={() => setIsDragging(true)}>
-                <Droppable
-                    droppableId="network-modification-list"
-                    isDropDisabled={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
-                >
-                    {(provided) => (
-                        <Box sx={styles.listContainer} ref={provided.innerRef} {...provided.droppableProps}>
-                            <CheckboxList
-                                sx={styles.list}
-                                onChecked={setSelectedItems}
-                                checkedValues={selectedItems}
-                                values={modifications}
-                                itemComparator={areUuidsEqual}
-                                itemRenderer={(props) => (
-                                    <ModificationListItem
-                                        key={props.item.uuid}
-                                        onEdit={doEditModification}
-                                        isDragging={isDragging}
-                                        isOneNodeBuilding={isAnyNodeBuilding}
-                                        deleteInProgress={deleteInProgress}
-                                        disabled={isLoading()}
-                                        listSize={modifications.length}
-                                        {...props}
-                                    />
-                                )}
-                            />
-                            {provided.placeholder}
-                        </Box>
-                    )}
-                </Droppable>
-            </DragDropContext>
+            <CheckboxList
+                sx={{
+                    label: styles.checkBoxLabel,
+                    checkBoxIcon: styles.checkBoxIcon,
+                    checkboxButton: styles.checkboxButton,
+                    checkbox: styles.checkbox,
+                    checkboxList: styles.list,
+                }}
+                selectedItems={selectedItems}
+                onSelectionChange={setSelectedItems}
+                items={modifications}
+                getItemId={(val) => val.uuid}
+                getItemLabel={getModificationLabel}
+                isDndDragAndDropActive
+                isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                secondaryAction={handleSecondaryAction}
+                enableSecondaryActionOnHover
+                isCheckboxClickableOnly
+                onDragEnd={commit}
+                onDragStart={() => setIsDragging(true)}
+                divider
+            />
         );
     };
 
