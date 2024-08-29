@@ -7,18 +7,12 @@
 
 import React, { FunctionComponent, useEffect } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import {
-    EQUIPMENT_TYPE_FIELD,
-    SIMPLE_MODIFICATIONS,
-} from '../../../utils/field-constants';
+import { EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../utils/field-constants';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
 import ModificationLineForm from './modification-line/modification-line-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
-import {
-    EQUIPMENTS_FIELDS,
-    getModificationLineInitialValue,
-} from './modification-line/modification-line-utils';
+import { EQUIPMENTS_FIELDS, getModificationLineInitialValue } from './modification-line/modification-line-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
@@ -42,8 +36,7 @@ const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
     const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentType] ?? [];
 
     // get predefined properties
-    const [predefinedProperties, setEquipmentType] =
-        usePredefinedProperties(equipmentType);
+    const [predefinedProperties, setEquipmentType] = usePredefinedProperties(equipmentType);
     useEffect(() => {
         setEquipmentType(equipmentType);
     }, [equipmentType, setEquipmentType]);

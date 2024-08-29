@@ -320,11 +320,7 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         FIELD_OPTIONS.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     ],
-    [EQUIPMENT_TYPES.LOAD]: [
-        FIELD_OPTIONS.PROPERTY,
-        FIELD_OPTIONS.ACTIVE_POWER,
-        FIELD_OPTIONS.REACTIVE_POWER,
-    ],
+    [EQUIPMENT_TYPES.LOAD]: [FIELD_OPTIONS.PROPERTY, FIELD_OPTIONS.ACTIVE_POWER, FIELD_OPTIONS.REACTIVE_POWER],
     [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
         FIELD_OPTIONS.PROPERTY,
         FIELD_OPTIONS.R,
@@ -346,8 +342,7 @@ export const EQUIPMENTS_FIELDS = {
 };
 
 export const getDataType = (fieldName: string) => {
-    return (searchTree(FIELD_OPTIONS, 'id', fieldName) as FieldOptionType)
-        ?.dataType;
+    return (searchTree(FIELD_OPTIONS, 'id', fieldName) as FieldOptionType)?.dataType;
 };
 
 export const getModificationLineInitialValue = () => ({
@@ -375,21 +370,17 @@ export function getModificationLinesSchema(id: string) {
                     .required()
                     .min(1, 'FieldIsRequired'),
                 [EDITED_FIELD]: yup.string().required(),
-                [PROPERTY_NAME_FIELD]: yup
-                    .string()
-                    .when([EDITED_FIELD], ([editedField], schema) => {
-                        const dataType = getDataType(editedField);
-                        if (dataType === DataType.PROPERTY) {
-                            return schema.required();
-                        }
-                        return schema.nullable();
-                    }),
-                [VALUE_FIELD]: yup
-                    .mixed()
-                    .when([EDITED_FIELD], ([editedField], schema) => {
-                        const dataType = getDataType(editedField);
-                        return getValueSchema(dataType);
-                    }),
+                [PROPERTY_NAME_FIELD]: yup.string().when([EDITED_FIELD], ([editedField], schema) => {
+                    const dataType = getDataType(editedField);
+                    if (dataType === DataType.PROPERTY) {
+                        return schema.required();
+                    }
+                    return schema.nullable();
+                }),
+                [VALUE_FIELD]: yup.mixed().when([EDITED_FIELD], ([editedField], schema) => {
+                    const dataType = getDataType(editedField);
+                    return getValueSchema(dataType);
+                }),
             })
         ),
     };

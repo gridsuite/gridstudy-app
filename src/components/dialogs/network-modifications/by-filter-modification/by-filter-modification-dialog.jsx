@@ -62,9 +62,7 @@ const ByFilterModificationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -72,18 +70,13 @@ const ByFilterModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const simpleModifications =
-                editData.simpleModificationInfosList?.map(
-                    (simpleModification) => ({
-                        [PROPERTY_NAME_FIELD]: simpleModification.propertyName,
-                        [VALUE_FIELD]: simpleModification.value,
-                        [EDITED_FIELD]: simpleModification.editedField,
-                        [DATA_TYPE]: getDataType(
-                            simpleModification.editedField
-                        ),
-                        [FILTERS]: simpleModification.filters,
-                    })
-                );
+            const simpleModifications = editData.simpleModificationInfosList?.map((simpleModification) => ({
+                [PROPERTY_NAME_FIELD]: simpleModification.propertyName,
+                [VALUE_FIELD]: simpleModification.value,
+                [EDITED_FIELD]: simpleModification.editedField,
+                [DATA_TYPE]: getDataType(simpleModification.editedField),
+                [FILTERS]: simpleModification.filters,
+            }));
             reset({
                 [EQUIPMENT_TYPE_FIELD]: editData.identifiableType,
                 [SIMPLE_MODIFICATIONS]: simpleModifications,
@@ -97,17 +90,13 @@ const ByFilterModificationDialog = ({
 
     const onSubmit = useCallback(
         (formData) => {
-            const simpleModificationsList = formData[SIMPLE_MODIFICATIONS].map(
-                (simpleModification) => {
-                    const dataType = getDataType(
-                        simpleModification[EDITED_FIELD]
-                    );
-                    return {
-                        ...simpleModification,
-                        dataType,
-                    };
-                }
-            );
+            const simpleModificationsList = formData[SIMPLE_MODIFICATIONS].map((simpleModification) => {
+                const dataType = getDataType(simpleModification[EDITED_FIELD]);
+                return {
+                    ...simpleModification,
+                    dataType,
+                };
+            });
             modifyByFilter(
                 studyUuid,
                 currentNodeUuid,
@@ -135,9 +124,7 @@ const ByFilterModificationDialog = ({
                 titleId="ModifyByFilter"
                 open={open}
                 maxWidth={'xl'}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <ByFilterModificationForm />

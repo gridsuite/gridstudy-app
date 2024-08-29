@@ -6,19 +6,8 @@
  */
 
 import React, { FunctionComponent, useMemo } from 'react';
-import {
-    AutocompleteInput,
-    DirectoryItemsInput,
-    ElementType,
-    FloatInput,
-    IntegerInput,
-} from '@gridsuite/commons-ui';
-import {
-    EDITED_FIELD,
-    FILTERS,
-    PROPERTY_NAME_FIELD,
-    VALUE_FIELD,
-} from '../../../../utils/field-constants';
+import { AutocompleteInput, DirectoryItemsInput, ElementType, FloatInput, IntegerInput } from '@gridsuite/commons-ui';
+import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
 import { DataType, FieldOptionType } from './modification-line-utils';
@@ -47,9 +36,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
     });
 
     const dataType = useMemo(() => {
-        return equipmentFields?.find(
-            (fieldOption) => fieldOption?.id === watchEditedField
-        )?.dataType;
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.dataType;
     }, [watchEditedField, equipmentFields]);
 
     const watchPropertyName = useWatch({
@@ -81,13 +68,9 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
             options={equipmentFields}
             label={'EditedField'}
             size={'small'}
-            inputTransform={(value: any) =>
-                equipmentFields.find((option) => option?.id === value) || value
-            }
+            inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) =>
-                intl.formatMessage({ id: getLabelOrValue(option) })
-            }
+            getOptionLabel={(option: any) => intl.formatMessage({ id: getLabelOrValue(option) })}
         />
     );
 
@@ -115,29 +98,18 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         }
 
         if (dataType === DataType.INTEGER) {
-            return (
-                <IntegerInput
-                    name={`${name}.${index}.${VALUE_FIELD}`}
-                    label={'Value'}
-                />
-            );
+            return <IntegerInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
         }
 
         // by default is a numeric type
-        return (
-            <FloatInput
-                name={`${name}.${index}.${VALUE_FIELD}`}
-                label={'Value'}
-            />
-        );
+        return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
     }, [dataType, name, index, predefinedValues]);
 
     return (
         <>
             {gridItem(filtersField, 2.25)}
             {gridItem(editedField, 3)}
-            {dataType === DataType.PROPERTY &&
-                gridItem(propertyNameField, 2.25)}
+            {dataType === DataType.PROPERTY && gridItem(propertyNameField, 2.25)}
             {gridItem(valueField, dataType === DataType.PROPERTY ? 3.25 : 5.5)}
         </>
     );
