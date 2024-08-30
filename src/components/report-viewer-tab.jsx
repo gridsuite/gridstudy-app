@@ -18,6 +18,7 @@ import { useSelector } from 'react-redux';
 import { Box } from '@mui/system';
 import { useReportFetcher } from '../hooks/use-report-fetcher';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../constants/report.constant';
+import { ROOT_NODE_LABEL } from '../constants/node.constant';
 
 const styles = {
     div: {
@@ -51,7 +52,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
     }, []);
 
     const rootNodeId = useMemo(() => {
-        const rootNode = treeModel.treeNodes.find((node) => node?.data?.label === 'Root');
+        const rootNode = treeModel.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
         return rootNode?.id;
     }, [treeModel]);
 

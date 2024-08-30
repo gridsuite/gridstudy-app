@@ -63,9 +63,9 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
 export const REPORT_TYPE = {
     GLOBAL: 'GlobalReport',
     NODE: 'NodeReport',
-};
+} as const;
 
-export const GLOBAL_NODE_TASK_KEY = 'Logs';
+export const GLOBAL_REPORT_NODE_LABEL = 'Logs';
 
 // must be in-sync with ReportType in study-server
 export const COMPUTING_AND_NETWORK_MODIFICATION_TYPE = {

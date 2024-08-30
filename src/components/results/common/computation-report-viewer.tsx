@@ -6,7 +6,6 @@
  */
 
 import { FunctionComponent, useEffect, useState } from 'react';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import ReportViewer from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
@@ -23,7 +22,6 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
     const [report, setReport] = useState<Report>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const { snackError } = useSnackMessage();
     const [isReportLoading, fetchReport] = useReportFetcher(reportType);
 
     useEffect(() => {
@@ -34,7 +32,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
                 }
             });
         }
-    }, [studyUuid, currentNode?.id, reportType, snackError, fetchReport]);
+    }, [studyUuid, currentNode?.id, reportType, fetchReport]);
 
     return (
         <WaitingLoader loading={isReportLoading} message={'loadingReport'}>

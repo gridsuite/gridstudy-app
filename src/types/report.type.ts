@@ -4,6 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+import { REPORT_TYPE } from '../constants/report.constant';
 
 export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
 
@@ -17,8 +18,12 @@ export type ReportSeverity = {
     displayedByDefault: boolean;
 };
 
+type ReportTypeKeys = keyof typeof REPORT_TYPE;
+
+export type ReportType = (typeof REPORT_TYPE)[ReportTypeKeys];
+
 export type ReportTree = Report & {
-    type: string;
+    type: ReportType;
     highestSeverity: ReportSeverity;
     subReports: ReportTree[];
 };
@@ -26,7 +31,7 @@ export type ReportTree = Report & {
 export type Report = {
     message: string;
     severities: string[];
-    parentId?: string;
+    parentId: string | null;
     id: string;
     subReports: Report[];
 };

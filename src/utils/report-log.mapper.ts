@@ -10,21 +10,25 @@ import { REPORT_SEVERITY } from '../constants/report.constant';
 
 export const mapReportLog = (report: Report) => {
     const formattedLogs: Log[] = [];
-    formatReport(report, formattedLogs);
+    formatReportLog(report, formattedLogs);
     return formattedLogs;
 };
 
-const formatReport = (report: Report, formattedLogs: Log[]) => {
+const formatReportLog = (report: Report, formattedLogs: Log[]) => {
     const highestSeverity = mapSeverity(report.severities ?? [REPORT_SEVERITY.UNKNOWN.name]);
     // For now, we want to display only reports that are not containers in the "log" view
-    if (report.subReports.length === 0 && highestSeverity.name !== REPORT_SEVERITY.UNKNOWN.name) {
+    if (
+        report.subReports.length === 0 &&
+        highestSeverity.name !== REPORT_SEVERITY.UNKNOWN.name &&
+        report.parentId !== null
+    ) {
         formattedLogs.push({
             message: report.message,
             severity: highestSeverity,
             parentId: report.parentId,
         });
     }
-    report.subReports.forEach((subReport: Report) => formatReport(subReport, formattedLogs));
+    report.subReports.forEach((subReport: Report) => formatReportLog(subReport, formattedLogs));
 };
 
 const mapSeverity = (severities: string[]) => {

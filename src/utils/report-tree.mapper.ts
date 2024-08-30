@@ -5,14 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Report, ReportTree } from '../types/report.type';
+import { Report, ReportTree, ReportType } from '../types/report.type';
 import { getHighestSeverity } from './report-severity.utils';
-import { GLOBAL_NODE_TASK_KEY, REPORT_TYPE } from '../constants/report.constant';
+import { GLOBAL_REPORT_NODE_LABEL, REPORT_TYPE } from '../constants/report.constant';
 
-export function mapReportsTree(report: Report, reportType?: string): ReportTree {
+export function mapReportsTree(report: Report, reportType?: ReportType): ReportTree {
     const severityList = report.severities || report.subReports.flatMap((subReport) => subReport.severities);
     return {
-        type: reportType ?? (report.message === GLOBAL_NODE_TASK_KEY ? REPORT_TYPE.GLOBAL : REPORT_TYPE.NODE),
+        type: reportType ?? (report.message === GLOBAL_REPORT_NODE_LABEL ? REPORT_TYPE.GLOBAL : REPORT_TYPE.NODE),
         id: report.id,
         message: report.message,
         parentId: report.parentId,

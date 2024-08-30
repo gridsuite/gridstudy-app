@@ -10,14 +10,15 @@ import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReport, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Log, Report } from '../types/report.type';
+import { Log, Report, ReportType } from '../types/report.type';
 import { getDefaultSeverityList } from '../utils/report-severity.utils';
 import { mapReportLog } from '../utils/report-log.mapper';
 import {
     COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
-    GLOBAL_NODE_TASK_KEY,
+    GLOBAL_REPORT_NODE_LABEL,
     REPORT_TYPE,
 } from '../constants/report.constant';
+import { ROOT_NODE_LABEL } from '../constants/node.constant';
 
 function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
     if (!Array.isArray(report)) {
@@ -27,15 +28,15 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<
             return setNodeName(report[0], nodesNames);
         }
         return {
-            message: GLOBAL_NODE_TASK_KEY,
-            id: GLOBAL_NODE_TASK_KEY,
+            message: GLOBAL_REPORT_NODE_LABEL,
+            id: GLOBAL_REPORT_NODE_LABEL,
             subReports: report.map((r) => setNodeName(r, nodesNames)),
         } as Report;
     }
 }
 
 function setNodeName(report: Report, nodesNames: Map<string, string>) {
-    if (report.message !== 'Root') {
+    if (report.message !== ROOT_NODE_LABEL) {
         report.message = nodesNames?.get(report.message) ?? report.message;
     }
     return report;
@@ -46,7 +47,7 @@ export const useReportFetcher = (
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
-    (reportId: string, severityList: string[], reportType: keyof typeof REPORT_TYPE) => Promise<Log[] | undefined>
+    (reportId: string, severityList: string[], reportType: ReportType) => Promise<Log[] | undefined>
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -103,7 +104,7 @@ export const useReportFetcher = (
     );
 
     const fetchLogs = useCallback(
-        (reportId: string, severityList: string[], reportType: keyof typeof REPORT_TYPE) => {
+        (reportId: string, severityList: string[], reportType: ReportType) => {
             let fetchPromise: (severityList: string[], reportId: string) => Promise<Report | Report[]>;
             if (reportType === REPORT_TYPE.NODE) {
                 fetchPromise = (severityList: string[], reportId: string) =>

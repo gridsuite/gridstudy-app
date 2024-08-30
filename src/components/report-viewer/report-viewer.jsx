@@ -18,15 +18,13 @@ import { mapReportsTree } from '../../utils/report-tree.mapper';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
-const MAX_SUB_REPORTS = 500;
-
 const styles = {
     treeItem: {
         whiteSpace: 'nowrap',
     },
 };
 
-export default function ReportViewer({ report, reportType, maxSubReports = MAX_SUB_REPORTS }) {
+export default function ReportViewer({ report, reportType }) {
     const [selectedReportId, setSelectedReportId] = useState(null);
     const [expandedTreeReports, setExpandedTreeReports] = useState([]);
     const [logs, setLogs] = useState(null);
@@ -42,31 +40,20 @@ export default function ReportViewer({ report, reportType, maxSubReports = MAX_S
      * Build the tree view (left pane) creating all ReportItem from json data
      * @type {Function}
      */
-    const initializeTreeDataAndComponent = useCallback(
-        (report) => {
-            reportTreeData.current[report.id] = report;
-            if (report.subReports.length > maxSubReports) {
-                console.warn(
-                    'The number (%s) being greater than %s only the first %s subreports will be displayed',
-                    report.subReports.length,
-                    maxSubReports,
-                    maxSubReports
-                );
-            }
-            return (
-                <ReportItem
-                    labelText={report.message}
-                    labelIconColor={report.highestSeverity.colorName}
-                    key={report.id}
-                    sx={styles.treeItem}
-                    nodeId={report.id}
-                >
-                    {report.subReports.map((value) => initializeTreeDataAndComponent(value))}
-                </ReportItem>
-            );
-        },
-        [maxSubReports]
-    );
+    const initializeTreeDataAndComponent = useCallback((report) => {
+        reportTreeData.current[report.id] = report;
+        return (
+            <ReportItem
+                labelText={report.message}
+                labelIconColor={report.highestSeverity.colorName}
+                key={report.id}
+                sx={styles.treeItem}
+                nodeId={report.id}
+            >
+                {report.subReports.map((value) => initializeTreeDataAndComponent(value))}
+            </ReportItem>
+        );
+    }, []);
 
     const refreshLogsOnSelectedReport = useCallback(
         (reportId, severityFilter) => {
