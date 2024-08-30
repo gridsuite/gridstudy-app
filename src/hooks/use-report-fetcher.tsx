@@ -38,6 +38,7 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<
 function setNodeName(report: Report, nodesNames: Map<string, string>) {
     if (report.message !== ROOT_NODE_LABEL) {
         report.message = nodesNames?.get(report.message) ?? report.message;
+        report.parentId = GLOBAL_REPORT_NODE_LABEL;
     }
     return report;
 }
