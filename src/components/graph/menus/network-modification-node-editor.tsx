@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckboxList, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -13,7 +13,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Switch, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -85,6 +85,7 @@ import {
     NetworkModificationData,
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
+import { SwitchNetworkModificationActive } from './switch-network-modification-active';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -858,16 +859,20 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleSecondaryAction = useCallback(
-        (modification: NetworkModificationMetadata) =>
-            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification) ? (
-                <IconButton
-                    onClick={() => doEditModification(modification.uuid, modification.type)}
-                    size={'small'}
-                    sx={styles.iconEdit}
-                >
-                    <EditIcon />
-                </IconButton>
-            ) : null,
+        (modification: NetworkModificationMetadata, isItemHovered?: boolean) => {
+            return (
+                <SwitchNetworkModificationActive
+                    modificationActive={modification.active}
+                    modificationUuid={modification.uuid}
+                    setModifications={setModifications}
+                    hidden={
+                        !isItemHovered || isAnyNodeBuilding || mapDataLoading || isDragging
+                        // ||
+                        // !isEditableModification(modification)
+                    }
+                />
+            );
+        },
         [doEditModification, isAnyNodeBuilding, isDragging, mapDataLoading]
     );
     const renderNetworkModificationsList = () => {
@@ -888,8 +893,6 @@ const NetworkModificationNodeEditor = () => {
                 isDndDragAndDropActive
                 isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
                 secondaryAction={handleSecondaryAction}
-                enableSecondaryActionOnHover
-                isCheckboxClickableOnly
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
                 divider

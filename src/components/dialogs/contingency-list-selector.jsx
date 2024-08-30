@@ -169,21 +169,22 @@ const ContingencyListSelector = (props) => {
     };
 
     const handleSecondaryAction = useCallback(
-        (item) => (
-            <IconButton
-                style={{
-                    alignItems: 'end',
-                }}
-                edge="end"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    removeFromFavorites([item]);
-                }}
-                size={'small'}
-            >
-                <DeleteIcon />
-            </IconButton>
-        ),
+        (item, isItemHovered) =>
+            isItemHovered && (
+                <IconButton
+                    style={{
+                        alignItems: 'end',
+                    }}
+                    edge="end"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromFavorites([item]);
+                    }}
+                    size={'small'}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            ),
         [removeFromFavorites]
     );
 
@@ -205,7 +206,6 @@ const ContingencyListSelector = (props) => {
                                 selectedItems={checkedContingencyList}
                                 onSelectionChange={setCheckedContingencyList}
                                 secondaryAction={handleSecondaryAction}
-                                enableSecondaryActionOnHover
                             />
                         </Grid>
                         <Grid item>

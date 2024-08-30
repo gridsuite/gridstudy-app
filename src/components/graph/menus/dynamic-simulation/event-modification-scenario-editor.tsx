@@ -224,8 +224,8 @@ const EventModificationScenarioEditor = () => {
     };
 
     const handleSecondaryAction = useCallback(
-        (item: Event) =>
-            !isAnyNodeBuilding ? (
+        (item: Event, isItemHovered?: boolean) =>
+            isItemHovered && !isAnyNodeBuilding ? (
                 <IconButton
                     onClick={() => doEditEvent(item)}
                     size={'small'}
@@ -254,7 +254,6 @@ const EventModificationScenarioEditor = () => {
                 getItemId={(v: Event) => v.equipmentId}
                 getItemLabel={getItemLabel}
                 secondaryAction={handleSecondaryAction}
-                enableSecondaryActionOnHover
                 isDisabled={() => isLoading()}
                 isCheckboxClickableOnly
                 divider
