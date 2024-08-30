@@ -211,6 +211,7 @@
     "VariableShuntCompensators": "MCS variables",
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageInitParametersError": "Erreur lors de la mise à jour des paramètres d'initialisation du plan de tension",
+    "voltageInitCancelError": "L'initialisation du plan de tension n'a pas pu être annulé",
     "AdjustExistingLimits": "Modifier les limites existantes",
     "AdjustExistingLimitsInfo": "Merci de saisir une valeur positive pour augmenter une limite existante et une valeur négative pour abaisser une limite existante (nouvelle limite = limite existante + valeur saisie).",
     "SetDefaultLimits": "Valeurs par défaut pour compléter les limites manquantes",
