@@ -158,7 +158,7 @@ export const styles = {
     multipleItems: (theme) => ({
         display: 'flex',
         flex: 'auto',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),

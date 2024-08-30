@@ -48,7 +48,8 @@ import {
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params.js';
-
+import yup from '../../../utils/yup-config';
+import { useLimitReductionsForm } from '../common/limitreductions/useLimitReductionsForm.js';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -101,11 +102,35 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         },
         [snackError, updateParameters]
     );
-
     const formSchema = useMemo(() => {
-        return getLimitReductionsFormSchema(
+        const limitReductionsSchema = getLimitReductionsFormSchema(
             params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
         );
+
+        const thresholdsSchema = yup.object().shape({
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: yup
+                .number()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage')
+                .required(),
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: yup
+                .number()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage')
+                .required(),
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: yup.number().required(),
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: yup
+                .number()
+                .min(0, 'NormalizedPercentage')
+                .max(100, 'NormalizedPercentage')
+                .required(),
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: yup.number().required(),
+        });
+
+        return yup.object().shape({
+            ...limitReductionsSchema.fields,
+            ...thresholdsSchema.fields,
+        });
     }, [params]);
 
     const formMethods = useForm({
@@ -141,7 +166,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const { handleSubmit, formState, reset } = formMethods;
 
-    const updateLimitReductions = useCallback(
+    const updateSaParametters = useCallback(
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,
@@ -161,6 +186,23 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
+
+    const { toFormValuesLimitReductions } = useLimitReductionsForm(params?.limitReductions);
+
+    useEffect(() => {
+        const limitReductionFormValues = toFormValuesLimitReductions();
+        const asSpecificFormValues = {
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] * 100,
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] * 100,
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: params[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] * 100,
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: params[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
+        };
+        reset({
+            ...limitReductionFormValues,
+            ...asSpecificFormValues,
+        });
+    }, [params, reset, toFormValuesLimitReductions]);
 
     const toFormValues = useCallback(() => {
         const limits = params.limitReductions;
@@ -229,7 +271,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
                 <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
                 <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
-                <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
+                <SubmitButton onClick={handleSubmit(updateSaParametters)} variant="outlined">
                     <FormattedMessage id="validate" />
                 </SubmitButton>
             </Grid>
