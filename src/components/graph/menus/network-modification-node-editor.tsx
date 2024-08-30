@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckboxList, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -13,7 +13,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, Switch, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -55,7 +55,6 @@ import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modi
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
 import { RestoreFromTrash } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit.js';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
@@ -95,8 +94,8 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    list: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
+    disabledModification: { opacity: 0.4 },
     checkBoxIcon: { minWidth: 0, padding: 0 },
     checkboxButton: {
         padding: 0,
@@ -104,7 +103,6 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    checkbox: { minWidth: 0, padding: 0 },
     modificationsTitle: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -839,9 +837,9 @@ const NetworkModificationNodeEditor = () => {
         [modifications, studyUuid, currentNode?.id, snackError]
     );
 
-    const isLoading = () => {
+    const isLoading = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
-    };
+    }, [notificationIdList, currentNode?.id]);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -860,31 +858,40 @@ const NetworkModificationNodeEditor = () => {
 
     const handleSecondaryAction = useCallback(
         (modification: NetworkModificationMetadata, isItemHovered?: boolean) => {
-            return (
+            return isItemHovered && !isDragging ? (
                 <SwitchNetworkModificationActive
                     modificationActive={modification.active}
                     modificationUuid={modification.uuid}
                     setModifications={setModifications}
-                    hidden={
-                        !isItemHovered || isAnyNodeBuilding || mapDataLoading || isDragging
-                        // ||
-                        // !isEditableModification(modification)
-                    }
+                    disabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
                 />
-            );
+            ) : null;
         },
-        [doEditModification, isAnyNodeBuilding, isDragging, mapDataLoading]
+        [isAnyNodeBuilding, isDragging, mapDataLoading, isLoading]
     );
+
+    const isModificationClickable = useCallback(
+        (modification: NetworkModificationMetadata) =>
+            modification.active &&
+            !isAnyNodeBuilding &&
+            !mapDataLoading &&
+            !isDragging &&
+            isEditableModification(modification),
+        [isAnyNodeBuilding, mapDataLoading, isDragging, isEditableModification]
+    );
+
     const renderNetworkModificationsList = () => {
         return (
             <CheckboxList
-                sx={{
-                    label: styles.checkBoxLabel,
+                sx={(modification) => ({
+                    label: { ...(!modification.active && { ...styles.disabledModification }), ...styles.checkBoxLabel },
                     checkBoxIcon: styles.checkBoxIcon,
                     checkboxButton: styles.checkboxButton,
-                    checkbox: styles.checkbox,
-                    checkboxList: styles.list,
+                })}
+                onItemClick={(modification) => {
+                    isModificationClickable(modification) && doEditModification(modification.uuid, modification.type);
                 }}
+                isItemClickable={isModificationClickable}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
                 items={modifications}

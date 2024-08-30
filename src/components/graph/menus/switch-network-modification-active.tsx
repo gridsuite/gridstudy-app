@@ -5,7 +5,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { Dispatch, SetStateAction, useCallback, useRef, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { NetworkModificationMetadata } from './network-modification-menu.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
@@ -18,50 +18,37 @@ interface SwitchNetworkModificationActiveProps {
     modificationUuid: UUID;
     modificationActive: boolean;
     setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
-    hidden?: boolean;
+    disabled?: boolean;
 }
 
 export const SwitchNetworkModificationActive = (props: SwitchNetworkModificationActiveProps) => {
-    const { setModifications, modificationActive, modificationUuid, hidden = false } = props;
+    const { setModifications, modificationActive, modificationUuid, disabled = false } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
-    const previousModificationActive = useRef(modificationActive);
 
     const updateModification = useCallback(
         (active: boolean) => {
-            setIsLoading(true);
             setModificationActive(studyUuid, currentNode?.id, modificationUuid, active)
                 .catch((err) => {
-                    setModifications((oldModifications) => {
-                        const newModifications = [...oldModifications];
-                        const modificationToUpdate = newModifications.find((m) => m.uuid === modificationUuid);
-                        if (!modificationToUpdate) {
-                            return oldModifications;
-                        }
-                        modificationToUpdate.active = !active;
-
-                        return newModifications;
-                    });
-                    snackError({ messageTxt: err.message });
+                    snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
                 })
                 .finally(() => {
                     setIsLoading(false);
                 });
         },
-        [studyUuid, currentNode?.id, modificationUuid]
+        [studyUuid, currentNode?.id, modificationUuid, setModifications, snackError]
     );
 
     const toggleModificationActive = useCallback(() => {
-        // update locally and send modification as debounce to prevent sending multiple request if user is clicking multiple times
+        setIsLoading(true);
         setModifications((oldModifications) => {
             const newModifications = [...oldModifications];
             const modificationToUpdate = newModifications.find((m) => m.uuid === modificationUuid);
             if (!modificationToUpdate) {
                 return oldModifications;
             }
-            previousModificationActive.current = modificationToUpdate.active;
             modificationToUpdate.active = !modificationToUpdate.active;
             updateModification(modificationToUpdate.active);
             return newModifications;
@@ -70,10 +57,10 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
 
     return (
         <Switch
-            sx={hidden ? { display: 'none' } : {}}
-            disabled={isLoading}
+            size="small"
+            disabled={isLoading || disabled}
             checked={modificationActive}
-            onClick={() => toggleModificationActive()}
+            onClick={toggleModificationActive}
         />
     );
 };

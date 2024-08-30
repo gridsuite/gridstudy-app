@@ -1388,6 +1388,6 @@
     "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
     "guidancePopUp.action":"Close editor",
     "generateNad": "Generate",
-    "nad": "NAD"
-
+    "nad": "NAD",
+    "networkModificationActivationError": "An error occured while enabling / disabling modification"
 }

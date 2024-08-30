@@ -1387,5 +1387,6 @@
     "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
     "guidancePopUp.action":"Fermer l'éditeur",
     "generateNad": "Générer",
-    "nad": "NAD"
+    "nad": "NAD",
+    "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de l'hypothèse"
 }
