@@ -258,7 +258,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
-                    <SecurityAnalysisParametersSelector params={params} updateParameters={updateParameters} />
+                    <SecurityAnalysisParametersSelector params={params} />
                 </Grid>
                 <Grid container key="secuAnalysisProvider" sx={styles.scrollableGrid} spacing={1}></Grid>
                 <LineSeparator />

@@ -42,7 +42,10 @@ export enum TAB_VALUES {
     'LimitReductions' = 1,
 }
 
-export const TAB_INFO = [{ label: TAB_VALUES[TAB_VALUES.General] }, { label: TAB_VALUES[TAB_VALUES.LimitReductions] }];
+export const TAB_INFO = [
+    { label: TAB_VALUES[TAB_VALUES.General], developerModeOnly: false },
+    { label: TAB_VALUES[TAB_VALUES.LimitReductions], developerModeOnly: true },
+];
 
 export interface IColumnsDef {
     label: string;
