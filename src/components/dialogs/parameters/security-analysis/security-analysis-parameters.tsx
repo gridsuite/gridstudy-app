@@ -136,11 +136,11 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const formMethods = useForm({
         defaultValues: {
             [LIMIT_REDUCTIONS_FORM]: [],
-            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: 0,
-            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: 0,
-            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: 0,
-            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: 0,
-            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: 0,
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: '',
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: '',
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: '',
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: '',
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: '',
         },
         resolver: yupResolver(formSchema),
     });
@@ -166,7 +166,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const { handleSubmit, formState, reset } = formMethods;
 
-    const updateSaParametters = useCallback(
+    const updateSAParameters = useCallback(
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,
@@ -271,7 +271,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
                 <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
                 <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
-                <SubmitButton onClick={handleSubmit(updateSaParametters)} variant="outlined">
+                <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
                     <FormattedMessage id="validate" />
                 </SubmitButton>
             </Grid>
