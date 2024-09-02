@@ -18,6 +18,7 @@ import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
 import { MidFormError } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 
+const MIN_LENGTH = 2;
 export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
@@ -26,6 +27,17 @@ export const ReactiveCapabilityCurveTable = ({
     updatePreviousReactiveCapabilityCurveTable,
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
+
+    // Respect minimum size (2 rows)
+    if (rows.length < MIN_LENGTH) {
+        for (let i = 0; i < MIN_LENGTH - rows.length; i++) {
+            rows.push({
+                [MAX_Q]: null,
+                [MIN_Q]: null,
+                [P]: null,
+            });
+        }
+    }
 
     const handleInsertRow = () => {
         if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
