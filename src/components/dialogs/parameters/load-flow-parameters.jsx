@@ -630,74 +630,80 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                         >
                             <Grid sx={{ width: '100%' }}>
                                 <Tabs value={tabValue} onChange={handleTabChange}>
-                                    {TAB_INFO.map((tab, index) => (
-                                        <Tab
-                                            key={tab.label}
-                                            label={<FormattedMessage id={tab.label} />}
-                                            value={index}
-                                            sx={{
-                                                fontSize: 17,
-                                                fontWeight: 'bold',
-                                                textTransform: 'capitalize',
-                                            }}
-                                        />
-                                    ))}
+                                    {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
+                                        (tab, index) => (
+                                            <Tab
+                                                key={tab.label}
+                                                label={<FormattedMessage id={tab.label} />}
+                                                value={index}
+                                                sx={{
+                                                    fontSize: 17,
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'capitalize',
+                                                }}
+                                            />
+                                        )
+                                    )}
                                 </Tabs>
 
-                                {TAB_INFO.map((tab, index) => (
-                                    <TabPanel key={tab.label} value={tabValue} index={index}>
-                                        {tabValue === TAB_VALUES.General && (
-                                            <>
-                                                <BasicLoadFlowParameters
-                                                    lfParams={params || {}}
-                                                    commitLFParameter={updateParameters}
-                                                />
-                                                <AdvancedLoadFlowParameters
-                                                    lfParams={params || {}}
-                                                    commitLFParameter={updateParameters}
-                                                />
-                                                <SpecificLoadFlowParameters
-                                                    disabled={!specificParamsDescriptions?.[provider]}
-                                                    subText={provider}
-                                                    specificParamsDescription={
-                                                        specificParamsDescrWithoutNanVals[provider]
-                                                    }
-                                                    specificCurrentParams={specificCurrentParams[provider]}
-                                                    onSpecificParamChange={onSpecificParamChange}
-                                                />
-                                            </>
-                                        )}
-                                        {tabValue === TAB_VALUES.LimitReductions && (
-                                            <Grid
-                                                container
-                                                sx={mergeSx(styles.scrollableGrid, {
-                                                    maxHeight: '100%',
-                                                })}
-                                                key="lfParameters"
-                                            >
+                                {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
+                                    (tab, index) => (
+                                        <TabPanel key={tab.label} value={tabValue} index={index}>
+                                            {tabValue === TAB_VALUES.General && (
+                                                <>
+                                                    <BasicLoadFlowParameters
+                                                        lfParams={params || {}}
+                                                        commitLFParameter={updateParameters}
+                                                    />
+                                                    <AdvancedLoadFlowParameters
+                                                        lfParams={params || {}}
+                                                        commitLFParameter={updateParameters}
+                                                    />
+                                                    <SpecificLoadFlowParameters
+                                                        disabled={!specificParamsDescriptions?.[provider]}
+                                                        subText={provider}
+                                                        specificParamsDescription={
+                                                            specificParamsDescrWithoutNanVals[provider]
+                                                        }
+                                                        specificCurrentParams={specificCurrentParams[provider]}
+                                                        onSpecificParamChange={onSpecificParamChange}
+                                                    />
+                                                </>
+                                            )}
+                                            {tabValue === TAB_VALUES.LimitReductions && (
                                                 <Grid
                                                     container
-                                                    spacing={1}
-                                                    paddingTop={1}
-                                                    paddingLeft={2}
-                                                    sx={{ width: '100%' }}
+                                                    sx={mergeSx(styles.scrollableGrid, {
+                                                        maxHeight: '100%',
+                                                    })}
+                                                    key="lfParameters"
                                                 >
-                                                    {params.limitReductions !== null ? (
-                                                        <LimitReductionsTableForm limits={params?.limitReductions} />
-                                                    ) : (
-                                                        <ParameterLineSlider
-                                                            paramNameId={PARAM_LIMIT_REDUCTION}
-                                                            label="LimitReduction"
-                                                            marks={alertThresholdMarks}
-                                                            minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
-                                                        />
-                                                    )}
-                                                    <LineSeparator />
+                                                    <Grid
+                                                        container
+                                                        spacing={1}
+                                                        paddingTop={1}
+                                                        paddingLeft={2}
+                                                        sx={{ width: '100%' }}
+                                                    >
+                                                        {params.limitReductions !== null ? (
+                                                            <LimitReductionsTableForm
+                                                                limits={params?.limitReductions}
+                                                            />
+                                                        ) : (
+                                                            <ParameterLineSlider
+                                                                paramNameId={PARAM_LIMIT_REDUCTION}
+                                                                label="LimitReduction"
+                                                                marks={alertThresholdMarks}
+                                                                minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                                            />
+                                                        )}
+                                                        <LineSeparator />
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        )}
-                                    </TabPanel>
-                                ))}
+                                            )}
+                                        </TabPanel>
+                                    )
+                                )}
                             </Grid>
                         </Grid>
                     </Box>
