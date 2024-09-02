@@ -1761,7 +1761,7 @@ export function modifyByFilter(
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
-        identifiableType: equipmentType,
+        equipmentType: equipmentType,
         simpleModificationInfosList: simpleModificationsList,
     });
 

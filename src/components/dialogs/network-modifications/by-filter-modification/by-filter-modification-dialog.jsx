@@ -78,7 +78,7 @@ const ByFilterModificationDialog = ({
                 [FILTERS]: simpleModification.filters,
             }));
             reset({
-                [EQUIPMENT_TYPE_FIELD]: editData.identifiableType,
+                [EQUIPMENT_TYPE_FIELD]: editData.equipmentType,
                 [SIMPLE_MODIFICATIONS]: simpleModifications,
             });
         }

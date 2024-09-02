@@ -30,10 +30,10 @@ const EQUIPMENT_TYPE_OPTIONS = [
 
 const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
     const { setValue, getValues } = useFormContext();
-    const equipmentType = useWatch({
+    const equipmentType: string = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
-    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentType] ?? [];
+    const equipmentFields = EQUIPMENTS_FIELDS[equipmentType] ?? [];
 
     // get predefined properties
     const [predefinedProperties, setEquipmentType] = usePredefinedProperties(equipmentType);
