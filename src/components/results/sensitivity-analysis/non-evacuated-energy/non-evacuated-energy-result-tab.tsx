@@ -16,7 +16,6 @@ import { LinearProgress, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { RunningStatus } from '../../../utils/running-status';
 import { ComputationReportViewer } from '../../common/computation-report-viewer';
-import { REPORT_TYPES } from '../../../utils/report-type';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { ComputingType } from '../../../computing-status/computing-type';
@@ -86,7 +85,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
                 {tabIndex === LOGS_TAB_INDEX &&
                     (nonEvacuatedEnergyStatus === RunningStatus.SUCCEED ||
                         nonEvacuatedEnergyStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer reportType={REPORT_TYPES.NON_EVACUATED_ENERGY_ANALYSIS} />
+                        <ComputationReportViewer reportType={ComputingType.NON_EVACUATED_ENERGY_ANALYSIS} />
                     )}
             </Box>
         </>
