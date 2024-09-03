@@ -24,6 +24,9 @@ export const useLimitReductionsForm = (limits: ILimitReductionsByVoltageLevel[])
     };
 
     const toFormValuesLimitReductions = useCallback(() => {
+        if (!limits) {
+            return {};
+        }
         return {
             [LIMIT_REDUCTIONS_FORM]: limits.map((vlLimits) => ({
                 [VOLTAGE_LEVELS_FORM]: vlLimits.voltageLevel.nominalV + ' (kV)',

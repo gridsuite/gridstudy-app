@@ -191,7 +191,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     useEffect(() => {
         const limitReductionFormValues = toFormValuesLimitReductions();
-        const asSpecificFormValues = {
+        const SASpecificFormValues = {
             [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] * 100,
             [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: params[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] * 100,
             [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: params[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
@@ -200,7 +200,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         };
         reset({
             ...limitReductionFormValues,
-            ...asSpecificFormValues,
+            ...SASpecificFormValues,
         });
     }, [params, reset, toFormValuesLimitReductions]);
 
