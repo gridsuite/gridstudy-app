@@ -146,7 +146,6 @@ type OwnProps = {
 
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const user = useSelector((state: AppState) => state.user);
-
     const [tabValue, setTabValue] = useState<string>(TAB_VALUES.sldParamsTabValue);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);

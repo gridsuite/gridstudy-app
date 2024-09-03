@@ -153,7 +153,6 @@ const SecurityAnalysisFields = ({
 export const SecurityAnalysisParameters = ({ parametersBackend }) => {
     const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
         parametersBackend;
-
     const handleUpdateProvider = (evt) => updateProvider(evt.target.value);
 
     const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);

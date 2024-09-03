@@ -28,6 +28,7 @@ export const PARAM_COMPUTED_LANGUAGE = 'computedLanguage';
 export const PARAM_DEVELOPER_MODE = 'enableDeveloperMode';
 export const PARAM_INIT_NAD_WITH_GEO_DATA = 'initNadWithGeoData';
 export const PARAMS_LOADED = 'paramsLoaded';
+export const STUDY_PARAMS_CHANDED = 'studyParamsChanged';
 
 export const PARAM_FAVORITE_CONTINGENCY_LISTS = 'favoriteContingencyLists';
 

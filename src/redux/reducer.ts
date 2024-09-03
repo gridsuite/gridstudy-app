@@ -154,6 +154,7 @@ import {
     SET_PARAMS_LOADED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
+    SET_STUDY_PARAMS_CHANGED,
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
@@ -166,6 +167,7 @@ import {
     SetParamsLoadedAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
+    SetStudyParamsChangedAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -218,6 +220,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
+    STUDY_PARAMS_CHANDED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -309,10 +312,15 @@ export interface NetworkImpactsInfos {
     impactedElementTypes: string[];
 }
 
+export interface StudyParametersInfos {
+    name: string;
+    provider?: string;
+}
+
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
+    payload: NetworkImpactsInfos | StudyParametersInfos;
 }
 
 interface StudyUpdatedEventDataUnknown {
@@ -455,6 +463,7 @@ export interface AppState extends CommonStoreState {
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
+    [STUDY_PARAMS_CHANDED]: string;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: UnknownArray;
@@ -582,6 +591,7 @@ const initialState: AppState = {
     [PARAM_DEVELOPER_MODE]: false,
     [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
+    [STUDY_PARAMS_CHANDED]: '',
 
     recentGlobalFilters: [],
     lastCompletedComputation: null,
@@ -902,6 +912,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_PARAMS_LOADED, (state, action: SetParamsLoadedAction) => {
         state[PARAMS_LOADED] = action[PARAMS_LOADED];
+    });
+
+    builder.addCase(SET_STUDY_PARAMS_CHANGED, (state, action: SetStudyParamsChangedAction) => {
+        state[STUDY_PARAMS_CHANDED] = action[STUDY_PARAMS_CHANDED];
     });
 
     builder.addCase(USE_NAME, (state, action: UseNameAction) => {

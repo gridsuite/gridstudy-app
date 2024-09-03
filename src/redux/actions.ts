@@ -29,6 +29,7 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
+    STUDY_PARAMS_CHANDED,
 } from '../utils/config-params';
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme } from '@gridsuite/commons-ui';
@@ -387,6 +388,16 @@ export function setParamsLoaded(): SetParamsLoadedAction {
     return {
         type: SET_PARAMS_LOADED,
         [PARAMS_LOADED]: true,
+    };
+}
+export const SET_STUDY_PARAMS_CHANGED = 'SET_STUDY_PARAMS_CHANGED';
+export type SetStudyParamsChangedAction = Readonly<Action<typeof SET_STUDY_PARAMS_CHANGED>> & {
+    [STUDY_PARAMS_CHANDED]: string;
+};
+export function setStudyParamsChanged(studyParamsChanged: string): SetStudyParamsChangedAction {
+    return {
+        type: SET_STUDY_PARAMS_CHANGED,
+        [STUDY_PARAMS_CHANDED]: studyParamsChanged,
     };
 }
 

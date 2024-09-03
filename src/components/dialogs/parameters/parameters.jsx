@@ -7,12 +7,14 @@
 
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Grid, Box, Button, Typography, Switch, Select, MenuItem } from '@mui/material';
 
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
 import { updateConfigParameter } from 'services/config';
+import { STUDY_PARAMS_CHANDED } from '../../../utils/config-params';
+import { setStudyParamsChanged } from '../../../redux/actions';
 
 export const CloseButton = ({ hideParameters, ...props }) => {
     return <LabelledButton callback={hideParameters} label={'close'} {...props} />;
@@ -236,7 +238,9 @@ export const useParametersBackend = (
     backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
+    const studyParamsChanged = useSelector((state) => state[STUDY_PARAMS_CHANDED]);
     const { snackError, snackWarning } = useSnackMessage();
+    const dispatch = useDispatch();
 
     const providersRef = useRef(INITIAL_PROVIDERS);
     const [provider, setProvider] = useState();
@@ -410,6 +414,7 @@ export const useParametersBackend = (
     }, [optionalServiceStatus, backendFetchSpecificParameters, snackError, studyUuid, type]);
 
     useEffect(() => {
+        //TODO: try to refacto the 2 useeffect
         if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
@@ -426,6 +431,35 @@ export const useParametersBackend = (
                 });
         }
     }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type]);
+
+    useEffect(() => {
+        console.log({ type });
+        console.log({ studyParamsChanged });
+        const secondPart =
+            studyParamsChanged === type &&
+            backendFetchParameters &&
+            studyUuid &&
+            optionalServiceStatus === OptionalServicesStatus.Up;
+        if (secondPart && studyParamsChanged !== '') {
+            backendFetchParameters(studyUuid)
+                .then((params) => {
+                    setParams(params);
+
+                    if (studyParamsChanged === type) {
+                        dispatch(setStudyParamsChanged(''));
+                    }
+                    if ('provider' in params) {
+                        setProvider(params.provider);
+                    }
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'fetch' + type + 'ParametersError',
+                    });
+                });
+        }
+    }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type, dispatch, studyParamsChanged]);
 
     return [
         providersRef.current,
