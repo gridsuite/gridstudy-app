@@ -27,6 +27,7 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import IconButton from '@mui/material/IconButton';
+import { toggleElementFromList } from 'components/utils/utils';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -206,6 +207,15 @@ const ContingencyListSelector = (props) => {
                                 selectedItems={checkedContingencyList}
                                 onSelectionChange={setCheckedContingencyList}
                                 secondaryAction={handleSecondaryAction}
+                                onItemClick={(contingencyList) =>
+                                    setCheckedContingencyList((oldCheckedElements) => [
+                                        ...toggleElementFromList(
+                                            contingencyList,
+                                            oldCheckedElements,
+                                            (element) => element.id
+                                        ),
+                                    ])
+                                }
                             />
                         </Grid>
                         <Grid item>

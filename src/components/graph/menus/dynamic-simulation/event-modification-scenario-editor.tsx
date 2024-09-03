@@ -255,7 +255,6 @@ const EventModificationScenarioEditor = () => {
                 getItemLabel={getItemLabel}
                 secondaryAction={handleSecondaryAction}
                 isDisabled={() => isLoading()}
-                isCheckboxClickableOnly
                 divider
             />
         );

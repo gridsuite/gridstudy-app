@@ -872,11 +872,7 @@ const NetworkModificationNodeEditor = () => {
 
     const isModificationClickable = useCallback(
         (modification: NetworkModificationMetadata) =>
-            modification.active &&
-            !isAnyNodeBuilding &&
-            !mapDataLoading &&
-            !isDragging &&
-            isEditableModification(modification),
+            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
         [isAnyNodeBuilding, mapDataLoading, isDragging, isEditableModification]
     );
 
