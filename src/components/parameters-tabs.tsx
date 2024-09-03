@@ -49,6 +49,7 @@ import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     fetchDefaultNonEvacuatedEnergyProvider,
     fetchNonEvacuatedEnergyProvider,
+    getNonEvacuatedEnergyParameters,
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
 import {
@@ -215,7 +216,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,
         fetchDefaultNonEvacuatedEnergyProvider,
-        updateNonEvacuatedEnergyProvider
+        updateNonEvacuatedEnergyProvider,
+        getNonEvacuatedEnergyParameters
     );
 
     const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();

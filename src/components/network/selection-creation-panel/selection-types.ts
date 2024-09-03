@@ -18,6 +18,6 @@ export function selectionTypeToLabel(selectionType: SELECTION_TYPES) {
         case SELECTION_TYPES.FILTER:
             return 'filter';
         case SELECTION_TYPES.NAD:
-            return 'nad';
+            return 'NetworkAreaDiagram';
     }
 }
