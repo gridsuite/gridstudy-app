@@ -17,13 +17,15 @@ import {
     VALUE_FIELD,
 } from '../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { searchTree } from '@gridsuite/commons-ui';
+import { Option, searchTree } from '@gridsuite/commons-ui';
 import { Schema } from 'yup';
+import { LOAD_TYPES } from '../../../../network/constants';
 
 export type FieldOptionType = {
     id: string;
     label: string;
     dataType: DataType;
+    values?: Option[];
 };
 export enum DataType {
     STRING = 'STRING',
@@ -50,6 +52,7 @@ export enum FieldType {
     TRANSIENT_REACTANCE = 'TRANSIENT_REACTANCE',
     STEP_UP_TRANSFORMER_REACTANCE = 'STEP_UP_TRANSFORMER_REACTANCE',
     Q_PERCENT = 'Q_PERCENT',
+    VOLTAGE_REGULATOR_ON = 'VOLTAGE_REGULATOR_ON',
     MAXIMUM_SECTION_COUNT = 'MAXIMUM_SECTION_COUNT',
     SECTION_COUNT = 'SECTION_COUNT',
     MAXIMUM_SUSCEPTANCE = 'MAXIMUM_SUSCEPTANCE',
@@ -76,6 +79,7 @@ export enum FieldType {
     PHASE_LOW_TAP_POSITION = 'PHASE_LOW_TAP_POSITION',
     PHASE_TAP_POSITION = 'PHASE_TAP_POSITION',
     PHASE_TARGET_DEADBAND = 'PHASE_TARGET_DEADBAND',
+    LOAD_TYPE = 'LOAD_TYPE',
 }
 export const FIELD_OPTIONS: {
     [key: string]: FieldOptionType;
@@ -154,6 +158,11 @@ export const FIELD_OPTIONS: {
         id: FieldType.Q_PERCENT,
         label: 'ReactivePercentageVoltageRegulation',
         dataType: DataType.DOUBLE,
+    },
+    VOLTAGE_REGULATOR_ON: {
+        id: FieldType.VOLTAGE_REGULATOR_ON,
+        label: 'voltageRegulationOn',
+        dataType: DataType.BOOLEAN,
     },
     MAXIMUM_SECTION_COUNT: {
         id: FieldType.MAXIMUM_SECTION_COUNT,
@@ -277,11 +286,18 @@ export const FIELD_OPTIONS: {
         label: 'PhaseDeadBand',
         dataType: DataType.DOUBLE,
     },
+    LOAD_TYPE: {
+        id: FieldType.LOAD_TYPE,
+        label: 'LoadType',
+        dataType: DataType.ENUM,
+        values: LOAD_TYPES,
+    },
 };
 
 export const EQUIPMENTS_FIELDS = {
     [EQUIPMENT_TYPES.GENERATOR]: [
         FIELD_OPTIONS.PROPERTY,
+        FIELD_OPTIONS.VOLTAGE_REGULATOR_ON,
         FIELD_OPTIONS.RATED_NOMINAL_POWER,
         FIELD_OPTIONS.MINIMUM_ACTIVE_POWER,
         FIELD_OPTIONS.MAXIMUM_ACTIVE_POWER,
@@ -320,7 +336,12 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         FIELD_OPTIONS.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     ],
-    [EQUIPMENT_TYPES.LOAD]: [FIELD_OPTIONS.PROPERTY, FIELD_OPTIONS.ACTIVE_POWER, FIELD_OPTIONS.REACTIVE_POWER],
+    [EQUIPMENT_TYPES.LOAD]: [
+        FIELD_OPTIONS.PROPERTY,
+        FIELD_OPTIONS.LOAD_TYPE,
+        FIELD_OPTIONS.ACTIVE_POWER,
+        FIELD_OPTIONS.REACTIVE_POWER,
+    ],
     [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [
         FIELD_OPTIONS.PROPERTY,
         FIELD_OPTIONS.R,

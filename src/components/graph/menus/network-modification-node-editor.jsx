@@ -324,17 +324,6 @@ const NetworkModificationNodeEditor = () => {
                     label: 'VSC',
                     action: () => adapt(VscCreationDialog),
                 },
-                {
-                    id: 'CREATE_MODIFY_MULTIPLE',
-                    label: 'menu.modifyMultiple',
-                    subItems: [
-                        {
-                            id: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
-                            label: 'BY_FILTER',
-                            action: () => adapt(ByFilterModificationDialog),
-                        },
-                    ],
-                },
             ],
         },
         {

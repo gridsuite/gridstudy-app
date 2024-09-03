@@ -6,7 +6,16 @@
  */
 
 import React, { FunctionComponent, useMemo } from 'react';
-import { AutocompleteInput, DirectoryItemsInput, ElementType, FloatInput, IntegerInput } from '@gridsuite/commons-ui';
+import {
+    AutocompleteInput,
+    DirectoryItemsInput,
+    ElementType,
+    FloatInput,
+    IntegerInput,
+    SelectInput,
+    SwitchInput,
+    TextInput,
+} from '@gridsuite/commons-ui';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
@@ -43,13 +52,17 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         name: `${name}.${index}.${PROPERTY_NAME_FIELD}`,
     });
 
-    const predefinedNames = useMemo(() => {
+    const predefinedPropertiesNames = useMemo(() => {
         return Object.keys(predefinedProperties ?? {}).sort();
     }, [predefinedProperties]);
 
-    const predefinedValues = useMemo(() => {
+    const predefinedPropertiesValues = useMemo(() => {
         return predefinedProperties?.[watchPropertyName]?.sort() ?? [];
     }, [watchPropertyName, predefinedProperties]);
+
+    const options = useMemo(() => {
+        return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.values ?? [];
+    }, [watchEditedField, equipmentFields]);
 
     const filtersField = (
         <DirectoryItemsInput
@@ -77,7 +90,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
     const propertyNameField = (
         <AutocompleteInput
             name={`${name}.${index}.${PROPERTY_NAME_FIELD}`}
-            options={predefinedNames}
+            options={predefinedPropertiesNames}
             label={'PropertyName'}
             size={'small'}
             allowNewValue
@@ -90,7 +103,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
                 <AutocompleteInput
                     name={`${name}.${index}.${VALUE_FIELD}`}
                     label={'PropertyValue'}
-                    options={predefinedValues}
+                    options={predefinedPropertiesValues}
                     size={'small'}
                     allowNewValue
                 />
@@ -101,9 +114,23 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
             return <IntegerInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
         }
 
+        if (dataType === DataType.BOOLEAN) {
+            return <SwitchInput name={`${name}.${index}.${VALUE_FIELD}`} formProps={{ value: false }} />;
+        }
+
+        if (dataType === DataType.STRING) {
+            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
+        }
+
+        if (dataType === DataType.ENUM) {
+            return (
+                <SelectInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" options={options} size={'small'} />
+            );
+        }
+
         // by default is a numeric type
         return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
-    }, [dataType, name, index, predefinedValues]);
+    }, [dataType, name, index, predefinedPropertiesValues, options]);
 
     return (
         <>
