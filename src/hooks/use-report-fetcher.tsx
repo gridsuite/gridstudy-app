@@ -30,6 +30,7 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<
         return {
             message: GLOBAL_REPORT_NODE_LABEL,
             id: GLOBAL_REPORT_NODE_LABEL,
+            parentId: null,
             subReports: report.map((r) => setNodeName(r, nodesNames)),
         } as Report;
     }

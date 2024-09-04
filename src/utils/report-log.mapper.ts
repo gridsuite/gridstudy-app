@@ -8,19 +8,19 @@
 import { Log, Report, ReportSeverity } from '../types/report.type';
 import { REPORT_SEVERITY } from '../constants/report.constant';
 
-export const mapReportLog = (report: Report, severities: String[]) => {
+export const mapReportLog = (report: Report, severities: string[]) => {
     const formattedLogs: Log[] = [];
     formatReportLog(report, severities, formattedLogs);
     return formattedLogs;
 };
 
-const formatReportLog = (report: Report, severities: String[], formattedLogs: Log[]) => {
+const formatReportLog = (report: Report, severities: string[], formattedLogs: Log[]) => {
     const highestSeverity = mapSeverity(report.severities ?? [REPORT_SEVERITY.UNKNOWN.name]);
     // We display a report line in the "log" view for both
     // - a leaf (no sub-report)
-    // - and a container (have sub-reports), if its highest severity belongs to the severity filter (or unk)
+    // - and a container (have sub-reports), if its highest severity belongs to the severity filter (or unknown)
     if (
-        report.parentId &&
+        report.parentId !== null &&
         (report.subReports.length === 0 ||
             severities.includes(highestSeverity.name) ||
             highestSeverity === REPORT_SEVERITY.UNKNOWN)
