@@ -8,7 +8,7 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import React, { FunctionComponent, useCallback, useMemo } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -17,7 +17,7 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
-import { EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
@@ -26,6 +26,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
 import { useSnackMessage } from '@gridsuite/commons-ui';
+import { fetchNetworkElementInfos } from '../../services/study/network';
 
 interface BusMenuProps {
     busId: string;
@@ -58,17 +59,33 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     onClose,
     setModificationInProgress,
 }) => {
-    const { snackError } = useSnackMessage();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const { snackError } = useSnackMessage();
+    const [equipmentInfos, setEquipmentInfos] = useState(null);
 
     // to check is node editable
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const isNodeEditable = useMemo(
         () => isNodeBuilt(currentNode) && !isNodeReadOnly(currentNode) && !isAnyNodeBuilding,
         [currentNode, isAnyNodeBuilding]
     );
+
+    useEffect(() => {
+        fetchNetworkElementInfos(
+            studyUuid,
+            currentNode?.id,
+            EQUIPMENT_TYPES.BUSBAR_SECTION,
+            EQUIPMENT_INFOS_TYPES.LIST.type,
+            busId,
+            false
+        ).then((value) => {
+            if (value) {
+                setEquipmentInfos(value);
+            }
+        });
+    }, [studyUuid, currentNode?.id, busId]);
 
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
 
@@ -91,30 +108,22 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
         [onClose, onOpenDynamicSimulationEventDialog]
     );
 
-    function handleError(error: string, translationKey: string) {
-        snackError({
-            messageTxt: error,
-            headerId: translationKey,
-        });
-        if (setModificationInProgress !== undefined) {
-            setModificationInProgress(false);
-        }
-    }
-
-    function startModification() {
+    const handleClickTrip = useCallback(() => {
         onClose();
         if (setModificationInProgress !== undefined) {
             setModificationInProgress(true);
         }
-    }
-
-    function handleTrip() {
-        startModification();
-        const equipmentInfos = { id: busId }; // We only need the ID for the moment
+        const equipmentInfos = { id: busId };
         tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
-            handleError(error.message, 'UnableToTripBusbarSection');
+            snackError({
+                messageTxt: error.message,
+                headerId: 'UnableToTripBusbarSection',
+            });
+            if (setModificationInProgress !== undefined) {
+                setModificationInProgress(false);
+            }
         });
-    }
+    }, [busId, currentNode?.id, studyUuid, onClose, setModificationInProgress, snackError]);
 
     return (
         <Menu
@@ -151,12 +160,19 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     />
                 </CustomMenuItem>
             )}
-
+            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
+                <DynamicSimulationEventMenuItem
+                    equipmentId={busId}
+                    equipmentType={EQUIPMENT_TYPES.BUS}
+                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
+                    disabled={!isNodeEditable}
+                />
+            )}
             <CustomMenuItem
                 sx={styles.menuItem}
-                onClick={() => handleTrip()}
+                onClick={handleClickTrip}
                 selected={false}
-                disabled={!isNodeEditable}
+                disabled={!isNodeEditable || equipmentInfos?.operatingStatus === 'FORCED_OUTAGE'}
             >
                 <ListItemIcon>
                     <OfflineBoltOutlinedIcon />
@@ -170,14 +186,6 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
                     }
                 />
             </CustomMenuItem>
-            {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
-                <DynamicSimulationEventMenuItem
-                    equipmentId={busId}
-                    equipmentType={EQUIPMENT_TYPES.BUS}
-                    onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                    disabled={!isNodeEditable}
-                />
-            )}
         </Menu>
     );
 };
