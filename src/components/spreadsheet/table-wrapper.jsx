@@ -1099,6 +1099,22 @@ const TableWrapper = (props) => {
         [addEditColumn, enrichColumn, isEditColumnVisible, reorderedTableDefinitionIndexes, selectedColumnsNames]
     );
 
+    const handleFormulaFiltering = useCallback((inputValue) => {
+        gridRef.current.api.onFilterChanged();
+    }, []);
+
+    const doesFormulaFilteringPass = useCallback(
+        (node) => {
+            console.log(formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data));
+            return globalFilterRef.current.getFilterValue()
+                ? formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data)
+                : true;
+        },
+        [formula]
+    );
+
+    const isExternalFilterPresent = useCallback(() => globalFilterRef.current.getFilterType(), []);
+
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
     }, [generateTableColumns, tabIndex]);
@@ -1126,6 +1142,7 @@ const TableWrapper = (props) => {
                             visible={props.visible}
                             gridRef={gridRef}
                             ref={globalFilterRef}
+                            handleFormulaFiltering={handleFormulaFiltering}
                         />
                     </Grid>
                     <Grid item sx={styles.selectColumns}>
@@ -1175,6 +1192,8 @@ const TableWrapper = (props) => {
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                        isExternalFilterPresent={isExternalFilterPresent}
+                        doesExternalFilterPass={doesFormulaFilteringPass}
                     />
                 </Box>
             )}
