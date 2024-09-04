@@ -10,7 +10,7 @@ import React, { FunctionComponent, SyntheticEvent, useCallback, useMemo, useStat
 import { FormattedMessage } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Tab, Tabs } from '@mui/material';
 import { TabPanel, useParameterState } from '../parameters';
 import { TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
@@ -55,21 +55,12 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
 
                 {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
-                        <Box display={tabValue === TAB_VALUES.General ? 'block' : 'none'}>
-                            <ViolationsHidingParameters />
-                        </Box>
-
-                        <Box
-                            sx={{
-                                width: '85%',
-                                display:
-                                    tabValue === TAB_VALUES.LimitReductions && params.limitReductions
-                                        ? 'block'
-                                        : 'none',
-                            }}
-                        >
-                            <LimitReductionsTableForm limits={params.limitReductions} />
-                        </Box>
+                        {tabValue === TAB_VALUES.General && <ViolationsHidingParameters />}
+                        {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
+                            <Grid sx={{ width: '85%' }}>
+                                <LimitReductionsTableForm limits={params.limitReductions} />
+                            </Grid>
+                        )}
                     </TabPanel>
                 ))}
             </Grid>
