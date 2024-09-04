@@ -11,7 +11,15 @@ import { Box, Grid } from '@mui/material';
 import {
     ADDITIONAL_PROPERTIES,
     B,
+    BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -53,6 +61,7 @@ import {
     PHASE_REGULATION_MODES,
     RATIO_REGULATION_MODES,
     REGULATION_TYPES,
+    UNDEFINED_CONNECTION_DIRECTION,
 } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -110,9 +119,17 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import LineConnectivityPane from '../../line/characteristics-pane/line-connectivity-pane';
+import {
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
+    ...getConnectivityWithPositionEmptyFormData(true, CONNECTIVITY_1),
+    ...getConnectivityWithPositionEmptyFormData(true, CONNECTIVITY_2),
     ...getCharacteristicsEmptyFormData(),
     ...getLimitsEmptyFormData(),
     ...getRatioTapChangerEmptyFormData(),
@@ -124,6 +141,8 @@ const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_NAME]: yup.string(),
+        ...getConnectivityWithPositionValidationSchema(true, CONNECTIVITY_1),
+        ...getConnectivityWithPositionValidationSchema(true, CONNECTIVITY_2),
         ...getCharacteristicsValidationSchema(true),
         ...getLimitsValidationSchema(),
         ...getRatioTapChangerModificationValidationSchema(),
@@ -133,10 +152,11 @@ const formSchema = yup
     .required();
 
 export const TwoWindingsTransformerModificationDialogTab = {
-    CHARACTERISTICS_TAB: 0,
-    LIMITS_TAB: 1,
-    RATIO_TAP_TAB: 2,
-    PHASE_TAP_TAB: 3,
+    CONNECTIVITY_TAB: 0,
+    CHARACTERISTICS_TAB: 1,
+    LIMITS_TAB: 2,
+    RATIO_TAP_TAB: 3,
+    PHASE_TAP_TAB: 4,
 };
 
 /**
@@ -161,7 +181,7 @@ const TwoWindingsTransformerModificationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
     const [selectedId, setSelectedId] = useState(defaultIdValue ?? null);
-    const [tabIndex, setTabIndex] = useState(TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB);
+    const [tabIndex, setTabIndex] = useState(TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [twtToModify, setTwtToModify] = useState(null);
@@ -170,7 +190,7 @@ const TwoWindingsTransformerModificationDialog = ({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const { reset, getValues } = formMethods;
+    const { reset, getValues, setValue } = formMethods;
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
@@ -211,6 +231,30 @@ const TwoWindingsTransformerModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
+                ...getConnectivityFormData(
+                    {
+                        busbarSectionId: twt?.busOrBusbarSectionId1?.value ?? null,
+                        connectionDirection: twt?.connectionPosition1?.connectionDirection1?.value ?? null,
+                        connectionName: twt?.connectionPosition1?.connectionName1?.value ?? '',
+                        connectionPosition: twt?.connectionPosition1?.connectionPosition1?.value ?? null,
+                        voltageLevelId: twt?.voltageLevelId1?.value ?? null,
+                        connected: twt?.terminal1Connected?.value ?? null,
+                        isEquipmentModification: true,
+                    },
+                    CONNECTIVITY_1
+                ),
+                ...getConnectivityFormData(
+                    {
+                        busbarSectionId: twt?.busOrBusbarSectionId2?.value ?? null,
+                        connectionDirection: twt?.connectionPosition2?.connectionDirection2?.value ?? null,
+                        connectionName: twt?.connectionPosition2?.connectionName2?.value ?? '',
+                        connectionPosition: twt?.connectionPosition2?.connectionPosition2?.value ?? null,
+                        voltageLevelId: twt?.voltageLevelId2?.value ?? null,
+                        connected: twt?.terminal2Connected?.value ?? null,
+                        isEquipmentModification: true,
+                    },
+                    CONNECTIVITY_2
+                ),
                 ...getCharacteristicsFormData({
                     r: twt.r?.value,
                     x: twt.x?.value,
@@ -369,6 +413,8 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const onSubmit = useCallback(
         (twt) => {
+            const connectivity1 = twt[CONNECTIVITY_1];
+            const connectivity2 = twt[CONNECTIVITY_2];
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
@@ -474,6 +520,18 @@ const TwoWindingsTransformerModificationDialog = ({
                 currentLimits2,
                 ratioTap,
                 phaseTap,
+                connectivity1[VOLTAGE_LEVEL]?.id,
+                connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
+                connectivity2[VOLTAGE_LEVEL]?.id,
+                connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
+                sanitizeString(connectivity1[CONNECTION_NAME]),
+                sanitizeString(connectivity2[CONNECTION_NAME]),
+                connectivity1[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectivity2[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectivity1[CONNECTION_POSITION] ?? null,
+                connectivity2[CONNECTION_POSITION] ?? null,
+                connectivity1[CONNECTED] ?? null,
+                connectivity2[CONNECTED] ?? null,
                 !!editData,
                 editData?.uuid,
                 toModificationProperties(twt)
@@ -499,6 +557,9 @@ const TwoWindingsTransformerModificationDialog = ({
 
     const onValidationError = (errors) => {
         let tabsInError = [];
+        if (errors?.[CONNECTIVITY] !== undefined) {
+            tabsInError.push(TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB);
+        }
         if (errors?.[CHARACTERISTICS] !== undefined) {
             tabsInError.push(TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB);
         }
@@ -544,6 +605,10 @@ const TwoWindingsTransformerModificationDialog = ({
                     .then((twt) => {
                         if (twt) {
                             setTwtToModify(twt);
+                            setValue(`${CONNECTIVITY_1}.${VOLTAGE_LEVEL}.${ID}`, twt?.voltageLevelId1);
+                            setValue(`${CONNECTIVITY_2}.${VOLTAGE_LEVEL}.${ID}`, twt?.voltageLevelId2);
+                            setValue(`${CONNECTIVITY_1}.${BUS_OR_BUSBAR_SECTION}.${ID}`, twt?.busOrBusbarSectionId1);
+                            setValue(`${CONNECTIVITY_2}.${BUS_OR_BUSBAR_SECTION}.${ID}`, twt?.busOrBusbarSectionId2);
                             if (editData?.equipmentId !== selectedId) {
                                 reset((formValues) => ({
                                     ...formValues,
@@ -584,7 +649,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues, setValue]
     );
 
     useEffect(() => {
@@ -638,6 +703,15 @@ const TwoWindingsTransformerModificationDialog = ({
                 )}
                 {selectedId != null && (
                     <>
+                        <Box hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB} p={1}>
+                            <LineConnectivityPane
+                                studyUuid={studyUuid}
+                                currentNode={currentNode}
+                                withPosition={true}
+                                isModification={true}
+                                previousValues={twtToModify}
+                            />
+                        </Box>
                         <Box
                             hidden={tabIndex !== TwoWindingsTransformerModificationDialogTab.CHARACTERISTICS_TAB}
                             p={1}

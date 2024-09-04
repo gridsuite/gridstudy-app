@@ -784,6 +784,7 @@
     "SusceptanceLabel": "Susceptance (S)",
     "LimitsTab": "Limites",
     "LineCharacteristicsTab": "Caractéristiques",
+    "ConnectivityTab": "Connectivité",
     "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
     "TemporaryLimitDuration": "Tempo (s)",
     "TemporaryLimitName": "Nom",

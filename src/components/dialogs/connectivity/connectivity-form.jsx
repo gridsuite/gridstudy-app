@@ -16,6 +16,8 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
@@ -73,6 +75,24 @@ export const ConnectivityForm = ({
     const watchVoltageLevelId = useWatch({
         name: `${id}.${VOLTAGE_LEVEL}.${ID}`,
     });
+
+    const { previousConnectablePositionValue, previousTerminalConnectedValue } = useMemo(() => {
+        let previousConnectablePositionValue;
+        let previousTerminalConnectedValue;
+
+        if (id === CONNECTIVITY) {
+            previousConnectablePositionValue = previousValues?.connectablePosition;
+            previousTerminalConnectedValue = previousValues?.terminalConnected;
+        } else if (id === CONNECTIVITY_1) {
+            previousConnectablePositionValue = previousValues?.connectablePosition1;
+            previousTerminalConnectedValue = previousValues?.terminal1Connected;
+        } else if (id === CONNECTIVITY_2) {
+            previousConnectablePositionValue = previousValues?.connectablePosition2;
+            previousTerminalConnectedValue = previousValues?.terminal2Connected;
+        }
+
+        return { previousConnectablePositionValue, previousTerminalConnectedValue };
+    }, [id, previousValues]);
 
     useEffect(() => {
         if (isEquipmentModification) {
@@ -164,10 +184,10 @@ export const ConnectivityForm = ({
         if (!isEquipmentModification) {
             return null;
         }
-        return previousValues?.terminalConnected
+        return previousTerminalConnectedValue
             ? intl.formatMessage({ id: 'connected' })
             : intl.formatMessage({ id: 'disconnected' });
-    }, [intl, previousValues, isEquipmentModification]);
+    }, [intl, previousTerminalConnectedValue, isEquipmentModification]);
 
     const connectedField = isEquipmentModification ? (
         <CheckboxNullableInput name={`${id}.${CONNECTED}`} label="connected" previousValue={previousConnectedField} />
@@ -210,12 +230,12 @@ export const ConnectivityForm = ({
         <TextInput
             name={`${id}.${CONNECTION_NAME}`}
             label="ConnectionName"
-            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionName : null}
+            previousValue={isEquipmentModification ? previousConnectablePositionValue?.connectionName : null}
         />
     );
 
     const previousConnectionDirectionLabel = isEquipmentModification
-        ? getConnectionDirectionLabel(previousValues?.connectablePosition?.connectionDirection) ?? null
+        ? getConnectionDirectionLabel(previousConnectablePositionValue?.connectionDirection) ?? null
         : null;
 
     const newConnectionDirectionField = (
@@ -246,7 +266,7 @@ export const ConnectivityForm = ({
         <IntegerInput
             name={`${id}.${CONNECTION_POSITION}`}
             label="ConnectionPosition"
-            previousValue={isEquipmentModification ? previousValues?.connectablePosition?.connectionPosition : null}
+            previousValue={isEquipmentModification ? previousConnectablePositionValue?.connectionPosition : null}
             clearable={true}
         />
     );
