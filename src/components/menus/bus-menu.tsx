@@ -51,6 +51,10 @@ const styles = {
     },
 };
 
+export type EquipmentInfo = {
+    [propertyName: string]: string[];
+};
+
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
     busId,
     handleRunShortcircuitAnalysis,
@@ -61,7 +65,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { snackError } = useSnackMessage();
-    const [equipmentInfos, setEquipmentInfos] = useState(null);
+    const [equipmentInfos, setEquipmentInfos] = useState({} as EquipmentInfo);
 
     // to check is node editable
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
