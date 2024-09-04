@@ -52,7 +52,7 @@ const styles = {
 };
 
 export type EquipmentInfo = {
-    [propertyName: string]: string[];
+    [propertyName: string]: any;
 };
 
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
