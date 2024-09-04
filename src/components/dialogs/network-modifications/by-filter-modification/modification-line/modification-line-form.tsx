@@ -14,8 +14,8 @@ import {
     IntegerInput,
     SelectInput,
     SwitchInput,
-    TextInput,
 } from '@gridsuite/commons-ui';
+import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
@@ -118,10 +118,6 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
             return <SwitchInput name={`${name}.${index}.${VALUE_FIELD}`} formProps={{ value: false }} />;
         }
 
-        if (dataType === DataType.STRING) {
-            return <TextInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
-        }
-
         if (dataType === DataType.ENUM) {
             return (
                 <SelectInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" options={options} size={'small'} />
@@ -136,7 +132,12 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
         <>
             {gridItem(filtersField, 2.25)}
             {gridItem(editedField, 3)}
-            {dataType === DataType.PROPERTY && gridItem(propertyNameField, 2.25)}
+            {dataType === DataType.PROPERTY && (
+                <>
+                    {gridItem(propertyNameField, 2.0)}
+                    {gridItem(<DensityLargeIcon fontSize="small" />, 0.25)}
+                </>
+            )}
             {gridItem(valueField, dataType === DataType.PROPERTY ? 3.25 : 5.5)}
         </>
     );
