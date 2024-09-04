@@ -78,7 +78,9 @@ import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import CustomColumnsConfig from './custom-columns/columns-config-custom';
-import { useFormula } from './custom-columns/FormulaContext';
+// import { useFormula } from './custom-columns/FormulaContext';
+import { useFormulaHook } from './custom-columns/use-formula';
+import { useOptimizedFormulaHook } from './custom-columns/use-formula-optim';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -175,20 +177,28 @@ const TableWrapper = (props) => {
         setMergedColumnData([...columnData, ...customColumnData]);
     }, [columnData, customColumnData]);
 
-    const formula = useFormula();
+    // we can use one of the two hooks to calculate the custom columns values
+    const { calcColumnValue } = useFormulaHook(tabIndex);
+
+    const { calcAllColumnValues: optimizedCalculation } = useOptimizedFormulaHook(tabIndex);
+
     const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
+
     useEffect(() => {
         setCustomColumnData(
-            customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
+            customColumnsDefinitions.map((colWithFormula, idx) => ({
                 coldId: `custom-${tabIndex}-${idx}`,
                 headerName: colWithFormula.name,
-                valueGetter: (params) =>
-                    formula.calcColumnValue(colWithFormula.formula, params.data, null, params.getValue),
+                valueGetter: (params) => {
+                    const allValues = optimizedCalculation(params.data);
+                    return allValues.get(colWithFormula.name);
+                    // return calcColumnValue(colWithFormula.formula, params.data);
+                },
                 editable: false,
-                cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
+                cellDataType: true,
             }))
         );
-    }, [formula, tabIndex, customColumnsDefinitions]);
+    }, [calcColumnValue, tabIndex, customColumnsDefinitions]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();

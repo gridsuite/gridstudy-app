@@ -95,7 +95,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
-                    <FormulaProvider>
+                    {/* <FormulaProvider> */}
                         <TableWrapper
                             studyUuid={studyUuid}
                             currentNode={currentNode}
@@ -105,7 +105,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                             disabled={disabled}
                             visible={props.view === StudyView.SPREADSHEET}
                         />
-                    </FormulaProvider>
+                    {/* </FormulaProvider> */}
                 </Paper>
             </TabPanelLazy>
 
