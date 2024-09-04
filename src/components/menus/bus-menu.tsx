@@ -33,7 +33,7 @@ interface BusMenuProps {
     onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
     position: [number, number];
     onClose: () => void;
-    setModificationInProgress: (arg0: boolean) => void;
+    setModificationInProgress: (progress: boolean) => void;
 }
 
 const styles = {
