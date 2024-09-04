@@ -46,7 +46,7 @@ import {
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params.js';
-import { toFormValueSaParameters } from '../common/limitreductions/useLimitReductionsForm.js';
+import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -137,7 +137,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const { handleSubmit, formState, reset } = formMethods;
 
     const updateSAParameters = useCallback(
-        // TODO : remove any type since we now know what to expect according to yup schema
+        //remove any type since we now know what to expect according to yup schema
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,

@@ -38,12 +38,14 @@ const LimitReductionsTableForm: FunctionComponent<{
             label: intl.formatMessage({ id: column.label }),
         }));
 
-        limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
-            columnsDefinition.push({
-                label: getLabelColumn(tlimit),
-                dataKey: LIMIT_DURATION_FORM + index,
+        if (limits !== null && limits.length > 0) {
+            limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
+                columnsDefinition.push({
+                    label: getLabelColumn(tlimit),
+                    dataKey: LIMIT_DURATION_FORM + index,
+                });
             });
-        });
+        }
 
         return columnsDefinition;
     }, [intl, limits, getLabelColumn]);
