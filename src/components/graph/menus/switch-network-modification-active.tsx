@@ -38,7 +38,7 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
                     setIsLoading(false);
                 });
         },
-        [studyUuid, currentNode?.id, modificationUuid, setModifications, snackError]
+        [studyUuid, currentNode?.id, modificationUuid, snackError]
     );
 
     const toggleModificationActive = useCallback(() => {
