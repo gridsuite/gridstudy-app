@@ -16,7 +16,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
 import {
     fetchShortCircuitParameters,
@@ -42,6 +42,8 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
+import { STUDY_PARAMS_CHANDED } from '../../../utils/config-params';
+import { setStudyParamsChanged } from '../../../redux/actions';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -110,11 +112,13 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
     const intl = useIntl();
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
+    const studyParamsChanged = useSelector((state) => state[STUDY_PARAMS_CHANDED]);
+    const dispatch = useDispatch();
+    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
     const [shortCircuitParams, setShortCircuitParams] = useShortCircuitParameters;
 
     const { snackError } = useSnackMessage();
-
     // get default values based on shortCircuitParams
     const emptyFormData = useMemo(() => {
         const { parameters, predefinedParameters } = shortCircuitParams;
@@ -226,6 +230,30 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
         },
         [setValue]
     );
+    // we need to call backendFetchParameters when ever the study params change
+    useEffect(() => {
+        console.log({ studyParamsChanged });
+
+        if (
+            studyParamsChanged === 'ShortCircuit' &&
+            studyUuid &&
+            shortCircuitAvailability === OptionalServicesStatus.Up
+        ) {
+            getShortCircuitParameters(studyUuid)
+                .then((params) => {
+                    replaceFormValues(params);
+                    //TODO: to be seen later
+                    reset({}, { keepValues: true });
+                    dispatch(setStudyParamsChanged(''));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsRetrievingError',
+                    });
+                });
+        }
+    }, [shortCircuitAvailability, studyUuid, snackError, dispatch, studyParamsChanged, replaceFormValues]);
 
     const loadParameters = useCallback(
         (newParams) => {

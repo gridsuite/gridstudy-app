@@ -414,7 +414,6 @@ export const useParametersBackend = (
     }, [optionalServiceStatus, backendFetchSpecificParameters, snackError, studyUuid, type]);
 
     useEffect(() => {
-        //TODO: try to refacto the 2 useeffect
         if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
@@ -432,22 +431,20 @@ export const useParametersBackend = (
         }
     }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type]);
 
+    // we need to call backendFetchParameters when ever the study params change
     useEffect(() => {
-        console.log({ type });
-        console.log({ studyParamsChanged });
-        const secondPart =
+        if (
             studyParamsChanged === type &&
             backendFetchParameters &&
             studyUuid &&
-            optionalServiceStatus === OptionalServicesStatus.Up;
-        if (secondPart && studyParamsChanged !== '') {
+            optionalServiceStatus === OptionalServicesStatus.Up &&
+            studyParamsChanged !== ''
+        ) {
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
-
-                    if (studyParamsChanged === type) {
-                        dispatch(setStudyParamsChanged(''));
-                    }
+                    //reset the value
+                    dispatch(setStudyParamsChanged(''));
                     if ('provider' in params) {
                         setProvider(params.provider);
                     }
