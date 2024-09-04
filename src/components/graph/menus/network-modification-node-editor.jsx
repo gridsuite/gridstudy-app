@@ -80,7 +80,6 @@ export const styles = {
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
-        padding: 0,
         paddingBottom: theme.spacing(8),
         '& .MuiListItem-root': {
             padding: 0,
