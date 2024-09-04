@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
@@ -29,15 +29,17 @@ export const ReactiveCapabilityCurveTable = ({
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
     // Respect minimum size (2 rows)
-    if (rows.length < MIN_LENGTH) {
-        for (let i = 0; i < MIN_LENGTH - rows.length; i++) {
-            rows.push({
-                [MAX_Q]: null,
-                [MIN_Q]: null,
-                [P]: null,
-            });
+    useEffect(() => {
+        if (rows.length < MIN_LENGTH) {
+            for (let i = 0; i < MIN_LENGTH - rows.length; i++) {
+                rows.push({
+                    [MAX_Q]: null,
+                    [MIN_Q]: null,
+                    [P]: null,
+                });
+            }
         }
-    }
+    }, [rows]);
 
     const handleInsertRow = () => {
         if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
