@@ -84,16 +84,6 @@ export function fetchNodeReport(studyUuid, nodeUuid, reportId, severityFilterLis
     return backendFetchJson(url);
 }
 
-export function fetchSubReport(studyUuid, nodeUuid, reportId, severityFilterList) {
-    console.info('get subReport with Id : ' + reportId + ' with severities ' + severityFilterList);
-
-    let url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/subreport?reportId=' + reportId;
-    if (severityFilterList?.length) {
-        url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
-    }
-    return backendFetchJson(url);
-}
-
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) => (response.status === 204 ? null : response.json()));
