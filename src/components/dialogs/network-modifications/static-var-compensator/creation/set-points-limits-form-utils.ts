@@ -50,14 +50,20 @@ export const getReactiveFormValidationSchema = () => ({
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
             is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
-            then: (schema) => schema.required(),
+            then: (schema) =>
+                schema
+                    .min(yup.ref(MIN_SUSCEPTANCE), 'StaticVarCompensatorErrorSMaxAtNominalVoltageGreaterThanSMin')
+                    .required(),
         }),
     [MIN_SUSCEPTANCE]: yup
         .number()
         .nullable()
         .when([CHARACTERISTICS_CHOICE], {
             is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
-            then: (schema) => schema.required(),
+            then: (schema) =>
+                schema
+                    .max(yup.ref(MAX_SUSCEPTANCE), 'StaticVarCompensatorErrorSMinAtNominalVoltageLessThanSMax')
+                    .required(),
         }),
     [MAX_Q_AT_NOMINAL_V]: yup
         .number()

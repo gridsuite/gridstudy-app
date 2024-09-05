@@ -58,7 +58,7 @@ const LimitReductionsTableForm: FunctionComponent<{
         return {
             [LIMIT_REDUCTIONS_FORM]: limits.map((vlLimits) => {
                 return {
-                    [VOLTAGE_LEVELS_FORM]: vlLimits.voltageLevel.nominalV + ' (kV)',
+                    [VOLTAGE_LEVELS_FORM]: vlLimits.voltageLevel.nominalV + ' kV',
                     [IST_FORM]: vlLimits.permanentLimitReduction,
                     ...toFormValuesFromTemporaryLimits(vlLimits.temporaryLimitReductions),
                 };

@@ -685,6 +685,7 @@
     "ShuntCompensatorModificationError": "Erreur lors de la modification d'un moyen de compensation",
     "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
+    "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -815,6 +816,8 @@
     "ShuntCompensatorErrorCurrentLessThanZero": "Le nombre de sections utilisées doit être supérieur ou égal à 0",
     "ShuntCompensatorErrorCurrentLessThanMaximum": "Le nombre de sections utilisées doit être inférieur ou égal au nombre maximum",
     "ShuntCompensatorErrorQAtNominalVoltageLessThanZero": "La valeur de Q à Unom doit être supérieure ou égale à 0",
+    "StaticVarCompensatorErrorSMaxAtNominalVoltageGreaterThanSMin": "La valeur de susceptance maximum doit être supérieur ou égale à susceptance minimum",
+    "StaticVarCompensatorErrorSMinAtNominalVoltageLessThanSMax": "La valeur de susceptance minimum doit être inférieur ou égale à susceptance maximum",
     "StaticVarCompensatorErrorQMaxAtNominalVoltageGreaterThanQMin": "La valeur de Q à Unom maximum doit être supérieur ou égale à Q minimum",
     "StaticVarCompensatorErrorQMinAtNominalVoltageLessThanQMax": "La valeur de Q à Unom minimum doit être inférieur ou égale à Q maximum",
     "ModifyShuntCompensator": "Modifier un moyen de compensation statique (Linéaire)",
@@ -1409,5 +1412,6 @@
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
     "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
     "guidancePopUp.action":"Fermer l'éditeur",
+    "generateNad": "Générer",
     "AddAutomaton": "Ajouter un automate"
 }

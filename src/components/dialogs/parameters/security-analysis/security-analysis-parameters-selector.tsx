@@ -11,17 +11,17 @@ import { FormattedMessage } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
-import { TabPanel } from '../parameters';
-import { TAB_VALUES } from './columns-definitions';
+import { TabPanel, useParameterState } from '../parameters';
+import { TAB_INFO, TAB_VALUES } from '../common/limitreductions/columns-definitions';
 import ViolationsHidingParameters from './security-analysis-violations-hiding';
-import LimitReductionsTableForm from './limit-reductions-table-form';
-
-const TAB_INFO = [{ label: TAB_VALUES[TAB_VALUES.General] }, { label: TAB_VALUES[TAB_VALUES.LimitReductions] }];
+import LimitReductionsTableForm from '../common/limitreductions/limit-reductions-table-form';
+import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: Record<string, any>;
     updateParameters: (value: Record<string, any>) => void;
 }> = ({ params, updateParameters }) => {
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabSelected, setTabSelected] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
         setTabSelected(newValue);
@@ -37,7 +37,7 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
         <>
             <Grid sx={{ width: '100%' }}>
                 <Tabs value={tabValue} onChange={handleTabChange}>
-                    {TAB_INFO.map(
+                    {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
                         (tab, index) =>
                             (tab.label !== TAB_VALUES[TAB_VALUES.LimitReductions] || params.limitReductions) && (
                                 <Tab
@@ -54,13 +54,15 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
                     )}
                 </Tabs>
 
-                {TAB_INFO.map((tab, index) => (
+                {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
                         {tabValue === TAB_VALUES.General && (
                             <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
                         )}
                         {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
-                            <LimitReductionsTableForm limits={params.limitReductions} />
+                            <Grid sx={{ width: '85%' }}>
+                                <LimitReductionsTableForm limits={params.limitReductions} />
+                            </Grid>
                         )}
                     </TabPanel>
                 ))}

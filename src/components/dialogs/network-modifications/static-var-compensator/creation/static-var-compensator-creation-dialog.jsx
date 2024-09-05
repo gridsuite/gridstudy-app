@@ -165,7 +165,7 @@ const StaticVarCompensatorCreationDialog = ({
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
                 }),
                 ...getAutomateFormData({
-                    addAutomate: staticCompensator.standByAutomatonInfos !== null,
+                    addAutomate: !!staticCompensator.standByAutomatonInfos,
                     standby: staticCompensator.standByAutomatonInfos?.standby,
                     b0: staticCompensator.standByAutomatonInfos?.b0,
                     nominalV: staticCompensator.nominalV,
@@ -282,7 +282,7 @@ const StaticVarCompensatorCreationDialog = ({
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ShuntCompensatorCreationError',
+                    headerId: 'StaticVarCompensatorCreationError',
                 });
             });
         },
