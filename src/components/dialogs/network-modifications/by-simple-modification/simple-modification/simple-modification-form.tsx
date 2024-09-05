@@ -14,10 +14,11 @@ import {
     IntegerInput,
     SelectInput,
     SwitchInput,
+    usePrevious,
 } from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
@@ -40,6 +41,8 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
     equipmentType,
 }) => {
     const intl = useIntl();
+
+    const { setValue } = useFormContext();
 
     const watchEditedField = useWatch({
         name: `${name}.${index}.${EDITED_FIELD}`,
@@ -64,6 +67,12 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
     const options = useMemo(() => {
         return equipmentFields?.find((fieldOption) => fieldOption?.id === watchEditedField)?.values ?? [];
     }, [watchEditedField, equipmentFields]);
+
+    // reset value field only when data type is changed
+    const prevDataType = usePrevious(dataType);
+    if (prevDataType !== dataType) {
+        setValue(`${name}.${index}.${VALUE_FIELD}`, null);
+    }
 
     const filtersField = (
         <DirectoryItemsInput
