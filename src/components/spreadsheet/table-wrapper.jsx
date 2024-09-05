@@ -19,7 +19,7 @@ import {
     TABLES_NAMES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, DirectoryItemSelector, ElementType } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
@@ -79,6 +79,8 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import CustomColumnsConfig from './custom-columns/columns-config-custom';
 import { useFormula } from './custom-columns/FormulaContext';
+import { evaluateFilter } from '../../services/study/filter';
+import Button from '@mui/material/Button';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -203,6 +205,7 @@ const TableWrapper = (props) => {
             defaultState: { sort: null },
         });
         rollbackEdit();
+        setFilterIds();
     }, [rollbackEdit]);
 
     const isEditColumnVisible = useCallback(() => {
@@ -1099,21 +1102,28 @@ const TableWrapper = (props) => {
         [addEditColumn, enrichColumn, isEditColumnVisible, reorderedTableDefinitionIndexes, selectedColumnsNames]
     );
 
+    const [filterIds, setFilterIds] = useState();
+
     const handleFormulaFiltering = useCallback((inputValue) => {
         gridRef.current.api.onFilterChanged();
     }, []);
 
     const doesFormulaFilteringPass = useCallback(
         (node) => {
-            console.log(formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data));
-            return globalFilterRef.current.getFilterValue()
-                ? formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data)
-                : true;
+            if (globalFilterRef.current.getFilterType()) {
+                return formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data);
+            } else if (filterIds) {
+                return filterIds?.includes(node.data.id);
+            }
+            return true;
         },
-        [formula]
+        [filterIds, formula]
     );
 
-    const isExternalFilterPresent = useCallback(() => globalFilterRef.current.getFilterType(), []);
+    const isExternalFilterPresent = useCallback(
+        () => filterIds?.length > 1 || globalFilterRef.current.getFilterType(),
+        [filterIds?.length]
+    );
 
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
@@ -1127,6 +1137,35 @@ const TableWrapper = (props) => {
             return undefined;
         }
     }, [editingData]);
+
+    const [openFilterDialog, setOpenFilterDialog] = useState(false);
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    const handleOpenFilterDialog = useCallback(() => {
+        setOpenFilterDialog(true);
+    }, []);
+
+    const applyFilter = useCallback(
+        (filter) => {
+            evaluateFilter(studyUuid, currentNode?.id, filter.id).then((response) => {
+                setFilterIds(response.map((equipment) => equipment.id));
+            });
+        },
+        [currentNode?.id, studyUuid]
+    );
+
+    const handleCloseFilterDialog = useCallback(
+        (nodes) => {
+            if (nodes.length === 1) {
+                const filterData = nodes[0];
+                applyFilter(filterData);
+            }
+            setOpenFilterDialog(false);
+        },
+        [applyFilter]
+    );
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -1145,6 +1184,25 @@ const TableWrapper = (props) => {
                             handleFormulaFiltering={handleFormulaFiltering}
                         />
                     </Grid>
+                    <Grid item>
+                        <Button onClick={handleOpenFilterDialog} variant={'contained'}>Open filter configuration</Button>
+                    </Grid>
+                    {openFilterDialog && (
+                        <DirectoryItemSelector
+                            open={openFilterDialog}
+                            onClose={handleCloseFilterDialog}
+                            types={[ElementType.FILTER]}
+                            equipmentTypes={[equipmentDefinition.type]}
+                            onlyLeaves={true}
+                            multiSelect={false}
+                            validationButtonText={intl.formatMessage({
+                                id: 'validate',
+                            })}
+                            title={intl.formatMessage({
+                                id: 'showSelectDirectoryDialog',
+                            })}
+                        />
+                    )}
                     <Grid item sx={styles.selectColumns}>
                         <ColumnsConfig
                             tabIndex={tabIndex}
