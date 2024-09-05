@@ -73,7 +73,7 @@ import { createCompositeModifications } from '../../../services/explore';
 import EditIcon from '@mui/icons-material/Edit';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
-import BySimpleModificationDialog from '../../dialogs/network-modifications/by-filter-modification/by-simple-modification-dialog';
+import BySimpleModificationDialog from '../../dialogs/network-modifications/by-simple-modification/by-simple-modification-dialog';
 
 export const styles = {
     listContainer: (theme) => ({
