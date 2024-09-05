@@ -6,7 +6,6 @@
  */
 
 import { ComputationReportViewer } from '../common/computation-report-viewer';
-import { REPORT_TYPES } from '../../utils/report-type';
 import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
@@ -40,7 +39,7 @@ const DynamicSimulationResultLogs = memo(() => {
     return (
         <>
             <Overlay message={overlayMessage}>
-                <ComputationReportViewer reportType={REPORT_TYPES.DYNAMIC_SIMULATION} />
+                <ComputationReportViewer reportType={ComputingType.DYNAMIC_SIMULATION} />
             </Overlay>
         </>
     );
