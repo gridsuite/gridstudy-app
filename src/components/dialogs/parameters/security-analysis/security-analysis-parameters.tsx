@@ -117,6 +117,9 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
+            if (!params?.limitReductions) {
+                return null;
+            }
             return params?.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
                 let vlLNewLimits: ILimitReductionsByVoltageLevel = {
                     ...vlLimits,
