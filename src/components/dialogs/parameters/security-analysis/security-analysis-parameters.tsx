@@ -16,10 +16,10 @@ import React, {
     useState,
 } from 'react';
 import { Grid } from '@mui/material';
-import { DropDown, LabelledButton, styles } from '../parameters.jsx';
-import { LineSeparator } from '../../dialogUtils.jsx';
+import { DropDown, LabelledButton, styles } from '../parameters';
+import { LineSeparator } from '../../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { mergeSx } from '../../../utils/functions.js';
+import { mergeSx } from '../../../utils/functions';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
@@ -27,7 +27,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis.js';
+import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
 import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { useForm } from 'react-hook-form';

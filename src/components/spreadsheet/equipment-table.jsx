@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useTheme } from '@mui/material';
-import { ALLOWED_KEYS } from './utils/config-tables';
+import { suppressKeyEvent } from '../utils/keys-utils';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
@@ -46,11 +46,6 @@ export const EquipmentTable = ({
 
     const getRowId = useCallback((params) => params.data.id, []);
 
-    //we filter enter key event to prevent closing or opening edit mode
-    const suppressKeyEvent = (params) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
-
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -69,7 +64,7 @@ export const EquipmentTable = ({
             network: network,
             editErrors: {},
             dynamicValidation: {},
-            isEditing: topPinnedData ? true : false,
+            isEditing: !!topPinnedData,
             theme,
             lastEditedField: undefined,
             dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},

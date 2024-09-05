@@ -8,7 +8,7 @@
 import React, { ChangeEvent, FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { Grid, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles } from '../parameters.jsx';
+import { styles } from '../parameters';
 import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -18,9 +18,9 @@ import {
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
-} from '../../../../utils/config-params.js';
-import { inputAdornment } from '../util/make-component-utils.jsx';
-import { roundToDefaultPrecision } from '../../../../utils/rounding.js';
+} from '../../../../utils/config-params';
+import { inputAdornment } from '../util/make-component-utils';
+import { roundToDefaultPrecision } from '../../../../utils/rounding';
 
 const formatValues = (values: Record<string, any>, isDivision: boolean) => {
     let result = {};

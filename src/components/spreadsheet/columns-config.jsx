@@ -6,11 +6,11 @@
  */
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { SelectOptionsDialog } from 'utils/dialogs';
+import { SelectOptionsDialog } from '../../utils/dialogs';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
@@ -19,11 +19,13 @@ import {
     TABLES_COLUMNS_NAMES,
     TABLES_NAMES,
 } from './utils/config-tables';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import {
+    DragIndicator as DragIndicatorIcon,
+    Lock as LockIcon,
+    LockOpen as LockOpenIcon,
+    ViewColumn as ViewColumnIcon,
+} from '@mui/icons-material';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
 
 const styles = {
@@ -270,12 +272,16 @@ export const ColumnsConfig = ({
 
     return (
         <>
-            <span>
+            <Button
+                variant="text"
+                aria-label="dialog"
+                startIcon={<ViewColumnIcon />}
+                color="inherit"
+                disabled={disabled}
+                onClick={handleOpenPopupSelectColumnNames}
+            >
                 <FormattedMessage id="LabelSelectList" />
-            </span>
-            <IconButton disabled={disabled} aria-label="dialog" onClick={handleOpenPopupSelectColumnNames}>
-                <ViewColumnIcon />
-            </IconButton>
+            </Button>
 
             <SelectOptionsDialog
                 open={popupSelectColumnNames}

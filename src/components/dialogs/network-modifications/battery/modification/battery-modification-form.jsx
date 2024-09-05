@@ -27,7 +27,7 @@ import { TextField } from '@mui/material';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 const BatteryModificationForm = ({
     studyUuid,

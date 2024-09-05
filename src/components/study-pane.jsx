@@ -17,6 +17,7 @@ import TableWrapper from './spreadsheet/table-wrapper';
 import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
+import { FormulaContext } from './spreadsheet/custom-columns/FormulaContext';
 
 const styles = {
     map: {
@@ -94,15 +95,17 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             {/* using a key in these TabPanelLazy because we can change the nodeUuid in this component */}
             <TabPanelLazy key={`spreadsheet-${currentNode?.id}`} selected={props.view === StudyView.SPREADSHEET}>
                 <Paper sx={styles.table}>
-                    <TableWrapper
-                        studyUuid={studyUuid}
-                        currentNode={currentNode}
-                        equipmentId={tableEquipment.id}
-                        equipmentType={tableEquipment.type}
-                        equipmentChanged={tableEquipment.changed}
-                        disabled={disabled}
-                        visible={props.view === StudyView.SPREADSHEET}
-                    />
+                    <FormulaContext>
+                        <TableWrapper
+                            studyUuid={studyUuid}
+                            currentNode={currentNode}
+                            equipmentId={tableEquipment.id}
+                            equipmentType={tableEquipment.type}
+                            equipmentChanged={tableEquipment.changed}
+                            disabled={disabled}
+                            visible={props.view === StudyView.SPREADSHEET}
+                        />
+                    </FormulaContext>
                 </Paper>
             </TabPanelLazy>
 

@@ -35,7 +35,7 @@ import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const GeneratorModificationForm = ({

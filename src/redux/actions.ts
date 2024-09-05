@@ -40,6 +40,7 @@ import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram
 import {
     AppState,
     CurrentTreeNode,
+    DeletedEquipment,
     EquipmentUpdateType,
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
@@ -65,6 +66,9 @@ import {
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { TablesDefinitionsNames } from '../components/spreadsheet/utils/config-tables';
+import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
+
 
 type MutableUnknownArray = unknown[];
 
@@ -151,7 +155,8 @@ export type AppActions =
     | SensitivityAnalysisResultFilterAction
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
-    | SpreadsheetFilterAction;
+    | SpreadsheetFilterAction
+    | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -181,15 +186,11 @@ export function updateEquipments(equipments: Record<EquipmentUpdateType, Identif
     };
 }
 
-type EquipmentToDelete = {
-    equipmentType: SpreadsheetEquipmentType;
-    equipmentId: string;
-};
 export const DELETE_EQUIPMENTS = 'DELETE_EQUIPMENTS';
 export type DeleteEquipmentsAction = Readonly<Action<typeof DELETE_EQUIPMENTS>> & {
-    equipments: EquipmentToDelete[];
+    equipments: DeletedEquipment[];
 };
-export function deleteEquipments(equipments: EquipmentToDelete[]): DeleteEquipmentsAction {
+export function deleteEquipments(equipments: DeletedEquipment[]): DeleteEquipmentsAction {
     return {
         type: DELETE_EQUIPMENTS,
         equipments,
@@ -1123,5 +1124,21 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
+    };
+}
+
+export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
+export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
+    table: TablesDefinitionsNames;
+    definitions: ColumnWithFormula[];
+};
+export function setCustomColumDefinitions(
+    table: TablesDefinitionsNames,
+    customColumNS: ColumnWithFormula[]
+): CustomColumnsDefinitionsAction {
+    return {
+        type: CUSTOM_COLUMNS_DEFINITIONS,
+        table,
+        definitions: customColumNS,
     };
 }

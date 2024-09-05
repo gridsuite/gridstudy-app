@@ -7,7 +7,9 @@
 import { FilterEnumsType, FilterPropsType } from '../../hooks/use-aggrid-row-filter';
 import { ColDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
-import { AnyAction } from 'redux';
+import { AppActions } from '../../redux/actions';
+import { IFilterOptionDef } from 'ag-grid-community/dist/types/core/interfaces/iFilter';
+import { FluxConventions } from '../dialogs/parameters/network-parameters';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -29,21 +31,51 @@ export enum FILTER_NUMBER_COMPARATORS {
 }
 
 type FilterParams = {
-    filterDataType?: string;
+    filterDataType?: FILTER_DATA_TYPES;
     isDuration?: boolean;
     filterComparators?: string[];
     debounceMs?: number;
     filterEnums?: FilterEnumsType;
 };
 
-export interface CustomColDef extends ColDef {
+type CustomFilterParams = FilterParams &
+    (
+        | {
+              filterComparators?: (FILTER_TEXT_COMPARATORS | FILTER_NUMBER_COMPARATORS)[];
+          }
+        | {
+              filterDataType: FILTER_DATA_TYPES.NUMBER;
+              filterComparators?: FILTER_NUMBER_COMPARATORS[];
+          }
+        | {
+              filterDataType: FILTER_DATA_TYPES.TEXT;
+              filterComparators?: FILTER_TEXT_COMPARATORS[];
+          }
+    );
+
+type AgGridFilterParams = {
+    filterOptions: IFilterOptionDef[];
+};
+
+export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {
     filterProps?: FilterPropsType;
     filterParams?: FilterParams;
     sortProps?: SortPropsType;
-    agGridFilterParams?: any;
+    agGridFilterParams?: AgGridFilterParams;
     filterTab?: string[];
     getEnumLabel?: (value: string) => string;
     isCountry?: boolean;
+
+    // props found in config-table
+    isEnum?: boolean;
+    isDefaultSort?: boolean;
+    id?: string;
+    customFilterParams?: CustomFilterParams;
+    columnWidth?: number;
+    canBeInvalidated?: boolean;
+    boolean?: boolean;
+    changeCmd?: string;
+    normed?: (convention: FluxConventions, val: any) => any;
 }
 
 export type FilterDataType = {
@@ -59,5 +91,5 @@ export type FilterSelectorType = FilterDataType & {
 export type FilterStorePropsType = {
     filterType: string;
     filterTab: string;
-    filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
+    filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AppActions;
 };

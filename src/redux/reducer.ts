@@ -53,6 +53,8 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
+    CUSTOM_COLUMNS_DEFINITIONS,
+    CustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -195,7 +197,12 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON, TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+    TablesDefinitionsNames,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -271,6 +278,7 @@ import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -302,13 +310,13 @@ export interface StudyUpdatedEventDataHeader {
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: SpreadsheetEquipmentType; //string;
 }
 
 export interface NetworkImpactsInfos {
     impactedSubstationsIds: UUID[];
     deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
+    impactedElementTypes: SpreadsheetEquipmentType[];
 }
 
 // EventData
@@ -410,7 +418,7 @@ export interface AppState extends CommonStoreState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
-    tableSort: TableSort;
+    [TABLE_SORT_STORE]: TableSort;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -422,6 +430,7 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, ColumnWithFormula[]>;
     allDisplayedColumnsNames: UnknownArray;
     allLockedColumnsNames: UnknownArray;
     allReorderedTableDefinitionIndexes: UnknownArray;
@@ -694,6 +703,10 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }),
+        {} as AppState['allCustomColumnsDefinitions']
+    ),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1542,6 +1555,12 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
+        state.allCustomColumnsDefinitions[action.table] = action.definitions.sort((a, b) =>
+            a.name.localeCompare(b.name)
+        );
     });
 });
 

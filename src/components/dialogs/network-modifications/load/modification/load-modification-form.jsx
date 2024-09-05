@@ -20,7 +20,7 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentId }) => {
     const intl = useIntl();

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { UUID } from 'crypto';
 import {
     fetchBatteries,
     fetchBuses,
@@ -18,11 +19,20 @@ import {
     fetchStaticVarCompensators,
     fetchSubstations,
     fetchThreeWindingsTransformers,
+    fetchTieLines,
     fetchTwoWindingsTransformers,
     fetchVoltageLevels,
     fetchVscConverterStations,
-    fetchTieLines,
 } from '../../services/study/network';
+import { EQUIPMENT_TYPES } from './equipment-types';
+import { IEquipment } from '../../services/study/contingency-list';
+
+//TODO use the type from network when passed to ts
+export type EquipmentFetcher = (
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    substationsIds: UUID[]
+) => Promise<IEquipment[]>;
 
 export const EQUIPMENT_FETCHERS = {
     SUBSTATION: [fetchSubstations],
@@ -43,4 +53,7 @@ export const EQUIPMENT_FETCHERS = {
     SWITCH: [],
     BUS: [fetchBuses],
     TIE_LINE: [fetchTieLines],
-};
+} as const satisfies Record<
+    Readonly<Exclude<EQUIPMENT_TYPES, EQUIPMENT_TYPES.BUSBAR_SECTION>>,
+    Readonly<EquipmentFetcher>
+>;

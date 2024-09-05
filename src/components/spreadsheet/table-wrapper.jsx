@@ -9,13 +9,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box } from '@mui/system';
-import { Alert, Grid } from '@mui/material';
+import { Alert, Box, Grid } from '@mui/material';
 import {
     EDIT_COLUMN,
+    getTableDefinitionByIndex,
     MIN_COLUMN_WIDTH,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_DEFINITION_INDEXES,
     TABLES_DEFINITION_TYPES,
     TABLES_NAMES,
 } from './utils/config-tables';
@@ -78,6 +77,8 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import CustomColumnsConfig from './custom-columns/columns-config-custom';
+import { useFormula } from './custom-columns/FormulaContext';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -128,6 +129,9 @@ const styles = {
     selectColumns: (theme) => ({
         marginLeft: theme.spacing(6),
     }),
+    selectCustomColumns: (theme) => ({
+        marginLeft: theme.spacing(2),
+    }),
 };
 
 const TableWrapper = (props) => {
@@ -165,6 +169,26 @@ const TableWrapper = (props) => {
     const globalFilterRef = useRef();
 
     const [columnData, setColumnData] = useState([]);
+    const [customColumnData, setCustomColumnData] = useState([]);
+    const [mergedColumnData, setMergedColumnData] = useState([]);
+    useEffect(() => {
+        setMergedColumnData([...columnData, ...customColumnData]);
+    }, [columnData, customColumnData]);
+
+    const formula = useFormula();
+    const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
+    useEffect(() => {
+        setCustomColumnData(
+            customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
+                coldId: `custom-${tabIndex}-${idx}`,
+                headerName: colWithFormula.name,
+                valueGetter: (params) =>
+                    formula.calcColumnValue(colWithFormula.formula, params.data, null, params.getValue),
+                editable: false,
+                cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
+            }))
+        );
+    }, [formula, tabIndex, customColumnsDefinitions]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
@@ -175,7 +199,7 @@ const TableWrapper = (props) => {
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
-        gridRef?.current?.columnApi.applyColumnState({
+        gridRef?.current?.api.applyColumnState({
             defaultState: { sort: null },
         });
         rollbackEdit();
@@ -184,8 +208,8 @@ const TableWrapper = (props) => {
     const isEditColumnVisible = useCallback(() => {
         return (
             !props.disabled &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex).type &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex)
+            getTableDefinitionByIndex(tabIndex).type &&
+            getTableDefinitionByIndex(tabIndex)
                 .columns.filter((c) => c.editable)
                 .filter((c) => selectedColumnsNames.has(c.id)).length > 0
         );
@@ -193,19 +217,19 @@ const TableWrapper = (props) => {
 
     const { onSortChanged, sortConfig } = useAgGridSort(
         SPREADSHEET_SORT_STORE,
-        TABLES_DEFINITION_INDEXES.get(tabIndex).type
+        getTableDefinitionByIndex(tabIndex).type
     );
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
         filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+        filterTab: getTableDefinitionByIndex(tabIndex).type,
         filterStoreAction: setSpreadsheetFilter,
     });
 
     const equipmentDefinition = useMemo(
         () => ({
-            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+            type: getTableDefinitionByIndex(tabIndex).type,
+            fetchers: getTableDefinitionByIndex(tabIndex).fetchers,
         }),
         [tabIndex]
     );
@@ -232,7 +256,7 @@ const TableWrapper = (props) => {
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
     const getEnumFilterColumns = useCallback(() => {
-        const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
+        const generatedTableColumns = getTableDefinitionByIndex(tabIndex).columns;
         return generatedTableColumns.filter(({ isEnum }) => isEnum === true);
     }, [tabIndex]);
 
@@ -379,9 +403,9 @@ const TableWrapper = (props) => {
     }, [equipments, props.disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
-    //is reinstanciated in order to notify components using it.
+    //is re-instantiated in order to notify components using it.
     //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
-    //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
+    //it is necessary since we currently lack the system to detect changes done to it after receiving a notification
     const rowData = getRows();
 
     const handleSwitchTab = useCallback(
@@ -412,7 +436,7 @@ const TableWrapper = (props) => {
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map((item) => item.id)
+                : getTableDefinitionByIndex(tabIndex).columns.map((item) => item.id)
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
@@ -434,7 +458,7 @@ const TableWrapper = (props) => {
 
     useEffect(() => {
         if (props.equipmentId !== null && props.equipmentType !== null && !manualTabSwitch) {
-            const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
+            const definition = TABLES_DEFINITION_TYPES[props.equipmentType];
             if (tabIndex === definition.index) {
                 // already in expected tab => explicit call to scroll to expected row
                 scrollToEquipmentIndex();
@@ -454,7 +478,7 @@ const TableWrapper = (props) => {
 
     const handleGridReady = useCallback(() => {
         if (globalFilterRef.current) {
-            gridRef.current?.api?.setQuickFilter(globalFilterRef.current.getFilterValue());
+            gridRef.current?.api?.updateGridOptions({ quickFilterText: globalFilterRef.current.getFilterValue() });
         }
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
@@ -471,7 +495,7 @@ const TableWrapper = (props) => {
         }, 50);
     }, [scrollToEquipmentIndex, isFetching, rowData]);
     useEffect(() => {
-        const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
+        const lockedColumnsConfig = getTableDefinitionByIndex(tabIndex)
             .columns.filter((column) => lockedColumnsNames.has(column.id))
             .map((column) => {
                 return { colId: column.field, pinned: 'left' };
@@ -484,7 +508,7 @@ const TableWrapper = (props) => {
             });
         }
 
-        gridRef.current?.columnApi?.applyColumnState({
+        gridRef.current?.api?.applyColumnState({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
@@ -894,7 +918,7 @@ const TableWrapper = (props) => {
             // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
             let groovyCr =
                 'equipment = network.' +
-                TABLES_DEFINITION_INDEXES.get(tabIndex).groovyEquipmentGetter +
+                getTableDefinitionByIndex(tabIndex).groovyEquipmentGetter +
                 "('" +
                 params.data.id.replace(/'/g, "\\'") +
                 "')\n";
@@ -1043,7 +1067,7 @@ const TableWrapper = (props) => {
                             component: EditableCellRenderer,
                             params: {
                                 setEditingData: setEditingData,
-                                equipmentType: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+                                equipmentType: getTableDefinitionByIndex(tabIndex).type,
                             },
                         };
                     }
@@ -1055,7 +1079,7 @@ const TableWrapper = (props) => {
 
     const generateTableColumns = useCallback(
         (tabIndex) => {
-            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex)
+            const generatedTableColumns = getTableDefinitionByIndex(tabIndex)
                 .columns.filter((c) => {
                     return selectedColumnsNames.has(c.id);
                 })
@@ -1116,12 +1140,15 @@ const TableWrapper = (props) => {
                             setLockedColumnsNames={setLockedColumnsNames}
                         />
                     </Grid>
+                    <Grid item sx={styles.selectCustomColumns}>
+                        <CustomColumnsConfig indexTab={tabIndex} />
+                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnData}
-                            tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
+                            tableName={getTableDefinitionByIndex(tabIndex).name}
                             disabled={!!(props.disabled || rowData.length === 0 || editingData)}
                         />
                     </Grid>
@@ -1138,7 +1165,7 @@ const TableWrapper = (props) => {
                         studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
-                        columnData={columnData}
+                        columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
                         visible={props.visible}
