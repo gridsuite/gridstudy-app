@@ -51,8 +51,10 @@ const styles = {
     },
 };
 
-export type EquipmentInfo = {
-    [propertyName: string]: any;
+type EquipmentInfo = {
+    id: string;
+    name: string;
+    operatingStatus: string;
 };
 
 export const BusMenu: FunctionComponent<BusMenuProps> = ({
@@ -65,7 +67,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
 }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const { snackError } = useSnackMessage();
-    const [equipmentInfos, setEquipmentInfos] = useState({} as EquipmentInfo);
+    const [equipmentInfos, setEquipmentInfos] = useState<EquipmentInfo>();
 
     // to check is node editable
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -84,7 +86,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             EQUIPMENT_INFOS_TYPES.LIST.type,
             busId,
             false
-        ).then((value) => {
+        ).then((value: EquipmentInfo | null) => {
             if (value) {
                 setEquipmentInfos(value);
             }
