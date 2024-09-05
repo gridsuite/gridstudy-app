@@ -71,7 +71,7 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
     // reset value field only when data type is changed
     const prevDataType = usePrevious(dataType);
     if (prevDataType !== dataType) {
-        setValue(`${name}.${index}.${VALUE_FIELD}`, null);
+        setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
     const filtersField = (
