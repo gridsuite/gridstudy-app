@@ -1,36 +1,31 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect } from 'react';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import React, { FC, useEffect } from 'react';
 import { EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../utils/field-constants';
 import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
-import ModificationLineForm from './modification-line/modification-line-form';
+import SimpleModificationForm from './simple-modification/simple-modification-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../dialogUtils';
-import { EQUIPMENTS_FIELDS, getModificationLineInitialValue } from './modification-line/modification-line-utils';
+import { getSimpleModificationInitialValue } from './simple-modification/simple-modification-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
+import { EQUIPMENTS_FIELDS } from './simple-modification/simple-modification-constants';
 
-interface ByFormulaFormProps {}
+interface BySimpleModificationFormProps {}
 
-const EQUIPMENT_TYPE_OPTIONS = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.BATTERY,
-    EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-    EQUIPMENT_TYPES.LOAD,
-    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-];
+type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
 
-const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
+const EQUIPMENT_TYPE_OPTIONS: EquipmentTypeOptionType[] = Object.keys(EQUIPMENTS_FIELDS) as EquipmentTypeOptionType[];
+
+const BySimpleModificationForm: FC<BySimpleModificationFormProps> = () => {
     const { setValue, getValues } = useFormContext();
-    const equipmentType: string = useWatch({
+    const equipmentType: EquipmentTypeOptionType = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
     });
     const equipmentFields = EQUIPMENTS_FIELDS[equipmentType] ?? [];
@@ -50,24 +45,24 @@ const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
                 setValue(
                     SIMPLE_MODIFICATIONS,
                     getValues(SIMPLE_MODIFICATIONS).map(() => ({
-                        ...getModificationLineInitialValue(),
+                        ...getSimpleModificationInitialValue(),
                     }))
                 );
             }}
         />
     );
 
-    const modificationLinesField = (
+    const simpleModificationsField = (
         <ExpandableInput
             name={SIMPLE_MODIFICATIONS}
-            Field={ModificationLineForm}
+            Field={SimpleModificationForm}
             fieldProps={{
                 predefinedProperties,
                 equipmentFields,
                 equipmentType,
             }}
-            addButtonLabel={'addNewModificationLine'}
-            initialValue={getModificationLineInitialValue()}
+            addButtonLabel={'addNewSimpleModification'}
+            initialValue={getSimpleModificationInitialValue()}
         />
     );
 
@@ -76,9 +71,9 @@ const ByFilterModificationForm: FunctionComponent<ByFormulaFormProps> = () => {
             <Grid container paddingTop={'20px'}>
                 {gridItem(equipmentTypeField, 2.15)}
             </Grid>
-            <Grid container>{gridItem(modificationLinesField, 12)}</Grid>
+            <Grid container>{gridItem(simpleModificationsField, 12)}</Grid>
         </>
     );
 };
 
-export default ByFilterModificationForm;
+export default BySimpleModificationForm;

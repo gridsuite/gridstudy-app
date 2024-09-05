@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
+import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -70,10 +70,10 @@ import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 import { createCompositeModifications } from '../../../services/explore';
-import EditIcon from '@mui/icons-material/Edit.js';
+import EditIcon from '@mui/icons-material/Edit';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
-import ByFilterModificationDialog from '../../dialogs/network-modifications/by-filter-modification/by-filter-modification-dialog';
+import BySimpleModificationDialog from '../../dialogs/network-modifications/by-filter-modification/by-simple-modification-dialog';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -399,7 +399,7 @@ const NetworkModificationNodeEditor = () => {
                 {
                     id: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
                     label: 'BY_FILTER',
-                    action: () => adapt(ByFilterModificationDialog),
+                    action: () => adapt(BySimpleModificationDialog),
                 },
             ],
         },
@@ -807,7 +807,6 @@ const NetworkModificationNodeEditor = () => {
     }, [modifications]);
 
     const renderDialog = () => {
-        // return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen).action();
         return getMenuItemById(menuDefinition, editDialogOpen)?.action();
     };
 

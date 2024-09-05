@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,43 +8,37 @@
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
-import { useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { FetchStatus } from '../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
-import ByFilterModificationForm from './by-filter-modification-form';
-import {
-    DATA_TYPE,
-    EDITED_FIELD,
-    EQUIPMENT_TYPE_FIELD,
-    FILTERS,
-    PROPERTY_NAME_FIELD,
-    SIMPLE_MODIFICATIONS,
-    VALUE_FIELD,
-} from '../../../utils/field-constants';
-import { modifyByFilter } from '../../../../services/study/network-modifications';
+import BySimpleModificationForm from './by-simple-modification-form';
+import { EDITED_FIELD, EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../utils/field-constants';
+import { modifyBySimpleModification } from '../../../../services/study/network-modifications';
 import {
     getDataType,
-    getModificationLineInitialValue,
-    getModificationLinesSchema,
-} from './modification-line/modification-line-utils.ts';
+    getSimpleModificationFromEditData,
+    getSimpleModificationInitialValue,
+    getSimpleModificationsSchema,
+} from './simple-modification/simple-modification-utils';
+import { BySimpleModification, SimpleModification } from './simple-modification/simple-modification.type';
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        ...getModificationLinesSchema(SIMPLE_MODIFICATIONS),
+        [SIMPLE_MODIFICATIONS]: getSimpleModificationsSchema(),
     })
     .required();
 
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
-    [SIMPLE_MODIFICATIONS]: [getModificationLineInitialValue()],
-};
+    [SIMPLE_MODIFICATIONS]: [getSimpleModificationInitialValue()],
+} as BySimpleModification;
 
-const ByFilterModificationDialog = ({
+const BySimpleModificationDialog: FC<any> = ({
     editData,
     currentNode,
     studyUuid,
@@ -70,13 +64,9 @@ const ByFilterModificationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const simpleModifications = editData.simpleModificationInfosList?.map((simpleModification) => ({
-                [PROPERTY_NAME_FIELD]: simpleModification.propertyName,
-                [VALUE_FIELD]: simpleModification.value,
-                [EDITED_FIELD]: simpleModification.editedField,
-                [DATA_TYPE]: getDataType(simpleModification.editedField),
-                [FILTERS]: simpleModification.filters,
-            }));
+            const simpleModifications: SimpleModification[] = editData.simpleModificationInfosList?.map(
+                getSimpleModificationFromEditData
+            );
             reset({
                 [EQUIPMENT_TYPE_FIELD]: editData.equipmentType,
                 [SIMPLE_MODIFICATIONS]: simpleModifications,
@@ -89,7 +79,7 @@ const ByFilterModificationDialog = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (formData) => {
+        (formData: BySimpleModification) => {
             const simpleModificationsList = formData[SIMPLE_MODIFICATIONS].map((simpleModification) => {
                 const dataType = getDataType(simpleModification[EDITED_FIELD]);
                 return {
@@ -97,7 +87,7 @@ const ByFilterModificationDialog = ({
                     dataType,
                 };
             });
-            modifyByFilter(
+            modifyBySimpleModification(
                 studyUuid,
                 currentNodeUuid,
                 formData[EQUIPMENT_TYPE_FIELD],
@@ -107,7 +97,7 @@ const ByFilterModificationDialog = ({
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ModifyByFilter',
+                    headerId: 'ModifyBySimpleModification',
                 });
             });
         },
@@ -120,17 +110,17 @@ const ByFilterModificationDialog = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-by-filter"
-                titleId="ModifyByFilter"
+                aria-labelledby="dialog-modify-by-simple-modification"
+                titleId="ModifyBySimpleModification"
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <ByFilterModificationForm />
+                <BySimpleModificationForm />
             </ModificationDialog>
         </CustomFormProvider>
     );
 };
 
-export default ByFilterModificationDialog;
+export default BySimpleModificationDialog;

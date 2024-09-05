@@ -1742,7 +1742,7 @@ export function modifyByFormula(studyUuid, currentNodeUuid, equipmentType, formu
     });
 }
 
-export function modifyByFilter(
+export function modifyBySimpleModification(
     studyUuid,
     currentNodeUuid,
     equipmentType,
@@ -1754,9 +1754,9 @@ export function modifyByFilter(
 
     if (isUpdate) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating by filter modification');
+        console.info('Updating by simple modification');
     } else {
-        console.info('Creating by filter modification');
+        console.info('Creating by simple modification');
     }
 
     const body = JSON.stringify({

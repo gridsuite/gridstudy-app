@@ -1,11 +1,11 @@
 /**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useMemo } from 'react';
+import React, { FC, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
@@ -19,11 +19,11 @@ import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { gridItem } from '../../../dialogUtils';
-import { DataType, FieldOptionType } from './modification-line-utils';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
+import { DataType, FieldOptionType } from './simple-modification.type';
 
-interface ModificationLineFormProps {
+interface SimpleModificationFormProps {
     name: String;
     index: number;
     predefinedProperties: any;
@@ -31,7 +31,7 @@ interface ModificationLineFormProps {
     equipmentType: string;
 }
 
-const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
+const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
     name,
     index,
     predefinedProperties,
@@ -83,7 +83,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => intl.formatMessage({ id: getLabelOrValue(option) })}
+            getOptionLabel={(option: any) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
         />
     );
 
@@ -135,7 +135,7 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
             {dataType === DataType.PROPERTY && (
                 <>
                     {gridItem(propertyNameField, 2.0)}
-                    {gridItem(<DensityLargeIcon fontSize="small" />, 0.25)}
+                    {gridItem(<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />, 0.25)}
                 </>
             )}
             {gridItem(valueField, dataType === DataType.PROPERTY ? 3.25 : 5.5)}
@@ -143,4 +143,4 @@ const ModificationLineForm: FunctionComponent<ModificationLineFormProps> = ({
     );
 };
 
-export default ModificationLineForm;
+export default SimpleModificationForm;
