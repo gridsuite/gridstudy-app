@@ -131,7 +131,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 return vlLNewLimits;
             });
         },
-        [params]
+        [params?.limitReductions]
     );
 
     const { handleSubmit, formState, reset } = formMethods;
