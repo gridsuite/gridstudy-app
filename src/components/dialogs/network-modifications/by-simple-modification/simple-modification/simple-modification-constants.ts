@@ -216,7 +216,7 @@ export const FIELD_OPTIONS: {
     },
     LOAD_TYPE: {
         id: FieldType.LOAD_TYPE,
-        label: 'LoadType',
+        label: 'loadType',
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },

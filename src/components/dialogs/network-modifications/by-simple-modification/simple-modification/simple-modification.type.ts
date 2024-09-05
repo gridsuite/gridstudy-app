@@ -90,9 +90,9 @@ export type Filter = {
 
 export type SimpleModification = {
     [FILTERS]: Filter[];
-    [DATA_TYPE]?: DataType;
+    [DATA_TYPE]: DataType;
     [EDITED_FIELD]: string;
-    [VALUE_FIELD]?: string | boolean | number;
+    [VALUE_FIELD]: string | boolean | number;
     [PROPERTY_NAME_FIELD]?: string;
 };
 

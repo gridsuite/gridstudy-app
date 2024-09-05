@@ -27,10 +27,10 @@ export const getDataType = (fieldName?: string | null) => {
 export const getSimpleModificationInitialValue = () =>
     ({
         [FILTERS]: [] as Filter[],
-        [DATA_TYPE]: undefined,
-        [EDITED_FIELD]: '',
-        [PROPERTY_NAME_FIELD]: undefined,
-        [VALUE_FIELD]: undefined,
+        [DATA_TYPE]: null as any,
+        [EDITED_FIELD]: null as any,
+        [PROPERTY_NAME_FIELD]: null as any,
+        [VALUE_FIELD]: null as any,
     } as SimpleModification);
 
 export function getSimpleModificationsSchema() {

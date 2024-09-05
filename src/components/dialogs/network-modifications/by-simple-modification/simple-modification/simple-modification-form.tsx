@@ -22,6 +22,7 @@ import { gridItem } from '../../../dialogUtils';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './simple-modification.type';
+import { areIdsEqual } from '../../../../utils/utils';
 
 interface SimpleModificationFormProps {
     name: String;
@@ -84,6 +85,7 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
             getOptionLabel={(option: any) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
+            isOptionEqualToValue={areIdsEqual}
         />
     );
 
