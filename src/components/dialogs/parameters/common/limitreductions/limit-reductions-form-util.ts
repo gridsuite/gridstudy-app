@@ -36,7 +36,7 @@ export const toFormValuesLimitReductions = (limits: ILimitReductionsByVoltageLev
     }
     return {
         [LIMIT_REDUCTIONS_FORM]: limits.map((vlLimits) => ({
-            [VOLTAGE_LEVELS_FORM]: vlLimits.voltageLevel.nominalV + ' (kV)',
+            [VOLTAGE_LEVELS_FORM]: vlLimits.voltageLevel.nominalV + ' kV',
             [IST_FORM]: vlLimits.permanentLimitReduction,
             ...toFormValuesFromTemporaryLimits(vlLimits.temporaryLimitReductions),
         })),

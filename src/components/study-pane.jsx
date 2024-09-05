@@ -125,7 +125,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
             </Box>
             <TabPanelLazy selected={props.view === StudyView.LOGS} key={`logs-${currentNode?.id}`}>
                 <ReportViewerTab
-                    studyId={studyUuid}
                     visible={props.view === StudyView.LOGS}
                     currentNode={currentNode}
                     disabled={disabled}

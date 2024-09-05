@@ -28,6 +28,7 @@ import { useComputationResultsCount } from '../hooks/use-computation-results-cou
 
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
+import { ROOT_NODE_LABEL } from '../constants/node.constant';
 
 const styles = {
     currentNodeBox: {
@@ -127,7 +128,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                         <OverflowableText
                             sx={styles.currentNodeLabel}
                             text={
-                                currentNode?.data?.label === 'Root'
+                                currentNode?.data?.label === ROOT_NODE_LABEL
                                     ? intl.formatMessage({ id: 'root' })
                                     : currentNode?.data?.label
                             }
