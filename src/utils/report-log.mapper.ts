@@ -20,7 +20,7 @@ const formatReportLog = (report: Report, severities: string[], formattedLogs: Lo
     // - a leaf (no sub-report)
     // - and a container (have sub-reports), if its highest severity belongs to the severity filter (or unknown)
     if (
-        report.parentId !== null &&
+        report.parentId != null &&
         (report.subReports.length === 0 ||
             severities.includes(highestSeverity.name) ||
             highestSeverity === REPORT_SEVERITY.UNKNOWN)
