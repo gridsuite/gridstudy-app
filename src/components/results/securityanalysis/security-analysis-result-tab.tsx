@@ -34,7 +34,6 @@ import { useNodeData } from '../../study-container';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { REPORT_TYPES } from '../../utils/report-type';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -326,7 +325,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {tabIndex === (enableDeveloperMode ? LOGS_TAB_INDEX : LOGS_TAB_INDEX - 1) &&
                     (securityAnalysisStatus === RunningStatus.SUCCEED ||
                         securityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer reportType={REPORT_TYPES.SECURITY_ANALYSIS} />
+                        <ComputationReportViewer reportType={ComputingType.SECURITY_ANALYSIS} />
                     )}
             </Box>
         </>
