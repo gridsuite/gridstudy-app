@@ -37,6 +37,7 @@ import {
 import LimitReductionsTableForm from './common/limitreductions/limit-reductions-table-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -576,6 +577,11 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         },
         [params, updateParameters, toLimitReductions]
     );
+
+    const { reset } = formMethods;
+    useEffect(() => {
+        reset(toFormValuesLimitReductions(params?.limitReductions));
+    }, [params?.limitReductions, reset]);
 
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);

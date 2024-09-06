@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
+import {
     ChangeEvent,
     Dispatch,
     FunctionComponent,
@@ -33,13 +33,20 @@ import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    getLimitReductionsFormSchema,
+    getSAParametersFromSchema,
     ILimitReductionsByVoltageLevel,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
 } from '../common/limitreductions/columns-definitions.js';
-
+import {
+    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+} from 'utils/config-params.js';
+import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -92,21 +99,28 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         },
         [snackError, updateParameters]
     );
-
     const formSchema = useMemo(() => {
-        return getLimitReductionsFormSchema(
-            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
-        );
+        return getSAParametersFromSchema(params.limitReductions);
     }, [params]);
 
     const formMethods = useForm({
-        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        defaultValues: {
+            [LIMIT_REDUCTIONS_FORM]: [],
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: null,
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: null,
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: null,
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: null,
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: null,
+        },
         resolver: yupResolver(formSchema),
     });
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
-            return params.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
+            if (!params?.limitReductions) {
+                return null;
+            }
+            return params?.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
                 let vlLNewLimits: ILimitReductionsByVoltageLevel = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],
@@ -120,15 +134,23 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 return vlLNewLimits;
             });
         },
-        [params]
+        [params?.limitReductions]
     );
 
-    const { handleSubmit, formState } = formMethods;
+    const { handleSubmit, formState, reset } = formMethods;
 
-    const updateLimitReductions = useCallback(
+    const updateSAParameters = useCallback(
+        //remove any type since we now know what to expect according to yup schema
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,
+                [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formLimits[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formLimits[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
+                [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formLimits[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
                 limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
             });
         },
@@ -138,6 +160,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
+
+    useEffect(() => {
+        reset(toFormValueSaParameters(params));
+    }, [params, reset]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
@@ -163,7 +189,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
-                    <SecurityAnalysisParametersSelector params={params} updateParameters={updateParameters} />
+                    <SecurityAnalysisParametersSelector params={params} />
                 </Grid>
                 <Grid container key="secuAnalysisProvider" sx={styles.scrollableGrid} spacing={1}></Grid>
                 <LineSeparator />
@@ -176,7 +202,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
                 <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
                 <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
-                <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
+                <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
                     <FormattedMessage id="validate" />
                 </SubmitButton>
             </Grid>
