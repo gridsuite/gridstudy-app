@@ -260,20 +260,6 @@ const NetworkModificationNodeEditor = () => {
         return withDefaultParams(Dialog, nprops);
     }
 
-    function getMenuItemById(menu, id) {
-        const stack = Array.isArray(menu) ? [...menu] : [menu];
-        while (stack.length) {
-            const item = stack.shift();
-            if (item?.id === id) {
-                return item;
-            }
-            if (item?.subItems) {
-                stack.push(...item?.subItems);
-            }
-        }
-        return null;
-    }
-
     const menuDefinition = [
         {
             id: 'CREATE',
@@ -478,6 +464,14 @@ const NetworkModificationNodeEditor = () => {
             action: () => adapt(VoltageInitModificationDialog),
         },
     ];
+
+    const subMenuItemsList = menuDefinition.reduce(
+        (actions, currentMenuItem) =>
+            currentMenuItem.subItems === undefined
+                ? [...actions, currentMenuItem]
+                : [...actions, ...currentMenuItem.subItems],
+        []
+    );
 
     const fillNotification = useCallback(
         (study, messageId) => {
@@ -807,7 +801,7 @@ const NetworkModificationNodeEditor = () => {
     }, [modifications]);
 
     const renderDialog = () => {
-        return getMenuItemById(menuDefinition, editDialogOpen)?.action();
+        return subMenuItemsList.find((menuItem) => menuItem.id === editDialogOpen).action();
     };
 
     const commit = useCallback(

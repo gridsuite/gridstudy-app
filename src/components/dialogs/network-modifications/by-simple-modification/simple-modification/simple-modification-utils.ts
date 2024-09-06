@@ -15,13 +15,12 @@ import {
     VALUE_FIELD,
 } from '../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
-import { searchTree } from '@gridsuite/commons-ui';
 import { Schema } from 'yup';
-import { DataType, FieldOptionType, Filter, SimpleModification } from './simple-modification.type';
+import { DataType, Filter, SimpleModification } from './simple-modification.type';
 import { FIELD_OPTIONS } from './simple-modification-constants';
 
 export const getDataType = (fieldName?: string | null) => {
-    return (searchTree(FIELD_OPTIONS, 'id', fieldName) as FieldOptionType)?.dataType;
+    return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName)?.dataType;
 };
 
 export const getSimpleModificationInitialValue = () =>
@@ -62,7 +61,7 @@ export function getSimpleModificationsSchema() {
     );
 }
 
-function getValueSchema(dataType: DataType) {
+function getValueSchema(dataType?: DataType) {
     let schema: Schema;
     // set type
     switch (dataType) {
