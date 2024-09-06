@@ -16,16 +16,12 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
+import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from 'components/computing-status/computing-type';
 
-const THRESHOLD_STATUS = {
-    BELOW: 'BELOW',
-    ABOVE: 'ABOVE',
-};
 const dynamicCssRules = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
