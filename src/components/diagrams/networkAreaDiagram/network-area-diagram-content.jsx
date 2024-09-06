@@ -136,7 +136,15 @@ function NetworkAreaDiagramContent(props) {
 
             diagramViewerRef.current = diagramViewer;
         }
-    }, [props.diagramId, props.svgType, props.svg, currentNode, props.loadingState, diagramSizeSetter]);
+    }, [
+        props.diagramId,
+        props.svgType,
+        props.svg,
+        currentNode,
+        props.loadingState,
+        diagramSizeSetter,
+        dynamicCssRules,
+    ]);
 
     /**
      * RENDER
