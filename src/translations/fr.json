@@ -204,6 +204,7 @@
     "VariableShuntCompensators": "MCS variables",
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageInitParametersError": "Erreur lors de la mise à jour des paramètres d'initialisation du plan de tension",
+    "voltageInitCancelError": "L'initialisation du plan de tension n'a pas pu être annulée",
     "AdjustExistingLimits": "Modifier les limites existantes",
     "AdjustExistingLimitsInfo": "Merci de saisir une valeur positive pour augmenter une limite existante et une valeur négative pour abaisser une limite existante (nouvelle limite = limite existante + valeur saisie).",
     "SetDefaultLimits": "Valeurs par défaut pour compléter les limites manquantes",
@@ -1367,6 +1368,5 @@
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
     "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
     "guidancePopUp.action":"Fermer l'éditeur",
-    "generateNad": "Générer",
-    "nad": "NAD"
+    "generateNad": "Générer"
 }
