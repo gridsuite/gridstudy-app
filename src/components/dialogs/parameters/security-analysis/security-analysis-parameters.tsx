@@ -47,10 +47,14 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params.js';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
+import { invalidateSecurityAnalysisStatus } from '../../../../services/study/security-analysis';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../../redux/reducer';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
         parametersBackend;
 
@@ -153,8 +157,9 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
                 limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
             });
+            invalidateSecurityAnalysisStatus(studyUuid);
         },
-        [params, updateParameters, toLimitReductions]
+        [params, updateParameters, toLimitReductions, studyUuid]
     );
 
     useEffect(() => {

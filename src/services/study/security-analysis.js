@@ -130,3 +130,12 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
         body: JSON.stringify(newParams),
     });
 }
+
+export function invalidateSecurityAnalysisStatus(studyUuid) {
+    console.info('invalidate security analysis status');
+    const invalidateSecurityAnalysisStatusUrl = getStudyUrl(studyUuid) + '/security-analysis/invalidate-status';
+    console.debug(invalidateSecurityAnalysisStatusUrl);
+    return backendFetch(invalidateSecurityAnalysisStatusUrl, {
+        method: 'PUT',
+    });
+}
