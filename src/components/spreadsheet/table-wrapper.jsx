@@ -1155,6 +1155,11 @@ const TableWrapper = (props) => {
         [currentNode?.id, studyUuid]
     );
 
+    const clearFilters = useCallback(() => {
+        setFilterIds();
+        globalFilterRef.current?.resetFilter();
+    }, []);
+
     const handleCloseFilterDialog = useCallback(
         (nodes) => {
             if (nodes.length === 1) {
@@ -1185,7 +1190,14 @@ const TableWrapper = (props) => {
                         />
                     </Grid>
                     <Grid item>
-                        <Button onClick={handleOpenFilterDialog} variant={'contained'}>Open filter configuration</Button>
+                        <Button onClick={handleOpenFilterDialog} variant={'contained'}>
+                            Open filter configuration
+                        </Button>
+                    </Grid>
+                    <Grid item sx={styles.filter}>
+                        <Button onClick={clearFilters} variant={'contained'}>
+                            Clear filters
+                        </Button>
                     </Grid>
                     {openFilterDialog && (
                         <DirectoryItemSelector

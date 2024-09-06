@@ -21,7 +21,6 @@ const styles = {
 };
 
 export const GlobalFilter = forwardRef(({ gridRef, disabled, handleFormulaFiltering }, ref) => {
-    const intl = useIntl();
     const inputRef = useRef();
     const [isFormulaFilteringEnabled, setIsFormulaFilteringEnabled] = useState(false);
 
