@@ -158,11 +158,11 @@ const LineModificationDialog = ({
                 ...getConnectivityFormData(
                     {
                         busbarSectionId: line?.busOrBusbarSectionId1?.value ?? null,
-                        connectionDirection: line?.connectionPosition1?.connectionDirection1?.value ?? null,
-                        connectionName: line?.connectionPosition1?.connectionName1?.value ?? '',
-                        connectionPosition: line?.connectionPosition1?.connectionPosition1?.value ?? null,
+                        connectionDirection: line?.connectionDirection1?.value ?? null,
+                        connectionName: line?.connectionName1?.value ?? '',
+                        connectionPosition: line?.connectionPosition1?.value ?? null,
                         voltageLevelId: line?.voltageLevelId1?.value ?? null,
-                        connected: line?.terminal1Connected?.value ?? null,
+                        terminalConnected: line?.terminal1Connected?.value ?? null,
                         isEquipmentModification: true,
                     },
                     CONNECTIVITY_1
@@ -170,11 +170,11 @@ const LineModificationDialog = ({
                 ...getConnectivityFormData(
                     {
                         busbarSectionId: line?.busOrBusbarSectionId2?.value ?? null,
-                        connectionDirection: line?.connectionPosition2?.connectionDirection2?.value ?? null,
-                        connectionName: line?.connectionPosition2?.connectionName2?.value ?? '',
-                        connectionPosition: line?.connectionPosition2?.connectionPosition2?.value ?? null,
+                        connectionDirection: line?.connectionDirection2?.value ?? null,
+                        connectionName: line?.connectionName2?.value ?? '',
+                        connectionPosition: line?.connectionPosition2?.value ?? null,
                         voltageLevelId: line?.voltageLevelId2?.value ?? null,
-                        connected: line?.terminal2Connected?.value ?? null,
+                        terminalConnected: line?.terminal2Connected?.value ?? null,
                         isEquipmentModification: true,
                     },
                     CONNECTIVITY_2

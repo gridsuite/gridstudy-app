@@ -234,11 +234,11 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getConnectivityFormData(
                     {
                         busbarSectionId: twt?.busOrBusbarSectionId1?.value ?? null,
-                        connectionDirection: twt?.connectionPosition1?.connectionDirection1?.value ?? null,
-                        connectionName: twt?.connectionPosition1?.connectionName1?.value ?? '',
-                        connectionPosition: twt?.connectionPosition1?.connectionPosition1?.value ?? null,
+                        connectionDirection: twt?.connectionDirection1?.value ?? null,
+                        connectionName: twt?.connectionName1?.value ?? '',
+                        connectionPosition: twt?.connectionPosition1?.value ?? null,
                         voltageLevelId: twt?.voltageLevelId1?.value ?? null,
-                        connected: twt?.terminal1Connected?.value ?? null,
+                        terminalConnected: twt?.terminal1Connected?.value ?? null,
                         isEquipmentModification: true,
                     },
                     CONNECTIVITY_1
@@ -246,11 +246,11 @@ const TwoWindingsTransformerModificationDialog = ({
                 ...getConnectivityFormData(
                     {
                         busbarSectionId: twt?.busOrBusbarSectionId2?.value ?? null,
-                        connectionDirection: twt?.connectionPosition2?.connectionDirection2?.value ?? null,
-                        connectionName: twt?.connectionPosition2?.connectionName2?.value ?? '',
-                        connectionPosition: twt?.connectionPosition2?.connectionPosition2?.value ?? null,
+                        connectionDirection: twt?.connectionDirection2?.value ?? null,
+                        connectionName: twt?.connectionName2?.value ?? '',
+                        connectionPosition: twt?.connectionPosition2?.value ?? null,
                         voltageLevelId: twt?.voltageLevelId2?.value ?? null,
-                        connected: twt?.terminal2Connected?.value ?? null,
+                        terminalConnected: twt?.terminal2Connected?.value ?? null,
                         isEquipmentModification: true,
                     },
                     CONNECTIVITY_2
