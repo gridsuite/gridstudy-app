@@ -46,14 +46,14 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
 export function setModificationActive(studyUuid, nodeUuid, modificationUuid, active) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('active', active);
-    urlSearchParams.append('uuids', [modificationUuid]);
     const modificationUpdateActiveUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
         '/nodes/' +
         encodeURIComponent(nodeUuid) +
-        '/network-modifications' +
+        '/network-modifications/' +
+        encodeURIComponent(modificationUuid) +
         '?' +
         urlSearchParams.toString();
     console.debug(modificationUpdateActiveUrl);
