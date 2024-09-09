@@ -303,7 +303,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {tabIndex === N_RESULTS_TAB_INDEX && enableDeveloperMode && (
                     <SecurityAnalysisResultN
                         result={result}
-                        isLoadingResult={isLoadingResult}
+                        isLoadingResult={isLoadingResult || filterEnumsLoading}
                         columnDefs={columnDefs}
                     />
                 )}
