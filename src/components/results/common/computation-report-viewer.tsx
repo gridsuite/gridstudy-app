@@ -5,88 +5,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useCallback, useEffect, useState } from 'react';
-import { fetchNodeReport, fetchParentNodesReport, fetchSubReport } from '../../../services/study';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { FunctionComponent, useEffect, useState } from 'react';
 import ReportViewer from '../../report-viewer/report-viewer';
-import LogReportItem from '../../report-viewer/log-report-item';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
+import { useReportFetcher } from '../../../hooks/use-report-fetcher';
+import { Report } from '../../../types/report.type';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
 }
 
 export const ComputationReportViewer: FunctionComponent<ComputationReportViewerProps> = ({ reportType }) => {
-    const [report, setReport] = useState(undefined);
-    const { snackError } = useSnackMessage();
+    const [report, setReport] = useState<Report>();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [waitingLoadReport, setWaitingLoadReport] = useState(false);
-
-    const makeReport = useCallback(
-        (reportData: any) => {
-            const nodeName = currentNode?.data.label;
-            // an array with a single reporter is expected (corresponding to the current Node)
-            let singleReport: any = Array.isArray(reportData) && reportData.length === 1 ? reportData[0] : undefined;
-            if (nodeName && singleReport) {
-                singleReport.title = nodeName;
-            }
-            return singleReport;
-        },
-        [currentNode?.data.label]
-    );
+    const [isReportLoading, fetchReport] = useReportFetcher(reportType);
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            // use a timout to avoid having a loader in case of fast promise return (avoid blink)
-            const timer = setTimeout(() => {
-                setWaitingLoadReport(true);
-            }, 700);
-
-            fetchParentNodesReport(
-                studyUuid.toString(),
-                currentNode.id.toString(),
-                true,
-                LogReportItem.getDefaultSeverityList(),
-                reportType
-            )
-                .then((fetchedReport) => {
-                    setReport(makeReport(fetchedReport));
-                })
-                .catch((error) => {
-                    setReport(undefined);
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'ReportFetchError',
-                    });
-                })
-                .finally(() => {
-                    clearTimeout(timer);
-                    setWaitingLoadReport(false);
-                });
+            fetchReport().then((report) => {
+                if (report !== undefined) {
+                    setReport(report);
+                }
+            });
         }
-    }, [studyUuid, currentNode?.id, reportType, snackError, makeReport]);
-
-    const subReportPromise = (reportId: string, severityFilterList: string[]) => {
-        return fetchSubReport(studyUuid?.toString(), currentNode?.id.toString(), reportId, severityFilterList);
-    };
-
-    const nodeReportPromise = (nodeId: string, reportId: string, severityFilterList: string[]) => {
-        return fetchNodeReport(studyUuid?.toString(), nodeId, reportId, severityFilterList);
-    };
+    }, [studyUuid, currentNode?.id, reportType, fetchReport]);
 
     return (
-        <WaitingLoader loading={waitingLoadReport} message={'loadingReport'}>
-            {report && (
-                <ReportViewer
-                    jsonReportTree={report}
-                    subReportPromise={subReportPromise}
-                    nodeReportPromise={nodeReportPromise}
-                />
-            )}
+        <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
+            {report && <ReportViewer report={report} reportType={reportType} />}
         </WaitingLoader>
     );
 };

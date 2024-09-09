@@ -87,10 +87,10 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) =
             ? []
             : logs.map((log) => {
                   return {
-                      severity: log.getSeverityName(),
-                      message: log.getLog(),
-                      backgroundColor: log.getColorName(),
-                      reportId: log.getReportId(),
+                      severity: log.severity.name,
+                      message: log.message,
+                      backgroundColor: log.severity.colorName,
+                      parentId: log.parentId,
                   };
               });
     };

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import SensitivityAnalysisTabs from './sensitivity-analysis-tabs';
@@ -24,10 +24,8 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
-import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import React, { useCallback } from 'react';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
 import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -35,8 +33,8 @@ import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
 import { setSensitivityAnalysisResultFilter } from 'redux/actions';
 import {
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
 } from 'utils/store-sort-filter-fields';
 
 export const SensitivityResultTabs = [
@@ -185,7 +183,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                     {(sensitivityAnalysisStatus === RunningStatus.SUCCEED ||
                         sensitivityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer reportType={REPORT_TYPES.SENSITIVITY_ANALYSIS} />
+                        <ComputationReportViewer reportType={ComputingType.SENSITIVITY_ANALYSIS} />
                     )}
                 </>
             )}
