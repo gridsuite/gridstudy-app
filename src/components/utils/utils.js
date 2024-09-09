@@ -237,3 +237,7 @@ export function usePrevious(value) {
     }, [value]);
     return ref.current;
 }
+
+export const comparatorStrIgnoreCase = (str1, str2) => {
+    return str1.toLowerCase().localeCompare(str2.toLowerCase());
+};

@@ -23,7 +23,7 @@ import { gridItem } from '../../../dialogUtils';
 import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './simple-modification.type';
-import { areIdsEqual } from '../../../../utils/utils';
+import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../utils/utils';
 
 interface SimpleModificationFormProps {
     name: String;
@@ -57,7 +57,7 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
     });
 
     const predefinedPropertiesNames = useMemo(() => {
-        return Object.keys(predefinedProperties ?? {}).sort();
+        return Object.keys(predefinedProperties ?? {}).sort(comparatorStrIgnoreCase);
     }, [predefinedProperties]);
 
     const predefinedPropertiesValues = useMemo(() => {
