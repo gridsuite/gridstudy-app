@@ -182,46 +182,46 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             paddingLeft: 1,
                         }}
                     >
-                <Grid container spacing={1} padding={1}>
-                    <Grid
-                        container
-                        spacing={1}
-                        sx={{
-                            padding: 0,
-                            paddingBottom: 2,
-                            justifyContent: 'space-between',
-                        }}
-                        xl={6}
-                    >
-                        <DropDown
-                            value={provider}
-                            label="Provider"
-                            values={securityAnalysisProvider}
-                            callback={updateProviderCallback}
-                        />
-                    </Grid>
-                    <Grid container paddingTop={1} paddingBottom={1}>
-                        <LineSeparator />
-                    </Grid>
-                    <SecurityAnalysisParametersSelector params={params} />
-                </Grid>
+                        <Grid container spacing={1} padding={1}>
+                            <Grid
+                                container
+                                spacing={1}
+                                sx={{
+                                    padding: 0,
+                                    paddingBottom: 2,
+                                    justifyContent: 'space-between',
+                                }}
+                                xl={6}
+                            >
+                                <DropDown
+                                    value={provider}
+                                    label="Provider"
+                                    values={securityAnalysisProvider}
+                                    callback={updateProviderCallback}
+                                />
+                            </Grid>
+                            <Grid container paddingTop={1} paddingBottom={1}>
+                                <LineSeparator />
+                            </Grid>
+                            <SecurityAnalysisParametersSelector params={params} />
+                        </Grid>
                     </Box>
                     <Box sx={{ flexShrink: 0 }}>
-                    <LineSeparator />
-            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
-                <LabelledButton
-                    callback={() => setOpenSelectParameterDialog(true)}
-                    label="settings.button.chooseSettings"
-                />
-                <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
-                <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
-                <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
-                <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
-                    <FormattedMessage id="validate" />
-                </SubmitButton>
-            </Grid>
-        </Box>
-</Box>
+                        <LineSeparator />
+                        <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
+                            <LabelledButton
+                                callback={() => setOpenSelectParameterDialog(true)}
+                                label="settings.button.chooseSettings"
+                            />
+                            <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                            <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
+                            <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
+                            <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </Grid>
+                    </Box>
+                </Box>
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
