@@ -7,7 +7,6 @@
 
 import { Option } from '@gridsuite/commons-ui';
 import {
-    DATA_TYPE,
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
@@ -90,9 +89,8 @@ export type Filter = {
 
 export type SimpleModification = {
     [FILTERS]: Filter[];
-    [DATA_TYPE]: DataType;
     [EDITED_FIELD]: string;
-    [VALUE_FIELD]: string | boolean | number;
+    [VALUE_FIELD]: string | number | boolean;
     [PROPERTY_NAME_FIELD]?: string;
 };
 

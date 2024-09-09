@@ -5,15 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    DATA_TYPE,
-    EDITED_FIELD,
-    FILTERS,
-    ID,
-    NAME,
-    PROPERTY_NAME_FIELD,
-    VALUE_FIELD,
-} from '../../../../utils/field-constants';
+import { EDITED_FIELD, FILTERS, ID, NAME, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
 import { DataType, Filter, SimpleModification } from './simple-modification.type';
@@ -23,42 +15,47 @@ export const getDataType = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName)?.dataType;
 };
 
-export const getSimpleModificationInitialValue = () =>
-    ({
-        [FILTERS]: [] as Filter[],
-        [DATA_TYPE]: null as any,
-        [EDITED_FIELD]: null as any,
-        [PROPERTY_NAME_FIELD]: null as any,
-        [VALUE_FIELD]: null as any,
-    } as SimpleModification);
+// ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
+export const getSimpleModificationInitialValue = () => ({
+    [FILTERS]: [] as Filter[],
+    [EDITED_FIELD]: null,
+    [PROPERTY_NAME_FIELD]: null,
+    [VALUE_FIELD]: null,
+});
 
 export function getSimpleModificationsSchema() {
-    return yup.array().of(
-        yup.object().shape({
-            [FILTERS]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
+    return yup
+        .array()
+        .of(
+            yup.object().shape({
+                [FILTERS]: yup
+                    .array()
+                    .of(
+                        yup.object().shape({
+                            [ID]: yup.string().required(),
+                            [NAME]: yup.string().required(),
+                        })
+                    )
+                    .required()
+                    .min(1, 'FieldIsRequired'),
+                [EDITED_FIELD]: yup.string().required(),
+                [PROPERTY_NAME_FIELD]: yup.string().when([EDITED_FIELD], ([editedField], schema) => {
+                    const dataType = getDataType(editedField);
+                    if (dataType === DataType.PROPERTY) {
+                        return schema.required();
+                    }
+                    return schema.nullable();
+                }),
+                [VALUE_FIELD]: yup
+                    .mixed<string | number | boolean>()
+                    .when([EDITED_FIELD], ([editedField], schema) => {
+                        const dataType = getDataType(editedField);
+                        return getValueSchema(dataType);
                     })
-                )
-                .required()
-                .min(1, 'FieldIsRequired'),
-            [EDITED_FIELD]: yup.string().required(),
-            [PROPERTY_NAME_FIELD]: yup.string().when([EDITED_FIELD], ([editedField], schema) => {
-                const dataType = getDataType(editedField);
-                if (dataType === DataType.PROPERTY) {
-                    return schema.required();
-                }
-                return schema.nullable();
-            }),
-            [VALUE_FIELD]: yup.mixed().when([EDITED_FIELD], ([editedField], schema) => {
-                const dataType = getDataType(editedField);
-                return getValueSchema(dataType);
-            }),
-        })
-    );
+                    .required(),
+            })
+        )
+        .required();
 }
 
 function getValueSchema(dataType?: DataType) {
@@ -81,9 +78,6 @@ function getValueSchema(dataType?: DataType) {
         default:
             schema = yup.number();
     }
-
-    // set required
-    schema = schema.required();
 
     return schema;
 }

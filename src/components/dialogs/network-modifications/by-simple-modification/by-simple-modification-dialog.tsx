@@ -24,6 +24,7 @@ import {
     getSimpleModificationsSchema,
 } from './simple-modification/simple-modification-utils';
 import { BySimpleModification, SimpleModification } from './simple-modification/simple-modification.type';
+import { DeepNullable } from '../../../utils/ts-utils';
 
 const formSchema = yup
     .object()
@@ -36,7 +37,7 @@ const formSchema = yup
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
     [SIMPLE_MODIFICATIONS]: [getSimpleModificationInitialValue()],
-} as BySimpleModification;
+};
 
 const BySimpleModificationDialog: FC<any> = ({
     editData,
@@ -49,9 +50,11 @@ const BySimpleModificationDialog: FC<any> = ({
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    // "DeepNullable" to allow deeply null values as default values for required values
+    // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
+    const formMethods = useForm<DeepNullable<BySimpleModification>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<BySimpleModification>>(formSchema),
     });
 
     const open = useOpenShortWaitFetching({
