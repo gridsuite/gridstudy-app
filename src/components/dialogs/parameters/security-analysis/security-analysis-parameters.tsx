@@ -101,7 +101,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     );
     const formSchema = useMemo(() => {
         return getSAParametersFromSchema(params.limitReductions);
-    }, [params]);
+    }, [params.limitReductions]);
 
     const formMethods = useForm({
         defaultValues: {
@@ -167,14 +167,35 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid sx={{ height: '100%' }}>
+            <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
                 <Box
                     sx={{
                         height: '100%',
                         display: 'flex',
+                        position: 'relative',
                         flexDirection: 'column',
                     }}
                 >
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            spacing={1}
+                            sx={{
+                                padding: 0,
+                                paddingBottom: 2,
+                                justifyContent: 'fit-content',
+                            }}
+                            justifyContent={'space-between'}
+                        >
+                            <DropDown
+                                value={provider}
+                                label="Provider"
+                                values={securityAnalysisProvider}
+                                callback={updateProviderCallback}
+                            />
+                            <LineSeparator />
+                        </Grid>
+                    </Box>
                     <Box
                         sx={{
                             flexGrow: 1,
@@ -182,31 +203,9 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             paddingLeft: 1,
                         }}
                     >
-                        <Grid container spacing={1} padding={1}>
-                            <Grid
-                                container
-                                spacing={1}
-                                sx={{
-                                    padding: 0,
-                                    paddingBottom: 2,
-                                    justifyContent: 'space-between',
-                                }}
-                                xl={6}
-                            >
-                                <DropDown
-                                    value={provider}
-                                    label="Provider"
-                                    values={securityAnalysisProvider}
-                                    callback={updateProviderCallback}
-                                />
-                            </Grid>
-                            <Grid container paddingTop={1} paddingBottom={1}>
-                                <LineSeparator />
-                            </Grid>
-                            <SecurityAnalysisParametersSelector params={params} />
-                        </Grid>
+                        <SecurityAnalysisParametersSelector params={params} />
                     </Box>
-                    <Box sx={{ flexShrink: 0 }}>
+                    <Box sx={{ flexGrow: 0 }}>
                         <LineSeparator />
                         <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
                             <LabelledButton
