@@ -23,7 +23,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { Equipment } from '@gridsuite/commons-ui';
 import { openNadList } from 'redux/actions';
 import { Nullable } from 'components/utils/ts-utils';
 import { AppState } from 'redux/reducer';

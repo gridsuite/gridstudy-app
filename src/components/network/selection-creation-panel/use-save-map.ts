@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { Equipment } from '@gridsuite/commons-ui';
 import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';
 
 export type UseSaveMapOutput = {

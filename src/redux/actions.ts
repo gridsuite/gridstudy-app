@@ -64,7 +64,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { Identifiable } from '@gridsuite/commons-ui';
 
 type MutableUnknownArray = unknown[];
 

@@ -10,7 +10,7 @@ import { EquipmentType, getEquipmentsInfosForSearchBar, useElementSearch } from 
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { Equipment } from '@gridsuite/commons-ui';
 
 interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;
