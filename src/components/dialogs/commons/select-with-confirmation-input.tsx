@@ -44,7 +44,7 @@ const SelectWithConfirmationInput: FunctionComponent<SelectWithConfirmationInput
     };
 
     const handleValidate = () => {
-        onValidate && onValidate();
+        onValidate?.();
         onChange(newValue);
     };
 
@@ -61,8 +61,8 @@ const SelectWithConfirmationInput: FunctionComponent<SelectWithConfirmationInput
                     onChange={handleChange}
                     label={<FormattedMessage id={label} />}
                 >
-                    {options.map((option, index) => (
-                        <MenuItem key={index} value={option}>
+                    {options.map((option) => (
+                        <MenuItem key={option} value={option}>
                             <FormattedMessage id={option} />
                         </MenuItem>
                     ))}

@@ -26,7 +26,7 @@ import { DataType, FieldOptionType } from './simple-modification.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../utils/utils';
 
 interface SimpleModificationFormProps {
-    name: String;
+    name: string;
     index: number;
     predefinedProperties: any;
     equipmentFields: FieldOptionType[];
