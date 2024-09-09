@@ -57,6 +57,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
         parametersBackend;
+    const { snackError } = useSnackMessage();
 
     const handleUpdateProvider = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         updateProvider(evt.target.value);
@@ -68,11 +69,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         });
     };
 
-    const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
+    const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider, studyUuid, snackError]);
     const intl = useIntl();
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
-    const { snackError } = useSnackMessage();
 
     // TODO: remove this when DynaFlow is supported
     // DynaFlow is not supported at the moment for security analysis
