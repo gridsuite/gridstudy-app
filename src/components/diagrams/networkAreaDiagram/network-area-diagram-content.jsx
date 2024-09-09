@@ -41,7 +41,13 @@ function NetworkAreaDiagramContent(props) {
                 MIN_WIDTH,
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
-                MAX_HEIGHT_NETWORK_AREA_DIAGRAM
+                MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
+                null,
+                null,
+                null,
+                false,
+                false,
+                null
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
