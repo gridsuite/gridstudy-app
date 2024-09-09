@@ -6,15 +6,15 @@
  */
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import yup from 'components/utils/yup-config';
+import yup from 'components/utils/yup-config.js';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../../services/utils.js';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../network/constants';
-import ByFormulaForm from './by-formula-form';
+import ModificationDialog from '../../../commons/modificationDialog.jsx';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form.js';
+import { FORM_LOADING_DELAY } from '../../../../network/constants.js';
+import ByFormulaForm from './by-formula-form.js';
 import {
     EDITED_FIELD,
     EQUIPMENT_FIELD,
@@ -25,9 +25,9 @@ import {
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
     VALUE,
-} from '../../../utils/field-constants';
-import { modifyByFormula } from '../../../../services/study/network-modifications';
-import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
+} from '../../../../utils/field-constants.js';
+import { modifyByFormula } from '../../../../../services/study/network-modifications.js';
+import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils.js';
 
 function getFieldOrValue(input) {
     const value = input.replace(',', '.');

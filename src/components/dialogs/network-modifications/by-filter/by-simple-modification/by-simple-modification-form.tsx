@@ -6,14 +6,14 @@
  */
 
 import React, { FC, useEffect } from 'react';
-import { EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../utils/field-constants';
-import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
+import { EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../../utils/field-constants';
+import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
 import SimpleModificationForm from './simple-modification/simple-modification-form';
 import Grid from '@mui/material/Grid';
-import { gridItem } from '../../dialogUtils';
+import { gridItem } from '../../../dialogUtils';
 import { getSimpleModificationInitialValue } from './simple-modification/simple-modification-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
-import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
+import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
 import { EQUIPMENTS_FIELDS } from './simple-modification/simple-modification-constants';
 

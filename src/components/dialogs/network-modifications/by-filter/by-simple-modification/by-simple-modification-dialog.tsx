@@ -9,14 +9,14 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FC, useCallback, useEffect } from 'react';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../commons/modificationDialog';
-import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
-import { FORM_LOADING_DELAY } from '../../../network/constants';
+import ModificationDialog from '../../../commons/modificationDialog';
+import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
+import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import BySimpleModificationForm from './by-simple-modification-form';
-import { EDITED_FIELD, EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../utils/field-constants';
-import { modifyBySimpleModification } from '../../../../services/study/network-modifications';
+import { EDITED_FIELD, EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../../utils/field-constants';
+import { modifyBySimpleModification } from '../../../../../services/study/network-modifications';
 import {
     getDataType,
     getSimpleModificationFromEditData,
@@ -24,7 +24,7 @@ import {
     getSimpleModificationsSchema,
 } from './simple-modification/simple-modification-utils';
 import { BySimpleModification, SimpleModification } from './simple-modification/simple-modification.type';
-import { DeepNullable } from '../../../utils/ts-utils';
+import { DeepNullable } from '../../../../utils/ts-utils';
 
 const formSchema = yup
     .object()

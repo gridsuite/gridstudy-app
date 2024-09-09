@@ -6,7 +6,7 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { AutocompleteInput, ElementType } from '@gridsuite/commons-ui';
+import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -14,14 +14,13 @@ import {
     OPERATOR,
     REFERENCE_FIELD_OR_VALUE_1,
     REFERENCE_FIELD_OR_VALUE_2,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import { gridItem } from '../../../dialogUtils';
+import { gridItem } from '../../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
-import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
+import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 

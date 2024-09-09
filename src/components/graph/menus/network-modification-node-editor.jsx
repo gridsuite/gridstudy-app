@@ -50,7 +50,7 @@ import BatteryModificationDialog from 'components/dialogs/network-modifications/
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import VoltageInitModificationDialog from 'components/dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import VscCreationDialog from 'components/dialogs/network-modifications/vsc/creation/vsc-creation-dialog';
-import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
+import ByFormulaDialog from 'components/dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import TabularModificationDialog from 'components/dialogs/network-modifications/tabular-modification/tabular-modification-dialog';
 import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
 import TabularCreationDialog from 'components/dialogs/network-modifications/tabular-creation/tabular-creation-dialog';
@@ -68,12 +68,12 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
-import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
+import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 import { createCompositeModifications } from '../../../services/explore';
 import EditIcon from '@mui/icons-material/Edit';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
-import BySimpleModificationDialog from '../../dialogs/network-modifications/by-simple-modification/by-simple-modification-dialog';
+import BySimpleModificationDialog from '../../dialogs/network-modifications/by-filter/by-simple-modification/by-simple-modification-dialog';
 
 export const styles = {
     listContainer: (theme) => ({

@@ -6,8 +6,8 @@
  */
 
 import { DataType, FieldOptionType, FieldType } from './simple-modification.type';
-import { LOAD_TYPES } from '../../../../network/constants';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { LOAD_TYPES } from '../../../../../network/constants';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 export const FIELD_OPTIONS: {
     [key: string]: FieldOptionType;

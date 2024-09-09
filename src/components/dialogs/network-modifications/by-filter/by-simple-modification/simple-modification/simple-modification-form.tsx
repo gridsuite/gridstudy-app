@@ -17,13 +17,13 @@ import {
     usePrevious,
 } from '@gridsuite/commons-ui';
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
-import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
+import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { gridItem } from '../../../dialogUtils';
-import { getIdOrValue, getLabelOrValue } from '../../../commons/utils';
+import { gridItem } from '../../../../dialogUtils';
+import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './simple-modification.type';
-import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../utils/utils';
+import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 
 interface SimpleModificationFormProps {
     name: string;

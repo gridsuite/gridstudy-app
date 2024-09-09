@@ -5,10 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EDITED_FIELD, FILTERS, ID, NAME, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
+import {
+    EDITED_FIELD,
+    FILTERS,
+    ID,
+    NAME,
+    PROPERTY_NAME_FIELD,
+    VALUE_FIELD,
+} from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { DataType, Filter, SimpleModification } from './simple-modification.type';
+import { DataType, SimpleModification } from './simple-modification.type';
 import { FIELD_OPTIONS } from './simple-modification-constants';
 
 export const getDataType = (fieldName?: string | null) => {
@@ -17,7 +24,7 @@ export const getDataType = (fieldName?: string | null) => {
 
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
 export const getSimpleModificationInitialValue = () => ({
-    [FILTERS]: [] as Filter[],
+    [FILTERS]: [],
     [EDITED_FIELD]: null,
     [PROPERTY_NAME_FIELD]: null,
     [VALUE_FIELD]: null,

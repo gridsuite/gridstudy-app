@@ -7,14 +7,14 @@
 
 import React, { FunctionComponent } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../utils/field-constants';
-import ExpandableInput from '../../../utils/rhf-inputs/expandable-input';
+import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constants';
+import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
 import FormulaForm from './formula/formula-form';
 import Grid from '@mui/material/Grid';
-import { gridItem } from '../../dialogUtils';
+import { gridItem } from '../../../dialogUtils';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
-import SelectWithConfirmationInput from '../../commons/select-with-confirmation-input';
+import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 
 interface ByFormulaFormProps {}
 

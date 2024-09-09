@@ -10,12 +10,11 @@ import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
-    ID,
-    NAME,
     PROPERTY_NAME_FIELD,
     SIMPLE_MODIFICATIONS,
     VALUE_FIELD,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
+import { Filter } from '../../commons/by-filter.type';
 
 // --- types for the configuration, see the constants file --- //
 
@@ -81,11 +80,6 @@ export enum FieldType {
 }
 
 // --- types for the form model --- //
-
-export type Filter = {
-    [ID]: string;
-    [NAME]: string;
-};
 
 export type SimpleModification = {
     [FILTERS]: Filter[];
