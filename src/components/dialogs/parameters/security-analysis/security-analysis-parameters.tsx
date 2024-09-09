@@ -183,7 +183,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             sx={{
                                 padding: 0,
                                 paddingBottom: 2,
-                                justifyContent: 'fit-content',
+                                height: 'fit-content',
                             }}
                             justifyContent={'space-between'}
                         >
@@ -203,11 +203,22 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             paddingLeft: 1,
                         }}
                     >
-                        <SecurityAnalysisParametersSelector params={params} />
+                        <Grid
+                            container
+                            sx={mergeSx(styles.scrollableGrid, {
+                                maxHeight: '100%',
+                            })}
+                        >
+                            <SecurityAnalysisParametersSelector params={params} />
+                        </Grid>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
                         <LineSeparator />
-                        <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
+                        <Grid
+                            container
+                            item
+                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                        >
                             <LabelledButton
                                 callback={() => setOpenSelectParameterDialog(true)}
                                 label="settings.button.chooseSettings"
