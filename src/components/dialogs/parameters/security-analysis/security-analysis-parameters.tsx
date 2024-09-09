@@ -58,8 +58,15 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
         parametersBackend;
 
-    const handleUpdateProvider = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    const handleUpdateProvider = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         updateProvider(evt.target.value);
+        invalidateSecurityAnalysisStatus(studyUuid).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'invalidateSecurityAnalysisStatusError',
+            });
+        });
+    };
 
     const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
     const intl = useIntl();
@@ -87,10 +94,15 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 fetchSecurityAnalysisParameters(newParams[0].id)
-                    .then(async (parameters) => {
+                    .then((parameters) => {
                         console.info('loading the following security analysis parameters : ' + parameters.uuid);
                         updateParameters({ ...parameters });
-                        await invalidateSecurityAnalysisStatus(studyUuid);
+                        invalidateSecurityAnalysisStatus(studyUuid).catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'invalidateSecurityAnalysisStatusError',
+                            });
+                        });
                     })
                     .catch((error) => {
                         console.error(error);

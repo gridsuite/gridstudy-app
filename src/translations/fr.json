@@ -1308,6 +1308,7 @@
     "nominalInitialVoltageProfileMode": "Normalisé",
     "cei909InitialVoltageProfileMode": "CEI 909",
     "invalidateLoadFlowStatusError": "Une erreur est survenue lors de l'invalidation du statut du calcul de répartition",
+    "invalidateSecurityAnalysisStatusError": "Une erreur est survenue lors de l'invalidation du statut de l'analyse de sécurité",
     "undefined": "non défini",
     "GenerationStages": "Paliers",
     "GeneratorsCappings": "Ecrêtements",

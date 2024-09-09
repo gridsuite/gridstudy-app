@@ -1294,6 +1294,7 @@
     "GeneratorTargetV": "Target V",
     "waitingStudyIndexation": "Waiting for study indexation...",
     "invalidateLoadFlowStatusError": "An error occurred while invalidating the load flow status",
+    "invalidateSecurityAnalysisStatusError": "An error occurred while invalidating the security analysis status",
     "ShortCircuitPredefinedParameters": "Preset parameters",
     "ShortCircuitCharacteristics": "Features considered",
     "ShortCircuitVoltageProfileMode": "Initial voltage profile",
