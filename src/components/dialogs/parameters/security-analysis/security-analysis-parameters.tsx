@@ -87,9 +87,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 fetchSecurityAnalysisParameters(newParams[0].id)
-                    .then((parameters) => {
+                    .then(async (parameters) => {
                         console.info('loading the following security analysis parameters : ' + parameters.uuid);
                         updateParameters({ ...parameters });
+                        await invalidateSecurityAnalysisStatus(studyUuid);
                     })
                     .catch((error) => {
                         console.error(error);
@@ -101,7 +102,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             }
             setOpenSelectParameterDialog(false);
         },
-        [snackError, updateParameters]
+        [snackError, updateParameters, studyUuid]
     );
     const formSchema = useMemo(() => {
         return getSAParametersFromSchema(params.limitReductions);
