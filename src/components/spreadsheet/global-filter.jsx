@@ -5,10 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, TextField, FormGroup, Grid } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
 
 const styles = {
     searchSection: (theme) => ({
@@ -17,9 +20,9 @@ const styles = {
     }),
 };
 
-export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
-    const intl = useIntl();
+export const GlobalFilter = forwardRef(({ gridRef, disabled, handleFormulaFiltering }, ref) => {
     const inputRef = useRef();
+    const [isFormulaFilteringEnabled, setIsFormulaFilteringEnabled] = useState(false);
 
     const applyQuickFilter = useCallback(
         (filterValue) => {
@@ -37,42 +40,83 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
         return inputRef.current?.value;
     }, []);
 
+    const getFilterType = useCallback(() => {
+        return isFormulaFilteringEnabled;
+    }, [isFormulaFilteringEnabled]);
+
     useImperativeHandle(
         ref,
         () => {
             return {
                 resetFilter: resetFilter,
                 getFilterValue: getFilterValue,
+                getFilterType: getFilterType,
             };
         },
-        [getFilterValue, resetFilter]
+        [getFilterType, getFilterValue, resetFilter]
     );
 
     const handleChangeFilter = useCallback(
         (event) => {
-            applyQuickFilter(event.target.value);
+            if (!isFormulaFilteringEnabled) {
+                applyQuickFilter(event.target.value);
+            }
         },
-        [applyQuickFilter]
+        [applyQuickFilter, isFormulaFilteringEnabled]
     );
 
+    const handleApplyFilter = useCallback(() => {
+        if (isFormulaFilteringEnabled) {
+            handleFormulaFiltering(inputRef.current.value);
+        } else {
+            applyQuickFilter(inputRef.current.value);
+        }
+    }, [applyQuickFilter, handleFormulaFiltering, isFormulaFilteringEnabled]);
+
     return (
-        <TextField
-            disabled={disabled}
-            size="small"
-            placeholder={intl.formatMessage({ id: 'filter' }) + '...'}
-            onChange={handleChangeFilter}
-            inputRef={inputRef}
-            fullWidth
-            InputProps={{
-                sx: {
-                    input: styles.searchSection,
-                },
-                startAdornment: (
-                    <InputAdornment position="start">
-                        <SearchIcon color={disabled ? 'disabled' : 'inherit'} />
-                    </InputAdornment>
-                ),
-            }}
-        />
+        <Grid container>
+            <Grid item sx={styles.searchSection}>
+                <TextField
+                    disabled={disabled}
+                    size="small"
+                    placeholder={(isFormulaFilteringEnabled ? 'Formula' : 'Quick filter') + '...'}
+                    onChange={handleChangeFilter}
+                    inputRef={inputRef}
+                    fullWidth
+                    InputProps={{
+                        sx: {
+                            input: styles.searchSection,
+                        },
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon color={disabled ? 'disabled' : 'inherit'} />
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </Grid>
+            <Grid item sx={styles.searchSection}>
+                <FormGroup>
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={isFormulaFilteringEnabled}
+                                onChange={() => {
+                                    setIsFormulaFilteringEnabled((prevState) => !prevState);
+                                    resetFilter();
+                                }}
+                                defaultChecked
+                            />
+                        }
+                        label="Formula filtering"
+                    />
+                </FormGroup>
+            </Grid>
+            <Grid item sx={styles.searchSection}>
+                <Button onClick={handleApplyFilter} disabled={!isFormulaFilteringEnabled} variant={'contained'}>
+                    Apply formula
+                </Button>
+            </Grid>
+        </Grid>
     );
 });

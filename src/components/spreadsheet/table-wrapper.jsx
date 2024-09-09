@@ -19,7 +19,7 @@ import {
     TABLES_NAMES,
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { useSnackMessage, DirectoryItemSelector, ElementType } from '@gridsuite/commons-ui';
 import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
@@ -79,6 +79,9 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import CustomColumnsConfig from './custom-columns/columns-config-custom';
 import { useFormula } from './custom-columns/FormulaContext';
+import { evaluateFilter } from '../../services/study/filter';
+import Button from '@mui/material/Button';
+import ArticleIcon from '@mui/icons-material/Article';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -179,7 +182,7 @@ const TableWrapper = (props) => {
     const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
     useEffect(() => {
         setCustomColumnData(
-            customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
+            customColumnsDefinitions.columns.map((colWithFormula, idx, arr) => ({
                 coldId: `custom-${tabIndex}-${idx}`,
                 headerName: colWithFormula.name,
                 valueGetter: (params) =>
@@ -203,6 +206,7 @@ const TableWrapper = (props) => {
             defaultState: { sort: null },
         });
         rollbackEdit();
+        setFilterIds();
     }, [rollbackEdit]);
 
     const isEditColumnVisible = useCallback(() => {
@@ -1099,6 +1103,35 @@ const TableWrapper = (props) => {
         [addEditColumn, enrichColumn, isEditColumnVisible, reorderedTableDefinitionIndexes, selectedColumnsNames]
     );
 
+    const [filterIds, setFilterIds] = useState();
+
+    const handleFormulaFiltering = useCallback((inputValue) => {
+        gridRef.current.api.onFilterChanged();
+    }, []);
+
+    const doesFormulaFilteringPass = useCallback(
+        (node) => {
+            console.log(customColumnsDefinitions.filter);
+            if (customColumnsDefinitions.filter.formula) {
+                return formula.evalFilterValue(customColumnsDefinitions.filter.formula, node.data);
+            } else if (globalFilterRef.current.getFilterType()) {
+                return formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data);
+            } else if (filterIds) {
+                return filterIds?.includes(node.data.id);
+            }
+            return true;
+        },
+        [customColumnsDefinitions.filter.formula, filterIds, formula]
+    );
+
+    const isExternalFilterPresent = useCallback(
+        () =>
+            filterIds?.length > 1 ||
+            globalFilterRef.current.getFilterType() ||
+            !!customColumnsDefinitions.filter.formula,
+        [customColumnsDefinitions.filter.formula, filterIds?.length]
+    );
+
     useEffect(() => {
         setColumnData(generateTableColumns(tabIndex));
     }, [generateTableColumns, tabIndex]);
@@ -1111,6 +1144,40 @@ const TableWrapper = (props) => {
             return undefined;
         }
     }, [editingData]);
+
+    const [openFilterDialog, setOpenFilterDialog] = useState(false);
+    const studyUuid = useSelector((state) => state.studyUuid);
+    const currentNode = useSelector((state) => state.currentTreeNode);
+
+    const handleOpenFilterDialog = useCallback(() => {
+        setOpenFilterDialog(true);
+    }, []);
+
+    const applyFilter = useCallback(
+        (filter) => {
+            evaluateFilter(studyUuid, currentNode?.id, filter.id).then((response) => {
+                setFilterIds(response.map((equipment) => equipment.id));
+            });
+        },
+        [currentNode?.id, studyUuid]
+    );
+
+    const clearFilters = useCallback(() => {
+        setFilterIds();
+        globalFilterRef.current?.resetFilter();
+    }, []);
+
+    const handleCloseFilterDialog = useCallback(
+        (nodes) => {
+            if (nodes.length === 1) {
+                const filterData = nodes[0];
+                applyFilter(filterData);
+            }
+            setOpenFilterDialog(false);
+        },
+        [applyFilter]
+    );
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
@@ -1126,8 +1193,35 @@ const TableWrapper = (props) => {
                             visible={props.visible}
                             gridRef={gridRef}
                             ref={globalFilterRef}
+                            handleFormulaFiltering={handleFormulaFiltering}
                         />
                     </Grid>
+                    <Grid item>
+                        <Button onClick={handleOpenFilterDialog} variant={'contained'}>
+                            Open filter configuration
+                        </Button>
+                    </Grid>
+                    <Grid item sx={styles.filter}>
+                        <Button onClick={clearFilters} variant={'contained'}>
+                            Clear filters
+                        </Button>
+                    </Grid>
+                    {openFilterDialog && (
+                        <DirectoryItemSelector
+                            open={openFilterDialog}
+                            onClose={handleCloseFilterDialog}
+                            types={[ElementType.FILTER]}
+                            equipmentTypes={[equipmentDefinition.type]}
+                            onlyLeaves={true}
+                            multiSelect={false}
+                            validationButtonText={intl.formatMessage({
+                                id: 'validate',
+                            })}
+                            title={intl.formatMessage({
+                                id: 'showSelectDirectoryDialog',
+                            })}
+                        />
+                    )}
                     <Grid item sx={styles.selectColumns}>
                         <ColumnsConfig
                             tabIndex={tabIndex}
@@ -1143,6 +1237,13 @@ const TableWrapper = (props) => {
                     <Grid item sx={styles.selectCustomColumns}>
                         <CustomColumnsConfig indexTab={tabIndex} />
                     </Grid>
+                    {customColumnsDefinitions.filter.formula && (
+                        <Grid item sx={styles.filter}>
+                            <Alert icon={<ArticleIcon fontSize="inherit" />} severity="warning">
+                                Configuration filter applied
+                            </Alert>
+                        </Grid>
+                    )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport
@@ -1175,6 +1276,8 @@ const TableWrapper = (props) => {
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                        isExternalFilterPresent={isExternalFilterPresent}
+                        doesExternalFilterPass={doesFormulaFilteringPass}
                     />
                 </Box>
             )}

@@ -69,6 +69,10 @@ export default class FormulaMathJs implements Formula /*<Record<string, unknown>
                 derivative: function () {
                     throw new Error('Function derivative is disabled');
                 },
+                equal: function (a: any, b: any) {
+                  // == instead of === to be able to compare strings to numbers
+                    return a == b;
+                },
             },
             { override: true }
         );
@@ -102,6 +106,14 @@ export default class FormulaMathJs implements Formula /*<Record<string, unknown>
         // idea: eval all formula in form of "f1 = ..." to store in scope?
         // idea: store all formula in function in scope?
         //TODO create a function to load another study following this example: https://mathjs.org/examples/advanced/custom_argument_parsing.js.html
+        return this.calc(formula, scope);
+    }
+
+    public evalFilterValue(formula: string, lineData: Record<string, unknown>, colGetter: (field: string) => unknown) {
+        const scope = new Map<string, unknown>();
+        for (const field in lineData) {
+            scope.set(`var_${field}`, lineData[field]);
+        }
         return this.calc(formula, scope);
     }
 

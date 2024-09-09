@@ -36,7 +36,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react';
-import { ColumnWithFormula } from './custom-columns.types';
+import { ColumnWithFormula, CustomEntry } from './custom-columns.types';
 import CustomColumnsImExPort from './custom-columns-port';
 import { AppDispatch } from '../../../redux/store';
 import { setCustomColumDefinitions } from '../../../redux/actions';
@@ -129,13 +129,16 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
     const dispatch = useDispatch<AppDispatch>();
 
     const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
-    const [columnsDefinitions, setColumnsDefinitions] = useState<ColumnWithFormula[]>([]);
+    const [columnsDefinitions, setColumnsDefinitions] = useState<CustomEntry>({ filter: { formula: '' }, columns: [] });
     const contentModified = useStateBoolean(false);
     const resetContentModified = contentModified.setFalse;
     const contentIsModified = contentModified.setTrue;
     useEffect(() => {
         if (open.value) {
-            setColumnsDefinitions(allDefinitions.map((def) => ({ ...def })));
+            setColumnsDefinitions({
+                columns: allDefinitions.columns.map((def) => ({ ...def })),
+                filter: allDefinitions.filter,
+            });
             resetContentModified();
             setDialogColumnWorkingOn(undefined);
         }
@@ -143,7 +146,7 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
 
     const onImportJson = useCallback(
         (content: unknown) => {
-            setColumnsDefinitions(someCheckOnDefs((content ?? []) as ColumnWithFormula[]));
+            setColumnsDefinitions((content ?? []) as CustomEntry);
             contentIsModified();
             return true;
         },
@@ -156,9 +159,9 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
     const onListItemDelete = useCallback(
         (itemIdx: number) => {
             setColumnsDefinitions((prevState) => {
-                let tmp = [...prevState];
+                let tmp = [...prevState.columns];
                 tmp.splice(itemIdx, 1);
-                return tmp;
+                return { columns: tmp, filter: prevState.filter };
             });
             contentIsModified();
         },
@@ -166,7 +169,7 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
     );
     const onListItemEdit = useCallback(
         (itemIdx: number) => {
-            setDialogColumnWorkingOn(columnsDefinitions[itemIdx]);
+            setDialogColumnWorkingOn(columnsDefinitions.columns[itemIdx]);
             dialogColumnOpen.setTrue();
         },
         [columnsDefinitions, dialogColumnOpen]
@@ -179,24 +182,28 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
         (columnDef: ColumnWithFormula) => {
             let newDefs: ColumnWithFormula[];
             if (dialogColumnWorkingOn === undefined) {
-                newDefs = [...columnsDefinitions, columnDef];
+                newDefs = [...columnsDefinitions.columns, columnDef];
             } else {
-                newDefs = [...columnsDefinitions];
+                newDefs = [...columnsDefinitions.columns];
                 newDefs.splice(
-                    columnsDefinitions.findIndex((value, index, arr) => value.name === dialogColumnWorkingOn.name),
+                    columnsDefinitions.columns.findIndex(
+                        (value, index, arr) => value.name === dialogColumnWorkingOn.name
+                    ),
                     1,
                     columnDef
                 );
                 setDialogColumnWorkingOn(undefined); //clean memory
             }
-            setColumnsDefinitions(someCheckOnDefs(newDefs));
+            setColumnsDefinitions({ columns: someCheckOnDefs(newDefs), filter: { formula: '' } });
             contentIsModified();
         },
         [columnsDefinitions, contentIsModified, dialogColumnWorkingOn]
     );
 
     const onSaveClick = useCallback(() => {
-        dispatch(setCustomColumDefinitions(TABLES_NAMES[indexTab], columnsDefinitions));
+        dispatch(
+            setCustomColumDefinitions(TABLES_NAMES[indexTab], columnsDefinitions.columns, columnsDefinitions.filter)
+        );
         open.setFalse();
     }, [columnsDefinitions, dispatch, indexTab, open]);
     return (
@@ -274,7 +281,7 @@ export default function CustomColumnsDialog({ indexTab, open }: Readonly<CustomC
             <List>
                 {useMemo(
                     () =>
-                        columnsDefinitions.map((data, idx, arr) => (
+                        columnsDefinitions.columns.map((data, idx, arr) => (
                             <Fragment key={`table-${indexTab}-item-${data.name}`}>
                                 <CustomColumnItem
                                     data={data}

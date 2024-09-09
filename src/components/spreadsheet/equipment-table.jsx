@@ -29,6 +29,8 @@ export const EquipmentTable = ({
     fetched,
     network,
     shouldHidePinnedHeaderRightBorder,
+    isExternalFilterPresent,
+    doesExternalFilterPass,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -129,6 +131,8 @@ export const EquipmentTable = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            isExternalFilterPresent={isExternalFilterPresent}
+            doesExternalFilterPass={doesExternalFilterPass}
         />
     );
 };

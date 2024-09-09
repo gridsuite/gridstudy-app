@@ -10,3 +10,12 @@ export type ColumnWithFormula = {
     name: string;
     formula: string;
 };
+
+export type FormulaFilter = {
+    formula: string;
+};
+
+export type CustomEntry = {
+    columns: ColumnWithFormula[];
+    filter: FormulaFilter;
+};
