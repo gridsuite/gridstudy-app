@@ -277,7 +277,7 @@ import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
-import { ColumnWithFormula } from '../components/spreadsheet/custom-columns/custom-columns.types';
+import { CustomEntry } from '../components/spreadsheet/custom-columns/custom-columns.types';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -434,7 +434,7 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, ColumnWithFormula[]>;
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
     allDisplayedColumnsNames: UnknownArray;
     allLockedColumnsNames: UnknownArray;
     allReorderedTableDefinitionIndexes: UnknownArray;
@@ -708,7 +708,7 @@ const initialState: AppState = {
         },
     },
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: [] }),
+        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as AppState['allCustomColumnsDefinitions']
     ),
 
@@ -1562,9 +1562,10 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
-        state.allCustomColumnsDefinitions[action.table] = action.definitions.sort((a, b) =>
+        state.allCustomColumnsDefinitions[action.table].columns = action.definitions.sort((a, b) =>
             a.name.localeCompare(b.name)
         );
+        state.allCustomColumnsDefinitions[action.table].filter = action.filter;
     });
 });
 

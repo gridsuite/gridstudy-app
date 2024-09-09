@@ -81,6 +81,7 @@ import CustomColumnsConfig from './custom-columns/columns-config-custom';
 import { useFormula } from './custom-columns/FormulaContext';
 import { evaluateFilter } from '../../services/study/filter';
 import Button from '@mui/material/Button';
+import ArticleIcon from '@mui/icons-material/Article';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -181,7 +182,7 @@ const TableWrapper = (props) => {
     const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
     useEffect(() => {
         setCustomColumnData(
-            customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
+            customColumnsDefinitions.columns.map((colWithFormula, idx, arr) => ({
                 coldId: `custom-${tabIndex}-${idx}`,
                 headerName: colWithFormula.name,
                 valueGetter: (params) =>
@@ -1110,19 +1111,25 @@ const TableWrapper = (props) => {
 
     const doesFormulaFilteringPass = useCallback(
         (node) => {
-            if (globalFilterRef.current.getFilterType()) {
+            console.log(customColumnsDefinitions.filter);
+            if (customColumnsDefinitions.filter.formula) {
+                return formula.evalFilterValue(customColumnsDefinitions.filter.formula, node.data);
+            } else if (globalFilterRef.current.getFilterType()) {
                 return formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data);
             } else if (filterIds) {
                 return filterIds?.includes(node.data.id);
             }
             return true;
         },
-        [filterIds, formula]
+        [customColumnsDefinitions.filter.formula, filterIds, formula]
     );
 
     const isExternalFilterPresent = useCallback(
-        () => filterIds?.length > 1 || globalFilterRef.current.getFilterType(),
-        [filterIds?.length]
+        () =>
+            filterIds?.length > 1 ||
+            globalFilterRef.current.getFilterType() ||
+            !!customColumnsDefinitions.filter.formula,
+        [customColumnsDefinitions.filter.formula, filterIds?.length]
     );
 
     useEffect(() => {
@@ -1230,6 +1237,13 @@ const TableWrapper = (props) => {
                     <Grid item sx={styles.selectCustomColumns}>
                         <CustomColumnsConfig indexTab={tabIndex} />
                     </Grid>
+                    {customColumnsDefinitions.filter.formula && (
+                        <Grid item sx={styles.filter}>
+                            <Alert icon={<ArticleIcon fontSize="inherit" />} severity="warning">
+                                Configuration filter applied
+                            </Alert>
+                        </Grid>
+                    )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport

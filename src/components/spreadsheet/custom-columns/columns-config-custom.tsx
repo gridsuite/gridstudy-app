@@ -28,8 +28,8 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
     const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
     const uEffectNumberColumnsSetValue = numberColumns.setValue; // eslint detection
     useEffect(() => {
-        uEffectNumberColumnsSetValue(allDefinitions.length);
-    }, [allDefinitions.length, uEffectNumberColumnsSetValue]);
+        uEffectNumberColumnsSetValue(allDefinitions.columns.length);
+    }, [allDefinitions.columns.length, uEffectNumberColumnsSetValue]);
 
     /* eslint-enable react-hooks/rules-of-hooks */
     return (
