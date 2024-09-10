@@ -15,7 +15,7 @@ import {
     useMemo,
     useState,
 } from 'react';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters.jsx';
 import { LineSeparator } from '../../dialogUtils.jsx';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -101,7 +101,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     );
     const formSchema = useMemo(() => {
         return getSAParametersFromSchema(params.limitReductions);
-    }, [params]);
+    }, [params.limitReductions]);
 
     const formMethods = useForm({
         defaultValues: {
@@ -167,44 +167,71 @@ export const SecurityAnalysisParameters: FunctionComponent<{
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid sx={{ height: '100%' }}>
-                <Grid container spacing={1} padding={1}>
-                    <Grid
-                        container
-                        spacing={1}
+            <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
+                <Box
+                    sx={{
+                        height: '100%',
+                        display: 'flex',
+                        position: 'relative',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            spacing={1}
+                            sx={{
+                                padding: 0,
+                                paddingBottom: 2,
+                                height: 'fit-content',
+                            }}
+                            justifyContent={'space-between'}
+                        >
+                            <DropDown
+                                value={provider}
+                                label="Provider"
+                                values={securityAnalysisProvider}
+                                callback={updateProviderCallback}
+                            />
+                            <LineSeparator />
+                        </Grid>
+                    </Box>
+                    <Box
                         sx={{
-                            padding: 0,
-                            paddingBottom: 2,
-                            justifyContent: 'space-between',
+                            flexGrow: 1,
+                            overflow: 'auto',
+                            paddingLeft: 1,
                         }}
-                        xl={6}
                     >
-                        <DropDown
-                            value={provider}
-                            label="Provider"
-                            values={securityAnalysisProvider}
-                            callback={updateProviderCallback}
-                        />
-                    </Grid>
-                    <Grid container paddingTop={1} paddingBottom={1}>
+                        <Grid
+                            container
+                            sx={mergeSx(styles.scrollableGrid, {
+                                maxHeight: '100%',
+                            })}
+                        >
+                            <SecurityAnalysisParametersSelector params={params} />
+                        </Grid>
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
                         <LineSeparator />
-                    </Grid>
-                    <SecurityAnalysisParametersSelector params={params} />
-                </Grid>
-                <Grid container key="secuAnalysisProvider" sx={styles.scrollableGrid} spacing={1}></Grid>
-                <LineSeparator />
-            </Grid>
-            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
-                <LabelledButton
-                    callback={() => setOpenSelectParameterDialog(true)}
-                    label="settings.button.chooseSettings"
-                />
-                <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
-                <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
-                <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
-                <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
-                    <FormattedMessage id="validate" />
-                </SubmitButton>
+                        <Grid
+                            container
+                            item
+                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                        >
+                            <LabelledButton
+                                callback={() => setOpenSelectParameterDialog(true)}
+                                label="settings.button.chooseSettings"
+                            />
+                            <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                            <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
+                            <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
+                            <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </Grid>
+                    </Box>
+                </Box>
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog
