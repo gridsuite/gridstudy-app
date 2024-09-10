@@ -81,7 +81,7 @@ export const PercentageArea = ({ upperLeftText, upperRightText }) => {
     );
 
     const slider = (
-        <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChange={onSliderChange} />
+        <SliderInput name={SLIDER_PERCENTAGE} min={0.0} max={100.0} step={0.1} onValueChanged={onSliderChange} />
     );
     return (
         <>
