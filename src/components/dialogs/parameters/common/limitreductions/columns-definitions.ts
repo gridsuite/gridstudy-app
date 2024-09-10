@@ -4,7 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import yup from '../../../utils/yup-config';
+import {
+    PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+} from 'utils/config-params';
+import yup from '../../../../utils/yup-config';
 import { NumberSchema } from 'yup';
 
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
@@ -36,10 +43,24 @@ export interface ILimitReductionsByVoltageLevel {
     temporaryLimitReductions: ITemporaryLimitReduction[];
 }
 
+export interface ISAParameters {
+    limitReductions: ILimitReductionsByVoltageLevel[];
+    [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: number;
+    [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: number;
+    [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: number;
+    [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: number;
+    [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: number;
+}
+
 export enum TAB_VALUES {
     'General' = 0,
     'LimitReductions' = 1,
 }
+
+export const TAB_INFO = [
+    { label: TAB_VALUES[TAB_VALUES.General], developerModeOnly: false },
+    { label: TAB_VALUES[TAB_VALUES.LimitReductions], developerModeOnly: true },
+];
 
 export interface IColumnsDef {
     label: string;
@@ -84,4 +105,35 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
             ),
         })
         .required();
+};
+
+export const getSAParametersFromSchema = (limitReductions: ILimitReductionsByVoltageLevel[]) => {
+    const limitReductionsSchema = getLimitReductionsFormSchema(
+        limitReductions ? limitReductions[0].temporaryLimitReductions.length : 0
+    );
+
+    const thresholdsSchema = yup.object().shape({
+        [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: yup
+            .number()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
+        [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: yup
+            .number()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
+        [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: yup.number().required(),
+        [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: yup
+            .number()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
+        [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: yup.number().required(),
+    });
+
+    return yup.object().shape({
+        ...limitReductionsSchema.fields,
+        ...thresholdsSchema.fields,
+    });
 };

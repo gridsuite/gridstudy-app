@@ -29,9 +29,8 @@ import ComputingType from './computing-status/computing-type';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
-import SelectionCreationPanel from './network/selection-creation-panel';
+import SelectionCreationPanel from './network/selection-creation-panel/selection-creation-panel';
 import { StudyDisplayMode } from './network-modification.type';
-
 import GuidancePopup from './network/guidance-popup';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -375,6 +374,7 @@ const MapViewer = ({
                                         onCancel={() => {
                                             setShouldOpenSelectionCreationPanel(false);
                                         }}
+                                        leaveDrawingMode={leaveDrawingMode}
                                         nominalVoltages={nominalVoltages}
                                     />
                                 )}

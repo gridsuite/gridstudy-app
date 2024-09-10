@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
+import {
     ChangeEvent,
     Dispatch,
     FunctionComponent,
@@ -15,7 +15,7 @@ import React, {
     useMemo,
     useState,
 } from 'react';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters.jsx';
 import { LineSeparator } from '../../dialogUtils.jsx';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -33,13 +33,20 @@ import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
-    getLimitReductionsFormSchema,
+    getSAParametersFromSchema,
     ILimitReductionsByVoltageLevel,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
-} from './columns-definitions';
-
+} from '../common/limitreductions/columns-definitions.js';
+import {
+    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
+} from 'utils/config-params.js';
+import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -92,21 +99,28 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         },
         [snackError, updateParameters]
     );
-
     const formSchema = useMemo(() => {
-        return getLimitReductionsFormSchema(
-            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
-        );
-    }, [params]);
+        return getSAParametersFromSchema(params.limitReductions);
+    }, [params.limitReductions]);
 
     const formMethods = useForm({
-        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        defaultValues: {
+            [LIMIT_REDUCTIONS_FORM]: [],
+            [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: null,
+            [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]: null,
+            [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: null,
+            [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]: null,
+            [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: null,
+        },
         resolver: yupResolver(formSchema),
     });
 
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
-            return params.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
+            if (!params?.limitReductions) {
+                return null;
+            }
+            return params?.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
                 let vlLNewLimits: ILimitReductionsByVoltageLevel = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],
@@ -120,15 +134,23 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                 return vlLNewLimits;
             });
         },
-        [params]
+        [params?.limitReductions]
     );
 
-    const { handleSubmit, formState } = formMethods;
+    const { handleSubmit, formState, reset } = formMethods;
 
-    const updateLimitReductions = useCallback(
+    const updateSAParameters = useCallback(
+        //remove any type since we now know what to expect according to yup schema
         (formLimits: Record<string, any>) => {
             updateParameters({
                 ...params,
+                [PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD]: formLimits[PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formLimits[PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD],
+                [PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD]:
+                    formLimits[PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD] / 100,
+                [PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD]: formLimits[PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD],
                 limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
             });
         },
@@ -139,46 +161,77 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
 
+    useEffect(() => {
+        reset(toFormValueSaParameters(params));
+    }, [params, reset]);
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid sx={{ height: '100%' }}>
-                <Grid container spacing={1} padding={1}>
-                    <Grid
-                        container
-                        spacing={1}
+            <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
+                <Box
+                    sx={{
+                        height: '100%',
+                        display: 'flex',
+                        position: 'relative',
+                        flexDirection: 'column',
+                    }}
+                >
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            spacing={1}
+                            sx={{
+                                padding: 0,
+                                paddingBottom: 2,
+                                height: 'fit-content',
+                            }}
+                            justifyContent={'space-between'}
+                        >
+                            <DropDown
+                                value={provider}
+                                label="Provider"
+                                values={securityAnalysisProvider}
+                                callback={updateProviderCallback}
+                            />
+                            <LineSeparator />
+                        </Grid>
+                    </Box>
+                    <Box
                         sx={{
-                            padding: 0,
-                            paddingBottom: 2,
-                            justifyContent: 'space-between',
+                            flexGrow: 1,
+                            overflow: 'auto',
+                            paddingLeft: 1,
                         }}
-                        xl={6}
                     >
-                        <DropDown
-                            value={provider}
-                            label="Provider"
-                            values={securityAnalysisProvider}
-                            callback={updateProviderCallback}
-                        />
-                    </Grid>
-                    <Grid container paddingTop={1} paddingBottom={1}>
+                        <Grid
+                            container
+                            sx={mergeSx(styles.scrollableGrid, {
+                                maxHeight: '100%',
+                            })}
+                        >
+                            <SecurityAnalysisParametersSelector params={params} />
+                        </Grid>
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
                         <LineSeparator />
-                    </Grid>
-                    <SecurityAnalysisParametersSelector params={params} updateParameters={updateParameters} />
-                </Grid>
-                <Grid container key="secuAnalysisProvider" sx={styles.scrollableGrid} spacing={1}></Grid>
-                <LineSeparator />
-            </Grid>
-            <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
-                <LabelledButton
-                    callback={() => setOpenSelectParameterDialog(true)}
-                    label="settings.button.chooseSettings"
-                />
-                <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
-                <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
-                <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
-                <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
-                    <FormattedMessage id="validate" />
-                </SubmitButton>
+                        <Grid
+                            container
+                            item
+                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                        >
+                            <LabelledButton
+                                callback={() => setOpenSelectParameterDialog(true)}
+                                label="settings.button.chooseSettings"
+                            />
+                            <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                            <LabelledButton callback={resetSAParametersAndProvider} label="resetToDefault" />
+                            <LabelledButton label="resetProviderValuesToDefault" callback={resetSAParameters} />
+                            <SubmitButton onClick={handleSubmit(updateSAParameters)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </Grid>
+                    </Box>
+                </Box>
             </Grid>
             {openCreateParameterDialog && (
                 <CreateParameterDialog

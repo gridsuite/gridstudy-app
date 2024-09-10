@@ -8,7 +8,7 @@
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Theme, Typography } from '@mui/material';
+import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Theme, Typography } from '@mui/material';
 
 import { useParametersBackend, useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
@@ -49,12 +49,16 @@ import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     fetchDefaultNonEvacuatedEnergyProvider,
     fetchNonEvacuatedEnergyProvider,
+    getNonEvacuatedEnergyParameters,
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
 import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import ComputingType from './computing-status/computing-type';
+import RunningStatus from './utils/running-status';
+import GlassPane from './results/common/glass-pane';
 import { NetworkAreaDiagramParameters } from './dialogs/parameters/network-area-diagram-parameters';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 
@@ -111,11 +115,16 @@ const styles = {
                 ? theme.palette.background.paper
                 : lighten(theme.palette.background.paper, 0.2),
         height: '100%',
+        position: 'relative',
+        padding: 0,
+    }),
+    contentBox: {
         paddingTop: 6,
         paddingBottom: 2,
         paddingLeft: 8,
         paddingRight: 8,
-    }),
+        height: '100%',
+    },
 };
 
 enum TAB_VALUES {
@@ -139,6 +148,7 @@ const hasValidationTabs = [
     TAB_VALUES.shortCircuitParamsTabValue,
     TAB_VALUES.dynamicSimulationParamsTabValue,
     TAB_VALUES.voltageInitParamsTabValue,
+    TAB_VALUES.lfParamsTabValue,
 ];
 
 type OwnProps = {
@@ -206,7 +216,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,
         fetchDefaultNonEvacuatedEnergyProvider,
-        updateNonEvacuatedEnergyProvider
+        updateNonEvacuatedEnergyProvider,
+        getNonEvacuatedEnergyParameters
     );
 
     const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
@@ -247,6 +258,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.sldParamsTabValue:
@@ -256,7 +268,12 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
             case TAB_VALUES.mapParamsTabValue:
                 return <MapParameters />;
             case TAB_VALUES.lfParamsTabValue:
-                return <LoadFlowParameters parametersBackend={loadFlowParametersBackend} />;
+                return (
+                    <LoadFlowParameters
+                        parametersBackend={loadFlowParametersBackend}
+                        setHaveDirtyFields={setHaveDirtyFields}
+                    />
+                );
             case TAB_VALUES.securityAnalysisParamsTabValue:
                 return (
                     <SecurityAnalysisParameters
@@ -322,7 +339,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                             orientation="vertical"
                             sx={styles.listDisplay}
                         >
-                            <Tab label={<FormattedMessage id="LoadFlow" />} value={TAB_VALUES.lfParamsTabValue} />
+                            <Tab
+                                label={<FormattedMessage id="LoadFlow" />}
+                                disabled={loadFlowStatus === RunningStatus.RUNNING}
+                                value={TAB_VALUES.lfParamsTabValue}
+                            />
                             <Tab
                                 disabled={securityAnalysisAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="SecurityAnalysis" />}
@@ -372,7 +393,11 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                     </Grid>
                 </Grid>
                 <Grid item xs={10} sx={styles.parametersBox}>
-                    {displayTab()}
+                    <GlassPane
+                        active={loadFlowStatus === RunningStatus.RUNNING && tabValue === TAB_VALUES.lfParamsTabValue}
+                    >
+                        <Box sx={styles.contentBox}>{displayTab()}</Box>
+                    </GlassPane>
                 </Grid>
             </Grid>
             <SelectOptionsDialog

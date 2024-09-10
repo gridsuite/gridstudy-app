@@ -35,6 +35,7 @@ import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
 import ComputingType from 'components/computing-status/computing-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
+import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 const INITIAL_POSITION = [0, 0];
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
@@ -93,7 +94,7 @@ export const NetworkMapTab = ({
     const theme = useTheme();
 
     const rootNodeId = useMemo(() => {
-        const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === 'Root');
+        const rootNode = treeModel?.treeNodes.find((node) => node?.data?.label === ROOT_NODE_LABEL);
         return rootNode?.id;
     }, [treeModel]);
 

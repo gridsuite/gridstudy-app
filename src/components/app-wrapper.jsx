@@ -36,6 +36,8 @@ import {
     multiple_selection_dialog_fr,
     common_button_en,
     common_button_fr,
+    equipments_en,
+    equipments_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -256,6 +258,7 @@ const messages = {
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
+        ...equipments_en,
         ...aggrid_locale_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
@@ -283,6 +286,7 @@ const messages = {
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
+        ...equipments_fr,
         ...aggrid_locale_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,

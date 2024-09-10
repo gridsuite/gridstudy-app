@@ -8,6 +8,7 @@
 export enum SELECTION_TYPES {
     FILTER = 'FILTER',
     CONTIGENCY_LIST = 'CONTIGENCY_LIST',
+    NAD = 'NAD',
 }
 
 export function selectionTypeToLabel(selectionType: SELECTION_TYPES) {
@@ -16,7 +17,7 @@ export function selectionTypeToLabel(selectionType: SELECTION_TYPES) {
             return 'ContingencyLists';
         case SELECTION_TYPES.FILTER:
             return 'filter';
-        default:
-            return selectionType;
+        case SELECTION_TYPES.NAD:
+            return 'NetworkAreaDiagram';
     }
 }
