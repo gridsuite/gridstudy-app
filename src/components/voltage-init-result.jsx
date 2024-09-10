@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useState, useMemo, useRef, useEffect } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -25,13 +25,13 @@ import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../services/utils';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
-import { REPORT_TYPES } from './utils/report-type';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
+import ComputingType from './computing-status/computing-type';
 
 const styles = {
     container: {
@@ -331,7 +331,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             <>
                 <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                 {(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={REPORT_TYPES.VOLTAGE_INITIALIZATION} />
+                    <ComputationReportViewer reportType={ComputingType.VOLTAGE_INITIALIZATION} />
                 )}
             </>
         );

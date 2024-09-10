@@ -122,6 +122,9 @@ ReportItem.propTypes = {
     color: PropTypes.string,
     labelInfo: PropTypes.string,
     labelText: PropTypes.string.isRequired,
+    labelIconColor: PropTypes.string.isRequired,
+    nodeId: PropTypes.string.isRequired,
+    children: PropTypes.node,
 };
 
 export default styled(ReportItem)({});
