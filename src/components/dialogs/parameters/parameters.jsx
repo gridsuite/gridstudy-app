@@ -132,7 +132,7 @@ export const styles = {
     singleItem: (theme) => ({
         display: 'flex',
         flex: 'auto',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
@@ -160,7 +160,7 @@ export const styles = {
     multipleItems: (theme) => ({
         display: 'flex',
         flex: 'auto',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
@@ -278,6 +278,16 @@ export const useParametersBackend = (
             backendUpdateProvider(studyUuid, newProvider)
                 .then(() => {
                     setProvider(newProvider);
+                    backendFetchParameters(studyUuid)
+                        .then((params) => {
+                            setParams(params);
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                                headerId: 'fetch' + type + 'ParametersError',
+                            });
+                        });
                 })
                 .catch((error) => {
                     snackError({
@@ -286,7 +296,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [type, backendUpdateProvider, studyUuid, snackError]
+        [type, backendUpdateProvider, backendFetchParameters, studyUuid, snackError]
     );
 
     const resetProvider = useCallback(() => {

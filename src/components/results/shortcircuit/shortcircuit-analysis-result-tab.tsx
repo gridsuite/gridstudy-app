@@ -22,7 +22,6 @@ import { ComputingType } from '../../computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
-import { REPORT_TYPES } from '../../utils/report-type';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { ShortCircuitExportButton } from './shortcircuit-analysis-export-button';
@@ -170,8 +169,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         <ComputationReportViewer
                             reportType={
                                 tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES
-                                    ? REPORT_TYPES.SHORT_CIRCUIT
-                                    : REPORT_TYPES.SHORT_CIRCUIT_ONE_BUS
+                                    ? ComputingType.SHORT_CIRCUIT
+                                    : ComputingType.SHORT_CIRCUIT_ONE_BUS
                             }
                         />
                     )}
