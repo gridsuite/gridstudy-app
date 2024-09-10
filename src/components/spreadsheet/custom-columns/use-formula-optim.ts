@@ -180,6 +180,31 @@ export function useOptimizedFormulaHook(tabIndex: number) {
     "formula": "5 + 2"
   }
 ]
+
+example with filter
+{
+  "columns": [
+    {
+      "name": "cust_a",
+      "formula": "cust_b + cust_c"
+    },
+    {
+      "name": "cust_b",
+      "formula": "var_minP + 1"
+    },
+    {
+      "name": "cust_c",
+      "formula": "cust_b +1"
+    },
+    {
+      "name": "cust_d",
+      "formula": "5 + 2"
+    }
+  ],
+  "filter": {
+    "formula": "cust_c > -33 and cust_b > -4"
+  }
+}
     
     */
 }
