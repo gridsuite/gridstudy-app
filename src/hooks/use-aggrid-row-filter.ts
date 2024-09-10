@@ -77,10 +77,7 @@ export const useAggridRowFilter = (
             }
 
             updateFilterCallback && updateFilterCallback();
-            filterStoreAction &&
-                filterTab &&
-                // @ts-expect-error TODO: maybe resolve this with discriminate union parameter in FilterStorePropsType?
-                dispatch(filterStoreAction(filterTab, updatedFilters));
+            filterStoreAction && filterTab && dispatch(filterStoreAction(filterTab, updatedFilters));
         },
         [filterTab, filterStore, updateFilterCallback, dispatch, filterStoreAction]
     );

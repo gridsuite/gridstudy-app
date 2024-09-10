@@ -5,12 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { legacy_createStore as createStore, Store } from 'redux';
+import { compose, legacy_createStore as createStore, Store } from 'redux';
 import { Actions, AppState, reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
 
-export const store = createStore(reducer);
+// Define the type for the Redux DevTools extension
+declare global {
+    interface Window {
+        __REDUX_DEVTOOLS_EXTENSION_COMPOSE__?: typeof compose;
+    }
+}
+
+// Use Redux DevTools extension if available, otherwise use default compose
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+export const store = createStore(reducer, composeEnhancers());
+
 setCommonStore(store);
 setUserStore(store);
 export type AppDispatch = Store<AppState, Actions>['dispatch'];
