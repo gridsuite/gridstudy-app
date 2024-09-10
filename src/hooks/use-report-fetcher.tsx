@@ -16,6 +16,7 @@ import { mapReportLog } from '../utils/report-log.mapper';
 import {
     COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
     GLOBAL_REPORT_NODE_LABEL,
+    REPORT_SEVERITY,
     REPORT_TYPE,
 } from '../constants/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
@@ -37,7 +38,14 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<
 
 function setNodeName(report: Report, nodesNames: Map<string, string>) {
     if (report.message !== ROOT_NODE_LABEL) {
-        report.message = nodesNames?.get(report.message) ?? report.message;
+        const nodeName = nodesNames?.get(report.message);
+        if (nodeName) {
+            report.message = nodeName; // replace node id by node name
+            if (report.subReports.length === 0 && report.severities.length === 0) {
+                // special case for a node with no log/severity (ex: at node creation time) : lets set INFO level
+                report.severities.push(REPORT_SEVERITY.INFO.name);
+            }
+        }
     }
     report.parentId = GLOBAL_REPORT_NODE_LABEL;
     return report;
