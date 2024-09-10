@@ -41,11 +41,12 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     useEffect(() => {
         if (studyUpdatedForce.type === NotificationType.STUDY) {
-            // @ts-ignore
-            const payload = JSON.parse(studyUpdatedForce.eventData.payload);
-            //TODO: add mapping here
-            if (payload?.name) {
-                dispatch(setStudyParamsChanged(payload.name));
+            // check if we need to update the study parameters
+            const payload = studyUpdatedForce.eventData.payload;
+            if (payload) {
+                //TODO: fix this alter
+                // @ts-ignore
+                dispatch(setStudyParamsChanged(payload));
                 return;
             }
 

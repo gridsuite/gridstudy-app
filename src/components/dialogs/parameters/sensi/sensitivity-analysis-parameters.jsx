@@ -454,6 +454,11 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
         isSubmitAction,
         reset,
     ]);
+    useEffect(() => {
+        if (params) {
+            reset(fromSensitivityAnalysisParamsDataToFormValues(params));
+        }
+    }, [params, reset, fromSensitivityAnalysisParamsDataToFormValues]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);

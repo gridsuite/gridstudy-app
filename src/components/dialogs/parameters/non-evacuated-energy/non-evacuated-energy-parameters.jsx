@@ -9,7 +9,7 @@ import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } fro
 import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -65,9 +65,13 @@ import {
     getMonitoredBranchesParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
+import { STUDY_PARAMS_CHANDED } from '../../../../utils/config-params';
+import { setStudyParamsChanged } from '../../../../redux/actions';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
+    const studyParamsChanged = useSelector((state) => state[STUDY_PARAMS_CHANDED]);
+    const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
 
@@ -83,6 +87,22 @@ export const useGetNonEvacuatedEnergyParameters = () => {
                 });
         }
     }, [studyUuid, snackError]);
+
+    useEffect(() => {
+        if (studyUuid && studyParamsChanged === 'NonEvacuatedEnergy') {
+            getNonEvacuatedEnergyParameters(studyUuid)
+                .then((params) => {
+                    setNonEvacuatedEnergyParams(params);
+                    dispatch(setStudyParamsChanged(''));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsRetrievingError',
+                    });
+                });
+        }
+    }, [studyUuid, snackError, dispatch, studyParamsChanged, setNonEvacuatedEnergyParams]);
 
     return [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams];
 };

@@ -320,7 +320,7 @@ export interface StudyParametersInfos {
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos | StudyParametersInfos;
+    payload: NetworkImpactsInfos | string;
 }
 
 interface StudyUpdatedEventDataUnknown {
