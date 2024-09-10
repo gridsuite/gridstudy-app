@@ -9,8 +9,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box } from '@mui/system';
-import { Alert, Grid } from '@mui/material';
+import { Alert, Box, Grid } from '@mui/material';
 import {
     EDIT_COLUMN,
     MIN_COLUMN_WIDTH,
@@ -78,6 +77,8 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import CustomColumnsConfig from './custom-columns/columns-config-custom';
+import { useFormula } from './custom-columns/FormulaContext';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -128,6 +129,9 @@ const styles = {
     selectColumns: (theme) => ({
         marginLeft: theme.spacing(6),
     }),
+    selectCustomColumns: (theme) => ({
+        marginLeft: theme.spacing(2),
+    }),
 };
 
 const TableWrapper = (props) => {
@@ -165,6 +169,26 @@ const TableWrapper = (props) => {
     const globalFilterRef = useRef();
 
     const [columnData, setColumnData] = useState([]);
+    const [customColumnData, setCustomColumnData] = useState([]);
+    const [mergedColumnData, setMergedColumnData] = useState([]);
+    useEffect(() => {
+        setMergedColumnData([...columnData, ...customColumnData]);
+    }, [columnData, customColumnData]);
+
+    const formula = useFormula();
+    const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
+    useEffect(() => {
+        setCustomColumnData(
+            customColumnsDefinitions.map((colWithFormula, idx, arr) => ({
+                coldId: `custom-${tabIndex}-${idx}`,
+                headerName: colWithFormula.name,
+                valueGetter: (params) =>
+                    formula.calcColumnValue(colWithFormula.formula, params.data, null, params.getValue),
+                editable: false,
+                cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
+            }))
+        );
+    }, [formula, tabIndex, customColumnsDefinitions]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
@@ -1116,6 +1140,9 @@ const TableWrapper = (props) => {
                             setLockedColumnsNames={setLockedColumnsNames}
                         />
                     </Grid>
+                    <Grid item sx={styles.selectCustomColumns}>
+                        <CustomColumnsConfig indexTab={tabIndex} />
+                    </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport
@@ -1138,7 +1165,7 @@ const TableWrapper = (props) => {
                         studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
-                        columnData={columnData}
+                        columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
                         visible={props.visible}

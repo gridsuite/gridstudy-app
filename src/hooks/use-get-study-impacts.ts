@@ -6,7 +6,13 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
+import {
+    DeletedEquipment,
+    NetworkImpactsInfos,
+    AppState,
+    NotificationType,
+    SpreadsheetEquipmentType,
+} from '../redux/reducer';
 import { UUID } from 'crypto';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
@@ -23,7 +29,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
     const [deletedEquipments, setDeletedEquipments] = useState<DeletedEquipment[]>([]);
-    const [impactedElementTypes, setImpactedElementTypes] = useState<string[]>([]);
+    const [impactedElementTypes, setImpactedElementTypes] = useState<SpreadsheetEquipmentType[]>([]);
 
     const resetImpactedSubstationsIds = useCallback(() => {
         setImpactedSubstationsIds([]);
