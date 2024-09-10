@@ -82,6 +82,7 @@ import { useFormula } from './custom-columns/FormulaContext';
 import { evaluateFilter } from '../../services/study/filter';
 import Button from '@mui/material/Button';
 import ArticleIcon from '@mui/icons-material/Article';
+import { useOptimizedFormulaHook } from './custom-columns/use-formula-optim';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -178,20 +179,25 @@ const TableWrapper = (props) => {
         setMergedColumnData([...columnData, ...customColumnData]);
     }, [columnData, customColumnData]);
 
-    const formula = useFormula();
+    // const formula = useFormula();
+
+    const { calcAllColumnValues, evalFilterValue } = useOptimizedFormulaHook(tabIndex);
+
     const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
     useEffect(() => {
         setCustomColumnData(
             customColumnsDefinitions.columns.map((colWithFormula, idx, arr) => ({
                 coldId: `custom-${tabIndex}-${idx}`,
                 headerName: colWithFormula.name,
-                valueGetter: (params) =>
-                    formula.calcColumnValue(colWithFormula.formula, params.data, null, params.getValue),
+                valueGetter: (params) => {
+                    const allValues = calcAllColumnValues(params.data);
+                    return allValues.get(colWithFormula.name);
+                },
                 editable: false,
                 cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
             }))
         );
-    }, [formula, tabIndex, customColumnsDefinitions]);
+    }, [calcAllColumnValues, tabIndex, customColumnsDefinitions]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
@@ -1113,15 +1119,15 @@ const TableWrapper = (props) => {
         (node) => {
             console.log(customColumnsDefinitions.filter);
             if (customColumnsDefinitions.filter.formula) {
-                return formula.evalFilterValue(customColumnsDefinitions.filter.formula, node.data);
+                return evalFilterValue(customColumnsDefinitions.filter.formula, node.data);
             } else if (globalFilterRef.current.getFilterType()) {
-                return formula.evalFilterValue(globalFilterRef.current.getFilterValue(), node.data);
+                return evalFilterValue(globalFilterRef.current.getFilterValue(), node.data);
             } else if (filterIds) {
                 return filterIds?.includes(node.data.id);
             }
             return true;
         },
-        [customColumnsDefinitions.filter.formula, filterIds, formula]
+        [customColumnsDefinitions.filter.formula, filterIds, evalFilterValue]
     );
 
     const isExternalFilterPresent = useCallback(
