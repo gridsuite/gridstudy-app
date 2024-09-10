@@ -22,6 +22,7 @@ import ColumnConfig3 from './column_config3.json';
 
 import { CellCoords, CellRange } from 'handsontable';
 import TextField from '@mui/material/TextField';
+import { RowNode } from 'ag-grid-community';
 
 const styles = {
     table: (theme: Theme) => ({
@@ -38,6 +39,17 @@ const GENERATOR_INDEX = 5;
 interface CustomHandsontableProps {}
 
 registerAllModules();
+
+const propertiesGetter = (params: RowNode) => {
+    const properties = params?.data?.properties;
+    if (properties && Object.keys(properties).length) {
+        return Object.keys(properties)
+            .map((property) => property + ' : ' + properties[property])
+            .join(' | ');
+    } else {
+        return null;
+    }
+};
 
 const isDataAltered = (hotTableComponent: RefObject<HotTableClass>) => {
     const initialColumnCount: number = TABLES_DEFINITION_INDEXES?.get(GENERATOR_INDEX)?.columns?.length as number;
@@ -78,24 +90,23 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
     );
 
     const { equipments } = useSpreadsheetEquipments(equipmentDefinition, formatFetchedEquipmentsHandler);
+    const initialConfiguration = useMemo(() => {
+        return TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)!.columns.map((column) => {
+            return {
+                header: column.header ?? column.id,
+                readOnly: true,
+                width: 100,
+                height: 40,
+                data: (rowData: any) => {
+                    return typeof rowData[column.field] === 'object'
+                        ? propertiesGetter(rowData)
+                        : rowData[column.field];
+                },
+            };
+        });
+    }, []);
 
-    /*    const initialConfiguration = useMemo(() => {
-  return TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)!.columns.map((column) => {
-      return {
-          header: column.header ?? column.id,
-          readOnly: true,
-          width: 100,
-          height: 40,
-          data: (rowData: any) => {
-              return typeof rowData[column.field] === 'object'
-                  ? propertiesGetter(rowData)
-                  : rowData[column.field];
-          },
-      };
-  });
-}, []);*/
-
-    const [columns, setColumns] = useState<any>(ColumnConfig1);
+    const [columns, setColumns] = useState<any>(initialConfiguration);
 
     const getColHeaders = useCallback(() => {
         const headers = isDataAltered(hotTableComponent)
@@ -332,6 +343,7 @@ return initialData;
                     ref={hotTableComponent}
                     height={'100%'}
                     rowHeaders={true}
+                    data={equipments}
                     filters={true}
                     dropdownMenu={true}
                     nestedHeaders={getNestedHeaders()}
@@ -412,7 +424,6 @@ return initialData;
                     licenseKey="non-commercial-and-evaluation"
                     fillHandle={'vertical'}
                     outsideClickDeselects={false}
-                    afterOnCellMouseDown={(event, coords, TD) => {}}
                 />
             </Box>
         </>
