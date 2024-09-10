@@ -545,7 +545,7 @@
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
-    "CreateCompositeModification": "Créer une modification réseau composée",
+    "CreateCompositeModification": "Create composite network modification",
     "descriptionProperty": "Description (optional)",
     "RestoreModificationText": "Please select modifications to restore",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
