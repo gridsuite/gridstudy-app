@@ -873,7 +873,7 @@ const NetworkModificationNodeEditor = () => {
                     checkBoxIcon: styles.checkBoxIcon,
                     checkboxButton: styles.checkboxButton,
                     checkbox: styles.checkbox,
-                    checkboxList: styles.list,
+                    checkboxListItem: styles.list,
                     dragAndDropContainer: styles.listContainer,
                 }}
                 selectedItems={selectedItems}
