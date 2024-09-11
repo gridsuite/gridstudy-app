@@ -81,16 +81,8 @@ export const styles = {
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
-        '& .MuiListItem-root': {
-            padding: 0,
-            margin: 0,
-            '&:hover': {
-                padding: 0,
-                margin: 0,
-            },
-        },
     }),
-    list: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
+    listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
     checkBoxIcon: { minWidth: 0, padding: 0 },
     checkboxButton: {
@@ -873,7 +865,7 @@ const NetworkModificationNodeEditor = () => {
                     checkBoxIcon: styles.checkBoxIcon,
                     checkboxButton: styles.checkboxButton,
                     checkbox: styles.checkbox,
-                    checkboxListItem: styles.list,
+                    checkboxListItem: styles.listItem,
                     dragAndDropContainer: styles.listContainer,
                 }}
                 selectedItems={selectedItems}
