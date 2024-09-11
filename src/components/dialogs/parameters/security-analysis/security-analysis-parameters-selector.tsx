@@ -19,8 +19,7 @@ import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 
 const SecurityAnalysisParametersSelector: FunctionComponent<{
     params: Record<string, any>;
-    updateParameters: (value: Record<string, any>) => void;
-}> = ({ params, updateParameters }) => {
+}> = ({ params }) => {
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [tabSelected, setTabSelected] = useState(TAB_VALUES.General);
     const handleTabChange = useCallback((event: SyntheticEvent, newValue: number) => {
@@ -56,11 +55,9 @@ const SecurityAnalysisParametersSelector: FunctionComponent<{
 
                 {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map((tab, index) => (
                     <TabPanel key={tab.label} value={tabValue} index={index}>
-                        {tabValue === TAB_VALUES.General && (
-                            <ViolationsHidingParameters params={params} updateParameters={updateParameters} />
-                        )}
+                        {tabValue === TAB_VALUES.General && <ViolationsHidingParameters />}
                         {tabValue === TAB_VALUES.LimitReductions && params.limitReductions && (
-                            <Grid sx={{ width: '85%' }}>
+                            <Grid sx={{ width: '100%' }}>
                                 <LimitReductionsTableForm limits={params.limitReductions} />
                             </Grid>
                         )}
