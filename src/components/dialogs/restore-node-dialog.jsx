@@ -41,13 +41,13 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
     };
 
     const handleDelete = () => {
-        const nodeIds = [...selectedNodes].map((node) => node.id);
+        const nodeIds = [...selectedNodes].map((node) => node.first.id);
         deleteStashedNodes(studyUuid, nodeIds);
         handleClose();
     };
 
     const handleRestore = () => {
-        const nodeIds = [...selectedNodes].map((node) => node.id);
+        const nodeIds = [...selectedNodes].map((node) => node.first.id);
         restoreStashedNodes(studyUuid, nodeIds, anchorNodeId);
         handleClose();
     };

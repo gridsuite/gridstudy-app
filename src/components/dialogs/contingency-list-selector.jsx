@@ -27,6 +27,7 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import IconButton from '@mui/material/IconButton';
+import { DialogActions } from '@mui/material';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -153,21 +154,6 @@ const ContingencyListSelector = (props) => {
         setFavoriteSelectorOpen(false);
     };
 
-    const renderButtons = () => {
-        return (
-            <Grid container spacing={1} item justifyContent={'center'}>
-                {makeButton(handleClose, 'close', false)}
-                {makeButton(handleAddFavorite, 'AddContingencyList', false)}
-                {makeButton(
-                    () => removeFromFavorites(checkedContingencyList),
-                    'DeleteContingencyList',
-                    checkedContingencyList.length === 0
-                )}
-                {makeButton(handleStart, 'Execute', simulatedContingencyCount === 0)}
-            </Grid>
-        );
-    };
-
     const handleSecondaryAction = useCallback(
         (item) => (
             <IconButton
@@ -196,31 +182,34 @@ const ContingencyListSelector = (props) => {
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={1} direction="column" item xs={12}>
-                        <Grid item>
-                            <CheckboxList
-                                items={contingencyList || []}
-                                getItemId={(v) => v.id}
-                                getItemLabel={(v) => v.name}
-                                selectedItems={checkedContingencyList}
-                                onSelectionChange={setCheckedContingencyList}
-                                secondaryAction={handleSecondaryAction}
-                                enableSecondaryActionOnHover
-                            />
-                        </Grid>
-                        <Grid item>
-                            <Alert variant="standard" severity="info">
-                                <FormattedMessage
-                                    id="xContingenciesWillBeSimulated"
-                                    values={{
-                                        x: getSimulatedContingencyCountLabel(),
-                                    }}
-                                />
-                            </Alert>
-                        </Grid>
-                        {renderButtons()}
-                    </Grid>
+                    <CheckboxList
+                        items={contingencyList || []}
+                        getItemId={(v) => v.id}
+                        getItemLabel={(v) => v.name}
+                        selectedItems={checkedContingencyList}
+                        onSelectionChange={setCheckedContingencyList}
+                        secondaryAction={handleSecondaryAction}
+                        enableSecondaryActionOnHover
+                    />
+                    <Alert variant="standard" severity="info">
+                        <FormattedMessage
+                            id="xContingenciesWillBeSimulated"
+                            values={{
+                                x: getSimulatedContingencyCountLabel(),
+                            }}
+                        />
+                    </Alert>
                 </DialogContent>
+                <DialogActions sx={{ justifyContent: 'center' }}>
+                    {makeButton(handleClose, 'close', false)}
+                    {makeButton(handleAddFavorite, 'AddContingencyList', false)}
+                    {makeButton(
+                        () => removeFromFavorites(checkedContingencyList),
+                        'DeleteContingencyList',
+                        checkedContingencyList.length === 0
+                    )}
+                    {makeButton(handleStart, 'Execute', simulatedContingencyCount === 0)}
+                </DialogActions>
             </Dialog>
             <DirectoryItemSelector
                 open={favoriteSelectorOpen}
