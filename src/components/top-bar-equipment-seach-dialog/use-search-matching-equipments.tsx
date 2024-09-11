@@ -6,11 +6,10 @@
  */
 
 import { useCallback, useEffect, useMemo } from 'react';
-import { EquipmentType, getEquipmentsInfosForSearchBar, useElementSearch } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, getEquipmentsInfosForSearchBar, useElementSearch } from '@gridsuite/commons-ui';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
-import { Equipment } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;
