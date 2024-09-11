@@ -42,11 +42,9 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     useEffect(() => {
         if (studyUpdatedForce.type === NotificationType.STUDY) {
             // check if we need to update the study parameters
-            const payload = studyUpdatedForce.eventData.payload;
-            if (payload) {
-                //TODO: fix this alter
-                // @ts-ignore
-                dispatch(setStudyParamsChanged(payload));
+            const headers = studyUpdatedForce.eventData.headers;
+            if (headers && headers['paramsName']) {
+                dispatch(setStudyParamsChanged(headers['paramsName']));
                 return;
             }
 

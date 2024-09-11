@@ -300,6 +300,7 @@ export interface StudyUpdatedEventDataHeader {
     nodes?: UUID[];
     error?: string;
     userId?: string;
+    paramsName?: string;
 }
 
 // Payloads
