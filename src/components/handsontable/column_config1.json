@@ -7,48 +7,54 @@
         "height": 40
     },
     {
-        "data": "nominalVoltage",
-        "header": "nominalVoltage",
+        "header": "Name",
+        "data": "name",
         "readOnly": true,
         "width": 100,
         "height": 40
     },
     {
-        "data": "maxP",
-        "header": "maxP",
+        "header": "SubstationId",
+        "data": "substationId",
         "readOnly": true,
         "width": 100,
         "height": 40
     },
     {
-        "data": "targetP",
-        "header": "activePowerSetpoint",
+        "header": "Country",
+        "data": "country",
         "readOnly": true,
         "width": 100,
         "height": 40
     },
     {
-        "data": "custom1",
-        "header": "Custom 1",
-        "formula": "=B1*C1",
-        "readOnly": false,
+        "header": "NominalV",
+        "data": "nominalV",
+        "readOnly": true,
         "width": 100,
         "height": 40
     },
     {
-        "data": "custom2",
-        "header": "Custom 2",
-        "formula": "=D1+C1*G1",
-        "readOnly": false,
+        "header": "IpMin",
+        "data": "identifiableShortCircuit.ipMin",
+        "readOnly": true,
         "width": 100,
         "height": 40
     },
     {
-        "data": "custom3",
-        "header": "Custom 3",
-        "formula": "=B1+C1",
-        "readOnly": false,
+        "header": "IpMax",
+        "data": "identifiableShortCircuit.ipMax",
+        "readOnly": true,
         "width": 100,
         "height": 40
+    },
+    {
+        "header": "Properties",
+        "data": "properties",
+        "readOnly": true,
+        "width": 100,
+        "height": 40
+
     }
+
 ]

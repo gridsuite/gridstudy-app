@@ -34,7 +34,7 @@ const styles = {
     }),
 };
 
-const GENERATOR_INDEX = 5;
+const GENERATOR_INDEX = 1;
 
 interface CustomHandsontableProps {}
 
@@ -50,6 +50,16 @@ const propertiesGetter = (params: RowNode) => {
         return null;
     }
 };
+
+const initialConfiguration = TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)!.columns.map((column) => {
+    return {
+        header: column.header ?? column.id,
+        readOnly: true,
+        width: 100,
+        height: 40,
+        data: column.field,
+    };
+});
 
 const isDataAltered = (hotTableComponent: RefObject<HotTableClass>) => {
     const initialColumnCount: number = TABLES_DEFINITION_INDEXES?.get(GENERATOR_INDEX)?.columns?.length as number;
@@ -82,6 +92,8 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
         []
     );
 
+    const [columns, setColumns] = useState<any>(ColumnConfig1);
+
     const formatFetchedEquipmentsHandler = useCallback(
         (fetchedEquipments: any) => {
             return formatFetchedEquipments(equipmentDefinition.type!, fetchedEquipments);
@@ -90,23 +102,6 @@ const CustomHandsontable: FunctionComponent<CustomHandsontableProps> = () => {
     );
 
     const { equipments } = useSpreadsheetEquipments(equipmentDefinition, formatFetchedEquipmentsHandler);
-    const initialConfiguration = useMemo(() => {
-        return TABLES_DEFINITION_INDEXES.get(GENERATOR_INDEX)!.columns.map((column) => {
-            return {
-                header: column.header ?? column.id,
-                readOnly: true,
-                width: 100,
-                height: 40,
-                data: (rowData: any) => {
-                    return typeof rowData[column.field] === 'object'
-                        ? propertiesGetter(rowData)
-                        : rowData[column.field];
-                },
-            };
-        });
-    }, []);
-
-    const [columns, setColumns] = useState<any>(initialConfiguration);
 
     const getColHeaders = useCallback(() => {
         const headers = isDataAltered(hotTableComponent)
@@ -263,6 +258,8 @@ return initialData;
         document.body.removeChild(link);
     }, [columns]);
 
+  console.log('HMA', columns, equipments);
+
     return (
         <>
             <Box>
@@ -275,6 +272,7 @@ return initialData;
                 >
                     Clear filters
                 </Button>
+                <Button onClick={() => swapColumnConfiguration(initialConfiguration)}>Display all columns</Button>
                 <Button onClick={() => swapColumnConfiguration(ColumnConfig1)}>Load column template 1</Button>
                 <Button onClick={() => swapColumnConfiguration(ColumnConfig2)}>Load column template 2</Button>
 
@@ -343,7 +341,6 @@ return initialData;
                     ref={hotTableComponent}
                     height={'100%'}
                     rowHeaders={true}
-                    data={equipments}
                     filters={true}
                     dropdownMenu={true}
                     nestedHeaders={getNestedHeaders()}

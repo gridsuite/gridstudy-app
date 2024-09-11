@@ -35,16 +35,9 @@ export function evaluateJsonFilter(
     });
 }
 
-export function evaluateFilter(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    filter: UUID
-) {
-    console.info(
-        `Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
-    const evaluateFilterUrl =
-        getStudyUrl(studyUuid) + '/filters/' + filter + '/elements';
+export function evaluateFilter(studyUuid: UUID, currentNodeUuid: UUID, filter: UUID) {
+    console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    const evaluateFilterUrl = getStudyUrl(studyUuid) + '/filters/' + filter + '/elements';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'get',
