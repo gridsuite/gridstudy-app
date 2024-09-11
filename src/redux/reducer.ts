@@ -14,6 +14,7 @@ import {
     GsLang,
     GsLangUser,
     GsTheme,
+    Identifiable,
     LOGOUT_ERROR,
     LogoutErrorAction,
     RESET_AUTHENTICATION_ROUTER_ERROR,
@@ -270,7 +271,6 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
 
 export enum NotificationType {
     STUDY = 'study',

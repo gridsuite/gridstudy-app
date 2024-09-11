@@ -7,7 +7,7 @@
 
 import { TableCell } from '@mui/material';
 import { FloatInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM, VOLTAGE_LEVELS_FORM } from './columns-definitions';
 
 const LimitReductionTableCell: FunctionComponent<{
