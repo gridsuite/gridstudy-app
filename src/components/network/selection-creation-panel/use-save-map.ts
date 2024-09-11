@@ -4,14 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
-import { Equipment } from '@gridsuite/commons-ui';
 import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';
 
 export type UseSaveMapOutput = {

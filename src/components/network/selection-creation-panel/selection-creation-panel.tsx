@@ -7,7 +7,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { CustomFormProvider, EquipmentType, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import { CustomFormProvider, Equipment, EquipmentType, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -23,7 +23,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { Equipment } from '@gridsuite/commons-ui';
 import { openNadList } from 'redux/actions';
 import { Nullable } from 'components/utils/ts-utils';
 import { AppState } from 'redux/reducer';
