@@ -84,6 +84,32 @@ export function fetchNodeReport(studyUuid, nodeUuid, reportId, severityFilterLis
     return backendFetchJson(url);
 }
 
+export function fetchNodeReportLogs(
+    studyUuid,
+    nodeUuid,
+    reportId,
+    severityFilterList,
+    messageFilter,
+    withParentNodes
+) {
+    let url;
+    if (withParentNodes) {
+        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/logs?';
+    } else {
+        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/logs?';
+    }
+    if (severityFilterList?.length) {
+        url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
+    }
+    if (messageFilter && messageFilter !== '') {
+        url += '&message=' + messageFilter;
+    }
+    console.info('url');
+    console.info(url);
+
+    return backendFetchJson(url);
+}
+
 export function fetchSvg(svgUrl) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) => (response.status === 204 ? null : response.json()));

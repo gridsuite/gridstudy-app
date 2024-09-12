@@ -49,6 +49,7 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
+        "use-debounce": "^10.0.3",
         "uuid": "^9.0.1",
         "yup": "^1.4.0"
     },

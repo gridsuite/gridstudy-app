@@ -11,6 +11,7 @@ import { styled } from '@mui/system';
 import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
 import { FilterButton } from './filter-button';
+import { TextFilterButton } from './text-filter-button.jsx';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -35,7 +36,7 @@ const styles = {
 
 const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
 
-const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) => {
+const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity, messageFilter, setMessageFilter }) => {
     const intl = useIntl();
 
     const theme = useTheme();
@@ -73,6 +74,7 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) =
             label: intl.formatMessage({ id: 'report_viewer/message' }).toUpperCase(),
             id: 'message',
             dataKey: 'message',
+            extra: <TextFilterButton filterText={messageFilter} setFilterText={setMessageFilter} />,
         },
     ];
 
@@ -89,8 +91,8 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity }) =
                   return {
                       severity: log.severity.name,
                       message: log.message,
-                      backgroundColor: log.severity.colorName,
                       parentId: log.parentId,
+                      backgroundColor: log.severity.colorName,
                   };
               });
     };

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Log, Report, ReportSeverity } from '../types/report.type';
+import { Log, Report, ReportLog, ReportSeverity } from '../types/report.type';
 import { REPORT_SEVERITY } from '../constants/report.constant';
 
 export const mapReportLog = (report: Report) => {
@@ -29,6 +29,23 @@ const formatReportLog = (report: Report, formattedLogs: Log[]) => {
         });
     }
     report.subReports.forEach((subReport: Report) => formatReportLog(subReport, formattedLogs));
+};
+
+export const mapReportLogs = (reportLogs: ReportLog[]) => {
+    const formattedLogs: Log[] = [];
+    reportLogs.forEach((reportLog) => {
+        formatLog(reportLog, formattedLogs);
+    });
+    return formattedLogs;
+};
+
+const formatLog = (reportLog: ReportLog, formattedLogs: Log[]) => {
+    const highestSeverity = mapSeverity(reportLog.severity ?? [REPORT_SEVERITY.UNKNOWN.name]);
+    formattedLogs.push({
+        message: reportLog.message,
+        severity: highestSeverity,
+        parentId: reportLog.parentId,
+    });
 };
 
 const mapSeverity = (severities: string[]) => {
