@@ -84,14 +84,7 @@ export function fetchNodeReport(studyUuid, nodeUuid, reportId, severityFilterLis
     return backendFetchJson(url);
 }
 
-export function fetchNodeReportLogs(
-    studyUuid,
-    nodeUuid,
-    reportId,
-    severityFilterList,
-    messageFilter,
-    withParentNodes
-) {
+export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilterList, messageFilter, withParentNodes) {
     let url;
     if (withParentNodes) {
         url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/logs?';
