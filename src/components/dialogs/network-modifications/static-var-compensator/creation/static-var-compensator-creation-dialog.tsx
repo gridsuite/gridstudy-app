@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
@@ -15,6 +15,7 @@ import {
     B0,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
+    CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -43,7 +44,7 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -84,6 +85,24 @@ import {
     getStandbyAutomatonFormDataValues,
     getStandbyAutomatonFormValidationSchema,
 } from './stand-by-automaton-form-utils';
+import { DeepNullable } from '../../../../utils/ts-utils';
+
+export type StaticVarCompensatorCreation = {
+    [EQUIPMENT_ID]: string;
+    [EQUIPMENT_NAME]?: string | undefined;
+    [MAX_SUSCEPTANCE]?: number | undefined;
+    [MIN_SUSCEPTANCE]?: number | undefined;
+    [MAX_Q_AT_NOMINAL_V]?: number | undefined;
+    [MIN_Q_AT_NOMINAL_V]?: number | undefined;
+    [VOLTAGE_SET_POINT]?: number | undefined;
+    [REACTIVE_POWER_SET_POINT]?: number | undefined;
+    [CHARACTERISTICS_CHOICE]?: string;
+    [VOLTAGE_REGULATION_MODE]?: string;
+    [VOLTAGE_REGULATION_TYPE]?: string;
+    [ADD_STAND_BY_AUTOMATON]?: boolean | undefined;
+    [CHARACTERISTICS_CHOICE_AUTOMATON]?: string | undefined;
+    [STAND_BY_AUTOMATON]?: boolean | undefined;
+};
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
@@ -116,7 +135,7 @@ const formSchema = yup
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-const StaticVarCompensatorCreationDialog = ({
+const StaticVarCompensatorCreationDialog: FC<any> = ({
     studyUuid,
     currentNode,
     editData,
@@ -128,43 +147,51 @@ const StaticVarCompensatorCreationDialog = ({
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<StaticVarCompensatorCreation>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<StaticVarCompensatorCreation>>(formSchema),
     });
 
     const { reset } = formMethods;
     const [tabIndex, setTabIndex] = useState(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const fromSearchCopyToFormValues = useCallback(
-        (staticCompensator) => {
+        (staticCompensator: any) => {
             reset({
                 [EQUIPMENT_ID]: staticCompensator.id + '(1)',
                 [EQUIPMENT_NAME]: staticCompensator.name ?? '',
                 ...getConnectivityFormData({
-                    voltageLevelId: staticCompensator.voltageLevelId,
-                    busbarSectionId: staticCompensator.busOrBusbarSectionId,
-                    connectionDirection: staticCompensator.connectablePosition.connectionDirection,
-                    connectionName: staticCompensator.connectablePosition.connectionName,
-                    connectionPosition: staticCompensator.connectablePosition.connectionPosition,
+                    voltageLevelId: staticCompensator.voltageLevelId ?? null,
+                    busbarSectionId: staticCompensator.busOrBusbarSectionId ?? null,
+                    busbarSectionName: null,
+                    connectionDirection: staticCompensator.connectablePosition.connectionDirection ?? null,
+                    connectionName: staticCompensator.connectablePosition.connectionName ?? null,
+                    connectionPosition: staticCompensator.connectablePosition.connectionPosition ?? null,
+                    terminalConnected: null,
+                    isEquipmentModification: false,
                 }),
                 ...getReactiveFormData({
-                    maxSusceptance: staticCompensator.maxSusceptance,
-                    minSusceptance: staticCompensator.minSusceptance,
+                    maxSusceptance: staticCompensator.maxSusceptance ?? null,
+                    minSusceptance: staticCompensator.minSusceptance ?? null,
                     nominalV: staticCompensator.nominalV,
                     regulationMode: staticCompensator.regulationMode,
-                    voltageSetpoint: staticCompensator.voltageSetpoint,
-                    reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
+                    voltageSetpoint: staticCompensator.voltageSetpoint ?? null,
+                    reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint ?? null,
                 }),
                 [VOLTAGE_REGULATION_TYPE]:
                     staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
                         ? REGULATION_TYPES.DISTANT.id
                         : REGULATION_TYPES.LOCAL.id,
                 ...getRegulatingTerminalFormData({
+                    voltageLevelId: staticCompensator.regulatingTerminalVlId,
+                    voltageLevelName: null,
+                    voltageLevelNominalVoltage: null,
+                    voltageLevelSubstationId: null,
+                    voltageLevelTopologyKind: null,
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
+                    equipmentName: null,
                     equipmentType: staticCompensator.regulatingTerminalConnectableType,
-                    voltageLevelId: staticCompensator.regulatingTerminalVlId,
                 }),
                 ...getStandbyAutomatonFormData({
                     addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
@@ -183,17 +210,19 @@ const StaticVarCompensatorCreationDialog = ({
     );
 
     const fromEditDataToFormValues = useCallback(
-        (staticCompensator) => {
+        (staticCompensator: any) => {
             reset({
                 [EQUIPMENT_ID]: staticCompensator.equipmentId,
                 [EQUIPMENT_NAME]: staticCompensator.equipmentName ?? '',
                 ...getConnectivityFormData({
                     voltageLevelId: staticCompensator.voltageLevelId,
                     busbarSectionId: staticCompensator.busOrBusbarSectionId,
+                    busbarSectionName: null,
                     connectionDirection: staticCompensator.connectionDirection,
                     connectionName: staticCompensator.connectionName,
                     connectionPosition: staticCompensator.connectionPosition,
                     terminalConnected: staticCompensator.terminalConnected,
+                    isEquipmentModification: false,
                 }),
                 ...getReactiveFormDataValues({
                     maxSusceptance: staticCompensator.maxSusceptance,
@@ -211,16 +240,21 @@ const StaticVarCompensatorCreationDialog = ({
                 ...getRegulatingTerminalFormData({
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
+                    voltageLevelName: null,
                     equipmentType: staticCompensator.regulatingTerminalType,
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
+                    voltageLevelNominalVoltage: null,
+                    voltageLevelSubstationId: null,
+                    voltageLevelTopologyKind: null,
+                    equipmentName: null,
                 }),
                 ...getStandbyAutomatonFormDataValues({
                     standbyAutomatonOn: staticCompensator.standbyAutomatonOn,
                     standby: staticCompensator.standby,
-                    lVoltageSetpoint: staticCompensator.lowVoltageSetpoint,
-                    hVoltageSetpoint: staticCompensator.highVoltageSetpoint,
-                    lVoltageThreshold: staticCompensator.lowVoltageThreshold,
-                    hVoltageThreshold: staticCompensator.highVoltageThreshold,
+                    lVoltageSetpoint: staticCompensator.lowVoltageSetpoint ?? null,
+                    hVoltageSetpoint: staticCompensator.highVoltageSetpoint ?? null,
+                    lVoltageThreshold: staticCompensator.lowVoltageThreshold ?? null,
+                    hVoltageThreshold: staticCompensator.highVoltageThreshold ?? null,
                     b0: staticCompensator.b0,
                     q0: staticCompensator.q0,
                 }),
@@ -233,7 +267,7 @@ const StaticVarCompensatorCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        toFormValues: (data) => data,
+        toFormValues: (data: StaticVarCompensatorCreation) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
         operation: undefined,
@@ -246,7 +280,7 @@ const StaticVarCompensatorCreationDialog = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (staticCompensator) => {
+        (staticCompensator: any) => {
             const isDistantRegulation = staticCompensator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
             createStaticVarCompensator(
                 studyUuid,
@@ -309,7 +343,7 @@ const StaticVarCompensatorCreationDialog = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const onValidationError = (errors) => {
+    const onValidationError = (errors: any) => {
         let tabsInError = [];
         if (errors?.[CONNECTIVITY] !== undefined) {
             tabsInError.push(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);
@@ -366,7 +400,7 @@ const StaticVarCompensatorCreationDialog = ({
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={'STATIC_VAR_COMPENSATOR'}
+                    equipmentType={EquipmentType.STATIC_VAR_COMPENSATOR}
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>

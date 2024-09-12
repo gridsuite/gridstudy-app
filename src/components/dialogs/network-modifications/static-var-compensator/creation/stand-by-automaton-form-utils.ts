@@ -99,6 +99,17 @@ export const getStandbyAutomatonFormValidationSchema = () => {
     };
 };
 
+export type StandbyAutomatonFormDataProps = {
+    addStandbyAutomaton: boolean;
+    standby: boolean;
+    b0: number;
+    nominalV: number;
+    lVoltageSetpoint: number;
+    hVoltageSetpoint: number;
+    lVoltageThreshold: number;
+    hVoltageThreshold: number;
+};
+
 export const getStandbyAutomatonFormData: ({
     addStandbyAutomaton,
     standby,
@@ -109,23 +120,26 @@ export const getStandbyAutomatonFormData: ({
     lVoltageThreshold,
     hVoltageThreshold,
 }: {
-    addStandbyAutomaton: boolean;
-    standby: boolean;
-    b0: number;
-    nominalV: number;
-    lVoltageSetpoint: number;
-    hVoltageSetpoint: number;
-    lVoltageThreshold: number;
-    hVoltageThreshold: number;
+    addStandbyAutomaton: any;
+    standby: any;
+    b0: any;
+    nominalV: any;
+    lVoltageSetpoint: any;
+    hVoltageSetpoint: any;
+    lVoltageThreshold: any;
+    hVoltageThreshold: any;
 }) => {
-    [ADD_STAND_BY_AUTOMATON]: boolean;
+    [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
+    [SLIDER_SUSCEPTANCE]: number;
+    [HIGH_VOLTAGE_SET_POINT]: number;
+    [HIGH_VOLTAGE_THRESHOLD]: number;
+    [SLIDER_Q_NOMINAL]: number;
     [STAND_BY_AUTOMATON]: boolean;
     [LOW_VOLTAGE_SET_POINT]: number;
-    [HIGH_VOLTAGE_SET_POINT]: number;
+    [ADD_STAND_BY_AUTOMATON]: boolean;
     [LOW_VOLTAGE_THRESHOLD]: number;
-    [HIGH_VOLTAGE_THRESHOLD]: number;
-    [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
     [B0]: number;
+    [Q0]: number;
 } = ({
     addStandbyAutomaton,
     standby,
@@ -162,24 +176,26 @@ export const getStandbyAutomatonFormDataValues: ({
     lVoltageThreshold,
     hVoltageThreshold,
 }: {
-    standbyAutomatonOn: boolean;
-    standby: boolean;
-    b0: number;
-    q0: number;
-    lVoltageSetpoint: number;
-    hVoltageSetpoint: number;
-    lVoltageThreshold: number;
-    hVoltageThreshold: number;
+    standbyAutomatonOn: any;
+    standby: any;
+    b0: any;
+    q0: any;
+    lVoltageSetpoint: any;
+    hVoltageSetpoint: any;
+    lVoltageThreshold: any;
+    hVoltageThreshold: any;
 }) => {
-    [ADD_STAND_BY_AUTOMATON]: boolean;
-    [STAND_BY_AUTOMATON]: boolean;
-    [LOW_VOLTAGE_SET_POINT]: number;
-    [HIGH_VOLTAGE_SET_POINT]: number;
-    [LOW_VOLTAGE_THRESHOLD]: number;
-    [HIGH_VOLTAGE_THRESHOLD]: number;
     [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
-    [B0]: number;
-    [Q0]: number;
+    [SLIDER_SUSCEPTANCE]: number | null;
+    [HIGH_VOLTAGE_SET_POINT]: number | null;
+    [HIGH_VOLTAGE_THRESHOLD]: number | null;
+    [SLIDER_Q_NOMINAL]: number | null;
+    [STAND_BY_AUTOMATON]: boolean;
+    [LOW_VOLTAGE_SET_POINT]: number | null;
+    [ADD_STAND_BY_AUTOMATON]: boolean;
+    [LOW_VOLTAGE_THRESHOLD]: number | null;
+    [B0]: number | null;
+    [Q0]: number | null;
 } = ({
     standbyAutomatonOn,
     standby,

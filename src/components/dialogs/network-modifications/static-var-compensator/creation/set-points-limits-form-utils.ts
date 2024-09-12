@@ -154,7 +154,7 @@ export const getReactiveFormData: ({
 }) => {
     [MAX_SUSCEPTANCE]: number;
     [MIN_SUSCEPTANCE]: number;
-    [VOLTAGE_SET_POINT]: string;
+    [VOLTAGE_SET_POINT]: number;
     [REACTIVE_POWER_SET_POINT]: number;
     [VOLTAGE_REGULATION_MODE]: string;
     [CHARACTERISTICS_CHOICE]: string;
@@ -194,7 +194,7 @@ export const getReactiveFormDataValues: ({
     [MIN_SUSCEPTANCE]: number;
     [MAX_Q_AT_NOMINAL_V]: number;
     [MIN_Q_AT_NOMINAL_V]: number;
-    [VOLTAGE_SET_POINT]: string;
+    [VOLTAGE_SET_POINT]: number;
     [REACTIVE_POWER_SET_POINT]: number;
     [VOLTAGE_REGULATION_MODE]: string;
     [CHARACTERISTICS_CHOICE]: string;

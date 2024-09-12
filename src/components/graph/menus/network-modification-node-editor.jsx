@@ -73,7 +73,7 @@ import { createCompositeModifications } from '../../../services/explore';
 import EditIcon from '@mui/icons-material/Edit.js';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
-import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog.jsx';
+import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog.tsx';
 
 export const styles = {
     listContainer: (theme) => ({
