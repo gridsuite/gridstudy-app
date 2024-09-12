@@ -70,7 +70,8 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
 
     // reset value field only when data type is changed
     const prevDataType = usePrevious(dataType);
-    if (prevDataType !== dataType) {
+    // important, check prevDataType should not be undefined to ensure that setValue is not called in initialization
+    if (prevDataType && prevDataType !== dataType) {
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
