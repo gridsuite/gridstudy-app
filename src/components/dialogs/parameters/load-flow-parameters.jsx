@@ -712,7 +712,6 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                                 minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
                                                             />
                                                         )}
-                                                        <LineSeparator />
                                                     </Grid>
                                                 </Grid>
                                             )}
@@ -723,6 +722,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                         </Grid>
                     </Box>
                     <Box sx={{ flexGrow: 0 }}>
+                        <LineSeparator />
                         <Grid
                             container
                             item
