@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import Grid from '@mui/material/Grid';
@@ -28,15 +28,22 @@ export const ReactiveCapabilityCurveTable = ({
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
+    const insertRow = useCallback(
+        (index) => {
+            if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
+                updatePreviousReactiveCapabilityCurveTable(INSERT, index);
+            }
+            insert(index, {
+                [P]: null,
+                [MIN_Q]: null,
+                [MAX_Q]: null,
+            });
+        },
+        [insert, updatePreviousReactiveCapabilityCurveTable, previousValues]
+    );
+
     const handleInsertRow = () => {
-        if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
-            updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
-        }
-        insert(rows.length - 1, {
-            [P]: null,
-            [MIN_Q]: null,
-            [MAX_Q]: null,
-        });
+        insertRow(rows.length - 1);
     };
 
     const handleRemoveRow = (index) => {
@@ -49,18 +56,10 @@ export const ReactiveCapabilityCurveTable = ({
     useEffect(() => {
         if (rows?.length < MIN_LENGTH) {
             for (let i = 0; i < MIN_LENGTH - rows.length; i++) {
-                if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
-                    updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length);
-                }
-
-                insert(rows.length, {
-                    [P]: null,
-                    [MIN_Q]: null,
-                    [MAX_Q]: null,
-                });
+                insertRow(rows.length);
             }
         }
-    }, [insert, rows.length, previousValues, updatePreviousReactiveCapabilityCurveTable]);
+    }, [insertRow, rows]);
 
     return (
         <Grid item container spacing={2}>
