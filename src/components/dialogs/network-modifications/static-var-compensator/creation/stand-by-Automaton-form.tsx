@@ -7,59 +7,54 @@
 
 import Grid from '@mui/material/Grid';
 import {
-    ADD_AUTOMATE,
-    CHARACTERISTICS_CHOICE_AUTOMATE,
+    ADD_STAND_BY_AUTOMATON,
+    CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
-    LOW_VOLTAGE_SET_LIMIT,
+    LOW_VOLTAGE_SET_POINT,
     LOW_VOLTAGE_THRESHOLD,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
-    STAND_BY_AUTOMATE,
+    STAND_BY_AUTOMATON,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import { CheckboxInput, FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { SusceptanceAdornment, VoltageAdornment } from '../../../dialogUtils';
 import { Box } from '@mui/system';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import { WarningAmber } from '@mui/icons-material';
-import { SusceptanceArea } from './susceptance-slider-area';
-import { getFloatNumber } from './automate-form-utils';
+import { SusceptanceArea } from './susceptance-area';
+import { getFloatNumber } from './stand-by-automaton-form-utils';
 
 type FieldKeys =
-    | 'modeAutomate'
-    | 'standBy'
+    | 'modeAutomaton'
+    | 'standby'
     | 'lVoltageSetLimit'
     | 'hVoltageSetLimit'
     | 'lVoltageThreshold'
     | 'hVoltageThreshold';
-export const AutomateForm = () => {
+export const StandbyAutomatonForm = () => {
     const [isHover, setHover] = useState(false);
-    const watchAddAutomateProps = useWatch({
-        name: ADD_AUTOMATE,
+    const watchAddStandbyAutomatonProps = useWatch({
+        name: ADD_STAND_BY_AUTOMATON,
     });
     const watchVoltageMode = useWatch({ name: VOLTAGE_REGULATION_MODE });
-    const watchChoiceAutomate = useWatch({ name: CHARACTERISTICS_CHOICE_AUTOMATE });
+    const watchChoiceAutomaton = useWatch({ name: CHARACTERISTICS_CHOICE_AUTOMATON });
     const watchSuceptanceMin = useWatch({ name: MIN_SUSCEPTANCE });
     const watchSuceptanceMax = useWatch({ name: MAX_SUSCEPTANCE });
     const watchQuNomMin = useWatch({ name: MIN_Q_AT_NOMINAL_V });
     const watchQuNomMax = useWatch({ name: MAX_Q_AT_NOMINAL_V });
 
-    const [standByDisabled, setStandByDisabled] = useState(watchVoltageMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id);
-    const isSusceptance = watchChoiceAutomate === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id;
-    const isQFixe = watchChoiceAutomate === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id;
-
-    useEffect(() => {
-        setStandByDisabled(watchVoltageMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id);
-    }, [setStandByDisabled, watchVoltageMode]);
+    const isSusceptance = watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id;
+    const isQFixe = watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id;
 
     const createField = (
         Component: any,
@@ -70,26 +65,26 @@ export const AutomateForm = () => {
     ) => <Component name={name} label={label} adornment={adornment} size="small" formProps={additionalProps} />;
 
     const fields = {
-        modeAutomate: createField(TextInput, VOLTAGE_REGULATION_MODE, 'ModeAutomate', null, {
+        modeAutomaton: createField(TextInput, VOLTAGE_REGULATION_MODE, 'ModeAutomaton', null, {
             disabled: true,
         }),
-        standBy: (
+        standby: (
             <Grid container onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                 <Grid container item xs={12}>
                     <FormControlLabel
-                        value="StandByAutomate"
+                        value="StandbyAutomaton"
                         control={
                             <SwitchInput
-                                name={STAND_BY_AUTOMATE}
+                                name={STAND_BY_AUTOMATON}
                                 formProps={{
-                                    disabled: !standByDisabled,
+                                    disabled: !(watchVoltageMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id),
                                 }}
                             />
                         }
-                        label={<FormattedMessage id={'StandByAutomate'} />}
+                        label={<FormattedMessage id={'StandbyAutomaton'} />}
                         labelPlacement="start"
                     />
-                    {isHover && !standByDisabled && (
+                    {isHover && !(watchVoltageMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id) && (
                         <Box marginLeft={2} marginTop={'5px'}>
                             <Tooltip title={<FormattedMessage id="StandbyNotAvailable" />}>
                                 <WarningAmber color="warning"></WarningAmber>
@@ -99,8 +94,8 @@ export const AutomateForm = () => {
                 </Grid>
             </Grid>
         ),
-        lVoltageSetLimit: createField(FloatInput, LOW_VOLTAGE_SET_LIMIT, 'LowVoltageSetLimit', VoltageAdornment),
-        hVoltageSetLimit: createField(FloatInput, HIGH_VOLTAGE_SET_POINT, 'HighVoltageSetLimit', VoltageAdornment),
+        lVoltageSetLimit: createField(FloatInput, LOW_VOLTAGE_SET_POINT, 'LowVoltageSetpoint', VoltageAdornment),
+        hVoltageSetLimit: createField(FloatInput, HIGH_VOLTAGE_SET_POINT, 'HighVoltageSetpoint', VoltageAdornment),
         lVoltageThreshold: createField(FloatInput, LOW_VOLTAGE_THRESHOLD, 'LowVoltageThreshold', SusceptanceAdornment),
         hVoltageThreshold: createField(
             FloatInput,
@@ -115,10 +110,10 @@ export const AutomateForm = () => {
             <Grid container spacing={2}>
                 <Grid item xs={4}>
                     <Box>
-                        <CheckboxInput name={ADD_AUTOMATE} label="AddAutomaton" />
+                        <CheckboxInput name={ADD_STAND_BY_AUTOMATON} label="AddAutomaton" />
                     </Box>
                 </Grid>
-                {watchAddAutomateProps && (
+                {watchAddStandbyAutomatonProps && (
                     <>
                         <Grid container spacing={2} padding={2}>
                             {Object.keys(fields).map((key: string, index: number) => {
@@ -134,7 +129,7 @@ export const AutomateForm = () => {
                         <Grid container spacing={2} padding={2}>
                             <Grid item xs={6}>
                                 <SelectInput
-                                    name={CHARACTERISTICS_CHOICE_AUTOMATE}
+                                    name={CHARACTERISTICS_CHOICE_AUTOMATON}
                                     options={Object.values(CHARACTERISTICS_CHOICES)}
                                     fullWidth
                                     disableClearable

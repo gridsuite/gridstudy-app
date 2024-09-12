@@ -27,7 +27,7 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import { useWatch } from 'react-hook-form';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent } from 'react';
 import VoltageRegulation from '../../../set-points/voltage-regulation';
 import { UUID } from 'crypto';
 
@@ -41,34 +41,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     currentNode,
     voltageLevelOptions,
 }) => {
-    const [formState, setFormState] = useState({
-        openWatchProps: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-        openWatchVoltageMode: VOLTAGE_REGULATION_MODES.OFF.id,
-    });
-
-    const updateFormState = (key: string, value: string | undefined) => {
-        setFormState((prevState) => ({ ...prevState, [key]: value }));
-    };
-
-    const watchProps = useWatch({ name: CHARACTERISTICS_CHOICE });
-    const watchVoltageMode = useWatch({ name: VOLTAGE_REGULATION_MODE });
-    type CharacteristicKeys = keyof typeof CHARACTERISTICS_CHOICES;
-    type RegulationModeKeys = keyof typeof VOLTAGE_REGULATION_MODES;
-    useEffect(() => {
-        if (watchProps) {
-            updateFormState('openWatchProps', CHARACTERISTICS_CHOICES[watchProps as CharacteristicKeys]?.id);
-        }
-    }, [watchProps]);
-
-    useEffect(() => {
-        if (watchVoltageMode) {
-            updateFormState(
-                'openWatchVoltageMode',
-                VOLTAGE_REGULATION_MODES[watchVoltageMode as RegulationModeKeys]?.id
-            );
-        }
-    }, [watchVoltageMode]);
-
+    const watchCharacteristicsChoice = useWatch({ name: CHARACTERISTICS_CHOICE });
     const minSusceptanceField = (
         <FloatInput name={MIN_SUSCEPTANCE} label={'minSusceptance'} adornment={SusceptanceAdornment} />
     );
@@ -105,13 +78,13 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                         size="small"
                     />
                 </Grid>
-                {formState.openWatchProps === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
+                {watchCharacteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                     <>
                         {gridItem(minQAtNominalVField, 4)}
                         {gridItem(maxQAtNominalVField, 4)}
                     </>
                 )}
-                {formState.openWatchProps === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
+                {watchCharacteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                     <>
                         {gridItem(minSusceptanceField, 4)}
                         {gridItem(maxSusceptanceField, 4)}
@@ -123,7 +96,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                 <Grid item xs={4}>
                     <SelectInput
                         name={VOLTAGE_REGULATION_MODE}
-                        label="ModeAutomate"
+                        label="ModeAutomaton"
                         options={Object.values(VOLTAGE_REGULATION_MODES)}
                         fullWidth
                         disableClearable

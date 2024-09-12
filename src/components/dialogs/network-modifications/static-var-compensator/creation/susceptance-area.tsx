@@ -20,7 +20,7 @@ import { FloatInput, SliderInput, TextInput } from '@gridsuite/commons-ui';
 import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
 import React, { FunctionComponent, useEffect } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { getFloatNumber } from './automate-form-utils';
+import { getFloatNumber } from './stand-by-automaton-form-utils';
 import { isValidPercentage } from '../../../percentage-area/percentage-area-utils';
 
 export interface SusceptanceAreaProps {
@@ -59,7 +59,7 @@ export const SusceptanceArea: FunctionComponent<SusceptanceAreaProps> = ({ isSus
     };
 
     const handleQnomValueChange = (value: any) => {
-        setValue(SLIDER_Q_NOMINAL, parseFloat(value));
+        setValue(SLIDER_Q_NOMINAL, getFloatNumber(value));
         return value;
     };
 

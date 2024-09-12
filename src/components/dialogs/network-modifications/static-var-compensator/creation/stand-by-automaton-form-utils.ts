@@ -6,13 +6,13 @@
  */
 
 import {
-    ADD_AUTOMATE,
+    ADD_STAND_BY_AUTOMATON,
     B0,
-    CHARACTERISTICS_CHOICE_AUTOMATE,
+    CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
-    LOW_VOLTAGE_SET_LIMIT,
+    LOW_VOLTAGE_SET_POINT,
     LOW_VOLTAGE_THRESHOLD,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
@@ -21,18 +21,18 @@ import {
     Q0,
     SLIDER_Q_NOMINAL,
     SLIDER_SUSCEPTANCE,
-    STAND_BY_AUTOMATE,
+    STAND_BY_AUTOMATON,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import yup from '../../../../utils/yup-config';
 import { computeQAtNominalV } from '../../../../utils/utils';
 
-export const getAutomateEmptyFormData = () => ({
-    [ADD_AUTOMATE]: false,
-    [CHARACTERISTICS_CHOICE_AUTOMATE]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-    [STAND_BY_AUTOMATE]: false,
-    [LOW_VOLTAGE_SET_LIMIT]: null,
+export const getStandbyAutomatonEmptyFormData = () => ({
+    [ADD_STAND_BY_AUTOMATON]: false,
+    [CHARACTERISTICS_CHOICE_AUTOMATON]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+    [STAND_BY_AUTOMATON]: false,
+    [LOW_VOLTAGE_SET_POINT]: null,
     [HIGH_VOLTAGE_SET_POINT]: null,
     [LOW_VOLTAGE_THRESHOLD]: null,
     [HIGH_VOLTAGE_THRESHOLD]: null,
@@ -42,34 +42,34 @@ export const getAutomateEmptyFormData = () => ({
     [Q0]: null,
 });
 
-export const getAutomateFormValidationSchema = () => {
-    const requiredIfAddAutomate = (yup: any) =>
-        yup.nullable().when([ADD_AUTOMATE], {
+export const getStandbyAutomatonFormValidationSchema = () => {
+    const requiredIfAddStandbyAutomaton = (yup: any) =>
+        yup.nullable().when([ADD_STAND_BY_AUTOMATON], {
             is: true,
             then: (schema: any) => schema.required(),
         });
 
     return {
-        [ADD_AUTOMATE]: yup.boolean().nullable(),
-        [STAND_BY_AUTOMATE]: yup
+        [ADD_STAND_BY_AUTOMATON]: yup.boolean().nullable(),
+        [STAND_BY_AUTOMATON]: yup
             .boolean()
             .nullable()
-            .when([ADD_AUTOMATE, VOLTAGE_REGULATION_MODE], {
-                is: (addAutomate: boolean, voltageRegulationMode: string) =>
-                    addAutomate && voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
+            .when([ADD_STAND_BY_AUTOMATON, VOLTAGE_REGULATION_MODE], {
+                is: (addStandbyAutomaton: boolean, voltageRegulationMode: string) =>
+                    addStandbyAutomaton && voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),
             }),
-        [LOW_VOLTAGE_SET_LIMIT]: requiredIfAddAutomate(yup.number()),
-        [HIGH_VOLTAGE_SET_POINT]: requiredIfAddAutomate(yup.number()),
-        [LOW_VOLTAGE_THRESHOLD]: requiredIfAddAutomate(yup.number()),
-        [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddAutomate(yup.number()),
-        [CHARACTERISTICS_CHOICE_AUTOMATE]: requiredIfAddAutomate(yup.string()),
+        [LOW_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number()),
+        [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number()),
+        [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number()),
+        [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number()),
+        [CHARACTERISTICS_CHOICE_AUTOMATON]: requiredIfAddStandbyAutomaton(yup.string()),
         [B0]: yup
             .number()
             .nullable()
-            .when([ADD_AUTOMATE, CHARACTERISTICS_CHOICE_AUTOMATE], {
-                is: (addAutomate: boolean, characteristicsChoiceAutomate: string) =>
-                    addAutomate && characteristicsChoiceAutomate === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+                is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+                    addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
                 then: (schema) =>
                     schema
                         .min(yup.ref(MIN_SUSCEPTANCE), 'StaticVarCompensatorErrorQMaxAtNominalVoltageGreaterThanQMin')
@@ -79,9 +79,9 @@ export const getAutomateFormValidationSchema = () => {
         [Q0]: yup
             .number()
             .nullable()
-            .when([ADD_AUTOMATE, CHARACTERISTICS_CHOICE_AUTOMATE], {
-                is: (addAutomate: boolean, characteristicsChoiceAutomate: string) =>
-                    addAutomate && characteristicsChoiceAutomate === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+                is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+                    addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
                 then: (schema) =>
                     schema
                         .min(
@@ -99,8 +99,8 @@ export const getAutomateFormValidationSchema = () => {
     };
 };
 
-export const getAutomateFormData: ({
-    addAutomate,
+export const getStandbyAutomatonFormData: ({
+    addStandbyAutomaton,
     standby,
     b0,
     nominalV,
@@ -109,7 +109,7 @@ export const getAutomateFormData: ({
     lVoltageThreshold,
     hVoltageThreshold,
 }: {
-    addAutomate: boolean;
+    addStandbyAutomaton: boolean;
     standby: boolean;
     b0: number;
     nominalV: number;
@@ -118,16 +118,16 @@ export const getAutomateFormData: ({
     lVoltageThreshold: number;
     hVoltageThreshold: number;
 }) => {
-    [ADD_AUTOMATE]: boolean;
-    [STAND_BY_AUTOMATE]: boolean;
-    [LOW_VOLTAGE_SET_LIMIT]: number;
+    [ADD_STAND_BY_AUTOMATON]: boolean;
+    [STAND_BY_AUTOMATON]: boolean;
+    [LOW_VOLTAGE_SET_POINT]: number;
     [HIGH_VOLTAGE_SET_POINT]: number;
     [LOW_VOLTAGE_THRESHOLD]: number;
     [HIGH_VOLTAGE_THRESHOLD]: number;
-    [CHARACTERISTICS_CHOICE_AUTOMATE]: string;
+    [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
     [B0]: number;
 } = ({
-    addAutomate,
+    addStandbyAutomaton,
     standby,
     b0,
     nominalV,
@@ -137,13 +137,13 @@ export const getAutomateFormData: ({
     hVoltageThreshold,
 }) => {
     return {
-        [ADD_AUTOMATE]: addAutomate,
-        [STAND_BY_AUTOMATE]: standby,
-        [LOW_VOLTAGE_SET_LIMIT]: lVoltageSetpoint,
+        [ADD_STAND_BY_AUTOMATON]: addStandbyAutomaton,
+        [STAND_BY_AUTOMATON]: standby,
+        [LOW_VOLTAGE_SET_POINT]: lVoltageSetpoint,
         [HIGH_VOLTAGE_SET_POINT]: hVoltageSetpoint,
         [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
         [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
-        [CHARACTERISTICS_CHOICE_AUTOMATE]:
+        [CHARACTERISTICS_CHOICE_AUTOMATON]:
             b0 != null ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [B0]: b0,
         [Q0]: computeQAtNominalV(b0, nominalV),
@@ -152,8 +152,8 @@ export const getAutomateFormData: ({
     };
 };
 
-export const getAutomateFormDataValues: ({
-    standByAutomateOn,
+export const getStandbyAutomatonFormDataValues: ({
+    standbyAutomatonOn,
     standby,
     b0,
     q0,
@@ -162,7 +162,7 @@ export const getAutomateFormDataValues: ({
     lVoltageThreshold,
     hVoltageThreshold,
 }: {
-    standByAutomateOn: boolean;
+    standbyAutomatonOn: boolean;
     standby: boolean;
     b0: number;
     q0: number;
@@ -171,17 +171,17 @@ export const getAutomateFormDataValues: ({
     lVoltageThreshold: number;
     hVoltageThreshold: number;
 }) => {
-    [ADD_AUTOMATE]: boolean;
-    [STAND_BY_AUTOMATE]: boolean;
-    [LOW_VOLTAGE_SET_LIMIT]: number;
+    [ADD_STAND_BY_AUTOMATON]: boolean;
+    [STAND_BY_AUTOMATON]: boolean;
+    [LOW_VOLTAGE_SET_POINT]: number;
     [HIGH_VOLTAGE_SET_POINT]: number;
     [LOW_VOLTAGE_THRESHOLD]: number;
     [HIGH_VOLTAGE_THRESHOLD]: number;
-    [CHARACTERISTICS_CHOICE_AUTOMATE]: string;
+    [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
     [B0]: number;
     [Q0]: number;
 } = ({
-    standByAutomateOn,
+    standbyAutomatonOn,
     standby,
     b0,
     q0,
@@ -191,13 +191,13 @@ export const getAutomateFormDataValues: ({
     hVoltageThreshold,
 }) => {
     return {
-        [ADD_AUTOMATE]: standByAutomateOn,
-        [STAND_BY_AUTOMATE]: standby,
-        [LOW_VOLTAGE_SET_LIMIT]: lVoltageSetpoint,
+        [ADD_STAND_BY_AUTOMATON]: standbyAutomatonOn,
+        [STAND_BY_AUTOMATON]: standby,
+        [LOW_VOLTAGE_SET_POINT]: lVoltageSetpoint,
         [HIGH_VOLTAGE_SET_POINT]: hVoltageSetpoint,
         [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
         [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
-        [CHARACTERISTICS_CHOICE_AUTOMATE]:
+        [CHARACTERISTICS_CHOICE_AUTOMATON]:
             b0 != null ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [B0]: b0,
         [Q0]: q0,

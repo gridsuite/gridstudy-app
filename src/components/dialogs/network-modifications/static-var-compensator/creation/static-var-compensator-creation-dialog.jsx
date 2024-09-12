@@ -9,9 +9,9 @@ import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
-    ADD_AUTOMATE,
+    ADD_STAND_BY_AUTOMATON,
     ADDIONAL_INFOS,
-    AUTOMATE,
+    AUTOMATON,
     B0,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
@@ -27,14 +27,16 @@ import {
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
     ID,
-    LOW_VOLTAGE_SET_LIMIT,
+    LOW_VOLTAGE_SET_POINT,
     LOW_VOLTAGE_THRESHOLD,
+    MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
+    MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
     Q0,
     REACTIVE_POWER_SET_POINT,
     SETPOINTS_LIMITS,
-    STAND_BY_AUTOMATE,
+    STAND_BY_AUTOMATON,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_TYPE,
@@ -77,18 +79,18 @@ import {
     getReactiveFormValidationSchema,
 } from './set-points-limits-form-utils';
 import {
-    getAutomateEmptyFormData,
-    getAutomateFormData,
-    getAutomateFormDataValues,
-    getAutomateFormValidationSchema,
-} from './automate-form-utils';
+    getStandbyAutomatonEmptyFormData,
+    getStandbyAutomatonFormData,
+    getStandbyAutomatonFormDataValues,
+    getStandbyAutomatonFormValidationSchema,
+} from './stand-by-automaton-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getConnectivityWithPositionEmptyFormData(),
     ...getReactiveFormEmptyFormData(),
-    ...getAutomateEmptyFormData(),
+    ...getStandbyAutomatonEmptyFormData(),
     ...emptyProperties,
 };
 
@@ -99,7 +101,7 @@ const formSchema = yup
         [EQUIPMENT_NAME]: yup.string(),
         ...getConnectivityWithPositionValidationSchema(),
         ...getReactiveFormValidationSchema(),
-        ...getAutomateFormValidationSchema(),
+        ...getStandbyAutomatonFormValidationSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
@@ -164,15 +166,15 @@ const StaticVarCompensatorCreationDialog = ({
                     equipmentType: staticCompensator.regulatingTerminalConnectableType,
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
                 }),
-                ...getAutomateFormData({
-                    addAutomate: !!staticCompensator.standByAutomatonInfos,
-                    standby: staticCompensator.standByAutomatonInfos?.standby,
-                    b0: staticCompensator.standByAutomatonInfos?.b0,
+                ...getStandbyAutomatonFormData({
+                    addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
+                    standby: staticCompensator.standbyAutomatonInfos?.standby,
+                    b0: staticCompensator.standbyAutomatonInfos?.b0,
                     nominalV: staticCompensator.nominalV,
-                    lVoltageSetpoint: staticCompensator.standByAutomatonInfos?.lowVoltageSetpoint,
-                    hVoltageSetpoint: staticCompensator.standByAutomatonInfos?.highVoltageSetpoint,
-                    lVoltageThreshold: staticCompensator.standByAutomatonInfos?.lowVoltageThreshold,
-                    hVoltageThreshold: staticCompensator.standByAutomatonInfos?.highVoltageThreshold,
+                    lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
+                    hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
+                    lVoltageThreshold: staticCompensator.standbyAutomatonInfos?.lowVoltageThreshold,
+                    hVoltageThreshold: staticCompensator.standbyAutomatonInfos?.highVoltageThreshold,
                 }),
                 ...copyEquipmentPropertiesForCreation(staticCompensator),
             });
@@ -196,6 +198,8 @@ const StaticVarCompensatorCreationDialog = ({
                 ...getReactiveFormDataValues({
                     maxSusceptance: staticCompensator.maxSusceptance,
                     minSusceptance: staticCompensator.minSusceptance,
+                    maxQAtNominalV: staticCompensator.maxQAtNominalV,
+                    minQAtNominalV: staticCompensator.minQAtNominalV,
                     regulationMode: staticCompensator.regulationMode,
                     voltageSetpoint: staticCompensator.voltageSetpoint,
                     reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
@@ -210,8 +214,8 @@ const StaticVarCompensatorCreationDialog = ({
                     equipmentType: staticCompensator.regulatingTerminalType,
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
                 }),
-                ...getAutomateFormDataValues({
-                    standByAutomateOn: staticCompensator.standByAutomateOn,
+                ...getStandbyAutomatonFormDataValues({
+                    standbyAutomatonOn: staticCompensator.standbyAutomatonOn,
                     standby: staticCompensator.standby,
                     lVoltageSetpoint: staticCompensator.lowVoltageSetpoint,
                     hVoltageSetpoint: staticCompensator.highVoltageSetpoint,
@@ -261,6 +265,12 @@ const StaticVarCompensatorCreationDialog = ({
                 staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
                     ? staticCompensator[MIN_SUSCEPTANCE]
                     : null,
+                staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                    ? staticCompensator[MAX_Q_AT_NOMINAL_V]
+                    : null,
+                staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                    ? staticCompensator[MIN_Q_AT_NOMINAL_V]
+                    : null,
                 staticCompensator[VOLTAGE_REGULATION_MODE],
                 staticCompensator[VOLTAGE_SET_POINT],
                 staticCompensator[REACTIVE_POWER_SET_POINT],
@@ -268,14 +278,14 @@ const StaticVarCompensatorCreationDialog = ({
                 isDistantRegulation ? staticCompensator[EQUIPMENT]?.id : null,
                 isDistantRegulation ? staticCompensator[EQUIPMENT]?.type : null,
                 isDistantRegulation ? staticCompensator[VOLTAGE_LEVEL]?.id : null,
-                staticCompensator[ADD_AUTOMATE],
-                staticCompensator[STAND_BY_AUTOMATE],
-                staticCompensator[ADD_AUTOMATE] ? staticCompensator[LOW_VOLTAGE_SET_LIMIT] : null,
-                staticCompensator[ADD_AUTOMATE] ? staticCompensator[HIGH_VOLTAGE_SET_POINT] : null,
-                staticCompensator[ADD_AUTOMATE] ? staticCompensator[LOW_VOLTAGE_THRESHOLD] : null,
-                staticCompensator[ADD_AUTOMATE] ? staticCompensator[HIGH_VOLTAGE_THRESHOLD] : null,
-                staticCompensator[ADD_AUTOMATE] ? staticCompensator[B0] : null,
-                staticCompensator[ADD_AUTOMATE] ? staticCompensator[Q0] : null,
+                staticCompensator[ADD_STAND_BY_AUTOMATON],
+                staticCompensator[STAND_BY_AUTOMATON],
+                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[LOW_VOLTAGE_SET_POINT] : null,
+                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[HIGH_VOLTAGE_SET_POINT] : null,
+                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[LOW_VOLTAGE_THRESHOLD] : null,
+                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[HIGH_VOLTAGE_THRESHOLD] : null,
+                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[B0] : null,
+                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[Q0] : null,
                 !!editData,
                 editData ? editData.uuid : undefined,
                 toModificationProperties(staticCompensator)
@@ -307,7 +317,7 @@ const StaticVarCompensatorCreationDialog = ({
         if (errors?.[SETPOINTS_LIMITS] !== undefined) {
             tabsInError.push(StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB);
         }
-        if (errors?.[AUTOMATE] !== undefined) {
+        if (errors?.[AUTOMATON] !== undefined) {
             tabsInError.push(StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB);
         }
         if (errors?.[ADDIONAL_INFOS] !== undefined) {
