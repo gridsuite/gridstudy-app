@@ -89,7 +89,7 @@ export default function ReportViewer({ report, reportType }) {
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setSelectedReportId(report.id);
         setExpandedTreeReports([report.id]);
-        setLogs(mapReportLog(report));
+        setLogs(mapReportLog(report, reportTree.severities));
         setSeverityFilter(getDefaultSeverityFilter(reportTree.severities));
     }, [report, initializeTreeDataAndComponent]);
 

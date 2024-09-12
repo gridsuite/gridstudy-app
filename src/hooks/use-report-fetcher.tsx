@@ -122,7 +122,7 @@ export const useReportFetcher = (
                     );
             }
             return fetch(() => fetchPromise(severityList, reportId)).then((r) =>
-                r === undefined ? undefined : mapReportLog(r)
+                r === undefined ? undefined : mapReportLog(r, severityList)
             );
         },
         [currentNode, fetch, computingAndNetworkModificationType, studyUuid]

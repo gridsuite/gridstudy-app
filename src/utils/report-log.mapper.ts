@@ -8,19 +8,22 @@
 import { Log, Report, ReportLog, ReportSeverity } from '../types/report.type';
 import { REPORT_SEVERITY } from '../constants/report.constant';
 
-export const mapReportLog = (report: Report) => {
+export const mapReportLog = (report: Report, severities: string[]) => {
     const formattedLogs: Log[] = [];
-    formatReportLog(report, formattedLogs);
+    formatReportLog(report, severities, formattedLogs);
     return formattedLogs;
 };
 
-const formatReportLog = (report: Report, formattedLogs: Log[]) => {
+const formatReportLog = (report: Report, severities: string[], formattedLogs: Log[]) => {
     const highestSeverity = mapSeverity(report.severities ?? [REPORT_SEVERITY.UNKNOWN.name]);
-    // For now, we want to display only reports that are not containers in the "log" view
+    // We display a report line in the "log" view for both
+    // - a leaf (no sub-report)
+    // - and a container (have sub-reports), if its highest severity belongs to the severity filter (or unknown)
     if (
-        report.subReports.length === 0 &&
-        highestSeverity.name !== REPORT_SEVERITY.UNKNOWN.name &&
-        report.parentId !== null
+        report.parentId != null &&
+        (report.subReports.length === 0 ||
+            severities.includes(highestSeverity.name) ||
+            highestSeverity === REPORT_SEVERITY.UNKNOWN)
     ) {
         formattedLogs.push({
             message: report.message,
@@ -28,7 +31,7 @@ const formatReportLog = (report: Report, formattedLogs: Log[]) => {
             parentId: report.parentId,
         });
     }
-    report.subReports.forEach((subReport: Report) => formatReportLog(subReport, formattedLogs));
+    report.subReports.forEach((subReport: Report) => formatReportLog(subReport, severities, formattedLogs));
 };
 
 export const mapReportLogs = (reportLogs: ReportLog[]) => {
