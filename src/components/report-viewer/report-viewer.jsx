@@ -34,7 +34,7 @@ export default function ReportViewer({ report, reportType }) {
     const [highlightedReportId, setHighlightedReportId] = useState();
     const [severityFilter, setSeverityFilter] = useState(getDefaultSeverityFilter());
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
-    const [isLogLoading, , , fetchReportLogs] = useReportFetcher(reportType);
+    const [isLogLoading, , fetchReportLogs] = useReportFetcher(reportType);
 
     const reportTreeData = useRef({});
     const treeView = useRef(null);

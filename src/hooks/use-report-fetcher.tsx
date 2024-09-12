@@ -8,9 +8,9 @@
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
-import { fetchNodeReport, fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
+import { fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Log, Report, ReportLog, ReportType } from '../types/report.type';
+import { Report, ReportLog, ReportType } from '../types/report.type';
 import { getDefaultSeverityList } from '../utils/report-severity.utils';
 import {
     COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
@@ -18,7 +18,6 @@ import {
     REPORT_TYPE,
 } from '../constants/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
-import { mapReportLog } from '../utils/report-log.mapper';
 
 function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
     if (!Array.isArray(report)) {
@@ -48,7 +47,6 @@ export const useReportFetcher = (
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
-    (reportId: string, severityList: string[], reportType: ReportType) => Promise<Log[] | undefined>,
     (reportId: string, severityList: string[], reportType: ReportType, filterMessage: string) => Promise<ReportLog[]>
 ] => {
     const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +60,7 @@ export const useReportFetcher = (
     }, [treeModel]);
 
     const fetch = useCallback(
-        (fetcher: () => Promise<Report | ReportLog[]>) => {
+        (fetcher: () => Promise<Report | Report[]>) => {
             // use a timout to avoid having a loader in case of fast promise return (avoid blink)
             const timer = setTimeout(() => {
                 setIsLoading(true);
@@ -105,29 +103,6 @@ export const useReportFetcher = (
         [currentNode, fetch, computingAndNetworkModificationType, studyUuid]
     );
 
-    const fetchLogs = useCallback(
-        (reportId: string, severityList: string[], reportType: ReportType) => {
-            let fetchPromise: (severityList: string[], reportId: string) => Promise<Report | Report[]>;
-            if (reportType === REPORT_TYPE.NODE) {
-                fetchPromise = (severityList: string[], reportId: string) =>
-                    fetchNodeReport(studyUuid, currentNode!.id, reportId, severityList);
-            } else {
-                fetchPromise = (severityList: string[], _: string) =>
-                    fetchParentNodesReport(
-                        studyUuid,
-                        currentNode!.id,
-                        false,
-                        severityList,
-                        computingAndNetworkModificationType
-                    );
-            }
-            return fetch(() => fetchPromise(severityList, reportId)).then((r) =>
-                r === undefined ? undefined : mapReportLog(r, severityList)
-            );
-        },
-        [currentNode, fetch, computingAndNetworkModificationType, studyUuid]
-    );
-
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
@@ -146,5 +121,5 @@ export const useReportFetcher = (
         [currentNode, studyUuid]
     );
 
-    return [isLoading, fetchRawParentReport, fetchLogs, fetchReportLogs];
+    return [isLoading, fetchRawParentReport, fetchReportLogs];
 };
