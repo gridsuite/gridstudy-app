@@ -1742,11 +1742,11 @@ export function modifyByFormula(studyUuid, currentNodeUuid, equipmentType, formu
     });
 }
 
-export function modifyBySimpleModification(
+export function modifyByAssignment(
     studyUuid,
     currentNodeUuid,
     equipmentType,
-    simpleModificationsList,
+    assignmentsList,
     isUpdate,
     modificationUuid
 ) {
@@ -1754,15 +1754,15 @@ export function modifyBySimpleModification(
 
     if (isUpdate) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating by simple modification');
+        console.info('Updating modification by assignment');
     } else {
-        console.info('Creating by simple modification');
+        console.info('Creating modification by assignment');
     }
 
     const body = JSON.stringify({
-        type: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
+        type: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
         equipmentType: equipmentType,
-        simpleModificationInfosList: simpleModificationsList,
+        assignmentInfosList: assignmentsList,
     });
 
     return backendFetchText(modificationUrl, {

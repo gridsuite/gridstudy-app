@@ -15,22 +15,22 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { DataType, SimpleModification } from './simple-modification.type';
-import { FIELD_OPTIONS } from './simple-modification-constants';
+import { Assignment, DataType } from './assignment.type';
+import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName)?.dataType;
 };
 
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
-export const getSimpleModificationInitialValue = () => ({
+export const getAssignmentInitialValue = () => ({
     [FILTERS]: [],
     [EDITED_FIELD]: null,
     [PROPERTY_NAME_FIELD]: null,
     [VALUE_FIELD]: null,
 });
 
-export function getSimpleModificationsSchema() {
+export function getAssignmentsSchema() {
     return yup
         .array()
         .of(
@@ -86,12 +86,12 @@ function getValueSchema(dataType?: DataType) {
             schema = yup.number();
     }
 
-    return schema;
+    return schema.required();
 }
 
-export function getSimpleModificationFromEditData(simpleModification: SimpleModification): SimpleModification {
+export function getAssignmentFromEditData(assignment: Assignment): Assignment {
     return {
-        ...simpleModification,
-        [FILTERS]: simpleModification.filters.map((filter) => ({ ...filter })),
+        ...assignment,
+        [FILTERS]: assignment.filters.map((filter) => ({ ...filter })),
     };
 }

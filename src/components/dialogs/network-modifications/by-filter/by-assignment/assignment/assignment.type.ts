@@ -7,11 +7,11 @@
 
 import { Option } from '@gridsuite/commons-ui';
 import {
+    ASSIGNMENTS,
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
     FILTERS,
     PROPERTY_NAME_FIELD,
-    SIMPLE_MODIFICATIONS,
     VALUE_FIELD,
 } from '../../../../../utils/field-constants';
 import { Filter } from '../../commons/by-filter.type';
@@ -81,14 +81,14 @@ export enum FieldType {
 
 // --- types for the form model --- //
 
-export type SimpleModification = {
+export type Assignment = {
     [FILTERS]: Filter[];
     [EDITED_FIELD]: string;
     [VALUE_FIELD]: string | number | boolean;
     [PROPERTY_NAME_FIELD]?: string;
 };
 
-export type BySimpleModification = {
+export type ModificationByAssignment = {
     [EQUIPMENT_TYPE_FIELD]: string;
-    [SIMPLE_MODIFICATIONS]: SimpleModification[];
+    [ASSIGNMENTS]: Assignment[];
 };

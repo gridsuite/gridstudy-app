@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DataType, FieldOptionType, FieldType } from './simple-modification.type';
+import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 

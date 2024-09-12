@@ -14,32 +14,32 @@ import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import BySimpleModificationForm from './by-simple-modification-form';
-import { EDITED_FIELD, EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../../utils/field-constants';
-import { modifyBySimpleModification } from '../../../../../services/study/network-modifications';
+import ModificationByAssignmentForm from './modification-by-assignment-form';
+import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-constants';
+import { modifyByAssignment } from '../../../../../services/study/network-modifications';
 import {
+    getAssignmentFromEditData,
+    getAssignmentInitialValue,
+    getAssignmentsSchema,
     getDataType,
-    getSimpleModificationFromEditData,
-    getSimpleModificationInitialValue,
-    getSimpleModificationsSchema,
-} from './simple-modification/simple-modification-utils';
-import { BySimpleModification, SimpleModification } from './simple-modification/simple-modification.type';
+} from './assignment/assignment-utils';
+import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
 
 const formSchema = yup
     .object()
     .shape({
         [EQUIPMENT_TYPE_FIELD]: yup.string().required(),
-        [SIMPLE_MODIFICATIONS]: getSimpleModificationsSchema(),
+        [ASSIGNMENTS]: getAssignmentsSchema(),
     })
     .required();
 
 const emptyFormData = {
     [EQUIPMENT_TYPE_FIELD]: '',
-    [SIMPLE_MODIFICATIONS]: [getSimpleModificationInitialValue()],
+    [ASSIGNMENTS]: [getAssignmentInitialValue()],
 };
 
-const BySimpleModificationDialog: FC<any> = ({
+const ModificationByAssignmentDialog: FC<any> = ({
     editData,
     currentNode,
     studyUuid,
@@ -52,9 +52,9 @@ const BySimpleModificationDialog: FC<any> = ({
 
     // "DeepNullable" to allow deeply null values as default values for required values
     // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
-    const formMethods = useForm<DeepNullable<BySimpleModification>>({
+    const formMethods = useForm<DeepNullable<ModificationByAssignment>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<BySimpleModification>>(formSchema),
+        resolver: yupResolver<DeepNullable<ModificationByAssignment>>(formSchema),
     });
 
     const open = useOpenShortWaitFetching({
@@ -67,12 +67,10 @@ const BySimpleModificationDialog: FC<any> = ({
 
     useEffect(() => {
         if (editData) {
-            const simpleModifications: SimpleModification[] = editData.simpleModificationInfosList?.map(
-                getSimpleModificationFromEditData
-            );
+            const assignments: Assignment[] = editData.assignmentInfosList?.map(getAssignmentFromEditData);
             reset({
                 [EQUIPMENT_TYPE_FIELD]: editData.equipmentType,
-                [SIMPLE_MODIFICATIONS]: simpleModifications,
+                [ASSIGNMENTS]: assignments,
             });
         }
     }, [editData, reset]);
@@ -82,25 +80,25 @@ const BySimpleModificationDialog: FC<any> = ({
     }, [reset]);
 
     const onSubmit = useCallback(
-        (formData: BySimpleModification) => {
-            const simpleModificationsList = formData[SIMPLE_MODIFICATIONS].map((simpleModification) => {
-                const dataType = getDataType(simpleModification[EDITED_FIELD]);
+        (formData: ModificationByAssignment) => {
+            const assignmentsList = formData[ASSIGNMENTS].map((assignment) => {
+                const dataType = getDataType(assignment[EDITED_FIELD]);
                 return {
-                    ...simpleModification,
+                    ...assignment,
                     dataType,
                 };
             });
-            modifyBySimpleModification(
+            modifyByAssignment(
                 studyUuid,
                 currentNodeUuid,
                 formData[EQUIPMENT_TYPE_FIELD],
-                simpleModificationsList,
+                assignmentsList,
                 !!editData,
                 editData?.uuid ?? null
             ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'ModifyBySimpleModification',
+                    headerId: 'ModifyByAssignment',
                 });
             });
         },
@@ -114,16 +112,16 @@ const BySimpleModificationDialog: FC<any> = ({
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-modify-by-simple-modification"
-                titleId="ModifyBySimpleModification"
+                titleId="ModifyByAssignment"
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <BySimpleModificationForm />
+                <ModificationByAssignmentForm />
             </ModificationDialog>
         </CustomFormProvider>
     );
 };
 
-export default BySimpleModificationDialog;
+export default ModificationByAssignmentDialog;

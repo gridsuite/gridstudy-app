@@ -22,10 +22,10 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../../dialogUtils';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
-import { DataType, FieldOptionType } from './simple-modification.type';
+import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 
-interface SimpleModificationFormProps {
+interface AssignmentFormProps {
     name: string;
     index: number;
     predefinedProperties: any;
@@ -33,7 +33,7 @@ interface SimpleModificationFormProps {
     equipmentType: string;
 }
 
-const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
+const AssignmentForm: FC<AssignmentFormProps> = ({
     name,
     index,
     predefinedProperties,
@@ -155,4 +155,4 @@ const SimpleModificationForm: FC<SimpleModificationFormProps> = ({
     );
 };
 
-export default SimpleModificationForm;
+export default AssignmentForm;

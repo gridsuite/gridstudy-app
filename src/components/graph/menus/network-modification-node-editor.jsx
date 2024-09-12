@@ -73,7 +73,7 @@ import { createCompositeModifications } from '../../../services/explore';
 import EditIcon from '@mui/icons-material/Edit';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
-import BySimpleModificationDialog from '../../dialogs/network-modifications/by-filter/by-simple-modification/by-simple-modification-dialog';
+import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 
 export const styles = {
     listContainer: (theme) => ({
@@ -383,9 +383,9 @@ const NetworkModificationNodeEditor = () => {
                     action: () => adapt(ByFormulaDialog),
                 },
                 {
-                    id: MODIFICATION_TYPES.BY_SIMPLE_MODIFICATION.type,
+                    id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
                     label: 'BY_FILTER',
-                    action: () => adapt(BySimpleModificationDialog),
+                    action: () => adapt(ModificationByAssignmentDialog),
                 },
             ],
         },

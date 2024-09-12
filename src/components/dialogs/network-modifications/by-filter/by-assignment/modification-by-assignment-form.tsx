@@ -6,24 +6,24 @@
  */
 
 import React, { FC, useEffect } from 'react';
-import { EQUIPMENT_TYPE_FIELD, SIMPLE_MODIFICATIONS } from '../../../../utils/field-constants';
+import { ASSIGNMENTS, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-constants';
 import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
-import SimpleModificationForm from './simple-modification/simple-modification-form';
+import AssignmentForm from './assignment/assignment-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../../../dialogUtils';
-import { getSimpleModificationInitialValue } from './simple-modification/simple-modification-utils';
+import { getAssignmentInitialValue } from './assignment/assignment-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
-import { EQUIPMENTS_FIELDS } from './simple-modification/simple-modification-constants';
+import { EQUIPMENTS_FIELDS } from './assignment/assignment-constants';
 
-interface BySimpleModificationFormProps {}
+interface ModificationByAssignmentFormProps {}
 
 type EquipmentTypeOptionType = keyof typeof EQUIPMENTS_FIELDS;
 
 const EQUIPMENT_TYPE_OPTIONS: EquipmentTypeOptionType[] = Object.keys(EQUIPMENTS_FIELDS) as EquipmentTypeOptionType[];
 
-const BySimpleModificationForm: FC<BySimpleModificationFormProps> = () => {
+const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () => {
     const { setValue, getValues } = useFormContext();
     const equipmentType: EquipmentTypeOptionType = useWatch({
         name: EQUIPMENT_TYPE_FIELD,
@@ -43,26 +43,26 @@ const BySimpleModificationForm: FC<BySimpleModificationFormProps> = () => {
             options={EQUIPMENT_TYPE_OPTIONS}
             onValidate={() => {
                 setValue(
-                    SIMPLE_MODIFICATIONS,
-                    getValues(SIMPLE_MODIFICATIONS).map(() => ({
-                        ...getSimpleModificationInitialValue(),
+                    ASSIGNMENTS,
+                    getValues(ASSIGNMENTS).map(() => ({
+                        ...getAssignmentInitialValue(),
                     }))
                 );
             }}
         />
     );
 
-    const simpleModificationsField = (
+    const assignmentsField = (
         <ExpandableInput
-            name={SIMPLE_MODIFICATIONS}
-            Field={SimpleModificationForm}
+            name={ASSIGNMENTS}
+            Field={AssignmentForm}
             fieldProps={{
                 predefinedProperties,
                 equipmentFields,
                 equipmentType,
             }}
-            addButtonLabel={'addNewSimpleModification'}
-            initialValue={getSimpleModificationInitialValue()}
+            addButtonLabel={'addNewAssignment'}
+            initialValue={getAssignmentInitialValue()}
         />
     );
 
@@ -71,9 +71,9 @@ const BySimpleModificationForm: FC<BySimpleModificationFormProps> = () => {
             <Grid container paddingTop={'20px'}>
                 {gridItem(equipmentTypeField, 2.15)}
             </Grid>
-            <Grid container>{gridItem(simpleModificationsField, 12)}</Grid>
+            <Grid container>{gridItem(assignmentsField, 12)}</Grid>
         </>
     );
 };
 
-export default BySimpleModificationForm;
+export default ModificationByAssignmentForm;
