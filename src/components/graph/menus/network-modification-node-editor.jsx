@@ -83,7 +83,7 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    list: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
+    listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
     checkBoxIcon: { minWidth: 0, padding: 0 },
     checkboxButton: {
@@ -871,7 +871,8 @@ const NetworkModificationNodeEditor = () => {
                     checkBoxIcon: styles.checkBoxIcon,
                     checkboxButton: styles.checkboxButton,
                     checkbox: styles.checkbox,
-                    checkboxList: styles.list,
+                    checkboxListItem: styles.listItem,
+                    dragAndDropContainer: styles.listContainer,
                 }}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
