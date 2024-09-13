@@ -4,24 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentInfos, TreeViewFinderNodeProps, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { SELECTION_TYPES } from '../utils/selection-types';
-import { createMapContingencyList, createMapFilter } from '../../services/study/network-map';
+import { SELECTION_TYPES } from './selection-types';
+import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
+import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';
 
-export interface ISelection {
-    selectionType: string;
-    equipmentType: string;
-}
 export type UseSaveMapOutput = {
     pendingState: boolean;
     onSaveSelection: (
-        equipments: EquipmentInfos[],
-        selection: ISelection,
-        distDir: TreeViewFinderNodeProps,
+        equipments: Equipment[],
+        selection: SelectionCreationPanelNotNadFields,
+        distDir: DestinationFolder,
         nominalVoltages: number[]
     ) => Promise<boolean>;
 };
@@ -35,9 +32,9 @@ export const useSaveMap = (): UseSaveMapOutput => {
 
     const onSaveSelection = useCallback(
         async (
-            equipments: EquipmentInfos[],
-            selection: ISelection,
-            distDir: TreeViewFinderNodeProps,
+            equipments: Equipment[],
+            selection: SelectionCreationPanelNotNadFields,
+            distDir: DestinationFolder,
             nominalVoltages: number[]
         ) => {
             const isFilter = selection.selectionType === SELECTION_TYPES.FILTER;
@@ -47,7 +44,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                 //we want to calculate selectedLine or selectedSubstation only when needed
                 //call getSelectedLines if the user want to create a filter with lines
                 //for all others case we call getSelectedSubstations
-                const selectedEquipmentsIds = equipments.map((eq: EquipmentInfos) => eq.id);
+                const selectedEquipmentsIds = equipments.map((eq) => eq.id);
                 if (selectedEquipmentsIds.length === 0) {
                     snackWarning({
                         messageTxt: intl.formatMessage({
@@ -56,36 +53,40 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         headerId: isFilter ? 'FilterCreationIgnored' : 'ContingencyListCreationIgnored',
                     });
                     return false;
+                }
+
+                if (isFilter) {
+                    await createMapFilter(
+                        selection.equipmentType as EquipmentType,
+                        selection.name,
+                        distDir.folderId,
+                        // @ts-expect-error TODO: manage null case
+                        studyUuid,
+                        currentNodeUuid,
+                        selectedEquipmentsIds,
+                        nominalVoltages
+                    );
+                    snackInfo({
+                        messageTxt: intl.formatMessage({
+                            id: 'FilterCreationSuccess',
+                        }),
+                    });
                 } else {
-                    if (isFilter) {
-                        await createMapFilter(
-                            selection,
-                            distDir,
-                            studyUuid,
-                            currentNodeUuid,
-                            selectedEquipmentsIds,
-                            nominalVoltages
-                        );
-                        snackInfo({
-                            messageTxt: intl.formatMessage({
-                                id: 'FilterCreationSuccess',
-                            }),
-                        });
-                    } else {
-                        await createMapContingencyList(
-                            selection,
-                            distDir,
-                            studyUuid,
-                            currentNodeUuid,
-                            equipments,
-                            nominalVoltages
-                        );
-                        snackInfo({
-                            messageTxt: intl.formatMessage({
-                                id: 'ContingencyListCreationSuccess',
-                            }),
-                        });
-                    }
+                    await createMapContingencyList(
+                        selection.equipmentType as EquipmentType,
+                        selection.name,
+                        distDir.folderId,
+                        // @ts-expect-error TODO: manage null case
+                        studyUuid,
+                        currentNodeUuid,
+                        equipments,
+                        nominalVoltages
+                    );
+                    snackInfo({
+                        messageTxt: intl.formatMessage({
+                            id: 'ContingencyListCreationSuccess',
+                        }),
+                    });
                 }
             } catch (error: any) {
                 if (error.message === 'EmptySelection') {

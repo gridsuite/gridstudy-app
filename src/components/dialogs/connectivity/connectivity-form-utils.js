@@ -7,44 +7,56 @@
 
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
-    CONNECTED,
     ID,
     NAME,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import yup from '../../utils/yup-config';
 
-export const getConnectivityPropertiesValidationSchema = () => {
+export const getConnectivityPropertiesValidationSchema = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()
             .required()
             .shape({
-                [ID]: yup.string(),
+                [ID]: yup.string().when([], {
+                    is: () => isEquipmentModification,
+                    then: (schema) => schema.nullable(),
+                }),
             }),
         [BUS_OR_BUSBAR_SECTION]: yup
             .object()
             .nullable()
             .required()
             .shape({
-                [ID]: yup.string(),
+                [ID]: yup.string().when([], {
+                    is: () => isEquipmentModification,
+                    then: (schema) => schema.nullable(),
+                }),
                 [NAME]: yup.string(),
             }),
     };
 };
 
-export const getConnectivityWithPositionValidationSchema = (id = CONNECTIVITY) => ({
+export const getConnectivityWithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
-        [CONNECTED]: yup.bool().required(),
-        ...getConnectivityPropertiesValidationSchema(),
+        [CONNECTED]: yup
+            .bool()
+            .nullable()
+            .when([], {
+                is: () => !isEquipmentModification,
+                then: (schema) => schema.required(),
+            }),
+        ...getConnectivityPropertiesValidationSchema(isEquipmentModification),
     }),
 });
 
@@ -54,21 +66,20 @@ export const getConnectivityWithoutPositionValidationSchema = (id = CONNECTIVITY
     };
 };
 
-export const getConnectivityPropertiesEmptyFormData = () => {
+export const getConnectivityPropertiesEmptyFormData = (isEquipmentModification = false) => {
     return {
         [VOLTAGE_LEVEL]: null,
         [BUS_OR_BUSBAR_SECTION]: null,
-        [CONNECTED]: true,
+        [CONNECTED]: isEquipmentModification ? null : true,
     };
 };
 
-export const getConnectivityWithPositionEmptyFormData = (id = CONNECTIVITY) => ({
+export const getConnectivityWithPositionEmptyFormData = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: {
-        ...getConnectivityPropertiesEmptyFormData(),
+        ...getConnectivityPropertiesEmptyFormData(isEquipmentModification),
         [CONNECTION_DIRECTION]: null,
         [CONNECTION_NAME]: '',
         [CONNECTION_POSITION]: null,
-        [CONNECTED]: true,
     },
 });
 
@@ -134,7 +145,8 @@ export const getConnectivityFormData = (
         connectionDirection,
         connectionName,
         connectionPosition,
-        connected,
+        terminalConnected,
+        isEquipmentModification = false,
     },
     id = CONNECTIVITY
 ) => {
@@ -148,7 +160,7 @@ export const getConnectivityFormData = (
             [CONNECTION_DIRECTION]: connectionDirection ?? null,
             [CONNECTION_NAME]: connectionName ?? '',
             [CONNECTION_POSITION]: connectionPosition ?? null,
-            [CONNECTED]: connected ?? true,
+            [CONNECTED]: isEquipmentModification ? terminalConnected : true,
         },
     };
 };

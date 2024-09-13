@@ -1,6 +1,11 @@
 {
+    "General": "General",
+
+    "LimitReductions" : "Abattements de limites",
+    "IST" : "IST",
+    "LimitDuration" : "Surcharge {sign} {value}min",
+
     "button.delete": "Supprimer",
-    "button.changeType": "Modifier",
     "filter": "Filtre",
 
     "deleteStudy": "Supprimer l'étude",
@@ -22,6 +27,7 @@
     "CopiedModificationInvalidationMessage": "Suite à modification d'hypothèse, le contenu du presse papier a été supprimé",
     "exportNetwork": "Exporter le réseau",
     "export": "Exporter",
+    "download.fileName": "Nom de fichier",
     "exportFormat": "Format de l'export",
     "exportStudyErrorMsg": "Le format de l'export n'est pas spécifié",
 
@@ -43,6 +49,7 @@
     "centerLabel": "Centrer les noms d'ouvrages",
     "topologicalColoring": "Coloration topologique",
     "SingleLineDiagram": "Schéma unifilaire",
+    "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
@@ -105,12 +112,6 @@
 
     "Spreadsheet": "Tableur",
     "Results": "Résultats",
-    "Substations": "Sites",
-    "VoltageLevels": "Postes",
-    "Lines": "Lignes",
-    "Generators": "Groupes",
-    "TwoWindingsTransformers": "Transformateurs à 2 enroulements",
-    "ThreeWindingsTransformers": "Transformateurs à 3 enroulements",
     "ID": "ID",
     "Name": "Nom",
     "Country": "Pays",
@@ -203,6 +204,7 @@
     "VariableShuntCompensators": "MCS variables",
     "voltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageInitParametersError": "Erreur lors de la mise à jour des paramètres d'initialisation du plan de tension",
+    "voltageInitCancelError": "L'initialisation du plan de tension n'a pas pu être annulée",
     "AdjustExistingLimits": "Modifier les limites existantes",
     "AdjustExistingLimitsInfo": "Merci de saisir une valeur positive pour augmenter une limite existante et une valeur négative pour abaisser une limite existante (nouvelle limite = limite existante + valeur saisie).",
     "SetDefaultLimits": "Valeurs par défaut pour compléter les limites manquantes",
@@ -507,12 +509,6 @@
     "EquipmentType": "Type d'ouvrage",
     "selectionType": "Type de sélection",
 
-    "Loads": "Consommations",
-    "Batteries": "Batteries",
-    "ShuntCompensators": "Moyens de compensation",
-    "StaticVarCompensators": "CSPR",
-    "LccConverterStations": "Stations conversion LCC",
-    "VscConverterStations": "Stations conversion VSC",
     "loadType": "Type",
     "ConstantP": "P constant (MW)",
     "ConstantQ": "Q constant (MVar)",
@@ -575,6 +571,7 @@
     "FluxConvention.target": "Métier",
     "Advanced": "Avancés",
     "EnableDeveloperMode": "Activer mode développeur",
+    "initNadWithGeoData": "Initialiser sur base des coordonnées géographiques", 
     "DeveloperModeWarningMsg": "Certaines fonctionnalités ne sont pas complètes et peuvent donc ne pas fonctionner comme prévu. Pour masquer ces fonctionnalités, désactivez le mode développeur",
     "ModifyNodeNotBuiltWarningMsg": "Les valeurs sont celles du précédent nœud réalisé dans la branche courante",
 
@@ -688,12 +685,6 @@
     "NbModificationToRestore": "{nb} modification{several} à restaurer",
     "GeneratorCreationError": "Erreur lors de la création d'un groupe",
     "energySource": "Source d'énergie",
-    "Hydro": "Hydraulique",
-    "Nuclear": "Nucléaire",
-    "Wind": "Éolien",
-    "Thermal": "Thermique",
-    "Solar": "Solaire",
-    "Other": "Autre",
     "MinimumActivePowerText": "Puissance active min",
     "MaximumActivePowerText": "Puissance active max",
     "RatedNominalPowerText": "Puissance nominale",
@@ -1230,7 +1221,7 @@
     "ConnectedT3WSide1": "Connecté 1",
     "ConnectedT3WSide2": "Connecté 2",
     "ConnectedT3WSide3": "Connecté 3",
-
+    "disconnected": "Disconnecté",
     "converterStationId": "ID de la station",
     "converterStationName": "Nom de la station",
     "converterStation1": "Station 1",
@@ -1374,7 +1365,8 @@
     "EquipmentSearchPlaceholder": "Recherche",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
-    "guidancePopUp.firstVariant":"Cliquez sur la carte pour commencer à dessiner un polygone.",
-    "guidancePopUp.secondVariant":"Appuyez sur Entrée pour enregistrer la sélection ou Échap pour annuler.",
-    "guidancePopUp.action":"Fermer l'éditeur"
+    "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
+    "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
+    "guidancePopUp.action":"Fermer l'éditeur",
+    "generateNad": "Générer"
 }

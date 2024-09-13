@@ -13,6 +13,7 @@ export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
 export const NAME = 'name';
+export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';
 export const FOLDER_ID = 'folderId';
 export const DESCRIPTION = 'description';
@@ -25,7 +26,7 @@ export const BUS_OR_BUSBAR_SECTION_ID = 'busOrBusbarSectionId';
 export const CONNECTION_DIRECTION = 'connectionDirection';
 export const CONNECTION_NAME = 'connectionName';
 export const CONNECTION_POSITION = 'connectionPosition';
-export const CONNECTED = 'connected';
+export const CONNECTED = 'terminalConnected';
 export const CONNECTED1 = 'connected1';
 export const CONNECTED2 = 'connected2';
 

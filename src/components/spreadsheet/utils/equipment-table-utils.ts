@@ -24,7 +24,7 @@ import {
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { IEquipment } from '../../../services/study/contingency-list';
+import { Identifiable } from '@gridsuite/commons-ui';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -179,7 +179,7 @@ const formatShuntCompensatorDataForTable = (shuntCompensator: any) => {
     return formattedCompensator;
 };
 
-export const formatFetchedEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: IEquipment[]) => {
+export const formatFetchedEquipments = (equipmentType: EQUIPMENT_TYPES, equipments: Identifiable[]) => {
     if (equipments && equipments?.length > 0) {
         return equipments.map((equipment) => {
             return formatFetchedEquipment(equipmentType, equipment);
@@ -188,7 +188,7 @@ export const formatFetchedEquipments = (equipmentType: EQUIPMENT_TYPES, equipmen
     return equipments;
 };
 
-export const formatFetchedEquipment = (equipmentType: EQUIPMENT_TYPES, equipment: IEquipment) => {
+export const formatFetchedEquipment = (equipmentType: EQUIPMENT_TYPES, equipment: Identifiable) => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
             return formatTwtDataForTable(equipment);

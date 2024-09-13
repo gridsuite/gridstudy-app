@@ -14,12 +14,19 @@ import yup from 'components/utils/yup-config';
 import {
     ACTIVE_POWER_SET_POINT,
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     DROOP,
     ENERGY_SOURCE,
     EQUIPMENT,
     EQUIPMENT_NAME,
     FORCED_OUTAGE_RATE,
     FREQUENCY_REGULATION,
+    ID,
     MARGINAL_COST,
     MAX_Q,
     MAXIMUM_ACTIVE_POWER,
@@ -73,6 +80,11 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    getConnectivityFormData,
+    getConnectivityWithPositionEmptyFormData,
+    getConnectivityWithPositionValidationSchema,
+} from '../../../connectivity/connectivity-form-utils.js';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -86,6 +98,7 @@ const emptyFormData = {
     [MARGINAL_COST]: null,
     [PLANNED_OUTAGE_RATE]: null,
     [FORCED_OUTAGE_RATE]: null,
+    ...getConnectivityWithPositionEmptyFormData(true),
     ...getSetPointsEmptyFormData(true),
     ...getReactiveLimitsEmptyFormData(),
     ...emptyProperties,
@@ -110,8 +123,10 @@ const formSchema = yup
         [TRANSFORMER_REACTANCE]: yup.number().nullable(),
         [PLANNED_ACTIVE_POWER_SET_POINT]: yup.number().nullable(),
         [MARGINAL_COST]: yup.number().nullable(),
+
         [PLANNED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
         [FORCED_OUTAGE_RATE]: yup.number().nullable().min(0, 'RealPercentage').max(1, 'RealPercentage'),
+        ...getConnectivityWithPositionValidationSchema(true),
         ...getSetPointsSchema(true),
         ...getReactiveLimitsSchema(true),
     })
@@ -165,6 +180,15 @@ const GeneratorModificationDialog = ({
                 [TRANSFORMER_REACTANCE]: editData?.stepUpTransformerX?.value ?? null,
                 [VOLTAGE_REGULATION_TYPE]: editData?.voltageRegulationType?.value ?? null,
                 [Q_PERCENT]: editData?.qPercent?.value ?? null,
+                ...getConnectivityFormData({
+                    voltageLevelId: editData?.voltageLevelId?.value ?? null,
+                    busbarSectionId: editData?.busOrBusbarSectionId?.value ?? null,
+                    connectionName: editData?.connectionName?.value ?? '',
+                    connectionDirection: editData?.connectionDirection?.value ?? null,
+                    connectionPosition: editData?.connectionPosition?.value ?? null,
+                    terminalConnected: editData?.terminalConnected?.value ?? null,
+                    isEquipmentModification: true,
+                }),
                 ...getReactiveLimitsFormData({
                     reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve?.value ? 'CURVE' : 'MINMAX',
                     maximumReactivePower: editData?.maxQ?.value ?? null,
@@ -260,6 +284,8 @@ const GeneratorModificationDialog = ({
                                     }
                                 }
                             }
+                            setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
+                            setValue(`${CONNECTIVITY}.${BUS_OR_BUSBAR_SECTION}.${ID}`, value?.busOrBusbarSectionId);
                             setGeneratorToModify({
                                 ...value,
                                 reactiveCapabilityCurveTable: previousReactiveCapabilityCurveTable,
@@ -329,10 +355,13 @@ const GeneratorModificationDialog = ({
                 generator[ACTIVE_POWER_SET_POINT],
                 generator[REACTIVE_POWER_SET_POINT],
                 generator[VOLTAGE_REGULATION],
-
                 generator[VOLTAGE_SET_POINT],
-                undefined,
-                undefined,
+                generator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                generator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                sanitizeString(generator[CONNECTIVITY]?.[CONNECTION_NAME]),
+                generator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
+                generator[CONNECTIVITY]?.[CONNECTION_POSITION],
+                generator[CONNECTIVITY]?.[CONNECTED],
                 editData?.uuid,
                 generator[Q_PERCENT],
                 generator[PLANNED_ACTIVE_POWER_SET_POINT],
