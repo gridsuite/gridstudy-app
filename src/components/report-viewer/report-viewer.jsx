@@ -110,7 +110,6 @@ export default function ReportViewer({ report, reportType }) {
             setSeverityFilter(updatedSeverityFilter);
             setMessageFilter('');
             setSelectedReportId(reportId);
-            refreshLogsOnSelectedReport(reportId, updatedSeverityFilter, messageFilter);
         }
     };
 
