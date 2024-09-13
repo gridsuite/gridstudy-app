@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
+import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import LineAttachToVoltageLevelDialog from 'components/dialogs/network-modifications/line-attach-to-voltage-level/line-attach-to-voltage-level-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
@@ -70,10 +70,10 @@ import { Box } from '@mui/system';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 import { createCompositeModifications } from '../../../services/explore';
-import EditIcon from '@mui/icons-material/Edit.js';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
+import EditIcon from '@mui/icons-material/Edit';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import CreateCompositeModificationDialog from '../../dialogs/create-composite-modification-dialog';
-import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog.tsx';
+import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 
 export const styles = {
     listContainer: (theme) => ({

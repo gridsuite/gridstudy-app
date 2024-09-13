@@ -109,10 +109,10 @@ export const getReactiveFormValidationSchema = () => ({
         .object()
         .nullable()
         .shape({
-            [ID]: yup.string(),
-            [NAME]: yup.string(),
-            [SUBSTATION_ID]: yup.string(),
-            [NOMINAL_VOLTAGE]: yup.string(),
+            [ID]: yup.string().required(),
+            [NAME]: yup.string().required(),
+            [SUBSTATION_ID]: yup.string().required(),
+            [NOMINAL_VOLTAGE]: yup.string().required(),
             [TOPOLOGY_KIND]: yup.string().nullable(),
         })
         .when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
@@ -125,9 +125,9 @@ export const getReactiveFormValidationSchema = () => ({
         .object()
         .nullable()
         .shape({
-            [ID]: yup.string(),
+            [ID]: yup.string().required(),
             [NAME]: yup.string().nullable(),
-            [TYPE]: yup.string(),
+            [TYPE]: yup.string().required(),
         })
         .when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulationMode: string, voltageRegulationType: string) =>

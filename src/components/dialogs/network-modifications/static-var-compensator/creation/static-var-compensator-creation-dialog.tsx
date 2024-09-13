@@ -11,6 +11,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import {
     ADD_STAND_BY_AUTOMATON,
     ADDIONAL_INFOS,
+    ADDITIONAL_PROPERTIES,
     AUTOMATON,
     B0,
     BUS_OR_BUSBAR_SECTION,
@@ -34,10 +35,17 @@ import {
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
+    NAME,
+    NOMINAL_VOLTAGE,
     Q0,
     REACTIVE_POWER_SET_POINT,
     SETPOINTS_LIMITS,
+    SLIDER_Q_NOMINAL,
+    SLIDER_SUSCEPTANCE,
     STAND_BY_AUTOMATON,
+    SUBSTATION_ID,
+    TOPOLOGY_KIND,
+    TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_TYPE,
@@ -55,7 +63,7 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
+    getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import { createStaticVarCompensator } from '../../../../../services/study/network-modifications';
 import { FetchStatus } from '../../../../../services/utils';
@@ -64,6 +72,7 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
+    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import StaticVarCompensatorCreationDialogTabs, {
@@ -87,21 +96,52 @@ import {
 } from './stand-by-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 
-export type StaticVarCompensatorCreation = {
+export type StaticVarCompensatorCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
-    [EQUIPMENT_NAME]?: string | undefined;
-    [MAX_SUSCEPTANCE]?: number | undefined;
-    [MIN_SUSCEPTANCE]?: number | undefined;
-    [MAX_Q_AT_NOMINAL_V]?: number | undefined;
-    [MIN_Q_AT_NOMINAL_V]?: number | undefined;
-    [VOLTAGE_SET_POINT]?: number | undefined;
-    [REACTIVE_POWER_SET_POINT]?: number | undefined;
+    [EQUIPMENT_NAME]?: string;
+    // Connectivity
+    [CONNECTIVITY]: {
+        [CONNECTION_DIRECTION]?: string;
+        [CONNECTION_NAME]?: string;
+        [CONNECTION_POSITION]?: number;
+        [CONNECTED]?: boolean;
+    };
+    // Reactive
+    [MAX_SUSCEPTANCE]?: number;
+    [MIN_SUSCEPTANCE]?: number;
+    [MAX_Q_AT_NOMINAL_V]?: number;
+    [MIN_Q_AT_NOMINAL_V]?: number;
+    [VOLTAGE_SET_POINT]?: number;
+    [REACTIVE_POWER_SET_POINT]?: number;
     [CHARACTERISTICS_CHOICE]?: string;
     [VOLTAGE_REGULATION_MODE]?: string;
     [VOLTAGE_REGULATION_TYPE]?: string;
-    [ADD_STAND_BY_AUTOMATON]?: boolean | undefined;
-    [CHARACTERISTICS_CHOICE_AUTOMATON]?: string | undefined;
-    [STAND_BY_AUTOMATON]?: boolean | undefined;
+    [VOLTAGE_LEVEL]?: {
+        [ID]: string;
+        [NAME]: string;
+        [SUBSTATION_ID]: string;
+        [NOMINAL_VOLTAGE]: string;
+        [TOPOLOGY_KIND]?: string;
+    };
+    [EQUIPMENT]?: {
+        [ID]: string;
+        [NAME]?: string;
+        [TYPE]: string;
+    };
+    // Standby automaton
+    [ADD_STAND_BY_AUTOMATON]?: boolean;
+    [STAND_BY_AUTOMATON]?: boolean;
+    [LOW_VOLTAGE_SET_POINT]?: number;
+    [HIGH_VOLTAGE_SET_POINT]?: number;
+    [LOW_VOLTAGE_THRESHOLD]?: number;
+    [HIGH_VOLTAGE_THRESHOLD]?: number;
+    [CHARACTERISTICS_CHOICE_AUTOMATON]?: string;
+    [B0]?: number;
+    [Q0]?: number;
+    [SLIDER_SUSCEPTANCE]?: number;
+    [SLIDER_Q_NOMINAL]?: number;
+    // Properties
+    [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 const emptyFormData = {
@@ -118,7 +158,7 @@ const formSchema = yup
     .shape({
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
-        ...getConnectivityWithPositionValidationSchema(),
+        [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
         ...getReactiveFormValidationSchema(),
         ...getStandbyAutomatonFormValidationSchema(),
     })
@@ -127,7 +167,6 @@ const formSchema = yup
 
 /**
  * Dialog to create a static compensator in the network
- * @param voltageLevelOptionsPromise Promise handling list of voltage level options
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit
@@ -147,9 +186,9 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
 
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm<DeepNullable<StaticVarCompensatorCreation>>({
+    const formMethods = useForm<DeepNullable<StaticVarCompensatorCreationSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver<DeepNullable<StaticVarCompensatorCreation>>(formSchema),
+        resolver: yupResolver<DeepNullable<StaticVarCompensatorCreationSchemaForm>>(formSchema),
     });
 
     const { reset } = formMethods;
@@ -267,7 +306,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        toFormValues: (data: StaticVarCompensatorCreation) => data,
+        toFormValues: (data: StaticVarCompensatorCreationSchemaForm) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
         operation: undefined,
