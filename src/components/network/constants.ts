@@ -84,6 +84,13 @@ export function getEnergySourceLabel(energySourceId: string) {
     return ENERGY_SOURCES.find(({ id }) => id === energySourceId)?.label;
 }
 
+export function getConnectionDirectionLabel(connectionDirectionId: string) {
+    if (connectionDirectionId === UNDEFINED_CONNECTION_DIRECTION) {
+        return 'Undefined';
+    }
+    return CONNECTION_DIRECTIONS.find(({ id }) => id === connectionDirectionId)?.label;
+}
+
 export const REACTIVE_LIMIT_TYPES = [
     { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },

@@ -1,6 +1,11 @@
 {
+    "General": "General",
+
+    "LimitReductions" : "Limit reductions",
+    "IST" : "IST",
+    "LimitDuration" : "Limit duration {sign} {value}min",
+
     "button.delete": "Delete",
-    "button.changeType": "Change",
     "filter": "Filter",
 
     "deleteStudy": "Delete Study",
@@ -22,6 +27,7 @@
     "CopiedModificationInvalidationMessage": "Following a modification of the hypothesis, the content of the clipboard has been deleted",
     "exportNetwork": "Export the network",
     "export": "Export",
+    "download.fileName": "File name",
     "exportFormat": "Format of the export",
     "exportStudyErrorMsg": "No export format specified",
 
@@ -43,7 +49,7 @@
     "centerLabel": "Center name",
     "topologicalColoring": "Topological coloring",
     "SingleLineDiagram": "Single line diagram",
-
+    "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
@@ -105,12 +111,6 @@
 
     "Spreadsheet": "Spreadsheet",
     "Results": "Results",
-    "Substations": "Substations",
-    "VoltageLevels": "Voltage levels",
-    "Lines": "Lines",
-    "Generators": "Generators",
-    "TwoWindingsTransformers": "2 windings transformers",
-    "ThreeWindingsTransformers": "3 windings transformers",
     "ID": "ID",
     "Name": "Name",
     "Country": "Country",
@@ -202,6 +202,7 @@
     "VariableTransformers": " Variable transformers",
     "VariableShuntCompensators": "Variable shunt compensators",
     "voltageInitError": "An error occurred while excuting the voltage profile initialization",
+    "voltageInitCancelError": "The voltage profile initialization could not be cancelled",
     "VoltageInitParametersError": "An error occurred while updating the voltage profile initialization parameters",
     "AdjustExistingLimits": "Adjust existing limits",
     "AdjustExistingLimitsInfo": "Please enter a positive number in order to increase an existing voltage limit and a negative number in order to decrease an existing voltage limit (new limit = existing limit + user input).",
@@ -506,12 +507,6 @@
     "EquipmentType": "Equipment type",
     "selectionType": "Selection type",
 
-    "Loads": "Loads",
-    "Batteries": "Batteries",
-    "ShuntCompensators": "Shunt Compensators",
-    "StaticVarCompensators": "Static Var Compensators",
-    "LccConverterStations": "LCC Converter Stations",
-    "VscConverterStations": "VSC Converter Stations",
     "loadType": "Type",
     "ConstantP": "Constant p (MW)",
     "ConstantQ": "Constant q (MVar)",
@@ -550,7 +545,7 @@
     "SubstationList": "Substation list",
     "NetworkModificationTree": "Network modification tree",
     "RestoreModifications": "Restore modifications",
-    "CreateCompositeModification": "Créer une modification réseau composée",
+    "CreateCompositeModification": "Create composite network modification",
     "descriptionProperty": "Description (optional)",
     "RestoreModificationText": "Please select modifications to restore",
     "DeleteModificationText": "{numberToDelete, plural, =0 {No modification to delete.} =1 {One modification will be permanently deleted.} other {# modifications will be permanently deleted.}}",
@@ -574,6 +569,7 @@
     "FluxConvention.target": "Target",
     "Advanced": "Advanced",
     "EnableDeveloperMode": "Enable developer mode",
+    "initNadWithGeoData": "Initialize with geographical data",
     "DeveloperModeWarningMsg": "Some of the features are not complete, so they may not work as expected. To hide these features, disable developer mode",
     "ModifyNodeNotBuiltWarningMsg": "The values are those of the previous built node in the current branch",
     "Optional": " (optional)",
@@ -618,6 +614,7 @@
     "EmptySelection": "No equipment is selected",
     "Connectivity": "Connectivity",
     "connected": "Connected",
+    "disconnected": "Disconnected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
     "errReorderModificationMsg": "Reorder network modification error:",
@@ -687,12 +684,6 @@
     "NbModificationToRestore": "{nb} modification{several} to restore",
     "GeneratorCreationError": "Error while creating generator",
     "energySource": "Energy source",
-    "Hydro": "Hydro",
-    "Nuclear": "Nuclear",
-    "Wind": "Wind",
-    "Thermal": "Thermal",
-    "Solar": "Solar",
-    "Other": "Other",
     "MinimumActivePowerText": "Minimum active power",
     "MaximumActivePowerText": "Maximum active power",
     "RatedNominalPowerText": "Rated nominal power",
@@ -1375,8 +1366,9 @@
     "EquipmentSearchPlaceholder": "Search",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
-    "guidancePopUp.firstVariant":"Click on the map to start drawing a polygon.",
-    "guidancePopUp.secondVariant":"Press Enter to finish or Esc to cancel.",
-    "guidancePopUp.action":"Close editor"
+    "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
+    "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
+    "guidancePopUp.action":"Close editor",
+    "generateNad": "Generate"
 
 }
