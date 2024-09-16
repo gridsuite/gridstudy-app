@@ -36,8 +36,7 @@ const network_modifications_locale_fr = {
         "{action, select, TRIP {Déclenchement de {computedLabel}} LOCKOUT {Consignation de {computedLabel}} ENERGISE_END_ONE {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} ENERGISE_END_TWO {Mise sous tension à vide de {computedLabel} depuis {energizedEnd}} SWITCH_ON {Mise en service de {computedLabel}} other {Modification du statut opérationnel de l'équipement {computedLabel}}}",
     'network_modifications.SHUNT_COMPENSATOR_CREATION': "Création d'un moyen de compensation {computedLabel}",
     'network_modifications.SHUNT_COMPENSATOR_MODIFICATION': "Modification d'un moyen de compensation {computedLabel}",
-    'network_modifications.STATIC_VAR_COMPENSATOR_CREATION':
-        "Création d'un compensateur statique d'énergie réactive {computedLabel}",
+    'network_modifications.STATIC_VAR_COMPENSATOR_CREATION': "Création d'un cspr {computedLabel}",
     'network_modifications.GENERATOR_SCALING': 'Variation plan de production {computedLabel}',
     'network_modifications.VSC_CREATION': 'Création de la HVDC (VSC) {computedLabel}',
     'network_modifications.VSC_MODIFICATION': 'Modification de la HVDC (VSC) {computedLabel}',

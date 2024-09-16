@@ -36,15 +36,12 @@ import {
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
     NAME,
-    NOMINAL_VOLTAGE,
     Q0,
     REACTIVE_POWER_SET_POINT,
     SETPOINTS_LIMITS,
     SLIDER_Q_NOMINAL,
     SLIDER_SUSCEPTANCE,
     STAND_BY_AUTOMATON,
-    SUBSTATION_ID,
-    TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
@@ -118,14 +115,9 @@ export type StaticVarCompensatorCreationSchemaForm = {
     [VOLTAGE_REGULATION_TYPE]?: string;
     [VOLTAGE_LEVEL]?: {
         [ID]: string;
-        [NAME]: string;
-        [SUBSTATION_ID]: string;
-        [NOMINAL_VOLTAGE]: string;
-        [TOPOLOGY_KIND]?: string;
     };
     [EQUIPMENT]?: {
         [ID]: string;
-        [NAME]?: string;
         [TYPE]: string;
     };
     // Standby automaton
@@ -202,11 +194,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 ...getConnectivityFormData({
                     voltageLevelId: staticCompensator.voltageLevelId ?? null,
                     busbarSectionId: staticCompensator.busOrBusbarSectionId ?? null,
-                    busbarSectionName: null,
+                    busbarSectionName: undefined,
                     connectionDirection: staticCompensator.connectablePosition.connectionDirection ?? null,
                     connectionName: staticCompensator.connectablePosition.connectionName ?? null,
                     connectionPosition: staticCompensator.connectablePosition.connectionPosition ?? null,
-                    terminalConnected: null,
+                    terminalConnected: undefined,
                     isEquipmentModification: false,
                 }),
                 ...getReactiveFormData({
@@ -223,13 +215,13 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         : REGULATION_TYPES.LOCAL.id,
                 ...getRegulatingTerminalFormData({
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
-                    voltageLevelName: null,
-                    voltageLevelNominalVoltage: null,
-                    voltageLevelSubstationId: null,
-                    voltageLevelTopologyKind: null,
+                    voltageLevelName: undefined,
+                    voltageLevelNominalVoltage: undefined,
+                    voltageLevelSubstationId: undefined,
+                    voltageLevelTopologyKind: undefined,
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
-                    equipmentName: null,
+                    equipmentName: undefined,
                     equipmentType: staticCompensator.regulatingTerminalConnectableType,
                 }),
                 ...getStandbyAutomatonFormData({
@@ -256,7 +248,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 ...getConnectivityFormData({
                     voltageLevelId: staticCompensator.voltageLevelId,
                     busbarSectionId: staticCompensator.busOrBusbarSectionId,
-                    busbarSectionName: null,
+                    busbarSectionName: undefined,
                     connectionDirection: staticCompensator.connectionDirection,
                     connectionName: staticCompensator.connectionName,
                     connectionPosition: staticCompensator.connectionPosition,
@@ -279,13 +271,13 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 ...getRegulatingTerminalFormData({
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
-                    voltageLevelName: null,
+                    voltageLevelName: undefined,
                     equipmentType: staticCompensator.regulatingTerminalType,
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
-                    voltageLevelNominalVoltage: null,
-                    voltageLevelSubstationId: null,
-                    voltageLevelTopologyKind: null,
-                    equipmentName: null,
+                    voltageLevelNominalVoltage: undefined,
+                    voltageLevelSubstationId: undefined,
+                    voltageLevelTopologyKind: undefined,
+                    equipmentName: undefined,
                 }),
                 ...getStandbyAutomatonFormDataValues({
                     standbyAutomatonOn: staticCompensator.standbyAutomatonOn,
@@ -383,6 +375,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     });
 
     const onValidationError = (errors: any) => {
+        console.log('=============================errors', errors);
         let tabsInError = [];
         if (errors?.[CONNECTIVITY] !== undefined) {
             tabsInError.push(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);

@@ -14,11 +14,7 @@ import {
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
-    NAME,
-    NOMINAL_VOLTAGE,
     REACTIVE_POWER_SET_POINT,
-    SUBSTATION_ID,
-    TOPOLOGY_KIND,
     TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
@@ -97,7 +93,7 @@ export const getReactiveFormValidationSchema = () => ({
         .number()
         .nullable()
         .when([VOLTAGE_REGULATION_MODE], {
-            is: (characteristicsChoice: string) => characteristicsChoice === VOLTAGE_REGULATION_MODES.REACTIF_POWER.id,
+            is: (characteristicsChoice: string) => characteristicsChoice === VOLTAGE_REGULATION_MODES.REACTIVE_POWER.id,
             then: (schema) => schema.required(),
             otherwise: (schema) => schema.notRequired(),
         }),
@@ -110,10 +106,6 @@ export const getReactiveFormValidationSchema = () => ({
         .nullable()
         .shape({
             [ID]: yup.string().required(),
-            [NAME]: yup.string().required(),
-            [SUBSTATION_ID]: yup.string().required(),
-            [NOMINAL_VOLTAGE]: yup.string().required(),
-            [TOPOLOGY_KIND]: yup.string().nullable(),
         })
         .when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
             is: (voltageRegulation: string, voltageRegulationType: string) =>
@@ -126,7 +118,6 @@ export const getReactiveFormValidationSchema = () => ({
         .nullable()
         .shape({
             [ID]: yup.string().required(),
-            [NAME]: yup.string().nullable(),
             [TYPE]: yup.string().required(),
         })
         .when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {

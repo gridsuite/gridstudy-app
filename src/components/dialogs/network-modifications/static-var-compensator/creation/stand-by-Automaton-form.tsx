@@ -77,14 +77,14 @@ export const StandbyAutomatonForm = () => {
                             <SwitchInput
                                 name={STAND_BY_AUTOMATON}
                                 formProps={{
-                                    disabled: !(watchVoltageMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id),
+                                    disabled: watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                                 }}
                             />
                         }
                         label={<FormattedMessage id={'StandbyAutomaton'} />}
                         labelPlacement="start"
                     />
-                    {isHover && !(watchVoltageMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id) && (
+                    {isHover && watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id && (
                         <Box marginLeft={2} marginTop={'5px'}>
                             <Tooltip title={<FormattedMessage id="StandbyNotAvailable" />}>
                                 <WarningAmber color="warning"></WarningAmber>

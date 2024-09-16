@@ -42,6 +42,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
     voltageLevelOptions,
 }) => {
     const watchCharacteristicsChoice = useWatch({ name: CHARACTERISTICS_CHOICE });
+    const watchRegulationMode = useWatch({ name: VOLTAGE_REGULATION_MODE });
     const minSusceptanceField = (
         <FloatInput name={MIN_SUSCEPTANCE} label={'minSusceptance'} adornment={SusceptanceAdornment} />
     );

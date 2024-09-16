@@ -130,7 +130,7 @@ export const CHARACTERISTICS_CHOICES = {
 export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
-    REACTIF_POWER: { id: 'REACTIF_POWER', label: 'ReactivePowerRegulationText' },
+    REACTIVE_POWER: { id: 'REACTIVE_POWER', label: 'ReactivePowerRegulationText' },
     OFF: { id: 'OFF', label: 'OffRegulationText' },
 };
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
