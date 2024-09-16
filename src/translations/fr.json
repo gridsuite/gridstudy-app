@@ -811,6 +811,8 @@
     "SwitchedOnMaxSusceptance": "Susceptance enclenchée",
     "maxQAtNominalV": "Q max à tension nominale",
     "minQAtNominalV": "Q min à tension nominale",
+    "maxQ": "Q max",
+    "minQ": "Q min",
     "maxSusceptance": "Susceptance max",
     "minSusceptance": "Susceptance min",
     "shuntCompensatorType": "Type",

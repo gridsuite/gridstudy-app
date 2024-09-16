@@ -14,10 +14,6 @@ import {
     HIGH_VOLTAGE_THRESHOLD,
     LOW_VOLTAGE_SET_POINT,
     LOW_VOLTAGE_THRESHOLD,
-    MAX_Q_AT_NOMINAL_V,
-    MAX_SUSCEPTANCE,
-    MIN_Q_AT_NOMINAL_V,
-    MIN_SUSCEPTANCE,
     STAND_BY_AUTOMATON,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
@@ -25,14 +21,13 @@ import {
 import { CheckboxInput, FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { SusceptanceAdornment, VoltageAdornment } from '../../../dialogUtils';
 import { Box } from '@mui/system';
-import React, { useState } from 'react';
-import { useWatch } from 'react-hook-form';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import { WarningAmber } from '@mui/icons-material';
 import { SusceptanceArea } from './susceptance-area';
-import { getFloatNumber } from './stand-by-automaton-form-utils';
 
 type FieldKeys =
     | 'modeAutomaton'
@@ -41,20 +36,24 @@ type FieldKeys =
     | 'hVoltageSetLimit'
     | 'lVoltageThreshold'
     | 'hVoltageThreshold';
-export const StandbyAutomatonForm = () => {
+export const StandByAutomatonForm = () => {
+    const { setValue } = useFormContext();
+
     const [isHover, setHover] = useState(false);
     const watchAddStandbyAutomatonProps = useWatch({
         name: ADD_STAND_BY_AUTOMATON,
     });
     const watchVoltageMode = useWatch({ name: VOLTAGE_REGULATION_MODE });
-    const watchChoiceAutomaton = useWatch({ name: CHARACTERISTICS_CHOICE_AUTOMATON });
-    const watchSuceptanceMin = useWatch({ name: MIN_SUSCEPTANCE });
-    const watchSuceptanceMax = useWatch({ name: MAX_SUSCEPTANCE });
-    const watchQuNomMin = useWatch({ name: MIN_Q_AT_NOMINAL_V });
-    const watchQuNomMax = useWatch({ name: MAX_Q_AT_NOMINAL_V });
 
-    const isSusceptance = watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id;
-    const isQFixe = watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id;
+    const isDisabled = useMemo(() => {
+        return watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id;
+    }, [watchVoltageMode]);
+
+    useEffect(() => {
+        if (isDisabled) {
+            setValue(STAND_BY_AUTOMATON, false);
+        }
+    }, [isDisabled, setValue]);
 
     const createField = (
         Component: any,
@@ -77,7 +76,7 @@ export const StandbyAutomatonForm = () => {
                             <SwitchInput
                                 name={STAND_BY_AUTOMATON}
                                 formProps={{
-                                    disabled: watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id,
+                                    disabled: isDisabled,
                                 }}
                             />
                         }
@@ -137,26 +136,9 @@ export const StandbyAutomatonForm = () => {
                                 />
                             </Grid>
                         </Grid>
-                        {isSusceptance && (
-                            <Grid container spacing={2} padding={2}>
-                                <SusceptanceArea
-                                    isSusceptance={true}
-                                    isQFixe={false}
-                                    min={getFloatNumber(watchSuceptanceMin)}
-                                    max={getFloatNumber(watchSuceptanceMax)}
-                                />
-                            </Grid>
-                        )}
-                        {isQFixe && (
-                            <Grid container spacing={2} padding={2}>
-                                <SusceptanceArea
-                                    isSusceptance={false}
-                                    isQFixe={true}
-                                    min={getFloatNumber(watchQuNomMin)}
-                                    max={getFloatNumber(watchQuNomMax)}
-                                />
-                            </Grid>
-                        )}
+                        <Grid container spacing={2} padding={2}>
+                            <SusceptanceArea />
+                        </Grid>
                     </>
                 )}
             </Grid>

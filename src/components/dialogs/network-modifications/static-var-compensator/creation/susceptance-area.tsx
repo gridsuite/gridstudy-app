@@ -8,6 +8,8 @@
 import Grid from '@mui/material/Grid';
 import {
     B0,
+    CHARACTERISTICS_CHOICE_AUTOMATON,
+    CHARACTERISTICS_CHOICES,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
@@ -16,86 +18,97 @@ import {
     SLIDER_Q_NOMINAL,
     SLIDER_SUSCEPTANCE,
 } from 'components/utils/field-constants';
-import { FloatInput, SliderInput, TextInput } from '@gridsuite/commons-ui';
+import { SliderInput, TextInput } from '@gridsuite/commons-ui';
 import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
-import React, { FunctionComponent, useEffect } from 'react';
-import { useFormContext } from 'react-hook-form';
+import React, { useEffect } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { getFloatNumber } from './stand-by-automaton-form-utils';
 import { isValidPercentage } from '../../../percentage-area/percentage-area-utils';
+import { InputAdornment, TextField } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 
-export interface SusceptanceAreaProps {
-    isSusceptance: boolean;
-    isQFixe: boolean;
-    min: number;
-    max: number;
-}
-export const SusceptanceArea: FunctionComponent<SusceptanceAreaProps> = ({ isSusceptance, isQFixe, min, max }) => {
+export const SusceptanceArea = () => {
     const { setValue } = useFormContext();
+    const watchChoiceAutomaton = useWatch({ name: CHARACTERISTICS_CHOICE_AUTOMATON });
+    const minS = useWatch({ name: MIN_SUSCEPTANCE });
+    const maxS = useWatch({ name: MAX_SUSCEPTANCE });
+    const minQ = useWatch({ name: MIN_Q_AT_NOMINAL_V });
+    const maxQ = useWatch({ name: MAX_Q_AT_NOMINAL_V });
 
     useEffect(() => {
-        let avgValue = (Number(min) + Number(max)) / 2;
-        if (isSusceptance) {
-            setValue(B0, avgValue);
-            setValue(SLIDER_SUSCEPTANCE, avgValue);
-        } else if (isQFixe) {
-            setValue(Q0, avgValue);
-            setValue(SLIDER_Q_NOMINAL, avgValue);
-        }
-    }, [setValue, isSusceptance, isQFixe, min, max]);
+        let avgSfixeValue = (getFloatNumber(minS) + getFloatNumber(maxS)) / 2;
+        let avgQfixeValue = (getFloatNumber(minQ) + getFloatNumber(maxQ)) / 2;
+        setValue(B0, avgSfixeValue);
+        setValue(SLIDER_SUSCEPTANCE, avgSfixeValue);
+        setValue(Q0, avgQfixeValue);
+        setValue(SLIDER_Q_NOMINAL, avgQfixeValue);
+    }, [setValue, minS, minQ, maxS, maxQ]);
 
-    const onSliderSusceptanceChange = (value: any) => {
+    const onSliderSusceptanceChange = (value: string) => {
         setValue(B0, getFloatNumber(value));
         return value;
     };
 
-    const onSliderQnomChange = (value: any) => {
+    const onSliderQnomChange = (value: string) => {
         setValue(Q0, getFloatNumber(value));
         return value;
     };
 
-    const handleSusceptanceValueChange = (value: any) => {
+    const handleSusceptanceValueChange = (value: string) => {
         setValue(SLIDER_SUSCEPTANCE, getFloatNumber(value));
         return value;
     };
 
-    const handleQnomValueChange = (value: any) => {
+    const handleQnomValueChange = (value: string) => {
         setValue(SLIDER_Q_NOMINAL, getFloatNumber(value));
         return value;
     };
 
     const minSusceptanceField = (
-        <FloatInput
-            name={MIN_SUSCEPTANCE}
-            label="minSusceptance"
-            adornment={SusceptanceAdornment}
-            formProps={{ disabled: true }}
+        <TextField
+            value={minS}
+            label={<FormattedMessage id={'minSusceptance'} />}
+            disabled={true}
+            size={'small'}
+            InputProps={{
+                endAdornment: <InputAdornment position="start">S</InputAdornment>,
+            }}
         />
     );
 
     const maxSusceptanceField = (
-        <FloatInput
-            name={MAX_SUSCEPTANCE}
-            label="maxSusceptance"
-            adornment={SusceptanceAdornment}
-            formProps={{ disabled: true }}
+        <TextField
+            value={maxS}
+            label={<FormattedMessage id={'maxSusceptance'} />}
+            disabled={true}
+            size={'small'}
+            InputProps={{
+                endAdornment: <InputAdornment position="start">S</InputAdornment>,
+            }}
         />
     );
 
     const minQAtNominalVField = (
-        <FloatInput
-            name={MIN_Q_AT_NOMINAL_V}
-            label="minQAtNominalV"
-            adornment={ReactivePowerAdornment}
-            formProps={{ disabled: true }}
+        <TextField
+            value={minQ}
+            label={<FormattedMessage id={'minQ'} />}
+            disabled={true}
+            size={'small'}
+            InputProps={{
+                endAdornment: <InputAdornment position="start">MVA</InputAdornment>,
+            }}
         />
     );
 
     const maxQAtNominalVField = (
-        <FloatInput
-            name={MAX_Q_AT_NOMINAL_V}
-            label="maxQAtNominalV"
-            adornment={ReactivePowerAdornment}
-            formProps={{ disabled: true }}
+        <TextField
+            value={maxQ}
+            label={<FormattedMessage id={'maxQ'} />}
+            disabled={true}
+            size={'small'}
+            InputProps={{
+                endAdornment: <InputAdornment position="start">MVA</InputAdornment>,
+            }}
         />
     );
 
@@ -108,6 +121,7 @@ export const SusceptanceArea: FunctionComponent<SusceptanceAreaProps> = ({ isSus
             outputTransform={handleSusceptanceValueChange}
         />
     );
+
     const qAtNominalVField = (
         <TextInput
             name={Q0}
@@ -121,19 +135,25 @@ export const SusceptanceArea: FunctionComponent<SusceptanceAreaProps> = ({ isSus
     const sliderS = (
         <SliderInput
             name={SLIDER_SUSCEPTANCE}
-            min={min}
-            max={max}
-            step={1}
+            min={getFloatNumber(minS)}
+            max={getFloatNumber(maxS)}
+            step={0.1}
             onValueChanged={onSliderSusceptanceChange}
         />
     );
     const sliderQ = (
-        <SliderInput name={SLIDER_Q_NOMINAL} min={min} max={max} step={1} onValueChanged={onSliderQnomChange} />
+        <SliderInput
+            name={SLIDER_Q_NOMINAL}
+            min={getFloatNumber(minQ)}
+            max={getFloatNumber(maxQ)}
+            step={0.1}
+            onValueChanged={onSliderQnomChange}
+        />
     );
 
     return (
         <>
-            {isSusceptance && (
+            {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <Grid container spacing={2} padding={2}>
                     {gridItem(minSusceptanceField, 3)}
                     {gridItem(sliderS, 3)}
@@ -141,7 +161,7 @@ export const SusceptanceArea: FunctionComponent<SusceptanceAreaProps> = ({ isSus
                     {gridItem(susceptanceField, 3)}
                 </Grid>
             )}
-            {isQFixe && (
+            {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <Grid container spacing={2} padding={2}>
                     {gridItem(minQAtNominalVField, 3)}
                     {gridItem(sliderQ, 3)}

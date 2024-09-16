@@ -99,17 +99,6 @@ export const getStandbyAutomatonFormValidationSchema = () => {
     };
 };
 
-export type StandbyAutomatonFormDataProps = {
-    addStandbyAutomaton: boolean;
-    standby: boolean;
-    b0: number;
-    nominalV: number;
-    lVoltageSetpoint: number;
-    hVoltageSetpoint: number;
-    lVoltageThreshold: number;
-    hVoltageThreshold: number;
-};
-
 export const getStandbyAutomatonFormData: ({
     addStandbyAutomaton,
     standby,

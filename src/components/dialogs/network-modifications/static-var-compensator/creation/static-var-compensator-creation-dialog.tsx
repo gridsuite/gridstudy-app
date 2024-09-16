@@ -205,13 +205,13 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     minSusceptance: staticCompensator.minSusceptance ?? null,
                     nominalV: staticCompensator.nominalV,
                     regulationMode: staticCompensator.regulationMode,
-                    voltageSetpoint: staticCompensator.voltageSetpoint ?? null,
-                    reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint ?? null,
+                    voltageSetpoint: staticCompensator.voltageSetpoint,
+                    reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
+                    voltageRegulationType:
+                        staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
+                            ? REGULATION_TYPES.DISTANT.id
+                            : REGULATION_TYPES.LOCAL.id,
                 }),
-                [VOLTAGE_REGULATION_TYPE]:
-                    staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
-                        ? REGULATION_TYPES.DISTANT.id
-                        : REGULATION_TYPES.LOCAL.id,
                 ...getRegulatingTerminalFormData({
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
                     voltageLevelName: undefined,
@@ -262,11 +262,11 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     regulationMode: staticCompensator.regulationMode,
                     voltageSetpoint: staticCompensator.voltageSetpoint,
                     reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
+                    voltageRegulationType:
+                        staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
+                            ? REGULATION_TYPES.DISTANT.id
+                            : REGULATION_TYPES.LOCAL.id,
                 }),
-                [VOLTAGE_REGULATION_TYPE]:
-                    staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
-                        ? REGULATION_TYPES.DISTANT.id
-                        : REGULATION_TYPES.LOCAL.id,
                 ...getRegulatingTerminalFormData({
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
@@ -374,7 +374,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     });
 
     const onValidationError = (errors: any) => {
-        console.log('=============================errors', errors);
         let tabsInError = [];
         if (errors?.[CONNECTIVITY] !== undefined) {
             tabsInError.push(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);

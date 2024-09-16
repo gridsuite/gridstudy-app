@@ -135,6 +135,7 @@ export const getReactiveFormData: ({
     regulationMode,
     voltageSetpoint,
     reactivePowerSetpoint,
+    voltageRegulationType,
 }: {
     maxSusceptance: any;
     minSusceptance: any;
@@ -142,6 +143,7 @@ export const getReactiveFormData: ({
     regulationMode: any;
     voltageSetpoint: any;
     reactivePowerSetpoint: any;
+    voltageRegulationType: any;
 }) => {
     [MAX_SUSCEPTANCE]: number;
     [MIN_SUSCEPTANCE]: number;
@@ -149,7 +151,16 @@ export const getReactiveFormData: ({
     [REACTIVE_POWER_SET_POINT]: number;
     [VOLTAGE_REGULATION_MODE]: string;
     [CHARACTERISTICS_CHOICE]: string;
-} = ({ maxSusceptance, minSusceptance, nominalV, regulationMode, voltageSetpoint, reactivePowerSetpoint }) => {
+    [VOLTAGE_REGULATION_TYPE]: string;
+} = ({
+    maxSusceptance,
+    minSusceptance,
+    nominalV,
+    regulationMode,
+    voltageSetpoint,
+    reactivePowerSetpoint,
+    voltageRegulationType,
+}) => {
     return {
         [CHARACTERISTICS_CHOICE]: maxSusceptance
             ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
@@ -161,6 +172,7 @@ export const getReactiveFormData: ({
         [MIN_Q_AT_NOMINAL_V]: computeQAtNominalV(minSusceptance, nominalV),
         [VOLTAGE_SET_POINT]: voltageSetpoint,
         [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
+        [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
     };
 };
 
@@ -172,6 +184,7 @@ export const getReactiveFormDataValues: ({
     regulationMode,
     voltageSetpoint,
     reactivePowerSetpoint,
+    voltageRegulationType,
 }: {
     maxSusceptance: any;
     minSusceptance: any;
@@ -180,6 +193,7 @@ export const getReactiveFormDataValues: ({
     regulationMode: any;
     voltageSetpoint: any;
     reactivePowerSetpoint: any;
+    voltageRegulationType: any;
 }) => {
     [MAX_SUSCEPTANCE]: number;
     [MIN_SUSCEPTANCE]: number;
@@ -189,6 +203,7 @@ export const getReactiveFormDataValues: ({
     [REACTIVE_POWER_SET_POINT]: number;
     [VOLTAGE_REGULATION_MODE]: string;
     [CHARACTERISTICS_CHOICE]: string;
+    [VOLTAGE_REGULATION_TYPE]: string;
 } = ({
     maxSusceptance,
     minSusceptance,
@@ -197,6 +212,7 @@ export const getReactiveFormDataValues: ({
     regulationMode,
     voltageSetpoint,
     reactivePowerSetpoint,
+    voltageRegulationType,
 }) => {
     return {
         [CHARACTERISTICS_CHOICE]: maxSusceptance
@@ -209,5 +225,6 @@ export const getReactiveFormDataValues: ({
         [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
         [VOLTAGE_SET_POINT]: voltageSetpoint,
         [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
+        [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
     };
 };
