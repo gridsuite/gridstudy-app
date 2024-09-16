@@ -94,6 +94,7 @@ export const styles = {
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
+    listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
     disabledModification: { opacity: 0.4 },
     checkBoxIcon: { minWidth: 0, padding: 0 },
@@ -103,6 +104,7 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
     },
+    checkbox: { minWidth: 0, padding: 0 },
     modificationsTitle: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -883,6 +885,9 @@ const NetworkModificationNodeEditor = () => {
                     label: { ...(!modification.active && { ...styles.disabledModification }), ...styles.checkBoxLabel },
                     checkBoxIcon: styles.checkBoxIcon,
                     checkboxButton: styles.checkboxButton,
+                    checkbox: styles.checkbox,
+                    checkboxListItem: styles.listItem,
+                    dragAndDropContainer: styles.listContainer,
                 })}
                 onItemClick={(modification) => {
                     isModificationClickable(modification) && doEditModification(modification.uuid, modification.type);

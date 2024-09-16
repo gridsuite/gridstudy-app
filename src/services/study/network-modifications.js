@@ -43,9 +43,9 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
-export function setModificationActive(studyUuid, nodeUuid, modificationUuid, active) {
+export function setModificationActivated(studyUuid, nodeUuid, modificationUuid, activated) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('active', active);
+    urlSearchParams.append('activated', activated);
     urlSearchParams.append('uuids', [modificationUuid]);
     const modificationUpdateActiveUrl =
         PREFIX_STUDY_QUERIES +

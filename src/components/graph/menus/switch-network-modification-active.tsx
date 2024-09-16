@@ -10,7 +10,7 @@ import { NetworkModificationMetadata } from './network-modification-menu.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { setModificationActive } from 'services/study/network-modifications';
+import { setModificationActivated } from 'services/study/network-modifications';
 import { Switch } from '@mui/material';
 import { UUID } from 'crypto';
 
@@ -30,7 +30,7 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
 
     const updateModification = useCallback(
         (active: boolean) => {
-            setModificationActive(studyUuid, currentNode?.id, modificationUuid, active)
+            setModificationActivated(studyUuid, currentNode?.id, modificationUuid, active)
                 .catch((err) => {
                     snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
                 })

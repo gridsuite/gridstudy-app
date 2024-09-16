@@ -28,6 +28,7 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import IconButton from '@mui/material/IconButton';
 import { toggleElementFromList } from 'components/utils/utils';
+import { DialogActions } from '@mui/material';
 
 function makeButton(onClick, message, disabled) {
     return (
@@ -99,7 +100,7 @@ const ContingencyListSelector = (props) => {
     }, [props.open, props.studyUuid, currentNode, checkedContingencyList]);
 
     useEffect(() => {
-        if (favoriteContingencyListUuids && favoriteContingencyListUuids.length > 0) {
+        if (favoriteContingencyListUuids && favoriteContingencyListUuids.length > 0 && props.open) {
             fetchContingencyAndFiltersLists(favoriteContingencyListUuids)
                 .then((res) => {
                     const mapCont = res.reduce((map, obj) => {
@@ -125,7 +126,7 @@ const ContingencyListSelector = (props) => {
         } else {
             setContingencyList([]);
         }
-    }, [favoriteContingencyListUuids, snackError]);
+    }, [favoriteContingencyListUuids, snackError, props.open]);
 
     function getSimulatedContingencyCountLabel() {
         return simulatedContingencyCount != null ? simulatedContingencyCount : '...';
@@ -152,21 +153,6 @@ const ContingencyListSelector = (props) => {
             saveFavorites(Array.from([...newFavoriteIdsSet]));
         }
         setFavoriteSelectorOpen(false);
-    };
-
-    const renderButtons = () => {
-        return (
-            <Grid container spacing={1} item justifyContent={'center'}>
-                {makeButton(handleClose, 'close', false)}
-                {makeButton(handleAddFavorite, 'AddContingencyList', false)}
-                {makeButton(
-                    () => removeFromFavorites(checkedContingencyList),
-                    'DeleteContingencyList',
-                    checkedContingencyList.length === 0
-                )}
-                {makeButton(handleStart, 'Execute', simulatedContingencyCount === 0)}
-            </Grid>
-        );
     };
 
     const handleSecondaryAction = useCallback(
@@ -198,39 +184,38 @@ const ContingencyListSelector = (props) => {
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <Grid container spacing={1} direction="column" item xs={12}>
-                        <Grid item>
-                            <CheckboxList
-                                items={contingencyList || []}
-                                getItemId={(v) => v.id}
-                                getItemLabel={(v) => v.name}
-                                selectedItems={checkedContingencyList}
-                                onSelectionChange={setCheckedContingencyList}
-                                secondaryAction={handleSecondaryAction}
-                                onItemClick={(contingencyList) =>
-                                    setCheckedContingencyList((oldCheckedElements) => [
-                                        ...toggleElementFromList(
-                                            contingencyList,
-                                            oldCheckedElements,
-                                            (element) => element.id
-                                        ),
-                                    ])
-                                }
-                            />
-                        </Grid>
-                        <Grid item>
-                            <Alert variant="standard" severity="info">
-                                <FormattedMessage
-                                    id="xContingenciesWillBeSimulated"
-                                    values={{
-                                        x: getSimulatedContingencyCountLabel(),
-                                    }}
-                                />
-                            </Alert>
-                        </Grid>
-                        {renderButtons()}
-                    </Grid>
+                    <CheckboxList
+                        items={contingencyList || []}
+                        getItemId={(v) => v.id}
+                        getItemLabel={(v) => v.name}
+                        selectedItems={checkedContingencyList}
+                        onSelectionChange={setCheckedContingencyList}
+                        secondaryAction={handleSecondaryAction}
+                        onItemClick={(contingencyList) =>
+                            setCheckedContingencyList((oldCheckedElements) => [
+                                ...toggleElementFromList(contingencyList, oldCheckedElements, (element) => element.id),
+                            ])
+                        }
+                    />
+                    <Alert variant="standard" severity="info">
+                        <FormattedMessage
+                            id="xContingenciesWillBeSimulated"
+                            values={{
+                                x: getSimulatedContingencyCountLabel(),
+                            }}
+                        />
+                    </Alert>
                 </DialogContent>
+                <DialogActions sx={{ justifyContent: 'center' }}>
+                    {makeButton(handleClose, 'close', false)}
+                    {makeButton(handleAddFavorite, 'AddContingencyList', false)}
+                    {makeButton(
+                        () => removeFromFavorites(checkedContingencyList),
+                        'DeleteContingencyList',
+                        checkedContingencyList.length === 0
+                    )}
+                    {makeButton(handleStart, 'Execute', simulatedContingencyCount === 0)}
+                </DialogActions>
             </Dialog>
             <DirectoryItemSelector
                 open={favoriteSelectorOpen}
