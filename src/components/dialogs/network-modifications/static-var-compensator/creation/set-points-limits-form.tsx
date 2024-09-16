@@ -65,6 +65,14 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
         <FloatInput name={REACTIVE_POWER_SET_POINT} label={'ReactivePowerText'} adornment={ReactivePowerAdornment} />
     );
 
+    const validModes = [
+        VOLTAGE_REGULATION_MODES.VOLTAGE.id,
+        VOLTAGE_REGULATION_MODES.REACTIVE_POWER.id,
+        VOLTAGE_REGULATION_MODES.OFF.id,
+    ];
+
+    const isValidMode = validModes.includes(watchRegulationMode);
+
     return (
         <>
             <GridSection title="ReactiveLimits" />
@@ -104,8 +112,12 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                         size="small"
                     />
                 </Grid>
-                {gridItem(voltageSetPointField, 4)}
-                {gridItem(reactivePowerSetPointField, 4)}
+                {isValidMode && (
+                    <>
+                        {gridItem(voltageSetPointField, 4)}
+                        {gridItem(reactivePowerSetPointField, 4)}
+                    </>
+                )}
                 <VoltageRegulation
                     voltageLevelOptions={voltageLevelOptions}
                     currentNodeUuid={currentNode.id}
