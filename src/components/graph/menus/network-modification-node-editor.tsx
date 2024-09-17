@@ -104,7 +104,6 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    checkbox: { minWidth: 0, padding: 0 },
     modificationsTitle: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -862,7 +861,7 @@ const NetworkModificationNodeEditor = () => {
         (modification: NetworkModificationMetadata, isItemHovered?: boolean) => {
             return isItemHovered && !isDragging ? (
                 <SwitchNetworkModificationActive
-                    modificationActive={modification.active}
+                    modificationActivated={modification.activated}
                     modificationUuid={modification.uuid}
                     setModifications={setModifications}
                     disabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
@@ -881,14 +880,17 @@ const NetworkModificationNodeEditor = () => {
     const renderNetworkModificationsList = () => {
         return (
             <CheckboxList
-                sx={(modification) => ({
-                    label: { ...(!modification.active && { ...styles.disabledModification }), ...styles.checkBoxLabel },
-                    checkBoxIcon: styles.checkBoxIcon,
-                    checkboxButton: styles.checkboxButton,
-                    checkbox: styles.checkbox,
-                    checkboxListItem: styles.listItem,
+                sx={{
+                    items: (modification) => ({
+                        label: {
+                            ...(!modification.activated && { ...styles.disabledModification }),
+                            ...styles.checkBoxLabel,
+                        },
+                        checkBoxIcon: styles.checkBoxIcon,
+                        checkboxButton: styles.checkboxButton,
+                    }),
                     dragAndDropContainer: styles.listContainer,
-                })}
+                }}
                 onItemClick={(modification) => {
                     isModificationClickable(modification) && doEditModification(modification.uuid, modification.type);
                 }}

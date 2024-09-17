@@ -12,7 +12,7 @@ export interface NetworkModificationMetadata {
     type: string;
     date: Date;
     stashed: boolean;
-    active: boolean;
+    activated: boolean;
     messageType: string;
     messageValues: string;
 }

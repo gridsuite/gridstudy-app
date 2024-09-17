@@ -16,21 +16,21 @@ import { UUID } from 'crypto';
 
 interface SwitchNetworkModificationActiveProps {
     modificationUuid: UUID;
-    modificationActive: boolean;
+    modificationActivated: boolean;
     setModifications: Dispatch<SetStateAction<NetworkModificationMetadata[]>>;
     disabled?: boolean;
 }
 
 export const SwitchNetworkModificationActive = (props: SwitchNetworkModificationActiveProps) => {
-    const { setModifications, modificationActive, modificationUuid, disabled = false } = props;
+    const { setModifications, modificationActivated, modificationUuid, disabled = false } = props;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isLoading, setIsLoading] = useState(false);
     const { snackError } = useSnackMessage();
 
     const updateModification = useCallback(
-        (active: boolean) => {
-            setModificationActivated(studyUuid, currentNode?.id, modificationUuid, active)
+        (activated: boolean) => {
+            setModificationActivated(studyUuid, currentNode?.id, modificationUuid, activated)
                 .catch((err) => {
                     snackError({ messageTxt: err.message, messageId: 'networkModificationActivationError' });
                 })
@@ -49,8 +49,8 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
             if (!modificationToUpdate) {
                 return oldModifications;
             }
-            modificationToUpdate.active = !modificationToUpdate.active;
-            updateModification(modificationToUpdate.active);
+            modificationToUpdate.activated = !modificationToUpdate.activated;
+            updateModification(modificationToUpdate.activated);
             return newModifications;
         });
     }, [modificationUuid, updateModification, setModifications]);
@@ -59,7 +59,7 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
         <Switch
             size="small"
             disabled={isLoading || disabled}
-            checked={modificationActive}
+            checked={modificationActivated}
             onClick={toggleModificationActive}
         />
     );
