@@ -7,7 +7,13 @@
 import React, { useCallback, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { CustomFormProvider, Equipment, EquipmentType, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    Equipment,
+    EquipmentType,
+    fetchDirectoryElementPath,
+    Identifiable,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -48,6 +54,14 @@ const emptyFormData = {
 };
 
 const formSchema = getSelectionCreationSchema();
+
+interface VoltageLevel extends Identifiable {
+    nominalV: number;
+}
+
+function isVoltageLevel(obj: Identifiable): obj is VoltageLevel {
+    return (obj as VoltageLevel).nominalV !== undefined;
+}
 
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
@@ -96,7 +110,10 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
                     selectedSubstationsWithVl
                         .flatMap((selectedSubstation) =>
                             selectedSubstation.voltageLevels
-                                ?.filter((vl) => nominalVoltages.includes(vl.nominalV))
+                                ?.filter(
+                                    (vl): vl is VoltageLevel =>
+                                        isVoltageLevel(vl) && nominalVoltages.includes(vl.nominalV)
+                                )
                                 .map((vl) => vl.id)
                         )
                         .filter((id): id is string => !!id)
