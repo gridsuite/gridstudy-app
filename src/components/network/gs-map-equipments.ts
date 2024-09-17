@@ -9,7 +9,7 @@ import { UUID } from 'crypto';
 import { RefObject } from 'react';
 import { IntlShape } from 'react-intl';
 import { Dispatch } from 'redux';
-import { UseSnackMessageReturn } from '@gridsuite/commons-ui/dist/hooks/useSnackMessage';
+import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
 import {
     fetchHvdcLinesMapInfos,

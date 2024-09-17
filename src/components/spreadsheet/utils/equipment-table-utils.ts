@@ -24,7 +24,7 @@ import {
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { Identifiable } from '@gridsuite/commons-ui/dist/utils/EquipmentType';
+import { Identifiable } from '@gridsuite/commons-ui';
 
 type DynamicValidation = Record<string, number | undefined>;
 
