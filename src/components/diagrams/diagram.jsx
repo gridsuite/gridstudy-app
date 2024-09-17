@@ -130,30 +130,28 @@ const Diagram = (props) => {
                     showCloseControl
                     onClose={onCloseHandler}
                 />
-                <Box position="relative" height={'100%'} left={0} right={0} top={'2em'}>
-                    {props.warningToDisplay ? (
-                        <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
-                    ) : (
-                        <>
-                            {props.children}
-                            <DiagramFooter
-                                showCounterControls={props.svgType === DiagramType.NETWORK_AREA_DIAGRAM}
-                                counterText={intl.formatMessage({
-                                    id: 'depth',
-                                })}
-                                counterValue={networkAreaDiagramDepth}
-                                onIncrementCounter={onIncrementDepthHandler}
-                                onDecrementCounter={onDecrementDepthHandler}
-                                showFullscreenControl
-                                fullScreenActive={shouldBeFullscreen}
-                                onStartFullScreen={onShowFullScreenHandler}
-                                onStopFullScreen={onHideFullScreenHandler}
-                                incrementCounterDisabled={incrementCounterDisabled}
-                                decrementCounterDisabled={decrementCounterDisabled}
-                            />
-                        </>
-                    )}
+                <Box sx={{position: 'relative', top:'2em', height: '100%',}}>
+                {props.warningToDisplay ? (
+                    <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
+                ) : (
+                    <>{props.children}</>
+                )}
                 </Box>
+                <DiagramFooter
+                    showCounterControls={props.svgType === DiagramType.NETWORK_AREA_DIAGRAM}
+                    counterText={intl.formatMessage({
+                        id: 'depth',
+                    })}
+                    counterValue={networkAreaDiagramDepth}
+                    onIncrementCounter={onIncrementDepthHandler}
+                    onDecrementCounter={onDecrementDepthHandler}
+                    showFullscreenControl
+                    fullScreenActive={shouldBeFullscreen}
+                    onStartFullScreen={onShowFullScreenHandler}
+                    onStopFullScreen={onHideFullScreenHandler}
+                    incrementCounterDisabled={incrementCounterDisabled}
+                    decrementCounterDisabled={decrementCounterDisabled}
+                />
             </Paper>
         </DiagramResizableBox>
     );
