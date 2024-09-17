@@ -264,6 +264,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     messageTxt: errorMessage,
                 });
             }
+            if (updateTypeHeader === 'voltageInit_cancel_failed') {
+                snackError({
+                    headerId: 'voltageInitCancelError',
+                });
+            }
             if (updateTypeHeader === 'stateEstimation_failed') {
                 snackError({
                     headerId: 'stateEstimationError',
