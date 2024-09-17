@@ -130,12 +130,12 @@ const Diagram = (props) => {
                     showCloseControl
                     onClose={onCloseHandler}
                 />
-                <Box sx={{position: 'relative', top:'2em', height: '100%',}}>
-                {props.warningToDisplay ? (
-                    <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
-                ) : (
-                    <>{props.children}</>
-                )}
+                <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
+                    {props.warningToDisplay ? (
+                        <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
+                    ) : (
+                        <>{props.children}</>
+                    )}
                 </Box>
                 <DiagramFooter
                     showCounterControls={props.svgType === DiagramType.NETWORK_AREA_DIAGRAM}
