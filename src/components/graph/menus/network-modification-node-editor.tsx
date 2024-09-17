@@ -13,7 +13,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -879,7 +879,7 @@ const NetworkModificationNodeEditor = () => {
                     checkboxButton: styles.checkboxButton,
                     checkbox: styles.checkbox,
                     checkboxListItem: styles.listItem,
-                    dragAndDropContainer: styles.listContainer,
+                    dragAndDropContainer: styles.listContainer as SxProps,
                 }}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
