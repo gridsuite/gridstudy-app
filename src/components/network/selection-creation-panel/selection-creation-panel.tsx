@@ -94,7 +94,11 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             dispatch(
                 openNadList(
                     selectedSubstationsWithVl
-                        .flatMap((selectedSubstation) => selectedSubstation.voltageLevels?.map((vl) => vl.id))
+                        .flatMap((selectedSubstation) =>
+                            selectedSubstation.voltageLevels
+                                ?.filter((vl) => nominalVoltages.includes(vl.nominalV))
+                                .map((vl) => vl.id)
+                        )
                         .filter((id): id is string => !!id)
                 )
             );
