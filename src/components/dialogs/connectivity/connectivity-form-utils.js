@@ -180,3 +180,13 @@ export const getConnectivityFormData = (
         },
     };
 };
+
+export const createConnectivityData = (equipmentToModify, index) => ({
+    busbarSectionId: equipmentToModify?.[`busOrBusbarSectionId${index}`]?.value ?? null,
+    connectionDirection: equipmentToModify?.[`connectionDirection${index}`]?.value ?? null,
+    connectionName: equipmentToModify?.[`connectionName${index}`]?.value ?? '',
+    connectionPosition: equipmentToModify?.[`connectionPosition${index}`]?.value ?? null,
+    voltageLevelId: equipmentToModify?.[`voltageLevelId${index}`]?.value ?? null,
+    terminalConnected: equipmentToModify?.[`terminal${index}Connected`]?.value ?? null,
+    isEquipmentModification: true,
+});

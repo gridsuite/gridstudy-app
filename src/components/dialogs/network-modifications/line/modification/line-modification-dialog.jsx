@@ -76,6 +76,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import {
+    createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
@@ -144,16 +145,6 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
-    const createConnectivityData = (line, index) => ({
-        busbarSectionId: line?.[`busOrBusbarSectionId${index}`]?.value ?? null,
-        connectionDirection: line?.[`connectionDirection${index}`]?.value ?? null,
-        connectionName: line?.[`connectionName${index}`]?.value ?? '',
-        connectionPosition: line?.[`connectionPosition${index}`]?.value ?? null,
-        voltageLevelId: line?.[`voltageLevelId${index}`]?.value ?? null,
-        terminalConnected: line?.[`terminal${index}Connected`]?.value ?? null,
-        isEquipmentModification: true,
-    });
-
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -163,8 +154,10 @@ const LineModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
-                [CONNECTIVITY]: getConnectivityFormData(createConnectivityData(line, 1), CONNECTIVITY_1),
-                [CONNECTIVITY]: getConnectivityFormData(createConnectivityData(line, 2), CONNECTIVITY_2),
+                [CONNECTIVITY]: {
+                    ...getConnectivityFormData(createConnectivityData(line, 1), CONNECTIVITY_1),
+                    ...getConnectivityFormData(createConnectivityData(line, 2), CONNECTIVITY_2),
+                },
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,

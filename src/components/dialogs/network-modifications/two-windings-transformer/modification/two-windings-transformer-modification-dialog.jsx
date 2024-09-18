@@ -121,6 +121,7 @@ import {
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
 import {
+    createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
@@ -222,16 +223,6 @@ const TwoWindingsTransformerModificationDialog = ({
         [twtToModify]
     );
 
-    const createConnectivityData = (twt, index) => ({
-        busbarSectionId: twt?.[`busOrBusbarSectionId${index}`]?.value ?? null,
-        connectionDirection: twt?.[`connectionDirection${index}`]?.value ?? null,
-        connectionName: twt?.[`connectionName${index}`]?.value ?? '',
-        connectionPosition: twt?.[`connectionPosition${index}`]?.value ?? null,
-        voltageLevelId: twt?.[`voltageLevelId${index}`]?.value ?? null,
-        terminalConnected: twt?.[`terminal${index}Connected`]?.value ?? null,
-        isEquipmentModification: true,
-    });
-
     const fromEditDataToFormValues = useCallback(
         (twt, updatedTemporaryLimits1, updatedTemporaryLimits2) => {
             if (twt?.equipmentId) {
@@ -239,8 +230,10 @@ const TwoWindingsTransformerModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: twt.equipmentName?.value,
-                [CONNECTIVITY]: getConnectivityFormData(createConnectivityData(twt, 1), CONNECTIVITY_1),
-                [CONNECTIVITY]: getConnectivityFormData(createConnectivityData(twt, 2), CONNECTIVITY_2),
+                [CONNECTIVITY]: {
+                    ...getConnectivityFormData(createConnectivityData(twt, 1), CONNECTIVITY_1),
+                    ...getConnectivityFormData(createConnectivityData(twt, 2), CONNECTIVITY_2),
+                },
                 ...getCharacteristicsFormData({
                     r: twt.r?.value,
                     x: twt.x?.value,
