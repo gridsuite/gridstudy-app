@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SelectInput } from '@gridsuite/commons-ui';
+import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
-import { FloatInput } from '@gridsuite/commons-ui';
 import { gridItem, percentageTextField, VoltageAdornment } from '../dialogUtils';
 import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
 import { Box } from '@mui/system';
@@ -23,7 +22,6 @@ const VoltageRegulation = ({
     voltageLevelOptions,
     previousValues,
     isEquipmentModification = false,
-    onlyRegulationTypes = false,
 }) => {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
@@ -104,7 +102,7 @@ const VoltageRegulation = ({
 
     return (
         <>
-            {!onlyRegulationTypes && gridItem(voltageSetPointField, 4)}
+            {gridItem(voltageSetPointField, 4)}
             {gridItem(voltageRegulationTypeField, 4)}
             <Box sx={{ width: '100%' }} />
             <Grid item xs={4} justifySelf={'end'} />
@@ -117,7 +115,7 @@ const VoltageRegulation = ({
                     </Grid>
                     {gridItem(regulatingTerminalField, 8)}
                     <Grid item xs={4} justifySelf={'end'} />
-                    {!onlyRegulationTypes && gridItem(qPercentField, 4)}
+                    {gridItem(qPercentField, 4)}
                 </>
             )}
         </>

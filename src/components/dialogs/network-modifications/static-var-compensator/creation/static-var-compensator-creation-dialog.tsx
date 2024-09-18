@@ -17,7 +17,6 @@ import {
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICE_AUTOMATON,
-    CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
@@ -77,7 +76,6 @@ import StaticVarCompensatorCreationDialogTabs, {
 import { Grid } from '@mui/material';
 import StaticVarCompensatorCreationForm from './static-var-compensator-creation-form';
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
-import { getRegulatingTerminalFormData } from '../../../regulating-terminal/regulating-terminal-form-utils';
 import {
     getReactiveFormData,
     getReactiveFormDataValues,
@@ -103,34 +101,38 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [CONNECTED]?: boolean;
     };
     // Reactive
-    [MAX_SUSCEPTANCE]?: number;
-    [MIN_SUSCEPTANCE]?: number;
-    [MAX_Q_AT_NOMINAL_V]?: number;
-    [MIN_Q_AT_NOMINAL_V]?: number;
-    [VOLTAGE_SET_POINT]?: number;
-    [REACTIVE_POWER_SET_POINT]?: number;
-    [CHARACTERISTICS_CHOICE]?: string;
-    [VOLTAGE_REGULATION_MODE]?: string;
-    [VOLTAGE_REGULATION_TYPE]?: string;
-    [VOLTAGE_LEVEL]?: {
-        [ID]: string;
-    };
-    [EQUIPMENT]?: {
-        [ID]: string;
-        [TYPE]: string;
+    [SETPOINTS_LIMITS]: {
+        [MAX_SUSCEPTANCE]?: number;
+        [MIN_SUSCEPTANCE]?: number;
+        [MAX_Q_AT_NOMINAL_V]?: number;
+        [MIN_Q_AT_NOMINAL_V]?: number;
+        [CHARACTERISTICS_CHOICE]?: string;
+        [VOLTAGE_REGULATION_MODE]?: string;
+        [VOLTAGE_REGULATION_TYPE]?: string;
+        [VOLTAGE_SET_POINT]?: number;
+        [REACTIVE_POWER_SET_POINT]?: number;
+        [VOLTAGE_LEVEL]?: {
+            [ID]: string;
+        };
+        [EQUIPMENT]?: {
+            [ID]: string;
+            [TYPE]: string;
+        };
     };
     // Standby automaton
-    [ADD_STAND_BY_AUTOMATON]?: boolean;
-    [STAND_BY_AUTOMATON]?: boolean;
-    [LOW_VOLTAGE_SET_POINT]?: number;
-    [HIGH_VOLTAGE_SET_POINT]?: number;
-    [LOW_VOLTAGE_THRESHOLD]?: number;
-    [HIGH_VOLTAGE_THRESHOLD]?: number;
-    [CHARACTERISTICS_CHOICE_AUTOMATON]?: string;
-    [B0]?: number;
-    [Q0]?: number;
-    [SLIDER_SUSCEPTANCE]?: number;
-    [SLIDER_Q_NOMINAL]?: number;
+    [AUTOMATON]: {
+        [ADD_STAND_BY_AUTOMATON]?: boolean;
+        [STAND_BY_AUTOMATON]?: boolean;
+        [LOW_VOLTAGE_SET_POINT]?: number;
+        [HIGH_VOLTAGE_SET_POINT]?: number;
+        [LOW_VOLTAGE_THRESHOLD]?: number;
+        [HIGH_VOLTAGE_THRESHOLD]?: number;
+        [CHARACTERISTICS_CHOICE_AUTOMATON]?: string;
+        [B0]?: number;
+        [Q0]?: number;
+        [SLIDER_SUSCEPTANCE]?: number;
+        [SLIDER_Q_NOMINAL]?: number;
+    };
     // Properties
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
@@ -150,8 +152,8 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
-        ...getReactiveFormValidationSchema(),
-        ...getStandbyAutomatonFormValidationSchema(),
+        [SETPOINTS_LIMITS]: getReactiveFormValidationSchema(),
+        [AUTOMATON]: getStandbyAutomatonFormValidationSchema(),
     })
     .concat(creationPropertiesSchema)
     .required();
@@ -211,17 +213,10 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
                             ? REGULATION_TYPES.DISTANT.id
                             : REGULATION_TYPES.LOCAL.id,
-                }),
-                ...getRegulatingTerminalFormData({
                     voltageLevelId: staticCompensator.regulatingTerminalVlId,
-                    voltageLevelName: undefined,
-                    voltageLevelNominalVoltage: undefined,
-                    voltageLevelSubstationId: undefined,
-                    voltageLevelTopologyKind: undefined,
+                    equipmentType: staticCompensator.regulatingTerminalConnectableType,
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
-                    equipmentName: undefined,
-                    equipmentType: staticCompensator.regulatingTerminalConnectableType,
                 }),
                 ...getStandbyAutomatonFormData({
                     addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
@@ -266,17 +261,10 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                         staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
                             ? REGULATION_TYPES.DISTANT.id
                             : REGULATION_TYPES.LOCAL.id,
-                }),
-                ...getRegulatingTerminalFormData({
+                    voltageLevelId: staticCompensator.regulatingTerminalVlId,
+                    equipmentType: staticCompensator.regulatingTerminalType,
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
-                    voltageLevelName: undefined,
-                    equipmentType: staticCompensator.regulatingTerminalType,
-                    voltageLevelId: staticCompensator.regulatingTerminalVlId,
-                    voltageLevelNominalVoltage: undefined,
-                    voltageLevelSubstationId: undefined,
-                    voltageLevelTopologyKind: undefined,
-                    equipmentName: undefined,
                 }),
                 ...getStandbyAutomatonFormDataValues({
                     standbyAutomatonOn: staticCompensator.standbyAutomatonOn,
@@ -311,47 +299,81 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
 
     const onSubmit = useCallback(
         (staticCompensator: any) => {
-            const isDistantRegulation = staticCompensator[VOLTAGE_REGULATION_TYPE] === REGULATION_TYPES.DISTANT.id;
+            const {
+                [EQUIPMENT_ID]: equipmentId,
+                [EQUIPMENT_NAME]: equipmentName,
+                [CONNECTIVITY]: connectivity = {},
+                [SETPOINTS_LIMITS]: setpointsLimits = {},
+                [AUTOMATON]: automaton = {},
+            } = staticCompensator;
+
+            const {
+                [VOLTAGE_LEVEL]: voltageLevel,
+                [BUS_OR_BUSBAR_SECTION]: busOrBusbarSection,
+                [CONNECTION_NAME]: connectionName,
+                [CONNECTION_DIRECTION]: connectionDirection,
+                [CONNECTION_POSITION]: connectionPosition,
+                [CONNECTED]: terminalConnected,
+            } = connectivity;
+
+            const {
+                [MAX_SUSCEPTANCE]: maxSusceptance,
+                [MIN_SUSCEPTANCE]: minSusceptance,
+                [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
+                [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
+                [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
+                [VOLTAGE_REGULATION_MODE]: voltageRegulationMode,
+                [VOLTAGE_SET_POINT]: voltageSetpoint,
+                [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
+                [EQUIPMENT]: regulationEquipment,
+                [VOLTAGE_LEVEL]: regulationVoltageLevel,
+            } = setpointsLimits;
+
+            const {
+                [ADD_STAND_BY_AUTOMATON]: addStandbyAutomaton,
+                [STAND_BY_AUTOMATON]: StandbyAutomaton,
+                [LOW_VOLTAGE_SET_POINT]: lowVoltageSetpoint,
+                [HIGH_VOLTAGE_SET_POINT]: highVoltageSetpoint,
+                [LOW_VOLTAGE_THRESHOLD]: lowVoltageThreshold,
+                [HIGH_VOLTAGE_THRESHOLD]: highVoltageThreshold,
+                [B0]: b0,
+                [Q0]: q0,
+            } = automaton;
+
+            const isDistantRegulation = voltageRegulationType === REGULATION_TYPES.DISTANT.id;
+
             createStaticVarCompensator(
                 studyUuid,
                 currentNodeUuid,
-                staticCompensator[EQUIPMENT_ID],
-                sanitizeString(staticCompensator[EQUIPMENT_NAME]),
-                staticCompensator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                staticCompensator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                sanitizeString(staticCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                staticCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                staticCompensator[CONNECTIVITY]?.[CONNECTION_POSITION],
-                staticCompensator[CONNECTIVITY]?.[CONNECTED],
-                staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                    ? staticCompensator[MAX_SUSCEPTANCE]
-                    : null,
-                staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                    ? staticCompensator[MIN_SUSCEPTANCE]
-                    : null,
-                staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? staticCompensator[MAX_Q_AT_NOMINAL_V]
-                    : null,
-                staticCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? staticCompensator[MIN_Q_AT_NOMINAL_V]
-                    : null,
-                staticCompensator[VOLTAGE_REGULATION_MODE],
-                staticCompensator[VOLTAGE_SET_POINT],
-                staticCompensator[REACTIVE_POWER_SET_POINT],
-                staticCompensator[VOLTAGE_REGULATION_TYPE],
-                isDistantRegulation ? staticCompensator[EQUIPMENT]?.id : null,
-                isDistantRegulation ? staticCompensator[EQUIPMENT]?.type : null,
-                isDistantRegulation ? staticCompensator[VOLTAGE_LEVEL]?.id : null,
-                staticCompensator[ADD_STAND_BY_AUTOMATON],
-                staticCompensator[STAND_BY_AUTOMATON],
-                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[LOW_VOLTAGE_SET_POINT] : null,
-                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[HIGH_VOLTAGE_SET_POINT] : null,
-                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[LOW_VOLTAGE_THRESHOLD] : null,
-                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[HIGH_VOLTAGE_THRESHOLD] : null,
-                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[B0] : null,
-                staticCompensator[ADD_STAND_BY_AUTOMATON] ? staticCompensator[Q0] : null,
+                equipmentId,
+                sanitizeString(equipmentName),
+                voltageLevel?.[ID],
+                busOrBusbarSection?.[ID],
+                sanitizeString(connectionName),
+                connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionPosition,
+                terminalConnected,
+                maxSusceptance,
+                minSusceptance,
+                maxQAtNominalV,
+                minQAtNominalV,
+                voltageRegulationMode,
+                voltageSetpoint,
+                reactivePowerSetpoint,
+                voltageRegulationType,
+                isDistantRegulation ? regulationEquipment?.id : null,
+                isDistantRegulation ? regulationEquipment?.type : null,
+                isDistantRegulation ? regulationVoltageLevel?.id : null,
+                addStandbyAutomaton,
+                StandbyAutomaton,
+                addStandbyAutomaton ? lowVoltageSetpoint : null,
+                addStandbyAutomaton ? highVoltageSetpoint : null,
+                addStandbyAutomaton ? lowVoltageThreshold : null,
+                addStandbyAutomaton ? highVoltageThreshold : null,
+                addStandbyAutomaton ? b0 : null,
+                addStandbyAutomaton ? q0 : null,
                 !!editData,
-                editData ? editData.uuid : undefined,
+                editData?.uuid,
                 toModificationProperties(staticCompensator)
             ).catch((error) => {
                 snackError({

@@ -7,6 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import {
+    AUTOMATON,
     B0,
     CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
@@ -15,6 +16,7 @@ import {
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
     Q0,
+    SETPOINTS_LIMITS,
     SLIDER_Q_NOMINAL,
     SLIDER_SUSCEPTANCE,
 } from 'components/utils/field-constants';
@@ -28,39 +30,40 @@ import { InputAdornment, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 export const SusceptanceArea = () => {
+    const id = AUTOMATON;
     const { setValue } = useFormContext();
-    const watchChoiceAutomaton = useWatch({ name: CHARACTERISTICS_CHOICE_AUTOMATON });
-    const minS = useWatch({ name: MIN_SUSCEPTANCE });
-    const maxS = useWatch({ name: MAX_SUSCEPTANCE });
-    const minQ = useWatch({ name: MIN_Q_AT_NOMINAL_V });
-    const maxQ = useWatch({ name: MAX_Q_AT_NOMINAL_V });
+    const watchChoiceAutomaton = useWatch({ name: `${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}` });
+    const minS = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_SUSCEPTANCE}` });
+    const maxS = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_SUSCEPTANCE}` });
+    const minQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_Q_AT_NOMINAL_V}` });
+    const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_NOMINAL_V}` });
 
     useEffect(() => {
         let avgSfixeValue = (getFloatNumber(minS) + getFloatNumber(maxS)) / 2;
         let avgQfixeValue = (getFloatNumber(minQ) + getFloatNumber(maxQ)) / 2;
-        setValue(B0, avgSfixeValue);
-        setValue(SLIDER_SUSCEPTANCE, avgSfixeValue);
-        setValue(Q0, avgQfixeValue);
-        setValue(SLIDER_Q_NOMINAL, avgQfixeValue);
-    }, [setValue, minS, minQ, maxS, maxQ]);
+        setValue(`${id}.${B0}`, getFloatNumber(avgSfixeValue));
+        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, getFloatNumber(avgSfixeValue));
+        setValue(`${id}.${Q0}`, getFloatNumber(avgQfixeValue));
+        setValue(`${id}.${SLIDER_Q_NOMINAL}`, getFloatNumber(avgQfixeValue));
+    }, [setValue, minS, minQ, maxS, maxQ, id]);
 
     const onSliderSusceptanceChange = (value: string) => {
-        setValue(B0, getFloatNumber(value));
+        setValue(`${id}.${B0}`, getFloatNumber(value));
         return value;
     };
 
     const onSliderQnomChange = (value: string) => {
-        setValue(Q0, getFloatNumber(value));
+        setValue(`${id}.${Q0}`, getFloatNumber(value));
         return value;
     };
 
     const handleSusceptanceValueChange = (value: string) => {
-        setValue(SLIDER_SUSCEPTANCE, getFloatNumber(value));
+        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, getFloatNumber(value));
         return value;
     };
 
     const handleQnomValueChange = (value: string) => {
-        setValue(SLIDER_Q_NOMINAL, getFloatNumber(value));
+        setValue(`${id}.${SLIDER_Q_NOMINAL}`, getFloatNumber(value));
         return value;
     };
 
@@ -114,7 +117,7 @@ export const SusceptanceArea = () => {
 
     const susceptanceField = (
         <TextInput
-            name={B0}
+            name={`${id}.${B0}`}
             label="b0"
             adornment={SusceptanceAdornment}
             acceptValue={isValidPercentage}
@@ -124,7 +127,7 @@ export const SusceptanceArea = () => {
 
     const qAtNominalVField = (
         <TextInput
-            name={Q0}
+            name={`${id}.${Q0}`}
             label="q0"
             adornment={ReactivePowerAdornment}
             acceptValue={isValidPercentage}
@@ -134,7 +137,7 @@ export const SusceptanceArea = () => {
 
     const sliderS = (
         <SliderInput
-            name={SLIDER_SUSCEPTANCE}
+            name={`${id}.${SLIDER_SUSCEPTANCE}`}
             min={getFloatNumber(minS)}
             max={getFloatNumber(maxS)}
             step={0.1}
@@ -143,7 +146,7 @@ export const SusceptanceArea = () => {
     );
     const sliderQ = (
         <SliderInput
-            name={SLIDER_Q_NOMINAL}
+            name={`${id}.${SLIDER_Q_NOMINAL}`}
             min={getFloatNumber(minQ)}
             max={getFloatNumber(maxQ)}
             step={0.1}

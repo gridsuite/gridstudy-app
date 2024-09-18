@@ -8,12 +8,14 @@
 import Grid from '@mui/material/Grid';
 import {
     ADD_STAND_BY_AUTOMATON,
+    AUTOMATON,
     CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
     LOW_VOLTAGE_SET_POINT,
     LOW_VOLTAGE_THRESHOLD,
+    SETPOINTS_LIMITS,
     STAND_BY_AUTOMATON,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
@@ -29,21 +31,17 @@ import Tooltip from '@mui/material/Tooltip';
 import { WarningAmber } from '@mui/icons-material';
 import { SusceptanceArea } from './susceptance-area';
 
-type FieldKeys =
-    | 'modeAutomaton'
-    | 'standby'
-    | 'lVoltageSetLimit'
-    | 'hVoltageSetLimit'
-    | 'lVoltageThreshold'
-    | 'hVoltageThreshold';
+type FieldKeys = 'standby' | 'lVoltageSetLimit' | 'hVoltageSetLimit' | 'lVoltageThreshold' | 'hVoltageThreshold';
 export const StandByAutomatonForm = () => {
+    const id = AUTOMATON;
     const { setValue } = useFormContext();
 
     const [isHover, setHover] = useState(false);
     const watchAddStandbyAutomatonProps = useWatch({
-        name: ADD_STAND_BY_AUTOMATON,
+        name: `${id}.${ADD_STAND_BY_AUTOMATON}`,
     });
-    const watchVoltageMode = useWatch({ name: VOLTAGE_REGULATION_MODE });
+    // a tricky solution to rerender voltage/reactive setpoints field with label changed between required <-> optional
+    const watchVoltageMode = useWatch({ name: `${SETPOINTS_LIMITS}.${VOLTAGE_REGULATION_MODE}` });
 
     const isDisabled = useMemo(() => {
         return watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id;
@@ -51,9 +49,9 @@ export const StandByAutomatonForm = () => {
 
     useEffect(() => {
         if (isDisabled) {
-            setValue(STAND_BY_AUTOMATON, false);
+            setValue(`${id}.${STAND_BY_AUTOMATON}`, false);
         }
-    }, [isDisabled, setValue]);
+    }, [isDisabled, setValue, id]);
 
     const createField = (
         Component: any,
@@ -64,7 +62,7 @@ export const StandByAutomatonForm = () => {
     ) => <Component name={name} label={label} adornment={adornment} size="small" formProps={additionalProps} />;
 
     const fields = {
-        modeAutomaton: createField(TextInput, VOLTAGE_REGULATION_MODE, 'ModeAutomaton', null, {
+        modeAutomaton: createField(TextInput, `${SETPOINTS_LIMITS}.${VOLTAGE_REGULATION_MODE}`, 'ModeAutomaton', null, {
             disabled: true,
         }),
         standby: (
@@ -74,7 +72,7 @@ export const StandByAutomatonForm = () => {
                         value="StandbyAutomaton"
                         control={
                             <SwitchInput
-                                name={STAND_BY_AUTOMATON}
+                                name={`${id}.${STAND_BY_AUTOMATON}`}
                                 formProps={{
                                     disabled: isDisabled,
                                 }}
@@ -93,12 +91,27 @@ export const StandByAutomatonForm = () => {
                 </Grid>
             </Grid>
         ),
-        lVoltageSetLimit: createField(FloatInput, LOW_VOLTAGE_SET_POINT, 'LowVoltageSetpoint', VoltageAdornment),
-        hVoltageSetLimit: createField(FloatInput, HIGH_VOLTAGE_SET_POINT, 'HighVoltageSetpoint', VoltageAdornment),
-        lVoltageThreshold: createField(FloatInput, LOW_VOLTAGE_THRESHOLD, 'LowVoltageThreshold', SusceptanceAdornment),
+        lVoltageSetLimit: createField(
+            FloatInput,
+            `${id}.${LOW_VOLTAGE_SET_POINT}`,
+            'LowVoltageSetpoint',
+            VoltageAdornment
+        ),
+        hVoltageSetLimit: createField(
+            FloatInput,
+            `${id}.${HIGH_VOLTAGE_SET_POINT}`,
+            'HighVoltageSetpoint',
+            VoltageAdornment
+        ),
+        lVoltageThreshold: createField(
+            FloatInput,
+            `${id}.${LOW_VOLTAGE_THRESHOLD}`,
+            'LowVoltageThreshold',
+            SusceptanceAdornment
+        ),
         hVoltageThreshold: createField(
             FloatInput,
-            HIGH_VOLTAGE_THRESHOLD,
+            `${id}.${HIGH_VOLTAGE_THRESHOLD}`,
             'HighVoltageThreshold',
             SusceptanceAdornment
         ),
@@ -109,7 +122,7 @@ export const StandByAutomatonForm = () => {
             <Grid container spacing={2}>
                 <Grid item xs={4}>
                     <Box>
-                        <CheckboxInput name={ADD_STAND_BY_AUTOMATON} label="AddAutomaton" />
+                        <CheckboxInput name={`${id}.${ADD_STAND_BY_AUTOMATON}`} label="AddAutomaton" />
                     </Box>
                 </Grid>
                 {watchAddStandbyAutomatonProps && (
@@ -128,7 +141,7 @@ export const StandByAutomatonForm = () => {
                         <Grid container spacing={2} padding={2}>
                             <Grid item xs={6}>
                                 <SelectInput
-                                    name={CHARACTERISTICS_CHOICE_AUTOMATON}
+                                    name={`${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}`}
                                     options={Object.values(CHARACTERISTICS_CHOICES)}
                                     fullWidth
                                     disableClearable
