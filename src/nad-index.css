@@ -1,39 +1,40 @@
 .nad-branch-edges .nad-edge-path,
 .nad-3wt-edges .nad-edge-path {
     stroke: var(--nad-vl-color, lightgrey);
-    stroke-width: 5;
+    stroke-width: 0.25%;
     fill: none;
 }
 .nad-branch-edges .nad-winding,
 .nad-3wt-nodes .nad-winding {
     stroke: var(--nad-vl-color, lightgrey);
-    stroke-width: 5;
+    stroke-width: 0.25%;
     fill: none;
 }
 .nad-text-edges {
     stroke: black;
-    stroke-width: 3;
+    stroke-width: 0.2%;
     stroke-dasharray: 6, 7;
 }
 .nad-disconnected .nad-edge-path {
     stroke-dasharray: 10, 10;
+    stroke: grey;
 }
 .nad-vl-nodes .nad-busnode {
     fill: var(--nad-vl-color, lightgrey);
 }
 .nad-vl-nodes circle.nad-unknown-busnode {
     stroke: var(--nad-vl-color, #808080);
-    stroke-width: 5;
+    stroke-width: 0.25%;
     stroke-dasharray: 5, 5;
     fill: none;
 }
 .nad-hvdc-edge polyline.nad-hvdc {
     stroke: grey;
-    stroke-width: 20;
+    stroke-width: 1%;
 }
 .nad-pst-arrow {
     stroke: #6a6a6a;
-    stroke-width: 4;
+    stroke-width: 0.2%;
     stroke-linecap: round;
     fill: none;
 }
@@ -79,7 +80,7 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     font: 20px serif;
     dominant-baseline: middle;
     stroke: #ffffffaa;
-    stroke-width: 10;
+    stroke-width: 0.5%;
     stroke-linejoin: round;
     paint-order: stroke;
 }
@@ -335,11 +336,11 @@ g.nad-disconnected > g.nad-disconnected {
     80%,
     100% {
         stroke: var(--nad-vl-color, black);
-        stroke-width: 5;
+        stroke-width: 0.25%;
     }
     40% {
         stroke: #ffeb3b;
-        stroke-width: 15;
+        stroke-width: 0.75%;
     }
 }
 @keyframes node-over-blink {
@@ -347,11 +348,11 @@ g.nad-disconnected > g.nad-disconnected {
     80%,
     100% {
         stroke: white;
-        stroke-width: 5;
+        stroke-width: 0.25%;
     }
     40% {
         stroke: #ff5722;
-        stroke-width: 15;
+        stroke-width: 0.75%;
     }
 }
 @keyframes node-under-blink {
@@ -359,10 +360,10 @@ g.nad-disconnected > g.nad-disconnected {
     80%,
     100% {
         stroke: white;
-        stroke-width: 5;
+        stroke-width: 0.25%;
     }
     40% {
         stroke: #00bcd4;
-        stroke-width: 15;
+        stroke-width: 0.75%;
     }
 }
