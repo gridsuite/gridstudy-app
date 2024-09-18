@@ -17,6 +17,7 @@ import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../.
 import LoaderWithOverlay from '../utils/loader-with-overlay';
 import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
+import { toggleElementFromList } from 'components/utils/utils';
 
 /**
  * Dialog to select network modification to create
@@ -97,6 +98,11 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                         onSelectionChange={setSelectedNodes}
                         getItemId={(v) => v.first.id}
                         getItemLabel={(v) => v.first.name + (v.second !== 0 ? ' ( + ' + v.second + ' )' : '')}
+                        onItemClick={(node) =>
+                            setSelectedNodes((oldCheckedElements) =>
+                                toggleElementFromList(node, oldCheckedElements, (v) => v.first.id)
+                            )
+                        }
                         divider
                     />
                 )}
