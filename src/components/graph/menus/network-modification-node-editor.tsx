@@ -13,7 +13,7 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
-import { Box, Checkbox, CircularProgress, SxProps, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
@@ -55,7 +55,6 @@ import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modi
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
 import { RestoreFromTrash } from '@mui/icons-material';
-import EditIcon from '@mui/icons-material/Edit.js';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
@@ -85,6 +84,7 @@ import {
     NetworkModificationData,
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
+import { SwitchNetworkModificationActive } from './switch-network-modification-active';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -96,6 +96,7 @@ export const styles = {
     }),
     listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
+    disabledModification: { opacity: 0.4 },
     checkBoxIcon: { minWidth: 0, padding: 0 },
     checkboxButton: {
         padding: 0,
@@ -103,7 +104,6 @@ export const styles = {
         display: 'flex',
         alignItems: 'center',
     },
-    checkbox: { minWidth: 0, padding: 0 },
     modificationsTitle: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
@@ -838,9 +838,9 @@ const NetworkModificationNodeEditor = () => {
         [modifications, studyUuid, currentNode?.id, snackError]
     );
 
-    const isLoading = () => {
+    const isLoading = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
-    };
+    }, [notificationIdList, currentNode?.id]);
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
@@ -858,29 +858,43 @@ const NetworkModificationNodeEditor = () => {
     };
 
     const handleSecondaryAction = useCallback(
-        (modification: NetworkModificationMetadata) =>
-            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification) ? (
-                <IconButton
-                    onClick={() => doEditModification(modification.uuid, modification.type)}
-                    size={'small'}
-                    sx={styles.iconEdit}
-                >
-                    <EditIcon />
-                </IconButton>
-            ) : null,
-        [doEditModification, isAnyNodeBuilding, isDragging, mapDataLoading]
+        (modification: NetworkModificationMetadata, isItemHovered?: boolean) => {
+            return isItemHovered && !isDragging ? (
+                <SwitchNetworkModificationActive
+                    modificationActivated={modification.activated}
+                    modificationUuid={modification.uuid}
+                    setModifications={setModifications}
+                    disabled={isLoading() || isAnyNodeBuilding || mapDataLoading}
+                />
+            ) : null;
+        },
+        [isAnyNodeBuilding, isDragging, mapDataLoading, isLoading]
     );
+
+    const isModificationClickable = useCallback(
+        (modification: NetworkModificationMetadata) =>
+            !isAnyNodeBuilding && !mapDataLoading && !isDragging && isEditableModification(modification),
+        [isAnyNodeBuilding, mapDataLoading, isDragging]
+    );
+
     const renderNetworkModificationsList = () => {
         return (
             <CheckboxList
                 sx={{
-                    label: styles.checkBoxLabel,
-                    checkBoxIcon: styles.checkBoxIcon,
-                    checkboxButton: styles.checkboxButton,
-                    checkbox: styles.checkbox,
-                    checkboxListItem: styles.listItem,
-                    dragAndDropContainer: styles.listContainer as SxProps,
+                    items: (modification) => ({
+                        label: {
+                            ...(!modification.activated && { ...styles.disabledModification }),
+                            ...styles.checkBoxLabel,
+                        },
+                        checkBoxIcon: styles.checkBoxIcon,
+                        checkboxButton: styles.checkboxButton,
+                    }),
+                    dragAndDropContainer: styles.listContainer,
                 }}
+                onItemClick={(modification) => {
+                    isModificationClickable(modification) && doEditModification(modification.uuid, modification.type);
+                }}
+                isItemClickable={isModificationClickable}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
                 items={modifications}
@@ -889,8 +903,6 @@ const NetworkModificationNodeEditor = () => {
                 isDndDragAndDropActive
                 isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
                 secondaryAction={handleSecondaryAction}
-                enableSecondaryActionOnHover
-                isCheckboxClickableOnly
                 onDragEnd={commit}
                 onDragStart={() => setIsDragging(true)}
                 divider

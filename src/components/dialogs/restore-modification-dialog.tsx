@@ -19,6 +19,7 @@ import { useModificationLabelComputer } from '../graph/util/use-modification-lab
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer.js';
 import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type.js';
+import { toggleElementFromList } from 'components/utils/utils.js';
 
 const styles = {
     text: (theme: Theme) => ({
@@ -127,6 +128,15 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                     onSelectionChange={setSelectedItems}
                     getItemId={(v) => v.uuid}
                     getItemLabel={getLabel}
+                    onItemClick={(stashedModification) =>
+                        setSelectedItems((oldCheckedElements) =>
+                            toggleElementFromList(
+                                stashedModification,
+                                oldCheckedElements,
+                                (v: NetworkModificationMetadata) => v.uuid
+                            )
+                        )
+                    }
                     addSelectAllCheckbox
                     selectAllCheckBoxLabel={'SelectAll'}
                     divider
