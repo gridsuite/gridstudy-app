@@ -78,6 +78,7 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import CustomColumnsConfig from './custom-columns/columns-config-custom';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -1115,6 +1116,9 @@ const TableWrapper = (props) => {
                             lockedColumnsNames={lockedColumnsNames}
                             setLockedColumnsNames={setLockedColumnsNames}
                         />
+                    </Grid>
+                    <Grid item sx={styles.selectCustomColumns}>
+                        <CustomColumnsConfig indexTab={tabIndex} />
                     </Grid>
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>

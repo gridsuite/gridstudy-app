@@ -196,7 +196,11 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON, TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -271,6 +275,7 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { CustomEntry } from 'components/spreadsheet/custom-columns/custom-columns.types';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -389,6 +394,10 @@ export type SelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
+export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
+export type TablesDefinitionsKeys = keyof TablesDefinitionsType;
+export type TablesDefinitionsNames = TablesDefinitionsType[TablesDefinitionsKeys]['name'];
+
 export interface AppState extends CommonStoreState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -435,6 +444,7 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -694,6 +704,11 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
+
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
+        {} as AppState['allCustomColumnsDefinitions']
+    ),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode

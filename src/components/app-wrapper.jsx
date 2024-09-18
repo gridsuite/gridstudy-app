@@ -67,6 +67,8 @@ import errors_locale_en from '../translations/dynamic/errors-locale-en';
 import errors_locale_fr from '../translations/dynamic/errors-locale-fr';
 import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
+import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
+import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
@@ -267,6 +269,7 @@ const messages = {
         ...table_locale_en,
         ...errors_locale_en,
         ...events_locale_en,
+        ...spreadsheet_locale_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
@@ -295,6 +298,7 @@ const messages = {
         ...table_locale_fr,
         ...errors_locale_fr,
         ...events_locale_fr,
+        ...spreadsheet_locale_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };
