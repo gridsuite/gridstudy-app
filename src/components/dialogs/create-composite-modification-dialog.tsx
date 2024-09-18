@@ -30,11 +30,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { AppState } from '../../redux/reducer';
 
-interface ICompositeCreateModificationDialog {
+export interface ICompositeCreateModificationDialog {
     [NAME]: string;
     [DESCRIPTION]: string;
     [FOLDER_NAME]: string;
-    [FOLDER_ID]: string;
+    [FOLDER_ID]: UUID;
 }
 interface CreateCompositeModificationDialogProps {
     open: boolean;
