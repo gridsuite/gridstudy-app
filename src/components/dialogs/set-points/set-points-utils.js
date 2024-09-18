@@ -147,7 +147,7 @@ export const getActivePowerSetPointSchema = (isEquipmentModification) => ({
             then: (schema) => {
                 return schema
                     .required()
-                    .nonNullable()
+                    .nonNullable('FieldIsRequired')
                     .test(
                         'activePowerSetPoint',
                         'ActivePowerMustBeZeroOrBetweenMinAndMaxActivePower',
