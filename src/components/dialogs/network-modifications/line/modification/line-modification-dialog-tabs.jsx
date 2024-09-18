@@ -10,13 +10,13 @@ import { Box } from '@mui/material';
 import LimitsPane from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import React from 'react';
-import LineConnectivityPane from '../characteristics-pane/line-connectivity-pane';
+import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
 
 const LineModificationDialogTabs = ({ studyUuid, currentNode, lineToModify, tabIndex }) => {
     return (
         <>
             <Box hidden={tabIndex !== LineModificationDialogTab.CONNECTIVITY_TAB} p={1}>
-                <LineConnectivityPane
+                <BranchConnectivityForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
                     withPosition={true}

@@ -12,6 +12,8 @@ import {
     CONNECTION_NAME,
     CONNECTION_POSITION,
     CONNECTIVITY,
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     ID,
     NAME,
     VOLTAGE_LEVEL,
@@ -44,6 +46,13 @@ export const getConnectivityPropertiesValidationSchema = (isEquipmentModificatio
     };
 };
 
+export const getCon1andCon2WithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
+    [id]: yup.object().shape({
+        ...getConnectivityWithPositionValidationSchema(isEquipmentModification, CONNECTIVITY_1),
+        ...getConnectivityWithPositionValidationSchema(isEquipmentModification, CONNECTIVITY_2),
+    }),
+});
+
 export const getConnectivityWithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
@@ -73,6 +82,13 @@ export const getConnectivityPropertiesEmptyFormData = (isEquipmentModification =
         [CONNECTED]: isEquipmentModification ? null : true,
     };
 };
+
+export const getCont1Cont2WithPositionEmptyFormData = (isEquipmentModification = false, id = CONNECTIVITY) => ({
+    [id]: {
+        ...getConnectivityWithPositionEmptyFormData(isEquipmentModification, CONNECTIVITY_1),
+        ...getConnectivityWithPositionEmptyFormData(isEquipmentModification, CONNECTIVITY_2),
+    },
+});
 
 export const getConnectivityWithPositionEmptyFormData = (isEquipmentModification = false, id = CONNECTIVITY) => ({
     [id]: {

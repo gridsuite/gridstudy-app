@@ -76,9 +76,9 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import {
+    getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
-    getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
+    getCont1Cont2WithPositionEmptyFormData,
 } from '../../../connectivity/connectivity-form-utils.js';
 
 export const LineModificationDialogTab = {
@@ -120,8 +120,7 @@ const LineModificationDialog = ({
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
-            ...getConnectivityWithPositionEmptyFormData(true, CONNECTIVITY_1),
-            ...getConnectivityWithPositionEmptyFormData(true, CONNECTIVITY_2),
+            ...getCont1Cont2WithPositionEmptyFormData(true),
             ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
             ...getLimitsEmptyFormData(),
             ...emptyProperties,
@@ -133,8 +132,7 @@ const LineModificationDialog = ({
         .object()
         .shape({
             [EQUIPMENT_NAME]: yup.string(),
-            ...getConnectivityWithPositionValidationSchema(true, CONNECTIVITY_1),
-            ...getConnectivityWithPositionValidationSchema(true, CONNECTIVITY_2),
+            ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
             ...getLimitsValidationSchema(),
         })
@@ -146,6 +144,16 @@ const LineModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
 
+    const createConnectivityData = (line, index) => ({
+        busbarSectionId: line?.[`busOrBusbarSectionId${index}`]?.value ?? null,
+        connectionDirection: line?.[`connectionDirection${index}`]?.value ?? null,
+        connectionName: line?.[`connectionName${index}`]?.value ?? '',
+        connectionPosition: line?.[`connectionPosition${index}`]?.value ?? null,
+        voltageLevelId: line?.[`voltageLevelId${index}`]?.value ?? null,
+        terminalConnected: line?.[`terminal${index}Connected`]?.value ?? null,
+        isEquipmentModification: true,
+    });
+
     const { reset, setValue, getValues } = formMethods;
 
     const fromEditDataToFormValues = useCallback(
@@ -155,30 +163,8 @@ const LineModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
-                ...getConnectivityFormData(
-                    {
-                        busbarSectionId: line?.busOrBusbarSectionId1?.value ?? null,
-                        connectionDirection: line?.connectionDirection1?.value ?? null,
-                        connectionName: line?.connectionName1?.value ?? '',
-                        connectionPosition: line?.connectionPosition1?.value ?? null,
-                        voltageLevelId: line?.voltageLevelId1?.value ?? null,
-                        terminalConnected: line?.terminal1Connected?.value ?? null,
-                        isEquipmentModification: true,
-                    },
-                    CONNECTIVITY_1
-                ),
-                ...getConnectivityFormData(
-                    {
-                        busbarSectionId: line?.busOrBusbarSectionId2?.value ?? null,
-                        connectionDirection: line?.connectionDirection2?.value ?? null,
-                        connectionName: line?.connectionName2?.value ?? '',
-                        connectionPosition: line?.connectionPosition2?.value ?? null,
-                        voltageLevelId: line?.voltageLevelId2?.value ?? null,
-                        terminalConnected: line?.terminal2Connected?.value ?? null,
-                        isEquipmentModification: true,
-                    },
-                    CONNECTIVITY_2
-                ),
+                [CONNECTIVITY]: getConnectivityFormData(createConnectivityData(line, 1), CONNECTIVITY_1),
+                [CONNECTIVITY]: getConnectivityFormData(createConnectivityData(line, 2), CONNECTIVITY_2),
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
@@ -225,8 +211,8 @@ const LineModificationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
-            const connectivity1 = line[CONNECTIVITY_1];
-            const connectivity2 = line[CONNECTIVITY_2];
+            const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
+            const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
@@ -298,6 +284,13 @@ const LineModificationDialog = ({
         reset(emptyFormData);
     }, [emptyFormData, reset]);
 
+    const setConnectivityValue = useCallback(
+        (index, field, value) => {
+            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
+        },
+        [setValue]
+    );
+
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -313,10 +306,10 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
-                            setValue(`${CONNECTIVITY_1}.${VOLTAGE_LEVEL}.${ID}`, line?.voltageLevelId1);
-                            setValue(`${CONNECTIVITY_2}.${VOLTAGE_LEVEL}.${ID}`, line?.voltageLevelId2);
-                            setValue(`${CONNECTIVITY_1}.${BUS_OR_BUSBAR_SECTION}.${ID}`, line?.busOrBusbarSectionId1);
-                            setValue(`${CONNECTIVITY_2}.${BUS_OR_BUSBAR_SECTION}.${ID}`, line?.busOrBusbarSectionId2);
+                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
+                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
+                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
+                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             if (editData?.equipmentId !== selectedId) {
                                 reset((formValues) => ({
                                     ...formValues,
@@ -346,7 +339,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData, getValues, setValue]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData, getValues, setConnectivityValue]
     );
 
     useEffect(() => {

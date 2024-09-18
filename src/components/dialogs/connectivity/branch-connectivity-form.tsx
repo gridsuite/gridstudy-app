@@ -6,50 +6,58 @@
  */
 
 import { Grid } from '@mui/material';
-import { gridItem, GridSection } from '../../../dialogUtils';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
+import { gridItem, GridSection } from '../dialogUtils';
+import { ConnectivityForm } from './connectivity-form';
+import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import React, { FunctionComponent } from 'react';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
+import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
 
-interface LineConnectivityPaneProps {
+interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
     isModification?: boolean;
     previousValues?: any;
 }
 
-const LineConnectivityPane: FunctionComponent<LineConnectivityPaneProps> = ({
+const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = ({
     currentNode,
     studyUuid,
     isModification = false,
     previousValues,
 }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
+    const id1 = `${CONNECTIVITY}.${CONNECTIVITY_1}`;
+    const id2 = `${CONNECTIVITY}.${CONNECTIVITY_2}`;
 
     const connectivity1Field = (
         <ConnectivityForm
-            id={CONNECTIVITY_1}
+            id={id1}
             studyUuid={studyUuid}
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             isEquipmentModification={isModification}
-            previousValues={previousValues}
+            previousValues={{
+                connectablePosition: previousValues?.connectablePosition1,
+                terminalConnected: previousValues?.terminal1Connected,
+            }}
         />
     );
 
     const connectivity2Field = (
         <ConnectivityForm
-            id={CONNECTIVITY_2}
+            id={id2}
             studyUuid={studyUuid}
             currentNode={currentNode}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             isEquipmentModification={isModification}
-            previousValues={previousValues}
+            previousValues={{
+                connectablePosition: previousValues?.connectablePosition12,
+                terminalConnected: previousValues?.terminal2Connected,
+            }}
         />
     );
 
@@ -67,4 +75,4 @@ const LineConnectivityPane: FunctionComponent<LineConnectivityPaneProps> = ({
     );
 };
 
-export default LineConnectivityPane;
+export default BranchConnectivityForm;
