@@ -12,6 +12,9 @@ import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
 import { FilterButton } from './filter-button';
 import { TextFilterButton } from './text-filter-button.jsx';
+import { useDispatch, useSelector } from 'react-redux';
+import { useDebounce } from 'use-debounce';
+import { setReportFilters } from '../../redux/actions';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -36,12 +39,36 @@ const styles = {
 
 const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
 
-const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity, messageFilter, setMessageFilter }) => {
+const LogTable = ({ logs, onRowClick }) => {
     const intl = useIntl();
 
     const theme = useTheme();
 
+    const dispatch = useDispatch();
+
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
+
+    const severityFilter = useSelector((state) => state.reportSeverityFilter);
+
+    const selectedReportId = useSelector((state) => state.reportSelectedReportId);
+
+    //messageFilter is only used for display, debouncedMessageFilter is used for triggering fetch
+    const [messageFilter, setMessageFilter] = useState('');
+
+    const [debouncedMessageFilter] = useDebounce(messageFilter, 500);
+
+    useEffect(() => {
+        dispatch(setReportFilters(undefined, debouncedMessageFilter, undefined));
+    }, [debouncedMessageFilter, dispatch]);
+
+    //We reset the displayed message filter when we switch reports
+    useEffect(() => {
+        setMessageFilter('');
+    }, [selectedReportId]);
+
+    const setSeverityFilter = (selectedSeverity) => {
+        dispatch(setReportFilters(undefined, undefined, selectedSeverity));
+    };
 
     const severityCellRender = (cellData) => {
         return (
@@ -68,7 +95,7 @@ const LogTable = ({ logs, onRowClick, selectedSeverity, setSelectedSeverity, mes
             maxWidth: SEVERITY_COLUMN_FIXED_WIDTH,
             minWidth: SEVERITY_COLUMN_FIXED_WIDTH,
             cellRenderer: severityCellRender,
-            extra: <FilterButton selectedItems={selectedSeverity} setSelectedItems={setSelectedSeverity} />,
+            extra: <FilterButton selectedItems={severityFilter} setSelectedItems={setSeverityFilter} />,
         },
         {
             label: intl.formatMessage({ id: 'report_viewer/message' }).toUpperCase(),

@@ -181,6 +181,7 @@ import {
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
     TABLE_SORT,
+    REPORT_FILTER,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
@@ -188,6 +189,7 @@ import {
     UpdateEquipmentsAction,
     USE_NAME,
     UseNameAction,
+    ReportFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -271,6 +273,8 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { SeverityFilter } from '../types/report.type';
+import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -411,6 +415,9 @@ export interface AppState extends CommonStoreState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
+    reportMessageFilter: string;
+    reportSeverityFilter: SeverityFilter;
+    reportSelectedReportId: string | null;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -562,6 +569,9 @@ const initialState: AppState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     limitReductionModified: false,
+    reportMessageFilter: '',
+    reportSeverityFilter: getDefaultSeverityFilter(),
+    reportSelectedReportId: null,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1542,6 +1552,18 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
+        if (action.messageFilter !== undefined) {
+            state.reportMessageFilter = action.messageFilter;
+        }
+        if (action.severityFilter !== undefined) {
+            state.reportSeverityFilter = action.severityFilter;
+        }
+        if (action.reportId !== undefined) {
+            state.reportSelectedReportId = action.reportId;
+        }
     });
 });
 

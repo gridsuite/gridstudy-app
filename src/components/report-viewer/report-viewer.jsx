@@ -15,7 +15,8 @@ import { getDefaultSeverityFilter } from '../../utils/report-severity.utils';
 import { useReportFetcher } from '../../hooks/use-report-fetcher';
 import { mapReportLog, mapReportLogs } from '../../utils/report-log.mapper';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
-// import { useDebounce } from 'use-debounce';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportFilters } from '../../redux/actions';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -26,20 +27,17 @@ const styles = {
 };
 
 export default function ReportViewer({ report, reportType }) {
+    const dispatch = useDispatch();
+
     const [expandedTreeReports, setExpandedTreeReports] = useState([]);
     const [logs, setLogs] = useState(null);
     const [highlightedReportId, setHighlightedReportId] = useState();
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
     const [isLogLoading, , fetchReportLogs] = useReportFetcher(reportType);
 
-    // const [selectedReportId, setSelectedReportId] = useState(null);
-    // const [severityFilter, setSeverityFilter] = useState(getDefaultSeverityFilter());
-    // const [messageFilter, setMessageFilter] = useState('');
-    // const [filterLogsTextDebounced] = useDebounce(messageFilter, 500);
-
-    const selectedReportId = useRef();
-    const severityFilter = useRef([]);
-    const messageFilter = useRef('');
+    const selectedReportId = useSelector((state) => state.reportSelectedReportId);
+    const severityFilter = useSelector((state) => state.reportSeverityFilter);
+    const messageFilter = useSelector((state) => state.reportMessageFilter);
 
     const reportTreeData = useRef({});
     const treeView = useRef(null);
@@ -63,45 +61,46 @@ export default function ReportViewer({ report, reportType }) {
         );
     }, []);
 
-    const refreshLogsOnSelectedReport = useCallback(() => {
-        let severityList = [];
-        for (const [severity, selected] of Object.entries(severityFilter.current)) {
-            if (selected) {
-                severityList.push(severity);
+    const refreshLogsOnSelectedReport = useCallback(
+        (selectedReportId, severityFilter, messageFilter) => {
+            let severityList = [];
+            for (const [severity, selected] of Object.entries(severityFilter)) {
+                if (selected) {
+                    severityList.push(severity);
+                }
             }
-        }
+            if (severityList.length === 0) {
+                setLogs([]);
+                setHighlightedReportId(null);
+                return;
+            }
 
-        if (severityList.length === 0) {
-            setLogs([]);
-            setHighlightedReportId(null);
-            return;
-        }
+            fetchReportLogs(
+                selectedReportId,
+                severityList,
+                reportTreeData.current[selectedReportId].type,
+                messageFilter
+            ).then((reportLogs) => {
+                setLogs(mapReportLogs(reportLogs));
+            });
+        },
+        [fetchReportLogs]
+    );
 
-        fetchReportLogs(
-            selectedReportId.current,
-            severityList,
-            reportTreeData.current[selectedReportId.current].type,
-            messageFilter.current
-        ).then((reportLogs) => {
-            setLogs(mapReportLogs(reportLogs));
-        });
-    }, [fetchReportLogs]);
+    useEffect(() => {
+        //refresh the logs when we change the filters
+        if (selectedReportId != null) {
+            refreshLogsOnSelectedReport(selectedReportId, severityFilter, messageFilter);
+        }
+    }, [messageFilter, severityFilter, selectedReportId, refreshLogsOnSelectedReport]);
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
         treeView.current = initializeTreeDataAndComponent(reportTree);
-        selectedReportId.current = report.id;
         setExpandedTreeReports([report.id]);
         setLogs(mapReportLog(report, reportTree.severities));
-        severityFilter.current = getDefaultSeverityFilter(reportTree.severities);
-    }, [report, initializeTreeDataAndComponent]);
-
-    // //to reload the logs with the updated message filter without spamming the back
-    // useEffect(() => {
-    //     if (selectedReportId != null) {
-    //         refreshLogsOnSelectedReport(selectedReportId, severityFilter, filterLogsTextDebounced);
-    //     }
-    // }, [refreshLogsOnSelectedReport, filterLogsTextDebounced, selectedReportId, severityFilter]);
+        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
+    }, [report, initializeTreeDataAndComponent, dispatch]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
@@ -109,27 +108,10 @@ export default function ReportViewer({ report, reportType }) {
 
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
-            severityFilter.current = getDefaultSeverityFilter(reportTreeData.current[reportId].severities);
-            messageFilter.current = '';
-            selectedReportId.current = reportId;
-            refreshLogsOnSelectedReport();
+            dispatch(
+                setReportFilters(reportId, '', getDefaultSeverityFilter(reportTreeData.current[reportId].severities))
+            );
         }
-    };
-
-    const onSeverityChange = (newSeverityFilter) => {
-        severityFilter.current = newSeverityFilter;
-        refreshLogsOnSelectedReport();
-    };
-
-    // useEffect(() => {
-    //     const timeout = setTimeout(() => refreshLogsOnSelectedReport(), 500);
-    //
-    //     return () => clearTimeout(timeout);
-    // }, [messageFilter.current]);
-
-    const handleMessageFilterChange = (newMessageFilter) => {
-        messageFilter.current = newMessageFilter;
-        refreshLogsOnSelectedReport();
     };
 
     // The MUI TreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
@@ -176,7 +158,7 @@ export default function ReportViewer({ report, reportType }) {
                 <ReportTreeViewContext.Provider value={isHighlighted}>
                     {/*TODO do we need to useMemo/useCallback these props to avoid rerenders ?*/}
                     <ReportTree
-                        selectedReportId={selectedReportId.current}
+                        selectedReportId={selectedReportId}
                         expandedTreeReports={expandedTreeReports}
                         setExpandedTreeReports={setExpandedTreeReports}
                         handleSelectNode={handleSelectNode}
@@ -186,14 +168,7 @@ export default function ReportViewer({ report, reportType }) {
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     <WaitingLoader loading={isLogLoading} message={'loadingReport'}>
-                        <LogTable
-                            logs={logs}
-                            onRowClick={onLogRowClick}
-                            selectedSeverity={severityFilter.current}
-                            setSelectedSeverity={onSeverityChange}
-                            messageFilter={messageFilter.current}
-                            setMessageFilter={handleMessageFilterChange}
-                        />
+                        <LogTable logs={logs} onRowClick={onLogRowClick} severityFilter={severityFilter} />
                     </WaitingLoader>
                 </Grid>
             </Grid>
