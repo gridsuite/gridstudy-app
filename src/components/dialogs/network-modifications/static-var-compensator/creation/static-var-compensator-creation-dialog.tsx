@@ -159,7 +159,7 @@ const formSchema = yup
     .required();
 
 /**
- * Dialog to create a static compensator in the network
+ * Dialog to create a static var compensator in the network
  * @param studyUuid the study we are currently working on
  * @param currentNode the node we are currently working on
  * @param editData the data to edit

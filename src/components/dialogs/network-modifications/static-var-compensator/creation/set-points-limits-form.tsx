@@ -39,7 +39,7 @@ import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;
     currentNode: { id: UUID };
-    voltageLevelOptions: [];
+    voltageLevelOptions: any;
 }
 export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = ({
     studyUuid,

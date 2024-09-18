@@ -786,9 +786,9 @@ export function createStaticVarCompensator(
 
     if (isUpdate) {
         createShuntUrl += '/' + encodeURIComponent(modificationUuid);
-        console.info('Updating static compensator creation');
+        console.info('Updating static var compensator creation');
     } else {
-        console.info('Creating static compensator creation');
+        console.info('Creating static var compensator creation');
     }
 
     return backendFetchText(createShuntUrl, {
