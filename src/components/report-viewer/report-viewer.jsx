@@ -35,6 +35,7 @@ export default function ReportViewer({ report, reportType }) {
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
     const [isLogLoading, , fetchReportLogs] = useReportFetcher(reportType);
 
+    const [displayedSelectedReportId, setDisplayedSelectedReportId] = useState(null);
     const selectedReportId = useSelector((state) => state.reportSelectedReportId);
     const severityFilter = useSelector((state) => state.reportSeverityFilter);
     const messageFilter = useSelector((state) => state.reportMessageFilter);
@@ -63,26 +64,28 @@ export default function ReportViewer({ report, reportType }) {
 
     const refreshLogsOnSelectedReport = useCallback(
         (selectedReportId, severityFilter, messageFilter) => {
-            let severityList = [];
-            for (const [severity, selected] of Object.entries(severityFilter)) {
-                if (selected) {
-                    severityList.push(severity);
+            //we need to do this check because selectedReportId can be outdated when switching between the different place we have this component
+            if (reportTreeData.current[selectedReportId] != null) {
+                let severityList = [];
+                for (const [severity, selected] of Object.entries(severityFilter)) {
+                    if (selected) {
+                        severityList.push(severity);
+                    }
                 }
+                if (severityList.length === 0) {
+                    setLogs([]);
+                    setHighlightedReportId(null);
+                    return;
+                }
+                fetchReportLogs(
+                    selectedReportId,
+                    severityList,
+                    reportTreeData.current[selectedReportId].type,
+                    messageFilter
+                ).then((reportLogs) => {
+                    setLogs(mapReportLogs(reportLogs));
+                });
             }
-            if (severityList.length === 0) {
-                setLogs([]);
-                setHighlightedReportId(null);
-                return;
-            }
-
-            fetchReportLogs(
-                selectedReportId,
-                severityList,
-                reportTreeData.current[selectedReportId].type,
-                messageFilter
-            ).then((reportLogs) => {
-                setLogs(mapReportLogs(reportLogs));
-            });
         },
         [fetchReportLogs]
     );
@@ -99,7 +102,10 @@ export default function ReportViewer({ report, reportType }) {
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setLogs(mapReportLog(report, reportTree.severities));
-        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
+        // we don't dispatch the new report id on initialisation because we don't want trigger the refreshLogsOnSelectedReport
+        // that fetch the logs (right part), since the first request return both the tree and the logs
+        dispatch(setReportFilters(null, '', getDefaultSeverityFilter(reportTree.severities)));
+        setDisplayedSelectedReportId(report.id);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -107,6 +113,7 @@ export default function ReportViewer({ report, reportType }) {
     }, []);
 
     const handleSelectNode = (_, reportId) => {
+        setDisplayedSelectedReportId(reportId);
         if (selectedReportId !== reportId) {
             dispatch(
                 setReportFilters(reportId, '', getDefaultSeverityFilter(reportTreeData.current[reportId].severities))
@@ -158,7 +165,7 @@ export default function ReportViewer({ report, reportType }) {
                 <ReportTreeViewContext.Provider value={isHighlighted}>
                     {/*TODO do we need to useMemo/useCallback these props to avoid rerenders ?*/}
                     <ReportTree
-                        selectedReportId={selectedReportId}
+                        selectedReportId={displayedSelectedReportId}
                         expandedTreeReports={expandedTreeReports}
                         setExpandedTreeReports={setExpandedTreeReports}
                         handleSelectNode={handleSelectNode}
