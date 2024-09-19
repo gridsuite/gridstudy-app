@@ -315,16 +315,10 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
-
-export interface StudyParametersInfos {
-    name: string;
-    provider?: string;
-}
-
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos | string;
+    payload: NetworkImpactsInfos;
 }
 
 interface StudyUpdatedEventDataUnknown {
