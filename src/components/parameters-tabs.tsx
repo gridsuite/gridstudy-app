@@ -8,8 +8,8 @@
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Theme, Typography } from '@mui/material';
-
+import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Typography } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { useParametersBackend, useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
