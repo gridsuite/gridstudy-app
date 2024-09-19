@@ -32,18 +32,10 @@ export const CustomNestedMenuItem = (props) => {
     return (
         <NestedMenuItem
             parentMenuOpen={true}
-            sx={mergeSx(
-                isSubMenuActive
-                    ? styles.highlightedParentLine
-                    : styles.highlightedLine,
-                sx
-            )}
+            sx={mergeSx(isSubMenuActive ? styles.highlightedParentLine : styles.highlightedLine, sx)}
             {...other}
         >
-            <Box
-                onMouseEnter={() => setSubMenuActive(true)}
-                onMouseLeave={() => setSubMenuActive(false)}
-            >
+            <Box onMouseEnter={() => setSubMenuActive(true)} onMouseLeave={() => setSubMenuActive(false)}>
                 {children}
             </Box>
         </NestedMenuItem>

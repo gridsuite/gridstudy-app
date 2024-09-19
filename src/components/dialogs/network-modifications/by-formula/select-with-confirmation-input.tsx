@@ -20,9 +20,12 @@ interface SelectWithConfirmationInputProps {
     label: string;
 }
 
-const SelectWithConfirmationInput: FunctionComponent<
-    SelectWithConfirmationInputProps
-> = ({ name, options, onValidate, label }) => {
+const SelectWithConfirmationInput: FunctionComponent<SelectWithConfirmationInputProps> = ({
+    name,
+    options,
+    onValidate,
+    label,
+}) => {
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     const [newValue, setNewValue] = useState('');
     const {
@@ -67,11 +70,7 @@ const SelectWithConfirmationInput: FunctionComponent<
             </FormControl>
             {openConfirmationDialog && (
                 <CustomDialog
-                    content={
-                        <FormattedMessage
-                            id={'byFormulaChangeTypeConfirmation'}
-                        />
-                    }
+                    content={<FormattedMessage id={'byFormulaChangeTypeConfirmation'} />}
                     onValidate={handleValidate}
                     validateButtonLabel="button.changeType"
                     onClose={() => setOpenConfirmationDialog(false)}

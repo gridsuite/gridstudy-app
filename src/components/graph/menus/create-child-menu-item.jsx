@@ -23,11 +23,7 @@ const styles = {
 
 const ChildMenuItem = ({ item }) => {
     return (
-        <CustomMenuItem
-            sx={styles.menuItem}
-            onClick={item.action}
-            disabled={item.disabled}
-        >
+        <CustomMenuItem sx={styles.menuItem} onClick={item.action} disabled={item.disabled}>
             <ListItemText
                 primary={
                     <Typography>

@@ -6,10 +6,7 @@
  */
 
 import { Button } from '@mui/material';
-import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
-} from 'components/utils/field-constants';
+import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { useCallback } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage } from 'react-intl';
@@ -31,11 +28,7 @@ const CreateRuleDialogSubmitButton = ({ handleSave, allowNegativeValues }) => {
     }, [lowTapPositionWatcher, highTapPositionWatcher, allowNegativeValues]);
 
     return (
-        <Button
-            onClick={handleSubmit(handleSave)}
-            variant="outlined"
-            disabled={isTapValuesInvalid()}
-        >
+        <Button onClick={handleSubmit(handleSave)} variant="outlined" disabled={isTapValuesInvalid()}>
             <FormattedMessage id="validate" />
         </Button>
     );

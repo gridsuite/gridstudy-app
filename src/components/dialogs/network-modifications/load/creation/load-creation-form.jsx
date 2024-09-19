@@ -6,14 +6,8 @@
  */
 
 import Grid from '@mui/material/Grid';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
+import React from 'react';
 import {
     ActivePowerAdornment,
     filledTextField,
@@ -22,45 +16,19 @@ import {
     ReactivePowerAdornment,
 } from '../../../dialogUtils';
 import { LOAD_TYPES } from 'components/network/constants';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { SelectInput } from '@gridsuite/commons-ui';
-import { TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-
-import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
+import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
-    const currentNodeUuid = currentNode?.id;
-    const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
-
-    useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
-                }
-            );
-        }
-    }, [studyUuid, currentNodeUuid]);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const loadNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const loadTypeField = (
         <SelectInput
@@ -73,21 +41,9 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
         />
     );
 
-    const activePowerField = (
-        <FloatInput
-            name={P0}
-            label={'ActivePowerText'}
-            adornment={ActivePowerAdornment}
-        />
-    );
+    const activePowerField = <FloatInput name={P0} label={'ActivePowerText'} adornment={ActivePowerAdornment} />;
 
-    const reactivePowerField = (
-        <FloatInput
-            name={Q0}
-            label={'ReactivePowerText'}
-            adornment={ReactivePowerAdornment}
-        />
-    );
+    const reactivePowerField = <FloatInput name={Q0} label={'ReactivePowerText'} adornment={ReactivePowerAdornment} />;
 
     const connectivityForm = (
         <ConnectivityForm

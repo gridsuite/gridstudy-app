@@ -7,13 +7,7 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import {
-    FILTERS,
-    ID,
-    NAME,
-    SPECIFIC_METADATA,
-    TYPE,
-} from '../../../utils/field-constants';
+import { FILTERS, ID, NAME, SPECIFIC_METADATA, TYPE } from '../../../utils/field-constants';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
@@ -65,9 +59,7 @@ const emptyFormData = {
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-const ByFilterDeletionDialog: FunctionComponent<
-    ByFilterDeletionDialogProps
-> = ({
+const ByFilterDeletionDialog: FunctionComponent<ByFilterDeletionDialogProps> = ({
     studyUuid,
     currentNode,
     editData,
@@ -90,9 +82,7 @@ const ByFilterDeletionDialog: FunctionComponent<
     const fromEditDataToFormValues = useCallback(
         (editData: ByFilterDeletionEditData) => {
             reset({
-                [TYPE]: EQUIPMENT_TYPES[
-                    editData.equipmentType
-                ] as keyof typeof EQUIPMENT_TYPES,
+                [TYPE]: EQUIPMENT_TYPES[editData.equipmentType] as keyof typeof EQUIPMENT_TYPES,
                 [FILTERS]: editData.filters,
             });
         },
@@ -129,9 +119,7 @@ const ByFilterDeletionDialog: FunctionComponent<
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -146,9 +134,7 @@ const ByFilterDeletionDialog: FunctionComponent<
                 aria-labelledby="dialog-by-filter-equipment-deletion"
                 titleId="DeleteEquipmentByFilter"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <ByFilterDeletionForm />

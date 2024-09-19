@@ -85,9 +85,7 @@ export const TableNumericalInput = ({
                 style: {
                     fontSize: 'small',
                     color:
-                        previousValue !== undefined &&
-                        previousValue === parseFloat(value) &&
-                        !valueModified
+                        previousValue !== undefined && previousValue === parseFloat(value) && !valueModified
                             ? 'grey'
                             : null, // grey out the value if it is the same as the previous one
                     textAlign: style?.textAlign ?? 'left',
@@ -105,9 +103,7 @@ export const TableNumericalInput = ({
                             <IconButton
                                 onClick={handleClearValue}
                                 style={{
-                                    visibility: clearable
-                                        ? 'visible'
-                                        : 'hidden',
+                                    visibility: clearable ? 'visible' : 'hidden',
                                 }}
                             >
                                 <ClearIcon />

@@ -5,12 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    MuiSelectInput,
-    SubmitButton,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -74,8 +69,7 @@ import { mergeSx } from 'components/utils/functions';
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
     const { snackError } = useSnackMessage();
-    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] =
-        useState(null);
+    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
 
     useEffect(() => {
         if (studyUuid) {
@@ -105,14 +99,10 @@ const formSchema = yup
     })
     .required();
 
-export const NonEvacuatedEnergyParameters = ({
-    parametersBackend,
-    useNonEvacuatedEnergyParameters,
-}) => {
+export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuatedEnergyParameters }) => {
     const { snackError } = useSnackMessage();
 
-    const [providers, provider, updateProvider, resetProvider] =
-        parametersBackend;
+    const [providers, provider, updateProvider, resetProvider] = parametersBackend;
 
     const emptyFormData = useMemo(() => {
         return {
@@ -179,8 +169,7 @@ export const NonEvacuatedEnergyParameters = ({
     const { reset, handleSubmit, setValue, getValues, watch } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
 
-    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] =
-        useNonEvacuatedEnergyParameters;
+    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useNonEvacuatedEnergyParameters;
 
     const resetNonEvacuatedEnergyParameters = useCallback(() => {
         setNonEvacuatedEnergyParameters(studyUuid, emptyFormData)
@@ -206,10 +195,7 @@ export const NonEvacuatedEnergyParameters = ({
         let params = {
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
-            [GENERATORS_LIMIT]: getGeneratorsCappingsParams(
-                newParams[SENSITIVITY_THRESHOLD],
-                newParams
-            ),
+            [GENERATORS_LIMIT]: getGeneratorsCappingsParams(newParams[SENSITIVITY_THRESHOLD], newParams),
             ...getMonitoredBranchesParams(newParams),
             ...getContingenciesParams(newParams),
         };
@@ -223,14 +209,9 @@ export const NonEvacuatedEnergyParameters = ({
 
     const onSubmit = useCallback(
         (newParams) => {
-            setNonEvacuatedEnergyParameters(
-                studyUuid,
-                formatNewParams(newParams, true)
-            )
+            setNonEvacuatedEnergyParameters(studyUuid, formatNewParams(newParams, true))
                 .then(() => {
-                    setNonEvacuatedEnergyParams(
-                        formatNewParams(newParams, false)
-                    );
+                    setNonEvacuatedEnergyParams(formatNewParams(newParams, false));
                     updateProvider(newParams[PROVIDER]);
                 })
                 .catch((error) => {
@@ -240,13 +221,7 @@ export const NonEvacuatedEnergyParameters = ({
                     });
                 });
         },
-        [
-            setNonEvacuatedEnergyParams,
-            snackError,
-            studyUuid,
-            formatNewParams,
-            updateProvider,
-        ]
+        [setNonEvacuatedEnergyParams, snackError, studyUuid, formatNewParams, updateProvider]
     );
 
     const fromNonEvacuatedEnergyParamsDataToFormValues = useCallback(
@@ -256,24 +231,18 @@ export const NonEvacuatedEnergyParameters = ({
                 [STAGES_DEFINITION]:
                     parameters[STAGES_DEFINITION]?.map((stageDefinition) => {
                         return {
-                            [GENERATION_STAGES_KIND]:
-                                stageDefinition[GENERATION_STAGES_KIND],
-                            [STAGES_DEFINITION_GENERATORS]: stageDefinition[
-                                STAGES_DEFINITION_GENERATORS
-                            ].map((generationStageFilter) => {
-                                return {
-                                    [ID]: generationStageFilter[CONTAINER_ID],
-                                    [NAME]: generationStageFilter[
-                                        CONTAINER_NAME
-                                    ],
-                                };
-                            }),
-                            [GENERATION_STAGES_PERCENT_MAXP_1]:
-                                stageDefinition[PMAX_PERCENTS]?.[0],
-                            [GENERATION_STAGES_PERCENT_MAXP_2]:
-                                stageDefinition[PMAX_PERCENTS]?.[1],
-                            [GENERATION_STAGES_PERCENT_MAXP_3]:
-                                stageDefinition[PMAX_PERCENTS]?.[2],
+                            [GENERATION_STAGES_KIND]: stageDefinition[GENERATION_STAGES_KIND],
+                            [STAGES_DEFINITION_GENERATORS]: stageDefinition[STAGES_DEFINITION_GENERATORS].map(
+                                (generationStageFilter) => {
+                                    return {
+                                        [ID]: generationStageFilter[CONTAINER_ID],
+                                        [NAME]: generationStageFilter[CONTAINER_NAME],
+                                    };
+                                }
+                            ),
+                            [GENERATION_STAGES_PERCENT_MAXP_1]: stageDefinition[PMAX_PERCENTS]?.[0],
+                            [GENERATION_STAGES_PERCENT_MAXP_2]: stageDefinition[PMAX_PERCENTS]?.[1],
+                            [GENERATION_STAGES_PERCENT_MAXP_3]: stageDefinition[PMAX_PERCENTS]?.[2],
                         };
                     }) ?? [],
 
@@ -282,31 +251,25 @@ export const NonEvacuatedEnergyParameters = ({
                         return {
                             [ACTIVATED]: stageSelection[ACTIVATED],
                             [NAME]: stageSelection[NAME],
-                            [STAGES_DEFINITION_INDEX]:
-                                stageSelection[STAGES_DEFINITION_INDEX],
-                            [PMAX_PERCENTS_INDEX]:
-                                stageSelection[PMAX_PERCENTS_INDEX],
+                            [STAGES_DEFINITION_INDEX]: stageSelection[STAGES_DEFINITION_INDEX],
+                            [PMAX_PERCENTS_INDEX]: stageSelection[PMAX_PERCENTS_INDEX],
                         };
                     }) ?? [],
 
-                [SENSITIVITY_THRESHOLD]:
-                    parameters[GENERATORS_LIMIT][SENSITIVITY_THRESHOLD],
+                [SENSITIVITY_THRESHOLD]: parameters[GENERATORS_LIMIT][SENSITIVITY_THRESHOLD],
 
                 [GENERATORS_CAPPINGS]:
-                    parameters[GENERATORS_LIMIT][
-                        GENERATORS_CAPPINGS_FILTER
-                    ]?.map((generatorCappings) => {
+                    parameters[GENERATORS_LIMIT][GENERATORS_CAPPINGS_FILTER]?.map((generatorCappings) => {
                         return {
-                            [GENERATORS_CAPPINGS_KIND]:
-                                generatorCappings[GENERATORS_CAPPINGS_KIND],
-                            [GENERATORS_CAPPINGS_FILTER]: generatorCappings[
-                                GENERATORS_CAPPINGS_FILTER
-                            ].map((generatorFilter) => {
-                                return {
-                                    [ID]: generatorFilter[CONTAINER_ID],
-                                    [NAME]: generatorFilter[CONTAINER_NAME],
-                                };
-                            }),
+                            [GENERATORS_CAPPINGS_KIND]: generatorCappings[GENERATORS_CAPPINGS_KIND],
+                            [GENERATORS_CAPPINGS_FILTER]: generatorCappings[GENERATORS_CAPPINGS_FILTER].map(
+                                (generatorFilter) => {
+                                    return {
+                                        [ID]: generatorFilter[CONTAINER_ID],
+                                        [NAME]: generatorFilter[CONTAINER_NAME],
+                                    };
+                                }
+                            ),
                             [ACTIVATED]: generatorCappings[ACTIVATED],
                         };
                     }) ?? [],
@@ -314,35 +277,19 @@ export const NonEvacuatedEnergyParameters = ({
                 [MONITORED_BRANCHES]:
                     parameters[MONITORED_BRANCHES]?.map((monitoredBranches) => {
                         return {
-                            [BRANCHES]: monitoredBranches[BRANCHES].map(
-                                (monitoredBranchFilter) => {
-                                    return {
-                                        [ID]: monitoredBranchFilter[
-                                            CONTAINER_ID
-                                        ],
-                                        [NAME]: monitoredBranchFilter[
-                                            CONTAINER_NAME
-                                        ],
-                                    };
-                                }
-                            ),
+                            [BRANCHES]: monitoredBranches[BRANCHES].map((monitoredBranchFilter) => {
+                                return {
+                                    [ID]: monitoredBranchFilter[CONTAINER_ID],
+                                    [NAME]: monitoredBranchFilter[CONTAINER_NAME],
+                                };
+                            }),
 
-                            [MONITORED_BRANCHES_IST_N]:
-                                monitoredBranches[MONITORED_BRANCHES_IST_N],
-                            [MONITORED_BRANCHES_LIMIT_NAME_N]:
-                                monitoredBranches[
-                                    MONITORED_BRANCHES_LIMIT_NAME_N
-                                ],
-                            [MONITORED_BRANCHES_COEFF_N]:
-                                monitoredBranches[MONITORED_BRANCHES_COEFF_N],
-                            [MONITORED_BRANCHES_IST_N_1]:
-                                monitoredBranches[MONITORED_BRANCHES_IST_N_1],
-                            [MONITORED_BRANCHES_LIMIT_NAME_N_1]:
-                                monitoredBranches[
-                                    MONITORED_BRANCHES_LIMIT_NAME_N_1
-                                ],
-                            [MONITORED_BRANCHES_COEFF_N_1]:
-                                monitoredBranches[MONITORED_BRANCHES_COEFF_N_1],
+                            [MONITORED_BRANCHES_IST_N]: monitoredBranches[MONITORED_BRANCHES_IST_N],
+                            [MONITORED_BRANCHES_LIMIT_NAME_N]: monitoredBranches[MONITORED_BRANCHES_LIMIT_NAME_N],
+                            [MONITORED_BRANCHES_COEFF_N]: monitoredBranches[MONITORED_BRANCHES_COEFF_N],
+                            [MONITORED_BRANCHES_IST_N_1]: monitoredBranches[MONITORED_BRANCHES_IST_N_1],
+                            [MONITORED_BRANCHES_LIMIT_NAME_N_1]: monitoredBranches[MONITORED_BRANCHES_LIMIT_NAME_N_1],
+                            [MONITORED_BRANCHES_COEFF_N_1]: monitoredBranches[MONITORED_BRANCHES_COEFF_N_1],
                             [ACTIVATED]: monitoredBranches[ACTIVATED],
                         };
                     }) ?? [],
@@ -350,14 +297,12 @@ export const NonEvacuatedEnergyParameters = ({
                 [CONTINGENCIES]:
                     parameters[CONTINGENCIES]?.map((contingencies) => {
                         return {
-                            [CONTINGENCIES]: contingencies[CONTINGENCIES].map(
-                                (contingency) => {
-                                    return {
-                                        [ID]: contingency[CONTAINER_ID],
-                                        [NAME]: contingency[CONTAINER_NAME],
-                                    };
-                                }
-                            ),
+                            [CONTINGENCIES]: contingencies[CONTINGENCIES].map((contingency) => {
+                                return {
+                                    [ID]: contingency[CONTAINER_ID],
+                                    [NAME]: contingency[CONTAINER_NAME],
+                                };
+                            }),
                             [ACTIVATED]: contingencies[ACTIVATED],
                         };
                     }) ?? [],
@@ -369,18 +314,11 @@ export const NonEvacuatedEnergyParameters = ({
     const combineStagesDefinition = useCallback((stagesDefinition) => {
         const stagesDefinitionsCount = 3; // only 3 stage definitions
         const stagesPmaxPercentsCount = 3; // only 3 pmax percents
-        const stagesSelectionsCount = Math.pow(
-            stagesPmaxPercentsCount,
-            stagesDefinitionsCount
-        );
+        const stagesSelectionsCount = Math.pow(stagesPmaxPercentsCount, stagesDefinitionsCount);
         let res = [];
         for (let i = 0; i < stagesSelectionsCount; ++i) {
-            const indexPmax1 = Math.trunc(
-                i / (stagesPmaxPercentsCount * stagesPmaxPercentsCount)
-            );
-            const indexPmax2 =
-                Math.trunc(i / stagesPmaxPercentsCount) %
-                stagesPmaxPercentsCount;
+            const indexPmax1 = Math.trunc(i / (stagesPmaxPercentsCount * stagesPmaxPercentsCount));
+            const indexPmax2 = Math.trunc(i / stagesPmaxPercentsCount) % stagesPmaxPercentsCount;
             const indexPmax3 = i % stagesPmaxPercentsCount;
             const valPmax1 =
                 indexPmax1 === 0
@@ -414,9 +352,7 @@ export const NonEvacuatedEnergyParameters = ({
                     stagesDefinition[2][GENERATION_STAGES_KIND] +
                     '_' +
                     valPmax3,
-                [STAGES_DEFINITION_INDEX]: Array.from(
-                    Array(stagesDefinitionsCount).keys()
-                ),
+                [STAGES_DEFINITION_INDEX]: Array.from(Array(stagesDefinitionsCount).keys()),
                 [PMAX_PERCENTS_INDEX]: [indexPmax1, indexPmax2, indexPmax3],
             };
             res.push(stageSelection);
@@ -425,33 +361,20 @@ export const NonEvacuatedEnergyParameters = ({
     }, []);
 
     const generateStagesSelection = useCallback(() => {
-        setValue(
-            STAGES_SELECTION,
-            combineStagesDefinition(getValues()[STAGES_DEFINITION]),
-            { shouldDirty: true }
-        );
+        setValue(STAGES_SELECTION, combineStagesDefinition(getValues()[STAGES_DEFINITION]), { shouldDirty: true });
     }, [setValue, getValues, combineStagesDefinition]);
 
     useEffect(() => {
         let params =
-            nonEvacuatedEnergyParams[STAGES_DEFINITION] &&
-            nonEvacuatedEnergyParams[STAGES_DEFINITION].length > 0
+            nonEvacuatedEnergyParams[STAGES_DEFINITION] && nonEvacuatedEnergyParams[STAGES_DEFINITION].length > 0
                 ? nonEvacuatedEnergyParams
                 : emptyFormData;
         fromNonEvacuatedEnergyParamsDataToFormValues(params);
-    }, [
-        fromNonEvacuatedEnergyParamsDataToFormValues,
-        nonEvacuatedEnergyParams,
-        parametersBackend,
-        emptyFormData,
-    ]);
+    }, [fromNonEvacuatedEnergyParamsDataToFormValues, nonEvacuatedEnergyParams, parametersBackend, emptyFormData]);
 
     useEffect(() => {
         const subscription = watch((value, { name, type }) => {
-            if (
-                type === 'change' &&
-                name.trim().startsWith(STAGES_DEFINITION)
-            ) {
+            if (type === 'change' && name.trim().startsWith(STAGES_DEFINITION)) {
                 // a change has been made in the stages definition :
                 // ==> regeneration of the stages selection
                 generateStagesSelection();
@@ -464,12 +387,7 @@ export const NonEvacuatedEnergyParameters = ({
         reset(emptyFormData);
         resetProvider();
         resetNonEvacuatedEnergyParameters();
-    }, [
-        emptyFormData,
-        reset,
-        resetProvider,
-        resetNonEvacuatedEnergyParameters,
-    ]);
+    }, [emptyFormData, reset, resetProvider, resetNonEvacuatedEnergyParameters]);
 
     const onFormChanged = () => {};
     const onChangeParams = () => {};
@@ -486,19 +404,13 @@ export const NonEvacuatedEnergyParameters = ({
                             fullWidth
                             name={PROVIDER}
                             size="small"
-                            options={Object.values(providers).map(
-                                (provider) => {
-                                    return { id: provider, label: provider };
-                                }
-                            )}
+                            options={Object.values(providers).map((provider) => {
+                                return { id: provider, label: provider };
+                            })}
                         />
                     </Grid>
                 </Grid>
-                <Grid
-                    container
-                    sx={styles.scrollableGrid}
-                    key="nonEvacuatedEnergyParameters"
-                >
+                <Grid container sx={styles.scrollableGrid} key="nonEvacuatedEnergyParameters">
                     <Grid container paddingTop={1} paddingBottom={1}>
                         <LineSeparator />
                     </Grid>
@@ -518,10 +430,7 @@ export const NonEvacuatedEnergyParameters = ({
                         <Button onClick={clear}>
                             <FormattedMessage id="resetToDefault" />
                         </Button>
-                        <SubmitButton
-                            onClick={handleSubmit(onSubmit)}
-                            variant="outlined"
-                        >
+                        <SubmitButton onClick={handleSubmit(onSubmit)} variant="outlined">
                             <FormattedMessage id="validate" />
                         </SubmitButton>
                     </DialogActions>

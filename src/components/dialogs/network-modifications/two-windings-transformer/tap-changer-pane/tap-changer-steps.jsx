@@ -12,9 +12,7 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 import Papa from 'papaparse';
 import { useIntl } from 'react-intl';
 import { IntegerInput } from '@gridsuite/commons-ui';
-import DndTable, {
-    MAX_ROWS_NUMBER,
-} from 'components/utils/dnd-table/dnd-table';
+import DndTable, { MAX_ROWS_NUMBER } from 'components/utils/dnd-table/dnd-table';
 import { CreateRuleDialog } from './create-rule/create-rule-dialog';
 import { ImportRuleDialog } from './import-rule-dialog';
 import {
@@ -26,10 +24,7 @@ import {
     TAP_POSITION,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import {
-    compareStepsWithPreviousValues,
-    computeHighTapPosition,
-} from 'components/utils/utils';
+import { compareStepsWithPreviousValues, computeHighTapPosition } from 'components/utils/utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 
 const TapChangerSteps = ({
@@ -70,11 +65,7 @@ const TapChangerSteps = ({
     const [openImportRuleDialog, setOpenImportRuleDialog] = useState(false);
 
     const disableAddingRows = useMemo(() => {
-        return (
-            isModification &&
-            lowTapPosition === null &&
-            previousValues?.[LOW_TAP_POSITION] === undefined
-        );
+        return isModification && lowTapPosition === null && previousValues?.[LOW_TAP_POSITION] === undefined;
     }, [isModification, lowTapPosition, previousValues]);
 
     function allowedToAddTapRows() {
@@ -85,17 +76,14 @@ const TapChangerSteps = ({
     }
 
     function createTapRows(numberOfRows) {
-        const currentLowTapPosition = getValues(
-            `${tapChanger}.${LOW_TAP_POSITION}`
-        );
+        const currentLowTapPosition = getValues(`${tapChanger}.${LOW_TAP_POSITION}`);
         const currentTapRows = getValues(`${tapChanger}.${STEPS}`);
 
         let nextHighestTap;
         if (currentTapRows.length === 0) {
             nextHighestTap = currentLowTapPosition;
         } else {
-            nextHighestTap =
-                currentTapRows[currentTapRows.length - 1][STEPS_TAP] + 1;
+            nextHighestTap = currentTapRows[currentTapRows.length - 1][STEPS_TAP] + 1;
         }
 
         const tapRowsToAdd = [];
@@ -127,38 +115,27 @@ const TapChangerSteps = ({
         if (editData?.[STEPS] && isNodeBuilt(currentNode)) {
             return true;
         } else {
-            return !compareStepsWithPreviousValues(
-                tapStepsWatcher,
-                previousValues?.[STEPS]
-            );
+            return !compareStepsWithPreviousValues(tapStepsWatcher, previousValues?.[STEPS]);
         }
     }, [currentNode, editData, previousValues, tapStepsWatcher]);
 
     const resetTapNumbers = useCallback(
         (tapSteps, isModification) => {
-            const currentTapRows =
-                tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
+            const currentTapRows = tapSteps ?? getValues(`${tapChanger}.${STEPS}`);
 
             const currentLowTapPosition =
-                isModification && lowTapPosition === null
-                    ? previousValues?.[LOW_TAP_POSITION]
-                    : lowTapPosition;
+                isModification && lowTapPosition === null ? previousValues?.[LOW_TAP_POSITION] : lowTapPosition;
 
             for (
                 let tapPosition = currentLowTapPosition, index = 0;
                 index < currentTapRows.length;
                 tapPosition++, index++
             ) {
-                setValue(
-                    `${tapChanger}.${STEPS}[${index}].${STEPS_TAP}`,
-                    tapPosition
-                );
+                setValue(`${tapChanger}.${STEPS}[${index}].${STEPS_TAP}`, tapPosition);
             }
 
             const newHighTapPosition =
-                currentTapRows.length !== 0
-                    ? currentLowTapPosition + currentTapRows.length - 1
-                    : null;
+                currentTapRows.length !== 0 ? currentLowTapPosition + currentTapRows.length - 1 : null;
             setValue(`${tapChanger}.${HIGH_TAP_POSITION}`, newHighTapPosition);
         },
         [getValues, tapChanger, lowTapPosition, previousValues, setValue]
@@ -213,12 +190,7 @@ const TapChangerSteps = ({
             skipEmptyLines: true,
             complete: function (results) {
                 if (results.data.length > MAX_ROWS_NUMBER) {
-                    setFileParseError(
-                        intl.formatMessage(
-                            { id: 'TapPositionValueError' },
-                            { value: MAX_ROWS_NUMBER }
-                        )
-                    );
+                    setFileParseError(intl.formatMessage({ id: 'TapPositionValueError' }, { value: MAX_ROWS_NUMBER }));
                     return;
                 }
                 let rows = results.data.map((val) => ({
@@ -273,10 +245,7 @@ const TapChangerSteps = ({
             placement="left"
         >
             <span>
-                <IconButton
-                    onClick={() => setOpenCreateRuleDialog(true)}
-                    disabled={disabled || tapSteps.length === 0}
-                >
+                <IconButton onClick={() => setOpenCreateRuleDialog(true)} disabled={disabled || tapSteps.length === 0}>
                     <AddchartIcon />
                 </IconButton>
             </span>
@@ -291,9 +260,7 @@ const TapChangerSteps = ({
 
     const getTapPreviousValue = useCallback(
         (rowIndex, column, arrayFormName, tapSteps) => {
-            const step = tapSteps?.find(
-                (e) => e.index === getValues(arrayFormName)[rowIndex]?.index
-            );
+            const step = tapSteps?.find((e) => e.index === getValues(arrayFormName)[rowIndex]?.index);
             if (step === undefined) {
                 return undefined;
             }
@@ -302,10 +269,7 @@ const TapChangerSteps = ({
         [getValues]
     );
 
-    const isTapModified = useCallback(
-        () => areStepsModified,
-        [areStepsModified]
-    );
+    const isTapModified = useCallback(() => areStepsModified, [areStepsModified]);
 
     return (
         <Grid item container spacing={1}>
@@ -329,9 +293,7 @@ const TapChangerSteps = ({
                 createRows={createTapRows}
                 handleUploadButton={handleImportTapRuleButton}
                 uploadButtonMessageId={importRuleMessageId}
-                handleResetButton={
-                    isModification ? handleResetButton : undefined
-                }
+                handleResetButton={isModification ? handleResetButton : undefined}
                 resetButtonMessageId={resetButtonMessageId}
                 previousValues={previousValues?.[STEPS]}
                 getPreviousValue={getTapPreviousValue}

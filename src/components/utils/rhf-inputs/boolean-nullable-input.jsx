@@ -11,13 +11,7 @@ import { useIntl } from 'react-intl';
 import { useController } from 'react-hook-form';
 import { useCallback } from 'react';
 
-const CheckboxNullableInput = ({
-    name,
-    label,
-    id,
-    formProps,
-    previousValue,
-}) => {
+const CheckboxNullableInput = ({ name, label, id, formProps, previousValue }) => {
     const {
         field: { onChange, value },
     } = useController({ name });

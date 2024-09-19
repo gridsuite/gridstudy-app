@@ -30,10 +30,7 @@ const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 
 const VariationForm = ({ name, index }) => {
     const { snackError } = useSnackMessage();
-    const filterFieldName = useMemo(
-        () => `${name}.${index}.${FILTERS}`,
-        [name, index]
-    );
+    const filterFieldName = useMemo(() => `${name}.${index}.${FILTERS}`, [name, index]);
 
     const variationMode = useWatch({
         name: `${name}.${index}.${VARIATION_MODE}`,
@@ -55,15 +52,12 @@ const VariationForm = ({ name, index }) => {
             fetchElementsInfos(ids, [], [])
                 .then((results) => {
                     const newFilters = filters.map((filter) => {
-                        const filterWithMetadata = results.find(
-                            (f) => f.elementUuid === filter.id
-                        );
+                        const filterWithMetadata = results.find((f) => f.elementUuid === filter.id);
                         if (filterWithMetadata) {
                             return {
                                 [ID]: filterWithMetadata.elementUuid,
                                 [NAME]: filterWithMetadata.elementName,
-                                [SPECIFIC_METADATA]:
-                                    filterWithMetadata.specificMetadata,
+                                [SPECIFIC_METADATA]: filterWithMetadata.specificMetadata,
                             };
                         }
                         return filter;
@@ -84,8 +78,7 @@ const VariationForm = ({ name, index }) => {
         // When editing the modification, filters does not have specific metadata which contain filter type
         // If variation mode is STACKING_UP or VENTILATION, all filters types must be 'explicit naming'
         if (
-            (variationMode === VARIATION_MODES.STACKING_UP.id ||
-                variationMode === VARIATION_MODES.VENTILATION.id) &&
+            (variationMode === VARIATION_MODES.STACKING_UP.id || variationMode === VARIATION_MODES.VENTILATION.id) &&
             filters.length > 0
         ) {
             // collect all filters without metadata
@@ -109,9 +102,7 @@ const VariationForm = ({ name, index }) => {
                 if (variationMode === VARIATION_MODES.VENTILATION.id) {
                     return (
                         value?.specificMetadata?.type === IDENTIFIER_LIST &&
-                        value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                            (fil) => !!fil.distributionKey
-                        )
+                        value?.specificMetadata?.filterEquipmentsAttributes?.every((fil) => !!fil.distributionKey)
                     );
                 }
             }

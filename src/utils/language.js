@@ -11,9 +11,7 @@ const supportedLanguages = [LANG_FRENCH, LANG_ENGLISH];
 
 export const getSystemLanguage = () => {
     const systemLanguage = navigator.language.split(/[-_]/)[0];
-    return supportedLanguages.includes(systemLanguage)
-        ? systemLanguage
-        : LANG_ENGLISH;
+    return supportedLanguages.includes(systemLanguage) ? systemLanguage : LANG_ENGLISH;
 };
 
 export const getComputedLanguage = (language) => {

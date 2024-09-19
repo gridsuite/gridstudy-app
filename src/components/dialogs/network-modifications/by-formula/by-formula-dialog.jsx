@@ -27,10 +27,7 @@ import {
     VALUE,
 } from '../../../utils/field-constants';
 import { modifyByFormula } from '../../../../services/study/network-modifications';
-import {
-    getFormulaInitialValue,
-    getFormulaSchema,
-} from './formula/formula-utils';
+import { getFormulaInitialValue, getFormulaSchema } from './formula/formula-utils';
 
 function getFieldOrValue(input) {
     const value = input.replace(',', '.');
@@ -54,14 +51,7 @@ const emptyFormData = {
     [FORMULAS]: [getFormulaInitialValue()],
 };
 
-const ByFormulaDialog = ({
-    editData,
-    currentNode,
-    studyUuid,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -72,9 +62,7 @@ const ByFormulaDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -83,12 +71,8 @@ const ByFormulaDialog = ({
     useEffect(() => {
         if (editData) {
             const formulas = editData.formulaInfosList?.map((formula) => {
-                const ref1 =
-                    formula?.fieldOrValue1?.value?.toString() ??
-                    formula?.fieldOrValue1?.equipmentField;
-                const ref2 =
-                    formula?.fieldOrValue2?.value?.toString() ??
-                    formula?.fieldOrValue2?.equipmentField;
+                const ref1 = formula?.fieldOrValue1?.value?.toString() ?? formula?.fieldOrValue1?.equipmentField;
+                const ref2 = formula?.fieldOrValue2?.value?.toString() ?? formula?.fieldOrValue2?.equipmentField;
                 return {
                     [REFERENCE_FIELD_OR_VALUE_1]: ref1,
                     [REFERENCE_FIELD_OR_VALUE_2]: ref2,
@@ -111,12 +95,8 @@ const ByFormulaDialog = ({
     const onSubmit = useCallback(
         (data) => {
             const formulas = data[FORMULAS].map((formula) => {
-                const fieldOrValue1 = getFieldOrValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_1]
-                );
-                const fieldOrValue2 = getFieldOrValue(
-                    formula[REFERENCE_FIELD_OR_VALUE_2]
-                );
+                const fieldOrValue1 = getFieldOrValue(formula[REFERENCE_FIELD_OR_VALUE_1]);
+                const fieldOrValue2 = getFieldOrValue(formula[REFERENCE_FIELD_OR_VALUE_2]);
                 return {
                     fieldOrValue1,
                     fieldOrValue2,
@@ -150,9 +130,7 @@ const ByFormulaDialog = ({
                 titleId="ModifyByFormula"
                 open={open}
                 maxWidth={'xl'}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <ByFormulaForm />

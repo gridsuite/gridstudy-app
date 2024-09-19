@@ -10,9 +10,7 @@ import { Grid } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { makeComponents, TYPES } from '../util/make-component-utils';
-import IdaSolverParameters, {
-    getFormSchema as getIdaFormSchema,
-} from './solver/ida-solver-parameters';
+import IdaSolverParameters, { getFormSchema as getIdaFormSchema } from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters, {
     getFormSchema as getSimplifiedFormSchema,
 } from './solver/simplified-solver-parameters';

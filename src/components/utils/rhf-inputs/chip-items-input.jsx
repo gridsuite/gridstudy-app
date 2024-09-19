@@ -100,16 +100,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
         <>
             <FormControl sx={styles.chipContainer} error={!!error?.message}>
                 {elements?.length === 0 && label && (
-                    <FieldLabel
-                        label={label}
-                        optional={
-                            !isFieldRequired(
-                                name,
-                                validationSchema,
-                                getValues()
-                            )
-                        }
-                    />
+                    <FieldLabel label={label} optional={!isFieldRequired(name, validationSchema, getValues())} />
                 )}
                 {elements?.length > 0 && (
                     <FormControl sx={styles.chipItem}>
@@ -122,11 +113,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                                 }}
                                 label={
                                     <OverflowableText
-                                        text={
-                                            <RawReadOnlyInput
-                                                name={`${name}.${index}`}
-                                            />
-                                        }
+                                        text={<RawReadOnlyInput name={`${name}.${index}`} />}
                                         sx={{ width: '100%' }}
                                     />
                                 }
@@ -151,9 +138,7 @@ const ChipItemsInput = ({ label, name, hideErrorMessage }) => {
                     onBlur={onBlur}
                 ></TextField>
             </FormControl>
-            {!hideErrorMessage && (
-                <ErrorInput name={name} InputField={MidFormError} />
-            )}
+            {!hideErrorMessage && <ErrorInput name={name} InputField={MidFormError} />}
         </>
     );
 };

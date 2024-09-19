@@ -21,11 +21,7 @@ import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reacti
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 
-const headerIds = [
-    'ActivePowerText',
-    'MinimumReactivePower',
-    'MaximumReactivePower',
-];
+const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
 
 const ReactiveLimitsForm = ({
     id = REACTIVE_LIMITS,
@@ -36,8 +32,7 @@ const ReactiveLimitsForm = ({
         name: `${id}.${REACTIVE_CAPABILITY_CURVE_CHOICE}`,
     });
 
-    const isReactiveCapabilityCurveOn =
-        reactiveCapabilityCurveChoice !== 'MINMAX';
+    const isReactiveCapabilityCurveOn = reactiveCapabilityCurveChoice !== 'MINMAX';
 
     const reactiveCapabilityCurveChoiceRadioField = (
         <RadioInput
@@ -74,9 +69,7 @@ const ReactiveLimitsForm = ({
             tableHeadersIds={headerIds}
             isReactiveCapabilityCurveOn={isReactiveCapabilityCurveOn}
             previousValues={equipmentToModify?.reactiveCapabilityCurvePoints}
-            updatePreviousReactiveCapabilityCurveTable={
-                updatePreviousReactiveCapabilityCurveTable
-            }
+            updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
         />
     );
 
@@ -84,12 +77,9 @@ const ReactiveLimitsForm = ({
         <Grid container spacing={2}>
             {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
 
-            {!isReactiveCapabilityCurveOn &&
-                gridItem(minimumReactivePowerField, 4)}
-            {!isReactiveCapabilityCurveOn &&
-                gridItem(maximumReactivePowerField, 4)}
-            {isReactiveCapabilityCurveOn &&
-                gridItem(reactiveCapabilityCurveTableField, 12)}
+            {!isReactiveCapabilityCurveOn && gridItem(minimumReactivePowerField, 4)}
+            {!isReactiveCapabilityCurveOn && gridItem(maximumReactivePowerField, 4)}
+            {isReactiveCapabilityCurveOn && gridItem(reactiveCapabilityCurveTableField, 12)}
         </Grid>
     );
 };

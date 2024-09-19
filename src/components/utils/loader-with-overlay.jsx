@@ -28,17 +28,9 @@ const styles = {
     },
 };
 
-const LoaderWithOverlay = ({
-    color,
-    loaderSize,
-    loadingMessageText,
-    isFixed,
-}) => {
+const LoaderWithOverlay = ({ color, loaderSize, loadingMessageText, isFixed }) => {
     return (
-        <Box
-            sx={styles.overlay}
-            style={{ position: isFixed ? 'fixed' : 'absolute' }}
-        >
+        <Box sx={styles.overlay} style={{ position: isFixed ? 'fixed' : 'absolute' }}>
             <CircularProgress color={color} size={loaderSize} />
             <FormattedMessage id={loadingMessageText} />
         </Box>

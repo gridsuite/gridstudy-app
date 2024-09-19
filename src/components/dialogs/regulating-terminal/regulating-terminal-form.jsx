@@ -8,12 +8,7 @@
 import { Popper } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
-import {
-    EQUIPMENT,
-    ID,
-    TYPE,
-    VOLTAGE_LEVEL,
-} from 'components/utils/field-constants';
+import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -64,15 +59,11 @@ const RegulatingTerminalForm = ({
 
     useEffect(() => {
         if (watchVoltageLevelId) {
-            fetchVoltageLevelEquipments(
-                studyUuid,
-                currentNodeUuid,
-                undefined,
-                watchVoltageLevelId,
-                true
-            ).then((values) => {
-                setEquipmentsOptions(values);
-            });
+            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid, undefined, watchVoltageLevelId, true).then(
+                (values) => {
+                    setEquipmentsOptions(values);
+                }
+            );
         } else {
             setEquipmentsOptions([]);
         }
@@ -87,13 +78,7 @@ const RegulatingTerminalForm = ({
             <Grid container direction={direction || 'row'} spacing={2}>
                 <Grid
                     item
-                    xs={
-                        direction &&
-                        (direction === 'column' ||
-                            direction === 'column-reverse')
-                            ? 12
-                            : 6
-                    }
+                    xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
                     align="start"
                 >
                     {
@@ -118,9 +103,7 @@ const RegulatingTerminalForm = ({
                                 const filtered = filter(options, params);
                                 if (
                                     params.inputValue !== '' &&
-                                    !options.find(
-                                        (opt) => opt?.[ID] === params.inputValue
-                                    )
+                                    !options.find((opt) => opt?.[ID] === params.inputValue)
                                 ) {
                                     filtered.push({
                                         inputValue: params.inputValue,
@@ -135,13 +118,7 @@ const RegulatingTerminalForm = ({
                 </Grid>
                 <Grid
                     item
-                    xs={
-                        direction &&
-                        (direction === 'column' ||
-                            direction === 'column-reverse')
-                            ? 12
-                            : 6
-                    }
+                    xs={direction && (direction === 'column' || direction === 'column-reverse') ? 12 : 6}
                     align="start"
                 >
                     {/* TODO: autoComplete prop is not working properly with material-ui v4,
@@ -153,12 +130,8 @@ const RegulatingTerminalForm = ({
                             name={`${id}.${EQUIPMENT}`}
                             //hack to work with freesolo autocomplete
                             //setting null programatically when freesolo is enable wont empty the field
-                            inputTransform={(value) =>
-                                value === null ? '' : value
-                            }
-                            outputTransform={(value) =>
-                                value === '' ? null : value
-                            }
+                            inputTransform={(value) => (value === null ? '' : value)}
+                            outputTransform={(value) => (value === '' ? null : value)}
                             label="Equipment"
                             size="small"
                             freeSolo
@@ -172,8 +145,7 @@ const RegulatingTerminalForm = ({
                             getOptionLabel={(equipment) => {
                                 return equipment === ''
                                     ? '' // to clear field
-                                    : (equipment?.[TYPE] ??
-                                          equipmentSectionTypeDefaultValue) +
+                                    : (equipment?.[TYPE] ?? equipmentSectionTypeDefaultValue) +
                                           ' : ' +
                                           equipment?.[ID] || '';
                             }}
@@ -182,12 +154,7 @@ const RegulatingTerminalForm = ({
                          */
                             filterOptions={(options, params) => {
                                 const filtered = filter(options, params);
-                                if (
-                                    params.inputValue !== '' &&
-                                    !options.find(
-                                        (opt) => opt?.id === params.inputValue
-                                    )
-                                ) {
+                                if (params.inputValue !== '' && !options.find((opt) => opt?.id === params.inputValue)) {
                                     filtered.push({
                                         [TYPE]: equipmentSectionTypeDefaultValue,
                                         [ID]: params.inputValue,

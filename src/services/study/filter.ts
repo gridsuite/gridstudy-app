@@ -23,13 +23,10 @@ export function evaluateJsonFilter(
     currentNodeUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
 ) {
-    console.info(
-        `Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`
-    );
+    console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const evaluateFilterUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/filters/evaluate?inUpstreamBuiltParentNode=true';
+        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/filters/evaluate?inUpstreamBuiltParentNode=true';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'post',

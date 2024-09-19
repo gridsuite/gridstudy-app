@@ -48,9 +48,8 @@ const ReferenceAutocompleteInput: FunctionComponent<{
         [intl]
     );
 
-    const inputTransform = (
-        value: { id: string; label: string } | string | null
-    ) => options.find((option) => option?.id === value) || value;
+    const inputTransform = (value: { id: string; label: string } | string | null) =>
+        options.find((option) => option?.id === value) || value;
 
     const outputTransform = (value: any) => {
         return value?.id ?? value;
@@ -62,9 +61,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
             options={options}
             isOptionEqualToValue={areIdsEqual}
             getOptionLabel={(option: any) => {
-                return option?.label
-                    ? intl.formatMessage({ id: option.label })
-                    : option;
+                return option?.label ? intl.formatMessage({ id: option.label }) : option;
             }}
             inputTransform={inputTransform}
             outputTransform={outputTransform}
@@ -82,9 +79,7 @@ const ReferenceAutocompleteInput: FunctionComponent<{
             }}
             filterOptions={(
                 options: ({ id: string; label: string } | string)[],
-                state: FilterOptionsState<
-                    string | { id: string; label: string }
-                >
+                state: FilterOptionsState<string | { id: string; label: string }>
             ) => handleFilterOptions(options, state)}
             formProps={{
                 helperText: intl.formatMessage({

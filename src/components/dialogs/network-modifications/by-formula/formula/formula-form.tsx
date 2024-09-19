@@ -26,7 +26,7 @@ import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 
 interface FormulaProps {
-    name: String;
+    name: string;
     index: number;
 }
 
@@ -44,7 +44,9 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
 
     const intl = useIntl();
 
-    const equipmentFields = EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+    const equipmentFields: { id: string; label: string }[] =
+        // @ts-expect-error TODO: missing type in context
+        EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
 
     const filtersField = (
         <DirectoryItemsInput
@@ -63,32 +65,19 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             options={equipmentFields}
             label={'EditedField'}
             size={'small'}
-            inputTransform={(value: any) =>
-                equipmentFields.find((option) => option?.id === value) || value
-            }
+            inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) =>
-                intl.formatMessage({ id: getLabelOrValue(option) })
-            }
+            getOptionLabel={(option: any) => intl.formatMessage({ id: getLabelOrValue(option) })}
         />
     );
 
     const referenceField1 = (
-        <ReferenceAutocompleteInput
-            name={`${name}.${index}.${REFERENCE_FIELD_OR_VALUE_1}`}
-            options={equipmentFields}
-        />
+        <ReferenceAutocompleteInput name={`${name}.${index}.${REFERENCE_FIELD_OR_VALUE_1}`} options={equipmentFields} />
     );
 
-    const inputTransform = (
-        value: { id: string; label: string } | string | null
-    ) => {
+    const inputTransform = (value: { id: string; label: string } | string | null) => {
         const newVal = value ?? null;
-        return (
-            OPERATOR_OPTIONS.find(
-                (option) => option?.id === getIdOrValue(value)
-            ) || newVal
-        );
+        return OPERATOR_OPTIONS.find((option) => option?.id === getIdOrValue(value)) || newVal;
     };
 
     const operatorField = (
@@ -105,10 +94,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
     );
 
     const referenceField2 = (
-        <ReferenceAutocompleteInput
-            name={`${name}.${index}.${REFERENCE_FIELD_OR_VALUE_2}`}
-            options={equipmentFields}
-        />
+        <ReferenceAutocompleteInput name={`${name}.${index}.${REFERENCE_FIELD_OR_VALUE_2}`} options={equipmentFields} />
     );
 
     return (

@@ -75,12 +75,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
         FORCED_OUTAGE_RATE,
     ],
     BATTERY: [EQUIPMENT_ID, MIN_P, TARGET_P, MAX_P, TARGET_Q, CONNECTED],
-    VOLTAGE_LEVEL: [
-        EQUIPMENT_ID,
-        NOMINAL_V,
-        LOW_VOLTAGE_LIMIT,
-        HIGH_VOLTAGE_LIMIT,
-    ],
+    VOLTAGE_LEVEL: [EQUIPMENT_ID, NOMINAL_V, LOW_VOLTAGE_LIMIT, HIGH_VOLTAGE_LIMIT],
     SHUNT_COMPENSATOR: [
         EQUIPMENT_ID,
         MAXIMUM_SECTION_COUNT,
@@ -92,18 +87,7 @@ export const TABULAR_MODIFICATION_FIELDS: TabularModificationFields = {
     ],
     LINE: [EQUIPMENT_ID, R, X, G1, G2, B1, B2, CONNECTED1, CONNECTED2],
     LOAD: [EQUIPMENT_ID, LOAD_TYPE, P0, Q0, CONNECTED],
-    TWO_WINDINGS_TRANSFORMER: [
-        EQUIPMENT_ID,
-        R,
-        X,
-        G,
-        B,
-        RATED_U1,
-        RATED_U2,
-        RATED_S,
-        CONNECTED1,
-        CONNECTED2,
-    ],
+    TWO_WINDINGS_TRANSFORMER: [EQUIPMENT_ID, R, X, G, B, RATED_U1, RATED_U2, RATED_S, CONNECTED1, CONNECTED2],
     SUBSTATION: [EQUIPMENT_ID, COUNTRY],
 };
 
@@ -114,8 +98,7 @@ export const TABULAR_MODIFICATION_TYPES: { [key: string]: string } = {
     VOLTAGE_LEVEL: MODIFICATION_TYPES.VOLTAGE_LEVEL_MODIFICATION.type,
     SHUNT_COMPENSATOR: MODIFICATION_TYPES.SHUNT_COMPENSATOR_MODIFICATION.type,
     LINE: MODIFICATION_TYPES.LINE_MODIFICATION.type,
-    TWO_WINDINGS_TRANSFORMER:
-        MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
+    TWO_WINDINGS_TRANSFORMER: MODIFICATION_TYPES.TWO_WINDINGS_TRANSFORMER_MODIFICATION.type,
     SUBSTATION: MODIFICATION_TYPES.SUBSTATION_MODIFICATION.type,
 };
 
@@ -129,10 +112,7 @@ export const formatModification = (modification: Modification) => {
     return rest;
 };
 
-export const convertValueFromBackToFront = (
-    key: string,
-    value: { value: string | number }
-) => {
+export const convertValueFromBackToFront = (key: string, value: { value: string | number }) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
@@ -148,10 +128,7 @@ export const convertValueFromBackToFront = (
     }
 };
 
-export const convertValueFromFrontToBack = (
-    key: string,
-    value: string | number
-) => {
+export const convertValueFromFrontToBack = (key: string, value: string | number) => {
     switch (key) {
         case EQUIPMENT_ID:
             return value;
@@ -168,9 +145,7 @@ export const convertValueFromFrontToBack = (
 };
 
 export const getEquipmentTypeFromModificationType = (type: string) => {
-    return Object.keys(TABULAR_MODIFICATION_TYPES).find(
-        (key) => TABULAR_MODIFICATION_TYPES[key] === type
-    );
+    return Object.keys(TABULAR_MODIFICATION_TYPES).find((key) => TABULAR_MODIFICATION_TYPES[key] === type);
 };
 
 export const styles = {

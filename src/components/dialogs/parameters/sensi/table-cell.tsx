@@ -8,12 +8,7 @@
 import { TableCell } from '@mui/material';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import React from 'react';
-import {
-    MuiSelectInput,
-    SwitchInput,
-    FloatInput,
-    TextInput,
-} from '@gridsuite/commons-ui';
+import { MuiSelectInput, SwitchInput, FloatInput, TextInput } from '@gridsuite/commons-ui';
 
 function EditableTableCell(
     arrayFormName: string,
@@ -56,16 +51,10 @@ function EditableTableCell(
             )}
             {column.checkboxItems && (
                 <span onChange={handleSwitchInputChange}>
-                    <SwitchInput
-                        name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                    />
+                    <SwitchInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} />
                 </span>
             )}
-            {column.floatItems && (
-                <FloatInput
-                    name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}
-                />
-            )}
+            {column.floatItems && <FloatInput name={`${arrayFormName}[${rowIndex}].${column.dataKey}`} />}
             {column.textItems && (
                 <TextInput
                     name={`${arrayFormName}[${rowIndex}].${column.dataKey}`}

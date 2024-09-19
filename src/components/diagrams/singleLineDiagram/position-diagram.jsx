@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    forwardRef,
-    useEffect,
-    useLayoutEffect,
-    useRef,
-    useState,
-} from 'react';
+import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { useSelector } from 'react-redux';
@@ -20,13 +14,7 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-import {
-    styles,
-    MAX_HEIGHT_VOLTAGE_LEVEL,
-    MAX_WIDTH_VOLTAGE_LEVEL,
-    NoSvg,
-    MIN_WIDTH,
-} from '../diagram-common';
+import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH } from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
@@ -157,21 +145,13 @@ const PositionDiagram = forwardRef((props, ref) => {
             }}
         >
             <Box>
-                <DiagramHeader
-                    diagramTitle={props.diagramTitle}
-                    showCloseControl
-                    onClose={onCloseHandler}
-                />
+                <DiagramHeader diagramTitle={props.diagramTitle} showCloseControl onClose={onCloseHandler} />
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
             <Box position="relative">
                 <Box
                     ref={svgRef}
-                    sx={mergeSx(
-                        styles.divDiagram,
-                        styles.divSingleLineDiagram,
-                        styles.divDiagramReadOnly
-                    )}
+                    sx={mergeSx(styles.divDiagram, styles.divSingleLineDiagram, styles.divDiagramReadOnly)}
                 />
             </Box>
         </Paper>

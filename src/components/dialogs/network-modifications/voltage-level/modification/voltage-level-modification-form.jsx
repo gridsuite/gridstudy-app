@@ -19,13 +19,7 @@ import {
 } from 'components/utils/field-constants';
 import { TextInput } from '@gridsuite/commons-ui';
 import { FloatInput } from '@gridsuite/commons-ui';
-import {
-    filledTextField,
-    gridItem,
-    GridSection,
-    KiloAmpereAdornment,
-    VoltageAdornment,
-} from '../../../dialogUtils';
+import { filledTextField, gridItem, GridSection, KiloAmpereAdornment, VoltageAdornment } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
@@ -144,10 +138,7 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
                 {gridItem(lowShortCircuitCurrentLimitField, 4)}
                 {gridItem(highShortCircuitCurrentLimitField, 4)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'voltageLevel'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'voltageLevel'} isModification={true} />
         </>
     );
 };

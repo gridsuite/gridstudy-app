@@ -54,11 +54,7 @@ const DndTableBottomLeftButtons = ({
                         placement="top"
                     >
                         <span>
-                            <IconButton
-                                color="primary"
-                                onClick={() => handleResetButton()}
-                                disabled={disabled}
-                            >
+                            <IconButton color="primary" onClick={() => handleResetButton()} disabled={disabled}>
                                 <ReplayIcon />
                             </IconButton>
                         </span>

@@ -7,10 +7,8 @@
 
 const events_locale_fr = {
     // Used in edition dialog and list of dynamic simulation events with format `Event{eventType}{equipmentType}`
-    EventDisconnect2WTransformer:
-        'Déclencher le transformateur {computedLabel}',
-    EventDisconnect3WTransformer:
-        'Déclencher le transformateur {computedLabel}',
+    EventDisconnect2WTransformer: 'Déclencher le transformateur {computedLabel}',
+    EventDisconnect3WTransformer: 'Déclencher le transformateur {computedLabel}',
     EventDisconnectGenerator: 'Déclencher le groupe {computedLabel}',
     EventDisconnectLine: 'Déclencher la ligne {computedLabel}',
     EventDisconnectLoad: 'Déclencher la consommation {computedLabel}',

@@ -30,12 +30,7 @@ const styles = {
  * @param {Object} anchor - Determines where the menu will appear on screen
  */
 
-export const MultiSelectList = ({
-    selectedItems,
-    handleChange,
-    handleClose,
-    anchor,
-}) => {
+export const MultiSelectList = ({ selectedItems, handleChange, handleClose, anchor }) => {
     const open = Boolean(anchor);
     return (
         <Menu open={open} onClose={handleClose} anchorEl={anchor}>
@@ -43,13 +38,7 @@ export const MultiSelectList = ({
                 return (
                     <MenuItem sx={styles.menuItem} key={key}>
                         <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={value}
-                                    onChange={handleChange}
-                                    name={key}
-                                />
-                            }
+                            control={<Checkbox checked={value} onChange={handleChange} name={key} />}
                             label={key}
                             sx={styles.label}
                         />

@@ -70,9 +70,7 @@ const CurveParameters = ({ path }) => {
                 // use functional keys to lookup
                 (curve) =>
                     !rowData.find(
-                        (elem) =>
-                            elem[EQUIPMENT_ID] === curve[EQUIPMENT_ID] &&
-                            elem[VARIABLE_ID] === curve[VARIABLE_ID]
+                        (elem) => elem[EQUIPMENT_ID] === curve[EQUIPMENT_ID] && elem[VARIABLE_ID] === curve[VARIABLE_ID]
                     )
             );
 
@@ -94,9 +92,7 @@ const CurveParameters = ({ path }) => {
         const indexesToRemove = selectedRows.map((elem) =>
             // use functional keys to lookup
             rowData.findIndex(
-                (row) =>
-                    elem[EQUIPMENT_ID] === row[EQUIPMENT_ID] &&
-                    elem[VARIABLE_ID] === row[VARIABLE_ID]
+                (row) => elem[EQUIPMENT_ID] === row[EQUIPMENT_ID] && elem[VARIABLE_ID] === row[VARIABLE_ID]
             )
         );
 
@@ -161,11 +157,7 @@ const CurveParameters = ({ path }) => {
                 {/* header toolbar of the aggrid */}
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <Grid container item xs={'auto'}>
-                        <GlobalFilter
-                            key={'curve-quick-filter'}
-                            ref={quickFilterRef}
-                            gridRef={gridRef}
-                        />
+                        <GlobalFilter key={'curve-quick-filter'} ref={quickFilterRef} gridRef={gridRef} />
                     </Grid>
                     <Grid
                         container
@@ -183,10 +175,7 @@ const CurveParameters = ({ path }) => {
                             })} (${selectedRowsLength} / ${rowData.length})`}
                         </Typography>
                     </Grid>
-                    <GridButtons
-                        onAddButton={handleAdd}
-                        onDeleteButton={handleDelete}
-                    />
+                    <GridButtons onAddButton={handleAdd} onDeleteButton={handleDelete} />
                 </Grid>
                 {/* aggrid for configured curves */}
                 <Grid item xs>
@@ -203,13 +192,7 @@ const CurveParameters = ({ path }) => {
                     </Box>
                 </Grid>
             </Grid>
-            {open && (
-                <CurveSelectorDialog
-                    open={open}
-                    onClose={handleClose}
-                    onSave={handleAppend}
-                />
-            )}
+            {open && <CurveSelectorDialog open={open} onClose={handleClose} onSave={handleAppend} />}
         </>
     );
 };

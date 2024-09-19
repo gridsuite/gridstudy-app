@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    FREQUENCY_RESERVE,
-    GENERATORS_FILTERS,
-    GENERATORS_FREQUENCY_RESERVES,
-} from 'components/utils/field-constants';
+import { FREQUENCY_RESERVE, GENERATORS_FILTERS, GENERATORS_FREQUENCY_RESERVES } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
 import React, { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
@@ -57,9 +53,7 @@ const FrequencyReservePane = ({ id = GENERATORS_FREQUENCY_RESERVES }) => {
 
     const newRowData = useMemo(() => {
         const newRowData = {};
-        columnsDefinition.forEach(
-            (column) => (newRowData[column.dataKey] = column.initialValue)
-        );
+        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createFrequencyReserveRows = () => [newRowData];

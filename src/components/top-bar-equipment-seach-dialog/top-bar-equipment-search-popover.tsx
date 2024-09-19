@@ -6,15 +6,7 @@
  */
 import { EquipmentType, FILTER_EQUIPMENTS } from '@gridsuite/commons-ui';
 import { HorizontalRule } from '@mui/icons-material';
-import {
-    Box,
-    FormControl,
-    FormControlLabel,
-    Popover,
-    Radio,
-    RadioGroup,
-    Theme,
-} from '@mui/material';
+import { Box, FormControl, FormControlLabel, Popover, Radio, RadioGroup, Theme } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -44,11 +36,8 @@ interface TopBarEquipmentSearchPopoverProps {
     setEquipmentType: Dispatch<SetStateAction<EquipmentType | null>>;
 }
 
-export const TopBarEquipmentSearchPopover = (
-    props: TopBarEquipmentSearchPopoverProps
-) => {
-    const { open, setIsOpen, equipmentType, setEquipmentType, anchorEl } =
-        props;
+export const TopBarEquipmentSearchPopover = (props: TopBarEquipmentSearchPopoverProps) => {
+    const { open, setIsOpen, equipmentType, setEquipmentType, anchorEl } = props;
 
     return (
         <Popover

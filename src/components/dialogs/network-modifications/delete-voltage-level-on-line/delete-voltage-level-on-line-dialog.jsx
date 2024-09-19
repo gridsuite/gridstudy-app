@@ -73,9 +73,7 @@ const DeleteVoltageLevelOnLineDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -132,15 +130,10 @@ const DeleteVoltageLevelOnLineDialog = ({
                 titleId="DeleteVoltageLevelOnLine"
                 subtitle={<DeleteVoltageLevelOnLineIllustration />}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <DeleteVoltageLevelOnLineForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                />
+                <DeleteVoltageLevelOnLineForm studyUuid={studyUuid} currentNode={currentNode} />
             </ModificationDialog>
         </CustomFormProvider>
     );

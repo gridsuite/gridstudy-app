@@ -43,14 +43,8 @@ import {
 } from '../../../connectivity/connectivity-form-utils';
 import BatteryCreationForm from './battery-creation-form';
 import { sanitizeString } from '../../../dialogUtils';
-import {
-    FORM_LOADING_DELAY,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from 'components/network/constants';
-import {
-    getActivePowerSetPointSchema,
-    getFrequencyRegulationSchema,
-} from '../../../set-points/set-points-utils';
+import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
+import { getActivePowerSetPointSchema, getFrequencyRegulationSchema } from '../../../set-points/set-points-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
@@ -99,14 +93,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-const BatteryCreationDialog = ({
-    editData,
-    currentNode,
-    studyUuid,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
 
@@ -129,21 +116,15 @@ const BatteryCreationDialog = ({
             ...getConnectivityFormData({
                 voltageLevelId: battery.voltageLevelId,
                 busbarSectionId: battery.busOrBusbarSectionId,
-                connectionDirection:
-                    battery.connectablePosition.connectionDirection,
+                connectionDirection: battery.connectablePosition.connectionDirection,
                 connectionName: battery.connectablePosition.connectionName,
                 // connected is not copied on purpose: we use the default value (true) in all cases
             }),
             ...getReactiveLimitsFormData({
-                reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits
-                    ? 'MINMAX'
-                    : 'CURVE',
-                minimumReactivePower:
-                    battery?.minMaxReactiveLimits?.minQ ?? null,
-                maximumReactivePower:
-                    battery?.minMaxReactiveLimits?.maxQ ?? null,
-                reactiveCapabilityCurveTable:
-                    battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
+                minimumReactivePower: battery?.minMaxReactiveLimits?.minQ ?? null,
+                maximumReactivePower: battery?.minMaxReactiveLimits?.maxQ ?? null,
+                reactiveCapabilityCurveTable: battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
             }),
             ...copyEquipmentPropertiesForCreation(battery),
         });
@@ -173,17 +154,15 @@ const BatteryCreationDialog = ({
                     connectionDirection: editData.connectionDirection,
                     connectionName: editData.connectionName,
                     connectionPosition: editData.connectionPosition,
-                    connected: editData.connected,
+                    terminalConnected: editData.terminalConnected,
                 }),
                 ...getReactiveLimitsFormData({
-                    reactiveCapabilityCurveChoice:
-                        editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
+                    reactiveCapabilityCurveChoice: editData?.reactiveCapabilityCurve ? 'CURVE' : 'MINMAX',
                     minimumReactivePower: editData?.minQ,
                     maximumReactivePower: editData?.maxQ,
-                    reactiveCapabilityCurveTable:
-                        editData?.reactiveCapabilityCurve
-                            ? editData?.reactiveCapabilityCurvePoints
-                            : [{}, {}],
+                    reactiveCapabilityCurveTable: editData?.reactiveCapabilityCurve
+                        ? editData?.reactiveCapabilityCurvePoints
+                        : [{}, {}],
                 }),
                 ...getPropertiesFromModification(editData.properties),
             });
@@ -197,8 +176,7 @@ const BatteryCreationDialog = ({
     const onSubmit = useCallback(
         (battery) => {
             const reactiveLimits = battery[REACTIVE_LIMITS];
-            const isReactiveCapabilityCurveOn =
-                reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
+            const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
             createBattery(
                 studyUuid,
                 currentNodeUuid,
@@ -207,22 +185,15 @@ const BatteryCreationDialog = ({
                 battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
                 battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
-                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
+                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
                 battery[CONNECTIVITY]?.[CONNECTION_POSITION],
                 battery[CONNECTIVITY]?.[CONNECTED],
                 battery[MINIMUM_ACTIVE_POWER],
                 battery[MAXIMUM_ACTIVE_POWER],
                 isReactiveCapabilityCurveOn,
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn
-                    ? null
-                    : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn
-                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
-                    : null,
+                isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+                isReactiveCapabilityCurveOn ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] : null,
                 battery[ACTIVE_POWER_SET_POINT],
                 battery[REACTIVE_POWER_SET_POINT],
                 battery[FREQUENCY_REGULATION],
@@ -242,9 +213,7 @@ const BatteryCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -258,15 +227,10 @@ const BatteryCreationDialog = ({
                 titleId="CreateBattery"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <BatteryCreationForm
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                />
+                <BatteryCreationForm studyUuid={studyUuid} currentNode={currentNode} />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

@@ -7,25 +7,13 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import {
-    Paper,
-    Popover,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from '@mui/material';
+import { Paper, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import { useSelector } from 'react-redux';
 import { RunningStatus } from '../utils/running-status';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from 'components/utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
 import { unitToMicroUnit } from 'utils/unit-converter';
@@ -40,13 +28,7 @@ const styles = {
     }),
 };
 
-const EquipmentPopover = ({
-    studyUuid,
-    anchorEl,
-    equipmentId,
-    equipmentType,
-    loadFlowStatus,
-}) => {
+const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
@@ -76,29 +58,15 @@ const EquipmentPopover = ({
         [anchorEl]
     );
 
-    const debouncedNetworkElementInfos = useDebounce(
-        getNetworkElementInfos,
-        200
-    );
+    const debouncedNetworkElementInfos = useDebounce(getNetworkElementInfos, 200);
 
     useEffect(() => {
         if (equipmentId && equipmentId !== '') {
-            debouncedNetworkElementInfos(
-                equipmentId,
-                equipmentType,
-                currentNode.id,
-                studyUuid
-            );
+            debouncedNetworkElementInfos(equipmentId, equipmentType, currentNode.id, studyUuid);
         } else {
             setEquipmentInfo(null);
         }
-    }, [
-        debouncedNetworkElementInfos,
-        equipmentId,
-        equipmentType,
-        currentNode.id,
-        studyUuid,
-    ]);
+    }, [debouncedNetworkElementInfos, equipmentId, equipmentType, currentNode.id, studyUuid]);
 
     const handlePopoverClose = () => {
         setEquipmentInfo(null);
@@ -133,36 +101,24 @@ const EquipmentPopover = ({
                                     })}
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
-                                    {formatValue(
-                                        Math.round(currentLimits.permanentLimit)
-                                    )}
+                                    {formatValue(Math.round(currentLimits.permanentLimit))}
                                 </TableCell>
                                 <TableCell
                                     sx={mergeSx(styles.tableCells, {
-                                        opacity:
-                                            loadFlowStatus ===
-                                            RunningStatus.SUCCEED
-                                                ? 1
-                                                : 0.2,
+                                        opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                     })}
                                 >
                                     {formatValue(
                                         Math.round(
                                             side === '1'
-                                                ? (Math.abs(equipmentInfo.i1) *
-                                                      100) /
-                                                      currentLimits.permanentLimit
-                                                : (Math.abs(equipmentInfo.i2) *
-                                                      100) /
-                                                      currentLimits.permanentLimit
+                                                ? (Math.abs(equipmentInfo.i1) * 100) / currentLimits.permanentLimit
+                                                : (Math.abs(equipmentInfo.i2) * 100) / currentLimits.permanentLimit
                                         )
                                     )}
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
                                     {formatValue(
-                                        side === '1'
-                                            ? equipmentInfo.voltageLevelId1
-                                            : equipmentInfo.voltageLevelId2
+                                        side === '1' ? equipmentInfo.voltageLevelId1 : equipmentInfo.voltageLevelId2
                                     )}
                                 </TableCell>
                             </TableRow>
@@ -173,47 +129,27 @@ const EquipmentPopover = ({
                                 (temporaryLimit) =>
                                     //This check is needed since some temporary limits are defined with no value so the row makes no sense
                                     temporaryLimit.value && (
-                                        <TableRow
-                                            key={temporaryLimit.name + side}
-                                        >
+                                        <TableRow key={temporaryLimit.name + side}>
                                             <TableCell sx={styles.tableCells}>
-                                                {formatValue(
-                                                    temporaryLimit.name
-                                                )}
+                                                {formatValue(temporaryLimit.name)}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
-                                                {formatValue(
-                                                    Math.round(
-                                                        temporaryLimit.value
-                                                    )
-                                                )}
+                                                {formatValue(Math.round(temporaryLimit.value))}
                                             </TableCell>
                                             <TableCell
                                                 sx={mergeSx(styles.tableCells, {
-                                                    opacity:
-                                                        loadFlowStatus ===
-                                                        RunningStatus.SUCCEED
-                                                            ? 1
-                                                            : 0.2,
+                                                    opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                                 })}
                                             >
                                                 {side === '1'
                                                     ? formatValue(
                                                           Math.round(
-                                                              (Math.abs(
-                                                                  equipmentInfo.i1
-                                                              ) *
-                                                                  100) /
-                                                                  temporaryLimit.value
+                                                              (Math.abs(equipmentInfo.i1) * 100) / temporaryLimit.value
                                                           )
                                                       )
                                                     : formatValue(
                                                           Math.round(
-                                                              (Math.abs(
-                                                                  equipmentInfo.i2
-                                                              ) *
-                                                                  100) /
-                                                                  temporaryLimit.value
+                                                              (Math.abs(equipmentInfo.i2) * 100) / temporaryLimit.value
                                                           )
                                                       )}
                                             </TableCell>
@@ -278,14 +214,8 @@ const EquipmentPopover = ({
         );
     };
 
-    const renderVoltageLevelCharacteristics = (
-        equipmentInfo,
-        equipmentType
-    ) => {
-        const renderShuntSusceptanceRow = (
-            voltageLevelId,
-            susceptanceValue
-        ) => (
+    const renderVoltageLevelCharacteristics = (equipmentInfo, equipmentType) => {
+        const renderShuntSusceptanceRow = (voltageLevelId, susceptanceValue) => (
             <TableRow>
                 {renderTableCell({ value: voltageLevelId, isLabel: false })}
                 {renderTableCell({ label: 'shuntSusceptance', isLabel: true })}
@@ -299,20 +229,11 @@ const EquipmentPopover = ({
         return (
             <>
                 {equipmentType === EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER ? (
-                    renderShuntSusceptanceRow(
-                        equipmentInfo.voltageLevelId2,
-                        equipmentInfo?.b
-                    )
+                    renderShuntSusceptanceRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b)
                 ) : (
                     <>
-                        {renderShuntSusceptanceRow(
-                            equipmentInfo.voltageLevelId1,
-                            equipmentInfo.b1
-                        )}
-                        {renderShuntSusceptanceRow(
-                            equipmentInfo.voltageLevelId2,
-                            equipmentInfo?.b2
-                        )}
+                        {renderShuntSusceptanceRow(equipmentInfo.voltageLevelId1, equipmentInfo.b1)}
+                        {renderShuntSusceptanceRow(equipmentInfo.voltageLevelId2, equipmentInfo?.b2)}
                     </>
                 )}
             </>
@@ -349,15 +270,10 @@ const EquipmentPopover = ({
                         >
                             <>
                                 <Grid item>
-                                    <Typography variant="caption">
-                                        {equipmentId}
-                                    </Typography>
+                                    <Typography variant="caption">{equipmentId}</Typography>
                                 </Grid>
                                 <Grid item>
-                                    <TableContainer
-                                        component={Paper}
-                                        sx={styles.table}
-                                    >
+                                    <TableContainer component={Paper} sx={styles.table}>
                                         <Table size={'small'}>
                                             <TableHead>
                                                 <TableRow>
@@ -373,92 +289,50 @@ const EquipmentPopover = ({
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {renderCommonCharacteristics(
-                                                    equipmentInfo
-                                                )}
-                                                {renderVoltageLevelCharacteristics(
-                                                    equipmentInfo,
-                                                    equipmentType
-                                                )}
+                                                {renderCommonCharacteristics(equipmentInfo)}
+                                                {renderVoltageLevelCharacteristics(equipmentInfo, equipmentType)}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>
                                 </Grid>
                                 <Grid item>
-                                    <TableContainer
-                                        component={Paper}
-                                        sx={styles.table}
-                                    >
+                                    <TableContainer component={Paper} sx={styles.table}>
                                         <Table size={'small'}>
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
+                                                    <TableCell sx={styles.tableCells}>
                                                         {intl.formatMessage({
                                                             id: 'CURRENT',
                                                         })}
                                                     </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {formatValue(
-                                                            equipmentInfo.voltageLevelId1
-                                                        )}
+                                                    <TableCell sx={styles.tableCells}>
+                                                        {formatValue(equipmentInfo.voltageLevelId1)}
                                                     </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
-                                                        {formatValue(
-                                                            equipmentInfo.voltageLevelId2
-                                                        )}
+                                                    <TableCell sx={styles.tableCells}>
+                                                        {formatValue(equipmentInfo.voltageLevelId2)}
                                                     </TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                                 <TableRow>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
+                                                    <TableCell sx={styles.tableCells}>
                                                         {intl.formatMessage({
                                                             id: 'I_(A)',
                                                         })}
                                                     </TableCell>
                                                     <TableCell
-                                                        sx={mergeSx(
-                                                            styles.tableCells,
-                                                            {
-                                                                opacity:
-                                                                    loadFlowStatus ===
-                                                                    RunningStatus.SUCCEED
-                                                                        ? 1
-                                                                        : 0.2,
-                                                            }
-                                                        )}
+                                                        sx={mergeSx(styles.tableCells, {
+                                                            opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                                        })}
                                                     >
-                                                        {formatValue(
-                                                            Math.round(
-                                                                equipmentInfo.i1
-                                                            )
-                                                        )}
+                                                        {formatValue(Math.round(equipmentInfo.i1))}
                                                     </TableCell>
                                                     <TableCell
-                                                        sx={mergeSx(
-                                                            styles.tableCells,
-                                                            {
-                                                                opacity:
-                                                                    loadFlowStatus ===
-                                                                    RunningStatus.SUCCEED
-                                                                        ? 1
-                                                                        : 0.2,
-                                                            }
-                                                        )}
+                                                        sx={mergeSx(styles.tableCells, {
+                                                            opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
+                                                        })}
                                                     >
-                                                        {formatValue(
-                                                            Math.round(
-                                                                equipmentInfo.i2
-                                                            )
-                                                        )}
+                                                        {formatValue(Math.round(equipmentInfo.i2))}
                                                     </TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -467,37 +341,26 @@ const EquipmentPopover = ({
                                 </Grid>
 
                                 <Grid item>
-                                    <TableContainer
-                                        component={Paper}
-                                        sx={styles.table}
-                                    >
+                                    <TableContainer component={Paper} sx={styles.table}>
                                         <Table size={'small'}>
                                             <TableHead>
                                                 <TableRow>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
+                                                    <TableCell sx={styles.tableCells}>
                                                         {intl.formatMessage({
                                                             id: 'Limit_name',
                                                         })}
                                                     </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
+                                                    <TableCell sx={styles.tableCells}>
                                                         {intl.formatMessage({
                                                             id: 'LimitLabel',
                                                         })}
                                                     </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
+                                                    <TableCell sx={styles.tableCells}>
                                                         {intl.formatMessage({
                                                             id: 'Loading',
                                                         })}
                                                     </TableCell>
-                                                    <TableCell
-                                                        sx={styles.tableCells}
-                                                    >
+                                                    <TableCell sx={styles.tableCells}>
                                                         {intl.formatMessage({
                                                             id: 'Side',
                                                         })}
@@ -505,14 +368,8 @@ const EquipmentPopover = ({
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {generateRows(
-                                                    equipmentInfo.currentLimits1,
-                                                    '1'
-                                                )}
-                                                {generateRows(
-                                                    equipmentInfo.currentLimits2,
-                                                    '2'
-                                                )}
+                                                {generateRows(equipmentInfo.currentLimits1, '1')}
+                                                {generateRows(equipmentInfo.currentLimits2, '2')}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>

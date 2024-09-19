@@ -43,11 +43,7 @@ export const getVariationSchema = () =>
         });
 
 export const getVariationsSchema = (id) => ({
-    [id]: yup
-        .array()
-        .nullable()
-        .min(1, 'EmptyList.variations')
-        .of(getVariationSchema()),
+    [id]: yup.array().nullable().min(1, 'EmptyList.variations').of(getVariationSchema()),
 });
 
 export const getVariationEmptyForm = (variationMode) => {

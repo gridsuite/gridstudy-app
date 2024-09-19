@@ -8,8 +8,7 @@
 import { UUID } from 'crypto';
 import { backendFetchJson } from './utils';
 
-const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES =
-    import.meta.env.VITE_API_GATEWAY + '/network-conversion';
+const PREFIX_NETWORK_CONVERSION_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-conversion';
 
 export interface CaseImportParameters {
     name: string;
@@ -24,15 +23,10 @@ export interface GetCaseImportParametersReturn {
     parameters: CaseImportParameters[];
 }
 
-export function getCaseImportParameters(
-    caseUuid: UUID
-): Promise<GetCaseImportParametersReturn> {
+export function getCaseImportParameters(caseUuid: UUID): Promise<GetCaseImportParametersReturn> {
     console.info(`get import parameters for case '${caseUuid}' ...`);
     const getExportFormatsUrl =
-        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES +
-        '/v1/cases/' +
-        caseUuid +
-        '/import-parameters';
+        PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/' + caseUuid + '/import-parameters';
     console.debug(getExportFormatsUrl);
     return backendFetchJson(getExportFormatsUrl);
 }

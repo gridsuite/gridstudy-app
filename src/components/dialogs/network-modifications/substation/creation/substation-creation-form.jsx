@@ -9,38 +9,17 @@ import Grid from '@mui/material/Grid';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
-import {
-    COUNTRY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-} from 'components/utils/field-constants';
+import { COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import PropertiesForm from '../../common/properties/properties-form';
 
 const SubstationCreationForm = () => {
-    const substationIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={filledTextField}
-        />
-    );
+    const substationIdField = <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={filledTextField} />;
 
-    const substationNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const substationNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const substationCountryField = (
-        <CountrySelectionInput
-            name={COUNTRY}
-            label={'Country'}
-            formProps={filledTextField}
-            size={'small'}
-        />
+        <CountrySelectionInput name={COUNTRY} label={'Country'} formProps={filledTextField} size={'small'} />
     );
 
     return (

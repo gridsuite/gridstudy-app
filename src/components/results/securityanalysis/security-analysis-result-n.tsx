@@ -17,9 +17,11 @@ import { MAX_INT32 } from './security-analysis-result-utils';
 import { convertSide } from '../loadflow/load-flow-result-utils';
 import { translateLimitNameBackToFront } from '../common/utils';
 
-export const SecurityAnalysisResultN: FunctionComponent<
-    SecurityAnalysisResultNProps
-> = ({ result, isLoadingResult, columnDefs }) => {
+export const SecurityAnalysisResultN: FunctionComponent<SecurityAnalysisResultNProps> = ({
+    result,
+    isLoadingResult,
+    columnDefs,
+}) => {
     const intl: IntlShape = useIntl();
 
     const rows = useMemo(() => {
@@ -33,13 +35,8 @@ export const SecurityAnalysisResultN: FunctionComponent<
                       }),
                       // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
                       acceptableDuration:
-                          limitViolation?.acceptableDuration === MAX_INT32
-                              ? null
-                              : limitViolation?.acceptableDuration,
-                      limitName: translateLimitNameBackToFront(
-                          limitViolation?.limitName,
-                          intl
-                      ),
+                          limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                      limitName: translateLimitNameBackToFront(limitViolation?.limitName, intl),
                       limit: limitViolation?.limit,
                       value: limitViolation?.value,
                       loading: limitViolation?.loading,
@@ -49,11 +46,5 @@ export const SecurityAnalysisResultN: FunctionComponent<
             : [];
     }, [intl, result]);
 
-    return (
-        <SecurityAnalysisTable
-            rows={rows}
-            columnDefs={columnDefs}
-            isLoadingResult={isLoadingResult}
-        />
-    );
+    return <SecurityAnalysisTable rows={rows} columnDefs={columnDefs} isLoadingResult={isLoadingResult} />;
 };

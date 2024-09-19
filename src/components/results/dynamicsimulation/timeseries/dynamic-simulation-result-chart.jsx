@@ -6,15 +6,7 @@
  */
 
 import PropTypes from 'prop-types';
-import {
-    Box,
-    Grid,
-    Paper,
-    TextField,
-    ToggleButton,
-    Tooltip,
-    Typography,
-} from '@mui/material';
+import { Box, Grid, Paper, TextField, ToggleButton, Tooltip, Typography } from '@mui/material';
 
 import DynamicSimulationResultSeriesList from './dynamic-simulation-result-series-list';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -86,12 +78,7 @@ const styles = {
     }),
 };
 
-const DynamicSimulationResultChart = ({
-    groupId,
-    timeseriesMetadatas,
-    selected,
-    loadTimeSeries,
-}) => {
+const DynamicSimulationResultChart = ({ groupId, timeseriesMetadatas, selected, loadTimeSeries }) => {
     const intl = useIntl();
 
     const headers = useMemo(
@@ -147,23 +134,21 @@ const DynamicSimulationResultChart = ({
 
     const selectSeries = useCallback(
         (selectedIndexes) => {
-            return loadTimeSeries(selectedIndexes).then(
-                (selectedTimeSeries) => {
-                    // transform to plotly's compatible data
-                    return selectedTimeSeries.map((elem) => {
-                        const metadata = elem?.metadata;
-                        const values = elem?.chunks && elem.chunks[0]?.values;
-                        return {
-                            index: elem.index,
-                            name: metadata?.name,
-                            data: {
-                                x: metadata?.irregularIndex,
-                                y: values,
-                            },
-                        };
-                    });
-                }
-            );
+            return loadTimeSeries(selectedIndexes).then((selectedTimeSeries) => {
+                // transform to plotly's compatible data
+                return selectedTimeSeries.map((elem) => {
+                    const metadata = elem?.metadata;
+                    const values = elem?.chunks && elem.chunks[0]?.values;
+                    return {
+                        index: elem.index,
+                        name: metadata?.name,
+                        data: {
+                            x: metadata?.irregularIndex,
+                            y: values,
+                        },
+                    };
+                });
+            });
         },
         [loadTimeSeries]
     );
@@ -181,10 +166,7 @@ const DynamicSimulationResultChart = ({
         [selectSeries]
     );
 
-    const debouncedHandleLeftAxisSelected = useDebounce(
-        handleLeftAxisSelected,
-        500
-    );
+    const debouncedHandleLeftAxisSelected = useDebounce(handleLeftAxisSelected, 500);
 
     const handleRightAxisSelected = useCallback(
         (index, selectedIndexes) => {
@@ -199,10 +181,7 @@ const DynamicSimulationResultChart = ({
         [selectSeries]
     );
 
-    const debouncedHandleRightAxisSelected = useDebounce(
-        handleRightAxisSelected,
-        500
-    );
+    const debouncedHandleRightAxisSelected = useDebounce(handleRightAxisSelected, 500);
 
     const items = useMemo(() => {
         return timeseriesMetadatas.map((elem, index) => ({
@@ -308,13 +287,7 @@ const DynamicSimulationResultChart = ({
         (index) => {
             const newPlots = Array.from(plots);
             newPlots.splice(index, 1);
-            setSelectedIndex(
-                newPlots.length === 0
-                    ? -1
-                    : index === plots.length - 1
-                    ? newPlots.length - 1
-                    : index
-            ); // get the next item in new plots
+            setSelectedIndex(newPlots.length === 0 ? -1 : index === plots.length - 1 ? newPlots.length - 1 : index); // get the next item in new plots
             setPlots(newPlots);
             if (newPlots.length === 0) {
                 // reset plotIncId to zero
@@ -343,21 +316,11 @@ const DynamicSimulationResultChart = ({
     return (
         <Box sx={mergeSx(styles.root, fullView && styles.modal)}>
             <Box>
-                <Grid
-                    container
-                    sx={styles.toolBar}
-                    alignItems="center"
-                    justify="center"
-                >
+                <Grid container sx={styles.toolBar} alignItems="center" justify="center">
                     {!plotIdScale && (
                         <Grid item>
                             <Paper elevation={2} sx={styles.paperOptionsGroup}>
-                                <ToggleButton
-                                    size={'small'}
-                                    value="sync"
-                                    selected={sync}
-                                    onChange={handleSync}
-                                >
+                                <ToggleButton size={'small'} value="sync" selected={sync} onChange={handleSync}>
                                     {sync ? (
                                         <Tooltip
                                             title={intl.formatMessage({
@@ -517,9 +480,7 @@ const DynamicSimulationResultChart = ({
                                             selected={selectedIndex === index}
                                             onSelect={handleSelectIndex}
                                             leftSeries={plot.leftSelectedSeries}
-                                            rightSeries={
-                                                plot.rightSelectedSeries
-                                            }
+                                            rightSeries={plot.rightSelectedSeries}
                                             onClose={handleClose}
                                             sync={sync}
                                             onPlotScale={handlePlotScale}
@@ -553,12 +514,8 @@ const DynamicSimulationResultChart = ({
                                         index={index}
                                         items={items}
                                         headers={headers}
-                                        onLeftAxisSelected={
-                                            debouncedHandleLeftAxisSelected
-                                        }
-                                        onRightAxisSelected={
-                                            debouncedHandleRightAxisSelected
-                                        }
+                                        onLeftAxisSelected={debouncedHandleLeftAxisSelected}
+                                        onRightAxisSelected={debouncedHandleRightAxisSelected}
                                     />
                                 </Visibility>
                             ))}

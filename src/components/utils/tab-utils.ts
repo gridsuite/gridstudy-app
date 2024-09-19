@@ -17,20 +17,10 @@ const styles = {
     }),
 };
 
-export function getTabIndicatorStyle<T extends number | string>(
-    tabIndexesWithError: T[],
-    index: T
-) {
-    return tabIndexesWithError.includes(index)
-        ? styles.tabWithErrorIndicator
-        : undefined;
+export function getTabIndicatorStyle<T extends number | string>(tabIndexesWithError: T[], index: T) {
+    return tabIndexesWithError.includes(index) ? styles.tabWithErrorIndicator : undefined;
 }
 
-export function getTabStyle<T extends number | string>(
-    tabIndexesWithError: T[],
-    index: T
-) {
-    return tabIndexesWithError.includes(index)
-        ? styles.tabWithError
-        : undefined;
+export function getTabStyle<T extends number | string>(tabIndexesWithError: T[], index: T) {
+    return tabIndexesWithError.includes(index) ? styles.tabWithError : undefined;
 }

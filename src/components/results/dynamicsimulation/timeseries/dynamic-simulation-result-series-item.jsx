@@ -6,20 +6,10 @@
  */
 
 import PropTypes from 'prop-types';
-import {
-    Checkbox,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-} from '@mui/material';
+import { Checkbox, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { memo, useState } from 'react';
 
-const DynamicSimulationResultSeriesItem = ({
-    item: { id, label },
-    onChangeLeftAxis,
-    onChangeRightAxis,
-}) => {
+const DynamicSimulationResultSeriesItem = ({ item: { id, label }, onChangeLeftAxis, onChangeRightAxis }) => {
     const [leftAxisChecked, setLeftAxisChecked] = useState(false);
     const [rightAxisChecked, setRightAxisChecked] = useState(false);
 
@@ -46,11 +36,7 @@ const DynamicSimulationResultSeriesItem = ({
             }
             disablePadding
         >
-            <ListItemButton
-                role={undefined}
-                onClick={() => handleToggleLeftAxis(id)}
-                dense
-            >
+            <ListItemButton role={undefined} onClick={() => handleToggleLeftAxis(id)} dense>
                 <ListItemIcon>
                     <Checkbox
                         edge={'start'}

@@ -77,10 +77,7 @@ export interface PreContingencyResult {
     limitViolation?: LimitViolation;
 }
 
-export type QueryParamsType = Record<
-    string,
-    string | number | SortConfigType[] | FilterSelectorType[]
->;
+export type QueryParamsType = Record<string, string | number | SortConfigType[] | FilterSelectorType[]>;
 
 type Sort = {
     empty?: boolean;
@@ -101,24 +98,14 @@ type PaginationProps = {
     count?: number;
     rowsPerPage?: number;
     page?: number;
-    onPageChange?: (
-        event: React.MouseEvent<HTMLButtonElement> | null,
-        page: number
-    ) => void;
-    onRowsPerPageChange?: React.ChangeEventHandler<
-        HTMLTextAreaElement | HTMLInputElement
-    >;
+    onPageChange?: (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => void;
+    onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 };
 
-export type SubjectIdRendererType = (
-    cellData: ICellRendererParams
-) => React.JSX.Element | undefined;
+export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
 
 export interface SecurityAnalysisNmkResult {
-    content?:
-        | ContingenciesFromConstraintItem[]
-        | ConstraintsFromContingencyItem[]
-        | null;
+    content?: ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null;
     empty?: boolean;
     first?: boolean;
     last?: boolean;

@@ -35,20 +35,15 @@ export function getVscHvdcLinePaneSchema(id: string) {
                     .number()
                     .nullable()
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
-                        is: (
-                            angleDroopActivePowerControl: boolean,
-                            droop: number
-                        ) => angleDroopActivePowerControl || droop,
+                        is: (angleDroopActivePowerControl: boolean, droop: number) =>
+                            angleDroopActivePowerControl || droop,
                         then: (schema) => schema.required(),
                     }),
                 [DROOP]: yup
                     .number()
                     .nullable()
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
-                        is: (
-                            angleDroopActivePowerControl: boolean,
-                            p0: number
-                        ) => angleDroopActivePowerControl || p0,
+                        is: (angleDroopActivePowerControl: boolean, p0: number) => angleDroopActivePowerControl || p0,
                         then: (schema) => schema.required(),
                     }),
             },
@@ -76,10 +71,7 @@ export function getVscHvdcLineModificationPaneSchema(id: string) {
         ),
     };
 }
-export function getVscHvdcLinePaneEmptyFormData(
-    id: string,
-    isModification: boolean
-) {
+export function getVscHvdcLinePaneEmptyFormData(id: string, isModification: boolean) {
     return {
         [id]: {
             [NOMINAL_V]: null,
@@ -108,49 +100,34 @@ export interface hvdcLineTabEditData {
     droop?: number | null;
 }
 
-export function getVscHvdcLineTabFormData(
-    id: string,
-    hvdcLine: hvdcLineTabEditData
-) {
+export function getVscHvdcLineTabFormData(id: string, hvdcLine: hvdcLineTabEditData) {
     return {
         [id]: {
             [NOMINAL_V]: hvdcLine.nominalV,
             [R]: hvdcLine.r,
             [MAX_P]: hvdcLine.maxP,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]:
-                hvdcLine?.operatorActivePowerLimitFromSide1ToSide2,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]:
-                hvdcLine?.operatorActivePowerLimitFromSide2ToSide1,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.operatorActivePowerLimitFromSide1ToSide2,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.operatorActivePowerLimitFromSide2ToSide1,
             [CONVERTERS_MODE]: hvdcLine.convertersMode,
             [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]:
-                hvdcLine.angleDroopActivePowerControl,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine.angleDroopActivePowerControl,
             [P0]: hvdcLine?.p0,
             [DROOP]: hvdcLine?.droop,
         },
     };
 }
 
-export function getVscHvdcLineModificationTabFormData(
-    id: string,
-    hvdcLine: any
-) {
+export function getVscHvdcLineModificationTabFormData(id: string, hvdcLine: any) {
     return {
         [id]: {
             [NOMINAL_V]: hvdcLine?.nominalV?.value ?? null,
             [R]: hvdcLine?.r?.value ?? null,
             [MAX_P]: hvdcLine?.maxP?.value ?? null,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]:
-                hvdcLine?.operatorActivePowerLimitFromSide1ToSide2?.value ??
-                null,
-            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]:
-                hvdcLine?.operatorActivePowerLimitFromSide2ToSide1?.value ??
-                null,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE1]: hvdcLine?.operatorActivePowerLimitFromSide1ToSide2?.value ?? null,
+            [OPERATOR_ACTIVE_POWER_LIMIT_SIDE2]: hvdcLine?.operatorActivePowerLimitFromSide2ToSide1?.value ?? null,
             [CONVERTERS_MODE]: hvdcLine?.convertersMode?.value ?? null,
-            [ACTIVE_POWER_SETPOINT]:
-                hvdcLine?.activePowerSetpoint?.value ?? null,
-            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]:
-                hvdcLine?.angleDroopActivePowerControl?.value ?? null,
+            [ACTIVE_POWER_SETPOINT]: hvdcLine?.activePowerSetpoint?.value ?? null,
+            [ANGLE_DROOP_ACTIVE_POWER_CONTROL]: hvdcLine?.angleDroopActivePowerControl?.value ?? null,
             [P0]: hvdcLine?.p0?.value ?? null,
             [DROOP]: hvdcLine?.droop?.value ?? null,
         },

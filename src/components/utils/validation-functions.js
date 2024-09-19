@@ -23,10 +23,7 @@ export function toNumber(value) {
             return Number(sanitizedString);
         }
     }
-    console.error(
-        'Error while trying to convert a value to Number. Value :',
-        value
-    );
+    console.error('Error while trying to convert a value to Number. Value :', value);
     return NaN;
 }
 
@@ -124,52 +121,30 @@ export function validateField(value, toValidate, disabled = false) {
         return makeErrorRecord('FieldIsRequired');
     }
 
-    if (
-        !isValueBlankOrEmpty &&
-        toValidate.isFieldNumeric &&
-        !validateValueIsANumber(value)
-    ) {
+    if (!isValueBlankOrEmpty && toValidate.isFieldNumeric && !validateValueIsANumber(value)) {
         return makeErrorRecord('FieldAcceptNumeric');
     }
 
     if (toValidate.valueLessThanOrEqualTo !== undefined) {
-        if (
-            !isValueBlankOrEmpty &&
-            !validateValueIsLessThanOrEqualTo(
-                value,
-                toValidate.valueLessThanOrEqualTo
-            )
-        ) {
+        if (!isValueBlankOrEmpty && !validateValueIsLessThanOrEqualTo(value, toValidate.valueLessThanOrEqualTo)) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.valueGreaterThanOrEqualTo !== undefined) {
-        if (
-            !isValueBlankOrEmpty &&
-            !validateValueIsGreaterThanOrEqualTo(
-                value,
-                toValidate.valueGreaterThanOrEqualTo
-            )
-        ) {
+        if (!isValueBlankOrEmpty && !validateValueIsGreaterThanOrEqualTo(value, toValidate.valueGreaterThanOrEqualTo)) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.valueLessThan !== undefined) {
-        if (
-            !isValueBlankOrEmpty &&
-            !validateValueIsLessThan(value, toValidate.valueLessThan)
-        ) {
+        if (!isValueBlankOrEmpty && !validateValueIsLessThan(value, toValidate.valueLessThan)) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
 
     if (toValidate.valueGreaterThan !== undefined) {
-        if (
-            !isValueBlankOrEmpty &&
-            !validateValueIsGreaterThan(value, toValidate.valueGreaterThan)
-        ) {
+        if (!isValueBlankOrEmpty && !validateValueIsGreaterThan(value, toValidate.valueGreaterThan)) {
             return makeErrorRecord(toValidate.errorMsgId);
         }
     }
@@ -211,23 +186,17 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
         const minP = everyValidP[0];
         const maxP = everyValidP[everyValidP.length - 1];
         const pAreInRange = everyValidP.filter(
-            (p) =>
-                validateValueIsLessThanOrEqualTo(minP, p) &&
-                validateValueIsLessThanOrEqualTo(p, maxP)
+            (p) => validateValueIsLessThanOrEqualTo(minP, p) && validateValueIsLessThanOrEqualTo(p, maxP)
         );
         if (pAreInRange.length !== everyValidP.length) {
-            errorMessages.push(
-                'ReactiveCapabilityCurveCreationErrorPOutOfRange'
-            );
+            errorMessages.push('ReactiveCapabilityCurveCreationErrorPOutOfRange');
         }
     }
 
     // Each qMin must be inferior or equal to qMax
     for (let element of reactiveCapabilityCurve) {
         if (!validateValueIsLessThanOrEqualTo(element.minQ, element.maxQ)) {
-            errorMessages.push(
-                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-            );
+            errorMessages.push('ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence');
             break;
         }
     }

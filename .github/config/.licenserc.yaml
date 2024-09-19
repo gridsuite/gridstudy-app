@@ -22,5 +22,6 @@ header:
     - '**/*.svg'
     - '**/*.css'
     - '**/*.conf'
+    - '**/*.properties'
 
   comment: on-failure

@@ -26,10 +26,7 @@ import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { getFeederTypeFromEquipmentType } from 'components/diagrams/diagram-common';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-} from '../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import {
     energiseEquipmentEnd,
     lockoutEquipment,
@@ -106,12 +103,7 @@ const withOperatingStatusMenu =
                     !modificationInProgress
                 );
             },
-            [
-                equipmentInfos,
-                currentNode,
-                isAnyNodeBuilding,
-                modificationInProgress,
-            ]
+            [equipmentInfos, currentNode, isAnyNodeBuilding, modificationInProgress]
         );
 
         function handleError(error, translationKey) {
@@ -133,51 +125,36 @@ const withOperatingStatusMenu =
 
         function handleLockout() {
             startModification();
-            lockoutEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
-                (error) => {
-                    handleError(error, 'UnableToLockout');
-                }
-            );
+            lockoutEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+                handleError(error, 'UnableToLockout');
+            });
         }
 
         function handleTrip() {
             startModification();
-            tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
-                (error) => {
-                    handleError(error, 'UnableToTrip');
-                }
-            );
+            tripEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+                handleError(error, 'UnableToTrip');
+            });
         }
 
         function handleEnergise(side) {
             startModification();
-            energiseEquipmentEnd(
-                studyUuid,
-                currentNode?.id,
-                equipmentInfos,
-                side
-            ).catch((error) => {
+            energiseEquipmentEnd(studyUuid, currentNode?.id, equipmentInfos, side).catch((error) => {
                 handleError(error, 'UnableToEnergiseOnOneEnd');
             });
         }
 
         function handleSwitchOn() {
             startModification();
-            switchOnEquipment(studyUuid, currentNode?.id, equipmentInfos).catch(
-                (error) => {
-                    handleError(error, 'UnableToSwitchOn');
-                }
-            );
+            switchOnEquipment(studyUuid, currentNode?.id, equipmentInfos).catch((error) => {
+                handleError(error, 'UnableToSwitchOn');
+            });
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
             (equipmentId, equipmentType, dialogTitle) => {
                 handleClose();
-                onOpenDynamicSimulationEventDialog(
-                    equipmentId,
-                    equipmentType,
-                    dialogTitle
-                );
+                onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
             },
             [handleClose, onOpenDynamicSimulationEventDialog]
         );
@@ -210,10 +187,7 @@ const withOperatingStatusMenu =
                     <CustomMenuItem
                         sx={styles.menuItem}
                         onClick={() => handleLockout()}
-                        disabled={
-                            !isNodeEditable ||
-                            equipmentInfos.operatingStatus === 'PLANNED_OUTAGE'
-                        }
+                        disabled={!isNodeEditable || equipmentInfos.operatingStatus === 'PLANNED_OUTAGE'}
                     >
                         <ListItemIcon>
                             <LockOutlinedIcon />
@@ -233,10 +207,7 @@ const withOperatingStatusMenu =
                 <CustomMenuItem
                     sx={styles.menuItem}
                     onClick={() => handleTrip()}
-                    disabled={
-                        !isNodeEditable ||
-                        equipmentInfos.operatingStatus === 'FORCED_OUTAGE'
-                    }
+                    disabled={!isNodeEditable || equipmentInfos.operatingStatus === 'FORCED_OUTAGE'}
                 >
                     <ListItemIcon>
                         <OfflineBoltOutlinedIcon />
@@ -256,13 +227,8 @@ const withOperatingStatusMenu =
                     <DynamicSimulationEventMenuItem
                         equipmentId={equipment.id}
                         equipmentType={equipmentType}
-                        onOpenDynamicSimulationEventDialog={
-                            handleOpenDynamicSimulationEventDialog
-                        }
-                        disabled={
-                            !isNodeEditable ||
-                            equipmentInfos.operatingStatus === 'FORCED_OUTAGE'
-                        }
+                        onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
+                        disabled={!isNodeEditable || equipmentInfos.operatingStatus === 'FORCED_OUTAGE'}
                     />
                 )}
                 {equipmentType === EQUIPMENT_TYPES.LINE && (
@@ -270,9 +236,7 @@ const withOperatingStatusMenu =
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
                         disabled={
-                            !isNodeEditable ||
-                            (equipmentInfos.terminal1Connected &&
-                                !equipmentInfos.terminal2Connected)
+                            !isNodeEditable || (equipmentInfos.terminal1Connected && !equipmentInfos.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -284,9 +248,7 @@ const withOperatingStatusMenu =
                                 <Typography noWrap>
                                     {intl.formatMessage(
                                         {
-                                            id: getTranslationKey(
-                                                'EnergiseOnOneEnd'
-                                            ),
+                                            id: getTranslationKey('EnergiseOnOneEnd'),
                                         },
                                         {
                                             substation: getNameOrId({
@@ -305,9 +267,7 @@ const withOperatingStatusMenu =
                         sx={styles.menuItem}
                         onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
                         disabled={
-                            !isNodeEditable ||
-                            (equipmentInfos.terminal2Connected &&
-                                !equipmentInfos.terminal1Connected)
+                            !isNodeEditable || (equipmentInfos.terminal2Connected && !equipmentInfos.terminal1Connected)
                         }
                     >
                         <ListItemIcon>
@@ -319,9 +279,7 @@ const withOperatingStatusMenu =
                                 <Typography noWrap>
                                     {intl.formatMessage(
                                         {
-                                            id: getTranslationKey(
-                                                'EnergiseOnOneEnd'
-                                            ),
+                                            id: getTranslationKey('EnergiseOnOneEnd'),
                                         },
                                         {
                                             substation: getNameOrId({
@@ -340,9 +298,7 @@ const withOperatingStatusMenu =
                         sx={styles.menuItem}
                         onClick={() => handleSwitchOn()}
                         disabled={
-                            !isNodeEditable ||
-                            (equipmentInfos.terminal1Connected &&
-                                equipmentInfos.terminal2Connected)
+                            !isNodeEditable || (equipmentInfos.terminal1Connected && equipmentInfos.terminal2Connected)
                         }
                     >
                         <ListItemIcon>
@@ -362,12 +318,7 @@ const withOperatingStatusMenu =
                 )}
                 <CustomMenuItem
                     sx={styles.menuItem}
-                    onClick={() =>
-                        handleDeleteEquipment(
-                            getFeederTypeFromEquipmentType(equipmentType),
-                            equipment.id
-                        )
-                    }
+                    onClick={() => handleDeleteEquipment(getFeederTypeFromEquipmentType(equipmentType), equipment.id)}
                     disabled={!isNodeEditable}
                 >
                     <ListItemIcon>
@@ -388,12 +339,7 @@ const withOperatingStatusMenu =
                     equipmentType === EQUIPMENT_TYPES.LINE) && (
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() =>
-                            handleOpenModificationDialog(
-                                equipment.id,
-                                equipmentType
-                            )
-                        }
+                        onClick={() => handleOpenModificationDialog(equipment.id, equipmentType)}
                         disabled={!isNodeEditable}
                     >
                         <ListItemIcon>

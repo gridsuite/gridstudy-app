@@ -65,43 +65,26 @@ const LineAttachToVoltageLevelForm = ({
     };
 
     const lineToAttachToForm = (
-        <LineToAttachOrSplitForm
-            label={'LineToAttachTo'}
-            studyUuid={studyUuid}
-            currentNode={currentNode}
-        />
+        <LineToAttachOrSplitForm label={'LineToAttachTo'} studyUuid={studyUuid} currentNode={currentNode} />
     );
 
-    const attachmentPointIdField = (
-        <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />
-    );
+    const attachmentPointIdField = <TextInput name={ATTACHMENT_POINT_ID} label={'AttachmentPointId'} />;
 
-    const attachmentPointNameField = (
-        <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />
-    );
+    const attachmentPointNameField = <TextInput name={ATTACHMENT_POINT_NAME} label={'AttachmentPointName'} />;
 
     const lineToIdField = (
-        <TextInput
-            name={ATTACHMENT_LINE_ID}
-            label={'AttachedLineId'}
-            formProps={{ disabled: true }}
-        />
+        <TextInput name={ATTACHMENT_LINE_ID} label={'AttachedLineId'} formProps={{ disabled: true }} />
     );
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
 
-    const newLine1NameField = (
-        <TextInput name={LINE1_NAME} label={'Line1Name'} />
-    );
+    const newLine1NameField = <TextInput name={LINE1_NAME} label={'Line1Name'} />;
 
     const newLine2IdField = <TextInput name={LINE2_ID} label={'Line2ID'} />;
 
-    const newLine2NameField = (
-        <TextInput name={LINE2_NAME} label={'Line2Name'} />
-    );
+    const newLine2NameField = <TextInput name={LINE2_NAME} label={'Line2Name'} />;
 
-    const isVoltageLevelEdit =
-        voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
+    const isVoltageLevelEdit = voltageLevelToEdit?.equipmentId === voltageLevelIdWatch;
 
     const busbarSectionOptions = useMemo(() => {
         if (isVoltageLevelEdit) {
@@ -136,9 +119,7 @@ const LineAttachToVoltageLevelForm = ({
                 {gridItem(
                     <Button
                         onClick={openVoltageLevelDialog}
-                        startIcon={
-                            isVoltageLevelEdit ? <EditIcon /> : <AddIcon />
-                        }
+                        startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
                     >
                         <Typography align="left">
                             <FormattedMessage id="NewVoltageLevel" />
@@ -151,10 +132,7 @@ const LineAttachToVoltageLevelForm = ({
                 {gridItem(lineToIdField, 6)}
                 <Box width="100%" />
                 {gridItem(
-                    <Button
-                        onClick={openLineDialog}
-                        startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}
-                    >
+                    <Button onClick={openLineDialog} startIcon={lineToEdit ? <EditIcon /> : <AddIcon />}>
                         <Typography align="left">
                             <FormattedMessage id="AttachedLine" />
                         </Typography>

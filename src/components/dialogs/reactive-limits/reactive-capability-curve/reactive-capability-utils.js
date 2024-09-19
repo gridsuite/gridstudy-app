@@ -5,10 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    toNumber,
-    validateValueIsANumber,
-} from 'components/utils/validation-functions';
+import { toNumber, validateValueIsANumber } from 'components/utils/validation-functions';
 import yup from 'components/utils/yup-config';
 import {
     MAX_Q,
@@ -28,10 +25,7 @@ const getCreationRowSchema = () =>
             .number()
             .nullable()
             .required()
-            .max(
-                yup.ref(MAX_Q),
-                'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-            ),
+            .max(yup.ref(MAX_Q), 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'),
         [P]: yup.number().nullable().required(),
     });
 
@@ -44,10 +38,7 @@ const getModificationRowSchema = () =>
             .when([MAX_Q], {
                 is: (value) => value != null,
                 then: (schema) =>
-                    schema.max(
-                        yup.ref(MAX_Q),
-                        'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'
-                    ),
+                    schema.max(yup.ref(MAX_Q), 'ReactiveCapabilityCurveCreationErrorQminPQmaxPIncoherence'),
             }),
         [P]: yup.number().nullable(),
     });
@@ -58,9 +49,7 @@ export const getRowEmptyFormData = () => ({
     [MIN_Q]: null,
 });
 
-export const getReactiveCapabilityCurveEmptyFormData = (
-    id = REACTIVE_CAPABILITY_CURVE_TABLE
-) => {
+export const getReactiveCapabilityCurveEmptyFormData = (id = REACTIVE_CAPABILITY_CURVE_TABLE) => {
     return {
         [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
     };
@@ -79,19 +68,13 @@ function getNotNullPFromArray(values, isEquipmentModification) {
 }
 
 function checkAllPValuesAreUnique(values, isEquipmentModification) {
-    const validActivePowerValues = getNotNullPFromArray(
-        values,
-        isEquipmentModification
-    );
+    const validActivePowerValues = getNotNullPFromArray(values, isEquipmentModification);
     const setOfPs = [...new Set(validActivePowerValues)];
     return setOfPs.length === validActivePowerValues.length;
 }
 
 function checkAllPValuesBetweenMinMax(values, isEquipmentModification) {
-    const validActivePowerValues = getNotNullPFromArray(
-        values,
-        isEquipmentModification
-    );
+    const validActivePowerValues = getNotNullPFromArray(values, isEquipmentModification);
     const minP = validActivePowerValues[0];
     const maxP = validActivePowerValues[validActivePowerValues.length - 1];
 
@@ -113,8 +96,7 @@ export const getReactiveCapabilityCurveValidationSchema = (
                     .when([], {
                         is: () => !isEquipmentModification,
                         then: (schema) => schema.of(getCreationRowSchema()),
-                        otherwise: (schema) =>
-                            schema.of(getModificationRowSchema()),
+                        otherwise: (schema) => schema.of(getModificationRowSchema()),
                     })
                     .when([], {
                         is: () => positiveAndNegativePExist,
@@ -123,41 +105,25 @@ export const getReactiveCapabilityCurveValidationSchema = (
                                 .test(
                                     'checkATLeastThereIsOneNegativeP',
                                     'ReactiveCapabilityCurveCreationErrorMissingNegativeP',
-                                    (values) =>
-                                        values.some((value) => value.p < 0)
+                                    (values) => values.some((value) => value.p < 0)
                                 )
                                 .test(
                                     'checkATLeastThereIsOnePositiveP',
                                     'ReactiveCapabilityCurveCreationErrorMissingPositiveP',
-                                    (values) =>
-                                        values.some((value) => value.p >= 0)
+                                    (values) => values.some((value) => value.p >= 0)
                                 ),
                     })
                     .min(2, 'ReactiveCapabilityCurveCreationErrorMissingPoints')
-                    .test(
-                        'checkAllValuesAreUnique',
-                        'ReactiveCapabilityCurveCreationErrorPInvalid',
-                        (values) =>
-                            checkAllPValuesAreUnique(
-                                values,
-                                isEquipmentModification
-                            )
+                    .test('checkAllValuesAreUnique', 'ReactiveCapabilityCurveCreationErrorPInvalid', (values) =>
+                        checkAllPValuesAreUnique(values, isEquipmentModification)
                     )
-                    .test(
-                        'checkAllValuesBetweenMinMax',
-                        'ReactiveCapabilityCurveCreationErrorPOutOfRange',
-                        (values) =>
-                            checkAllPValuesBetweenMinMax(
-                                values,
-                                isEquipmentModification
-                            )
+                    .test('checkAllValuesBetweenMinMax', 'ReactiveCapabilityCurveCreationErrorPOutOfRange', (values) =>
+                        checkAllPValuesBetweenMinMax(values, isEquipmentModification)
                     ),
         }),
 });
 
-export const completeReactiveCapabilityCurvePointsData = (
-    reactiveCapabilityCurvePoints
-) => {
+export const completeReactiveCapabilityCurvePointsData = (reactiveCapabilityCurvePoints) => {
     reactiveCapabilityCurvePoints.map((rcc) => {
         if (!(P in rcc)) {
             rcc[P] = null;
@@ -181,16 +147,8 @@ export const insertEmptyRowAtSecondToLastIndex = (table) => {
     });
 };
 
-export const calculateCurvePointsToStore = (
-    reactiveCapabilityCurve,
-    equipmentToModify
-) => {
-    if (
-        reactiveCapabilityCurve.every(
-            (point) =>
-                point.p == null && point.minQ == null && point.maxQ == null
-        )
-    ) {
+export const calculateCurvePointsToStore = (reactiveCapabilityCurve, equipmentToModify) => {
+    if (reactiveCapabilityCurve.every((point) => point.p == null && point.minQ == null && point.maxQ == null)) {
         return null;
     } else {
         const pointsToStore = [];
@@ -198,17 +156,11 @@ export const calculateCurvePointsToStore = (
             if (point) {
                 let pointToStore = {
                     p: point?.[P],
-                    oldP:
-                        equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.p ?? null,
+                    oldP: equipmentToModify.reactiveCapabilityCurveTable?.[index]?.p ?? null,
                     minQ: point?.minQ,
-                    oldMinQ:
-                        equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.minQ ?? null,
+                    oldMinQ: equipmentToModify.reactiveCapabilityCurveTable?.[index]?.minQ ?? null,
                     maxQ: point?.maxQ,
-                    oldMaxQ:
-                        equipmentToModify.reactiveCapabilityCurveTable?.[index]
-                            ?.maxQ ?? null,
+                    oldMaxQ: equipmentToModify.reactiveCapabilityCurveTable?.[index]?.maxQ ?? null,
                 };
                 pointsToStore.push(pointToStore);
             }
@@ -238,16 +190,12 @@ export function setCurrentReactiveCapabilityCurveTable(
     if (previousReactiveCapabilityCurveTable) {
         const currentReactiveCapabilityCurveTable = getValues(fieldKey);
 
-        const sizeDiff =
-            previousReactiveCapabilityCurveTable.length -
-            currentReactiveCapabilityCurveTable.length;
+        const sizeDiff = previousReactiveCapabilityCurveTable.length - currentReactiveCapabilityCurveTable.length;
 
         // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
         if (sizeDiff > 0) {
             for (let i = 0; i < sizeDiff; i++) {
-                insertEmptyRowAtSecondToLastIndex(
-                    currentReactiveCapabilityCurveTable
-                );
+                insertEmptyRowAtSecondToLastIndex(currentReactiveCapabilityCurveTable);
             }
             setValue(fieldKey, currentReactiveCapabilityCurveTable, {
                 shouldValidate: true,
@@ -255,9 +203,7 @@ export function setCurrentReactiveCapabilityCurveTable(
         } else if (sizeDiff < 0) {
             // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
             for (let i = 0; i > sizeDiff; i--) {
-                insertEmptyRowAtSecondToLastIndex(
-                    previousReactiveCapabilityCurveTable
-                );
+                insertEmptyRowAtSecondToLastIndex(previousReactiveCapabilityCurveTable);
             }
         }
     }

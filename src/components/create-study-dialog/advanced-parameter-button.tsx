@@ -25,9 +25,10 @@ const styles = {
     }),
 };
 
-export const AdvancedParameterButton: FunctionComponent<
-    AdvancedParameterButtonProps
-> = ({ disabled = false, ...props }) => {
+export const AdvancedParameterButton: FunctionComponent<AdvancedParameterButtonProps> = ({
+    disabled = false,
+    ...props
+}) => {
     const { showOpenIcon, callback, label } = props;
 
     return (
@@ -35,9 +36,7 @@ export const AdvancedParameterButton: FunctionComponent<
             <Grid item xs={12} sx={styles.advancedParameterButton}>
                 <Button
                     startIcon={<SettingsIcon />}
-                    endIcon={
-                        showOpenIcon && <CheckIcon style={{ color: 'green' }} />
-                    }
+                    endIcon={showOpenIcon && <CheckIcon style={{ color: 'green' }} />}
                     onClick={callback}
                     disabled={disabled}
                 >

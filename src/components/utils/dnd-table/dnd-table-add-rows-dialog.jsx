@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    TextField,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
@@ -37,11 +30,7 @@ function DndTableAddRowsDialog({ open, handleAddButton, onClose }) {
                     type="Number"
                     value={rowNumber}
                     onChange={(event) => {
-                        setRowNumber(
-                            !event.target.value
-                                ? 0
-                                : parseInt(event.target.value)
-                        );
+                        setRowNumber(!event.target.value ? 0 : parseInt(event.target.value));
                     }}
                 />
             </DialogContent>

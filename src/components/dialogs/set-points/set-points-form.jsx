@@ -16,11 +16,7 @@ import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
-import {
-    ACTIVE_POWER_SET_POINT,
-    REACTIVE_POWER_SET_POINT,
-    VOLTAGE_REGULATION,
-} from 'components/utils/field-constants';
+import { ACTIVE_POWER_SET_POINT, REACTIVE_POWER_SET_POINT, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import FrequencyRegulation from './frequency-regulation';
 import VoltageRegulation from './voltage-regulation';
@@ -80,10 +76,7 @@ const SetPointsForm = ({
         </Box>
     ) : (
         <Box>
-            <SwitchInput
-                name={VOLTAGE_REGULATION}
-                label={'VoltageRegulationText'}
-            />
+            <SwitchInput name={VOLTAGE_REGULATION} label={'VoltageRegulationText'} />
         </Box>
     );
 
@@ -108,11 +101,7 @@ const SetPointsForm = ({
                 <Box sx={{ width: '100%' }} />
                 {gridItemWithTooltip(
                     voltageRegulationField,
-                    watchVoltageRegulation !== null ? (
-                        ''
-                    ) : (
-                        <FormattedMessage id={'NoModification'} />
-                    ),
+                    watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />,
                     4
                 )}
 

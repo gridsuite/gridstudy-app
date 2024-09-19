@@ -71,11 +71,7 @@ export const getRegulatingTerminalVoltageLevelData = ({
     };
 };
 
-export const getRegulatingTerminalEquipmentData = ({
-    equipmentId,
-    equipmentName = '',
-    equipmentType = '',
-}) => {
+export const getRegulatingTerminalEquipmentData = ({ equipmentId, equipmentName = '', equipmentType = '' }) => {
     if (!equipmentId) {
         return null;
     }

@@ -21,14 +21,17 @@ import {
 } from '../../../dialogUtils';
 import Grid from '@mui/material/Grid';
 import React from 'react';
-import { TextInput, FloatInput } from '@gridsuite/commons-ui';
+import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { TextField } from '@mui/material';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import { FormattedMessage } from 'react-intl';
 import PropertiesForm from '../../common/properties/properties-form';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
 
 const BatteryModificationForm = ({
+    studyUuid,
+    currentNode,
     batteryToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
@@ -97,11 +100,26 @@ const BatteryModificationForm = ({
         />
     );
 
+    const connectivityForm = (
+        <ConnectivityForm
+            withPosition={true}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            isEquipmentModification={true}
+            previousValues={batteryToModify}
+        />
+    );
+
     return (
         <>
             <Grid container spacing={2}>
                 {gridItem(batteryIdField, 4)}
                 {gridItem(batteryNameField, 4)}
+            </Grid>
+            {/* Connectivity part */}
+            <GridSection title="Connectivity" />
+            <Grid container spacing={2}>
+                {gridItem(connectivityForm, 12)}
             </Grid>
             {/* Limits part */}
             <Grid container spacing={2}>
@@ -129,9 +147,7 @@ const BatteryModificationForm = ({
             </Grid>
             <ReactiveLimitsForm
                 equipmentToModify={batteryToModify}
-                updatePreviousReactiveCapabilityCurveTable={
-                    updatePreviousReactiveCapabilityCurveTable
-                }
+                updatePreviousReactiveCapabilityCurveTable={updatePreviousReactiveCapabilityCurveTable}
             />
             {/* Set points part */}
             <GridSection title="Setpoints" />
@@ -140,15 +156,9 @@ const BatteryModificationForm = ({
                 {gridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <FrequencyRegulation
-                    isEquipmentModification={batteryToModify}
-                    previousValues={batteryToModify}
-                />
+                <FrequencyRegulation isEquipmentModification={true} previousValues={batteryToModify} />
             </Grid>
-            <PropertiesForm
-                networkElementType={'battery'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'battery'} isModification={true} />
         </>
     );
 };

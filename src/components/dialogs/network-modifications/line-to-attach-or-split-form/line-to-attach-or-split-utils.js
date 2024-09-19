@@ -30,10 +30,7 @@ export const getLineToAttachOrSplitEmptyFormData = () => {
     return lineToAttachOrSplitEmptyFormData();
 };
 
-export const getLineToAttachOrSplitFormData = ({
-    lineToAttachOrSplitId,
-    percent,
-}) => {
+export const getLineToAttachOrSplitFormData = ({ lineToAttachOrSplitId, percent }) => {
     return {
         [LINE_TO_ATTACH_OR_SPLIT_ID]: lineToAttachOrSplitId,
         ...getPercentageAreaData({

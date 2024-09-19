@@ -43,11 +43,7 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
 
     return (
         <Box sx={styles.header}>
-            <IconButton
-                size={'small'}
-                onClick={() => setOpenEditTitle(true)}
-                disabled={onChange === undefined}
-            >
+            <IconButton size={'small'} onClick={() => setOpenEditTitle(true)} disabled={onChange === undefined}>
                 <EditIcon />
             </IconButton>
             <OverflowableText text={name} sx={styles.nodeNameTitle} />

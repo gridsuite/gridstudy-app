@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    useCallback,
-    useState,
-    forwardRef,
-    useImperativeHandle,
-    useMemo,
-    useEffect,
-} from 'react';
+import { useCallback, useState, forwardRef, useImperativeHandle, useMemo, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -66,202 +59,179 @@ function initializeLocalRowData(rowData: any) {
     });
 }
 
-export const SitePropertiesEditor = forwardRef(
-    ({ colDef, data, stopEditing }: ICellEditorParams, ref) => {
-        const theme = useTheme();
-        const [error, setError] = useState('');
-        const intl = useIntl();
-        const [open, setOpen] = useState(true);
-        const [cancel, setCancel] = useState(false);
-        const [localRowData, setRowData] = useState(() =>
-            initializeLocalRowData(data)
-        );
+export const SitePropertiesEditor = forwardRef(({ colDef, data, stopEditing }: ICellEditorParams, ref) => {
+    const theme = useTheme();
+    const [error, setError] = useState('');
+    const intl = useIntl();
+    const [open, setOpen] = useState(true);
+    const [cancel, setCancel] = useState(false);
+    const [localRowData, setRowData] = useState(() => initializeLocalRowData(data));
 
-        // Documented in https://www.ag-grid.com/archive/31.2.0/react-data-grid/component-cell-editor-imperative-react/
-        useImperativeHandle(
-            ref,
-            () => {
-                return {
-                    getValue: () => {
-                        return arrayToObject(localRowData);
-                    },
-                    getField: () => {
-                        return colDef.field;
-                    },
-                    isCancelAfterEnd: () => {
-                        return cancel;
-                    },
-                };
-            },
-            [colDef.field, localRowData, cancel]
-        );
+    // Documented in https://www.ag-grid.com/archive/31.2.0/react-data-grid/component-cell-editor-imperative-react/
+    useImperativeHandle(
+        ref,
+        () => {
+            return {
+                getValue: () => {
+                    return arrayToObject(localRowData);
+                },
+                getField: () => {
+                    return colDef.field;
+                },
+                isCancelAfterEnd: () => {
+                    return cancel;
+                },
+            };
+        },
+        [colDef.field, localRowData, cancel]
+    );
 
-        useEffect(() => {
-            if (cancel) {
-                stopEditing();
-            }
-        }, [cancel, stopEditing]);
+    useEffect(() => {
+        if (cancel) {
+            stopEditing();
+        }
+    }, [cancel, stopEditing]);
 
-        const handleRemoveRow = useCallback(
-            (index: number) => {
-                const newData = [...localRowData];
-                newData.splice(index, 1);
-                // Update the id of the remaining rows
-                newData.forEach((item, i) => {
-                    item.id = i;
-                });
-                setRowData(newData);
-            },
-            [localRowData]
-        );
-
-        const handleAddRow = () => {
-            const newId = localRowData.length;
-            setRowData([...localRowData, { id: newId, key: '', value: '' }]);
-        };
-
-        const performValidation = () => {
-            //validate rowData with yup and display error message and errors cells if any
-            let hasError = false;
-            try {
-                hasError = !validationSchema.isValidSync(localRowData);
-                validationSchema.validateSync(localRowData, {
-                    abortEarly: true,
-                });
-            } catch (err: any) {
-                setError(
-                    intl.formatMessage({
-                        id: err.errors[0],
-                    })
-                );
-            }
-            if (!hasError) {
-                setError('');
-                setOpen(false);
-                stopEditing();
-            }
-
-            return !hasError;
-        };
-
-        const handleNameChange = (index: number, value: any) => {
+    const handleRemoveRow = useCallback(
+        (index: number) => {
             const newData = [...localRowData];
-            newData[index].key = value;
+            newData.splice(index, 1);
+            // Update the id of the remaining rows
+            newData.forEach((item, i) => {
+                item.id = i;
+            });
             setRowData(newData);
-        };
+        },
+        [localRowData]
+    );
 
-        const handleValueChange = (index: number, value: any) => {
-            const newData = [...localRowData];
-            newData[index].value = value;
-            setRowData(newData);
-        };
+    const handleAddRow = () => {
+        const newId = localRowData.length;
+        setRowData([...localRowData, { id: newId, key: '', value: '' }]);
+    };
 
-        const handleCancelPopupSelectEditSiteProperties = () => {
+    const performValidation = () => {
+        //validate rowData with yup and display error message and errors cells if any
+        let hasError = false;
+        try {
+            hasError = !validationSchema.isValidSync(localRowData);
+            validationSchema.validateSync(localRowData, {
+                abortEarly: true,
+            });
+        } catch (err: any) {
+            setError(
+                intl.formatMessage({
+                    id: err.errors[0],
+                })
+            );
+        }
+        if (!hasError) {
+            setError('');
             setOpen(false);
-            setCancel(true);
-        };
+            stopEditing();
+        }
 
-        return (
-            <SelectOptionsDialog
-                open={open}
-                onClose={handleCancelPopupSelectEditSiteProperties}
-                onClick={performValidation}
-                title={intl.formatMessage({
-                    id: 'editSiteProperties',
-                })}
-                style={undefined}
-                child={
-                    <Grid container spacing={2} style={{ width: '500px' }}>
-                        <Grid item xs={12}>
-                            <TableContainer
-                                sx={{
-                                    border: 'solid 0px rgba(0,0,0,0.1)',
-                                }}
-                            >
-                                <Table stickyHeader size="small">
-                                    <PropertiesEditorHeader
-                                        darkTheme={
-                                            theme.palette.mode === 'dark'
-                                        }
-                                        handleAddRow={handleAddRow}
-                                    />
-                                    <TableBody>
-                                        {localRowData?.map((row, index) => {
-                                            return (
-                                                <TableRow key={row.id}>
-                                                    <TableCell>
-                                                        <TextField
-                                                            size="small"
-                                                            fullWidth
-                                                            value={row.key}
-                                                            onChange={(e) =>
-                                                                handleNameChange(
-                                                                    index,
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <TextField
-                                                            size="small"
-                                                            fullWidth
-                                                            value={row.value}
-                                                            onChange={(e) =>
-                                                                handleValueChange(
-                                                                    index,
-                                                                    e.target
-                                                                        .value
-                                                                )
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Box>
-                                                            <IconButton
-                                                                onClick={() => {
-                                                                    handleRemoveRow(
-                                                                        index
-                                                                    );
+        return !hasError;
+    };
+
+    const handleNameChange = (index: number, value: any) => {
+        const newData = [...localRowData];
+        newData[index].key = value;
+        setRowData(newData);
+    };
+
+    const handleValueChange = (index: number, value: any) => {
+        const newData = [...localRowData];
+        newData[index].value = value;
+        setRowData(newData);
+    };
+
+    const handleCancelPopupSelectEditSiteProperties = () => {
+        setOpen(false);
+        setCancel(true);
+    };
+
+    return (
+        <SelectOptionsDialog
+            open={open}
+            onClose={handleCancelPopupSelectEditSiteProperties}
+            onClick={performValidation}
+            title={intl.formatMessage({
+                id: 'editSiteProperties',
+            })}
+            style={undefined}
+            child={
+                <Grid container spacing={2} style={{ width: '500px' }}>
+                    <Grid item xs={12}>
+                        <TableContainer
+                            sx={{
+                                border: 'solid 0px rgba(0,0,0,0.1)',
+                            }}
+                        >
+                            <Table stickyHeader size="small">
+                                <PropertiesEditorHeader
+                                    darkTheme={theme.palette.mode === 'dark'}
+                                    handleAddRow={handleAddRow}
+                                />
+                                <TableBody>
+                                    {localRowData?.map((row, index) => {
+                                        return (
+                                            <TableRow key={row.id}>
+                                                <TableCell>
+                                                    <TextField
+                                                        size="small"
+                                                        fullWidth
+                                                        value={row.key}
+                                                        onChange={(e) => handleNameChange(index, e.target.value)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <TextField
+                                                        size="small"
+                                                        fullWidth
+                                                        value={row.value}
+                                                        onChange={(e) => handleValueChange(index, e.target.value)}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Box>
+                                                        <IconButton
+                                                            onClick={() => {
+                                                                handleRemoveRow(index);
+                                                            }}
+                                                        >
+                                                            <DeleteIcon
+                                                                sx={{
+                                                                    color:
+                                                                        theme.palette.mode === 'dark'
+                                                                            ? 'white'
+                                                                            : 'black',
                                                                 }}
-                                                            >
-                                                                <DeleteIcon
-                                                                    sx={{
-                                                                        color:
-                                                                            theme
-                                                                                .palette
-                                                                                .mode ===
-                                                                            'dark'
-                                                                                ? 'white'
-                                                                                : 'black',
-                                                                    }}
-                                                                />
-                                                            </IconButton>
-                                                        </Box>
-                                                    </TableCell>
-                                                </TableRow>
-                                            );
-                                        })}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        </Grid>
-                        <Grid item>
-                            <Box
-                                sx={{
-                                    color: 'red',
-                                }}
-                            >
-                                {error && <p>{error}</p>}
-                            </Box>
-                        </Grid>
+                                                            />
+                                                        </IconButton>
+                                                    </Box>
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </Grid>
-                }
-            />
-        );
-    }
-);
+                    <Grid item>
+                        <Box
+                            sx={{
+                                color: 'red',
+                            }}
+                        >
+                            {error && <p>{error}</p>}
+                        </Box>
+                    </Grid>
+                </Grid>
+            }
+        />
+    );
+});
 
 const PropertiesEditorHeader = ({ darkTheme, handleAddRow }: any) => {
     const intl = useIntl();

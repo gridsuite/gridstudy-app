@@ -6,21 +6,13 @@
  */
 
 import { Grid, TextField } from '@mui/material';
-import {
-    ENABLED,
-    EQUIPMENT_NAME,
-    RATIO_TAP_CHANGER,
-    PHASE_TAP_CHANGER,
-} from 'components/utils/field-constants';
+import { ENABLED, EQUIPMENT_NAME, RATIO_TAP_CHANGER, PHASE_TAP_CHANGER } from 'components/utils/field-constants';
 import React from 'react';
 import { filledTextField, gridItem } from '../../../dialogUtils';
 import { TextInput } from '@gridsuite/commons-ui';
 import { SwitchInput } from '@gridsuite/commons-ui';
 
-const TwoWindingsTransformerModificationDialogHeader = ({
-    equipmentToModify,
-    equipmentId,
-}) => {
+const TwoWindingsTransformerModificationDialogHeader = ({ equipmentToModify, equipmentId }) => {
     const twoWindingsTransformerIdField = (
         <TextField
             size="small"
@@ -46,17 +38,11 @@ const TwoWindingsTransformerModificationDialogHeader = ({
     );
 
     const ratioTapChangerEnabledField = (
-        <SwitchInput
-            name={`${RATIO_TAP_CHANGER}.${ENABLED}`}
-            label="WithRatioTapChanger"
-        />
+        <SwitchInput name={`${RATIO_TAP_CHANGER}.${ENABLED}`} label="WithRatioTapChanger" />
     );
 
     const phaseTapChangerEnabledField = (
-        <SwitchInput
-            name={`${PHASE_TAP_CHANGER}.${ENABLED}`}
-            label="WithPhaseTapChanger"
-        />
+        <SwitchInput name={`${PHASE_TAP_CHANGER}.${ENABLED}`} label="WithPhaseTapChanger" />
     );
 
     return (

@@ -26,24 +26,13 @@ const styles = {
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
     equipmentType: string;
-    onOpenDynamicSimulationEventDialog: (
-        equipmentId: string,
-        equipmentType: string,
-        dialogTitle: string
-    ) => void;
+    onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
     disabled: boolean;
 }
 
-const DynamicSimulationEventMenuItem = (
-    props: DynamicSimulationEventMenuItemProps
-) => {
+const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemProps) => {
     const intl = useIntl();
-    const {
-        equipmentId,
-        equipmentType,
-        onOpenDynamicSimulationEventDialog,
-        disabled,
-    } = props;
+    const { equipmentId, equipmentType, onOpenDynamicSimulationEventDialog, disabled } = props;
     return (
         <CustomMenuItem
             sx={styles.menuItem}
@@ -52,6 +41,7 @@ const DynamicSimulationEventMenuItem = (
                     equipmentId,
                     equipmentType,
                     `${getEventType(equipmentType)}${
+                        // @ts-expect-error TODO: conflicts types
                         EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
                     }`
                 )
@@ -66,6 +56,7 @@ const DynamicSimulationEventMenuItem = (
                     <Typography noWrap>
                         {intl.formatMessage({
                             id: `${getEventType(equipmentType)}${
+                                // @ts-expect-error TODO: conflicts types
                                 EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
                             }`,
                         })}

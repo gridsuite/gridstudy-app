@@ -129,12 +129,7 @@ export function sanitizeString(val) {
     return trimedValue === '' ? null : trimedValue;
 }
 
-export const GridSection = ({
-    title,
-    heading = '3',
-    size = 12,
-    customStyle = {},
-}) => {
+export const GridSection = ({ title, heading = '3', size = 12, customStyle = {} }) => {
     const CustomTag = styled(`h${heading}`)(customStyle);
     return (
         <Grid container spacing={2}>
@@ -163,12 +158,7 @@ export const gridItemWithTooltip = (field, tooltip = '', size = 6) => {
     );
 };
 
-export const gridItemWithErrorMsg = (
-    field,
-    size = 6,
-    error,
-    errorClassName
-) => {
+export const gridItemWithErrorMsg = (field, size = 6, error, errorClassName) => {
     return (
         <Grid item xs={size} align={'start'}>
             {field}
@@ -194,15 +184,7 @@ export function LineSeparator() {
     );
 }
 
-export const LabelledSlider = ({
-    value,
-    label,
-    disabled,
-    onCommitCallback,
-    marks,
-    minValue = 0,
-    maxValue = 100,
-}) => {
+export const LabelledSlider = ({ value, label, disabled, onCommitCallback, marks, minValue = 0, maxValue = 100 }) => {
     const [sliderValue, setSliderValue] = useState(value);
 
     const handleValueChanged = (event, newValue) => {

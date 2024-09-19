@@ -5,12 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    ChangeEvent,
-    FunctionComponent,
-    useCallback,
-    useEffect,
-} from 'react';
+import React, { ChangeEvent, FunctionComponent, useCallback, useEffect } from 'react';
 import { useDebounce } from '@gridsuite/commons-ui';
 import { elementExists } from 'services/explore';
 import { FormattedMessage } from 'react-intl';
@@ -30,22 +25,14 @@ interface UniqueNameInputProps {
     activeDirectory: UUID | null;
     formProps?: Omit<
         TextFieldProps,
-        | 'value'
-        | 'onChange'
-        | 'name'
-        | 'label'
-        | 'inputRef'
-        | 'inputProps'
-        | 'InputProps'
+        'value' | 'onChange' | 'name' | 'label' | 'inputRef' | 'inputProps' | 'InputProps'
     >;
 }
 
 /**
  * Input component that constantly check if the field's value is available or not
  */
-export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
-    props
-) => {
+export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (props) => {
     const {
         field: { onChange, onBlur, value, name, ref },
         fieldState: { error, isDirty },
@@ -86,13 +73,7 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
                     });
             }
         },
-        [
-            setError,
-            clearErrors,
-            props.activeDirectory,
-            props.name,
-            props.elementType,
-        ]
+        [setError, clearErrors, props.activeDirectory, props.name, props.elementType]
     );
 
     const debouncedHandleCheckName = useDebounce(handleCheckName, 700);
@@ -119,19 +100,10 @@ export const UniqueNameInput: FunctionComponent<UniqueNameInputProps> = (
                 message: 'nameEmpty',
             });
         }
-    }, [
-        debouncedHandleCheckName,
-        setError,
-        clearErrors,
-        props.name,
-        value,
-        isDirty,
-    ]);
+    }, [debouncedHandleCheckName, setError, clearErrors, props.name, value, isDirty]);
 
     // Handle on user's change
-    const handleManualChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
+    const handleManualChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         onChange(e.target.value);
         props.onManualChangeCallback && props.onManualChangeCallback();
     };

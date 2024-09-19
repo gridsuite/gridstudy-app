@@ -7,14 +7,7 @@
 
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import {
-    Accordion,
-    AccordionDetails,
-    AccordionSummary,
-    Box,
-    Theme,
-    Typography,
-} from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Theme, Typography } from '@mui/material';
 import { ExpandCircleDown, ExpandMore } from '@mui/icons-material';
 
 type AccordionIllustrationProps = {
@@ -34,8 +27,7 @@ export const styles = {
         justifyContent: 'left',
         transition: '0.2s',
         padding: '0px 16px',
-        backgroundColor:
-            theme.palette.mode === 'light' ? 'none' : ILLUSTRATION_DARK_BG,
+        backgroundColor: theme.palette.mode === 'light' ? 'none' : ILLUSTRATION_DARK_BG,
         '& .MuiAccordionSummary-expandIconWrapper': {
             transform: 'rotate(180deg)',
         },
@@ -51,9 +43,7 @@ export const styles = {
     }),
 };
 
-export const AccordionIllustration: FunctionComponent<
-    PropsWithChildren<AccordionIllustrationProps>
-> = (props) => {
+export const AccordionIllustration: FunctionComponent<PropsWithChildren<AccordionIllustrationProps>> = (props) => {
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
@@ -77,9 +67,7 @@ export const AccordionIllustration: FunctionComponent<
                     </Box>
                 </Typography>
             </AccordionSummary>
-            <AccordionDetails sx={styles.accordionIllustrationDetails}>
-                {props.children}
-            </AccordionDetails>
+            <AccordionDetails sx={styles.accordionIllustrationDetails}>{props.children}</AccordionDetails>
         </Accordion>
     );
 };

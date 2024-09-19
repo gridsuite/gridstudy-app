@@ -7,18 +7,10 @@
 
 import { SelectInput } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
-import {
-    Q_PERCENT,
-    VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
-} from 'components/utils/field-constants';
+import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
-import {
-    gridItem,
-    percentageTextField,
-    VoltageAdornment,
-} from '../dialogUtils';
+import { gridItem, percentageTextField, VoltageAdornment } from '../dialogUtils';
 import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
 import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
@@ -34,10 +26,7 @@ const VoltageRegulation = ({
 }) => {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
-        if (
-            previousValues?.regulatingTerminalVlId ||
-            previousValues?.regulatingTerminalConnectableId
-        ) {
+        if (previousValues?.regulatingTerminalVlId || previousValues?.regulatingTerminalConnectableId) {
             return REGULATION_TYPES.DISTANT.id;
         } else {
             return REGULATION_TYPES.LOCAL.id;
@@ -49,10 +38,7 @@ const VoltageRegulation = ({
     });
 
     const translatedPreviousRegulationLabel = useMemo(() => {
-        if (
-            isEquipmentModification &&
-            REGULATION_TYPES[previousRegulationType]
-        ) {
+        if (isEquipmentModification && REGULATION_TYPES[previousRegulationType]) {
             return intl.formatMessage({
                 id: REGULATION_TYPES[previousRegulationType].label,
             });
@@ -63,8 +49,7 @@ const VoltageRegulation = ({
     const isDistantRegulation = useMemo(() => {
         return (
             voltageRegulationType === REGULATION_TYPES.DISTANT.id ||
-            (!voltageRegulationType &&
-                previousRegulationType === REGULATION_TYPES.DISTANT.id)
+            (!voltageRegulationType && previousRegulationType === REGULATION_TYPES.DISTANT.id)
         );
     }, [previousRegulationType, voltageRegulationType]);
 
@@ -95,9 +80,7 @@ const VoltageRegulation = ({
             equipmentSectionTypeDefaultValue={''}
             currentNodeUuid={currentNodeUuid}
             studyUuid={studyUuid}
-            previousRegulatingTerminalValue={
-                previousValues?.regulatingTerminalVlId
-            }
+            previousRegulatingTerminalValue={previousValues?.regulatingTerminalVlId}
             previousEquipmentSectionTypeValue={
                 previousValues?.regulatingTerminalConnectableType
                     ? previousValues?.regulatingTerminalConnectableType +
@@ -113,11 +96,7 @@ const VoltageRegulation = ({
             name={Q_PERCENT}
             label={'QPercentText'}
             adornment={percentageTextField}
-            previousValue={
-                !isNaN(previousValues?.qPercent)
-                    ? previousValues?.qPercent
-                    : null
-            }
+            previousValue={!isNaN(previousValues?.qPercent) ? previousValues?.qPercent : null}
             clearable={true}
         />
     );

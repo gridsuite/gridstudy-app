@@ -128,8 +128,7 @@ const LineAttachToVoltageLevelDialog = ({
                 ...getConnectivityData({
                     busbarSectionId: lineAttach.bbsOrBusId,
                     voltageLevelId:
-                        lineAttach?.existingVoltageLevelId ??
-                        lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
+                        lineAttach?.existingVoltageLevelId ?? lineAttach?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
             };
             const newVoltageLevel = lineAttach?.mayNewVoltageLevelInfos;
@@ -138,8 +137,7 @@ const LineAttachToVoltageLevelDialog = ({
                     ...formData,
                     [CONNECTIVITY]: {
                         ...formData[CONNECTIVITY],
-                        [VOLTAGE_LEVEL]:
-                            getNewVoltageLevelData(newVoltageLevel),
+                        [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevel),
                     },
                 };
             }
@@ -165,10 +163,8 @@ const LineAttachToVoltageLevelDialog = ({
 
     const onSubmit = useCallback(
         (lineAttach) => {
-            const currentVoltageLevelId =
-                lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
-            const isNewVoltageLevel =
-                newVoltageLevel?.equipmentId === currentVoltageLevelId;
+            const currentVoltageLevelId = lineAttach[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+            const isNewVoltageLevel = newVoltageLevel?.equipmentId === currentVoltageLevelId;
             attachLine(
                 studyUuid,
                 currentNodeUuid,
@@ -192,25 +188,14 @@ const LineAttachToVoltageLevelDialog = ({
                 });
             });
         },
-        [
-            attachmentLine,
-            currentNodeUuid,
-            editData,
-            newVoltageLevel,
-            snackError,
-            studyUuid,
-        ]
+        [attachmentLine, currentNodeUuid, editData, newVoltageLevel, snackError, studyUuid]
     );
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then((values) => {
+                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
+            });
         }
     }, [studyUuid, currentNode?.id]);
 
@@ -311,8 +296,7 @@ const LineAttachToVoltageLevelDialog = ({
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 
-                const formattedVoltageLevel =
-                    getNewVoltageLevelData(preparedVoltageLevel);
+                const formattedVoltageLevel = getNewVoltageLevelData(preparedVoltageLevel);
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
@@ -341,9 +325,7 @@ const LineAttachToVoltageLevelDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -357,9 +339,7 @@ const LineAttachToVoltageLevelDialog = ({
                 titleId="LineAttachToVoltageLevel"
                 subtitle={<LineAttachToVoltageLevelIllustration />}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <LineAttachToVoltageLevelForm

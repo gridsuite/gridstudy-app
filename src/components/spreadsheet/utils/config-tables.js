@@ -27,17 +27,9 @@ import {
 } from 'components/network/constants';
 import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
 import { EQUIPMENT_FETCHERS } from 'components/utils/equipment-fetchers';
-import {
-    kiloUnitToUnit,
-    unitToKiloUnit,
-    unitToMicroUnit,
-} from '../../../utils/unit-converter';
+import { kiloUnitToUnit, unitToKiloUnit, unitToMicroUnit } from '../../../utils/unit-converter';
 import { getComputedRegulationMode } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
-import {
-    computeHighTapPosition,
-    getEnumLabelById,
-    getTapChangerRegulationTerminalValue,
-} from 'components/utils/utils';
+import { computeHighTapPosition, getEnumLabelById, getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
@@ -47,14 +39,10 @@ import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../country-cell-render';
 import EnumCellRenderer from '../enum-cell-renderer';
 import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { store } from '../../../redux/store';
+import { useSelector } from 'react-redux';
 
 const generateTapPositions = (params) => {
-    return params
-        ? Array.from(
-              Array(params.highTapPosition - params.lowTapPosition + 1).keys()
-          )
-        : [];
+    return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];
 };
 
 const isEditable = (params) => {
@@ -63,9 +51,7 @@ const isEditable = (params) => {
 
 const editableCellStyle = (params) => {
     if (isEditable(params)) {
-        if (
-            Object.keys(params.context.editErrors).includes(params.column.colId)
-        ) {
+        if (Object.keys(params.context.editErrors).includes(params.column.colId)) {
             return params.context.theme.editableCellError;
         } else {
             return params.context.theme.editableCell;
@@ -81,13 +67,12 @@ const applyFluxConvention = (convention, val) => {
     return val;
 };
 
-const getFluxConvention = () => {
-    const state = store.getState();
-    return state.fluxConvention;
-};
+function useFluxConvention() {
+    return useSelector((state) => state.fluxConvention);
+}
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
-// The columns we want to include in the global filter at the date of this comment : ID (all), Name, Country, Type and Nominal Voltage (all).
+// The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
 const excludeFromGlobalFilter = () => '';
 
@@ -102,10 +87,7 @@ const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
     customFilterParams: {
         filterDataType: FILTER_DATA_TYPES.TEXT,
-        filterComparators: [
-            FILTER_TEXT_COMPARATORS.STARTS_WITH,
-            FILTER_TEXT_COMPARATORS.CONTAINS,
-        ],
+        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
     },
 };
 
@@ -192,18 +174,12 @@ const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
             filterOptions: [
                 {
                     displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                    displayName:
-                        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                    displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
                     predicate: ([filterValue], cellValue) => {
                         const transformedValue = applyFluxConvention
-                            ? applyFluxConvention(
-                                  getFluxConvention(),
-                                  cellValue
-                              )
+                            ? applyFluxConvention(getFluxConvention(), cellValue)
                             : cellValue;
-                        return transformedValue
-                            ? transformedValue >= filterValue
-                            : false;
+                        return transformedValue ? transformedValue >= filterValue : false;
                     },
                 },
                 {
@@ -211,14 +187,9 @@ const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
                     displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
                     predicate: ([filterValue], cellValue) => {
                         const transformedValue = applyFluxConvention
-                            ? applyFluxConvention(
-                                  getFluxConvention(),
-                                  cellValue
-                              )
+                            ? applyFluxConvention(getFluxConvention(), cellValue)
                             : cellValue;
-                        return transformedValue
-                            ? transformedValue > filterValue
-                            : false;
+                        return transformedValue ? transformedValue > filterValue : false;
                     },
                 },
                 {
@@ -226,14 +197,9 @@ const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
                     displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
                     predicate: ([filterValue], cellValue) => {
                         const transformedValue = applyFluxConvention
-                            ? applyFluxConvention(
-                                  getFluxConvention(),
-                                  cellValue
-                              )
+                            ? applyFluxConvention(getFluxConvention(), cellValue)
                             : cellValue;
-                        return transformedValue
-                            ? transformedValue <= filterValue
-                            : false;
+                        return transformedValue ? transformedValue <= filterValue : false;
                     },
                 },
                 {
@@ -241,14 +207,9 @@ const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
                     displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN,
                     predicate: ([filterValue], cellValue) => {
                         const transformedValue = applyFluxConvention
-                            ? applyFluxConvention(
-                                  getFluxConvention(),
-                                  cellValue
-                              )
+                            ? applyFluxConvention(getFluxConvention(), cellValue)
                             : cellValue;
-                        return transformedValue
-                            ? transformedValue < filterValue
-                            : false;
+                        return transformedValue ? transformedValue < filterValue : false;
                     },
                 },
             ],
@@ -301,20 +262,12 @@ const getTwtRatioRegulationModeId = (twt) => {
 
 const hasTwtRatioTapChanger = (params) => {
     const ratioTapChanger = params.data?.ratioTapChanger;
-    return (
-        ratioTapChanger !== null &&
-        ratioTapChanger !== undefined &&
-        Object.keys(ratioTapChanger).length > 0
-    );
+    return ratioTapChanger !== null && ratioTapChanger !== undefined && Object.keys(ratioTapChanger).length > 0;
 };
 
 const isTwtRatioOnload = (params) => {
-    const hasLoadTapChangingCapabilities =
-        params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
-    return (
-        hasLoadTapChangingCapabilities === true ||
-        hasLoadTapChangingCapabilities === 1
-    );
+    const hasLoadTapChangingCapabilities = params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
+    return hasLoadTapChangingCapabilities === true || hasLoadTapChangingCapabilities === 1;
 };
 
 const isTwtRatioOnloadAndEditable = (params) => {
@@ -323,11 +276,7 @@ const isTwtRatioOnloadAndEditable = (params) => {
 
 const hasTwtPhaseTapChanger = (params) => {
     const phaseTapChanger = params.data?.phaseTapChanger;
-    return (
-        phaseTapChanger !== null &&
-        phaseTapChanger !== undefined &&
-        Object.keys(phaseTapChanger).length > 0
-    );
+    return phaseTapChanger !== null && phaseTapChanger !== undefined && Object.keys(phaseTapChanger).length > 0;
 };
 
 const hasTwtPhaseTapChangerAndEditable = (params) => {
@@ -335,43 +284,30 @@ const hasTwtPhaseTapChangerAndEditable = (params) => {
 };
 
 const isEditableTwtPhaseRegulationSideCell = (params) => {
-    return (
-        isEditable(params) &&
-        params.data?.phaseTapChanger?.regulationType ===
-            REGULATION_TYPES.LOCAL.id
-    );
+    return isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
 };
 
 const isEditableTwtRatioRegulationSideCell = (params) => {
     return (
         isTwtRatioOnloadAndEditable(params) &&
-        params.data?.ratioTapChanger?.regulationType ===
-            REGULATION_TYPES.LOCAL.id
+        params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id
     );
 };
 
 const isEditableTwtRatioRegulatingTerminalCell = (params) => {
     return (
         isTwtRatioOnloadAndEditable(params) &&
-        params.data?.ratioTapChanger?.regulationType ===
-            REGULATION_TYPES.DISTANT.id
+        params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id
     );
 };
 
 const isEditableTwtPhaseRegulatingTerminalCell = (params) => {
-    return (
-        isEditable(params) &&
-        params.data?.phaseTapChanger?.regulationType ===
-            REGULATION_TYPES.DISTANT.id
-    );
+    return isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
 };
 
 const RegulatingTerminalCellGetter = (params) => {
-    const {
-        regulatingTerminalConnectableId,
-        regulatingTerminalVlId,
-        regulatingTerminalConnectableType,
-    } = params?.data || {};
+    const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
+        params?.data || {};
 
     if (
         regulatingTerminalVlId &&
@@ -559,19 +495,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: unitToKiloUnit(
-                            params.data?.identifiableShortCircuit?.ipMin
-                        ),
+                        defaultValue: unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,
                     };
                 },
-                valueGetter: (params) =>
-                    unitToKiloUnit(
-                        params.data?.identifiableShortCircuit?.ipMin
-                    ),
+                valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,
@@ -597,19 +528,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue: unitToKiloUnit(
-                            params.data?.identifiableShortCircuit?.ipMax
-                        ),
+                        defaultValue: unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,
                     };
                 },
-                valueGetter: (params) =>
-                    unitToKiloUnit(
-                        params.data?.identifiableShortCircuit?.ipMax
-                    ),
+                valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
                 valueSetter: (params) => {
                     params.data.identifiableShortCircuit = {
                         ...params.data.identifiableShortCircuit,
@@ -949,13 +875,10 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'HasLoadTapChangingCapabilities',
                 field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-                valueGetter: (params) =>
-                    params?.data?.ratioTapChanger
-                        ?.hasLoadTapChangingCapabilities,
+                valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
                 cellRenderer: BooleanCellRenderer,
                 ...defaultBooleanFilterConfig,
-                editable: (params) =>
-                    isEditable(params) && hasTwtRatioTapChanger(params),
+                editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
                 cellStyle: editableCellStyle,
                 cellEditor: BooleanListField,
                 valueSetter: (params) => {
@@ -963,8 +886,7 @@ export const TABLES_DEFINITIONS = {
                         ...(params.data.ratioTapChanger || {}),
                         hasLoadTapChangingCapabilities: params.newValue,
                         regulationMode: !!params.newValue
-                            ? getTwtRatioRegulationModeId(params.data) ||
-                              RATIO_REGULATION_MODES.FIXED_RATIO.id
+                            ? getTwtRatioRegulationModeId(params.data) || RATIO_REGULATION_MODES.FIXED_RATIO.id
                             : null,
                     };
                     return params;
@@ -972,10 +894,8 @@ export const TABLES_DEFINITIONS = {
                 cellEditorParams: (params) => {
                     return {
                         defaultValue:
-                            params.data?.ratioTapChanger
-                                ?.hasLoadTapChangingCapabilities != null
-                                ? +params.data?.ratioTapChanger
-                                      ?.hasLoadTapChangingCapabilities
+                            params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities != null
+                                ? +params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities
                                 : '',
                         gridContext: params.context,
                         gridApi: params.api,
@@ -987,8 +907,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'RatioRegulationMode',
                 field: 'ratioTapChanger.regulationMode',
-                valueGetter: (params) =>
-                    params.data?.ratioTapChanger?.regulationMode,
+                valueGetter: (params) => params.data?.ratioTapChanger?.regulationMode,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data?.ratioTapChanger || {}),
@@ -1010,8 +929,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 crossValidation: {
                     requiredOn: {
-                        dependencyColumn:
-                            'ratioTapChanger.hasLoadTapChangingCapabilities',
+                        dependencyColumn: 'ratioTapChanger.hasLoadTapChangingCapabilities',
                         columnValue: 1,
                     },
                 },
@@ -1053,8 +971,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data.ratioTapChanger.targetDeadband,
+                        defaultValue: params.data.ratioTapChanger.targetDeadband,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1074,8 +991,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RatioRegulationTypeText',
                 field: 'ratioTapChanger.regulationType',
                 ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-                valueGetter: (params) =>
-                    params.data?.ratioTapChanger?.regulationType,
+                valueGetter: (params) => params.data?.ratioTapChanger?.regulationType,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data?.ratioTapChanger || {}),
@@ -1099,8 +1015,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RatioRegulatedSide',
                 field: 'ratioTapChanger.regulationSide',
                 ...getDefaultEnumConfig(Object.values(SIDE)),
-                valueGetter: (params) =>
-                    params.data?.ratioTapChanger?.regulationSide,
+                valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...(params.data?.ratioTapChanger || {}),
@@ -1129,14 +1044,11 @@ export const TABLES_DEFINITIONS = {
                 id: 'RatioRegulatingTerminal',
                 field: 'ratioTapChanger.ratioRegulatingTerminal',
                 ...defaultTextFilterConfig,
-                valueGetter: (params) =>
-                    params.data?.ratioTapChanger?.ratioRegulatingTerminal,
+                valueGetter: (params) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellStyle: (params) =>
-                    isEditableTwtRatioRegulatingTerminalCell(params)
-                        ? editableCellStyle(params)
-                        : {},
+                    isEditableTwtRatioRegulatingTerminalCell(params) ? editableCellStyle(params) : {},
                 editable: isEditableTwtRatioRegulatingTerminalCell,
                 crossValidation: {
                     requiredOn: {
@@ -1163,16 +1075,12 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
-                editable: (params) =>
-                    isEditable(params) &&
-                    params.data?.ratioTapChanger?.steps?.length > 0,
+                editable: (params) => isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
                 cellStyle: editableCellStyle,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data?.ratioTapChanger
-                        ),
+                        values: generateTapPositions(params.data?.ratioTapChanger),
                     };
                 },
                 valueSetter: (params) => {
@@ -1192,10 +1100,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RatioHighTapPosition',
                 field: 'ratioTapChanger.highTapPosition',
                 ...defaultNumericFilterConfig(),
-                valueGetter: (params) =>
-                    computeHighTapPosition(
-                        params?.data?.ratioTapChanger?.steps
-                    ),
+                valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1204,8 +1109,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.ratioTapChanger?.tapPosition,
+                valueGetter: (params) => params?.data?.ratioTapChanger?.tapPosition,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger = {
                         ...params.data.ratioTapChanger,
@@ -1217,14 +1121,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data?.ratioTapChanger
-                        ),
+                        values: generateTapPositions(params.data?.ratioTapChanger),
                     };
                 },
-                editable: (params) =>
-                    isEditable(params) &&
-                    params.data?.ratioTapChanger?.steps?.length > 0,
+                editable: (params) => isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
                 cellStyle: editableCellStyle,
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
@@ -1237,8 +1137,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'RegulatingMode',
                 field: 'phaseTapChanger.regulationMode',
                 ...getDefaultEnumConfig(Object.values(PHASE_REGULATION_MODES)),
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger?.regulationMode,
+                valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger = {
                         ...(params.data?.phaseTapChanger || {}),
@@ -1264,19 +1163,16 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 fractionDigits: 1,
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger?.regulationValue,
+                valueGetter: (params) => params?.data?.phaseTapChanger?.regulationValue,
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
                     hasTwtPhaseTapChangerAndEditable(params) &&
-                    params.data?.phaseTapChanger?.regulationMode !==
-                        PHASE_REGULATION_MODES.FIXED_TAP.id,
+                    params.data?.phaseTapChanger?.regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
                 cellStyle: editableCellStyle,
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.phaseTapChanger?.regulationValue,
+                        defaultValue: params.data?.phaseTapChanger?.regulationValue,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1299,14 +1195,12 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
                 editable: (params) =>
                     hasTwtPhaseTapChangerAndEditable(params) &&
-                    params.data?.phaseTapChanger?.regulationMode !==
-                        PHASE_REGULATION_MODES.FIXED_TAP.id,
+                    params.data?.phaseTapChanger?.regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
                 cellStyle: editableCellStyle,
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.phaseTapChanger?.targetDeadband,
+                        defaultValue: params.data?.phaseTapChanger?.targetDeadband,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1325,8 +1219,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PhaseRegulationTypeText',
                 field: 'phaseTapChanger.regulationType',
                 ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-                valueGetter: (params) =>
-                    params.data?.phaseTapChanger?.regulationType,
+                valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger = {
                         ...(params.data?.phaseTapChanger || {}),
@@ -1350,8 +1243,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PhaseRegulatedSide',
                 field: 'phaseTapChanger.regulationSide',
                 ...getDefaultEnumConfig(Object.values(SIDE)),
-                valueGetter: (params) =>
-                    params.data?.phaseTapChanger?.regulationSide,
+                valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger = {
                         ...(params.data?.phaseTapChanger || {}),
@@ -1380,14 +1272,11 @@ export const TABLES_DEFINITIONS = {
                 id: 'PhaseRegulatingTerminal',
                 field: 'phaseTapChanger.phaseRegulatingTerminal',
                 ...defaultTextFilterConfig,
-                valueGetter: (params) =>
-                    params.data?.phaseTapChanger?.phaseRegulatingTerminal,
+                valueGetter: (params) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
                 columnWidth: MEDIUM_COLUMN_WIDTH,
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellStyle: (params) =>
-                    isEditableTwtPhaseRegulatingTerminalCell(params)
-                        ? editableCellStyle(params)
-                        : {},
+                    isEditableTwtPhaseRegulatingTerminalCell(params) ? editableCellStyle(params) : {},
                 editable: isEditableTwtPhaseRegulatingTerminalCell,
                 crossValidation: {
                     requiredOn: {
@@ -1416,16 +1305,12 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
-                editable: (params) =>
-                    isEditable(params) &&
-                    params.data?.phaseTapChanger?.steps?.length > 0,
+                editable: (params) => isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
                 cellStyle: editableCellStyle,
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data?.phaseTapChanger
-                        ),
+                        values: generateTapPositions(params.data?.phaseTapChanger),
                     };
                 },
                 valueSetter: (params) => {
@@ -1445,10 +1330,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'PhaseHighTapPosition',
                 field: 'phaseTapChanger.highTapPosition',
                 ...defaultNumericFilterConfig(),
-                valueGetter: (params) =>
-                    computeHighTapPosition(
-                        params?.data?.phaseTapChanger?.steps
-                    ),
+                valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1457,8 +1339,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 numeric: true,
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger?.tapPosition,
+                valueGetter: (params) => params?.data?.phaseTapChanger?.tapPosition,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger = {
                         ...params.data.phaseTapChanger,
@@ -1469,14 +1350,10 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data?.phaseTapChanger
-                        ),
+                        values: generateTapPositions(params.data?.phaseTapChanger),
                     };
                 },
-                editable: (params) =>
-                    isEditable(params) &&
-                    params.data?.phaseTapChanger?.steps?.length > 0,
+                editable: (params) => isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
                 cellStyle: editableCellStyle,
                 getQuickFilterText: excludeFromGlobalFilter,
                 crossValidation: {
@@ -1707,8 +1584,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Ratio', 1),
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.ratioTapChanger1?.tapPosition,
+                valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger1 = {
                         ...params.data.ratioTapChanger1,
@@ -1721,9 +1597,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data.ratioTapChanger1
-                        ),
+                        values: generateTapPositions(params.data.ratioTapChanger1),
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1758,8 +1632,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Ratio', 2),
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.ratioTapChanger2?.tapPosition,
+                valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger2 = {
                         ...params.data.ratioTapChanger2,
@@ -1772,9 +1645,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data.ratioTapChanger2
-                        ),
+                        values: generateTapPositions(params.data.ratioTapChanger2),
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1809,8 +1680,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Ratio', 3),
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.ratioTapChanger3?.tapPosition,
+                valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
                 valueSetter: (params) => {
                     params.data.ratioTapChanger3 = {
                         ...params.data.ratioTapChanger3,
@@ -1823,9 +1693,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data.ratioTapChanger3
-                        ),
+                        values: generateTapPositions(params.data.ratioTapChanger3),
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1851,8 +1719,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Phase', 1),
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger1?.tapPosition,
+                valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger1 = {
                         ...params.data.phaseTapChanger1,
@@ -1865,9 +1732,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data.phaseTapChanger1
-                        ),
+                        values: generateTapPositions(params.data.phaseTapChanger1),
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1902,8 +1767,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Phase', 2),
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger2?.tapPosition,
+                valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger2 = {
                         ...params.data.phaseTapChanger2,
@@ -1916,9 +1780,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data.phaseTapChanger1
-                        ),
+                        values: generateTapPositions(params.data.phaseTapChanger1),
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -1953,8 +1815,7 @@ export const TABLES_DEFINITIONS = {
                 ...defaultNumericFilterConfig(),
                 changeCmd: generateTapRequest('Phase', 3),
                 fractionDigits: 0,
-                valueGetter: (params) =>
-                    params?.data?.phaseTapChanger3?.tapPosition,
+                valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
                 valueSetter: (params) => {
                     params.data.phaseTapChanger3 = {
                         ...params.data.phaseTapChanger3,
@@ -1967,9 +1828,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: 'agSelectCellEditor',
                 cellEditorParams: (params) => {
                     return {
-                        values: generateTapPositions(
-                            params.data.phaseTapChanger3
-                        ),
+                        values: generateTapPositions(params.data.phaseTapChanger3),
                     };
                 },
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2071,20 +1930,13 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 cellEditor: EnumListField,
                 cellEditorParams: (params) =>
-                    getDefaultEnumCellEditorParams(
-                        params,
-                        params.data?.energySource,
-                        ENERGY_SOURCES
-                    ),
+                    getDefaultEnumCellEditorParams(params, params.data?.energySource, ENERGY_SOURCES),
             },
             {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig(
-                    applyFluxConvention,
-                    getFluxConvention
-                ),
+                ...defaultNumericFilterConfig(applyFluxConvention, useFluxConvention),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2094,10 +1946,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig(
-                    applyFluxConvention,
-                    getFluxConvention
-                ),
+                ...defaultNumericFilterConfig(applyFluxConvention, useFluxConvention),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2332,8 +2181,7 @@ export const TABLES_DEFINITIONS = {
                 fractionDigits: 1,
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
-                    const qPercent =
-                        params.data?.coordinatedReactiveControl?.qPercent;
+                    const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                     return {
                         defaultValue: isNaN(qPercent) ? 0 : qPercent,
                         gridContext: params.context,
@@ -2343,8 +2191,7 @@ export const TABLES_DEFINITIONS = {
                     };
                 },
                 valueGetter: (params) => {
-                    const qPercent =
-                        params.data?.coordinatedReactiveControl?.qPercent;
+                    const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                     return isNaN(qPercent) ? 0 : qPercent;
                 },
                 valueSetter: (params) => {
@@ -2370,17 +2217,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.generatorShortCircuit?.directTransX ||
-                            0,
+                        defaultValue: params.data?.generatorShortCircuit?.directTransX || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,
                     };
                 },
-                valueGetter: (params) =>
-                    params.data?.generatorShortCircuit?.directTransX,
+                valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
@@ -2404,17 +2248,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.generatorShortCircuit
-                                ?.stepUpTransformerX || 0,
+                        defaultValue: params.data?.generatorShortCircuit?.stepUpTransformerX || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,
                     };
                 },
-                valueGetter: (params) =>
-                    params.data?.generatorShortCircuit?.stepUpTransformerX,
+                valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
                 valueSetter: (params) => {
                     params.data.generatorShortCircuit = {
                         ...params.data.generatorShortCircuit,
@@ -2438,17 +2279,14 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.generatorStartup
-                                ?.plannedActivePowerSetPoint,
+                        defaultValue: params.data?.generatorStartup?.plannedActivePowerSetPoint,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,
                     };
                 },
-                valueGetter: (params) =>
-                    params.data?.generatorStartup?.plannedActivePowerSetPoint,
+                valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
                 valueSetter: (params) => {
                     params.data.generatorStartup = {
                         ...params.data?.generatorStartup,
@@ -2472,16 +2310,14 @@ export const TABLES_DEFINITIONS = {
                 getQuickFilterText: excludeFromGlobalFilter,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.generatorStartup?.marginalCost,
+                        defaultValue: params.data?.generatorStartup?.marginalCost,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
                         rowData: params.data,
                     };
                 },
-                valueGetter: (params) =>
-                    params.data?.generatorStartup?.marginalCost,
+                valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
                 valueSetter: (params) => {
                     params.data.generatorStartup = {
                         ...params.data?.generatorStartup,
@@ -2505,9 +2341,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data?.generatorStartup?.plannedOutageRate ||
-                            0,
+                        defaultValue: params.data?.generatorStartup?.plannedOutageRate || 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2519,8 +2353,7 @@ export const TABLES_DEFINITIONS = {
                     maxExpression: 1,
                     minExpression: 0,
                 },
-                valueGetter: (params) =>
-                    params.data?.generatorStartup?.plannedOutageRate,
+                valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
                 valueSetter: (params) => {
                     params.data.generatorStartup = {
                         ...params.data?.generatorStartup,
@@ -2541,8 +2374,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: NumericalField,
                 cellEditorParams: (params) => {
                     return {
-                        defaultValue:
-                            params.data.generatorStartup?.forcedOutageRate,
+                        defaultValue: params.data.generatorStartup?.forcedOutageRate,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2554,8 +2386,7 @@ export const TABLES_DEFINITIONS = {
                     maxExpression: 1,
                     minExpression: 0,
                 },
-                valueGetter: (params) =>
-                    params.data?.generatorStartup?.forcedOutageRate,
+                valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
                 valueSetter: (params) => {
                     params.data.generatorStartup = {
                         ...params.data?.generatorStartup,
@@ -2591,10 +2422,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'RegulatingTerminalGenerator',
                 ...defaultTextFilterConfig,
                 valueGetter: RegulatingTerminalCellGetter,
-                cellStyle: (params) =>
-                    isEditableRegulatingTerminalCell(params)
-                        ? editableCellStyle(params)
-                        : {},
+                cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
                 editable: (params) => isEditableRegulatingTerminalCell(params),
                 crossValidation: {
                     requiredOn: {
@@ -2658,10 +2486,7 @@ export const TABLES_DEFINITIONS = {
             {
                 id: 'loadType',
                 field: 'type',
-                ...getDefaultEnumConfig([
-                    ...LOAD_TYPES,
-                    { id: 'UNDEFINED', label: 'Undefined' },
-                ]),
+                ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
                 changeCmd: 'equipment.setLoadType(LoadType.{})\n',
                 editable: isEditable,
                 cellStyle: editableCellStyle,
@@ -2821,10 +2646,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig(
-                    applyFluxConvention,
-                    getFluxConvention
-                ),
+                ...defaultNumericFilterConfig(applyFluxConvention, useFluxConvention),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -2883,11 +2705,7 @@ export const TABLES_DEFINITIONS = {
                 cellStyle: editableCellStyle,
                 cellEditor: EnumListField,
                 cellEditorParams: (params) =>
-                    getDefaultEnumCellEditorParams(
-                        params,
-                        params.data?.type,
-                        Object.values(SHUNT_COMPENSATOR_TYPES)
-                    ),
+                    getDefaultEnumCellEditorParams(params, params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
             },
             {
                 id: 'maxQAtNominalV',
@@ -2917,9 +2735,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'switchedOnQAtNominalV',
                 numeric: true,
                 valueGetter: (params) =>
-                    (params?.data?.maxQAtNominalV /
-                        params?.data?.maximumSectionCount) *
-                    params?.data?.sectionCount,
+                    (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
                 ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -2949,9 +2765,7 @@ export const TABLES_DEFINITIONS = {
                 field: 'switchedOnSusceptance',
                 numeric: true,
                 valueGetter: (params) =>
-                    (params?.data?.maxSusceptance /
-                        params?.data?.maximumSectionCount) *
-                    params?.data?.sectionCount,
+                    (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
                 ...defaultNumericFilterConfig(),
                 fractionDigits: 5,
                 getQuickFilterText: excludeFromGlobalFilter,
@@ -3127,10 +2941,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'activePower',
                 field: 'p',
                 numeric: true,
-                ...defaultNumericFilterConfig(
-                    applyFluxConvention,
-                    getFluxConvention
-                ),
+                ...defaultNumericFilterConfig(applyFluxConvention, useFluxConvention),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -3140,10 +2951,7 @@ export const TABLES_DEFINITIONS = {
                 id: 'ReactivePower',
                 field: 'q',
                 numeric: true,
-                ...defaultNumericFilterConfig(
-                    applyFluxConvention,
-                    getFluxConvention
-                ),
+                ...defaultNumericFilterConfig(applyFluxConvention, useFluxConvention),
                 fractionDigits: 1,
                 normed: applyFluxConvention,
                 canBeInvalidated: true,
@@ -4028,31 +3836,23 @@ export const TABLES_DEFINITIONS = {
     },
 };
 
-export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
-    'displayedColumns.';
+export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
 export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
-export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE =
-    'reorderedColumns.';
+export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'reorderedColumns.';
 
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)
     .map((cols) => new Set(cols.map((c) => c.id)));
 
-export const TABLES_COLUMNS_NAMES_JSON = TABLES_COLUMNS_NAMES.map((cols) =>
-    JSON.stringify([...cols])
-);
+export const TABLES_COLUMNS_NAMES_JSON = TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols]));
 
-export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map(
-    (table) => table.name
-);
+export const TABLES_NAMES = Object.values(TABLES_DEFINITIONS).map((table) => table.name);
 
 export const TABLES_NAMES_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.name, table.index])
 );
 
-export const TABLES_DEFINITION_TYPES = new Map(
-    Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table])
-);
+export const TABLES_DEFINITION_TYPES = new Map(Object.values(TABLES_DEFINITIONS).map((table) => [table.type, table]));
 
 export const TABLES_DEFINITION_INDEXES = new Map(
     Object.values(TABLES_DEFINITIONS).map((table) => [table.index, table])
@@ -4076,10 +3876,4 @@ function generateTapRequest(type, leg) {
     );
 }
 
-export const ALLOWED_KEYS = [
-    'Escape',
-    'ArrowDown',
-    'ArrowUp',
-    'ArrowLeft',
-    'ArrowRight',
-];
+export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];

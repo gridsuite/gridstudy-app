@@ -17,11 +17,7 @@ interface VscTabsProps {
     setTabIndex: React.Dispatch<React.SetStateAction<number>>;
 }
 
-const VscTabs: FunctionComponent<VscTabsProps> = ({
-    tabIndex,
-    tabIndexesWithError,
-    setTabIndex,
-}) => {
+const VscTabs: FunctionComponent<VscTabsProps> = ({ tabIndex, tabIndexesWithError, setTabIndex }) => {
     return (
         <>
             <Grid container>
@@ -35,24 +31,15 @@ const VscTabs: FunctionComponent<VscTabsProps> = ({
                 >
                     <Tab
                         label={<FormattedMessage id="HVDC_LINE" />}
-                        sx={getTabStyle(
-                            tabIndexesWithError,
-                            VSC_CREATION_TABS.HVDC_LINE_TAB
-                        )}
+                        sx={getTabStyle(tabIndexesWithError, VSC_CREATION_TABS.HVDC_LINE_TAB)}
                     />
                     <Tab
                         label={<FormattedMessage id="converterStation1" />}
-                        sx={getTabStyle(
-                            tabIndexesWithError,
-                            VSC_CREATION_TABS.CONVERTER_STATION_1
-                        )}
+                        sx={getTabStyle(tabIndexesWithError, VSC_CREATION_TABS.CONVERTER_STATION_1)}
                     />
                     <Tab
                         label={<FormattedMessage id="converterStation2" />}
-                        sx={getTabStyle(
-                            tabIndexesWithError,
-                            VSC_CREATION_TABS.CONVERTER_STATION_2
-                        )}
+                        sx={getTabStyle(tabIndexesWithError, VSC_CREATION_TABS.CONVERTER_STATION_2)}
                     />
                 </Tabs>
             </Grid>

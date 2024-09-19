@@ -35,27 +35,24 @@ const Diagram = (props) => {
     const dispatch = useDispatch();
     const intl = useIntl();
 
-    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } =
-        useDiagram();
+    const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } = useDiagram();
 
     const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
 
     const shouldBeHidden =
         fullScreenDiagram?.id &&
-        (fullScreenDiagram.id !== props.diagramId ||
-            fullScreenDiagram.svgType !== props.svgType);
+        (fullScreenDiagram.id !== props.diagramId || fullScreenDiagram.svgType !== props.svgType);
 
     const shouldBeFullscreen =
-        fullScreenDiagram?.id === props.diagramId &&
-        fullScreenDiagram?.svgType === props.svgType;
+        fullScreenDiagram?.id === props.diagramId && fullScreenDiagram?.svgType === props.svgType;
 
-    const networkAreaDiagramDepth = useSelector(
-        (state) => state.networkAreaDiagramDepth
-    );
+    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
 
-    const nbVoltageLevels = useSelector(
-        (state) => state.networkAreaDiagramNbVoltageLevels
-    );
+    const nbVoltageLevels = useSelector((state) => state.networkAreaDiagramNbVoltageLevels);
+
+    const incrementCounterDisabled = props.loadingState || nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
+
+    const decrementCounterDisabled = props.loadingState || networkAreaDiagramDepth === 0;
 
     /**
      * DIAGRAM CONTROL HANDLERS
@@ -127,50 +124,34 @@ const Diagram = (props) => {
                     diagramId={props.diagramId}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
-                    showTogglePinControl={
-                        props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
-                    }
+                    showTogglePinControl={props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
                     onTogglePin={onTogglePinHandler}
                     pinned={props.pinned}
                     showCloseControl
                     onClose={onCloseHandler}
                 />
-
-                {props.warningToDisplay ? (
-                    <Box position="relative" left={0} right={0} top={0}>
-                        <AlertCustomMessageNode
-                            message={props.warningToDisplay}
-                            noMargin
-                        />
-                    </Box>
-                ) : (
-                    <Box height={'100%'}>
-                        {props.children}
-                        <DiagramFooter
-                            showCounterControls={
-                                props.svgType ===
-                                DiagramType.NETWORK_AREA_DIAGRAM
-                            }
-                            counterText={intl.formatMessage({
-                                id: 'depth',
-                            })}
-                            counterValue={networkAreaDiagramDepth}
-                            onIncrementCounter={onIncrementDepthHandler}
-                            onDecrementCounter={onDecrementDepthHandler}
-                            showFullscreenControl
-                            fullScreenActive={shouldBeFullscreen}
-                            onStartFullScreen={onShowFullScreenHandler}
-                            onStopFullScreen={onHideFullScreenHandler}
-                            incrementCounterDisabled={
-                                nbVoltageLevels >
-                                NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
-                            }
-                            decrementCounterDisabled={
-                                networkAreaDiagramDepth === 0
-                            }
-                        />
-                    </Box>
-                )}
+                <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
+                    {props.warningToDisplay ? (
+                        <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
+                    ) : (
+                        <>{props.children}</>
+                    )}
+                </Box>
+                <DiagramFooter
+                    showCounterControls={props.svgType === DiagramType.NETWORK_AREA_DIAGRAM}
+                    counterText={intl.formatMessage({
+                        id: 'depth',
+                    })}
+                    counterValue={networkAreaDiagramDepth}
+                    onIncrementCounter={onIncrementDepthHandler}
+                    onDecrementCounter={onDecrementDepthHandler}
+                    showFullscreenControl
+                    fullScreenActive={shouldBeFullscreen}
+                    onStartFullScreen={onShowFullScreenHandler}
+                    onStopFullScreen={onHideFullScreenHandler}
+                    incrementCounterDisabled={incrementCounterDisabled}
+                    decrementCounterDisabled={decrementCounterDisabled}
+                />
             </Paper>
         </DiagramResizableBox>
     );
@@ -198,6 +179,7 @@ Diagram.propTypes = {
     height: PropTypes.number,
     fullscreenWidth: PropTypes.number,
     fullscreenHeight: PropTypes.number,
+    loadingState: PropTypes.bool,
 };
 
 export default Diagram;

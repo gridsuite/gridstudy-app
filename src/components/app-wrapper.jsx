@@ -7,11 +7,7 @@
 
 import App from './app';
 import React from 'react';
-import {
-    createTheme,
-    ThemeProvider,
-    StyledEngineProvider,
-} from '@mui/material/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import {
     LIGHT_THEME,
     CardErrorBoundary,
@@ -40,6 +36,8 @@ import {
     multiple_selection_dialog_fr,
     common_button_en,
     common_button_fr,
+    equipments_en,
+    equipments_fr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -129,12 +127,10 @@ let lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
-    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
-        'mapbox://styles/mapbox/light-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/light-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
-    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
-        'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     aggrid: {
         theme: 'ag-theme-alpine',
         overlay: {
@@ -208,12 +204,10 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
-    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]:
-        'mapbox://styles/mapbox/dark-v9',
+    [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/dark-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
-    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]:
-        'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    [basemap_style_theme_key(MAP_BASEMAP_CARTO)]: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     aggrid: {
         theme: 'ag-theme-alpine-dark',
         overlay: {
@@ -263,6 +257,7 @@ const messages = {
         ...flat_parameters_en,
         ...multiple_selection_dialog_en,
         ...common_button_en,
+        ...equipments_en,
         ...aggrid_locale_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
@@ -290,6 +285,7 @@ const messages = {
         ...flat_parameters_fr,
         ...multiple_selection_dialog_fr,
         ...common_button_fr,
+        ...equipments_fr,
         ...aggrid_locale_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
@@ -311,10 +307,7 @@ const AppWrapperWithRedux = () => {
     const theme = useSelector((state) => state[PARAM_THEME]);
 
     return (
-        <IntlProvider
-            locale={computedLanguage}
-            messages={messages[computedLanguage]}
-        >
+        <IntlProvider locale={computedLanguage} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
                 <StyledEngineProvider injectFirst>
                     <ThemeProvider theme={getMuiTheme(theme)}>

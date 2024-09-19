@@ -5,33 +5,39 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { Autocomplete, Chip, Grid, TextField, Box } from '@mui/material';
 import {
-    DropDown,
-    LabelledButton,
-    SwitchWithLabel,
-    useParameterState,
-    styles,
-} from './parameters';
-import { LineSeparator } from '../dialogUtils';
-import {
+    CustomFormProvider,
+    DirectoryItemSelector,
     ElementType,
     FlatParameters,
+    SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
+import { Autocomplete, Box, Chip, Grid, Tab, Tabs, TextField } from '@mui/material';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
+import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
-import {
-    PARAM_DEVELOPER_MODE,
-    PARAM_LIMIT_REDUCTION,
-} from '../../../utils/config-params';
-import { ParameterType, ParamLine, ParameterGroup } from './widget';
-import { mergeSx } from '../../utils/functions';
+import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { DirectoryItemSelector } from '@gridsuite/commons-ui';
-import { fetchLoadFlowParameters } from '../../../services/loadflow';
+import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParameterState } from './parameters';
+import { ParameterGroup } from './widget';
+import ParameterLineSlider from './widget/parameter-line-slider';
+import {
+    IST_FORM,
+    LIMIT_DURATION_FORM,
+    LIMIT_REDUCTIONS_FORM,
+    TAB_INFO,
+    TAB_VALUES,
+    getLimitReductionsFormSchema,
+} from './common/limitreductions/columns-definitions';
+import LimitReductionsTableForm from './common/limitreductions/limit-reductions-table-form';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
@@ -45,20 +51,14 @@ const CountrySelector = ({ value, label, callback }) => {
                 <Autocomplete
                     size="small"
                     value={value}
-                    multiple={true}
+                    multiple
                     onChange={(event, newValues) => callback(newValues)}
                     options={countryCodes}
                     getOptionLabel={(countryCode) => translate(countryCode)}
                     renderInput={(props) => (
                         <TextField
                             label={
-                                <FormattedMessage
-                                    id={
-                                        value?.length === 0
-                                            ? 'descLfAllCountries'
-                                            : 'descLfCountries'
-                                    }
-                                />
+                                <FormattedMessage id={value?.length === 0 ? 'descLfAllCountries' : 'descLfCountries'} />
                             }
                             sx={styles.minWidthMedium}
                             {...props}
@@ -111,9 +111,7 @@ export const DoubleEditor = ({
 
     const checkValue = useCallback(
         (newValue) => {
-            const FloatRE = checkIsTwoDigitAfterDecimal
-                ? /^(\d*\.{0,1}\d{0,2}$)/
-                : /^-?\d*[.,]?\d*$/;
+            const FloatRE = checkIsTwoDigitAfterDecimal ? /^(\d*\.{0,1}\d{0,2}$)/ : /^-?\d*[.,]?\d*$/;
             const outputTransformFloatString = (value) => {
                 return value?.replace(',', '.') || '';
             };
@@ -165,29 +163,10 @@ const fusionSpecificWithOtherParams = (allParams, specificParams) => {
     return commitParameters;
 };
 
-function makeComponentsFor(
-    defParams,
-    localParams,
-    allParams,
-    setter,
-    provider
-) {
+function makeComponentsFor(defParams, localParams, allParams, setter, provider) {
     return Object.keys(defParams).map((key) => (
-        <Grid
-            container
-            spacing={1}
-            paddingTop={1}
-            key={key}
-            justifyContent={'space-between'}
-        >
-            {makeComponentFor(
-                defParams[key],
-                key,
-                localParams,
-                allParams,
-                setter,
-                provider
-            )}
+        <Grid container spacing={1} paddingTop={1} key={key} justifyContent={'space-between'}>
+            {makeComponentFor(defParams[key], key, localParams, allParams, setter, provider)}
             <LineSeparator />
         </Grid>
     ));
@@ -200,14 +179,7 @@ function getValue(param, key) {
     return param[key];
 }
 
-function makeComponentFor(
-    defParam,
-    key,
-    localParams,
-    allParams,
-    setter,
-    provider
-) {
+function makeComponentFor(defParam, key, localParams, allParams, setter, provider) {
     function updateValues(newval) {
         localParams = { ...localParams, [key]: newval }; // single value update made
         let newParams = { ...allParams }; // but we send/update all params to the back
@@ -324,12 +296,7 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
         },
     };
 
-    return makeComponentsFor(
-        defParams,
-        lfParams?.commonParameters || {},
-        lfParams,
-        commitLFParameter
-    );
+    return makeComponentsFor(defParams, lfParams?.commonParameters || {}, lfParams, commitLFParameter);
 };
 
 const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
@@ -382,17 +349,8 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     };
 
     return (
-        <ParameterGroup
-            label={'showAdvancedParameters'}
-            state={showAdvancedLfParams}
-            onClick={setShowAdvancedLfParams}
-        >
-            {makeComponentsFor(
-                defParams,
-                lfParams?.commonParameters || {},
-                lfParams,
-                commitLFParameter
-            )}
+        <ParameterGroup label={'showAdvancedParameters'} state={showAdvancedLfParams} onClick={setShowAdvancedLfParams}>
+            {makeComponentsFor(defParams, lfParams?.commonParameters || {}, lfParams, commitLFParameter)}
         </ParameterGroup>
     );
 };
@@ -431,7 +389,7 @@ const SpecificLoadFlowParameters = ({
     );
 };
 
-export const LoadFlowParameters = ({ parametersBackend }) => {
+export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) => {
     const [
         providers,
         provider,
@@ -457,20 +415,16 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
         },
     ];
 
-    const [specificCurrentParams, setSpecificCurrentParams] = useState(
-        params['specificParametersPerProvider']
-    );
-    const [openCreateParameterDialog, setOpenCreateParameterDialog] =
-        useState(false);
-    const [openSelectParameterDialog, setOpenSelectParameterDialog] =
-        useState(false);
+    const [specificCurrentParams, setSpecificCurrentParams] = useState(params['specificParametersPerProvider']);
+    const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
+    const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
     const onSpecificParamChange = (paramName, newValue) => {
-        const specificParamDescr = Object.values(
-            specificParamsDescrWithoutNanVals[provider]
-        ).find((descr) => descr.name === paramName);
+        const specificParamDescr = Object.values(specificParamsDescrWithoutNanVals[provider]).find(
+            (descr) => descr.name === paramName
+        );
 
         let specParamsToSave;
         if (specificParamDescr.defaultValue !== newValue) {
@@ -482,8 +436,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 },
             };
         } else {
-            const { [specificParamDescr.name]: value, ...otherProviderParams } =
-                specificCurrentParams[provider] || {};
+            const { [specificParamDescr.name]: value, ...otherProviderParams } = specificCurrentParams[provider] || {};
             specParamsToSave = {
                 ...specificCurrentParams,
                 [provider]: otherProviderParams,
@@ -492,10 +445,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
         setSpecificCurrentParams(specParamsToSave);
 
-        const commitParameters = fusionSpecificWithOtherParams(
-            params,
-            specParamsToSave
-        );
+        const commitParameters = fusionSpecificWithOtherParams(params, specParamsToSave);
         updateParameters(commitParameters);
     };
 
@@ -542,9 +492,7 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
     const LoadFlowProviders = Object.fromEntries(
-        Object.entries(providers).filter(
-            ([key]) => !key.includes('DynaFlow') || enableDeveloperMode
-        )
+        Object.entries(providers).filter(([key]) => !key.includes('DynaFlow') || enableDeveloperMode)
     );
     const handleLoadParameter = useCallback(
         (newParams) => {
@@ -552,21 +500,12 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
                 setOpenSelectParameterDialog(false);
                 fetchLoadFlowParameters(newParams[0].id)
                     .then((parameters) => {
-                        console.info(
-                            'loading the following loadflow parameters : ' +
-                                parameters.uuid
-                        );
+                        console.info('loading the following loadflow parameters : ' + parameters.uuid);
                         const provider = parameters['provider'];
                         const specParamsToSave = {
-                            [provider]:
-                                parameters?.specificParametersPerProvider[
-                                    provider
-                                ],
+                            [provider]: parameters?.specificParametersPerProvider[provider],
                         };
-                        const commitParameters = fusionSpecificWithOtherParams(
-                            parameters,
-                            specParamsToSave
-                        );
+                        const commitParameters = fusionSpecificWithOtherParams(parameters, specParamsToSave);
                         updateParameters(commitParameters);
                         setSpecificCurrentParams(specParamsToSave);
                     })
@@ -584,143 +523,240 @@ export const LoadFlowParameters = ({ parametersBackend }) => {
     );
     const formatNewParams = useCallback((newParams) => {
         const speceficParameters =
-            'specificParametersPerProvider' in newParams
-                ? newParams['specificParametersPerProvider']
-                : {};
+            'specificParametersPerProvider' in newParams ? newParams['specificParametersPerProvider'] : {};
 
         return {
             ...newParams,
             specificParametersPerProvider: speceficParameters,
         };
     }, []);
+
+    const [tabValue, setTabValue] = useState(TAB_VALUES.General);
+    const handleTabChange = useCallback((event, newValue) => {
+        setTabValue(newValue);
+    }, []);
+
+    const formSchema = useMemo(() => {
+        return getLimitReductionsFormSchema(
+            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
+        );
+    }, [params]);
+
+    const formMethods = useForm({
+        defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
+        resolver: yupResolver(formSchema),
+    });
+
+    const toLimitReductions = useCallback(
+        (formLimits) => {
+            return params.limitReductions.map((vlLimits, indexVl) => {
+                let vlLNewLimits = {
+                    ...vlLimits,
+                    permanentLimitReduction: formLimits[indexVl][IST_FORM],
+                };
+                vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+                    vlLNewLimits.temporaryLimitReductions[index] = {
+                        ...temporaryLimit,
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+                    };
+                });
+                return vlLNewLimits;
+            });
+        },
+        [params]
+    );
+
+    const { handleSubmit, formState } = formMethods;
+
+    const updateLimitReductions = useCallback(
+        (formLimits) => {
+            updateParameters({
+                ...params,
+                limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
+            });
+        },
+        [params, updateParameters, toLimitReductions]
+    );
+
+    const { reset } = formMethods;
+    useEffect(() => {
+        reset(toFormValuesLimitReductions(params?.limitReductions));
+    }, [params?.limitReductions, reset]);
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     // we must keep the line of the simulator selection visible during scrolling
     // only specifics parameters are dependents of simulator type
     return (
-        <Grid item sx={{ height: '100%' }} xl={8} lg={10} md={12}>
-            <Box
-                sx={{
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                }}
-            >
-                <Box sx={{ flexGrow: 0 }}>
-                    <Grid
-                        container
-                        spacing={1}
-                        sx={{
-                            paddingLeft: 0,
-                            paddingRight: 2,
-                            height: 'fit-content',
-                        }}
-                        justifyContent={'space-between'}
-                    >
-                        <DropDown
-                            value={provider}
-                            label="Provider"
-                            values={LoadFlowProviders}
-                            callback={updateLfProviderCallback}
-                        />
-                    </Grid>
-                </Box>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+            <Grid item sx={{ height: '100%' }} xl={9} lg={11} md={12}>
                 <Box
                     sx={{
-                        flexGrow: 1,
-                        overflow: 'auto',
+                        height: '100%',
+                        display: 'flex',
+                        position: 'relative',
+                        flexDirection: 'column',
                     }}
                 >
-                    <Grid
-                        container
-                        sx={mergeSx(styles.scrollableGrid, {
-                            maxHeight: '100%',
-                        })}
-                        key="lfParameters"
-                    >
-                        <LineSeparator />
-                        <Grid container spacing={1} paddingTop={1}>
-                            <ParamLine
-                                type={ParameterType.Slider}
-                                param_name_id={PARAM_LIMIT_REDUCTION}
-                                label="LimitReduction"
-                                marks={alertThresholdMarks}
-                                minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                    <Box sx={{ flexGrow: 0, paddingLeft: 1, paddingTop: 1 }}>
+                        <Grid
+                            container
+                            spacing={1}
+                            sx={{
+                                paddingLeft: 0,
+                                paddingRight: 2,
+                                height: 'fit-content',
+                            }}
+                            justifyContent={'space-between'}
+                        >
+                            <DropDown
+                                value={provider}
+                                label="Provider"
+                                values={LoadFlowProviders}
+                                callback={updateLfProviderCallback}
                             />
                             <LineSeparator />
                         </Grid>
-                        <BasicLoadFlowParameters
-                            lfParams={params || {}}
-                            commitLFParameter={updateParameters}
-                        />
-                        <AdvancedLoadFlowParameters
-                            lfParams={params || {}}
-                            commitLFParameter={updateParameters}
-                        />
-                        <SpecificLoadFlowParameters
-                            disabled={!specificParamsDescriptions?.[provider]}
-                            subText={provider}
-                            specificParamsDescription={
-                                specificParamsDescrWithoutNanVals[provider]
-                            }
-                            specificCurrentParams={
-                                specificCurrentParams[provider]
-                            }
-                            onSpecificParamChange={onSpecificParamChange}
-                        />
-                    </Grid>
-                </Box>
-                <Box sx={{ flexGrow: 0 }}>
-                    <Grid
-                        container
-                        item
-                        sx={mergeSx(
-                            styles.controlParametersItem,
-                            styles.marginTopButton,
-                            { paddingBottom: 0 }
-                        )}
+                    </Box>
+                    <Box
+                        sx={{
+                            flexGrow: 1,
+                            overflow: 'auto',
+                            paddingLeft: 1,
+                        }}
                     >
-                        <LabelledButton
-                            callback={() => setOpenSelectParameterDialog(true)}
-                            label="settings.button.chooseSettings"
+                        <Grid
+                            container
+                            sx={mergeSx(styles.scrollableGrid, {
+                                maxHeight: '100%',
+                            })}
+                            key="lfParameters"
+                        >
+                            <Grid sx={{ width: '100%' }}>
+                                <Tabs value={tabValue} onChange={handleTabChange}>
+                                    {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
+                                        (tab, index) => (
+                                            <Tab
+                                                key={tab.label}
+                                                label={<FormattedMessage id={tab.label} />}
+                                                value={index}
+                                                sx={{
+                                                    fontSize: 17,
+                                                    fontWeight: 'bold',
+                                                    textTransform: 'capitalize',
+                                                }}
+                                            />
+                                        )
+                                    )}
+                                </Tabs>
+
+                                {TAB_INFO.filter((t) => enableDeveloperMode || !t.developerModeOnly).map(
+                                    (tab, index) => (
+                                        <TabPanel key={tab.label} value={tabValue} index={index}>
+                                            {tabValue === TAB_VALUES.General && (
+                                                <>
+                                                    <BasicLoadFlowParameters
+                                                        lfParams={params || {}}
+                                                        commitLFParameter={updateParameters}
+                                                    />
+                                                    <AdvancedLoadFlowParameters
+                                                        lfParams={params || {}}
+                                                        commitLFParameter={updateParameters}
+                                                    />
+                                                    <SpecificLoadFlowParameters
+                                                        disabled={!specificParamsDescriptions?.[provider]}
+                                                        subText={provider}
+                                                        specificParamsDescription={
+                                                            specificParamsDescrWithoutNanVals[provider]
+                                                        }
+                                                        specificCurrentParams={specificCurrentParams[provider]}
+                                                        onSpecificParamChange={onSpecificParamChange}
+                                                    />
+                                                </>
+                                            )}
+                                            {tabValue === TAB_VALUES.LimitReductions && (
+                                                <Grid
+                                                    container
+                                                    sx={mergeSx(styles.scrollableGrid, {
+                                                        maxHeight: '100%',
+                                                    })}
+                                                    key="lfParameters"
+                                                >
+                                                    <Grid
+                                                        container
+                                                        spacing={1}
+                                                        paddingTop={1}
+                                                        paddingLeft={2}
+                                                        sx={{ width: '100%' }}
+                                                    >
+                                                        {params.limitReductions !== null ? (
+                                                            <LimitReductionsTableForm
+                                                                limits={params?.limitReductions}
+                                                            />
+                                                        ) : (
+                                                            <ParameterLineSlider
+                                                                paramNameId={PARAM_LIMIT_REDUCTION}
+                                                                label="LimitReduction"
+                                                                marks={alertThresholdMarks}
+                                                                minValue={MIN_VALUE_ALLOWED_FOR_LIMIT_REDUCTION}
+                                                            />
+                                                        )}
+                                                    </Grid>
+                                                </Grid>
+                                            )}
+                                        </TabPanel>
+                                    )
+                                )}
+                            </Grid>
+                        </Grid>
+                    </Box>
+                    <Box sx={{ flexGrow: 0 }}>
+                        <LineSeparator />
+                        <Grid
+                            container
+                            item
+                            sx={mergeSx(styles.controlParametersItem, styles.marginTopButton, { paddingBottom: 0 })}
+                        >
+                            <LabelledButton
+                                callback={() => setOpenSelectParameterDialog(true)}
+                                label="settings.button.chooseSettings"
+                            />
+                            <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
+                            <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
+                            <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
+                            <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
+                                <FormattedMessage id="validate" />
+                            </SubmitButton>
+                        </Grid>
+                    </Box>
+                    {openCreateParameterDialog && (
+                        <CreateParameterDialog
+                            open={openCreateParameterDialog}
+                            onClose={() => setOpenCreateParameterDialog(false)}
+                            parameterValues={() => formatNewParams(params)}
+                            parameterFormatter={(newParams) => newParams}
+                            parameterType={ElementType.LOADFLOW_PARAMETERS}
                         />
-                        <LabelledButton
-                            callback={() => setOpenCreateParameterDialog(true)}
-                            label="save"
+                    )}
+                    {openSelectParameterDialog && (
+                        <DirectoryItemSelector
+                            open={openSelectParameterDialog}
+                            onClose={handleLoadParameter}
+                            types={[ElementType.LOADFLOW_PARAMETERS]}
+                            title={intl.formatMessage({
+                                id: 'showSelectParameterDialog',
+                            })}
+                            onlyLeaves={true}
+                            multiselect={false}
+                            validationButtonText={intl.formatMessage({
+                                id: 'validate',
+                            })}
                         />
-                        <LabelledButton
-                            callback={resetLfParametersAndLfProvider}
-                            label="resetToDefault"
-                        />
-                        <LabelledButton
-                            callback={resetLfParameters}
-                            label="resetProviderValuesToDefault"
-                        />
-                    </Grid>
+                    )}
                 </Box>
-                {openCreateParameterDialog && (
-                    <CreateParameterDialog
-                        open={openCreateParameterDialog}
-                        onClose={() => setOpenCreateParameterDialog(false)}
-                        parameterValues={() => formatNewParams(params)}
-                        parameterFormatter={(newParams) => newParams}
-                        parameterType={ElementType.LOADFLOW_PARAMETERS}
-                    />
-                )}
-                {openSelectParameterDialog && (
-                    <DirectoryItemSelector
-                        open={openSelectParameterDialog}
-                        onClose={handleLoadParameter}
-                        types={[ElementType.LOADFLOW_PARAMETERS]}
-                        title={intl.formatMessage({
-                            id: 'showSelectParameterDialog',
-                        })}
-                        onlyLeaves={true}
-                        multiselect={false}
-                        validationButtonText={intl.formatMessage({
-                            id: 'validate',
-                        })}
-                    />
-                )}
-            </Box>
-        </Grid>
+            </Grid>
+        </CustomFormProvider>
     );
 };

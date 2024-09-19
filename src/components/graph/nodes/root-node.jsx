@@ -12,6 +12,7 @@ import React from 'react';
 import { Handle } from 'react-flow-renderer';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
+import { BUILD_STATUS } from '../../network/constants';
 
 const styles = {
     rootSelected: (theme) => ({
@@ -53,18 +54,11 @@ const RootNode = (props) => {
                 }}
                 isConnectable={false}
             />
-            <Tooltip
-                title={props.data.caseName}
-                placement="top"
-                disableHoverListener={!props.data.caseName}
-            >
-                <IconButton
-                    variant="outlined"
-                    sx={isSelectedNode() ? styles.rootSelected : styles.root}
-                >
-                    {(props.data.globalBuildStatus === 'BUILDING' && (
-                        <CircularProgress size={24} />
-                    )) || <PhotoIcon />}
+            <Tooltip title={props.data.caseName} placement="top" disableHoverListener={!props.data.caseName}>
+                <IconButton variant="outlined" sx={isSelectedNode() ? styles.rootSelected : styles.root}>
+                    {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (
+                        <PhotoIcon />
+                    )}
                 </IconButton>
             </Tooltip>
         </>

@@ -66,22 +66,13 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid }) => {
             </Box>
             <Box sx={styles.resultContainer}>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_TIME_SERIES}>
-                    <DynamicSimulationResultTimeSeries
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
-                    />
+                    <DynamicSimulationResultTimeSeries studyUuid={studyUuid} nodeUuid={nodeUuid} />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_TIMELINE}>
-                    <DynamicSimulationResultTimeline
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
-                    />
+                    <DynamicSimulationResultTimeline studyUuid={studyUuid} nodeUuid={nodeUuid} />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_STATUS}>
-                    <DynamicSimulationResultSynthesis
-                        studyUuid={studyUuid}
-                        nodeUuid={nodeUuid}
-                    />
+                    <DynamicSimulationResultSynthesis studyUuid={studyUuid} nodeUuid={nodeUuid} />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_LOGS}>
                     <DynamicSimulationResultLogs />

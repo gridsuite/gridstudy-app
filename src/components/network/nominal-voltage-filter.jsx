@@ -43,11 +43,7 @@ const styles = {
     },
 };
 
-const NominalVoltageFilter = ({
-    nominalVoltages,
-    filteredNominalVoltages,
-    onChange,
-}) => {
+const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChange }) => {
     // Set up filteredNominalVoltages
     useEffect(() => {
         if (nominalVoltages && !filteredNominalVoltages) {
@@ -87,15 +83,8 @@ const NominalVoltageFilter = ({
                     >
                         <FormattedMessage id="CBAll" />
                     </Button>
-                    <ListItemText
-                        sx={styles.nominalVoltageText}
-                        secondary={'/'}
-                    />
-                    <Button
-                        size={'small'}
-                        sx={styles.nominalVoltageSelectionControl}
-                        onClick={handleToggle([], false)}
-                    >
+                    <ListItemText sx={styles.nominalVoltageText} secondary={'/'} />
+                    <Button size={'small'} sx={styles.nominalVoltageSelectionControl} onClick={handleToggle([], false)}>
                         <FormattedMessage id="CBNone" />
                     </Button>
                 </ListItem>
@@ -111,12 +100,7 @@ const NominalVoltageFilter = ({
                                 <Checkbox
                                     color="default"
                                     sx={styles.nominalVoltageCheck}
-                                    checked={
-                                        !filteredNominalVoltages ||
-                                        filteredNominalVoltages.indexOf(
-                                            value
-                                        ) !== -1
-                                    }
+                                    checked={!filteredNominalVoltages || filteredNominalVoltages.indexOf(value) !== -1}
                                 />
                                 <ListItemText
                                     sx={styles.nominalVoltageText}

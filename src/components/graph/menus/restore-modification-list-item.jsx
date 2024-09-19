@@ -48,13 +48,7 @@ const RestoreModificationListItem = (props) => {
                 }}
             >
                 <ListItemIcon>
-                    <Checkbox
-                        edge="start"
-                        size={'small'}
-                        checked={props.checked}
-                        tabIndex={-1}
-                        disableRipple
-                    />
+                    <Checkbox edge="start" size={'small'} checked={props.checked} tabIndex={-1} disableRipple />
                 </ListItemIcon>
                 <ListItemText primary={props.primary} />
             </ListItemButton>

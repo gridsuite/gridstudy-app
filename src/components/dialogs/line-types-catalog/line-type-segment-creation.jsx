@@ -22,12 +22,7 @@ import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input'
 import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
 import PropTypes from 'prop-types';
 
-const LineTypeSegmentCreation = ({
-    name,
-    index,
-    onEditButtonClick,
-    onSegmentDistanceChange,
-}) => {
+const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDistanceChange }) => {
     const watchDistance = useWatch({
         name: `${name}.${index}.${SEGMENT_DISTANCE_VALUE}`,
     });
@@ -40,26 +35,11 @@ const LineTypeSegmentCreation = ({
         />
     );
 
-    const segmentResistanceField = (
-        <ReadOnlyInput
-            isNumerical
-            name={`${name}.${index}.${SEGMENT_RESISTANCE}`}
-        />
-    );
+    const segmentResistanceField = <ReadOnlyInput isNumerical name={`${name}.${index}.${SEGMENT_RESISTANCE}`} />;
 
-    const segmentReactanceField = (
-        <ReadOnlyInput
-            isNumerical
-            name={`${name}.${index}.${SEGMENT_REACTANCE}`}
-        />
-    );
+    const segmentReactanceField = <ReadOnlyInput isNumerical name={`${name}.${index}.${SEGMENT_REACTANCE}`} />;
 
-    const segmentSusceptanceField = (
-        <ReadOnlyInput
-            isNumerical
-            name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`}
-        />
-    );
+    const segmentSusceptanceField = <ReadOnlyInput isNumerical name={`${name}.${index}.${SEGMENT_SUSCEPTANCE}`} />;
 
     const handleEditButtonClick = useCallback(
         () => onEditButtonClick && onEditButtonClick(index),
@@ -77,8 +57,7 @@ const LineTypeSegmentCreation = ({
     );
 
     useEffect(() => {
-        onSegmentDistanceChange &&
-            onSegmentDistanceChange(index, watchDistance);
+        onSegmentDistanceChange && onSegmentDistanceChange(index, watchDistance);
     }, [onSegmentDistanceChange, index, watchDistance]);
 
     return (

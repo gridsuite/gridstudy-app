@@ -19,8 +19,9 @@ const styles = {
         display: 'block',
         zIndex: 19,
         position: 'absolute',
-        height: 'inherit',
-        width: 'inherit',
+
+        height: '100%',
+        width: '100%',
         textAlign: 'center',
     },
     circularProgress: {

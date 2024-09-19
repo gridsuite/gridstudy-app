@@ -10,11 +10,7 @@ import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo, useRef } from 'react';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
-import {
-    getNoRowsMessage,
-    getRows,
-    useIntlResultStatusMessages,
-} from '../../utils/aggrid-rows-handler';
+import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
@@ -22,10 +18,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { Box, LinearProgress } from '@mui/material';
-import {
-    SENSITIVITY_AT_NODE,
-    SUFFIX_TYPES,
-} from './sensitivity-analysis-result-utils';
+import { SENSITIVITY_AT_NODE, SUFFIX_TYPES } from './sensitivity-analysis-result-utils';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 function makeRows(resultRecord) {
@@ -50,9 +43,7 @@ const SensitivityAnalysisResult = ({
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
     const { onGridColumnsChanged } = props;
 
     const messages = useIntlResultStatusMessages(intl, true);
@@ -62,13 +53,9 @@ const SensitivityAnalysisResult = ({
             const { onSortChanged = () => {}, sortConfig } = sortProps || {};
             const { updateFilter, filterSelector } = filterProps || {};
 
-            const isSortActive = !!sortConfig?.find(
-                (value) => value.colId === field
-            );
+            const isSortActive = !!sortConfig?.find((value) => value.colId === field);
 
-            const { options: filterOptions = [] } =
-                filtersDef.find((filterDef) => filterDef?.field === field) ||
-                {};
+            const { options: filterOptions = [] } = filtersDef.find((filterDef) => filterDef?.field === field) || {};
 
             return {
                 field,
@@ -111,10 +98,7 @@ const SensitivityAnalysisResult = ({
         returnedTable.push(
             makeColumn({
                 field: 'funcId',
-                labelId:
-                    sensiKind === SENSITIVITY_AT_NODE
-                        ? 'BusBarBus'
-                        : 'SupervisedBranches',
+                labelId: sensiKind === SENSITIVITY_AT_NODE ? 'BusBarBus' : 'SupervisedBranches',
                 pinned: true,
                 maxWidth: 350,
             })
@@ -198,16 +182,10 @@ const SensitivityAnalysisResult = ({
         [onGridColumnsChanged]
     );
 
-    const message = getNoRowsMessage(
-        messages,
-        rows,
-        sensitivityAnalysisStatus,
-        !isLoading
-    );
+    const message = getNoRowsMessage(messages, rows, sensitivityAnalysisStatus, !isLoading);
 
     const openLoader = useOpenLoaderShortWait({
-        isLoading:
-            sensitivityAnalysisStatus === RunningStatus.RUNNING || isLoading,
+        isLoading: sensitivityAnalysisStatus === RunningStatus.RUNNING || isLoading,
         delay: RESULTS_LOADING_DELAY,
     });
 

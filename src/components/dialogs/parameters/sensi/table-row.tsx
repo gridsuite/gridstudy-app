@@ -43,18 +43,9 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     };
 
     return (
-        <TableRow
-            key={row.id}
-            onMouseEnter={() => handleHover(true)}
-            onMouseLeave={() => handleHover(false)}
-        >
+        <TableRow key={row.id} onMouseEnter={() => handleHover(true)} onMouseLeave={() => handleHover(false)}>
             {columnsDefinition.map((column: IColumnsDef) =>
-                EditableTableCell(
-                    arrayFormName,
-                    index,
-                    column,
-                    handleRowChanged
-                )
+                EditableTableCell(arrayFormName, index, column, handleRowChanged)
             )}
             {!disableDelete && (
                 <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
@@ -64,9 +55,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
                                 id: 'DeleteRows',
                             })}
                         >
-                            <IconButton
-                                onClick={() => handleDeleteButton(index)}
-                            >
+                            <IconButton onClick={() => handleDeleteButton(index)}>
                                 <DeleteIcon />
                             </IconButton>
                         </Tooltip>

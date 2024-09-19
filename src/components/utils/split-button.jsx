@@ -141,9 +141,7 @@ const SplitButton = ({
     onSelectionChange,
 }) => {
     const [open, setOpen] = React.useState(false);
-    const computationStarting = useSelector(
-        (state) => state.computationStarting
-    );
+    const computationStarting = useSelector((state) => state.computationStarting);
 
     const anchorRef = React.useRef(null);
 
@@ -228,26 +226,15 @@ const SplitButton = ({
                     sx={getStyle(runningStatus)}
                     disabled={selectionDisabled}
                 >
-                    <ArrowDropDownIcon
-                        sx={mergeSx(styles.expand, open && styles.expandOpen)}
-                    />
+                    <ArrowDropDownIcon sx={mergeSx(styles.expand, open && styles.expandOpen)} />
                 </Button>
             </ButtonGroup>
-            <Popper
-                open={open}
-                anchorEl={anchorRef.current}
-                role={undefined}
-                transition
-                sx={styles.runMenuButton}
-            >
+            <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition sx={styles.runMenuButton}>
                 {({ TransitionProps, placement }) => (
                     <Grow
                         {...TransitionProps}
                         style={{
-                            transformOrigin:
-                                placement === 'bottom'
-                                    ? 'center top'
-                                    : 'center bottom',
+                            transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom',
                         }}
                     >
                         <Paper sx={styles.listOptions}>
@@ -258,25 +245,14 @@ const SplitButton = ({
                                             disabled={disabledOption}
                                             key={option}
                                             selected={index === selectedIndex}
-                                            onClick={(event) =>
-                                                handleMenuItemClick(
-                                                    event,
-                                                    index
-                                                )
-                                            }
+                                            onClick={(event) => handleMenuItemClick(event, index)}
                                         >
-                                            {runningStatus ===
-                                                RunningStatus.RUNNING && (
+                                            {runningStatus === RunningStatus.RUNNING && (
                                                 <ListItemIcon>
-                                                    <StopIcon
-                                                        fontSize="small"
-                                                        sx={styles.stop}
-                                                    />
+                                                    <StopIcon fontSize="small" sx={styles.stop} />
                                                 </ListItemIcon>
                                             )}
-                                            <ListItemText
-                                                primary={breakText(option)}
-                                            />
+                                            <ListItemText primary={breakText(option)} />
                                         </MenuItem>
                                     ))}
                                 </MenuList>

@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { ExportButton } from '../../utils/export-button';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
@@ -28,16 +22,8 @@ interface ShortCircuitExportButtonProps {
     disabled?: boolean;
 }
 
-export const ShortCircuitExportButton: FunctionComponent<
-    ShortCircuitExportButtonProps
-> = (props) => {
-    const {
-        studyUuid,
-        nodeUuid,
-        csvHeaders,
-        disabled = false,
-        analysisType,
-    } = props;
+export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
+    const { studyUuid, nodeUuid, csvHeaders, disabled = false, analysisType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -73,13 +59,7 @@ export const ShortCircuitExportButton: FunctionComponent<
     const exportCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
-        downloadShortCircuitResultZippedCsv(
-            studyUuid,
-            nodeUuid,
-            analysisType,
-            csvHeaders,
-            enumValueTranslations
-        )
+        downloadShortCircuitResultZippedCsv(studyUuid, nodeUuid, analysisType, csvHeaders, enumValueTranslations)
             .then((response) => {
                 response.blob().then((fileBlob: Blob) => {
                     downloadZipFile(
@@ -101,15 +81,7 @@ export const ShortCircuitExportButton: FunctionComponent<
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        studyUuid,
-        nodeUuid,
-        intl,
-        snackError,
-        csvHeaders,
-        analysisType,
-        enumValueTranslations,
-    ]);
+    }, [studyUuid, nodeUuid, intl, snackError, csvHeaders, analysisType, enumValueTranslations]);
 
     return (
         <ExportButton

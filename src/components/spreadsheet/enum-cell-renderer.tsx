@@ -13,10 +13,7 @@ interface EnumCellRendererProps {
     enumOptions: { id: string; label: string }[];
 }
 
-const EnumCellRenderer: React.FC<EnumCellRendererProps> = ({
-    value,
-    enumOptions,
-}) => {
+const EnumCellRenderer: React.FC<EnumCellRendererProps> = ({ value, enumOptions }) => {
     const intl = useIntl();
 
     if (!value) {
@@ -25,9 +22,7 @@ const EnumCellRenderer: React.FC<EnumCellRendererProps> = ({
 
     const label = getEnumLabelById(enumOptions, value) || value;
 
-    return (
-        <span>{intl.formatMessage({ id: label, defaultMessage: label })}</span>
-    );
+    return <span>{intl.formatMessage({ id: label, defaultMessage: label })}</span>;
 };
 
 export default EnumCellRenderer;

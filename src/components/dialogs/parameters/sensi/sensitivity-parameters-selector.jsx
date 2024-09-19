@@ -59,20 +59,13 @@ const styles = {
     },
 };
 
-const SensitivityParametersSelector = ({
-    onFormChanged,
-    onChangeParams,
-    launchLoader,
-    analysisComputeComplexity,
-}) => {
+const SensitivityParametersSelector = ({ onFormChanged, onChangeParams, launchLoader, analysisComputeComplexity }) => {
     const intl = useIntl();
 
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
-    const [subTabValue, setSubTabValue] = useState(
-        TAB_VALUES.SensiInjectionsSet
-    );
+    const [subTabValue, setSubTabValue] = useState(TAB_VALUES.SensiInjectionsSet);
     const handleTabChange = useCallback((event, newValue) => {
         setTabValue(newValue);
     }, []);
@@ -93,23 +86,17 @@ const SensitivityParametersSelector = ({
         ...((enableDeveloperMode && [{ label: 'SensitivityNodes' }]) || []),
     ];
 
-    const [rowDataInjectionsSet, useFieldArrayOutputInjectionsSet] =
-        useCreateRowDataSensi(sensiParam.SensiInjectionsSet);
-
-    const [rowDataInjections, useFieldArrayOutputInjections] =
-        useCreateRowDataSensi(sensiParam.SensiInjection);
-
-    const [rowDataHvdc, useFieldArrayOutputHvdc] = useCreateRowDataSensi(
-        sensiParam.SensiHvdcs
+    const [rowDataInjectionsSet, useFieldArrayOutputInjectionsSet] = useCreateRowDataSensi(
+        sensiParam.SensiInjectionsSet
     );
 
-    const [rowDataPst, useFieldArrayOutputPst] = useCreateRowDataSensi(
-        sensiParam.SensiPsts
-    );
+    const [rowDataInjections, useFieldArrayOutputInjections] = useCreateRowDataSensi(sensiParam.SensiInjection);
 
-    const [rowDataNodes, useFieldArrayOutputNodes] = useCreateRowDataSensi(
-        sensiParam.SensiNodes
-    );
+    const [rowDataHvdc, useFieldArrayOutputHvdc] = useCreateRowDataSensi(sensiParam.SensiHvdcs);
+
+    const [rowDataPst, useFieldArrayOutputPst] = useCreateRowDataSensi(sensiParam.SensiPsts);
+
+    const [rowDataNodes, useFieldArrayOutputNodes] = useCreateRowDataSensi(sensiParam.SensiNodes);
 
     const getColumnsDefinition = useCallback(
         (sensiColumns) => {
@@ -134,16 +121,10 @@ const SensitivityParametersSelector = ({
     };
 
     const renderComputingEvent = () => {
-        if (
-            analysisComputeComplexity < 999999 &&
-            analysisComputeComplexity > 500000
-        ) {
+        if (analysisComputeComplexity < 999999 && analysisComputeComplexity > 500000) {
             return (
                 <Box sx={styles.textAlert}>
-                    <ErrorOutlineIcon
-                        size={'1em'}
-                        sx={styles.errorOutlineIcon}
-                    />
+                    <ErrorOutlineIcon size={'1em'} sx={styles.errorOutlineIcon} />
                     <FormattedMessage
                         id="sensitivityAnalysis.simulatedComputations"
                         values={{
@@ -156,10 +137,7 @@ const SensitivityParametersSelector = ({
         if (analysisComputeComplexity > 999999) {
             return (
                 <Box sx={styles.textAlert}>
-                    <ErrorOutlineIcon
-                        size={'1em'}
-                        sx={styles.errorOutlineIcon}
-                    />
+                    <ErrorOutlineIcon size={'1em'} sx={styles.errorOutlineIcon} />
                     <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
                 </Box>
             );
@@ -212,122 +190,81 @@ const SensitivityParametersSelector = ({
                     ))}
                 </Tabs>
                 {tabInfo.map((tab, index) => (
-                    <TabPanel
-                        key={tab.label}
-                        value={tabValue}
-                        index={index}
-                        sx={{ paddingTop: 1 }}
-                    >
-                        {tabValue === TAB_VALUES.SensitivityBranches &&
-                            tab.subTabs && (
-                                <>
-                                    <Tabs
-                                        value={subTabValue}
-                                        onChange={handleSubTabChange}
-                                    >
-                                        {tab.subTabs.map((subTab, subIndex) => (
-                                            <Tab
-                                                key={subTab.label}
-                                                value={subIndex}
-                                                sx={{
-                                                    fontWeight: 'bold',
-                                                    textTransform: 'capitalize',
-                                                }}
-                                                label={
-                                                    <FormattedMessage
-                                                        id={subTab.label}
-                                                    />
-                                                }
-                                            ></Tab>
-                                        ))}
-                                        <Box sx={styles.boxContent}>
-                                            {launchLoader
-                                                ? renderComputingEventLoading()
-                                                : renderComputingEvent()}
-                                            <FormattedMessage id="sensitivityAnalysis.separator" />
-                                            <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
-                                        </Box>
-                                    </Tabs>
-                                    <TabPanel
-                                        index={TAB_VALUES.SensiInjectionsSet}
-                                        value={subTabValue}
-                                    >
-                                        <SensitivityTable
-                                            arrayFormName={`${SensiInjectionsSet.name}`}
-                                            columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_INJECTIONS_SET
-                                            )}
-                                            useFieldArrayOutput={
-                                                useFieldArrayOutputInjectionsSet
-                                            }
-                                            createRows={rowDataInjectionsSet}
-                                            tableHeight={300}
-                                            onFormChanged={onFormChanged}
-                                            onChangeParams={onChangeParams}
-                                        />
-                                    </TabPanel>
-                                    <TabPanel
-                                        index={TAB_VALUES.SensiInjection}
-                                        value={subTabValue}
-                                    >
-                                        <SensitivityTable
-                                            arrayFormName={`${SensiInjection.name}`}
-                                            columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_INJECTIONS
-                                            )}
-                                            useFieldArrayOutput={
-                                                useFieldArrayOutputInjections
-                                            }
-                                            createRows={rowDataInjections}
-                                            tableHeight={300}
-                                            onFormChanged={onFormChanged}
-                                            onChangeParams={onChangeParams}
-                                        />
-                                    </TabPanel>
-                                    <TabPanel
-                                        index={TAB_VALUES.SensiHVDC}
-                                        value={subTabValue}
-                                    >
-                                        <SensitivityTable
-                                            arrayFormName={`${SensiHvdcs.name}`}
-                                            columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_HVDCS
-                                            )}
-                                            useFieldArrayOutput={
-                                                useFieldArrayOutputHvdc
-                                            }
-                                            createRows={rowDataHvdc}
-                                            tableHeight={300}
-                                            onFormChanged={onFormChanged}
-                                            onChangeParams={onChangeParams}
-                                        />
-                                    </TabPanel>
-                                    <TabPanel
-                                        index={TAB_VALUES.SensiPST}
-                                        value={subTabValue}
-                                    >
-                                        <SensitivityTable
-                                            arrayFormName={`${SensiPsts.name}`}
-                                            columnsDefinition={getColumnsDefinition(
-                                                sensiParam.COLUMNS_DEFINITIONS_PSTS
-                                            )}
-                                            useFieldArrayOutput={
-                                                useFieldArrayOutputPst
-                                            }
-                                            createRows={rowDataPst}
-                                            tableHeight={300}
-                                            onFormChanged={onFormChanged}
-                                            onChangeParams={onChangeParams}
-                                        />
-                                    </TabPanel>
-                                </>
-                            )}
+                    <TabPanel key={tab.label} value={tabValue} index={index} sx={{ paddingTop: 1 }}>
+                        {tabValue === TAB_VALUES.SensitivityBranches && tab.subTabs && (
+                            <>
+                                <Tabs value={subTabValue} onChange={handleSubTabChange}>
+                                    {tab.subTabs.map((subTab, subIndex) => (
+                                        <Tab
+                                            key={subTab.label}
+                                            value={subIndex}
+                                            sx={{
+                                                fontWeight: 'bold',
+                                                textTransform: 'capitalize',
+                                            }}
+                                            label={<FormattedMessage id={subTab.label} />}
+                                        ></Tab>
+                                    ))}
+                                    <Box sx={styles.boxContent}>
+                                        {launchLoader ? renderComputingEventLoading() : renderComputingEvent()}
+                                        <FormattedMessage id="sensitivityAnalysis.separator" />
+                                        <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
+                                    </Box>
+                                </Tabs>
+                                <TabPanel index={TAB_VALUES.SensiInjectionsSet} value={subTabValue}>
+                                    <SensitivityTable
+                                        arrayFormName={`${SensiInjectionsSet.name}`}
+                                        columnsDefinition={getColumnsDefinition(
+                                            sensiParam.COLUMNS_DEFINITIONS_INJECTIONS_SET
+                                        )}
+                                        useFieldArrayOutput={useFieldArrayOutputInjectionsSet}
+                                        createRows={rowDataInjectionsSet}
+                                        tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
+                                    />
+                                </TabPanel>
+                                <TabPanel index={TAB_VALUES.SensiInjection} value={subTabValue}>
+                                    <SensitivityTable
+                                        arrayFormName={`${SensiInjection.name}`}
+                                        columnsDefinition={getColumnsDefinition(
+                                            sensiParam.COLUMNS_DEFINITIONS_INJECTIONS
+                                        )}
+                                        useFieldArrayOutput={useFieldArrayOutputInjections}
+                                        createRows={rowDataInjections}
+                                        tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
+                                    />
+                                </TabPanel>
+                                <TabPanel index={TAB_VALUES.SensiHVDC} value={subTabValue}>
+                                    <SensitivityTable
+                                        arrayFormName={`${SensiHvdcs.name}`}
+                                        columnsDefinition={getColumnsDefinition(sensiParam.COLUMNS_DEFINITIONS_HVDCS)}
+                                        useFieldArrayOutput={useFieldArrayOutputHvdc}
+                                        createRows={rowDataHvdc}
+                                        tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
+                                    />
+                                </TabPanel>
+                                <TabPanel index={TAB_VALUES.SensiPST} value={subTabValue}>
+                                    <SensitivityTable
+                                        arrayFormName={`${SensiPsts.name}`}
+                                        columnsDefinition={getColumnsDefinition(sensiParam.COLUMNS_DEFINITIONS_PSTS)}
+                                        useFieldArrayOutput={useFieldArrayOutputPst}
+                                        createRows={rowDataPst}
+                                        tableHeight={300}
+                                        onFormChanged={onFormChanged}
+                                        onChangeParams={onChangeParams}
+                                    />
+                                </TabPanel>
+                            </>
+                        )}
                         {tabValue === TAB_VALUES.SensitivityNodes && (
                             <SensitivityTable
                                 arrayFormName={`${SensiNodes.name}`}
-                                columnsDefinition={getColumnsDefinition(
-                                    sensiParam.COLUMNS_DEFINITIONS_NODES
-                                )}
+                                columnsDefinition={getColumnsDefinition(sensiParam.COLUMNS_DEFINITIONS_NODES)}
                                 useFieldArrayOutput={useFieldArrayOutputNodes}
                                 createRows={rowDataNodes}
                                 tableHeight={367}

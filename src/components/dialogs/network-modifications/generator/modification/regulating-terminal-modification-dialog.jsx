@@ -83,9 +83,7 @@ const RegulatingTerminalModificationDialog = ({
         if (studyUuid && currentNode.id) {
             fetchVoltageLevelsListInfos(studyUuid, currentNode.id)
                 .then((values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a.id.localeCompare(b.id))
-                    );
+                    setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
                 })
                 .catch((error) => {
                     console.error('Error fetching voltage levels: ', error);
@@ -128,21 +126,13 @@ const RegulatingTerminalModificationDialog = ({
             equipmentSectionTypeDefaultValue={''}
             currentNodeUuid={currentNode.id}
             studyUuid={studyUuid}
-            previousRegulatingTerminalValue={
-                previousData?.regulatingTerminalVlId
-            }
-            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(
-                previousData
-            )}
+            previousRegulatingTerminalValue={previousData?.regulatingTerminalVlId}
+            previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(previousData)}
         />
     );
 
     return (
-        <CustomFormProvider
-            removeOptional={true}
-            validationSchema={formSchema}
-            {...formMethods}
-        >
+        <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}

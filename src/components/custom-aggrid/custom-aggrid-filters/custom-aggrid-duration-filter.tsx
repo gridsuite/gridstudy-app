@@ -5,13 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
-import {
-    Grid,
-    InputAdornment,
-    TextField,
-    Typography,
-    IconButton,
-} from '@mui/material';
+import { Grid, InputAdornment, TextField, Typography, IconButton } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 
@@ -28,10 +22,9 @@ const styles = {
         justifyContent: 'center',
     },
     noArrows: {
-        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
-            {
-                display: 'none',
-            },
+        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+            display: 'none',
+        },
         '& input[type=number]': {
             MozAppearance: 'textfield',
         },
@@ -43,9 +36,7 @@ interface ICustomAggridDurationFilter {
     onChange: (value?: string) => void;
 }
 
-const CustomAggridDurationFilter: FunctionComponent<
-    ICustomAggridDurationFilter
-> = ({ value, onChange }) => {
+const CustomAggridDurationFilter: FunctionComponent<ICustomAggridDurationFilter> = ({ value, onChange }) => {
     const intl = useIntl();
 
     // Initialize minutes and seconds based on the initial value prop
@@ -61,8 +52,7 @@ const CustomAggridDurationFilter: FunctionComponent<
         }
         return { minutes: '', seconds: '' };
     }, [value]);
-    const { minutes: initialMinutes, seconds: initialSeconds } =
-        parseInitialValue();
+    const { minutes: initialMinutes, seconds: initialSeconds } = parseInitialValue();
     const [minutes, setMinutes] = useState(initialMinutes);
     const [seconds, setSeconds] = useState(initialSeconds);
 
@@ -72,8 +62,7 @@ const CustomAggridDurationFilter: FunctionComponent<
             if (newMinutes === '' && newSeconds === '') {
                 onChange('');
             } else {
-                const totalSeconds =
-                    Number(newMinutes) * 60 + Number(newSeconds);
+                const totalSeconds = Number(newMinutes) * 60 + Number(newSeconds);
                 onChange(totalSeconds.toString());
             }
         },
@@ -118,9 +107,7 @@ const CustomAggridDurationFilter: FunctionComponent<
                     placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
                     InputProps={{
                         type: 'number',
-                        endAdornment: (
-                            <InputAdornment position="end">mn</InputAdornment>
-                        ),
+                        endAdornment: <InputAdornment position="end">mn</InputAdornment>,
                         inputProps: { min: 0 },
                     }}
                     sx={styles.noArrows}
@@ -138,9 +125,7 @@ const CustomAggridDurationFilter: FunctionComponent<
                     placeholder={intl.formatMessage({ id: 'filter.filterOoo' })}
                     InputProps={{
                         type: 'number',
-                        endAdornment: (
-                            <InputAdornment position="end">s</InputAdornment>
-                        ),
+                        endAdornment: <InputAdornment position="end">s</InputAdornment>,
                         inputProps: { min: 0, max: 59 },
                     }}
                     sx={styles.noArrows}

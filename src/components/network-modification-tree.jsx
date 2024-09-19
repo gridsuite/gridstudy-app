@@ -6,20 +6,11 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import ReactFlow, {
-    Controls,
-    useStore,
-    useReactFlow,
-    ControlButton,
-    MiniMap,
-} from 'react-flow-renderer';
+import ReactFlow, { Controls, useStore, useReactFlow, ControlButton, MiniMap } from 'react-flow-renderer';
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import {
-    setModificationsDrawerOpen,
-    setCurrentTreeNode,
-} from '../redux/actions';
+import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import { DRAWER_NODE_EDITOR_WIDTH, TOOLTIP_DELAY } from '../utils/UIconstants';
@@ -28,7 +19,7 @@ import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
-import { StudyDisplayMode } from '../redux/reducer.type';
+import { StudyDisplayMode } from './network-modification.type';
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
@@ -57,9 +48,7 @@ const NetworkModificationTree = ({
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     const [isMoving, setIsMoving] = useState(false);
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
@@ -88,9 +77,7 @@ const NetworkModificationTree = ({
 
     const onNodeClick = useCallback(
         (event, node) => {
-            dispatch(
-                setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION')
-            );
+            dispatch(setModificationsDrawerOpen(node.type === 'NETWORK_MODIFICATION'));
             if (!isSameNode(currentNode, node)) {
                 dispatch(setCurrentTreeNode(node));
             }
@@ -126,16 +113,10 @@ const NetworkModificationTree = ({
     const intl = useIntl();
 
     useEffect(() => {
-        const nodeEditorShift = isStudyDrawerOpen
-            ? DRAWER_NODE_EDITOR_WIDTH
-            : 0;
-        const { x, y, zoom, setViewport, prevTreeDisplay } =
-            focusParams.current;
+        const nodeEditorShift = isStudyDrawerOpen ? DRAWER_NODE_EDITOR_WIDTH : 0;
+        const { x, y, zoom, setViewport, prevTreeDisplay } = focusParams.current;
         if (prevTreeDisplay) {
-            if (
-                prevTreeDisplay.display === StudyDisplayMode.TREE &&
-                studyMapTreeDisplay === StudyDisplayMode.HYBRID
-            ) {
+            if (prevTreeDisplay.display === StudyDisplayMode.TREE && studyMapTreeDisplay === StudyDisplayMode.HYBRID) {
                 setViewport({
                     x: x - (prevTreeDisplay.width + nodeEditorShift) / 4,
                     y: y,
@@ -239,9 +220,7 @@ const NetworkModificationTree = ({
                     </Tooltip>
                 </Controls>
 
-                {isMinimapOpen && (
-                    <MiniMap nodeColor={nodeColor} nodeStrokeWidth={0} />
-                )}
+                {isMinimapOpen && <MiniMap nodeColor={nodeColor} nodeStrokeWidth={0} />}
             </ReactFlow>
         </Box>
     );

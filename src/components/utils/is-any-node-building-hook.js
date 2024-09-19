@@ -11,9 +11,7 @@ import { useSelector } from 'react-redux';
 export const useIsAnyNodeBuilding = () => {
     const [iAnyNodeBuild, setAnyNodeBuilding] = useState(false);
 
-    const treeModel = useSelector(
-        (state) => state.networkModificationTreeModel
-    );
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     useEffect(() => {
         setAnyNodeBuilding(treeModel.isAnyNodeBuilding);

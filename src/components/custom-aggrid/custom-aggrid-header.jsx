@@ -7,24 +7,11 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
-import {
-    Autocomplete,
-    Badge,
-    debounce,
-    Grid,
-    IconButton,
-    MenuItem,
-    Popover,
-    Select,
-    TextField,
-} from '@mui/material';
+import { Autocomplete, Badge, debounce, Grid, IconButton, MenuItem, Popover, Select, TextField } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SortWay } from '../../hooks/use-aggrid-sort';
-import {
-    FILTER_TEXT_COMPARATORS,
-    FILTER_DATA_TYPES,
-} from './custom-aggrid-header.type';
+import { FILTER_TEXT_COMPARATORS, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
 import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
@@ -46,10 +33,9 @@ const styles = {
         textOverflow: 'ellipsis',
     },
     noArrows: {
-        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button':
-            {
-                display: 'none',
-            },
+        '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
+            display: 'none',
+        },
         '& input[type=number]': {
             MozAppearance: 'textfield',
         },
@@ -83,11 +69,8 @@ const CustomHeaderComponent = ({
     const { translate } = useLocalizedCountries();
 
     const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
-    const isAutoCompleteFilter =
-        filterDataType === FILTER_DATA_TYPES.TEXT &&
-        !!customFilterOptions?.length;
-    const isNumberInput =
-        filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
+    const isAutoCompleteFilter = filterDataType === FILTER_DATA_TYPES.TEXT && !!customFilterOptions?.length;
+    const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const columnSort = sortConfig?.find((value) => value.colId === field);
     const isColumnSorted = !!columnSort;
 
@@ -95,16 +78,13 @@ const CustomHeaderComponent = ({
     Filter dataType should be defined and
      filter is an autocomplete (have options) or filter have comparators */
     const shouldActivateFilter =
-        isFilterable &&
-        filterDataType &&
-        (isAutoCompleteFilter || !!filterComparators.length || isBooleanFilter);
+        isFilterable && filterDataType && (isAutoCompleteFilter || !!filterComparators.length || isBooleanFilter);
 
     const intl = useIntl();
 
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
-    const [selectedFilterComparator, setSelectedFilterComparator] =
-        useState('');
+    const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState(undefined);
 
     const shouldDisplayFilterIcon =
@@ -205,9 +185,7 @@ const CustomHeaderComponent = ({
         if (!filterSelector?.length) {
             setSelectedFilterData(undefined);
         } else {
-            const filterObject = filterSelector?.find(
-                (filter) => filter.column === field
-            );
+            const filterObject = filterSelector?.find((filter) => filter.column === field);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
                 setSelectedFilterComparator(filterObject.type);
@@ -279,13 +257,9 @@ const CustomHeaderComponent = ({
                                     <Grid item>
                                         <IconButton>
                                             {columnSort.sort === SortWay.ASC ? (
-                                                <ArrowUpward
-                                                    sx={styles.iconSize}
-                                                />
+                                                <ArrowUpward sx={styles.iconSize} />
                                             ) : (
-                                                <ArrowDownward
-                                                    sx={styles.iconSize}
-                                                />
+                                                <ArrowDownward sx={styles.iconSize} />
                                             )}
                                         </IconButton>
                                     </Grid>
@@ -302,17 +276,10 @@ const CustomHeaderComponent = ({
                         >
                             {shouldDisplayFilterIcon && (
                                 <Grid item>
-                                    <IconButton
-                                        size={'small'}
-                                        onClick={handleShowFilter}
-                                    >
+                                    <IconButton size={'small'} onClick={handleShowFilter}>
                                         <Badge
                                             color="secondary"
-                                            variant={
-                                                selectedFilterData?.length
-                                                    ? 'dot'
-                                                    : null
-                                            }
+                                            variant={selectedFilterData?.length ? 'dot' : null}
                                             invisible={!selectedFilterData}
                                         >
                                             <FilterAlt sx={styles.iconSize} />
@@ -339,9 +306,7 @@ const CustomHeaderComponent = ({
                         horizontal: 'left',
                     }}
                     PaperProps={{
-                        sx: styles[
-                            isAutoCompleteFilter ? 'autoCompleteInput' : 'input'
-                        ],
+                        sx: styles[isAutoCompleteFilter ? 'autoCompleteInput' : 'input'],
                     }}
                 >
                     {isAutoCompleteFilter ? (
@@ -373,12 +338,7 @@ const CustomHeaderComponent = ({
                             onChange={handleSelectedFilterDataChange}
                         />
                     ) : (
-                        <Grid
-                            container
-                            direction={'column'}
-                            gap={0.8}
-                            sx={{ padding: '8px' }}
-                        >
+                        <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
                             <Select
                                 value={selectedFilterComparator}
                                 onChange={handleFilterComparatorChange}
@@ -387,10 +347,7 @@ const CustomHeaderComponent = ({
                                 sx={styles.input}
                             >
                                 {filterComparators.map((filterComparator) => (
-                                    <MenuItem
-                                        key={filterComparator}
-                                        value={filterComparator}
-                                    >
+                                    <MenuItem key={filterComparator} value={filterComparator}>
                                         {intl.formatMessage({
                                             id: `filter.${filterComparator}`,
                                         })}
@@ -412,14 +369,9 @@ const CustomHeaderComponent = ({
                                         id: 'filter.filterOoo',
                                     })}
                                     inputProps={{
-                                        type: isNumberInput
-                                            ? FILTER_DATA_TYPES.NUMBER
-                                            : FILTER_DATA_TYPES.TEXT,
+                                        type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
                                     }}
-                                    sx={mergeSx(
-                                        styles.input,
-                                        isNumberInput && styles.noArrows
-                                    )}
+                                    sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
                                 />
                             )}
                         </Grid>
@@ -446,11 +398,7 @@ CustomHeaderComponent.propTypes = {
     }),
     isFilterable: PropTypes.bool,
     filterParams: PropTypes.shape({
-        filterDataType: PropTypes.oneOf([
-            FILTER_DATA_TYPES.TEXT,
-            FILTER_DATA_TYPES.NUMBER,
-            FILTER_DATA_TYPES.BOOLEAN,
-        ]),
+        filterDataType: PropTypes.oneOf([FILTER_DATA_TYPES.TEXT, FILTER_DATA_TYPES.NUMBER, FILTER_DATA_TYPES.BOOLEAN]),
         filterComparators: PropTypes.arrayOf(PropTypes.string),
         debounceMs: PropTypes.number,
         updateFilter: PropTypes.func,

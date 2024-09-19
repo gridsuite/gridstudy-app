@@ -1,9 +1,9 @@
-
 # How to add plugins
 
 Add a plugin component or object in the corresponding group represented as folders.
 
 plugins/myPluginGroup/myNewPlugin.js
+
 ```js
 const MyNewPlugin = {
     ...
@@ -12,6 +12,7 @@ export default MyNewPlugin;
 ```
 
 Edit index.js to export your new plugin in the corresponding group
+
 ```js
 import MyNewPlugin from './myPluginGroup/myNewPlugin';
 ...
@@ -24,6 +25,7 @@ export const MyPluginGroupPlugins = [
 ```
 
 Defining and adding a group a group of plugins needs to add some code in the target component
+
 ```js
 // Plugins
 import { MyPluginGroupPlugins } from '../plugins';
@@ -47,7 +49,7 @@ const MyPluggableComponent = () => {
 
 Add your private translations to the following directory to complete or overwrite existing translations
 
-* src/plugins/translations
+-   src/plugins/translations
 
 import your file and export an object messages_plugins for the translation in french or english
 in src/plugins/translations/index.js

@@ -62,12 +62,7 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
                     })
                 )
                 .min(1),
-            [FREQUENCY_RESERVE]: yup
-                .number()
-                .nullable()
-                .min(0)
-                .max(100)
-                .required(),
+            [FREQUENCY_RESERVE]: yup.number().nullable().min(0).max(100).required(),
         })
     ),
 });
@@ -75,11 +70,7 @@ const getGeneratorsFrequencyReserveSchema = (id) => ({
 const getSubstationsGeneratorsOrderingSchema = (id) => ({
     [id]: yup.array().of(
         yup.object().shape({
-            [SUBSTATION_IDS]: yup
-                .array()
-                .of(yup.string().required())
-                .min(1)
-                .required(),
+            [SUBSTATION_IDS]: yup.array().of(yup.string().required()).min(1).required(),
         })
     ),
 });
@@ -88,18 +79,11 @@ const formSchema = yup
     .object()
     .shape({
         [LOSS_COEFFICIENT]: yup.number().nullable().min(0).max(100).required(),
-        [DEFAULT_OUTAGE_RATE]: yup
-            .number()
-            .nullable()
-            .min(0)
-            .max(100)
-            .required(),
+        [DEFAULT_OUTAGE_RATE]: yup.number().nullable().min(0).max(100).required(),
         ...getGeneratorsFiltersSchema(GENERATORS_WITHOUT_OUTAGE),
         ...getGeneratorsFiltersSchema(GENERATORS_WITH_FIXED_ACTIVE_POWER),
         ...getGeneratorsFrequencyReserveSchema(GENERATORS_FREQUENCY_RESERVES),
-        ...getSubstationsGeneratorsOrderingSchema(
-            SUBSTATIONS_GENERATORS_ORDERING
-        ),
+        ...getSubstationsGeneratorsOrderingSchema(SUBSTATIONS_GENERATORS_ORDERING),
     })
     .required();
 
@@ -127,14 +111,9 @@ const GenerationDispatchDialog = ({
                 [LOSS_COEFFICIENT]: generation.lossCoefficient,
                 [DEFAULT_OUTAGE_RATE]: generation.defaultOutageRate,
                 [GENERATORS_WITHOUT_OUTAGE]: generation.generatorsWithoutOutage,
-                [GENERATORS_WITH_FIXED_ACTIVE_POWER]:
-                    generation.generatorsWithFixedSupply,
-                [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(
-                    generation.generatorsFrequencyReserve
-                ),
-                [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(
-                    generation.substationsGeneratorsOrdering
-                ),
+                [GENERATORS_WITH_FIXED_ACTIVE_POWER]: generation.generatorsWithFixedSupply,
+                [GENERATORS_FREQUENCY_RESERVES]: addSelectedFieldToRows(generation.generatorsFrequencyReserve),
+                [SUBSTATIONS_GENERATORS_ORDERING]: addSelectedFieldToRows(generation.substationsGeneratorsOrdering),
             });
         },
         [reset]
@@ -174,18 +153,12 @@ const GenerationDispatchDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
     return (
-        <CustomFormProvider
-            validationSchema={formSchema}
-            removeOptional={true}
-            {...formMethods}
-        >
+        <CustomFormProvider validationSchema={formSchema} removeOptional={true} {...formMethods}>
             <ModificationDialog
                 fullWidth
                 onClear={clear}
@@ -194,15 +167,10 @@ const GenerationDispatchDialog = ({
                 maxWidth={'md'}
                 titleId="GenerationDispatch"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <GenerationDispatchForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
+                <GenerationDispatchForm currentNode={currentNode} studyUuid={studyUuid} />
             </ModificationDialog>
         </CustomFormProvider>
     );

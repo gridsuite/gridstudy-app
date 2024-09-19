@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { ReduxState } from '../redux/reducer.type';
+import { AppState } from '../redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
 
@@ -15,43 +15,34 @@ import RunningStatus from 'components/utils/running-status';
  * @returns the number of computation results accessible.
  */
 export const useComputationResultsCount = () => {
-    const loadFlowStatus = useSelector(
-        (state: ReduxState) => state.computingStatus[ComputingType.LOAD_FLOW]
-    );
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     const sensitivityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
     );
 
     const nonEvacuateEnergyAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const oneBusallBusesShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const allBusesShortCircuitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
     const voltageInitStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
+        (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
@@ -59,28 +50,19 @@ export const useComputationResultsCount = () => {
     // TODO FIX : separate technical errors from computation errors
     // see running-status.ts for more details
 
-    const loadflowResultPresent =
-        loadFlowStatus === RunningStatus.SUCCEED ||
-        loadFlowStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+    const loadflowResultPresent = loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     const saResutPresent =
-        securityAnalysisStatus === RunningStatus.SUCCEED ||
-        securityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
-    const sensiResultPresent =
-        sensitivityAnalysisStatus === RunningStatus.SUCCEED;
-    const nonEvacuatedEnergyResultPresent =
-        nonEvacuateEnergyAnalysisStatus === RunningStatus.SUCCEED;
-    const allBusesshortCircuitResultPresent =
-        allBusesShortCircuitStatus === RunningStatus.SUCCEED;
+        securityAnalysisStatus === RunningStatus.SUCCEED || securityAnalysisStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+    const sensiResultPresent = sensitivityAnalysisStatus === RunningStatus.SUCCEED;
+    const nonEvacuatedEnergyResultPresent = nonEvacuateEnergyAnalysisStatus === RunningStatus.SUCCEED;
+    const allBusesshortCircuitResultPresent = allBusesShortCircuitStatus === RunningStatus.SUCCEED;
 
-    const oneBusShortCircuitResultPresent =
-        oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED;
+    const oneBusShortCircuitResultPresent = oneBusallBusesShortCircuitStatus === RunningStatus.SUCCEED;
     const voltageInitResultPresent =
-        voltageInitStatus === RunningStatus.SUCCEED ||
-        voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+        voltageInitStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     const dynamicSimulationResultPresent =
-        dynamicSimulationStatus === RunningStatus.SUCCEED ||
-        dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+        dynamicSimulationStatus === RunningStatus.SUCCEED || dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowResultPresent,

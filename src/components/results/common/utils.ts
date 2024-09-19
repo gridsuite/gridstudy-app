@@ -9,10 +9,7 @@ import { NA_Value } from '../../spreadsheet/utils/cell-renderers';
 
 export const PERMANENT_LIMIT_NAME = 'permanent';
 
-export const translateLimitNameBackToFront = (
-    limitName: string | null | undefined,
-    intl: IntlShape
-) => {
+export const translateLimitNameBackToFront = (limitName: string | null | undefined, intl: IntlShape) => {
     switch (limitName) {
         case PERMANENT_LIMIT_NAME:
             return intl.formatMessage({ id: 'PermanentLimitName' });
@@ -23,10 +20,7 @@ export const translateLimitNameBackToFront = (
     }
 };
 
-export const translateLimitNameFrontToBack = (
-    limitName: string,
-    intl: IntlShape
-) => {
+export const translateLimitNameFrontToBack = (limitName: string, intl: IntlShape) => {
     switch (limitName) {
         case intl.formatMessage({ id: 'PermanentLimitName' }):
             return PERMANENT_LIMIT_NAME;

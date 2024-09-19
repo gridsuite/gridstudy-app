@@ -55,8 +55,6 @@ export const makeComponentFor = (
     propertyDefinition: EventPropertyDefinition | undefined,
     propertyValue: any
 ) => {
-    const render = propertyDefinition
-        ? DEFAULT_PRIMITIVE_RENDER[propertyDefinition?.type]
-        : undefined;
+    const render = propertyDefinition ? DEFAULT_PRIMITIVE_RENDER[propertyDefinition?.type] : undefined;
     return render && render(propertyName, propertyDefinition, propertyValue);
 };

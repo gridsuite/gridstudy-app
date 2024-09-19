@@ -15,17 +15,8 @@ import {
     SubjectIdRendererType,
 } from './security-analysis.type';
 import { IntlShape } from 'react-intl';
-import {
-    ColDef,
-    PostSortRowsParams,
-    ValueFormatterParams,
-    ValueGetterParams,
-} from 'ag-grid-community';
-import {
-    ContingencyCellRenderer,
-    convertDuration,
-    formatNAValue,
-} from 'components/spreadsheet/utils/cell-renderers';
+import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
+import { ContingencyCellRenderer, convertDuration, formatNAValue } from 'components/spreadsheet/utils/cell-renderers';
 import {
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -33,25 +24,14 @@ import {
     FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
-import {
-    FilterEnumsType,
-    FilterPropsType,
-} from '../../../hooks/use-aggrid-row-filter';
+import { FilterEnumsType, FilterPropsType } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import {
-    translateLimitNameFrontToBack,
-    translateLimitNameBackToFront,
-} from '../common/utils';
-import {
-    SECURITY_ANALYSIS_RESULT_N,
-    SECURITY_ANALYSIS_RESULT_N_K,
-} from 'utils/store-filter-fields';
+import { translateLimitNameFrontToBack, translateLimitNameBackToFront } from '../common/utils';
+import { SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType, {
-    ComputingType,
-} from '../../computing-status/computing-type';
+import computingType, { ComputingType } from '../../computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 
@@ -64,109 +44,79 @@ const contingencyGetterValues = (params: ValueGetterParams) => {
     }
 };
 
-export const flattenNmKResultsContingencies = (
-    intl: IntlShape,
-    result: ConstraintsFromContingencyItem[] = []
-) => {
+export const flattenNmKResultsContingencies = (intl: IntlShape, result: ConstraintsFromContingencyItem[] = []) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
-    result?.forEach(
-        ({
-            subjectLimitViolations = [],
-            contingency,
-        }: ConstraintsFromContingencyItem) => {
-            const { contingencyId, status, elements = [] } = contingency || {};
+    result?.forEach(({ subjectLimitViolations = [], contingency }: ConstraintsFromContingencyItem) => {
+        const { contingencyId, status, elements = [] } = contingency || {};
+        rows.push({
+            contingencyId,
+            contingencyEquipmentsIds: elements.map((element) => element.id),
+            status: status
+                ? intl.formatMessage({
+                      id: status,
+                  })
+                : '',
+            violationCount: subjectLimitViolations.length,
+        });
+        subjectLimitViolations?.forEach((constraint: Constraint) => {
+            const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
+
             rows.push({
-                contingencyId,
-                contingencyEquipmentsIds: elements.map((element) => element.id),
-                status: status
+                subjectId,
+                limitType: limitViolation.limitType
                     ? intl.formatMessage({
-                          id: status,
+                          id: limitViolation.limitType,
                       })
                     : '',
-                violationCount: subjectLimitViolations.length,
+                limit: limitViolation.limit,
+                value: limitViolation.value,
+                loading: limitViolation.loading,
+                limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
+                side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
+                linkedElementId: contingencyId,
+                // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                acceptableDuration:
+                    limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
             });
-            subjectLimitViolations?.forEach((constraint: Constraint) => {
-                const { limitViolation = {} as LimitViolation, subjectId } =
-                    constraint || {};
-
-                rows.push({
-                    subjectId,
-                    limitType: limitViolation.limitType
-                        ? intl.formatMessage({
-                              id: limitViolation.limitType,
-                          })
-                        : '',
-                    limit: limitViolation.limit,
-                    value: limitViolation.value,
-                    loading: limitViolation.loading,
-                    limitName: translateLimitNameBackToFront(
-                        limitViolation.limitName,
-                        intl
-                    ),
-                    side: limitViolation.side
-                        ? intl.formatMessage({ id: limitViolation.side })
-                        : '',
-                    linkedElementId: contingencyId,
-                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                    acceptableDuration:
-                        limitViolation?.acceptableDuration === MAX_INT32
-                            ? null
-                            : limitViolation?.acceptableDuration,
-                });
-            });
-        }
-    );
+        });
+    });
 
     return rows;
 };
 
-export const flattenNmKResultsConstraints = (
-    intl: IntlShape,
-    result: ContingenciesFromConstraintItem[] = []
-) => {
+export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] = []) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
     result?.forEach(({ contingencies = [], subjectId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
             rows.push({ subjectId });
 
-            contingencies.forEach(
-                ({ contingency = {}, limitViolation = {} }) => {
-                    rows.push({
-                        contingencyId: contingency.contingencyId,
-                        contingencyEquipmentsIds: contingency.elements?.map(
-                            (element) => element.id
-                        ),
-                        status: contingency.status
-                            ? intl.formatMessage({
-                                  id: contingency.status,
-                              })
-                            : '',
-                        limitType: limitViolation.limitType
-                            ? intl.formatMessage({
-                                  id: limitViolation.limitType,
-                              })
-                            : '',
-                        limitName: translateLimitNameBackToFront(
-                            limitViolation.limitName,
-                            intl
-                        ),
-                        side: limitViolation.side
-                            ? intl.formatMessage({ id: limitViolation.side })
-                            : '',
-                        // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
-                        acceptableDuration:
-                            limitViolation?.acceptableDuration === MAX_INT32
-                                ? null
-                                : limitViolation?.acceptableDuration,
-                        limit: limitViolation.limit,
-                        value: limitViolation.value,
-                        loading: limitViolation.loading,
-                        linkedElementId: subjectId,
-                    });
-                }
-            );
+            contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
+                rows.push({
+                    contingencyId: contingency.contingencyId,
+                    contingencyEquipmentsIds: contingency.elements?.map((element) => element.id),
+                    status: contingency.status
+                        ? intl.formatMessage({
+                              id: contingency.status,
+                          })
+                        : '',
+                    limitType: limitViolation.limitType
+                        ? intl.formatMessage({
+                              id: limitViolation.limitType,
+                          })
+                        : '',
+                    limitName: translateLimitNameBackToFront(limitViolation.limitName, intl),
+                    side: limitViolation.side ? intl.formatMessage({ id: limitViolation.side }) : '',
+                    // TODO: Remove this check after fixing the acceptableDuration issue on the Powsybl side
+                    acceptableDuration:
+                        limitViolation?.acceptableDuration === MAX_INT32 ? null : limitViolation?.acceptableDuration,
+                    limit: limitViolation.limit,
+                    value: limitViolation.value,
+                    loading: limitViolation.loading,
+                    linkedElementId: subjectId,
+                });
+            });
         }
     });
 
@@ -186,10 +136,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         filterProps,
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [
-                FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                FILTER_TEXT_COMPARATORS.CONTAINS,
-            ],
+            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
         },
     }),
 
@@ -207,8 +154,7 @@ export const securityAnalysisTableNColumnsDefinition = (
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
         field: 'limitName',
-        valueFormatter: (params: ValueFormatterParams) =>
-            formatNAValue(params.value, intl),
+        valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         sortProps,
         filterProps,
         filterParams: {
@@ -261,8 +207,7 @@ export const securityAnalysisTableNColumnsDefinition = (
             id: 'Overload',
         }),
         field: 'acceptableDuration',
-        valueFormatter: (value: any) =>
-            convertDuration(value.data.acceptableDuration),
+        valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
         sortProps,
         filterProps,
         filterParams: {
@@ -301,10 +246,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -325,10 +267,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -344,8 +283,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            valueFormatter: (params: ValueFormatterParams) =>
-                formatNAValue(params.value, intl),
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
             sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
@@ -394,8 +332,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
+            valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
             sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
@@ -439,10 +376,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -454,10 +388,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             filterProps,
             filterParams: {
                 filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [
-                    FILTER_TEXT_COMPARATORS.STARTS_WITH,
-                    FILTER_TEXT_COMPARATORS.CONTAINS,
-                ],
+                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -483,8 +414,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
             field: 'limitName',
-            valueFormatter: (params: ValueFormatterParams) =>
-                formatNAValue(params.value, intl),
+            valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
             sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
@@ -533,8 +463,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                 id: 'Overload',
             }),
             field: 'acceptableDuration',
-            valueFormatter: (value: ValueFormatterParams) =>
-                convertDuration(value.data.acceptableDuration),
+            valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
             sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
@@ -563,9 +492,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
 };
 
 export const handlePostSortRows = (params: PostSortRowsParams) => {
-    const isFromContingency = !params.nodes.find(
-        (node) => Object.keys(node.data).length === 1
-    );
+    const isFromContingency = !params.nodes.find((node) => Object.keys(node.data).length === 1);
 
     const agGridRows = params.nodes;
     const idField = isFromContingency ? 'contingencyId' : 'subjectId';
@@ -622,13 +549,10 @@ export const useFetchFiltersEnums = () => {
             side: null,
         },
     });
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const securityAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
     );
 
     useEffect(() => {
@@ -645,12 +569,7 @@ export const useFetchFiltersEnums = () => {
         ];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(
-                studyUuid,
-                currentNode.id,
-                computingType.SECURITY_ANALYSIS,
-                filterType
-            )
+            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.SECURITY_ANALYSIS, filterType)
         );
 
         setLoading(true);
@@ -682,14 +601,12 @@ export const useFetchFiltersEnums = () => {
             .finally(() => {
                 setLoading(false);
             });
-    }, [securityAnalysisStatus, studyUuid, currentNode.id]);
+    }, [securityAnalysisStatus, studyUuid, currentNode?.id]);
 
     return { loading, result, error };
 };
 
-export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = [
-    'securityAnalysisResult',
-];
+export const SECURITY_ANALYSIS_RESULT_INVALIDATIONS = ['securityAnalysisResult'];
 
 export const FROM_COLUMN_TO_FIELD_N: Record<string, string> = {
     subjectId: 'subjectLimitViolation.subjectId',
@@ -716,19 +633,18 @@ export const FROM_COLUMN_TO_FIELD_NMK_CONTINGENCIES: Record<string, string> = {
     loading: 'contingencyLimitViolations.loading',
 };
 
-export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> =
-    {
-        subjectId: 'subjectId',
-        contingencyId: 'contingencyLimitViolations.contingency.contingencyId',
-        status: 'contingencyLimitViolations.contingency.status',
-        limitType: 'contingencyLimitViolations.limitType',
-        limitName: 'contingencyLimitViolations.limitName',
-        side: 'contingencyLimitViolations.side',
-        acceptableDuration: 'contingencyLimitViolations.acceptableDuration',
-        limit: 'contingencyLimitViolations.limit',
-        value: 'contingencyLimitViolations.value',
-        loading: 'contingencyLimitViolations.loading',
-    };
+export const FROM_COLUMN_TO_FIELD_NMK_LIMIT_VIOLATIONS: Record<string, string> = {
+    subjectId: 'subjectId',
+    contingencyId: 'contingencyLimitViolations.contingency.contingencyId',
+    status: 'contingencyLimitViolations.contingency.status',
+    limitType: 'contingencyLimitViolations.limitType',
+    limitName: 'contingencyLimitViolations.limitName',
+    side: 'contingencyLimitViolations.side',
+    acceptableDuration: 'contingencyLimitViolations.acceptableDuration',
+    limit: 'contingencyLimitViolations.limit',
+    value: 'contingencyLimitViolations.value',
+    loading: 'contingencyLimitViolations.loading',
+};
 
 export enum NMK_TYPE {
     CONSTRAINTS_FROM_CONTINGENCIES = 'constraints-from-contingencies',
@@ -752,19 +668,13 @@ export const mappingColumnToField = (resultType: RESULT_TYPE) => {
     }
 };
 
-export const convertFilterValues = (
-    intl: IntlShape,
-    filterSelector: FilterSelectorType[]
-) => {
+export const convertFilterValues = (intl: IntlShape, filterSelector: FilterSelectorType[]) => {
     return filterSelector.map((filter) => {
         switch (filter.column) {
             case 'limitName':
                 return {
                     ...filter,
-                    value: translateLimitNameFrontToBack(
-                        filter.value as string,
-                        intl
-                    ),
+                    value: translateLimitNameFrontToBack(filter.value as string, intl),
                 };
             default:
                 return filter;
@@ -777,8 +687,7 @@ export const PAGE_OPTIONS = [25, 100, 500, 1000];
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 
 export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
-    return index === 0 ||
-        (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
+    return index === 0 || (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
         ? 'subjectId'
         : 'contingencyId';
 };

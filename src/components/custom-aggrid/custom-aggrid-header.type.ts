@@ -4,10 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import {
-    FilterEnumsType,
-    FilterPropsType,
-} from '../../hooks/use-aggrid-row-filter';
+import { FilterEnumsType, FilterPropsType } from '../../hooks/use-aggrid-row-filter';
 import { ColDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
@@ -62,8 +59,5 @@ export type FilterSelectorType = FilterDataType & {
 export type FilterStorePropsType = {
     filterType: string;
     filterTab: string;
-    filterStoreAction: (
-        filterTab: string,
-        filter: FilterSelectorType[]
-    ) => AnyAction;
+    filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };

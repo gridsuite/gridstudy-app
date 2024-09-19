@@ -29,13 +29,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchEquipmentsIds(
-                studyUuid,
-                currentNode?.id,
-                undefined,
-                EQUIPMENT_TYPES.LINE,
-                true
-            )
+            fetchEquipmentsIds(studyUuid, currentNode?.id, undefined, EQUIPMENT_TYPES.LINE, true)
                 .then((values) => {
                     setLinesOptions(values.sort());
                 })
@@ -49,18 +43,10 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     }, [studyUuid, currentNode?.id, watchLineToAttachOrSplit, snackError]);
 
     useEffect(() => {
-        const lineToAttachOrSplit = linesOptions.find(
-            (l) => l?.id === watchLineToAttachOrSplit
-        );
+        const lineToAttachOrSplit = linesOptions.find((l) => l?.id === watchLineToAttachOrSplit);
 
-        setLine1Substation(
-            lineToAttachOrSplit?.voltageLevelName1 ??
-                lineToAttachOrSplit?.voltageLevelId1
-        );
-        setLine2Substation(
-            lineToAttachOrSplit?.voltageLevelName2 ??
-                lineToAttachOrSplit?.voltageLevelId2
-        );
+        setLine1Substation(lineToAttachOrSplit?.voltageLevelName1 ?? lineToAttachOrSplit?.voltageLevelId1);
+        setLine2Substation(lineToAttachOrSplit?.voltageLevelName2 ?? lineToAttachOrSplit?.voltageLevelId2);
     }, [linesOptions, watchLineToAttachOrSplit]);
 
     const lineToAttachOrSplitField = (
@@ -76,9 +62,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
             size={'small'}
         />
     );
-    const percentageArea = (
-        <PercentageArea upperLeftText={'Line1'} upperRightText={'Line2'} />
-    );
+    const percentageArea = <PercentageArea upperLeftText={'Line1'} upperRightText={'Line2'} />;
     return (
         <>
             <Grid container spacing={2} alignItems="center">

@@ -10,9 +10,7 @@ import { useIntl } from 'react-intl';
 import { VoltageTableProps } from './short-circuit-parameters.type';
 import { INITIAL_VOLTAGE } from '../../../utils/constants';
 
-const VoltageTable: FunctionComponent<VoltageTableProps> = ({
-    voltageProfileMode,
-}) => {
+const VoltageTable: FunctionComponent<VoltageTableProps> = ({ voltageProfileMode }) => {
     const intl = useIntl();
 
     const rows = useMemo(

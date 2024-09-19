@@ -13,11 +13,7 @@ import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import {
-    CREATIONS_TABLE,
-    REACTIVE_CAPABILITY_CURVE,
-    TYPE,
-} from 'components/utils/field-constants';
+import { CREATIONS_TABLE, REACTIVE_CAPABILITY_CURVE, TYPE } from 'components/utils/field-constants';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createTabularCreation } from 'services/study/network-modifications';
 import { FetchStatus } from 'services/utils';
@@ -35,10 +31,7 @@ const formSchema = yup
     .object()
     .shape({
         [TYPE]: yup.string().nullable().required(),
-        [CREATIONS_TABLE]: yup
-            .array()
-            .min(1, 'CreationsRequiredTabError')
-            .required(),
+        [CREATIONS_TABLE]: yup.array().min(1, 'CreationsRequiredTabError').required(),
     })
     .required();
 
@@ -56,14 +49,7 @@ const emptyFormData = {
  * @param dialogProps props that are forwarded to the generic ModificationDialog component
  * @param editDataFetchStatus indicates the status of fetching EditData
  */
-const TabularCreationDialog = ({
-    studyUuid,
-    currentNode,
-    editData,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+const TabularCreationDialog = ({ studyUuid, currentNode, editData, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode?.id;
 
     const intl = useIntl();
@@ -84,16 +70,11 @@ const TabularCreationDialog = ({
 
     useEffect(() => {
         if (editData) {
-            const equipmentType = getEquipmentTypeFromCreationType(
-                editData?.creationType
-            );
+            const equipmentType = getEquipmentTypeFromCreationType(editData?.creationType);
             const creations = editData?.creations.map((creat) => {
                 const creation = {};
                 Object.keys(formatModification(creat)).forEach((key) => {
-                    const entry = convertCreationFieldFromBackToFront(
-                        key,
-                        creat[key]
-                    );
+                    const entry = convertCreationFieldFromBackToFront(key, creat[key]);
                     creation[entry.key] = entry.value;
                 });
                 return creation;
@@ -113,10 +94,7 @@ const TabularCreationDialog = ({
                     type: creationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    const entry = convertCreationFieldFromFrontToBack(
-                        key,
-                        row[key]
-                    );
+                    const entry = convertCreationFieldFromFrontToBack(key, row[key]);
                     creation[entry.key] = entry.value;
                 });
                 // For now, we do not manage reactive limits by diagram
@@ -148,9 +126,7 @@ const TabularCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -165,9 +141,7 @@ const TabularCreationDialog = ({
                 aria-labelledby="dialog-tabular-creation"
                 titleId="TabularCreation"
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <TabularCreationForm />

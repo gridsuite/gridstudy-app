@@ -28,11 +28,7 @@ export const ExportButton: FunctionComponent<ExportButtonProps> = ({
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <FormattedMessage id="MuiVirtualizedTable/exportCSV" />
             <Box sx={{ position: 'relative' }}>
-                <IconButton
-                    disabled={disabled}
-                    aria-label="exportCSVButton"
-                    onClick={onClick}
-                >
+                <IconButton disabled={disabled} aria-label="exportCSVButton" onClick={onClick}>
                     {isDownloadSuccessful ? <CheckIcon /> : <GetAppIcon />}
                 </IconButton>
                 {isCsvLoading && (

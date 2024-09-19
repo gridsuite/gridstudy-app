@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CHARACTERISTICS,
-    CONNECTIVITY_1,
-    CONNECTIVITY_2,
-} from 'components/utils/field-constants';
+import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
@@ -22,8 +18,8 @@ import {
 
 const twoWindingsTransformerValidationSchema = () =>
     getCharacteristicsValidationSchema(false, {
-        ...getConnectivityWithPositionValidationSchema(CONNECTIVITY_1),
-        ...getConnectivityWithPositionValidationSchema(CONNECTIVITY_2),
+        ...getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_1),
+        ...getConnectivityWithPositionValidationSchema(false, CONNECTIVITY_2),
     });
 
 export const getTwoWindingsTransformerValidationSchema = () => {
@@ -32,8 +28,8 @@ export const getTwoWindingsTransformerValidationSchema = () => {
 
 const twoWindingsTransformerEmptyFormData = () =>
     getCharacteristicsEmptyFormData({
-        ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_1),
-        ...getConnectivityWithPositionEmptyFormData(CONNECTIVITY_2),
+        ...getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_1),
+        ...getConnectivityWithPositionEmptyFormData(false, CONNECTIVITY_2),
     });
 
 export const getTwoWindingsTransformerEmptyFormData = () => {

@@ -8,13 +8,7 @@
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { ExportButton } from 'components/utils/export-button';
 import { UUID } from 'crypto';
-import {
-    FunctionComponent,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { downloadSecurityAnalysisResultZippedCsv } from 'services/study/security-analysis';
 import { downloadZipFile } from 'services/utils';
@@ -29,9 +23,7 @@ interface SecurityAnalysisExportButtonProps {
     disabled?: boolean;
 }
 
-export const SecurityAnalysisExportButton: FunctionComponent<
-    SecurityAnalysisExportButtonProps
-> = (props) => {
+export const SecurityAnalysisExportButton: FunctionComponent<SecurityAnalysisExportButtonProps> = (props) => {
     const { studyUuid, nodeUuid, csvHeaders, disabled, resultType } = props;
     const { snackError } = useSnackMessage();
 
@@ -97,15 +89,7 @@ export const SecurityAnalysisExportButton: FunctionComponent<
                 });
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [
-        resultType,
-        csvHeaders,
-        enumValueTranslations,
-        studyUuid,
-        nodeUuid,
-        snackError,
-        intl,
-    ]);
+    }, [resultType, csvHeaders, enumValueTranslations, studyUuid, nodeUuid, snackError, intl]);
 
     return (
         <ExportButton

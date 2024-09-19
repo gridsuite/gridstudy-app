@@ -6,12 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import React, { useEffect } from 'react';
@@ -58,17 +53,11 @@ export const AskTextDialog = ({ title, value, show, onValidate, onClose }) => {
             <DialogTitle id={'modal-title'}>{title}</DialogTitle>
             <DialogContent>
                 {nameField}
-                {!isNameOK && nameError !== undefined && (
-                    <Alert severity="error">{nameError}</Alert>
-                )}
+                {!isNameOK && nameError !== undefined && <Alert severity="error">{nameError}</Alert>}
             </DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
-                <Button
-                    onClick={handleValidate}
-                    variant={'outlined'}
-                    disabled={!isNameOK}
-                >
+                <Button onClick={handleValidate} variant={'outlined'} disabled={!isNameOK}>
                     {intl.formatMessage({ id: 'validate' })}
                 </Button>
             </DialogActions>

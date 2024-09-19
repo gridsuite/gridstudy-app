@@ -26,13 +26,7 @@ const GridButtons = ({ onAddButton, onDeleteButton, disabled }) => {
     const hasSelectedRow = false;
 
     return (
-        <Grid
-            container
-            item
-            xs
-            spacing={1}
-            sx={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}
-        >
+        <Grid container item xs spacing={1} sx={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
             <Grid item>
                 <Tooltip
                     title={intl.formatMessage({
@@ -41,11 +35,7 @@ const GridButtons = ({ onAddButton, onDeleteButton, disabled }) => {
                     placement="top"
                 >
                     <span>
-                        <IconButton
-                            color="primary"
-                            onClick={() => handleAddButton()}
-                            disabled={disabled}
-                        >
+                        <IconButton color="primary" onClick={() => handleAddButton()} disabled={disabled}>
                             <AddCircleIcon />
                         </IconButton>
                     </span>

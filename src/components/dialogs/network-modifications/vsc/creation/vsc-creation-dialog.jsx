@@ -6,11 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-    CustomFormProvider,
-    TextInput,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -31,11 +27,7 @@ import {
     R,
 } from '../../../../utils/field-constants';
 import Grid from '@mui/material/Grid';
-import {
-    filledTextField,
-    gridItem,
-    sanitizeString,
-} from '../../../dialogUtils';
+import { filledTextField, gridItem, sanitizeString } from '../../../dialogUtils';
 import VscTabs from '../vsc-tabs';
 import { Box } from '@mui/system';
 import yup from 'components/utils/yup-config';
@@ -94,14 +86,7 @@ export const VSC_CREATION_TABS = {
     CONVERTER_STATION_2: 2,
 };
 
-const VscCreationDialog = ({
-    editData,
-    currentNode,
-    studyUuid,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
@@ -120,34 +105,23 @@ const VscCreationDialog = ({
                 nominalV: hvdcLine.nominalV,
                 r: hvdcLine.r,
                 maxP: hvdcLine.maxP,
-                operatorActivePowerLimitFromSide1ToSide2:
-                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-                operatorActivePowerLimitFromSide2ToSide1:
-                    hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
+                operatorActivePowerLimitFromSide1ToSide2: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
+                operatorActivePowerLimitFromSide2ToSide1: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
                 convertersMode: hvdcLine.convertersMode,
                 activePowerSetpoint: hvdcLine.activePowerSetpoint,
-                angleDroopActivePowerControl:
-                    hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
+                angleDroopActivePowerControl: hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
                 p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
                 droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
             }),
-            ...getConverterStationFromSearchCopy(
-                CONVERTER_STATION_1,
-                hvdcLine.converterStation1
-            ),
-            ...getConverterStationFromSearchCopy(
-                CONVERTER_STATION_2,
-                hvdcLine.converterStation2
-            ),
+            ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
+            ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
             ...copyEquipmentPropertiesForCreation(hvdcLine),
         });
     };
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -160,20 +134,10 @@ const VscCreationDialog = ({
     });
 
     const generatorIdField = (
-        <TextInput
-            name={EQUIPMENT_ID}
-            label={'ID'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const generatorNameField = (
-        <TextInput
-            name={EQUIPMENT_NAME}
-            label={'Name'}
-            formProps={filledTextField}
-        />
-    );
+    const generatorNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const headersAndTabs = (
         <Box
@@ -187,11 +151,7 @@ const VscCreationDialog = ({
                 {gridItem(generatorIdField, 4)}
                 {gridItem(generatorNameField, 4)}
             </Grid>
-            <VscTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-            />
+            <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
     );
 
@@ -203,14 +163,8 @@ const VscCreationDialog = ({
                 [EQUIPMENT_ID]: editData.equipmentId,
                 [EQUIPMENT_NAME]: editData?.equipmentName ?? '',
                 ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, editData),
-                ...getConverterStationFormEditData(
-                    CONVERTER_STATION_1,
-                    editData.converterStation1
-                ),
-                ...getConverterStationFormEditData(
-                    CONVERTER_STATION_2,
-                    editData.converterStation2
-                ),
+                ...getConverterStationFormEditData(CONVERTER_STATION_1, editData.converterStation1),
+                ...getConverterStationFormEditData(CONVERTER_STATION_2, editData.converterStation2),
                 ...getPropertiesFromModification(editData.properties),
             });
         }
@@ -243,12 +197,8 @@ const VscCreationDialog = ({
     const onSubmit = useCallback(
         (hvdcLine) => {
             const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
-            const converterStation1 = getConverterStationCreationData(
-                hvdcLine[CONVERTER_STATION_1]
-            );
-            const converterStation2 = getConverterStationCreationData(
-                hvdcLine[CONVERTER_STATION_2]
-            );
+            const converterStation1 = getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]);
+            const converterStation2 = getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]);
             createVsc(
                 studyUuid,
                 currentNodeUuid,
@@ -297,16 +247,10 @@ const VscCreationDialog = ({
                     },
                 }}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VscCreationForm
-                    tabIndex={tabIndex}
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
+                <VscCreationForm tabIndex={tabIndex} currentNode={currentNode} studyUuid={studyUuid} />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

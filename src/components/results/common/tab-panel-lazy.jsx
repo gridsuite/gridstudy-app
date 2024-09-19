@@ -26,11 +26,7 @@ const TabPanelLazy = (props) => {
     }, [selected, initialized]);
 
     return (
-        <Box
-            style={{ display: selected ? 'inherit' : 'none' }}
-            sx={styles.fullHeight}
-            {...other}
-        >
+        <Box style={{ display: selected ? 'inherit' : 'none' }} sx={styles.fullHeight} {...other}>
             {initialized && children}
         </Box>
     );

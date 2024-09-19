@@ -114,8 +114,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 ...getConnectivityData({
                     busbarSectionId: lineSplit.bbsOrBusId,
                     voltageLevelId:
-                        lineSplit?.existingVoltageLevelId ??
-                        lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
+                        lineSplit?.existingVoltageLevelId ?? lineSplit?.mayNewVoltageLevelInfos?.equipmentId,
                 }),
             };
             const newVoltageLevel = lineSplit?.mayNewVoltageLevelInfos;
@@ -124,8 +123,7 @@ const LineSplitWithVoltageLevelDialog = ({
                     ...formData,
                     [CONNECTIVITY]: {
                         ...formData[CONNECTIVITY],
-                        [VOLTAGE_LEVEL]:
-                            getNewVoltageLevelData(newVoltageLevel),
+                        [VOLTAGE_LEVEL]: getNewVoltageLevelData(newVoltageLevel),
                     },
                 };
             }
@@ -150,10 +148,8 @@ const LineSplitWithVoltageLevelDialog = ({
 
     const onSubmit = useCallback(
         (lineSplit) => {
-            const currentVoltageLevelId =
-                lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
-            const isNewVoltageLevel =
-                newVoltageLevel?.equipmentId === currentVoltageLevelId;
+            const currentVoltageLevelId = lineSplit[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID];
+            const isNewVoltageLevel = newVoltageLevel?.equipmentId === currentVoltageLevelId;
             divideLine(
                 studyUuid,
                 currentNodeUuid,
@@ -183,13 +179,9 @@ const LineSplitWithVoltageLevelDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then(
-                (values) => {
-                    setVoltageLevelOptions(
-                        values.sort((a, b) => a?.id?.localeCompare(b?.id))
-                    );
-                }
-            );
+            fetchVoltageLevelsListInfos(studyUuid, currentNode?.id).then((values) => {
+                setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
+            });
         }
     }, [studyUuid, currentNode?.id]);
 
@@ -234,8 +226,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 // we keep the old voltage level id, so it can be removed for from voltage level options
                 const oldVoltageLevelId = newVoltageLevel?.equipmentId;
 
-                const formattedVoltageLevel =
-                    getNewVoltageLevelData(preparedVoltageLevel);
+                const formattedVoltageLevel = getNewVoltageLevelData(preparedVoltageLevel);
 
                 // we add the new voltage level, (or replace it if it exists). And we remove the old id if it is different (in case we modify the id)
                 const newVoltageLevelOptions = getNewVoltageLevelOptions(
@@ -262,22 +253,15 @@ const LineSplitWithVoltageLevelDialog = ({
     );
 
     const onVoltageLevelChange = useCallback(() => {
-        const currentVoltageLevelId = getValues(
-            `${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`
-        );
-        if (
-            newVoltageLevel &&
-            currentVoltageLevelId !== newVoltageLevel?.equipmentId
-        ) {
+        const currentVoltageLevelId = getValues(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`);
+        if (newVoltageLevel && currentVoltageLevelId !== newVoltageLevel?.equipmentId) {
             setNewVoltageLevel(null);
         }
     }, [getValues, newVoltageLevel]);
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -291,9 +275,7 @@ const LineSplitWithVoltageLevelDialog = ({
                 titleId="LineSplitWithVoltageLevel"
                 subtitle={<LineSplitWithVoltageLevelIllustration />}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
                 <LineSplitWithVoltageLevelForm

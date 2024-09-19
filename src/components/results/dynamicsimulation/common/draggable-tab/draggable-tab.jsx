@@ -12,22 +12,10 @@ import Tab from '@mui/material/Tab';
 const DraggableTab = (props) => {
     const { id, index, value, label, ...others } = props;
     return (
-        <Draggable
-            draggableId={id}
-            index={index}
-            disableInteractiveElementBlocking
-        >
+        <Draggable draggableId={id} index={index} disableInteractiveElementBlocking>
             {(draggableProvided) => (
-                <div
-                    ref={draggableProvided.innerRef}
-                    {...draggableProvided.draggableProps}
-                >
-                    <Tab
-                        value={value}
-                        label={label}
-                        {...others}
-                        {...draggableProvided.dragHandleProps}
-                    />
+                <div ref={draggableProvided.innerRef} {...draggableProvided.draggableProps}>
+                    <Tab value={value} label={label} {...others} {...draggableProvided.dragHandleProps} />
                 </div>
             )}
         </Draggable>

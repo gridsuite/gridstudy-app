@@ -5,18 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    FunctionComponent,
-    useCallback,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
-import {
-    DefaultCellRenderer,
-    BooleanCellRenderer,
-} from '../../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer, BooleanCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
@@ -37,13 +28,7 @@ import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 
-export const ALLOWED_KEYS = [
-    'Escape',
-    'ArrowDown',
-    'ArrowUp',
-    'ArrowLeft',
-    'ArrowRight',
-];
+export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
 export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
@@ -159,6 +144,7 @@ interface VoltageInitModificationProps {
     onClose: CloseFunction;
     onPreviewModeSubmit?: PreviewModeSubmitFunction;
     editDataFetchStatus: FetchStatus;
+    disabledSave: boolean;
     dialogProps: any;
 }
 
@@ -177,13 +163,12 @@ const styles = {
     },
 };
 
-const VoltageInitModificationDialog: FunctionComponent<
-    VoltageInitModificationProps
-> = ({
+const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationProps> = ({
     editData,
     onClose,
     onPreviewModeSubmit,
     editDataFetchStatus,
+    disabledSave,
     dialogProps,
 }) => {
     const intl = useIntl();
@@ -365,19 +350,11 @@ const VoltageInitModificationDialog: FunctionComponent<
             }}
         >
             <Grid container>
-                <Tabs
-                    value={tabIndex}
-                    variant="scrollable"
-                    onChange={(event, newValue) => handleTabChange(newValue)}
-                >
+                <Tabs value={tabIndex} variant="scrollable" onChange={(event, newValue) => handleTabChange(newValue)}>
                     <Tab label={<FormattedMessage id="Generators" />} />
                     <Tab label={<FormattedMessage id="Transformers" />} />
-                    <Tab
-                        label={<FormattedMessage id="StaticVarCompensators" />}
-                    />
-                    <Tab
-                        label={<FormattedMessage id="VscConverterStations" />}
-                    />
+                    <Tab label={<FormattedMessage id="StaticVarCompensators" />} />
+                    <Tab label={<FormattedMessage id="VscConverterStations" />} />
                     <Tab label={<FormattedMessage id="ShuntCompensators" />} />
                     <Tab label={<FormattedMessage id="Buses" />} />
                 </Tabs>
@@ -415,10 +392,7 @@ const VoltageInitModificationDialog: FunctionComponent<
 
     const displayTable = useCallback(
         (currentTab: number) => {
-            const prepareGridData = (
-                currentTab: number,
-                editData: EditData
-            ) => {
+            const prepareGridData = (currentTab: number, editData: EditData) => {
                 let rowData: any[] = [];
                 let columnDefs: any[] = [];
                 let tableName: string = '';
@@ -440,9 +414,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             }
                             rowData.push(row);
                         });
-                    } else if (
-                        currentTab === EquipmentTypeTabs.TRANSFORMER_TAB
-                    ) {
+                    } else if (currentTab === EquipmentTypeTabs.TRANSFORMER_TAB) {
                         columnDefs = transformersColumnDefs;
                         tableName = 'Transformers';
                         editData.transformers.forEach((m: TransformerData) => {
@@ -453,89 +425,71 @@ const VoltageInitModificationDialog: FunctionComponent<
                                 [LEG_SIDE]: undefined,
                             };
                             if (check(m.ratioTapChangerPosition)) {
-                                row[RATIO_TAP_CHANGER_POSITION] =
-                                    m.ratioTapChangerPosition;
+                                row[RATIO_TAP_CHANGER_POSITION] = m.ratioTapChangerPosition;
                             }
                             if (check(m.ratioTapChangerTargetV)) {
-                                row[RATIO_TAP_CHANGER_TARGET_V] =
-                                    m.ratioTapChangerTargetV;
+                                row[RATIO_TAP_CHANGER_TARGET_V] = m.ratioTapChangerTargetV;
                             }
                             if (m.legSide) {
                                 row[LEG_SIDE] = m.legSide;
                             }
                             rowData.push(row);
                         });
-                    } else if (
-                        currentTab ===
-                        EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB
-                    ) {
+                    } else if (currentTab === EquipmentTypeTabs.STATIC_VAR_COMPENSATOR_TAB) {
                         columnDefs = staticVarCompensatorsColumnDefs;
                         tableName = 'StaticVarCompensators';
-                        editData.staticVarCompensators.forEach(
-                            (m: StaticVarCompensatorData) => {
-                                let row: StaticVarCompensatorRowData = {
-                                    ID: m.staticVarCompensatorId,
-                                    [VOLTAGE_SET_POINT]: undefined,
-                                    [REACTIVE_POWER_SET_POINT]: undefined,
-                                };
-                                if (check(m.voltageSetpoint)) {
-                                    row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
-                                }
-                                if (check(m.reactivePowerSetpoint)) {
-                                    row[REACTIVE_POWER_SET_POINT] =
-                                        m.reactivePowerSetpoint;
-                                }
-                                rowData.push(row);
+                        editData.staticVarCompensators.forEach((m: StaticVarCompensatorData) => {
+                            let row: StaticVarCompensatorRowData = {
+                                ID: m.staticVarCompensatorId,
+                                [VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.voltageSetpoint)) {
+                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
-                        );
-                    } else if (
-                        currentTab ===
-                        EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB
-                    ) {
+                            if (check(m.reactivePowerSetpoint)) {
+                                row[REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
+                            }
+                            rowData.push(row);
+                        });
+                    } else if (currentTab === EquipmentTypeTabs.VSC_CONVERTER_STATION_TAB) {
                         columnDefs = vscConverterStationsColumnDefs;
                         tableName = 'VscConverterStations';
-                        editData.vscConverterStations.forEach(
-                            (m: VscConverterStationData) => {
-                                let row: VscConverterStationRowData = {
-                                    ID: m.vscConverterStationId,
-                                    [VOLTAGE_SET_POINT]: undefined,
-                                    [REACTIVE_POWER_SET_POINT]: undefined,
-                                };
-                                if (check(m.voltageSetpoint)) {
-                                    row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
-                                }
-                                if (check(m.reactivePowerSetpoint)) {
-                                    row[REACTIVE_POWER_SET_POINT] =
-                                        m.reactivePowerSetpoint;
-                                }
-                                rowData.push(row);
+                        editData.vscConverterStations.forEach((m: VscConverterStationData) => {
+                            let row: VscConverterStationRowData = {
+                                ID: m.vscConverterStationId,
+                                [VOLTAGE_SET_POINT]: undefined,
+                                [REACTIVE_POWER_SET_POINT]: undefined,
+                            };
+                            if (check(m.voltageSetpoint)) {
+                                row[VOLTAGE_SET_POINT] = m.voltageSetpoint;
                             }
-                        );
-                    } else if (
-                        currentTab === EquipmentTypeTabs.SHUNT_COMPENSATOR_TAB
-                    ) {
+                            if (check(m.reactivePowerSetpoint)) {
+                                row[REACTIVE_POWER_SET_POINT] = m.reactivePowerSetpoint;
+                            }
+                            rowData.push(row);
+                        });
+                    } else if (currentTab === EquipmentTypeTabs.SHUNT_COMPENSATOR_TAB) {
                         columnDefs = shuntCompensatorsColumnDefs;
                         tableName = 'ShuntCompensators';
-                        editData.shuntCompensators.forEach(
-                            (m: ShuntCompensatorData) => {
-                                let row: ShuntCompensatorRowData = {
-                                    ID: m.shuntCompensatorId,
-                                    [SECTION_COUNT]: undefined,
-                                    [CONNECT]: false,
-                                    [TARGET_V]: undefined,
-                                };
-                                if (check(m.sectionCount)) {
-                                    row[SECTION_COUNT] = m.sectionCount;
-                                }
-                                if (m.connect) {
-                                    row[CONNECT] = m.connect;
-                                }
-                                if (check(m.targetV)) {
-                                    row[TARGET_V] = m.targetV;
-                                }
-                                rowData.push(row);
+                        editData.shuntCompensators.forEach((m: ShuntCompensatorData) => {
+                            let row: ShuntCompensatorRowData = {
+                                ID: m.shuntCompensatorId,
+                                [SECTION_COUNT]: undefined,
+                                [CONNECT]: false,
+                                [TARGET_V]: undefined,
+                            };
+                            if (check(m.sectionCount)) {
+                                row[SECTION_COUNT] = m.sectionCount;
                             }
-                        );
+                            if (m.connect) {
+                                row[CONNECT] = m.connect;
+                            }
+                            if (check(m.targetV)) {
+                                row[TARGET_V] = m.targetV;
+                            }
+                            rowData.push(row);
+                        });
                     } else if (currentTab === EquipmentTypeTabs.BUS_TAB) {
                         columnDefs = busColumnDefs;
                         tableName = 'Buses';
@@ -558,10 +512,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                 return { rowData, columnDefs, tableName };
             };
 
-            const { rowData, columnDefs, tableName } = prepareGridData(
-                currentTab,
-                editData
-            );
+            const { rowData, columnDefs, tableName } = prepareGridData(currentTab, editData);
 
             return (
                 <Box sx={styles.container}>
@@ -572,10 +523,7 @@ const VoltageInitModificationDialog: FunctionComponent<
                             columns={columnDefs}
                             tableName={tableName}
                             tableNamePrefix="VoltageInit_"
-                            disabled={
-                                rowData.length === 0 ||
-                                editDataFetchStatus === FetchStatus.RUNNING
-                            }
+                            disabled={rowData.length === 0 || editDataFetchStatus === FetchStatus.RUNNING}
                         />
                     </Box>
                     <Box sx={styles.grid}>
@@ -606,9 +554,7 @@ const VoltageInitModificationDialog: FunctionComponent<
     );
 
     const open: boolean = useOpenShortWaitFetching({
-        isDataFetched:
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+        isDataFetched: editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -620,9 +566,7 @@ const VoltageInitModificationDialog: FunctionComponent<
             onClose={onClose}
             onClear={handleClear}
             onSave={onPreviewModeSubmit} // we can save/submit in case of preview mode
-            disabledSave={
-                onPreviewModeSubmit === undefined || editData === undefined
-            }
+            disabledSave={disabledSave || onPreviewModeSubmit === undefined || editData === undefined}
             aria-labelledby="dialog-voltage-init-modification"
             subtitle={equipmentTabs}
             PaperProps={{

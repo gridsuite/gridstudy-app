@@ -17,7 +17,7 @@ import { FC } from 'react';
 import { useSearchMatchingEquipments } from '../top-bar-equipment-seach-dialog/use-search-matching-equipments';
 import { UUID } from 'crypto';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 
@@ -45,14 +45,14 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
     currentNodeUuid,
 }) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } =
-        useSearchMatchingEquipments({
-            studyUuid: studyUuid,
-            nodeUuid: currentNodeUuid,
-            inUpstreamBuiltParentNode: true,
-            equipmentType: equipmentType,
-        });
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useSearchMatchingEquipments({
+        // @ts-expect-error TODO: manage null case
+        studyUuid: studyUuid,
+        nodeUuid: currentNodeUuid,
+        inUpstreamBuiltParentNode: true,
+        equipmentType: equipmentType,
+    });
 
     return (
         <ElementSearchDialog
@@ -65,18 +65,10 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
                 onSelectionChange(element);
             }}
             elementsFound={equipmentsFound}
-            renderElement={(props) => (
-                <EquipmentItem
-                    styles={equipmentStyles}
-                    {...props}
-                    key={props.element.key}
-                />
-            )}
+            renderElement={(props) => <EquipmentItem styles={equipmentStyles} {...props} key={props.element.key} />}
             loading={isLoading}
             getOptionLabel={(equipment) => equipment.label}
-            isOptionEqualToValue={(equipment1, equipment2) =>
-                equipment1.id === equipment2.id
-            }
+            isOptionEqualToValue={(equipment1, equipment2) => equipment1.id === equipment2.id}
             renderInput={(displayedValue, params) => (
                 <TextField
                     autoFocus={true}

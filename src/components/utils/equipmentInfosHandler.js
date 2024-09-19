@@ -15,9 +15,7 @@ export const useNameOrId = () => {
         (infos) => {
             if (infos != null) {
                 const name = infos.name;
-                return useName && name != null && name.trim() !== ''
-                    ? name
-                    : infos?.id;
+                return useName && name != null && name.trim() !== '' ? name : infos?.id;
             }
             return null;
         },

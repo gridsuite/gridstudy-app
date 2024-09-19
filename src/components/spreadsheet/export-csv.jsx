@@ -35,16 +35,10 @@ export const CsvExport = ({
             .map((column) => column.field);
 
         const processData = () => {
-            const gridData =
-                gridRef?.current?.api
-                    ?.getModel()
-                    ?.rowsToDisplay.map((node) => node.data) || [];
+            const gridData = gridRef?.current?.api?.getModel()?.rowsToDisplay.map((node) => node.data) || [];
             Object.keys(gridData).forEach((item) => {
                 if (gridData[item].limitName) {
-                    gridData[item].limitName = formatNAValue(
-                        gridData[item].limitName,
-                        intl
-                    );
+                    gridData[item].limitName = formatNAValue(gridData[item].limitName, intl);
                 }
             });
             return gridData;
@@ -57,14 +51,7 @@ export const CsvExport = ({
             fileName: tableNamePrefix.concat(getCSVFilename()),
             rowData: processData(),
         });
-    }, [
-        columns,
-        getCSVFilename,
-        gridRef,
-        tableNamePrefix,
-        skipColumnHeaders,
-        intl,
-    ]);
+    }, [columns, getCSVFilename, gridRef, tableNamePrefix, skipColumnHeaders, intl]);
 
     return <ExportButton disabled={disabled} onClick={downloadCSVData} />;
 };

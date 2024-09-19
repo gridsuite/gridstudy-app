@@ -17,24 +17,11 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import { FloatInput } from '@gridsuite/commons-ui';
-import {
-    B,
-    CHARACTERISTICS,
-    G,
-    R,
-    RATED_S,
-    RATED_U1,
-    RATED_U2,
-    X,
-} from 'components/utils/field-constants';
+import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import { unitToMicroUnit } from '../../../../../utils/unit-converter';
 import PropertiesForm from '../../common/properties/properties-form';
 
-const TwoWindingsTransformerCharacteristicsPane = ({
-    id = CHARACTERISTICS,
-    twtToModify,
-    isModification = false,
-}) => {
+const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtToModify, isModification = false }) => {
     const width = isModification ? 12 : 8;
 
     const seriesResistanceField = (
@@ -133,10 +120,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({
                 {gridItem(ratedVoltage1Field)}
                 {gridItem(ratedVoltage2Field)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'twt'}
-                isModification={isModification}
-            />
+            <PropertiesForm networkElementType={'twt'} isModification={isModification} />
         </>
     );
 };

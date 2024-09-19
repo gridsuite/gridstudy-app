@@ -17,11 +17,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 import { SelectInput } from '@gridsuite/commons-ui';
-import {
-    ACTIVE_VARIATION_MODES,
-    REACTIVE_VARIATION_MODES,
-    VARIATION_TYPES,
-} from 'components/network/constants';
+import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
 import { ElementType } from '@gridsuite/commons-ui';
@@ -40,15 +36,10 @@ const VariationForm = ({ name, index }) => {
 
     const itemFilter = useCallback(
         (value) => {
-            if (
-                value?.type === ElementType.FILTER &&
-                variationMode === ACTIVE_VARIATION_MODES.VENTILATION.id
-            ) {
+            if (value?.type === ElementType.FILTER && variationMode === ACTIVE_VARIATION_MODES.VENTILATION.id) {
                 return (
                     value?.specificMetadata?.type === IDENTIFIER_LIST &&
-                    value?.specificMetadata?.filterEquipmentsAttributes?.every(
-                        (filter) => !!filter.distributionKey
-                    )
+                    value?.specificMetadata?.filterEquipmentsAttributes?.every((filter) => !!filter.distributionKey)
                 );
             }
 

@@ -25,10 +25,8 @@ export const GRIDSUITE_DEFAULT_PRECISION = 13;
 // Note: this is not guaranteed to always round in the same direction:
 // roundToPrecision(300000.00000365, 13) => 300000.0000037
 // roundToPrecision(900000.00000365, 13) => 900000.0000036
-export const roundToPrecision = (num, precision) =>
-    Number(num.toPrecision(precision));
-export const roundToDefaultPrecision = (num) =>
-    roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
+export const roundToPrecision = (num, precision) => Number(num.toPrecision(precision));
+export const roundToDefaultPrecision = (num) => roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
 
 /**
  * Counts the number of decimal places in a given number.

@@ -15,15 +15,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { CancelButton } from '@gridsuite/commons-ui';
 
-const SelectOptionsDialog = ({
-    open,
-    onClose,
-    onClick,
-    title,
-    child,
-    style,
-    validateKey,
-}) => {
+const SelectOptionsDialog = ({ open, onClose, onClick, title, child, style, validateKey }) => {
     const handleClose = () => {
         onClose();
     };
@@ -31,9 +23,7 @@ const SelectOptionsDialog = ({
     return (
         <Dialog open={open} onClose={handleClose} sx={style}>
             <DialogTitle>{title}</DialogTitle>
-            <DialogContent style={{ padding: '8px 32px 8px 15px' }}>
-                {child}
-            </DialogContent>
+            <DialogContent style={{ padding: '8px 32px 8px 15px' }}>{child}</DialogContent>
             <DialogActions>
                 <CancelButton onClick={handleClose} />
                 <Button onClick={onClick} variant="outlined">

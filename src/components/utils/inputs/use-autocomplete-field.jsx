@@ -7,20 +7,10 @@
 
 import { func_identity } from '../../dialogs/dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { validateField } from '../validation-functions';
 import { Autocomplete, TextField } from '@mui/material';
-import {
-    FieldLabel,
-    genHelperError,
-    genHelperPreviousValue,
-} from '@gridsuite/commons-ui';
+import { FieldLabel, genHelperError, genHelperPreviousValue } from '@gridsuite/commons-ui';
 
 const QUESTIONABLE_SIZE = 1000;
 
@@ -140,9 +130,7 @@ export const useAutocompleteField = ({
     useEffect(() => {
         const mismatchIdx = arraysMismatchIndex(prevValues.current, values);
         const shouldUpdateValueToo =
-            mismatchIdx >= 0 &&
-            prevValues.current.length > mismatchIdx &&
-            value === prevValues.current[mismatchIdx];
+            mismatchIdx >= 0 && prevValues.current.length > mismatchIdx && value === prevValues.current[mismatchIdx];
         const valuesChanged = prevValues.current !== values;
         prevValues.current = values;
 
@@ -211,9 +199,7 @@ export const useAutocompleteField = ({
     const handleSearchTermChange = useCallback(
         (term, reason) => {
             if (allowNewValue && reason !== 'reset') {
-                let matchingOption = values?.find(
-                    (val) => val.id?.toUpperCase() === term.toUpperCase()
-                );
+                let matchingOption = values?.find((val) => val.id?.toUpperCase() === term.toUpperCase());
                 if (matchingOption) {
                     setValue(matchingOption);
                 } else {
@@ -236,14 +222,7 @@ export const useAutocompleteField = ({
                 return term;
             });
         },
-        [
-            values,
-            minCharsBeforeSearch,
-            onSearchTermChange,
-            allowNewValue,
-            newEntryToValue,
-            inputForm,
-        ]
+        [values, minCharsBeforeSearch, onSearchTermChange, allowNewValue, newEntryToValue, inputForm]
     );
 
     const field = useMemo(() => {
@@ -261,9 +240,7 @@ export const useAutocompleteField = ({
         };
 
         const optionEqualsToValue = (option, input) =>
-            option === input ||
-            option.id === input ||
-            (option.id !== undefined && option.id === input?.id);
+            option === input || option.id === input || (option.id !== undefined && option.id === input?.id);
 
         return (
             <Autocomplete
@@ -291,9 +268,7 @@ export const useAutocompleteField = ({
                     blurOnSelect: true,
                     clearOnBlur: true,
                 })}
-                onInputChange={(_event, value, reason) =>
-                    handleSearchTermChange(value, reason)
-                }
+                onInputChange={(_event, value, reason) => handleSearchTermChange(value, reason)}
                 noOptionsText={intl.formatMessage({
                     id: 'element_search/noResult',
                 })}
@@ -311,12 +286,7 @@ export const useAutocompleteField = ({
                         {...props}
                         onKeyDown={handleKeyDown}
                         size="small"
-                        label={
-                            <FieldLabel
-                                label={label}
-                                optional={validation.isFieldRequired === false}
-                            />
-                        }
+                        label={<FieldLabel label={label} optional={validation.isFieldRequired === false} />}
                         value={value}
                         {...genHelperPreviousValue(previousValue)}
                         {...genHelperError(error, errorMsg)}

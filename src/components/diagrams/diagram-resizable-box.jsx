@@ -9,12 +9,7 @@ import React from 'react';
 import { ResizableBox } from 'react-resizable';
 import PropTypes from 'prop-types';
 import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
-import {
-    MIN_HEIGHT,
-    MIN_WIDTH,
-    LOADING_HEIGHT,
-    LOADING_WIDTH,
-} from './diagram-common';
+import { MIN_HEIGHT, MIN_WIDTH, LOADING_HEIGHT, LOADING_WIDTH } from './diagram-common';
 import { mergeSx } from '../utils/functions';
 import { styled } from '@mui/system';
 
@@ -70,23 +65,15 @@ const DiagramResizableBox = (props) => {
             resizeHandles={props?.align === 'right' ? ['sw'] : undefined}
             sx={mergeSx(
                 styles.resizable,
-                !props.disableResize &&
-                    props?.align === 'right' &&
-                    styles.leftHandle,
-                !props.disableResize &&
-                    props?.align === 'left' &&
-                    styles.rightHandle
+                !props.disableResize && props?.align === 'right' && styles.leftHandle,
+                !props.disableResize && props?.align === 'left' && styles.rightHandle
             )}
         >
             <>
                 {props.children}
                 {!props.disableResize && (
                     <ResizeHandleIcon
-                        sx={
-                            props?.align === 'right'
-                                ? styles.resizeHandleIconLeft
-                                : styles.resizeHandleIconRight
-                        }
+                        sx={props?.align === 'right' ? styles.resizeHandleIconLeft : styles.resizeHandleIconRight}
                     />
                 )}
             </>

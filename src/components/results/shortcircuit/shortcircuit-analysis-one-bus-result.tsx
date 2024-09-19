@@ -13,7 +13,7 @@ import {
 } from 'components/results/shortcircuit/shortcircuit-analysis-result.type';
 import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shortcircuit-analysis-result';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -26,20 +26,18 @@ interface ShortCircuitAnalysisOneBusResultProps {
     onRowDataUpdated: (params: GridReadyEvent) => void;
 }
 
-export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
-    ShortCircuitAnalysisOneBusResultProps
-> = ({ onGridColumnsChanged, onRowDataUpdated }) => {
+export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAnalysisOneBusResultProps> = ({
+    onGridColumnsChanged,
+    onRowDataUpdated,
+}) => {
     const { snackError } = useSnackMessage();
 
     const oneBusShortCircuitAnalysisStatus = useSelector(
-        (state: ReduxState) =>
-            state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
-    const studyUuid = useSelector((state: ReduxState) => state.studyUuid);
-    const currentNode = useSelector(
-        (state: ReduxState) => state.currentTreeNode
-    );
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const [faultResult, setFaultResult] = useState<SCAFaultResult>();
     const [feederResults, setFeederResults] = useState<SCAFeederResult[]>();
@@ -82,12 +80,9 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
         setResult(faultWithPagedFeeders);
     }, [faultResult, feederResults]);
 
-    const updateResult = useCallback(
-        (results: SCAFaultResult[] | SCAFeederResult[] | null) => {
-            setFeederResults((results as SCAFeederResult[]) ?? null);
-        },
-        []
-    );
+    const updateResult = useCallback((results: SCAFaultResult[] | SCAFeederResult[] | null) => {
+        setFeederResults((results as SCAFeederResult[]) ?? null);
+    }, []);
 
     return (
         <ShortCircuitAnalysisResult
@@ -96,8 +91,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<
             result={result}
             updateResult={updateResult}
             customTablePaginationProps={{
-                labelRowsPerPageId:
-                    'muiTablePaginationLabelRowsPerPageOneBusSCA',
+                labelRowsPerPageId: 'muiTablePaginationLabelRowsPerPageOneBusSCA',
             }}
             onGridColumnsChanged={onGridColumnsChanged}
             onRowDataUpdated={onRowDataUpdated}

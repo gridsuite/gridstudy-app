@@ -20,19 +20,11 @@ import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { DiagramType } from '../diagram-common';
 import { getVoltageLevelSingleLineDiagram } from '../../../services/study/network';
 
-const PositionDiagramPane = ({
-    open,
-    onClose,
-    voltageLevelId,
-    currentNodeUuid,
-    studyUuid,
-}) => {
+const PositionDiagramPane = ({ open, onClose, voltageLevelId, currentNodeUuid, studyUuid }) => {
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
     const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
     const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
-    const componentLibrary = useSelector(
-        (state) => state[PARAM_COMPONENT_LIBRARY]
-    );
+    const componentLibrary = useSelector((state) => state[PARAM_COMPONENT_LIBRARY]);
     const language = useSelector((state) => state[PARAM_LANGUAGE]);
 
     const [svgUrl, setSvgUrl] = useState(null);
@@ -54,16 +46,7 @@ const PositionDiagramPane = ({
                 SLD_DISPLAY_MODE.FEEDER_POSITION,
                 language
             ),
-        [
-            studyUuid,
-            currentNodeUuid,
-            voltageLevelId?.id,
-            useName,
-            centerName,
-            diagonalName,
-            componentLibrary,
-            language,
-        ]
+        [studyUuid, currentNodeUuid, voltageLevelId?.id, useName, centerName, diagonalName, componentLibrary, language]
     );
 
     useEffect(() => {

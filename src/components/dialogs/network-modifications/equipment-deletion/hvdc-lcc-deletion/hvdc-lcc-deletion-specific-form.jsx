@@ -28,11 +28,7 @@ const HvdcLccDeletionSpecificForm = () => {
         name: `${DELETION_SPECIFIC_DATA}.${SHUNT_COMPENSATOR_SIDE_2}`,
     });
 
-    const ShuntCompensatorSelectionForm = ({
-        title,
-        arrayFormName,
-        mcsRows,
-    }) => {
+    const ShuntCompensatorSelectionForm = ({ title, arrayFormName, mcsRows }) => {
         return (
             <Grid item container spacing={1} direction="column">
                 <Grid item>
@@ -41,23 +37,12 @@ const HvdcLccDeletionSpecificForm = () => {
                     </h4>
                 </Grid>
                 {mcsRows.map((field, index) => (
-                    <Grid
-                        container
-                        spacing={1}
-                        alignItems="center"
-                        key={field.id}
-                    >
+                    <Grid container spacing={1} alignItems="center" key={field.id}>
                         <Grid item xs={1} align={'start'}>
-                            <CheckboxInput
-                                key={field.id + 'SEL'}
-                                name={`${arrayFormName}[${index}].${MCS_SELECTED}`}
-                            />
+                            <CheckboxInput key={field.id + 'SEL'} name={`${arrayFormName}[${index}].${MCS_SELECTED}`} />
                         </Grid>
                         <Grid item xs={11} align={'start'}>
-                            <ReadOnlyInput
-                                key={field.id + 'ID'}
-                                name={`${arrayFormName}[${index}].${ID}`}
-                            />
+                            <ReadOnlyInput key={field.id + 'ID'} name={`${arrayFormName}[${index}].${ID}`} />
                         </Grid>
                     </Grid>
                 ))}
@@ -82,13 +67,7 @@ const HvdcLccDeletionSpecificForm = () => {
     );
 
     return (
-        <Grid
-            container
-            spacing={1}
-            direction="column"
-            paddingTop={2}
-            paddingLeft={1}
-        >
+        <Grid container spacing={1} direction="column" paddingTop={2} paddingLeft={1}>
             <GridSection title="LCCConverterStationShuntCompensators" />
             <Grid container spacing={1}>
                 {gridItem(mcsOnsideOne)}

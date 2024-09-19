@@ -23,13 +23,7 @@ const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
     const [linesOptions, setLinesOptions] = useState([]);
 
     useEffect(() => {
-        fetchEquipmentsIds(
-            studyUuid,
-            currentNode.id,
-            undefined,
-            'LINE',
-            true
-        ).then((values) => {
+        fetchEquipmentsIds(studyUuid, currentNode.id, undefined, 'LINE', true).then((values) => {
             setLinesOptions(
                 values
                     .sort((a, b) => a.localeCompare(b))
@@ -68,12 +62,8 @@ const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
         />
     );
 
-    const replacingLineIdField = (
-        <TextInput name={REPLACING_LINE_1_ID} label={'ReplacingLineId'} />
-    );
-    const replacingLineNameField = (
-        <TextInput name={REPLACING_LINE_1_NAME} label={'ReplacingLineName'} />
-    );
+    const replacingLineIdField = <TextInput name={REPLACING_LINE_1_ID} label={'ReplacingLineId'} />;
+    const replacingLineNameField = <TextInput name={REPLACING_LINE_1_NAME} label={'ReplacingLineName'} />;
 
     return (
         <>

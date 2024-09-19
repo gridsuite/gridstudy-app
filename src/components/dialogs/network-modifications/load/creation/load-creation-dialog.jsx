@@ -7,24 +7,14 @@
 
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
 import React, { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import {
-    FORM_LOADING_DELAY,
-    UNDEFINED_CONNECTION_DIRECTION,
-    UNDEFINED_LOAD_TYPE,
-} from 'components/network/constants';
+import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION, UNDEFINED_LOAD_TYPE } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import {
@@ -77,14 +67,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-const LoadCreationDialog = ({
-    editData,
-    currentNode,
-    studyUuid,
-    isUpdate,
-    editDataFetchStatus,
-    ...dialogProps
-}) => {
+const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
@@ -105,10 +88,9 @@ const LoadCreationDialog = ({
             ...getConnectivityFormData({
                 voltageLevelId: load.voltageLevelId,
                 busbarSectionId: load.busOrBusbarSectionId,
-                connectionDirection:
-                    load.connectablePosition.connectionDirection,
+                connectionDirection: load.connectablePosition.connectionDirection,
                 connectionName: load.connectablePosition.connectionName,
-                // connected is not copied on purpose: we use the default value (true) in all cases
+                // terminalConnected is not copied on purpose: we use the default value (true) in all cases
             }),
             ...copyEquipmentPropertiesForCreation(load),
         });
@@ -128,7 +110,7 @@ const LoadCreationDialog = ({
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
                     connectionPosition: load.connectionPosition,
-                    connected: load.connected,
+                    terminalConnected: load.terminalConnected,
                 }),
                 ...getPropertiesFromModification(load.properties),
             });
@@ -164,11 +146,10 @@ const LoadCreationDialog = ({
                 load.connectivity.busOrBusbarSection.id,
                 !!editData,
                 editData ? editData.uuid : undefined,
-                load.connectivity?.connectionDirection ??
-                    UNDEFINED_CONNECTION_DIRECTION,
+                load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
                 sanitizeString(load.connectivity?.connectionName),
                 load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.connected,
+                load.connectivity?.terminalConnected,
                 toModificationProperties(load)
             ).catch((error) => {
                 snackError({
@@ -186,9 +167,7 @@ const LoadCreationDialog = ({
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
     return (
@@ -202,15 +181,10 @@ const LoadCreationDialog = ({
                 titleId="CreateLoad"
                 searchCopy={searchCopy}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LoadCreationForm
-                    currentNode={currentNode}
-                    studyUuid={studyUuid}
-                />
+                <LoadCreationForm currentNode={currentNode} studyUuid={studyUuid} />
 
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}

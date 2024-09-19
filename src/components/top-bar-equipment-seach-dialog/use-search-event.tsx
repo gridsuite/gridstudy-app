@@ -6,19 +6,15 @@
  */
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { ReduxState } from 'redux/reducer.type';
+import { AppState } from 'redux/reducer';
 
 export const useSearchEvent = (enableSearchCallback: () => void) => {
-    const user = useSelector((state: ReduxState) => state.user);
+    const user = useSelector((state: AppState) => state.user);
 
     useEffect(() => {
         if (user) {
             const openSearch = (e: KeyboardEvent) => {
-                if (
-                    e.ctrlKey &&
-                    e.shiftKey &&
-                    (e.key === 'F' || e.key === 'f')
-                ) {
+                if (e.ctrlKey && e.shiftKey && (e.key === 'F' || e.key === 'f')) {
                     e.preventDefault();
                     enableSearchCallback();
                 }

@@ -6,12 +6,7 @@
  */
 
 import dagre from 'dagre';
-import {
-    nodeWidth,
-    nodeHeight,
-    rootNodeWidth,
-    rootNodeHeight,
-} from './util/model-constants';
+import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
 
 export function getLayoutedNodes(nodes, edges) {
     const dagreGraph = new dagre.graphlib.Graph();

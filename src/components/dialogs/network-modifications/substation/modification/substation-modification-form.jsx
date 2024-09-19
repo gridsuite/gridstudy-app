@@ -59,10 +59,7 @@ const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
                 {gridItem(substationNameField, 4)}
                 {gridItem(substationCountryField, 4)}
             </Grid>
-            <PropertiesForm
-                networkElementType={'substation'}
-                isModification={true}
-            />
+            <PropertiesForm networkElementType={'substation'} isModification={true} />
         </>
     );
 };

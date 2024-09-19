@@ -72,18 +72,12 @@ export const EquipmentTable = ({
             isEditing: topPinnedData ? true : false,
             theme,
             lastEditedField: undefined,
-            dataToModify: topPinnedData
-                ? JSON.parse(JSON.stringify(topPinnedData[0]))
-                : {},
+            dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
         };
     }, [currentNode, network, studyUuid, theme, topPinnedData]);
-    const getRowHeight = useCallback(
-        (params) =>
-            params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT,
-        []
-    );
+    const getRowHeight = useCallback((params) => (params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT), []);
 
     const rowsToShow = useMemo(() => {
         return fetched && rowData.length > 0 ? rowData : [];
@@ -129,9 +123,7 @@ export const EquipmentTable = ({
             singleClickEdit={true}
             context={gridContext}
             onGridReady={handleGridReady}
-            shouldHidePinnedHeaderRightBorder={
-                shouldHidePinnedHeaderRightBorder
-            }
+            shouldHidePinnedHeaderRightBorder={shouldHidePinnedHeaderRightBorder}
             getRowHeight={getRowHeight}
             overlayNoRowsTemplate={message}
             loadingOverlayComponent={loadingOverlayComponent}

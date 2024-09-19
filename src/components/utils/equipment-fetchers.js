@@ -37,10 +37,7 @@ export const EQUIPMENT_FETCHERS = {
     SHUNT_COMPENSATOR: [fetchShuntCompensators],
     DANGLING_LINE: [fetchDanglingLines],
     STATIC_VAR_COMPENSATOR: [fetchStaticVarCompensators],
-    HVDC_CONVERTER_STATION: [
-        fetchLccConverterStations,
-        fetchVscConverterStations,
-    ],
+    HVDC_CONVERTER_STATION: [fetchLccConverterStations, fetchVscConverterStations],
     VSC_CONVERTER_STATION: [fetchVscConverterStations],
     LCC_CONVERTER_STATION: [fetchLccConverterStations],
     SWITCH: [],

@@ -7,15 +7,12 @@
 import { useFormContext, useWatch } from 'react-hook-form';
 import React, { ChangeEvent, useCallback } from 'react';
 import { ParameterSwitch } from '../widget/parameter-switch';
-import {
-    GENERAL,
-    GENERAL_APPLY_MODIFICATIONS,
-} from './voltage-init-parameters-form';
+import { GENERAL, GENERAL_APPLY_MODIFICATIONS } from './voltage-init-parameters-form';
 import Alert from '@mui/material/Alert';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
-import { REACTIVE_SLACKS_THRESHOLD } from './voltage-init-constants';
+import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
 import { ParameterFloat } from '../widget/parameter-float';
 import { ReactivePowerAdornment } from '../../dialogUtils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
@@ -51,11 +48,7 @@ export const GeneralParameters = () => {
 
     return (
         <Grid>
-            <Alert
-                sx={styles.adjustExistingLimitsInfo}
-                severity="info"
-                variant="outlined"
-            >
+            <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="VoltageInitParametersGeneralSaveInfo" />
             </Alert>
             <ParameterSwitch
@@ -73,6 +66,15 @@ export const GeneralParameters = () => {
                 style={styles.parameterName}
                 label={'ReactiveSlacksThreshold'}
                 adornment={ReactivePowerAdornment}
+                labelSize={8}
+                inputSize={4}
+            />
+            <ParameterFloat
+                name={`${GENERAL}.${SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD}`}
+                style={styles.parameterName}
+                label={'ShuntCompensatorActivationThreshold'}
+                adornment={ReactivePowerAdornment}
+                tooltip={'ShuntCompensatorActivationThresholdDescription'}
                 labelSize={8}
                 inputSize={4}
             />

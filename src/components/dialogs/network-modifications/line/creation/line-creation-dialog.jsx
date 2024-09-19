@@ -5,11 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    CustomFormProvider,
-    TextInput,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Box, Grid } from '@mui/material';
 import {
@@ -46,10 +42,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import {
-    FORM_LOADING_DELAY,
-    UNDEFINED_CONNECTION_DIRECTION,
-} from 'components/network/constants';
+import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { getConnectivityFormData } from '../../../connectivity/connectivity-form-utils';
@@ -59,11 +52,7 @@ import {
     getCharacteristicsFormData,
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/line-characteristics-pane-utils';
-import {
-    getHeaderEmptyFormData,
-    getHeaderFormData,
-    getHeaderValidationSchema,
-} from './line-creation-dialog-utils';
+import { getHeaderEmptyFormData, getHeaderFormData, getHeaderValidationSchema } from './line-creation-dialog-utils';
 import LimitsPane from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
@@ -71,11 +60,7 @@ import {
     getLimitsValidationSchema,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
-import {
-    filledTextField,
-    gridItem,
-    sanitizeString,
-} from 'components/dialogs/dialogUtils';
+import { filledTextField, gridItem, sanitizeString } from 'components/dialogs/dialogUtils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
@@ -127,13 +112,10 @@ const LineCreationDialog = ({
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const [tabIndex, setTabIndex] = useState(
-        LineCreationDialogTab.CHARACTERISTICS_TAB
-    );
+    const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
 
-    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] =
-        useState(false);
+    const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
 
     const handleCloseLineTypesCatalogDialog = () => {
         setOpenLineTypesCatalogDialog(false);
@@ -143,10 +125,7 @@ const LineCreationDialog = ({
         .object()
         .shape({
             ...getHeaderValidationSchema(),
-            ...getCharacteristicsValidationSchema(
-                CHARACTERISTICS,
-                displayConnectivity
-            ),
+            ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
             ...getLimitsValidationSchema(),
         })
         .concat(creationPropertiesSchema)
@@ -178,11 +157,8 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId1,
                                 busbarSectionId: line.busOrBusbarSectionId1,
-                                connectionDirection:
-                                    line.connectablePosition1
-                                        .connectionDirection,
-                                connectionName:
-                                    line.connectablePosition1.connectionName,
+                                connectionDirection: line.connectablePosition1.connectionDirection,
+                                connectionName: line.connectablePosition1.connectionName,
                             },
                             CONNECTIVITY_1
                         )),
@@ -191,11 +167,8 @@ const LineCreationDialog = ({
                             {
                                 voltageLevelId: line.voltageLevelId2,
                                 busbarSectionId: line.busOrBusbarSectionId2,
-                                connectionDirection:
-                                    line.connectablePosition2
-                                        .connectionDirection,
-                                connectionName:
-                                    line.connectablePosition2.connectionName,
+                                connectionDirection: line.connectablePosition2.connectionDirection,
+                                connectionName: line.connectablePosition2.connectionName,
                             },
                             CONNECTIVITY_2
                         )),
@@ -204,14 +177,10 @@ const LineCreationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
+                        formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
+                        formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
                     ),
                 }),
                 ...copyEquipmentPropertiesForCreation(line),
@@ -261,14 +230,10 @@ const LineCreationDialog = ({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits1?.temporaryLimits
-                        )
+                        formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(
-                            line.currentLimits2?.temporaryLimits
-                        )
+                        formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
                     ),
                 }),
                 ...getPropertiesFromModification(line.properties),
@@ -334,24 +299,14 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
                 limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]
-                ),
-                sanitizeLimitNames(
-                    limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]
-                ),
+                sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
+                sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
                 !!editData,
                 editData ? editData.uuid : undefined,
-                sanitizeString(
-                    characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]
-                ),
-                characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(
-                    characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]
-                ),
-                characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ??
-                    UNDEFINED_CONNECTION_DIRECTION,
+                sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
+                characteristics[CONNECTIVITY_1]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                sanitizeString(characteristics[CONNECTIVITY_2]?.[CONNECTION_NAME]),
+                characteristics[CONNECTIVITY_2]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
                 characteristics[CONNECTIVITY_1]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_2]?.[CONNECTION_POSITION] ?? null,
                 characteristics[CONNECTIVITY_1]?.[CONNECTED] ?? null,
@@ -397,11 +352,7 @@ const LineCreationDialog = ({
     );
 
     const lineNameField = (
-        <TextInput
-            name={`${TAB_HEADER}.${EQUIPMENT_NAME}`}
-            label={'Name'}
-            formProps={filledTextField}
-        />
+        <TextInput name={`${TAB_HEADER}.${EQUIPMENT_NAME}`} label={'Name'} formProps={filledTextField} />
     );
 
     const headerAndTabs = (
@@ -416,19 +367,13 @@ const LineCreationDialog = ({
                 {gridItem(lineIdField, 4)}
                 {gridItem(lineNameField, 4)}
             </Grid>
-            <LineDialogTabs
-                tabIndex={tabIndex}
-                tabIndexesWithError={tabIndexesWithError}
-                setTabIndex={setTabIndex}
-            />
+            <LineDialogTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
     );
 
     const open = useOpenShortWaitFetching({
         isDataFetched:
-            !isUpdate ||
-            editDataFetchStatus === FetchStatus.SUCCEED ||
-            editDataFetchStatus === FetchStatus.FAILED,
+            !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
 
@@ -451,17 +396,10 @@ const LineCreationDialog = ({
                     },
                 }}
                 open={open}
-                isDataFetching={
-                    isUpdate && editDataFetchStatus === FetchStatus.RUNNING
-                }
+                isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <Box
-                    hidden={
-                        tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB
-                    }
-                    p={1}
-                >
+                <Box hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB} p={1}>
                     <LineCharacteristicsPane
                         displayConnectivity={displayConnectivity}
                         studyUuid={studyUuid}
@@ -469,10 +407,7 @@ const LineCreationDialog = ({
                     />
                 </Box>
 
-                <Box
-                    hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB}
-                    p={1}
-                >
+                <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
                     <LimitsPane />
                 </Box>
 

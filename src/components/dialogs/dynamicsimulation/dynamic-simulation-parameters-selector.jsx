@@ -8,21 +8,12 @@
 import yup from '../../utils/yup-config';
 import React, { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-} from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import {
-    AutocompleteInput,
-    CustomFormProvider,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { AutocompleteInput, CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import {
     fetchDynamicSimulationParameters,
     updateDynamicSimulationParameters,
@@ -112,10 +103,7 @@ const DynamicSimulationParametersSelector = (props) => {
                 ...dynamicSimulationParams,
                 mapping: formData[MAPPING],
             };
-            updateDynamicSimulationParameters(
-                studyUuid,
-                newDynamicSimulationParams
-            )
+            updateDynamicSimulationParameters(studyUuid, newDynamicSimulationParams)
                 .then(() => {
                     // start computation
                     onStart();
@@ -133,11 +121,7 @@ const DynamicSimulationParametersSelector = (props) => {
     const makeButton = (onClick, message, disabled) => {
         return (
             <Grid item>
-                <Button
-                    onClick={onClick}
-                    variant="contained"
-                    disabled={disabled}
-                >
+                <Button onClick={onClick} variant="contained" disabled={disabled}>
                     <FormattedMessage id={message} />
                 </Button>
             </Grid>
@@ -155,27 +139,14 @@ const DynamicSimulationParametersSelector = (props) => {
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                maxWidth={'sm'}
-                fullWidth={true}
-            >
+            <Dialog open={open} onClose={handleClose} maxWidth={'sm'} fullWidth={true}>
                 <DialogTitle>
                     <Typography component="span" variant="h5">
                         <FormattedMessage id="DynamicSimulationParametersSelection" />
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <Grid
-                        container
-                        spacing={2}
-                        direction="column"
-                        item
-                        xs={12}
-                        justifyContent={'center'}
-                        padding={1}
-                    >
+                    <Grid container spacing={2} direction="column" item xs={12} justifyContent={'center'} padding={1}>
                         <Grid item>{gridItem(mappingNameField, 6)}</Grid>
                     </Grid>
                 </DialogContent>

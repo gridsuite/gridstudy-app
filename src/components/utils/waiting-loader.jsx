@@ -17,11 +17,7 @@ const WaitingLoader = ({ loading, message, errMessage, children }) => {
     } else if (loading === true) {
         return (
             <Paper className={'singlestretch-child'}>
-                <LoaderWithOverlay
-                    color="inherit"
-                    loaderSize={70}
-                    loadingMessageText={message}
-                />
+                <LoaderWithOverlay color="inherit" loaderSize={70} loadingMessageText={message} />
             </Paper>
         );
     }

@@ -8,15 +8,9 @@
 import { DialogContent, DialogTitle, Grid } from '@mui/material';
 import { gridItem } from 'components/dialogs/dialogUtils';
 import { FloatInput } from '@gridsuite/commons-ui';
-import {
-    HIGH_TAP_POSITION,
-    LOW_TAP_POSITION,
-} from 'components/utils/field-constants';
+import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import {
-    PHASE_TAP,
-    RATIO_TAP,
-} from '../../creation/two-windings-transformer-creation-dialog';
+import { PHASE_TAP, RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 
 const CreateRuleForm = (props) => {
     const computeLowTapLabel = (ruleType) => {
@@ -39,30 +33,14 @@ const CreateRuleForm = (props) => {
         return '';
     };
 
-    const lowTapValueField = (
-        <FloatInput
-            label={computeLowTapLabel(props.ruleType)}
-            name={LOW_TAP_POSITION}
-        />
-    );
+    const lowTapValueField = <FloatInput label={computeLowTapLabel(props.ruleType)} name={LOW_TAP_POSITION} />;
 
-    const highTapValueField = (
-        <FloatInput
-            label={computeHighTapLabel(props.ruleType)}
-            name={HIGH_TAP_POSITION}
-        />
-    );
+    const highTapValueField = <FloatInput label={computeHighTapLabel(props.ruleType)} name={HIGH_TAP_POSITION} />;
 
     return (
         <>
             <DialogTitle>
-                <FormattedMessage
-                    id={
-                        props.ruleType === PHASE_TAP
-                            ? 'CreateDephasingRule'
-                            : 'CreateRegulationRule'
-                    }
-                />
+                <FormattedMessage id={props.ruleType === PHASE_TAP ? 'CreateDephasingRule' : 'CreateRegulationRule'} />
             </DialogTitle>
             <DialogContent>
                 <Grid

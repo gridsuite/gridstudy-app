@@ -13,10 +13,8 @@ import yup from '../../../utils/yup-config';
 export const NETWORK = 'network';
 
 const CAPACITOR_NO_RECLOSING_DELAY = 'capacitorNoReclosingDelay';
-const DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION =
-    'danglingLineCurrentLimitMaxTimeOperation';
-const LINE_CURRENT_LIMIT_MAX_TIME_OPERATION =
-    'lineCurrentLimitMaxTimeOperation';
+const DANGLING_LINE_CURRENT_LIMIT_MAX_TIME_OPERATION = 'danglingLineCurrentLimitMaxTimeOperation';
+const LINE_CURRENT_LIMIT_MAX_TIME_OPERATION = 'lineCurrentLimitMaxTimeOperation';
 const LOAD_TP = 'loadTp';
 const LOAD_TQ = 'loadTq';
 const LOAD_ALPHA = 'loadAlpha';
@@ -28,8 +26,7 @@ const LOAD_IS_RESTORATIVE = 'loadIsRestorative';
 const LOAD_Z_PMAX = 'loadZPMax';
 const LOAD_Z_QMAX = 'loadZQMax';
 const REACTANCE_NO_RECLOSING_DELAY = 'reactanceNoReclosingDelay';
-const TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION =
-    'transformerCurrentLimitMaxTimeOperation';
+const TRANSFORMER_CURRENT_LIMIT_MAX_TIME_OPERATION = 'transformerCurrentLimitMaxTimeOperation';
 const TRANSFORMER_T1_ST_HT = 'transformerT1StHT';
 const TRANSFORMER_T1_ST_THT = 'transformerT1StTHT';
 const TRANSFORMER_T_NEXT_HT = 'transformerTNextHT';

@@ -64,13 +64,7 @@ const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
             </Grid>
             {watchProps &&
                 values.map((value, idx) => (
-                    <Grid
-                        key={value.id}
-                        container
-                        spacing={2}
-                        item
-                        alignItems={alignItems}
-                    >
+                    <Grid key={value.id} container spacing={2} item alignItems={alignItems}>
                         <Field name={name} index={idx} {...fieldProps} />
                         <Grid item xs={1}>
                             <IconButton
@@ -85,11 +79,7 @@ const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
                                     }
                                 }}
                             >
-                                {getDeletionMark && getDeletionMark(idx) ? (
-                                    <RestoreFromTrashIcon />
-                                ) : (
-                                    <DeleteIcon />
-                                )}
+                                {getDeletionMark && getDeletionMark(idx) ? <RestoreFromTrashIcon /> : <DeleteIcon />}
                             </IconButton>
                         </Grid>
                     </Grid>

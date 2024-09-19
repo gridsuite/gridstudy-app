@@ -42,29 +42,16 @@ export function getFirstNodeOfType(elements, nodeType, buildStatusList) {
 }
 
 // Recursive search of a node of type and buildStatus specified
-export function recursiveSearchFirstNodeOfType(
-    elements,
-    parentNodeUuid,
-    nodeType,
-    buildStatusList
-) {
+export function recursiveSearchFirstNodeOfType(elements, parentNodeUuid, nodeType, buildStatusList) {
     if (
         elements.type === nodeType &&
-        (buildStatusList === undefined ||
-            buildStatusList.includes(
-                elements.nodeBuildStatus?.globalBuildStatus
-            ))
+        (buildStatusList === undefined || buildStatusList.includes(elements.nodeBuildStatus?.globalBuildStatus))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
 
     for (const child of elements.children) {
-        const found = recursiveSearchFirstNodeOfType(
-            child,
-            elements.id,
-            nodeType,
-            buildStatusList
-        );
+        const found = recursiveSearchFirstNodeOfType(child, elements.id, nodeType, buildStatusList);
         if (found) {
             return found;
         }
@@ -96,9 +83,7 @@ export function isNodeRenamed(node1, node2) {
     if (!node1 || !node2) {
         return false;
     }
-    return (
-        isSameNode(node1, node2) && node1?.data?.label !== node2?.data?.label
-    );
+    return isSameNode(node1, node2) && node1?.data?.label !== node2?.data?.label;
 }
 
 export function isNodeInNotificationList(node, notificationIdList) {
@@ -114,9 +99,7 @@ export function isSameNodeAndBuilt(node1, node2) {
 
 export function getAllChildren(elements, nodeId) {
     const selectedNode = elements.treeNodes.find((node) => node.id === nodeId);
-    const directChildren = elements.treeNodes.filter(
-        (node) => node.data.parentNodeUuid === selectedNode.id
-    );
+    const directChildren = elements.treeNodes.filter((node) => node.data.parentNodeUuid === selectedNode.id);
     let allChildren = [...directChildren];
     directChildren.forEach((child) => {
         allChildren = allChildren.concat(getAllChildren(elements, child.id));

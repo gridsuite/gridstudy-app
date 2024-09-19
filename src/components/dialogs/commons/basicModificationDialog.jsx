@@ -19,13 +19,7 @@ import ModificationDialogContent from './modification-dialog-content';
  * @param {Boolean} disabledSave to control disabled prop of the validate button
  * @param {Array} props props that are forwarded to the MUI Dialog component
  */
-const BasicModificationDialog = ({
-    onClose,
-    onClear,
-    onSave,
-    disabledSave = false,
-    ...props
-}) => {
+const BasicModificationDialog = ({ onClose, onClear, onSave, disabledSave = false, ...props }) => {
     const closeAndClear = (event, reason) => {
         onClear();
         onClose(event, reason);
@@ -38,22 +32,12 @@ const BasicModificationDialog = ({
     };
 
     const submitButton = (
-        <Button
-            onClick={handleSubmit}
-            variant="outlined"
-            disabled={disabledSave}
-        >
+        <Button onClick={handleSubmit} variant="outlined" disabled={disabledSave}>
             <FormattedMessage id="validate" />
         </Button>
     );
 
-    return (
-        <ModificationDialogContent
-            submitButton={submitButton}
-            closeAndClear={closeAndClear}
-            {...props}
-        />
-    );
+    return <ModificationDialogContent submitButton={submitButton} closeAndClear={closeAndClear} {...props} />;
 };
 
 BasicModificationDialog.propTypes = {

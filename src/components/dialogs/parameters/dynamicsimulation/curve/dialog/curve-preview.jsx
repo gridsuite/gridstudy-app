@@ -5,14 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, {
-    forwardRef,
-    useCallback,
-    useImperativeHandle,
-    useMemo,
-    useRef,
-    useState,
-} from 'react';
+import React, { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
@@ -85,9 +78,7 @@ const CurvePreview = forwardRef((props, ref) => {
                             (curve) =>
                                 !prev.find(
                                     (elem) =>
-                                        elem.equipmentId ===
-                                            curve.equipmentId &&
-                                        elem.variableId === curve.variableId
+                                        elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId
                                 )
                         );
                         return [...prev, ...notYetAddedCurves];
@@ -104,10 +95,8 @@ const CurvePreview = forwardRef((props, ref) => {
                             (elem) =>
                                 !selectedRows.find(
                                     (selectedElem) =>
-                                        elem.equipmentId ===
-                                            selectedElem.equipmentId &&
-                                        elem.variableId ===
-                                            selectedElem.variableId
+                                        elem.equipmentId === selectedElem.equipmentId &&
+                                        elem.variableId === selectedElem.variableId
                                 )
                         );
                         return remainingRows;
@@ -125,9 +114,7 @@ const CurvePreview = forwardRef((props, ref) => {
         <>
             <Grid item>
                 <Typography sx={styles.h6} variant="h6">
-                    <FormattedMessage
-                        id={'DynamicSimulationCurveToAdd'}
-                    ></FormattedMessage>
+                    <FormattedMessage id={'DynamicSimulationCurveToAdd'}></FormattedMessage>
                     {` (${selectedRowsLength} / ${rowData.length})`}
                 </Typography>
             </Grid>

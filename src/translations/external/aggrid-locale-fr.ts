@@ -40,8 +40,7 @@ const aggrid_locale_fr = {
     'grid.nextPage': 'Page suivante',
     'grid.lastPage': 'Dernière page',
     'grid.ariaSortableColumn': 'Appuyez sur ENTRÉE pour trier.',
-    'grid.ariaMenuColumn':
-        'Appuyez sur CTRL+ENTRÉE pour ouvrir le menu de colonne.',
+    'grid.ariaMenuColumn': 'Appuyez sur CTRL+ENTRÉE pour ouvrir le menu de colonne.',
     'grid.ariaFilteringOperator': 'Operateur de filtre',
     'grid.ariaFilterToValue': 'Filtre vers valeur',
     'grid.ariaFilterValue': 'Valeur de filtre',
