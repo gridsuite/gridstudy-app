@@ -277,6 +277,7 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 
 export enum NotificationType {
     STUDY = 'study',
+    COMPUTATION_PARAMETERS = 'computationParametersUpdated',
 }
 
 export enum StudyIndexationStatus {

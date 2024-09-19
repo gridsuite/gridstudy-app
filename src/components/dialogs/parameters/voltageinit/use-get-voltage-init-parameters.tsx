@@ -15,6 +15,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/op
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
 import { setStudyParamsChanged } from '../../../../redux/actions';
 import { STUDY_PARAMS_CHANDED } from '../../../../utils/config-params';
+import ComputingType from '../../../computing-status/computing-type';
 
 export const useGetVoltageInitParameters = (): [
     VoltageInitParam | null,
@@ -43,12 +44,10 @@ export const useGetVoltageInitParameters = (): [
     }, [voltageInitAvailability, studyUuid, snackError]);
 
     useEffect(() => {
-        console.log({ studyParamsChanged });
-
         if (
             studyUuid &&
             voltageInitAvailability === OptionalServicesStatus.Up &&
-            studyParamsChanged === 'VoltageInit'
+            studyParamsChanged === ComputingType.VOLTAGE_INITIALIZATION
         ) {
             getVoltageInitStudyParameters(studyUuid)
                 .then((params) => {

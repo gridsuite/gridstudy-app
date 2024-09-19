@@ -67,6 +67,7 @@ import {
 import { mergeSx } from 'components/utils/functions';
 import { STUDY_PARAMS_CHANDED } from '../../../../utils/config-params';
 import { setStudyParamsChanged } from '../../../../redux/actions';
+import ComputingType from '../../../computing-status/computing-type';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -89,7 +90,7 @@ export const useGetNonEvacuatedEnergyParameters = () => {
     }, [studyUuid, snackError]);
 
     useEffect(() => {
-        if (studyUuid && studyParamsChanged === 'NonEvacuatedEnergy') {
+        if (studyUuid && studyParamsChanged === ComputingType.NON_EVACUATED_ENERGY_ANALYSIS) {
             getNonEvacuatedEnergyParameters(studyUuid)
                 .then((params) => {
                     setNonEvacuatedEnergyParams(params);

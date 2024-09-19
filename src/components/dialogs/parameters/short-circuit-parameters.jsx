@@ -45,6 +45,7 @@ import CreateParameterDialog from './common/parameters-creation-dialog';
 import { STUDY_PARAMS_CHANDED } from '../../../utils/config-params';
 import { setStudyParamsChanged } from '../../../redux/actions';
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
+import ComputingType from '../../computing-status/computing-type';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -74,7 +75,7 @@ export const useGetShortCircuitParameters = () => {
         if (
             studyUuid &&
             shortCircuitAvailability === OptionalServicesStatus.Up &&
-            studyParamsChanged === 'ShortCircuit'
+            studyParamsChanged === ComputingType.SHORT_CIRCUIT
         ) {
             getShortCircuitParameters(studyUuid)
                 .then((params) => {

@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
 import { UUID } from 'crypto';
-import { setStudyParamsChanged } from '../redux/actions';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
     resetImpactedSubstationsIds: () => void;
@@ -21,7 +20,6 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const dispatch = useDispatch();
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
     const [deletedEquipments, setDeletedEquipments] = useState<DeletedEquipment[]>([]);
@@ -41,13 +39,6 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     useEffect(() => {
         if (studyUpdatedForce.type === NotificationType.STUDY) {
-            // check if we need to update the study parameters
-            const headers = studyUpdatedForce.eventData.headers;
-            if (headers && headers['paramsName']) {
-                dispatch(setStudyParamsChanged(headers['paramsName']));
-                return;
-            }
-
             const {
                 impactedSubstationsIds: substationsIds,
                 deletedEquipments,
@@ -67,7 +58,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                 setImpactedSubstationsIds(substationsIds);
             }
         }
-    }, [studyUpdatedForce, dispatch]);
+    }, [studyUpdatedForce]);
 
     return {
         impactedSubstationsIds,

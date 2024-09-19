@@ -437,8 +437,7 @@ export const useParametersBackend = (
             studyParamsChanged === type &&
             backendFetchParameters &&
             studyUuid &&
-            optionalServiceStatus === OptionalServicesStatus.Up &&
-            studyParamsChanged !== ''
+            optionalServiceStatus === OptionalServicesStatus.Up
         ) {
             backendFetchParameters(studyUuid)
                 .then((params) => {

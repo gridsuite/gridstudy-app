@@ -174,7 +174,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
-        'LoadFlow',
+        ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
         null,
@@ -187,7 +187,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const securityAnalysisParametersBackend = useParametersBackend(
         user,
-        'SecurityAnalysis',
+        ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
         null,
@@ -199,7 +199,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
-        'SensitivityAnalysis',
+        ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
         null,
@@ -210,7 +210,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
-        'NonEvacuatedEnergy',
+        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
         nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,
