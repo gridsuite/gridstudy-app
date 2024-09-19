@@ -5,15 +5,26 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LineCreationDialogTab } from './line-modification-dialog';
+import { LineModificationDialogTab } from './line-modification-dialog';
 import { Box } from '@mui/material';
 import LimitsPane from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
+import React from 'react';
+import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
 
 const LineModificationDialogTabs = ({ studyUuid, currentNode, lineToModify, tabIndex }) => {
     return (
         <>
-            <Box hidden={tabIndex !== LineCreationDialogTab.CHARACTERISTICS_TAB} p={1} sx={{ marginTop: -2 }}>
+            <Box hidden={tabIndex !== LineModificationDialogTab.CONNECTIVITY_TAB} p={1}>
+                <BranchConnectivityForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    withPosition={true}
+                    isModification={true}
+                    previousValues={lineToModify}
+                />
+            </Box>
+            <Box hidden={tabIndex !== LineModificationDialogTab.CHARACTERISTICS_TAB} p={1}>
                 <LineCharacteristicsPane
                     displayConnectivity={false}
                     studyUuid={studyUuid}
@@ -24,7 +35,7 @@ const LineModificationDialogTabs = ({ studyUuid, currentNode, lineToModify, tabI
                 />
             </Box>
 
-            <Box hidden={tabIndex !== LineCreationDialogTab.LIMITS_TAB} p={1}>
+            <Box hidden={tabIndex !== LineModificationDialogTab.LIMITS_TAB} p={1}>
                 <LimitsPane currentNode={currentNode} equipmentToModify={lineToModify} clearableFields={true} />
             </Box>
         </>
