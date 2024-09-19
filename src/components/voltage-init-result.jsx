@@ -109,6 +109,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const gridRef = useRef();
     const defaultColDef = useMemo(
         () => ({
+            filter: true,
             sortable: true,
             resizable: false,
             lockPinned: true,
