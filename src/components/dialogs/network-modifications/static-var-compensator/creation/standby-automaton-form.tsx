@@ -36,7 +36,7 @@ export const StandbyAutomatonForm = () => {
     const id = AUTOMATON;
     const { setValue } = useFormContext();
 
-    const [isHover, setHover] = useState(false);
+    const [hover, setHover] = useState(false);
     const watchAddStandbyAutomatonProps = useWatch({
         name: `${id}.${ADD_STAND_BY_AUTOMATON}`,
     });
@@ -80,7 +80,7 @@ export const StandbyAutomatonForm = () => {
                         label={<FormattedMessage id={'StandbyAutomaton'} />}
                         labelPlacement="start"
                     />
-                    {isHover && watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id && (
+                    {hover && watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id && (
                         <Box marginLeft={2} marginTop={'5px'}>
                             <Tooltip title={<FormattedMessage id="StandbyNotAvailable" />}>
                                 <WarningAmber color="warning"></WarningAmber>
@@ -117,43 +117,41 @@ export const StandbyAutomatonForm = () => {
     };
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <Grid item xs={4}>
-                    <Box>
-                        <CheckboxInput name={`${id}.${ADD_STAND_BY_AUTOMATON}`} label="AddAutomaton" />
-                    </Box>
-                </Grid>
-                {watchAddStandbyAutomatonProps && (
-                    <>
-                        <Grid container spacing={2} padding={2}>
-                            {Object.keys(fields).map((key: string, index: number) => {
-                                const typedKey = key as FieldKeys;
-                                return (
-                                    <Grid item xs={6} key={index}>
-                                        {fields[typedKey]}
-                                    </Grid>
-                                );
-                            })}
-                        </Grid>
-
-                        <Grid container spacing={2} padding={2}>
-                            <Grid item xs={6}>
-                                <SelectInput
-                                    name={`${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}`}
-                                    options={Object.values(CHARACTERISTICS_CHOICES)}
-                                    fullWidth
-                                    disableClearable
-                                    size="small"
-                                />
-                            </Grid>
-                        </Grid>
-                        <Grid container spacing={2} padding={2}>
-                            <SusceptanceArea />
-                        </Grid>
-                    </>
-                )}
+        <Grid container spacing={2}>
+            <Grid item xs={4}>
+                <Box>
+                    <CheckboxInput name={`${id}.${ADD_STAND_BY_AUTOMATON}`} label="AddAutomaton" />
+                </Box>
             </Grid>
-        </>
+            {watchAddStandbyAutomatonProps && (
+                <>
+                    <Grid container spacing={2} padding={2}>
+                        {Object.keys(fields).map((key: string) => {
+                            const typedKey = key as FieldKeys;
+                            return (
+                                <Grid item xs={6} key={key}>
+                                    {fields[typedKey]}
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+
+                    <Grid container spacing={2} padding={2}>
+                        <Grid item xs={6}>
+                            <SelectInput
+                                name={`${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}`}
+                                options={Object.values(CHARACTERISTICS_CHOICES)}
+                                fullWidth
+                                disableClearable
+                                size="small"
+                            />
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2} padding={2}>
+                        <SusceptanceArea />
+                    </Grid>
+                </>
+            )}
+        </Grid>
     );
 };
