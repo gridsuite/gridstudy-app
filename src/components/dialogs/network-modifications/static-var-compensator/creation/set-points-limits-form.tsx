@@ -48,6 +48,7 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
 }) => {
     const id = SETPOINTS_LIMITS;
     const watchCharacteristicsChoice = useWatch({ name: `${id}.${CHARACTERISTICS_CHOICE}` });
+    // a tricky solution to rerender voltage/reactive setpoints field with label changed between required <-> optional
     useWatch({ name: `${id}.${VOLTAGE_REGULATION_MODE}` });
     const watchRegulationType = useWatch({ name: `${id}.${VOLTAGE_REGULATION_TYPE}` });
     const minSusceptanceField = (

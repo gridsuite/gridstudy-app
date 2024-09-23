@@ -40,7 +40,6 @@ export const StandByAutomatonForm = () => {
     const watchAddStandbyAutomatonProps = useWatch({
         name: `${id}.${ADD_STAND_BY_AUTOMATON}`,
     });
-    // a tricky solution to rerender voltage/reactive setpoints field with label changed between required <-> optional
     const watchVoltageMode = useWatch({ name: `${SETPOINTS_LIMITS}.${VOLTAGE_REGULATION_MODE}` });
 
     const isDisabled = useMemo(() => {
