@@ -7,13 +7,13 @@
     "dependencies": {
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.5",
-        "@gridsuite/commons-ui": "0.64.3",
+        "@gridsuite/commons-ui": "0.65.2",
         "@hookform/resolvers": "^3.3.4",
         "@mui/icons-material": "^5.15.14",
         "@mui/lab": "5.0.0-alpha.169",
         "@mui/material": "^5.15.14",
         "@mui/x-tree-view": "^6.17.0",
-        "@powsybl/diagram-viewer": "0.5.4",
+        "@powsybl/diagram-viewer": "0.5.5",
         "@reduxjs/toolkit": "^2.2.3",
         "@svgdotjs/svg.js": "^3.2.0",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
@@ -58,6 +58,7 @@
         "build": "tsc && vite build",
         "serve": "vite preview",
         "test": "jest",
+        "test:coverage": "jest --coverage",
         "lint": "eslint . --ext js,mjs,jsx,ts,mts,tsx --max-warnings 0",
         "licenses-check": "license-checker --summary --excludePrivatePackages --production --onlyAllow \"$( jq -r .onlyAllow[] license-checker-config.json | tr '\n' ';')\" --excludePackages \"$( jq -r .excludePackages[] license-checker-config.json | tr '\n' ';')\""
     },

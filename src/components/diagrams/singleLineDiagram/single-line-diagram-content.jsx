@@ -48,8 +48,6 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-ty
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
-import { useOptionalServiceStatus } from '../../../hooks/use-optional-service-status';
-import { OptionalServicesNames, OptionalServicesStatus } from '../../utils/optional-services';
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
@@ -76,7 +74,6 @@ function SingleLineDiagramContent(props) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
     const computationStarting = useSelector((state) => state.computationStarting);
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -460,7 +457,7 @@ function SingleLineDiagramContent(props) {
                 isReadyForInteraction ? showEquipmentMenu : null,
 
                 // callback on the buses
-                isReadyForInteraction && shortCircuitAvailability === OptionalServicesStatus.Up ? showBusMenu : null,
+                isReadyForInteraction ? showBusMenu : null,
 
                 // arrows color
                 theme.palette.background.paper,
@@ -495,7 +492,6 @@ function SingleLineDiagramContent(props) {
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        shortCircuitAvailability,
         props.svgUrl,
         props.svg,
         props.svgMetadata,

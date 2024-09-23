@@ -3,7 +3,8 @@
     "extends": ["react-app", "plugin:prettier/recommended"],
     "ignorePatterns": [
         // node_modules is implicitly always ignored
-        "build"
+        "build",
+        "coverage"
     ],
     "rules": {
         "prettier/prettier": "warn",
