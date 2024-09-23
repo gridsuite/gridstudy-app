@@ -11,6 +11,15 @@ import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import ChildMenuItem from './create-child-menu-item';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
+import { MenuDefinition } from './network-modification-menu.type';
+
+interface NetworkModificationMenuProps {
+    open: boolean;
+    onClose: () => void;
+    onItemClick: (id: string) => void;
+    menuDefinition: MenuDefinition[];
+    anchorEl?: HTMLElement | null;
+}
 
 /**
  * Menu to select network modification to create
@@ -20,14 +29,20 @@ import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
  * @param menuDefinition the definition of nested menu
  * @param anchorEl anchorEl of fab Button
  */
-const NetworkModificationsMenu = ({ open, onClose, onItemClick, menuDefinition, anchorEl }) => {
+const NetworkModificationsMenu = ({
+    open,
+    onClose,
+    onItemClick,
+    menuDefinition,
+    anchorEl,
+}: NetworkModificationMenuProps) => {
     const intl = useIntl();
-    const renderMenuItems = (menuItems) => {
+    const renderMenuItems = (menuItems: MenuDefinition[]) => {
         return menuItems.map((menuItem) => {
             if (menuItem?.hide) {
                 return undefined;
             }
-            return menuItem.subItems === undefined ? (
+            return !('subItems' in menuItem) ? (
                 <ChildMenuItem
                     key={menuItem.id}
                     item={{

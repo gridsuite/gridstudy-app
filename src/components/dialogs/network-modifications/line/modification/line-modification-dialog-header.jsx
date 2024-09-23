@@ -7,11 +7,10 @@
 
 import React from 'react';
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, TextField } from '@mui/material';
 import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
-import { TextField } from '@mui/material';
 
 const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIndex, setTabIndex, equipmentId }) => {
     const lineIdField = (
@@ -55,6 +54,7 @@ const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIn
                     tabIndex={tabIndex}
                     tabIndexesWithError={tabIndexesWithError}
                     setTabIndex={setTabIndex}
+                    isModification={true}
                 />
             </Box>
         </>

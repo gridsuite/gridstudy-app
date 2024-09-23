@@ -4,42 +4,51 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, DialogContentText } from '@mui/material';
+import { Box, DialogContentText, Theme } from '@mui/material';
 import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer.js';
+import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type.js';
+import { toggleElementFromList } from 'components/utils/utils.js';
 
 const styles = {
-    text: (theme) => ({
+    text: (theme: Theme) => ({
         padding: theme.spacing(1),
     }),
-    listContainer: (theme) => ({
+    listContainer: (theme: Theme) => ({
         overflowY: 'auto',
         display: 'flex',
         flexDirection: 'column',
         flexGrow: 1,
         paddingBottom: theme.spacing(8),
     }),
-    selectAll: (theme) => ({
+    selectAll: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(3),
         paddingBottom: theme.spacing(1),
     }),
-    list: (theme) => ({
+    list: (theme: Theme) => ({
         paddingTop: theme.spacing(0),
         flexGrow: 1,
     }),
 };
+
+interface RestoreModificationDialogProps {
+    open: boolean;
+    onClose: () => void;
+    modifToRestore: NetworkModificationMetadata[];
+}
 
 /**
  * Dialog to select network modification to restore
@@ -50,11 +59,13 @@ const styles = {
  * @param studyUuid Id of the current study
  */
 
-const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode, studyUuid }) => {
+const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreModificationDialogProps) => {
     const intl = useIntl();
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
-    const [stashedModifications, setStashedModifications] = useState([]);
-    const [selectedItems, setSelectedItems] = useState([]);
+    const [stashedModifications, setStashedModifications] = useState<NetworkModificationMetadata[]>([]);
+    const [selectedItems, setSelectedItems] = useState<NetworkModificationMetadata[]>([]);
     const [openDeleteConfirmationPopup, setOpenDeleteConfirmationPopup] = useState(false);
 
     const { computeLabel } = useModificationLabelComputer();
@@ -67,14 +78,14 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
     const handleDelete = () => {
         const selectedModificationsUuidsToDelete = selectedItems.map((item) => item.uuid);
         setOpenDeleteConfirmationPopup(false);
-        deleteModifications(studyUuid, currentNode.id, selectedModificationsUuidsToDelete);
+        deleteModifications(studyUuid, currentNode?.id, selectedModificationsUuidsToDelete);
         handleClose();
     };
 
     const handleRestore = () => {
         const selectedModificationsUuidToRestore = selectedItems.map((item) => item.uuid);
 
-        restoreModifications(studyUuid, currentNode.id, selectedModificationsUuidToRestore);
+        restoreModifications(studyUuid, currentNode?.id, selectedModificationsUuidToRestore);
         handleClose();
     };
 
@@ -82,7 +93,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
         setStashedModifications(modifToRestore);
     }, [modifToRestore]);
 
-    const getLabel = (modif) => {
+    const getLabel = (modif: NetworkModificationMetadata) => {
         if (!modif) {
             return null;
         }
@@ -117,6 +128,15 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
                     onSelectionChange={setSelectedItems}
                     getItemId={(v) => v.uuid}
                     getItemLabel={getLabel}
+                    onItemClick={(stashedModification) =>
+                        setSelectedItems((oldCheckedElements) =>
+                            toggleElementFromList(
+                                stashedModification,
+                                oldCheckedElements,
+                                (v: NetworkModificationMetadata) => v.uuid
+                            )
+                        )
+                    }
                     addSelectAllCheckbox
                     selectAllCheckBoxLabel={'SelectAll'}
                     divider
@@ -148,14 +168,6 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore, currentNode,
             )}
         </Dialog>
     );
-};
-
-RestoreModificationDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    modifications: PropTypes.array,
-    currentNode: PropTypes.any,
-    studyUuid: PropTypes.any,
 };
 
 export default RestoreModificationDialog;
