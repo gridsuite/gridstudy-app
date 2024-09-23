@@ -87,7 +87,7 @@ import {
     getStandbyAutomatonFormData,
     getStandbyAutomatonFormDataValues,
     getStandbyAutomatonFormValidationSchema,
-} from './stand-by-automaton-form-utils';
+} from './standby-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
 
 export type StaticVarCompensatorCreationSchemaForm = {

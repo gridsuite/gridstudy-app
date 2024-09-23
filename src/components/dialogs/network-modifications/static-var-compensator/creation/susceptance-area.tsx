@@ -24,7 +24,7 @@ import { SliderInput, TextInput } from '@gridsuite/commons-ui';
 import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
 import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { getFloatNumber } from './stand-by-automaton-form-utils';
+import { getFloatNumber } from './standby-automaton-form-utils';
 import { isValidPercentage } from '../../../percentage-area/percentage-area-utils';
 import { InputAdornment, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';

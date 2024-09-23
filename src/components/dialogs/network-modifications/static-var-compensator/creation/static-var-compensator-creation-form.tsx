@@ -13,7 +13,7 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
-import { StandByAutomatonForm } from './stand-by-automaton-form';
+import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
@@ -55,7 +55,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
                 />
             </Box>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB}>
-                <StandByAutomatonForm />
+                <StandbyAutomatonForm />
             </Box>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB}>
                 <PropertiesForm networkElementType={'staticCompensator'} />

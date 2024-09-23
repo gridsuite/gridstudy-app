@@ -32,7 +32,7 @@ import { WarningAmber } from '@mui/icons-material';
 import { SusceptanceArea } from './susceptance-area';
 
 type FieldKeys = 'standby' | 'lVoltageSetLimit' | 'hVoltageSetLimit' | 'lVoltageThreshold' | 'hVoltageThreshold';
-export const StandByAutomatonForm = () => {
+export const StandbyAutomatonForm = () => {
     const id = AUTOMATON;
     const { setValue } = useFormContext();
 
