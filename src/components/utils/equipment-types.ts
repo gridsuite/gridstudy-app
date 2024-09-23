@@ -1,3 +1,5 @@
+import {Identifiable} from "@gridsuite/commons-ui";
+
 /**
  * Copyright (c) 2023, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -74,4 +76,8 @@ export function equipmentTypeToLabel(equipmentType: EQUIPMENT_TYPES) {
         default:
             return equipmentType;
     }
+}
+
+export interface VoltageLevel extends Identifiable {
+    nominalV: number;
 }

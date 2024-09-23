@@ -38,6 +38,7 @@ import {
     SelectionCreationPanelFormSchema,
     getSelectionCreationSchema,
 } from './selection-creation-schema';
+import { VoltageLevel } from '../../utils/equipment-types';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -54,10 +55,6 @@ const emptyFormData = {
 };
 
 const formSchema = getSelectionCreationSchema();
-
-interface VoltageLevel extends Identifiable {
-    nominalV: number;
-}
 
 function isVoltageLevel(obj: Identifiable): obj is VoltageLevel {
     return (obj as VoltageLevel).nominalV !== undefined;
