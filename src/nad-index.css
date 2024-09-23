@@ -80,7 +80,7 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
     font: 20px serif;
     dominant-baseline: middle;
     stroke: #ffffffaa;
-    stroke-width: 0.5%;
+    stroke-width: 8;
     stroke-linejoin: round;
     paint-order: stroke;
 }

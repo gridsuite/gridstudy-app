@@ -27,21 +27,21 @@ const dynamicCssRules = [
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
         belowThresholdCssDeclaration: { display: 'block' },
         aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3000,
+        threshold: 2500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
     {
         cssSelector: '.nad-label-box', // tooltips linked to nodes
         belowThresholdCssDeclaration: { display: 'block' },
         aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 4000,
+        threshold: 3500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
     {
         cssSelector: '.nad-text-edges', // visual link between nodes and their tooltip
         belowThresholdCssDeclaration: { display: 'block' },
         aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 4000,
+        threshold: 3500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
     {
