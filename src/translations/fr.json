@@ -777,6 +777,7 @@
     "b0": "Susceptance fixe",
     "LimitsTab": "Limites",
     "LineCharacteristicsTab": "Caractéristiques",
+    "ConnectivityTab": "Connectivité",
     "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
     "TemporaryLimitDuration": "Tempo (s)",
     "TemporaryLimitName": "Nom",
@@ -1397,5 +1398,6 @@
     "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
     "guidancePopUp.action":"Fermer l'éditeur",
     "generateNad": "Générer",
+    "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification"
     "AddAutomaton": "Ajouter un automate"
 }

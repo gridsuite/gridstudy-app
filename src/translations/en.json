@@ -776,6 +776,7 @@
     "HighVoltageThreshold": "High voltage threshold",
     "LimitsTab": "Limits",
     "LineCharacteristicsTab": "Characteristics",
+    "ConnectivityTab": "Connectivity",
     "TemporaryCurrentLimitsText": "Temporary current limits",
     "TemporaryLimitDuration": "Duration (s)",
     "TemporaryLimitName": "Name",
@@ -1397,5 +1398,6 @@
     "guidancePopUp.secondVariant":"Press {symbol} Enter to finish or Esc to cancel.",
     "guidancePopUp.action":"Close editor",
     "generateNad": "Generate",
+    "networkModificationActivationError": "An error occured while enabling / disabling modification"
     "AddAutomaton": "Add an automaton"
 }

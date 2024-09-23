@@ -241,3 +241,16 @@ export function usePrevious(value) {
     }, [value]);
     return ref.current;
 }
+
+// remove elementToToggle from list, or add it if it does not exist yet
+// useful when checking/unchecking checkboxex
+export function toggleElementFromList(elementToToggle, list, getFieldId) {
+    const resultList = [...list];
+    const elementToToggleIndex = resultList.findIndex((element) => getFieldId(element) === getFieldId(elementToToggle));
+    if (elementToToggleIndex >= 0) {
+        resultList.splice(elementToToggleIndex, 1);
+    } else {
+        resultList.push(elementToToggle);
+    }
+    return resultList;
+}

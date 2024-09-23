@@ -43,6 +43,25 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
+export function setModificationActivated(studyUuid, nodeUuid, modificationUuid, activated) {
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('activated', activated);
+    urlSearchParams.append('uuids', [modificationUuid]);
+    const modificationUpdateActiveUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/nodes/' +
+        encodeURIComponent(nodeUuid) +
+        '/network-modifications' +
+        '?' +
+        urlSearchParams.toString();
+    console.debug(modificationUpdateActiveUrl);
+    return backendFetch(modificationUpdateActiveUrl, {
+        method: 'PUT',
+    });
+}
+
 export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('stashed', false);
@@ -925,6 +944,18 @@ export function modifyLine(
     b2,
     currentLimit1,
     currentLimit2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2,
+    connectionName1,
+    connectionName2,
+    connectionDirection1,
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2,
+    connected1,
+    connected2,
     isUpdate,
     modificationUuid,
     properties
@@ -956,6 +987,18 @@ export function modifyLine(
             b2: toModificationOperation(b2),
             currentLimits1: currentLimit1,
             currentLimits2: currentLimit2,
+            voltageLevelId1: toModificationOperation(voltageLevelId1),
+            busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
+            voltageLevelId2: toModificationOperation(voltageLevelId2),
+            busOrBusbarSectionId2: toModificationOperation(busOrBusbarSectionId2),
+            connectionName1: toModificationOperation(connectionName1),
+            connectionName2: toModificationOperation(connectionName2),
+            connectionDirection1: toModificationOperation(connectionDirection1),
+            connectionDirection2: toModificationOperation(connectionDirection2),
+            connectionPosition1: toModificationOperation(connectionPosition1),
+            connectionPosition2: toModificationOperation(connectionPosition2),
+            terminal1Connected: toModificationOperation(connected1),
+            terminal2Connected: toModificationOperation(connected2),
             properties,
         }),
     });
@@ -1057,6 +1100,18 @@ export function modifyTwoWindingsTransformer(
     currentLimit2,
     ratioTapChanger,
     phaseTapChanger,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2,
+    connectionName1,
+    connectionName2,
+    connectionDirection1,
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2,
+    connected1,
+    connected2,
     isUpdate,
     modificationUuid,
     properties
@@ -1092,6 +1147,18 @@ export function modifyTwoWindingsTransformer(
             currentLimits2: currentLimit2,
             ratioTapChanger: ratioTapChanger,
             phaseTapChanger: phaseTapChanger,
+            voltageLevelId1: toModificationOperation(voltageLevelId1),
+            busOrBusbarSectionId1: toModificationOperation(busOrBusbarSectionId1),
+            voltageLevelId2: toModificationOperation(voltageLevelId2),
+            busOrBusbarSectionId2: toModificationOperation(busOrBusbarSectionId2),
+            connectionName1: toModificationOperation(connectionName1),
+            connectionName2: toModificationOperation(connectionName2),
+            connectionDirection1: toModificationOperation(connectionDirection1),
+            connectionDirection2: toModificationOperation(connectionDirection2),
+            connectionPosition1: toModificationOperation(connectionPosition1),
+            connectionPosition2: toModificationOperation(connectionPosition2),
+            terminal1Connected: toModificationOperation(connected1),
+            terminal2Connected: toModificationOperation(connected2),
             properties,
         }),
     });
