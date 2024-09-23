@@ -1,4 +1,4 @@
-import {Identifiable} from "@gridsuite/commons-ui";
+import { Identifiable } from '@gridsuite/commons-ui';
 
 /**
  * Copyright (c) 2023, RTE (http://www.rte-france.com)
