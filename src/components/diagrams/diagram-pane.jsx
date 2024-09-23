@@ -44,7 +44,7 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
@@ -262,6 +262,10 @@ const styles = {
         bottom: '60px',
         position: 'absolute',
         marginLeft: '3em',
+    },
+    minimizedDiagramTitle: {
+        maxWidth: '17em',
+        paddingTop: '4px',
     },
     separator: {
         flexGrow: 1,
@@ -1010,7 +1014,12 @@ export function DiagramPane({ studyUuid, showInSpreadsheet, currentNode, visible
                                         <ArrowUpwardIcon />
                                     )
                                 }
-                                label={getDiagramTitle(diagramView)}
+                                label={
+                                    <OverflowableText
+                                        sx={styles.minimizedDiagramTitle}
+                                        text={getDiagramTitle(diagramView)}
+                                    />
+                                }
                                 onClick={() => handleOpenDiagramView(diagramView.id, diagramView.svgType)}
                                 onDelete={() => handleCloseDiagramView(diagramView.id, diagramView.svgType)}
                             />
