@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { INITIAL_VOLTAGE, STATUS } from '../../../utils/constants';
+import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS, STATUS } from '../../../utils/constants';
 import { Lens } from '@mui/icons-material';
 
 import {
@@ -17,6 +17,7 @@ import {
     SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../../utils/field-constants';
+import { ShortCircuitParameters } from './short-circuit-parameters.type';
 
 export const intlPredefinedParametersOptions = () => [
     {
@@ -51,7 +52,10 @@ export const getStatus = (status: STATUS, styles: any) => {
     return <Lens fontSize={'medium'} sx={color} />;
 };
 
-export const formatShortCircuitParameters = (parameters: any, predefinedParameters: any): any => {
+export const formatShortCircuitParameters = (
+    parameters: ShortCircuitParameters,
+    predefinedParameters: PREDEFINED_PARAMETERS
+): any => {
     return {
         [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters.withFeederResult,
         [SHORT_CIRCUIT_PREDEFINED_PARAMS]: predefinedParameters,
