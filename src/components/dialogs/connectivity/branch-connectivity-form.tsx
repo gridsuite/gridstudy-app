@@ -55,7 +55,7 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             withPosition={true}
             isEquipmentModification={isModification}
             previousValues={{
-                connectablePosition: previousValues?.connectablePosition12,
+                connectablePosition: previousValues?.connectablePosition2,
                 terminalConnected: previousValues?.terminal2Connected,
             }}
         />
