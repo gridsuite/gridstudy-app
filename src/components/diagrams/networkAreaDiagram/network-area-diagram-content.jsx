@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -21,6 +21,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from 'components/computing-status/computing-type';
+import EquipmentPopover from 'components/tooltips/equipment-popover';
 
 const dynamicCssRules = [
     {
@@ -94,10 +95,50 @@ function NetworkAreaDiagramContent(props) {
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
-
+    const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
+    const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const studyUuid = useSelector((state) => state.studyUuid);
     /**
      * DIAGRAM CONTENT BUILDING
      */
+    const handleTogglePopover = useCallback(
+        (shouldDisplay, anchorEl, mousePosition, equipmentId, equipmentType) => {
+            console.log('=======cc======', shouldDisplay, mousePosition, equipmentId, equipmentType);
+            setShouldDisplayTooltip(shouldDisplay);
+            setAnchorPosition({
+                top: mousePosition.y + 10, // Adjust for better positioning
+                left: mousePosition.x + 10,
+            });
+            if (shouldDisplay) {
+                setHoveredEquipmentId(equipmentId);
+                setAnchorPosition({
+                    top: mousePosition.y + 10, // Adjust for better positioning
+                    left: mousePosition.x + 10,
+                });
+                //   setEquipmentPopoverAnchorEl(currentTarget);
+                setHoveredEquipmentType(equipmentType);
+            } else {
+                setHoveredEquipmentId('');
+                //  setEquipmentPopoverAnchorEl(null);
+                setHoveredEquipmentType('');
+            }
+        },
+        [setShouldDisplayTooltip, setAnchorPosition]
+    );
+    const displayTooltip = () => {
+        return (
+            <EquipmentPopover
+                studyUuid={studyUuid}
+                anchorEl={null}
+                anchorPosition={anchorPosition}
+                equipmentType={hoveredEquipmentType}
+                equipmentId={hoveredEquipmentId}
+                loadFlowStatus={loadFlowStatus}
+            />
+        );
+    };
 
     useLayoutEffect(() => {
         if (props.svg) {
@@ -113,7 +154,8 @@ function NetworkAreaDiagramContent(props) {
                 null,
                 true,
                 true,
-                dynamicCssRules
+                dynamicCssRules,
+                handleTogglePopover
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -131,7 +173,15 @@ function NetworkAreaDiagramContent(props) {
 
             diagramViewerRef.current = diagramViewer;
         }
-    }, [props.diagramId, props.svgType, props.svg, currentNode, props.loadingState, diagramSizeSetter]);
+    }, [
+        props.diagramId,
+        props.svgType,
+        props.svg,
+        currentNode,
+        props.loadingState,
+        diagramSizeSetter,
+        handleTogglePopover,
+    ]);
 
     /**
      * RENDER
@@ -140,6 +190,8 @@ function NetworkAreaDiagramContent(props) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
+            {shouldDisplayTooltip && displayTooltip()}
+
             <Box
                 ref={svgRef}
                 sx={mergeSx(

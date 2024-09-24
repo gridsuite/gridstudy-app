@@ -28,11 +28,12 @@ const styles = {
     }),
 };
 
-const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loadFlowStatus }) => {
+const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, equipmentType, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
+    const [localAnchorPosition, setLocalAnchorPosition] = useState(null);
 
     const getNetworkElementInfos = useCallback(
         (equipmentId, equipmentType, currentNodeId, studyUuid) => {
@@ -45,6 +46,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                 true
             ).then((value) => {
                 setEquipmentInfo(value);
+                setLocalAnchorPosition(anchorPosition);
                 // When multiple rerender happens on the svg, the anchorEl can be already removed from the DOM
                 // which will cause the popover to jump all over the place during a few frames, so we wait for the
                 // debounced fetch to end to fix that effect.
@@ -55,7 +57,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                 }
             });
         },
-        [anchorEl]
+        [anchorEl, anchorPosition]
     );
 
     const debouncedNetworkElementInfos = useDebounce(getNetworkElementInfos, 200);
@@ -66,7 +68,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
         } else {
             setEquipmentInfo(null);
         }
-    }, [debouncedNetworkElementInfos, equipmentId, equipmentType, currentNode.id, studyUuid]);
+    }, [debouncedNetworkElementInfos, anchorPosition, equipmentId, equipmentType, currentNode.id, studyUuid]);
 
     const handlePopoverClose = () => {
         setEquipmentInfo(null);
@@ -239,25 +241,33 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
             </>
         );
     };
+    const anchorProps = localAnchorPosition
+        ? {
+              anchorReference: 'anchorPosition', // Define reference to anchorPosition
+              anchorPosition: localAnchorPosition, // Use position directly
+          }
+        : {
+              anchorEl: localAnchorEl, // Use anchorEl when no position is provided
+              anchorOrigin: {
+                  vertical: 'bottom',
+                  horizontal: 'left',
+              },
+              transformOrigin: {
+                  vertical: 'top',
+                  horizontal: 'right',
+              },
+          };
 
     return (
         <>
-            {localAnchorEl && (
+            {(localAnchorPosition || localAnchorEl) && (
                 <Popover
-                    anchorEl={localAnchorEl}
+                    {...anchorProps}
                     sx={{
                         pointerEvents: 'none',
                     }}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
                     onClose={handlePopoverClose}
-                    open={Boolean(localAnchorEl)}
+                    open={Boolean(localAnchorPosition || localAnchorEl)}
                     disableRestoreFocus
                 >
                     {equipmentInfo !== null && (
@@ -386,6 +396,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
 EquipmentPopover.propTypes = {
     studyUuid: PropTypes.string,
     anchorEl: PropTypes.any,
+    anchorPosition: PropTypes.any,
     equipmentId: PropTypes.string,
     equipmentType: PropTypes.string,
     loadFlowStatus: PropTypes.any,

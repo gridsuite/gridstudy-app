@@ -363,6 +363,7 @@ function SingleLineDiagramContent(props) {
             <EquipmentPopover
                 studyUuid={studyUuid}
                 anchorEl={equipmentPopoverAnchorEl}
+                anchorPosition={null}
                 equipmentType={hoveredEquipmentType}
                 equipmentId={hoveredEquipmentId}
                 loadFlowStatus={loadFlowStatus}
