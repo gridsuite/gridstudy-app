@@ -152,7 +152,8 @@ export type AppActions =
     | SensitivityAnalysisResultFilterAction
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
-    | SpreadsheetFilterAction;
+    | SpreadsheetFilterAction
+    | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1131,17 +1132,17 @@ export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
 export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
     table: TablesDefinitionsNames;
     definitions: ColumnWithFormula[];
-    filter: FormulaFilter;
+    filter?: FormulaFilter;
 };
 export function setCustomColumDefinitions(
     table: TablesDefinitionsNames,
-    customColumNS: ColumnWithFormula[],
-    filter: FormulaFilter
+    customColumns: ColumnWithFormula[],
+    filter?: FormulaFilter
 ): CustomColumnsDefinitionsAction {
     return {
         type: CUSTOM_COLUMNS_DEFINITIONS,
         table,
-        definitions: customColumNS,
+        definitions: customColumns,
         filter: filter,
     };
 }

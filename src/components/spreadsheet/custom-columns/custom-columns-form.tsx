@@ -8,12 +8,10 @@
 import yup from '../../../components/utils/yup-config';
 
 export const TAB_CUSTOM_COLUMN = 'TAB_CUSTOM_COLUMN';
-export const FORMULA_NAME = 'FORMULA_NAME';
-export const COLUMN_NAME = 'COLUMN_NAME';
-export const FORMULA = 'FORMULA';
+export const COLUMN_NAME = 'name';
+export const FORMULA = 'formula';
 
 export const initialCustomColumnForm: CustomColumnForm = {
-    [FORMULA_NAME]: '',
     [TAB_CUSTOM_COLUMN]: [
         {
             [COLUMN_NAME]: '',
@@ -23,13 +21,18 @@ export const initialCustomColumnForm: CustomColumnForm = {
 };
 
 export const customColumnFormSchema = yup.object().shape({
-    [FORMULA_NAME]: yup.string().required(),
-    [TAB_CUSTOM_COLUMN]: yup.array().of(
-        yup.object().shape({
-            [COLUMN_NAME]: yup.string().required(),
-            [FORMULA]: yup.string().required(),
-        })
-    ),
+    [TAB_CUSTOM_COLUMN]: yup
+        .array()
+        .of(
+            yup.object().shape({
+                [COLUMN_NAME]: yup
+                    .string()
+                    .required()
+                    .matches(/^[^\s$]+$/, 'Column name must not contain spaces or $ symbols'),
+                [FORMULA]: yup.string().required(),
+            })
+        )
+        .min(1, 'The array must have at least one item'),
 });
 
 export type CustomColumnForm = yup.InferType<typeof customColumnFormSchema>;

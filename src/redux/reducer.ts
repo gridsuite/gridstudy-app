@@ -54,6 +54,8 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
+    CUSTOM_COLUMNS_DEFINITIONS,
+    CustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -1557,6 +1559,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
+        state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+        //state.allCustomColumnsDefinitions[action.table].filter = action.filter;
     });
 });
 

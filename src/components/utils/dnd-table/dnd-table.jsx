@@ -38,7 +38,7 @@ import ChipItemsInput from '../rhf-inputs/chip-items-input';
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
     columnsStyle: {
-        display: 'flex',
+        display: 'inline-flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         margin: 1,
@@ -164,6 +164,7 @@ const DndTable = ({
                     getPreviousValue ? getPreviousValue(rowIndex, column, arrayFormName, previousValues) : undefined
                 }
                 valueModified={isValueModified ? isValueModified(rowIndex, arrayFormName) : false}
+                sx={{ width: column?.width }}
             />
         );
     }
@@ -285,7 +286,7 @@ const DndTable = ({
                         />
                     </TableCell>
                     {columnsDefinition.map((column) => (
-                        <TableCell key={column.dataKey}>
+                        <TableCell key={column.dataKey} sx={{ width: column?.width }}>
                             <Box sx={styles.columnsStyle}>
                                 {column.label}
                                 {column.extra}

@@ -29,6 +29,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/dialog_edit/submit_error': 'Invalid definition',
     'spreadsheet/custom_column/column_name': 'Column name',
     'spreadsheet/custom_column/column_content': 'Column content',
+    'spreadsheet/custom_column/column_content_tooltip': `Column content is described with variable names (in order to reference grid data) and operators provided by MathJS library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
 };
 
 export default spreadsheetFr;

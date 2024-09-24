@@ -1,13 +1,28 @@
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { COLUMN_NAME, FORMULA, TAB_CUSTOM_COLUMN } from './custom-columns-form';
-import { SELECTED } from 'components/utils/field-constants';
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
+import { IconButton, Tooltip } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 
 export default function CustomColumnTable() {
     const DndTableTyped = DndTable as React.ComponentType<any>;
     const intl = useIntl();
+    const CustomColumnTooltip = useMemo(() => {
+        return (
+            <Tooltip
+                title={intl.formatMessage({
+                    id: 'spreadsheet/custom_column/column_content_tooltip',
+                })}
+            >
+                <IconButton>
+                    <InfoIcon />
+                </IconButton>
+            </Tooltip>
+        );
+    }, [intl]);
+
     const CUSTOM_COLUMNS_DEFINITIONS = useMemo(() => {
         return [
             {
@@ -16,13 +31,14 @@ export default function CustomColumnTable() {
                 initialValue: null,
                 editable: true,
                 titleId: 'FiltersListsSelection',
+                width: '250px',
             },
             {
                 label: 'spreadsheet/custom_column/column_content',
                 dataKey: FORMULA,
                 initialValue: null,
                 editable: true,
-                textAlign: 'right',
+                extra: CustomColumnTooltip,
             },
         ].map((column) => ({
             ...column,
@@ -31,7 +47,7 @@ export default function CustomColumnTable() {
                 .toLowerCase()
                 .replace(/^\w/, (c) => c.toUpperCase()),
         }));
-    }, [intl]);
+    }, [CustomColumnTooltip, intl]);
 
     const useTabCustomColumnFieldArrayOutput = useFieldArray({
         name: `${TAB_CUSTOM_COLUMN}`,
@@ -39,7 +55,6 @@ export default function CustomColumnTable() {
 
     const newCustomColumnRowData = useMemo(() => {
         const newRowData: any = {};
-        newRowData[SELECTED] = false;
         CUSTOM_COLUMNS_DEFINITIONS.forEach((column: any) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [CUSTOM_COLUMNS_DEFINITIONS]);
@@ -54,8 +69,6 @@ export default function CustomColumnTable() {
             tableHeight={270}
             withAddRowsDialog={false}
             withLeftButtons={false}
-            handleUploadButton={undefined /*TODO*/}
-            uploadButtonMessageId="spreadsheet/custom_column/dialog_edit/upload"
         />
     );
 }

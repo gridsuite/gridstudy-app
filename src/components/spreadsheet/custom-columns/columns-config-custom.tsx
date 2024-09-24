@@ -11,19 +11,18 @@ import { Badge, Box } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-//import CustomColumnsDialog from './custom-columns-dialog';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
 import { useStateBoolean, useStateNumber } from '../../../hooks/use-states';
-import CustomColumnsDialog from './custom-columns-dialog';
+import CustomColumnDialog from './custom-column-dialog';
 
 export type CustomColumnsConfigProps = {
     indexTab: number;
 };
 
 export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
-    const formulaCalculating = useStateBoolean(false); //TODO
-    const formulaError = useStateBoolean(false); //TODO
+    const formulaCalculating = useStateBoolean(false);
+    const formulaError = useStateBoolean(false);
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
     const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
@@ -64,7 +63,7 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
                     )}
                 </FormattedMessage>
             </LoadingButton>
-            <CustomColumnsDialog indexTab={indexTab} open={dialogOpen} />
+            <CustomColumnDialog indexTab={indexTab} open={dialogOpen} />
         </>
     );
 }
