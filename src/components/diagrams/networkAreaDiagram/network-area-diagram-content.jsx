@@ -93,6 +93,27 @@ const dynamicCssRules = [
         threshold: 2500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
+    {
+        cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
+        belowThresholdCssDeclaration: { 'stroke-width': '3' },
+        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
+        threshold: 1000,
+        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+    },
+    {
+        cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
+        belowThresholdCssDeclaration: { 'stroke-width': '3' },
+        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
+        threshold: 1000,
+        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+    },
+    {
+        cssSelector: '.nad-vl-nodes circle.nad-unknown-busnode',
+        belowThresholdCssDeclaration: { 'stroke-width': '3' },
+        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
+        threshold: 1000,
+        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+    },
 ];
 
 function NetworkAreaDiagramContent(props) {
