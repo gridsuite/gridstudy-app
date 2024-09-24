@@ -21,7 +21,6 @@ import {
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
     limitReductionModified,
-    setStudyParamsChanged,
 } from '../redux/actions';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
@@ -45,9 +44,8 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { NotificationType, StudyIndexationStatus } from 'redux/reducer';
+import { StudyIndexationStatus } from 'redux/reducer';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
-import { isValidComputingType } from './computing-status/computing-type';
 
 function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, nodeUuid, invalidations) {
     const headers = studyUpdatedForce?.eventData?.headers;
@@ -153,7 +151,6 @@ function useStudy(studyUuidRequest) {
 }
 
 export const UPDATE_TYPE_HEADER = 'updateType';
-export const COMPUTATION_TYPE_HEADER = 'computationType';
 const UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE = 'study_network_recreation_done';
 const UPDATE_TYPE_INDEXATION_STATUS = 'indexation_status_updated';
 const HEADER_INDEXATION_STATUS = 'indexation_status';
@@ -316,17 +313,9 @@ export function StudyContainer({ view, onChangeTab }) {
             ws.onmessage = function (event) {
                 const eventData = JSON.parse(event.data);
                 const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
-                const computationTypeHeader = eventData.headers[COMPUTATION_TYPE_HEADER];
                 if (updateTypeHeader === 'STUDY_ALERT') {
                     sendAlert(eventData);
                     return; // here, we do not want to update the redux state
-                }
-                // used to update the computation type
-                if (
-                    updateTypeHeader === NotificationType.COMPUTATION_PARAMETERS &&
-                    isValidComputingType(computationTypeHeader)
-                ) {
-                    dispatch(setStudyParamsChanged(computationTypeHeader));
                 }
                 displayErrorNotifications(eventData);
                 dispatch(studyUpdated(eventData));

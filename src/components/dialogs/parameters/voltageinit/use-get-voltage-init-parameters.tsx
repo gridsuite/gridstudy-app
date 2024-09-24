@@ -6,30 +6,30 @@
  */
 
 import { VoltageInitParam } from './voltage-init-utils';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
-import { setStudyParamsChanged } from '../../../../redux/actions';
-import { STUDY_PARAMS_CHANDED } from '../../../../utils/config-params';
-import ComputingType from '../../../computing-status/computing-type';
+import ComputationType from '../../../computing-status/computation-type';
+import { isComputationParametersUpdated } from '../common/computation-parameters-util';
+import { UUID } from 'crypto';
 
 export const useGetVoltageInitParameters = (): [
     VoltageInitParam | null,
     Dispatch<SetStateAction<VoltageInitParam | null>>
 ] => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const studyParamsChanged = useSelector((state: AppState) => state[STUDY_PARAMS_CHANDED]);
-    const dispatch = useDispatch();
+    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
     const { snackError } = useSnackMessage();
     const [voltageInitParams, setVoltageInitParams] = useState<VoltageInitParam | null>(null);
 
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
-    useEffect(() => {
-        if (studyUuid && voltageInitAvailability === OptionalServicesStatus.Up) {
+
+    const fetchVoltageInitStudyParameters = useCallback(
+        (studyUuid: UUID) => {
             getVoltageInitStudyParameters(studyUuid)
                 .then((params: VoltageInitParam) => {
                     setVoltageInitParams(params);
@@ -40,28 +40,25 @@ export const useGetVoltageInitParameters = (): [
                         headerId: 'paramsRetrievingError',
                     });
                 });
+        },
+        [snackError]
+    );
+    useEffect(() => {
+        if (studyUuid && voltageInitAvailability === OptionalServicesStatus.Up) {
+            fetchVoltageInitStudyParameters(studyUuid);
         }
-    }, [voltageInitAvailability, studyUuid, snackError]);
+    }, [voltageInitAvailability, studyUuid, fetchVoltageInitStudyParameters]);
 
+    // fetch the parameter if VOLTAGE_INITIALIZATION  notification type is received.
     useEffect(() => {
         if (
             studyUuid &&
             voltageInitAvailability === OptionalServicesStatus.Up &&
-            studyParamsChanged === ComputingType.VOLTAGE_INITIALIZATION
+            isComputationParametersUpdated(ComputationType.VOLTAGE_INITIALIZATION, studyUpdated)
         ) {
-            getVoltageInitStudyParameters(studyUuid)
-                .then((params) => {
-                    setVoltageInitParams(params);
-                    dispatch(setStudyParamsChanged(''));
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
+            fetchVoltageInitStudyParameters(studyUuid);
         }
-    }, [studyUuid, snackError, dispatch, studyParamsChanged, setVoltageInitParams, voltageInitAvailability]);
+    }, [studyUuid, voltageInitAvailability, fetchVoltageInitStudyParameters, studyUpdated]);
 
     return [voltageInitParams, setVoltageInitParams];
 };

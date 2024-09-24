@@ -9,7 +9,7 @@ import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } fro
 import { Button, DialogActions, Grid } from '@mui/material';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -65,19 +65,18 @@ import {
     getMonitoredBranchesParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
-import { STUDY_PARAMS_CHANDED } from '../../../../utils/config-params';
-import { setStudyParamsChanged } from '../../../../redux/actions';
-import ComputingType from '../../../computing-status/computing-type';
+import ComputationType from '../../../computing-status/computation-type';
+import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
-    const studyParamsChanged = useSelector((state) => state[STUDY_PARAMS_CHANDED]);
-    const dispatch = useDispatch();
+    const studyUpdated = useSelector((state) => state.studyUpdated);
+
     const { snackError } = useSnackMessage();
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
 
-    useEffect(() => {
-        if (studyUuid) {
+    const fetchNonEvacuatedEnergyParameters = useCallback(
+        (studyUuid) => {
             getNonEvacuatedEnergyParameters(studyUuid)
                 .then((params) => setNonEvacuatedEnergyParams(params))
                 .catch((error) => {
@@ -86,24 +85,22 @@ export const useGetNonEvacuatedEnergyParameters = () => {
                         headerId: 'paramsRetrievingError',
                     });
                 });
-        }
-    }, [studyUuid, snackError]);
+        },
+        [snackError]
+    );
 
     useEffect(() => {
-        if (studyUuid && studyParamsChanged === ComputingType.NON_EVACUATED_ENERGY_ANALYSIS) {
-            getNonEvacuatedEnergyParameters(studyUuid)
-                .then((params) => {
-                    setNonEvacuatedEnergyParams(params);
-                    dispatch(setStudyParamsChanged(''));
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
+        if (studyUuid) {
+            fetchNonEvacuatedEnergyParameters(studyUuid);
         }
-    }, [studyUuid, snackError, dispatch, studyParamsChanged, setNonEvacuatedEnergyParams]);
+    }, [studyUuid, fetchNonEvacuatedEnergyParameters]);
+
+    // fetch the parameter if NON_EVACUATED_ENERGY_ANALYSIS  notification type is received.
+    useEffect(() => {
+        if (studyUuid && isComputationParametersUpdated(ComputationType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)) {
+            fetchNonEvacuatedEnergyParameters(studyUuid);
+        }
+    }, [studyUuid, fetchNonEvacuatedEnergyParameters, studyUpdated]);
 
     return [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams];
 };

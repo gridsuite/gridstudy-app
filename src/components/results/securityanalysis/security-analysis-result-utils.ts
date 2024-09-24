@@ -29,7 +29,7 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-
 import { translateLimitNameFrontToBack, translateLimitNameBackToFront } from '../common/utils';
 import { SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType, { ComputingType } from '../../computing-status/computing-type';
+import computingType, { ComputationType } from '../../computing-status/computation-type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
@@ -552,7 +552,7 @@ export const useFetchFiltersEnums = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const securityAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputationType.SECURITY_ANALYSIS]
     );
 
     useEffect(() => {

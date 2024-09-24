@@ -27,7 +27,7 @@ import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
 import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
 import { Box } from '@mui/system';
-import ComputingType from './computing-status/computing-type';
+import ComputationType from './computing-status/computation-type';
 import { useSelector } from 'react-redux';
 import { usePrevious } from './utils/utils';
 
@@ -55,7 +55,7 @@ interface IResultViewTabProps {
 
 export interface IService {
     id: string;
-    computingType: ComputingType[];
+    computingType: ComputationType[];
     displayed: boolean;
     renderResult: React.ReactNode;
 }
@@ -154,43 +154,43 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         return [
             {
                 id: 'LoadFlow',
-                computingType: [ComputingType.LOAD_FLOW],
+                computingType: [ComputationType.LOAD_FLOW],
                 displayed: true,
                 renderResult: renderLoadFlowResult,
             },
             {
                 id: 'SecurityAnalysis',
-                computingType: [ComputingType.SECURITY_ANALYSIS],
+                computingType: [ComputationType.SECURITY_ANALYSIS],
                 displayed: securityAnalysisAvailability === OptionalServicesStatus.Up,
                 renderResult: renderSecurityAnalysisResult,
             },
             {
                 id: 'SensitivityAnalysis',
-                computingType: [ComputingType.SENSITIVITY_ANALYSIS],
+                computingType: [ComputationType.SENSITIVITY_ANALYSIS],
                 displayed: sensitivityAnalysisUnavailability === OptionalServicesStatus.Up,
                 renderResult: renderSensitivityAnalysisResult,
             },
             {
                 id: 'NonEvacuatedEnergyAnalysis',
-                computingType: [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS],
+                computingType: [ComputationType.NON_EVACUATED_ENERGY_ANALYSIS],
                 displayed: enableDeveloperMode && nonEvacuatedEnergyUnavailability === OptionalServicesStatus.Up,
                 renderResult: renderNonEvacuatedEnergyResult,
             },
             {
                 id: 'ShortCircuitAnalysis',
-                computingType: [ComputingType.SHORT_CIRCUIT, ComputingType.SHORT_CIRCUIT_ONE_BUS],
+                computingType: [ComputationType.SHORT_CIRCUIT, ComputationType.SHORT_CIRCUIT_ONE_BUS],
                 displayed: shortCircuitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderShortCircuitAnalysisResult,
             },
             {
                 id: 'DynamicSimulation',
-                computingType: [ComputingType.DYNAMIC_SIMULATION],
+                computingType: [ComputationType.DYNAMIC_SIMULATION],
                 displayed: enableDeveloperMode && dynamicSimulationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderDynamicSimulationResult,
             },
             {
                 id: 'VoltageInit',
-                computingType: [ComputingType.VOLTAGE_INITIALIZATION],
+                computingType: [ComputationType.VOLTAGE_INITIALIZATION],
                 displayed: voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
             },
@@ -213,7 +213,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     ]);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
-        () => computingTypeToRootTabRedirection(lastCompletedComputation ?? ComputingType.LOAD_FLOW, services),
+        () => computingTypeToRootTabRedirection(lastCompletedComputation ?? ComputationType.LOAD_FLOW, services),
         [lastCompletedComputation, services]
     );
 

@@ -29,7 +29,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
-    STUDY_PARAMS_CHANDED,
 } from '../utils/config-params';
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
@@ -49,7 +48,7 @@ import {
     StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
-import { ComputingType } from '../components/computing-status/computing-type';
+import { ComputationType } from '../components/computing-status/computation-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -388,16 +387,6 @@ export function setParamsLoaded(): SetParamsLoadedAction {
     return {
         type: SET_PARAMS_LOADED,
         [PARAMS_LOADED]: true,
-    };
-}
-export const SET_STUDY_PARAMS_CHANGED = 'SET_STUDY_PARAMS_CHANGED';
-export type SetStudyParamsChangedAction = Readonly<Action<typeof SET_STUDY_PARAMS_CHANGED>> & {
-    [STUDY_PARAMS_CHANDED]: string;
-};
-export function setStudyParamsChanged(studyParamsChanged: string): SetStudyParamsChangedAction {
-    return {
-        type: SET_STUDY_PARAMS_CHANGED,
-        [STUDY_PARAMS_CHANDED]: studyParamsChanged,
     };
 }
 
@@ -931,11 +920,11 @@ export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels: number): N
 
 export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
 export type SetComputingStatusAction = Readonly<Action<typeof SET_COMPUTING_STATUS>> & {
-    computingType: ComputingType;
+    computingType: ComputationType;
     runningStatus: RunningStatus;
 };
 export function setComputingStatus(
-    computingType: ComputingType,
+    computingType: ComputationType,
     runningStatus: RunningStatus
 ): SetComputingStatusAction {
     return {
@@ -1014,10 +1003,10 @@ export function addToRecentGlobalFilters(globalFilters: Filter[]): AddToRecentGl
 
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
-    lastCompletedComputation: ComputingType | null;
+    lastCompletedComputation: ComputationType | null;
 };
 export function setLastCompletedComputation(
-    lastCompletedComputation?: ComputingType
+    lastCompletedComputation?: ComputationType
 ): SetLastCompletedComputationAction {
     return {
         type: SET_LAST_COMPLETED_COMPUTATION,

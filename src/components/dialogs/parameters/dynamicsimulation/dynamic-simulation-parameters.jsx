@@ -54,7 +54,7 @@ import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
-import ComputingType from '../../../computing-status/computing-type';
+import ComputationType from '../../../computing-status/computation-type.js';
 
 const TAB_VALUES = {
     TIME_DELAY: 'timeDelay',
@@ -70,7 +70,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
         useParametersBackend(
             user,
-            ComputingType.DYNAMIC_SIMULATION,
+            ComputationType.DYNAMIC_SIMULATION,
             dynamicSimulationAvailability,
             fetchDynamicSimulationProviders,
             fetchDynamicSimulationProvider,

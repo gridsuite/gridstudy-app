@@ -15,7 +15,7 @@ import { fetchSecurityAnalysisResult } from '../../../services/study/security-an
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputationType } from '../../computing-status/computation-type';
 import { SecurityAnalysisResultN } from './security-analysis-result-n';
 import { SecurityAnalysisResultNmk } from './security-analysis-result-nmk';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -106,7 +106,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
         }
     }, [enableDeveloperMode, tabIndex, previousEnableDeveloperMode]);
     const securityAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputationType.SECURITY_ANALYSIS]
     );
 
     const resultType = useMemo(() => {
@@ -325,7 +325,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 {tabIndex === (enableDeveloperMode ? LOGS_TAB_INDEX : LOGS_TAB_INDEX - 1) &&
                     (securityAnalysisStatus === RunningStatus.SUCCEED ||
                         securityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer reportType={ComputingType.SECURITY_ANALYSIS} />
+                        <ComputationReportViewer reportType={ComputationType.SECURITY_ANALYSIS} />
                     )}
             </Box>
         </>

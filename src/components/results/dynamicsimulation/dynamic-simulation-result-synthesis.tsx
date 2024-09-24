@@ -12,7 +12,7 @@ import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
 import { dynamicSimulationResultInvalidations, MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
 import { useSelector } from 'react-redux';
-import ComputingType from '../../computing-status/computing-type';
+import ComputationType from '../../computing-status/computation-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
@@ -77,7 +77,7 @@ const DynamicSimulationResultSynthesis = memo(({ nodeUuid, studyUuid }: DynamicS
 
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+        (state: AppState) => state.computingStatus[ComputationType.DYNAMIC_SIMULATION]
     );
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(

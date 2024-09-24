@@ -33,7 +33,7 @@ import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
-import ComputingType from 'components/computing-status/computing-type';
+import ComputationType from 'components/computing-status/computation-type.js';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 const INITIAL_POSITION = [0, 0];
@@ -87,7 +87,7 @@ export const NetworkMapTab = ({
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
     const basemap = useSelector((state) => state[PARAM_MAP_BASEMAP]);
     const useName = useSelector((state) => state[PARAM_USE_NAME]);
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputationType.LOAD_FLOW]);
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const centerOnSubstation = useSelector((state) => state.centerOnSubstation);
 

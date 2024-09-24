@@ -7,14 +7,13 @@
 
 import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Grid, Box, Button, Typography, Switch, Select, MenuItem } from '@mui/material';
 
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
 import { updateConfigParameter } from 'services/config';
-import { STUDY_PARAMS_CHANDED } from '../../../utils/config-params';
-import { setStudyParamsChanged } from '../../../redux/actions';
+import { isComputationParametersUpdated } from './common/computation-parameters-util';
 
 export const CloseButton = ({ hideParameters, ...props }) => {
     return <LabelledButton callback={hideParameters} label={'close'} {...props} />;
@@ -238,9 +237,9 @@ export const useParametersBackend = (
     backendFetchSpecificParameters
 ) => {
     const studyUuid = useSelector((state) => state.studyUuid);
-    const studyParamsChanged = useSelector((state) => state[STUDY_PARAMS_CHANDED]);
+    const studyUpdated = useSelector((state) => state.studyUpdated);
+
     const { snackError, snackWarning } = useSnackMessage();
-    const dispatch = useDispatch();
 
     const providersRef = useRef(INITIAL_PROVIDERS);
     const [provider, setProvider] = useState();
@@ -413,8 +412,8 @@ export const useParametersBackend = (
         }
     }, [optionalServiceStatus, backendFetchSpecificParameters, snackError, studyUuid, type]);
 
-    useEffect(() => {
-        if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
+    const fetchParameters = useCallback(
+        (studyUuid) => {
             backendFetchParameters(studyUuid)
                 .then((params) => {
                     setParams(params);
@@ -428,34 +427,27 @@ export const useParametersBackend = (
                         headerId: 'fetch' + type + 'ParametersError',
                     });
                 });
-        }
-    }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type]);
+        },
+        [backendFetchParameters, type, snackError]
+    );
 
-    // we need to call backendFetchParameters when ever the study params change
+    useEffect(() => {
+        if (studyUuid && backendFetchParameters && optionalServiceStatus === OptionalServicesStatus.Up) {
+            fetchParameters(studyUuid);
+        }
+    }, [optionalServiceStatus, backendFetchParameters, studyUuid, fetchParameters]);
+
+    // we need to call backendFetchParameters when ever a computationParametersUpdated notification received.
     useEffect(() => {
         if (
-            studyParamsChanged === type &&
+            isComputationParametersUpdated(type, studyUpdated) &&
             backendFetchParameters &&
             studyUuid &&
             optionalServiceStatus === OptionalServicesStatus.Up
         ) {
-            backendFetchParameters(studyUuid)
-                .then((params) => {
-                    setParams(params);
-                    //reset the value
-                    dispatch(setStudyParamsChanged(''));
-                    if ('provider' in params) {
-                        setProvider(params.provider);
-                    }
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'fetch' + type + 'ParametersError',
-                    });
-                });
+            fetchParameters(studyUuid);
         }
-    }, [optionalServiceStatus, backendFetchParameters, snackError, studyUuid, type, dispatch, studyParamsChanged]);
+    }, [optionalServiceStatus, backendFetchParameters, fetchParameters, studyUuid, type, studyUpdated]);
 
     return [
         providersRef.current,

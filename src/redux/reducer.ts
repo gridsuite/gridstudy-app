@@ -158,7 +158,6 @@ import {
     SET_PARAMS_LOADED,
     SET_STUDY_DISPLAY_MODE,
     SET_STUDY_INDEXATION_STATUS,
-    SET_STUDY_PARAMS_CHANGED,
     SetComputationStartingAction,
     SetComputingStatusAction,
     SetEventScenarioDrawerOpenAction,
@@ -171,7 +170,6 @@ import {
     SetParamsLoadedAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
-    SetStudyParamsChangedAction,
     SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
     ShortcircuitAnalysisResultFilterAction,
     SPREADSHEET_FILTER,
@@ -224,7 +222,6 @@ import {
     PARAM_THEME,
     PARAM_USE_NAME,
     PARAMS_LOADED,
-    STUDY_PARAMS_CHANDED,
 } from '../utils/config-params';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -232,7 +229,7 @@ import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-st
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputationType } from 'components/computing-status/computation-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
@@ -277,7 +274,7 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 
 export enum NotificationType {
     STUDY = 'study',
-    COMPUTATION_PARAMETERS = 'computationParametersUpdated',
+    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -301,7 +298,7 @@ export interface StudyUpdatedEventDataHeader {
     nodes?: UUID[];
     error?: string;
     userId?: string;
-    paramsName?: string;
+    computationType?: ComputationType;
 }
 
 // Payloads
@@ -352,15 +349,15 @@ export interface TreeNodeData {
 export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
 
 export interface ComputingStatus {
-    [ComputingType.LOAD_FLOW]: RunningStatus;
-    [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
-    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT]: RunningStatus;
-    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
-    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
-    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
-    [ComputingType.STATE_ESTIMATION]: RunningStatus;
+    [ComputationType.LOAD_FLOW]: RunningStatus;
+    [ComputationType.SECURITY_ANALYSIS]: RunningStatus;
+    [ComputationType.SENSITIVITY_ANALYSIS]: RunningStatus;
+    [ComputationType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
+    [ComputationType.SHORT_CIRCUIT]: RunningStatus;
+    [ComputationType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
+    [ComputationType.DYNAMIC_SIMULATION]: RunningStatus;
+    [ComputationType.VOLTAGE_INITIALIZATION]: RunningStatus;
+    [ComputationType.STATE_ESTIMATION]: RunningStatus;
 }
 
 export type TableSortConfig = Record<string, SortConfigType[]>;
@@ -402,7 +399,7 @@ export interface AppState extends CommonStoreState {
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     computingStatus: ComputingStatus;
-    lastCompletedComputation: ComputingType | null;
+    lastCompletedComputation: ComputationType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
@@ -461,7 +458,6 @@ export interface AppState extends CommonStoreState {
     [PARAM_DEVELOPER_MODE]: boolean;
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
-    [STUDY_PARAMS_CHANDED]: string;
 
     [LOADFLOW_RESULT_STORE_FIELD]: {
         [LOADFLOW_CURRENT_LIMIT_VIOLATION]: UnknownArray;
@@ -549,15 +545,15 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: {
-        [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
-        [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputingType.SHORT_CIRCUIT]: RunningStatus.IDLE,
-        [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
-        [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
-        [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
-        [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
+        [ComputationType.LOAD_FLOW]: RunningStatus.IDLE,
+        [ComputationType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputationType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputationType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputationType.SHORT_CIRCUIT]: RunningStatus.IDLE,
+        [ComputationType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
+        [ComputationType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+        [ComputationType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
+        [ComputationType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({
@@ -589,7 +585,6 @@ const initialState: AppState = {
     [PARAM_DEVELOPER_MODE]: false,
     [PARAM_INIT_NAD_WITH_GEO_DATA]: true,
     [PARAMS_LOADED]: false,
-    [STUDY_PARAMS_CHANDED]: '',
 
     recentGlobalFilters: [],
     lastCompletedComputation: null,
@@ -910,10 +905,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(SET_PARAMS_LOADED, (state, action: SetParamsLoadedAction) => {
         state[PARAMS_LOADED] = action[PARAMS_LOADED];
-    });
-
-    builder.addCase(SET_STUDY_PARAMS_CHANGED, (state, action: SetStudyParamsChangedAction) => {
-        state[STUDY_PARAMS_CHANDED] = action[STUDY_PARAMS_CHANDED];
     });
 
     builder.addCase(USE_NAME, (state, action: UseNameAction) => {

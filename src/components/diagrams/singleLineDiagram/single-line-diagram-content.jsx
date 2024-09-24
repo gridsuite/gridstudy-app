@@ -41,7 +41,7 @@ import LineModificationDialog from 'components/dialogs/network-modifications/lin
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
 import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputationType } from 'components/computing-status/computation-type.js';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
@@ -75,7 +75,7 @@ function SingleLineDiagramContent(props) {
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state) => state.computationStarting);
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputationType.LOAD_FLOW]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
@@ -230,7 +230,7 @@ function SingleLineDiagramContent(props) {
 
     const handleRunShortcircuitAnalysis = useCallback(
         (busId) => {
-            dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
+            dispatch(setComputingStatus(ComputationType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
             startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
@@ -239,7 +239,7 @@ function SingleLineDiagramContent(props) {
                         messageTxt: error.message,
                         headerId: 'startShortCircuitError',
                     });
-                    dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
+                    dispatch(setComputingStatus(ComputationType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
                 .finally(() => dispatch(setComputationStarting(false)));

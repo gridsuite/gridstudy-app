@@ -16,7 +16,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { LineSeparator } from '../dialogUtils';
 import {
     fetchShortCircuitParameters,
@@ -42,22 +42,22 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { STUDY_PARAMS_CHANDED } from '../../../utils/config-params';
-import { setStudyParamsChanged } from '../../../redux/actions';
+
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
-import ComputingType from '../../computing-status/computing-type';
+import ComputationType from '../../computing-status/computation-type.js';
+import { isComputationParametersUpdated } from './common/computation-parameters-util.js';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
-    const studyParamsChanged = useSelector((state) => state[STUDY_PARAMS_CHANDED]);
-    const dispatch = useDispatch();
+    const studyUpdated = useSelector((state) => state.studyUpdated);
+
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
-    useEffect(() => {
-        if (studyUuid && shortCircuitAvailability === OptionalServicesStatus.Up) {
+    const fetchShortCircuitParameters = useCallback(
+        (studyUuid) => {
             getShortCircuitParameters(studyUuid)
                 .then((params) => {
                     setShortCircuitParams(params);
@@ -68,28 +68,26 @@ export const useGetShortCircuitParameters = () => {
                         headerId: 'paramsRetrievingError',
                     });
                 });
-        }
-    }, [shortCircuitAvailability, studyUuid, snackError]);
+        },
+        [snackError]
+    );
 
+    useEffect(() => {
+        if (studyUuid && shortCircuitAvailability === OptionalServicesStatus.Up) {
+            fetchShortCircuitParameters(studyUuid);
+        }
+    }, [shortCircuitAvailability, studyUuid, fetchShortCircuitParameters]);
+
+    // fetch the parameter if SHORT_CIRCUIT  notification type is received.
     useEffect(() => {
         if (
             studyUuid &&
             shortCircuitAvailability === OptionalServicesStatus.Up &&
-            studyParamsChanged === ComputingType.SHORT_CIRCUIT
+            isComputationParametersUpdated(ComputationType.SHORT_CIRCUIT, studyUpdated)
         ) {
-            getShortCircuitParameters(studyUuid)
-                .then((params) => {
-                    setShortCircuitParams(params);
-                    dispatch(setStudyParamsChanged(''));
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
+            fetchShortCircuitParameters(studyUuid);
         }
-    }, [studyUuid, snackError, dispatch, studyParamsChanged, setShortCircuitParams, shortCircuitAvailability]);
+    }, [studyUuid, shortCircuitAvailability, fetchShortCircuitParameters, studyUpdated]);
 
     return [shortCircuitParams, setShortCircuitParams];
 };

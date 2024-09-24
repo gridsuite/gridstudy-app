@@ -20,7 +20,7 @@ import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-vie
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
-import ComputingType from 'components/computing-status/computing-type';
+import ComputationType from 'components/computing-status/computation-type.js';
 
 const dynamicCssRules = [
     {
@@ -93,7 +93,7 @@ function NetworkAreaDiagramContent(props) {
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputationType.LOAD_FLOW]);
 
     /**
      * DIAGRAM CONTENT BUILDING

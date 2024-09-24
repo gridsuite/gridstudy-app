@@ -12,7 +12,7 @@ import { SCAFaultResult, SCAFeederResult, ShortCircuitAnalysisType } from './sho
 import { GridReadyEvent, RowClassParams, ValueGetterParams } from 'ag-grid-community';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputationType } from '../../computing-status/computation-type';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FilterEnumsType, FilterPropsType } from '../../../hooks/use-aggrid-row-filter';
@@ -202,8 +202,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         (state: AppState) =>
             state.computingStatus[
                 analysisType === ShortCircuitAnalysisType.ALL_BUSES
-                    ? ComputingType.SHORT_CIRCUIT
-                    : ComputingType.SHORT_CIRCUIT_ONE_BUS
+                    ? ComputationType.SHORT_CIRCUIT
+                    : ComputationType.SHORT_CIRCUIT_ONE_BUS
             ]
     );
 

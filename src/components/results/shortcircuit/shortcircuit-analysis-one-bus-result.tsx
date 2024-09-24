@@ -17,7 +17,7 @@ import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisResult } from 'services/study/short-circuit-analysis';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputationType } from 'components/computing-status/computation-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { GridReadyEvent } from 'ag-grid-community';
 
@@ -33,7 +33,7 @@ export const ShortCircuitAnalysisOneBusResult: FunctionComponent<ShortCircuitAna
     const { snackError } = useSnackMessage();
 
     const oneBusShortCircuitAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

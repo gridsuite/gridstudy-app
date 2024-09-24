@@ -41,7 +41,7 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType from '../../computing-status/computing-type';
+import computingType from '../../computing-status/computation-type';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;

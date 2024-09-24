@@ -24,7 +24,7 @@ import {
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputationType } from 'components/computing-status/computation-type.js';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
 import { SortWay } from 'hooks/use-aggrid-sort';
@@ -47,7 +47,7 @@ const PagedSensitivityAnalysisResult = ({
     const [result, setResult] = useState(null);
     const [options, setOptions] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const sensiStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
+    const sensiStatus = useSelector((state) => state.computingStatus[ComputationType.SENSITIVITY_ANALYSIS]);
 
     const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};

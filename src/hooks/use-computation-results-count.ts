@@ -6,7 +6,7 @@
  */
 import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
-import ComputingType from 'components/computing-status/computing-type';
+import ComputationType from 'components/computing-status/computation-type';
 import RunningStatus from 'components/utils/running-status';
 
 /**
@@ -15,34 +15,34 @@ import RunningStatus from 'components/utils/running-status';
  * @returns the number of computation results accessible.
  */
 export const useComputationResultsCount = () => {
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputationType.LOAD_FLOW]);
 
     const securityAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputationType.SECURITY_ANALYSIS]
     );
 
     const sensitivityAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputationType.SENSITIVITY_ANALYSIS]
     );
 
     const nonEvacuateEnergyAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputationType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const oneBusallBusesShortCircuitStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const allBusesShortCircuitStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT]
     );
 
     const dynamicSimulationStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
+        (state: AppState) => state.computingStatus[ComputationType.DYNAMIC_SIMULATION]
     );
 
     const voltageInitStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
+        (state: AppState) => state.computingStatus[ComputationType.VOLTAGE_INITIALIZATION]
     );
 
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)

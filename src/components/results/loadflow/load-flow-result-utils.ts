@@ -28,7 +28,7 @@ import {
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
-import computingType, { ComputingType } from '../../computing-status/computing-type';
+import computingType, { ComputationType } from '../../computing-status/computation-type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
@@ -173,7 +173,7 @@ export const useFetchFiltersEnums = (): {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputationType.LOAD_FLOW]);
 
     useEffect(() => {
         if (loadFlowStatus !== RunningStatus.SUCCEED) {

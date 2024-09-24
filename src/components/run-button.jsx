@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
-import ComputingType from './computing-status/computing-type';
+import ComputationType from './computing-status/computation-type.js';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();
@@ -47,14 +47,14 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
     }, [selectedRunnable, getStatus]);
 
     function isButtonDisable() {
-        if (selectedRunnable === ComputingType.LOAD_FLOW) {
+        if (selectedRunnable === ComputationType.LOAD_FLOW) {
             // We run once loadflow analysis, as it will always return the same result for one hypothesis
             return getRunningStatus() !== RunningStatus.IDLE;
-        } else if (selectedRunnable === ComputingType.DYNAMIC_SIMULATION) {
+        } else if (selectedRunnable === ComputationType.DYNAMIC_SIMULATION) {
             // Load flow button's status must be "SUCCEED"
             return (
                 getRunningStatus() === RunningStatus.RUNNING ||
-                getStatus(ComputingType.LOAD_FLOW) !== RunningStatus.SUCCEED
+                getStatus(ComputationType.LOAD_FLOW) !== RunningStatus.SUCCEED
             );
         } else {
             // We can run only 1 computation at a time

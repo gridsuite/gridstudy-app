@@ -21,7 +21,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputationType } from '../../computing-status/computation-type.js';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
@@ -54,7 +54,9 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
+    const sensitivityAnalysisStatus = useSelector(
+        (state) => state.computingStatus[ComputationType.SENSITIVITY_ANALYSIS]
+    );
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
@@ -183,7 +185,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
                     <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                     {(sensitivityAnalysisStatus === RunningStatus.SUCCEED ||
                         sensitivityAnalysisStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer reportType={ComputingType.SENSITIVITY_ANALYSIS} />
+                        <ComputationReportViewer reportType={ComputationType.SENSITIVITY_ANALYSIS} />
                     )}
                 </>
             )}

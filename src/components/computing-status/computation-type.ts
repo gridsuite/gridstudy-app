@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-export enum ComputingType {
+export enum ComputationType {
     LOAD_FLOW = 'LOAD_FLOW',
     SECURITY_ANALYSIS = 'SECURITY_ANALYSIS',
     SENSITIVITY_ANALYSIS = 'SENSITIVITY_ANALYSIS',
@@ -17,8 +17,8 @@ export enum ComputingType {
     STATE_ESTIMATION = 'STATE_ESTIMATION',
 }
 
-export const isValidComputingType = (value: string): boolean => {
-    return Object.values(ComputingType).includes(value as ComputingType);
+export const isValidComputationType = (value: string | undefined): boolean => {
+    return Object.values(ComputationType).includes(value as ComputationType);
 };
 
-export default ComputingType;
+export default ComputationType;

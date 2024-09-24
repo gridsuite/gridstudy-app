@@ -18,7 +18,7 @@ import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
-import ComputingType from '../../computing-status/computing-type';
+import ComputationType from '../../computing-status/computation-type.js';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
 
@@ -88,7 +88,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
     };
 
     // messages to show when no data
-    const dynamicSimulationStatus = useSelector((state) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]);
+    const dynamicSimulationStatus = useSelector((state) => state.computingStatus[ComputationType.DYNAMIC_SIMULATION]);
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(
         () => getNoRowsMessage(messages, result?.timeseriesMetadatas, dynamicSimulationStatus, !isLoading),

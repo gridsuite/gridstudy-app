@@ -13,7 +13,7 @@ import { IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { ComputingType } from '../../computing-status/computing-type';
+import { ComputationType } from '../../computing-status/computation-type';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProps> = ({
@@ -25,7 +25,7 @@ export const SecurityAnalysisTable: FunctionComponent<SecurityAnalysisResultProp
     const intl: IntlShape = useIntl();
     const resultStatusMessages = useIntlResultStatusMessages(intl);
     const securityAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputationType.SECURITY_ANALYSIS]
     );
     const rowsToShow = getRows(rows, securityAnalysisStatus);
 

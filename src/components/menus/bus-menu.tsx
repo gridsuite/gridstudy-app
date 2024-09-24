@@ -13,7 +13,7 @@ import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functio
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
-import { ComputingType } from 'components/computing-status/computing-type';
+import { ComputationType } from 'components/computing-status/computation-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
@@ -98,7 +98,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
     const oneBusShortcircuitAnalysisState = useSelector(
-        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const handleClickRunShortcircuitAnalysis = useCallback(() => {

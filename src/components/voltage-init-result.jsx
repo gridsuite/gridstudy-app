@@ -31,7 +31,7 @@ import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import ComputingType from './computing-status/computing-type';
+import ComputationType from './computing-status/computation-type.js';
 
 const styles = {
     container: {
@@ -332,7 +332,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             <>
                 <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
                 {(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={ComputingType.VOLTAGE_INITIALIZATION} />
+                    <ComputationReportViewer reportType={ComputationType.VOLTAGE_INITIALIZATION} />
                 )}
             </>
         );
