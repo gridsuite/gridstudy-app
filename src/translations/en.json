@@ -186,7 +186,7 @@
     "startVoltageInitError": "An error occurred while starting the voltage profile initialization",
     "VoltageInitParametersGeneralTabLabel": "General",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Automatically apply voltage init modification",
-    "VoltageInitParametersGeneralSaveInfo": "Settings of this tab won't be saved and will be set back to default if choosing from external settings",
+    "VoltageInitParametersGeneralSaveInfo": "This option won't be saved and will be set back to its default value when choosing settings from GridExplore",
     "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Update bus voltage",
     "VoltageLimits": "Voltage limits",
     "VoltageLevelFilter": "Voltage level filter",
