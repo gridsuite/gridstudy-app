@@ -9,9 +9,8 @@ import { legacy_createStore as createStore, Store } from 'redux';
 import { Actions, AppState, reducer } from './reducer';
 import { setCommonStore } from '@gridsuite/commons-ui';
 import { setUserStore } from './user-store';
-import { composeWithDevTools } from '@redux-devtools/extension';
 
-export const store = createStore(reducer, composeWithDevTools());
+export const store = createStore(reducer);
 setCommonStore(store);
 setUserStore(store);
 export type AppDispatch = Store<AppState, Actions>['dispatch'];
