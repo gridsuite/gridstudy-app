@@ -86,6 +86,9 @@ path.nad-arrow-in:not(.nad-state-in .nad-arrow-in) {
 .nad-disconnected {
     --nad-vl-color: #808080;
 }
+g.nad-disconnected > g.nad-disconnected { /* When both edges of a line are disconnected in a NAD, both of them and their parent have the .nad-disconnected class */
+    --nad-vl-color: #808080;
+}
 .nad-vl0to30-line {
     --nad-vl-color: #afb42b;
 }
