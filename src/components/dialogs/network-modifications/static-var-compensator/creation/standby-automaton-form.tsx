@@ -20,19 +20,21 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
-import { CheckboxInput, FloatInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import { CheckboxInput, FloatInput, SelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import { SusceptanceAdornment, VoltageAdornment } from '../../../dialogUtils';
 import { Box } from '@mui/system';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Tooltip from '@mui/material/Tooltip';
 import { WarningAmber } from '@mui/icons-material';
 import { SusceptanceArea } from './susceptance-area';
+import { TextField } from '@mui/material';
 
 type FieldKeys = 'standby' | 'lVoltageSetLimit' | 'hVoltageSetLimit' | 'lVoltageThreshold' | 'hVoltageThreshold';
 export const StandbyAutomatonForm = () => {
+    const intl = useIntl();
     const id = AUTOMATON;
     const { setValue } = useFormContext();
 
@@ -42,15 +44,20 @@ export const StandbyAutomatonForm = () => {
     });
     const watchVoltageMode = useWatch({ name: `${SETPOINTS_LIMITS}.${VOLTAGE_REGULATION_MODE}` });
 
-    const isDisabled = useMemo(() => {
+    const watchVoltageModeLabel = useMemo(() => {
+        return Object.values(VOLTAGE_REGULATION_MODES).find((voltageMode) => voltageMode.id === watchVoltageMode)
+            ?.label;
+    }, [watchVoltageMode]);
+
+    const standbyDisabled = useMemo(() => {
         return watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id;
     }, [watchVoltageMode]);
 
     useEffect(() => {
-        if (isDisabled) {
+        if (standbyDisabled) {
             setValue(`${id}.${STAND_BY_AUTOMATON}`, false);
         }
-    }, [isDisabled, setValue, id]);
+    }, [standbyDisabled, setValue, id]);
 
     const createField = (
         Component: any,
@@ -61,9 +68,14 @@ export const StandbyAutomatonForm = () => {
     ) => <Component name={name} label={label} adornment={adornment} size="small" formProps={additionalProps} />;
 
     const fields = {
-        modeAutomaton: createField(TextInput, `${SETPOINTS_LIMITS}.${VOLTAGE_REGULATION_MODE}`, 'ModeAutomaton', null, {
-            disabled: true,
-        }),
+        modeAutomaton: (
+            <TextField
+                value={intl.formatMessage({ id: watchVoltageModeLabel })}
+                label={intl.formatMessage({ id: 'ModeAutomaton' })}
+                disabled={true}
+                size={'small'}
+            />
+        ),
         standby: (
             <Grid container onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)}>
                 <Grid container item xs={12}>
@@ -73,7 +85,7 @@ export const StandbyAutomatonForm = () => {
                             <SwitchInput
                                 name={`${id}.${STAND_BY_AUTOMATON}`}
                                 formProps={{
-                                    disabled: isDisabled,
+                                    disabled: standbyDisabled,
                                 }}
                             />
                         }
