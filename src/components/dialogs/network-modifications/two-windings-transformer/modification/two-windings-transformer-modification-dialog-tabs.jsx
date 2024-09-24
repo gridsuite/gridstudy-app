@@ -32,6 +32,10 @@ const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWith
                 }}
             >
                 <Tab
+                    label={<FormattedMessage id="ConnectivityTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB)}
+                />
+                <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />}
                     sx={getTabStyle(
                         tabIndexesWithError,
