@@ -31,7 +31,11 @@ import { fetchNetworkElementInfos } from '../../services/study/network';
 interface BusMenuProps {
     busId: string;
     handleRunShortcircuitAnalysis: (busId: string) => void;
-    onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
+    onOpenDynamicSimulationEventDialog: (
+        equipmentId: string,
+        equipmentType: EQUIPMENT_TYPES,
+        dialogTitle: string
+    ) => void;
     position: [number, number];
     onClose: () => void;
     setModificationInProgress: (progress: boolean) => void;
@@ -109,7 +113,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     const handleOpenDynamicSimulationEventDialog = useCallback(
         (equipmentId: string, equipmentType: string, dialogTitle: string) => {
             onClose();
-            onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
+            onOpenDynamicSimulationEventDialog(equipmentId, equipmentType as EQUIPMENT_TYPES, dialogTitle);
         },
         [onClose, onOpenDynamicSimulationEventDialog]
     );

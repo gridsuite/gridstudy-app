@@ -144,7 +144,7 @@ DiagramHeader.propTypes = {
     showCloseControl: PropTypes.bool,
     onClose: PropTypes.func,
     diagramId: PropTypes.string,
-    svgType: PropTypes.string.isRequired,
+    svgType: PropTypes.string,
 };
 
 export default DiagramHeader;

@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
@@ -20,7 +19,8 @@ import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-vie
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
-import ComputingType from 'components/computing-status/computing-type';
+import ComputingType from '../../computing-status/computing-type';
+import { AppState } from 'redux/reducer';
 
 const dynamicCssRules = [
     {
@@ -88,12 +88,19 @@ const dynamicCssRules = [
     },
 ];
 
-function NetworkAreaDiagramContent(props) {
+type NetworkAreaDiagramContentProps = {
+    svgType: string;
+    svg: string;
+    loadingState: boolean;
+    diagramSizeSetter: (id: string, type: string, width: number, height: number) => void;
+    diagramId: string;
+};
+function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter } = props;
     const svgRef = useRef();
-    const diagramViewerRef = useRef();
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -102,7 +109,7 @@ function NetworkAreaDiagramContent(props) {
     useLayoutEffect(() => {
         if (props.svg) {
             const diagramViewer = new NetworkAreaDiagramViewer(
-                svgRef.current,
+                svgRef.current!,
                 props.svg,
                 MIN_WIDTH,
                 MIN_HEIGHT,
@@ -126,7 +133,10 @@ function NetworkAreaDiagramContent(props) {
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
                 diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
             ) {
-                diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
+                const viewBox = diagramViewerRef.current.getViewBox();
+                if (viewBox) {
+                    diagramViewer.setViewBox(viewBox);
+                }
             }
 
             diagramViewerRef.current = diagramViewer;
@@ -152,13 +162,5 @@ function NetworkAreaDiagramContent(props) {
         </>
     );
 }
-
-NetworkAreaDiagramContent.propTypes = {
-    svgType: PropTypes.string,
-    svg: PropTypes.string,
-    loadingState: PropTypes.bool,
-    diagramSizeSetter: PropTypes.func,
-    diagramId: PropTypes.string,
-};
 
 export default NetworkAreaDiagramContent;
