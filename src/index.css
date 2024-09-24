@@ -254,7 +254,7 @@ code {
 
 :root {
     --sld-overload-color: #ffeb3b; /* Yellow for overload */
-    --sld-overvoltage-color: #5a0101; /* Red for overvoltage */
+    --sld-overvoltage-color: #ffeb3b; /* Yellow for overvoltage */
     --sld-undervoltage-color: #0000ff; /* Blue for undervoltage */
   }
   
