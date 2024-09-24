@@ -11,7 +11,7 @@ import { useIntl } from 'react-intl';
 
 import SplitButton from './utils/split-button';
 import RunningStatus from './utils/running-status';
-import ComputationType from './computing-status/computation-type.js';
+import ComputationType from './computing-status/computation-type';
 
 const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, disabled }) => {
     const intl = useIntl();

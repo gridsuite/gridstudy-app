@@ -24,7 +24,7 @@ import {
     fetchSensitivityAnalysisResult,
 } from '../../../services/study/sensitivity-analysis';
 import { useSelector } from 'react-redux';
-import { ComputationType } from 'components/computing-status/computation-type.js';
+import { ComputationType } from 'components/computing-status/computation-type';
 import { RunningStatus } from '../../utils/running-status';
 import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
 import { SortWay } from 'hooks/use-aggrid-sort';

@@ -20,7 +20,7 @@ import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-vie
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
-import ComputationType from 'components/computing-status/computation-type.js';
+import ComputationType from 'components/computing-status/computation-type';
 
 const dynamicCssRules = [
     {

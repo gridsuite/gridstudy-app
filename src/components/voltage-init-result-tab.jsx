@@ -9,7 +9,7 @@ import { useNodeData } from './study-container';
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
-import { ComputationType } from './computing-status/computation-type.js';
+import { ComputationType } from './computing-status/computation-type';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import { useState } from 'react';
 import RunningStatus from './utils/running-status';

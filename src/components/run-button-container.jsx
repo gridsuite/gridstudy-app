@@ -12,7 +12,7 @@ import { setComputingStatus, setComputationStarting } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
-import ComputationType from './computing-status/computation-type.js';
+import ComputationType from './computing-status/computation-type';
 
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';

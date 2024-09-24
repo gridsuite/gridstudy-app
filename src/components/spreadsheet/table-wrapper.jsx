@@ -71,7 +71,7 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
-import ComputationType from 'components/computing-status/computation-type.js';
+import ComputationType from 'components/computing-status/computation-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';

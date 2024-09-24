@@ -21,7 +21,7 @@ import {
 } from './sensitivity-analysis-result-utils';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useSelector } from 'react-redux';
-import { ComputationType } from '../../computing-status/computation-type.js';
+import { ComputationType } from '../../computing-status/computation-type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';

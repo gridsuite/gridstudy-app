@@ -18,7 +18,7 @@ import Visibility from './common/visibility';
 import TooltipIconButton from './common/tooltip-icon-button';
 import useResultTimeSeries from './hooks/useResultTimeSeries';
 import { useSelector } from 'react-redux';
-import ComputationType from '../../computing-status/computation-type.js';
+import ComputationType from '../../computing-status/computation-type';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import Overlay from '../common/Overlay';
 

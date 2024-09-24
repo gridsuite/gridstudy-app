@@ -31,7 +31,7 @@ import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import ComputationType from './computing-status/computation-type.js';
+import ComputationType from './computing-status/computation-type';
 
 const styles = {
     container: {

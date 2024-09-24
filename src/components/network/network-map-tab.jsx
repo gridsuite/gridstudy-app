@@ -33,7 +33,7 @@ import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import { useTheme } from '@emotion/react';
 import RunningStatus from 'components/utils/running-status';
-import ComputationType from 'components/computing-status/computation-type.js';
+import ComputationType from 'components/computing-status/computation-type';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 const INITIAL_POSITION = [0, 0];

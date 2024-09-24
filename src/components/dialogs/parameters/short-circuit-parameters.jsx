@@ -44,7 +44,7 @@ import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
-import ComputationType from '../../computing-status/computation-type.js';
+import ComputationType from '../../computing-status/computation-type';
 import { isComputationParametersUpdated } from './common/computation-parameters-util.js';
 
 export const useGetShortCircuitParameters = () => {

@@ -54,7 +54,7 @@ import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
-import ComputationType from '../../../computing-status/computation-type.js';
+import ComputationType from '../../../computing-status/computation-type';
 
 const TAB_VALUES = {
     TIME_DELAY: 'timeDelay',
