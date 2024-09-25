@@ -26,6 +26,7 @@ import {
 import yup from '../../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import { computeQAtNominalV } from '../../../../utils/utils';
+import { Schema } from 'yup';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {
@@ -42,6 +43,14 @@ export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
         [EQUIPMENT]: null,
     },
 });
+
+const requiredWhenDistantVoltageMode = (schema: Schema) =>
+    schema.when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
+        is: (voltageRegulationMode: string, voltageRegulationType: string) =>
+            voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id &&
+            voltageRegulationType === REGULATION_TYPES.DISTANT.id,
+        then: (schema) => schema.required(),
+    });
 
 export const getReactiveFormValidationSchema = () =>
     yup.object().shape({
@@ -111,31 +120,23 @@ export const getReactiveFormValidationSchema = () =>
         [VOLTAGE_REGULATION_MODE]: yup.string().required(),
         [VOLTAGE_REGULATION_TYPE]: yup.string().required(),
 
-        [VOLTAGE_LEVEL]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string().required(),
-            })
-            .when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
-                is: (voltageRegulation: string, voltageRegulationType: string) =>
-                    voltageRegulation === VOLTAGE_REGULATION_MODES.VOLTAGE.id &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
-        [EQUIPMENT]: yup
-            .object()
-            .nullable()
-            .shape({
-                [ID]: yup.string().required(),
-                [TYPE]: yup.string().required(),
-            })
-            .when([VOLTAGE_REGULATION_MODE, VOLTAGE_REGULATION_TYPE], {
-                is: (voltageRegulationMode: string, voltageRegulationType: string) =>
-                    voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id &&
-                    voltageRegulationType === REGULATION_TYPES.DISTANT.id,
-                then: (schema) => schema.required(),
-            }),
+        [VOLTAGE_LEVEL]: requiredWhenDistantVoltageMode(
+            yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string().required(),
+                })
+        ),
+        [EQUIPMENT]: requiredWhenDistantVoltageMode(
+            yup
+                .object()
+                .nullable()
+                .shape({
+                    [ID]: yup.string().required(),
+                    [TYPE]: yup.string().required(),
+                })
+        ),
     });
 
 export const getReactiveFormData = ({
