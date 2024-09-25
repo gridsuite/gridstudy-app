@@ -84,9 +84,9 @@ export function fetchNodeReport(studyUuid, nodeUuid, reportId, severityFilterLis
     return backendFetchJson(url);
 }
 
-export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilterList, messageFilter, withParentNodes) {
+export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilterList, messageFilter, isGlobalLogs) {
     let url;
-    if (withParentNodes) {
+    if (isGlobalLogs) {
         url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/logs?';
     } else {
         url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/logs?';

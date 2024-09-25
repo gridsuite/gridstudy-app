@@ -42,6 +42,17 @@ function setNodeName(report: Report, nodesNames: Map<string, string>) {
     return report;
 }
 
+function prettifyReportLogMessage(reports: ReportLog[], nodesNames: Map<string, string>) {
+    reports.forEach((report) => {
+        if (report.parentId == null) {
+            if (report.message !== ROOT_NODE_LABEL) {
+                report.message = nodesNames?.get(report.message) ?? report.message;
+            }
+        }
+    });
+    return reports;
+}
+
 export const useReportFetcher = (
     computingAndNetworkModificationType: keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
 ): [
@@ -106,7 +117,6 @@ export const useReportFetcher = (
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
-
             if (reportType === REPORT_TYPE.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
                     fetchNodeReportLogs(studyUuid, currentNode!.id, null, severityList, messageFilter, true);
@@ -115,10 +125,10 @@ export const useReportFetcher = (
                     fetchNodeReportLogs(studyUuid, currentNode!.id, reportId, severityList, messageFilter, false);
             }
             return fetchPromise(severityList, reportId).then((r) => {
-                return r;
+                return prettifyReportLogMessage(r, nodesNames);
             });
         },
-        [currentNode, studyUuid]
+        [currentNode, studyUuid, nodesNames]
     );
 
     return [isLoading, fetchRawParentReport, fetchReportLogs];

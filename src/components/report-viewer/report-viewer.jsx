@@ -35,7 +35,6 @@ export default function ReportViewer({ report, reportType }) {
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
     const [isLogLoading, , fetchReportLogs] = useReportFetcher(reportType);
 
-    const [displayedSelectedReportId, setDisplayedSelectedReportId] = useState(null);
     const selectedReportId = useSelector((state) => state.reportSelectedReportId);
     const severityFilter = useSelector((state) => state.reportSeverityFilter);
     const messageFilter = useSelector((state) => state.reportMessageFilter);
@@ -91,10 +90,7 @@ export default function ReportViewer({ report, reportType }) {
     );
 
     useEffect(() => {
-        //refresh the logs when we change the filters
-        if (selectedReportId != null) {
-            refreshLogsOnSelectedReport(selectedReportId, severityFilter, messageFilter);
-        }
+        refreshLogsOnSelectedReport(selectedReportId, severityFilter, messageFilter);
     }, [messageFilter, severityFilter, selectedReportId, refreshLogsOnSelectedReport]);
 
     useEffect(() => {
@@ -102,10 +98,7 @@ export default function ReportViewer({ report, reportType }) {
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setLogs(mapReportLog(report, reportTree.severities));
-        // we don't dispatch the new report id on initialisation because we don't want trigger the refreshLogsOnSelectedReport
-        // that fetch the logs (right part), since the first request return both the tree and the logs
-        dispatch(setReportFilters(null, '', getDefaultSeverityFilter(reportTree.severities)));
-        setDisplayedSelectedReportId(report.id);
+        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -113,7 +106,6 @@ export default function ReportViewer({ report, reportType }) {
     }, []);
 
     const handleSelectNode = (_, reportId) => {
-        setDisplayedSelectedReportId(reportId);
         if (selectedReportId !== reportId) {
             dispatch(
                 setReportFilters(reportId, '', getDefaultSeverityFilter(reportTreeData.current[reportId].severities))
@@ -165,7 +157,7 @@ export default function ReportViewer({ report, reportType }) {
                 <ReportTreeViewContext.Provider value={isHighlighted}>
                     {/*TODO do we need to useMemo/useCallback these props to avoid rerenders ?*/}
                     <ReportTree
-                        selectedReportId={displayedSelectedReportId}
+                        selectedReportId={selectedReportId}
                         expandedTreeReports={expandedTreeReports}
                         setExpandedTreeReports={setExpandedTreeReports}
                         handleSelectNode={handleSelectNode}
