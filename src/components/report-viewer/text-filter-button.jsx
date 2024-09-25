@@ -18,6 +18,15 @@ const styles = {
         width: '0.7em',
         height: '0.7em',
     },
+    notificationDot: {
+        height: '6px',
+        width: '6px',
+        backgroundColor: '#cc70a0',
+        borderRadius: '50%',
+        position: 'absolute',
+        top: '5px',
+        left: '23px',
+    },
 };
 
 /**
@@ -35,18 +44,29 @@ export const TextFilterButton = ({ filterText, setFilterText }) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = () => {
+    const handleClose = (event) => {
         setAnchorEl(null);
+        //To remove the focus of the button when closing the menu by pressing "Enter"
+        if (event) {
+            event.target.blur();
+        }
     };
 
     const handleChange = (event) => {
         setFilterText(event.target.value);
     };
 
+    const handleKeyUp = (event) => {
+        if (event.key === 'Enter') {
+            handleClose(event);
+        }
+    };
+
     return (
         <Box sx={styles.container}>
             <IconButton onClick={handleClick}>
                 <FilterAltIcon sx={styles.icon} />
+                {filterText && <Box sx={styles.notificationDot} />}
             </IconButton>
             <Menu open={Boolean(anchorEl)} onClose={handleClose} anchorEl={anchorEl}>
                 <TextField
@@ -54,6 +74,7 @@ export const TextFilterButton = ({ filterText, setFilterText }) => {
                     fullWidth
                     value={filterText || ''}
                     onChange={handleChange}
+                    onKeyUp={handleKeyUp}
                     placeholder={intl.formatMessage({
                         id: 'filter.filterOoo',
                     })}

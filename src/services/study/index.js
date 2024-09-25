@@ -73,17 +73,6 @@ export function fetchParentNodesReport(studyUuid, nodeUuid, nodeOnlyReport, seve
     return backendFetchJson(url);
 }
 
-export function fetchNodeReport(studyUuid, nodeUuid, reportId, severityFilterList) {
-    console.info('get report for node : ' + nodeUuid + ' in study ' + studyUuid);
-
-    let url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report?reportId=' + reportId;
-    if (severityFilterList?.length) {
-        url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
-    }
-
-    return backendFetchJson(url);
-}
-
 export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilterList, messageFilter, isGlobalLogs) {
     let url;
     if (isGlobalLogs) {
@@ -97,8 +86,6 @@ export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilte
     if (messageFilter && messageFilter !== '') {
         url += '&message=' + messageFilter;
     }
-    console.info('url');
-    console.info(url);
 
     return backendFetchJson(url);
 }

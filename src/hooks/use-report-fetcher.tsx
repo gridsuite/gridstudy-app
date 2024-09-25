@@ -10,7 +10,7 @@ import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Report, ReportLog, ReportType } from '../types/report.type';
+import { Log, Report, ReportLog, ReportType } from '../types/report.type';
 import { getDefaultSeverityList } from '../utils/report-severity.utils';
 import {
     COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
@@ -18,6 +18,7 @@ import {
     REPORT_TYPE,
 } from '../constants/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
+import { mapReportLogs } from '../utils/report-log.mapper';
 
 function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
     if (!Array.isArray(report)) {
@@ -58,7 +59,7 @@ export const useReportFetcher = (
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
-    (reportId: string, severityList: string[], reportType: ReportType, filterMessage: string) => Promise<ReportLog[]>
+    (reportId: string, severityList: string[], reportType: ReportType, filterMessage: string) => Promise<Log[]>
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -125,7 +126,7 @@ export const useReportFetcher = (
                     fetchNodeReportLogs(studyUuid, currentNode!.id, reportId, severityList, messageFilter, false);
             }
             return fetchPromise(severityList, reportId).then((r) => {
-                return prettifyReportLogMessage(r, nodesNames);
+                return mapReportLogs(prettifyReportLogMessage(r, nodesNames));
             });
         },
         [currentNode, studyUuid, nodesNames]

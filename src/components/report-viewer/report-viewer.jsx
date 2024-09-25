@@ -13,7 +13,7 @@ import ReportTree from './report-tree';
 import ReportItem from './report-item';
 import { getDefaultSeverityFilter } from '../../utils/report-severity.utils';
 import { useReportFetcher } from '../../hooks/use-report-fetcher';
-import { mapReportLog, mapReportLogs } from '../../utils/report-log.mapper';
+import { mapReportLogs } from '../../utils/report-log.mapper';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
 import { useDispatch, useSelector } from 'react-redux';
 import { setReportFilters } from '../../redux/actions';
@@ -97,7 +97,6 @@ export default function ReportViewer({ report, reportType }) {
         const reportTree = mapReportsTree(report);
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
-        setLogs(mapReportLog(report, reportTree.severities));
         dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
