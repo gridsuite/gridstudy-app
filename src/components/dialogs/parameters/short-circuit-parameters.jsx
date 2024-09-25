@@ -45,7 +45,7 @@ import CreateParameterDialog from './common/parameters-creation-dialog';
 
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
 import ComputationType from '../../computing-status/computation-type';
-import { isComputationParametersUpdated } from './common/computation-parameters-util.js';
+import { isComputationParametersUpdated } from './common/computation-parameters-util';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
