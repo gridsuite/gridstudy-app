@@ -100,15 +100,15 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const computationStarting = useSelector((state: any) => state.computationStarting);
-    const loadFlowStatus = useSelector((state: any) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const computationStarting = useSelector((state: AppState) => state.computationStarting);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode.id);
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!);
 
     // dynamic simulation event configuration states
     const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] = useState<
@@ -620,7 +620,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
                     studyUuid={studyUuid}
-                    currentNodeId={currentNode?.id}
+                    currentNodeId={currentNode?.id ?? ''}
                     equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
                     equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}

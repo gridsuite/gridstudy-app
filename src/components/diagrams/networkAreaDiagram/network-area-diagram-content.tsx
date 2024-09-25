@@ -15,14 +15,14 @@ import {
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
+import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 
-const dynamicCssRules = [
+const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
         belowThresholdCssDeclaration: { display: 'block' },
