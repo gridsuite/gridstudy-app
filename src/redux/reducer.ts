@@ -382,7 +382,12 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
-export type NadNodeMovement = {};
+export type NadNodeMovement = {
+    nadIds: string;
+    id: string;
+    x: number;
+    y: number;
+};
 
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
@@ -1377,10 +1382,29 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            console.error('CHARLY REDUX : ' + action.id + ', ' + action.x + ', ' + action.y);
-            const newMovement = {id: action.id, x: action.x, y: action.y} as NadNodeMovement;
-            const nadNodeMovements = state.nadNodeMovements;
-            nadNodeMovements.push(newMovement);
+
+            // TODO CHARLY Pour le moment, la liste des IDs n'est pas la bonne solution : si on transforme un VL en VL avec ring (...)
+            // TODO (...) dans un autre node de l'arbre, alors on a des bugs visuels.
+            const openNadIds = state.diagramStates
+                .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+                .map((diagram) => diagram.id)
+                .sort()
+                .join(',');
+
+            const correspondingMovement = state.nadNodeMovements.filter(
+                (movement) => movement.nadIds === openNadIds && movement.id === action.id
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadNodeMovements.push({
+                    nadIds: openNadIds,
+                    id: action.id,
+                    x: action.x,
+                    y: action.y,
+                } as NadNodeMovement);
+            } else {
+                correspondingMovement[0].x = action.x;
+                correspondingMovement[0].y = action.y;
+            }
         }
     );
 

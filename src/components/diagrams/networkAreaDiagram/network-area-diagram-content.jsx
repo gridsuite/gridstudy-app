@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef } from 'react';
+import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -15,6 +15,7 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
+    DiagramType,
 } from '../diagram-common';
 import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -125,26 +126,24 @@ function NetworkAreaDiagramContent(props) {
     const currentNode = useSelector((state) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
+    const diagramStates = useSelector((state) => state.diagramStates);
 
-    const onMoveNodeCallback = (equipmentId, nodeId, x, y, XOrig, yOrig) => {
-        console.error(
-            'CHARLY onMoveNodeCallback ' +
-                equipmentId +
-                ', ' +
-                nodeId +
-                ', ' +
-                x +
-                ', ' +
-                y +
-                ', ' +
-                XOrig +
-                ', ' +
-                yOrig +
-                ')'
-        );
+    const onMoveNodeCallback = useCallback(
+        (equipmentId, nodeId, x, y, xOrig, yOrig) => {
+            dispatch(storeNetworkAreaDiagramNodeMovement(nodeId, x, y));
+        },
+        [dispatch]
+    );
 
-        dispatch(storeNetworkAreaDiagramNodeMovement(nodeId, x, y));
-    };
+    // TODO CHARLY Pour le moment, la liste des IDs n'est pas la bonne solution : si on transforme un VL en VL avec ring (...)
+    // TODO (...) dans un autre node de l'arbre, alors on a des bugs visuels.
+    const openNadIds = useMemo(() => {
+        return diagramStates
+            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+            .map((diagram) => diagram.id)
+            .sort()
+            .join(',');
+    }, [diagramStates]);
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -179,14 +178,28 @@ function NetworkAreaDiagramContent(props) {
             ) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
-            //diagramViewer.moveNodeToCoordonates('0', 19188.26, -449900.29);
-            console.error(" === APRES INIT, LISTE MOUVEMENTS : ", nadNodeMovements);
-            nadNodeMovements.forEach(move => {
-                diagramViewer.moveNodeToCoordonates(move.id, move.x, move.y);
-            });
+
+            // APPLYING THE SAVED MOVEMENTS ON THIS NAD'S NODES (if there are saved movements for the current NAD)
+            const correspondingMovements = nadNodeMovements.filter((movement) => movement.nadIds === openNadIds);
+            if (correspondingMovements.length > 0) {
+                correspondingMovements.forEach((movement) => {
+                    // TODO CHARLY vérifier qu'on ne repasse pas dans onMoveNodeCallback à chaque itération et que ça ne repasse pas par le redux pour rien
+                    diagramViewer.moveNodeToCoordonates(movement.id, movement.x, movement.y);
+                });
+            }
             diagramViewerRef.current = diagramViewer;
         }
-    }, [props.diagramId, props.svgType, props.svg, currentNode, props.loadingState, diagramSizeSetter]);
+    }, [
+        props.diagramId,
+        props.svgType,
+        props.svg,
+        currentNode,
+        props.loadingState,
+        diagramSizeSetter,
+        onMoveNodeCallback,
+        openNadIds,
+        nadNodeMovements, // TODO CHARLY attention, ça ressemble à de la dépendance cyclique
+    ]);
 
     /**
      * RENDER
