@@ -570,7 +570,7 @@ const initialState: AppState = {
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     limitReductionModified: false,
     reportMessageFilter: '',
-    reportSeverityFilter: getDefaultSeverityFilter(),
+    reportSeverityFilter: getDefaultSeverityFilter([]),
     reportSelectedReportId: null,
 
     // params
