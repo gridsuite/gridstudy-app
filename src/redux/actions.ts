@@ -905,6 +905,27 @@ export function decrementNetworkAreaDiagramDepth(): DecrementNetworkAreaDiagramD
     };
 }
 
+export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT';
+export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
+    Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
+> & {
+    id: string;
+    x: number;
+    y: number;
+};
+export function storeNetworkAreaDiagramNodeMovement(
+    id: string,
+    x: number,
+    y: number
+): StoreNetworkAreaDiagramNodeMovementAction {
+    return {
+        type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        id: id,
+        x: x,
+        y: y,
+    };
+}
+
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>

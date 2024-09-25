@@ -176,6 +176,8 @@ import {
     SpreadsheetFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
+    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    StoreNetworkAreaDiagramNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
@@ -380,6 +382,8 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
+export type NadNodeMovement = {};
+
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: string | null;
@@ -418,6 +422,7 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
+    nadNodeMovements: NadNodeMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -538,6 +543,7 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
+    nadNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1367,6 +1373,16 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
     });
+
+    builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
+            console.error('CHARLY REDUX : ' + action.id + ', ' + action.x + ', ' + action.y);
+            const newMovement = {id: action.id, x: action.x, y: action.y} as NadNodeMovement;
+            const nadNodeMovements = state.nadNodeMovements;
+            nadNodeMovements.push(newMovement);
+        }
+    );
 
     builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
