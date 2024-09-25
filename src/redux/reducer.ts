@@ -176,6 +176,8 @@ import {
     SpreadsheetFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
+    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    StoreNetworkAreaDiagramNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
@@ -380,6 +382,13 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
+export type NadNodeMovement = {
+    nadIds: string;
+    id: string;
+    x: number;
+    y: number;
+};
+
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: string | null;
@@ -418,6 +427,7 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
+    nadNodeMovements: NadNodeMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -538,6 +548,7 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
+    nadNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1367,6 +1378,35 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
     });
+
+    builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
+            // TODO CHARLY Pour le moment, la liste des IDs n'est pas la bonne solution : si on transforme un VL en VL avec ring
+            // TODO dans un autre node de l'arbre, alors on a des bugs visuels.
+            // TODO De même, on ne gère pas correctement la profondeur : openNadIds reste le même.
+            const openNadIds = state.diagramStates
+                .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+                .map((diagram) => diagram.id)
+                .sort()
+                .join(',');
+
+            const correspondingMovement = state.nadNodeMovements.filter(
+                (movement) => movement.nadIds === openNadIds && movement.id === action.id
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadNodeMovements.push({
+                    nadIds: openNadIds,
+                    id: action.id,
+                    x: action.x,
+                    y: action.y,
+                } as NadNodeMovement);
+            } else {
+                correspondingMovement[0].x = action.x;
+                correspondingMovement[0].y = action.y;
+            }
+        }
+    );
 
     builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,

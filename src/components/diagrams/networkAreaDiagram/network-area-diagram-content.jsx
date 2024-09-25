@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -15,12 +15,14 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
+    DiagramType,
 } from '../diagram-common';
 import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from 'components/computing-status/computing-type';
+import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 
 const dynamicCssRules = [
     {
@@ -118,17 +120,38 @@ const dynamicCssRules = [
 
 function NetworkAreaDiagramContent(props) {
     const { diagramSizeSetter } = props;
+    const dispatch = useDispatch();
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
+    const diagramStates = useSelector((state) => state.diagramStates);
+
+    const onMoveNodeCallback = useCallback(
+        (equipmentId, nodeId, x, y, xOrig, yOrig) => {
+            dispatch(storeNetworkAreaDiagramNodeMovement(nodeId, x, y));
+        },
+        [dispatch]
+    );
+
+    // TODO CHARLY Pour le moment, la liste des IDs n'est pas la bonne solution : si on transforme un VL en VL avec ring
+    // TODO dans un autre node de l'arbre, alors on a des bugs visuels.
+    // TODO De même, on ne gère pas correctement la profondeur : openNadIds reste le même.
+    const openNadIds = useMemo(() => {
+        return diagramStates
+            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
+            .map((diagram) => diagram.id)
+            .sort()
+            .join(',');
+    }, [diagramStates]);
 
     /**
      * DIAGRAM CONTENT BUILDING
      */
 
     useLayoutEffect(() => {
-        if (props.svg) {
+        if (props.svg && !props.loadingState) {
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
@@ -136,7 +159,7 @@ function NetworkAreaDiagramContent(props) {
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-                null,
+                onMoveNodeCallback,
                 null,
                 null,
                 true,
@@ -148,7 +171,7 @@ function NetworkAreaDiagramContent(props) {
             diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
-            // the user's zoom and scoll state for the current render.
+            // the user's zoom and scroll state for the current render.
             if (
                 diagramViewerRef.current &&
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
@@ -157,9 +180,27 @@ function NetworkAreaDiagramContent(props) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
 
+            // APPLYING THE SAVED MOVEMENTS ON THIS NAD'S NODES (if there are saved movements for the current NAD)
+            const correspondingMovements = nadNodeMovements.filter((movement) => movement.nadIds === openNadIds);
+            if (correspondingMovements.length > 0) {
+                correspondingMovements.forEach((movement) => {
+                    // TODO CHARLY vérifier qu'on ne repasse pas dans onMoveNodeCallback à chaque itération et que ça ne repasse pas par le redux pour rien
+                    diagramViewer.moveNodeToCoordonates(movement.id, movement.x, movement.y);
+                });
+            }
             diagramViewerRef.current = diagramViewer;
         }
-    }, [props.diagramId, props.svgType, props.svg, currentNode, props.loadingState, diagramSizeSetter]);
+    }, [
+        props.diagramId,
+        props.svgType,
+        props.svg,
+        currentNode,
+        props.loadingState,
+        diagramSizeSetter,
+        onMoveNodeCallback,
+        openNadIds,
+        nadNodeMovements, // TODO CHARLY attention, ça ressemble à de la dépendance cyclique
+    ]);
 
     /**
      * RENDER
