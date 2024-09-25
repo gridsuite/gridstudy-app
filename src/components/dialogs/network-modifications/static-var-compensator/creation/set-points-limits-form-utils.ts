@@ -138,84 +138,10 @@ export const getReactiveFormValidationSchema = () =>
             }),
     });
 
-export const getReactiveFormData: ({
+export const getReactiveFormData = ({
     maxSusceptance,
     minSusceptance,
     nominalV,
-    regulationMode,
-    voltageSetpoint,
-    reactivePowerSetpoint,
-    voltageRegulationType,
-    voltageLevelId,
-    equipmentType,
-    equipmentId,
-}: {
-    maxSusceptance: any;
-    minSusceptance: any;
-    nominalV: any;
-    regulationMode: any;
-    voltageSetpoint: any;
-    reactivePowerSetpoint: any;
-    voltageRegulationType: any;
-    voltageLevelId: any;
-    equipmentType: any;
-    equipmentId: any;
-}) => {
-    [SETPOINTS_LIMITS]: {
-        [VOLTAGE_REGULATION_TYPE]: string;
-        [VOLTAGE_SET_POINT]: number;
-        [MAX_Q_AT_NOMINAL_V]: number;
-        [VOLTAGE_REGULATION_MODE]: string;
-        [CHARACTERISTICS_CHOICE]: string;
-        [MAX_SUSCEPTANCE]: number;
-        [REACTIVE_POWER_SET_POINT]: number;
-        [MIN_SUSCEPTANCE]: number;
-        [MIN_Q_AT_NOMINAL_V]: number;
-        [VOLTAGE_LEVEL]: {
-            [ID]: string;
-        };
-        [EQUIPMENT]: {
-            [ID]: string;
-            [TYPE]: string;
-        };
-    };
-} = ({
-    maxSusceptance,
-    minSusceptance,
-    nominalV,
-    regulationMode,
-    voltageSetpoint,
-    reactivePowerSetpoint,
-    voltageRegulationType,
-    voltageLevelId,
-    equipmentType,
-    equipmentId,
-}) => {
-    return {
-        [SETPOINTS_LIMITS]: {
-            [CHARACTERISTICS_CHOICE]: maxSusceptance
-                ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-            [VOLTAGE_REGULATION_MODE]: regulationMode,
-            [MAX_SUSCEPTANCE]: maxSusceptance,
-            [MIN_SUSCEPTANCE]: minSusceptance,
-            [MAX_Q_AT_NOMINAL_V]: computeQAtNominalV(maxSusceptance, nominalV),
-            [MIN_Q_AT_NOMINAL_V]: computeQAtNominalV(minSusceptance, nominalV),
-            [VOLTAGE_SET_POINT]: voltageSetpoint,
-            [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
-            [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
-            [VOLTAGE_LEVEL]: { [ID]: voltageLevelId },
-            [EQUIPMENT]: {
-                [ID]: equipmentId,
-                [TYPE]: equipmentType,
-            },
-        },
-    };
-};
-
-export const getReactiveFormDataValues: ({
-    maxSusceptance,
-    minSusceptance,
     maxQAtNominalV,
     minQAtNominalV,
     regulationMode,
@@ -228,8 +154,9 @@ export const getReactiveFormDataValues: ({
 }: {
     maxSusceptance: any;
     minSusceptance: any;
-    maxQAtNominalV: any;
-    minQAtNominalV: any;
+    nominalV?: any;
+    maxQAtNominalV?: any;
+    minQAtNominalV?: any;
     regulationMode: any;
     voltageSetpoint: any;
     reactivePowerSetpoint: any;
@@ -237,56 +164,25 @@ export const getReactiveFormDataValues: ({
     voltageLevelId: any;
     equipmentType: any;
     equipmentId: any;
-}) => {
+}) => ({
     [SETPOINTS_LIMITS]: {
-        [VOLTAGE_REGULATION_TYPE]: any;
-        [VOLTAGE_SET_POINT]: any;
-        [MAX_Q_AT_NOMINAL_V]: any;
-        [VOLTAGE_REGULATION_MODE]: any;
-        [CHARACTERISTICS_CHOICE]: string;
-        [MAX_SUSCEPTANCE]: any;
-        [REACTIVE_POWER_SET_POINT]: any;
-        [MIN_SUSCEPTANCE]: any;
-        [MIN_Q_AT_NOMINAL_V]: any;
-        [VOLTAGE_LEVEL]: {
-            [ID]: string;
-        };
-        [EQUIPMENT]: {
-            [ID]: string;
-            [TYPE]: string;
-        };
-    };
-} = ({
-    maxSusceptance,
-    minSusceptance,
-    maxQAtNominalV,
-    minQAtNominalV,
-    regulationMode,
-    voltageSetpoint,
-    reactivePowerSetpoint,
-    voltageRegulationType,
-    voltageLevelId,
-    equipmentType,
-    equipmentId,
-}) => {
-    return {
-        [SETPOINTS_LIMITS]: {
-            [CHARACTERISTICS_CHOICE]: maxSusceptance
-                ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-            [VOLTAGE_REGULATION_MODE]: regulationMode,
-            [MAX_SUSCEPTANCE]: maxSusceptance,
-            [MIN_SUSCEPTANCE]: minSusceptance,
-            [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
-            [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
-            [VOLTAGE_SET_POINT]: voltageSetpoint,
-            [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
-            [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
-            [VOLTAGE_LEVEL]: { [ID]: voltageLevelId },
-            [EQUIPMENT]: {
-                [ID]: equipmentId,
-                [TYPE]: equipmentType,
-            },
-        },
-    };
-};
+        [CHARACTERISTICS_CHOICE]: maxSusceptance
+            ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+            : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        [VOLTAGE_REGULATION_MODE]: regulationMode,
+        [MAX_SUSCEPTANCE]: maxSusceptance,
+        [MIN_SUSCEPTANCE]: minSusceptance,
+        [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV ?? computeQAtNominalV(maxSusceptance, nominalV),
+        [MIN_Q_AT_NOMINAL_V]: minQAtNominalV ?? computeQAtNominalV(minSusceptance, nominalV),
+        [VOLTAGE_SET_POINT]: voltageSetpoint,
+        [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
+        [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
+        [VOLTAGE_LEVEL]: voltageLevelId ? { [ID]: voltageLevelId } : null,
+        [EQUIPMENT]: equipmentId
+            ? {
+                  [ID]: equipmentId,
+                  [TYPE]: equipmentType,
+              }
+            : null, // set null because this object field is conditionally required, see in schema
+    },
+});

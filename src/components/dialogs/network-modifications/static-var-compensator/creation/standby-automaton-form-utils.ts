@@ -83,11 +83,12 @@ export const getStandbyAutomatonFormValidationSchema = () =>
         [SLIDER_Q_NOMINAL]: yup.number().nullable(),
     });
 
-export const getStandbyAutomatonFormData: ({
+export const getStandbyAutomatonFormData = ({
     addStandbyAutomaton,
     standby,
     b0,
     nominalV,
+    q0,
     lVoltageSetpoint,
     hVoltageSetpoint,
     lVoltageThreshold,
@@ -96,112 +97,28 @@ export const getStandbyAutomatonFormData: ({
     addStandbyAutomaton: any;
     standby: any;
     b0: any;
-    nominalV: any;
+    nominalV?: any;
+    q0?: any;
     lVoltageSetpoint: any;
     hVoltageSetpoint: any;
     lVoltageThreshold: any;
     hVoltageThreshold: any;
-}) => {
+}) => ({
     [AUTOMATON]: {
-        [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
-        [SLIDER_SUSCEPTANCE]: number;
-        [HIGH_VOLTAGE_SET_POINT]: number;
-        [HIGH_VOLTAGE_THRESHOLD]: number;
-        [SLIDER_Q_NOMINAL]: number;
-        [STAND_BY_AUTOMATON]: boolean;
-        [LOW_VOLTAGE_SET_POINT]: number;
-        [ADD_STAND_BY_AUTOMATON]: boolean;
-        [LOW_VOLTAGE_THRESHOLD]: number;
-        [B0]: number;
-        [Q0]: number;
-    };
-} = ({
-    addStandbyAutomaton,
-    standby,
-    b0,
-    nominalV,
-    lVoltageSetpoint,
-    hVoltageSetpoint,
-    lVoltageThreshold,
-    hVoltageThreshold,
-}) => {
-    return {
-        [AUTOMATON]: {
-            [ADD_STAND_BY_AUTOMATON]: addStandbyAutomaton,
-            [STAND_BY_AUTOMATON]: standby,
-            [LOW_VOLTAGE_SET_POINT]: lVoltageSetpoint,
-            [HIGH_VOLTAGE_SET_POINT]: hVoltageSetpoint,
-            [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
-            [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
-            [CHARACTERISTICS_CHOICE_AUTOMATON]:
-                b0 != null ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-            [B0]: b0,
-            [Q0]: computeQAtNominalV(b0, nominalV),
-            [SLIDER_SUSCEPTANCE]: b0,
-            [SLIDER_Q_NOMINAL]: computeQAtNominalV(b0, nominalV),
-        },
-    };
-};
-
-export const getStandbyAutomatonFormDataValues: ({
-    standbyAutomatonOn,
-    standby,
-    b0,
-    q0,
-    lVoltageSetpoint,
-    hVoltageSetpoint,
-    lVoltageThreshold,
-    hVoltageThreshold,
-}: {
-    standbyAutomatonOn: any;
-    standby: any;
-    b0: any;
-    q0: any;
-    lVoltageSetpoint: any;
-    hVoltageSetpoint: any;
-    lVoltageThreshold: any;
-    hVoltageThreshold: any;
-}) => {
-    [AUTOMATON]: {
-        [CHARACTERISTICS_CHOICE_AUTOMATON]: string;
-        [SLIDER_SUSCEPTANCE]: any;
-        [HIGH_VOLTAGE_SET_POINT]: any;
-        [HIGH_VOLTAGE_THRESHOLD]: any;
-        [SLIDER_Q_NOMINAL]: any;
-        [STAND_BY_AUTOMATON]: any;
-        [LOW_VOLTAGE_SET_POINT]: any;
-        [ADD_STAND_BY_AUTOMATON]: any;
-        [LOW_VOLTAGE_THRESHOLD]: any;
-        [B0]: any;
-        [Q0]: any;
-    };
-} = ({
-    standbyAutomatonOn,
-    standby,
-    b0,
-    q0,
-    lVoltageSetpoint,
-    hVoltageSetpoint,
-    lVoltageThreshold,
-    hVoltageThreshold,
-}) => {
-    return {
-        [AUTOMATON]: {
-            [ADD_STAND_BY_AUTOMATON]: standbyAutomatonOn,
-            [STAND_BY_AUTOMATON]: standby,
-            [LOW_VOLTAGE_SET_POINT]: lVoltageSetpoint,
-            [HIGH_VOLTAGE_SET_POINT]: hVoltageSetpoint,
-            [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
-            [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
-            [CHARACTERISTICS_CHOICE_AUTOMATON]:
-                b0 != null ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-            [B0]: b0,
-            [Q0]: q0,
-            [SLIDER_SUSCEPTANCE]: b0,
-            [SLIDER_Q_NOMINAL]: q0,
-        },
-    };
-};
+        [ADD_STAND_BY_AUTOMATON]: addStandbyAutomaton,
+        [STAND_BY_AUTOMATON]: standby,
+        [LOW_VOLTAGE_SET_POINT]: lVoltageSetpoint,
+        [HIGH_VOLTAGE_SET_POINT]: hVoltageSetpoint,
+        [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
+        [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
+        [CHARACTERISTICS_CHOICE_AUTOMATON]:
+            b0 != null ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        [B0]: b0,
+        [Q0]: q0 ?? computeQAtNominalV(b0, nominalV),
+        [SLIDER_SUSCEPTANCE]: b0,
+        [SLIDER_Q_NOMINAL]: q0 ?? computeQAtNominalV(b0, nominalV),
+    },
+});
 
 export function getFloatNumber(value: any) {
     return !isNaN(value) ? parseFloat(value) : 0;

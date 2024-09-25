@@ -78,14 +78,12 @@ import StaticVarCompensatorCreationForm from './static-var-compensator-creation-
 import StaticVarCompensatorCreationDialogHeader from './static-var-compensator-creation-dialog-header';
 import {
     getReactiveFormData,
-    getReactiveFormDataValues,
     getReactiveFormEmptyFormData,
     getReactiveFormValidationSchema,
 } from './set-points-limits-form-utils';
 import {
     getStandbyAutomatonEmptyFormData,
     getStandbyAutomatonFormData,
-    getStandbyAutomatonFormDataValues,
     getStandbyAutomatonFormValidationSchema,
 } from './standby-automaton-form-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
@@ -249,7 +247,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     terminalConnected: staticCompensator.terminalConnected,
                     isEquipmentModification: false,
                 }),
-                ...getReactiveFormDataValues({
+                ...getReactiveFormData({
                     maxSusceptance: staticCompensator.maxSusceptance,
                     minSusceptance: staticCompensator.minSusceptance,
                     maxQAtNominalV: staticCompensator.maxQAtNominalV,
@@ -266,8 +264,8 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     equipmentId:
                         staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
                 }),
-                ...getStandbyAutomatonFormDataValues({
-                    standbyAutomatonOn: staticCompensator.standbyAutomatonOn,
+                ...getStandbyAutomatonFormData({
+                    addStandbyAutomaton: staticCompensator.standbyAutomatonOn,
                     standby: staticCompensator.standby,
                     lVoltageSetpoint: staticCompensator.lowVoltageSetpoint ?? null,
                     hVoltageSetpoint: staticCompensator.highVoltageSetpoint ?? null,
@@ -395,25 +393,34 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         delay: FORM_LOADING_DELAY,
     });
 
-    const onValidationError = (errors: any) => {
-        let tabsInError = [];
-        if (errors?.[CONNECTIVITY] !== undefined) {
-            tabsInError.push(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);
-        }
-        if (errors?.[SETPOINTS_LIMITS] !== undefined) {
-            tabsInError.push(StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB);
-        }
-        if (errors?.[AUTOMATON] !== undefined) {
-            tabsInError.push(StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB);
-        }
-        if (errors?.[ADDIONAL_INFOS] !== undefined) {
-            tabsInError.push(StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB);
-        }
-        if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
+    const onValidationError = useCallback(
+        (errors: any) => {
+            console.log('AAAA', { errors });
+            const tabsInError = [];
+            if (errors?.[CONNECTIVITY]) {
+                tabsInError.push(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);
+            }
+            if (errors?.[SETPOINTS_LIMITS]) {
+                tabsInError.push(StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB);
+            }
+            if (errors?.[AUTOMATON]) {
+                tabsInError.push(StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB);
+            }
+            if (errors?.[ADDIONAL_INFOS]) {
+                tabsInError.push(StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB);
+            }
+
+            if (tabsInError.includes(tabIndex)) {
+                // error in current tab => do not change tab systematically but remove current tab in error list
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+            } else if (tabsInError.length > 0) {
+                // switch to the first tab in the list then remove the tab in the error list
+                setTabIndex(tabsInError[0]);
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
+            }
+        },
+        [tabIndex]
+    );
 
     const headerAndTabs = (
         <Grid container spacing={2}>
