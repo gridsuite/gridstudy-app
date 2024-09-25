@@ -328,19 +328,6 @@ export const useParametersBackend = (
                             headerId: 'reset' + type + 'ParametersWarning',
                         });
                     }
-                    return backendFetchParameters(studyUuid)
-                        .then((params) => {
-                            setParams(params);
-                            if (callBack) {
-                                callBack();
-                            }
-                        })
-                        .catch((error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'fetch' + type + 'ParametersError',
-                            });
-                        });
                 })
                 .catch((error) => {
                     snackError({
@@ -349,7 +336,7 @@ export const useParametersBackend = (
                     });
                 });
         },
-        [studyUuid, type, backendUpdateParameters, backendFetchParameters, snackError, snackWarning, setParams]
+        [studyUuid, type, backendUpdateParameters, snackError, snackWarning]
     );
 
     useEffect(() => {

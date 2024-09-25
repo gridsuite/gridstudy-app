@@ -190,24 +190,13 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useNonEvacuatedEnergyParameters;
 
     const resetNonEvacuatedEnergyParameters = useCallback(() => {
-        setNonEvacuatedEnergyParameters(studyUuid, emptyFormData)
-            .then(() => {
-                return getNonEvacuatedEnergyParameters(studyUuid)
-                    .then((params) => setNonEvacuatedEnergyParams(params))
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
+        setNonEvacuatedEnergyParameters(studyUuid, emptyFormData).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'paramsChangingError',
             });
-    }, [studyUuid, emptyFormData, setNonEvacuatedEnergyParams, snackError]);
+        });
+    }, [studyUuid, emptyFormData, snackError]);
 
     const formatNewParams = useCallback((newParams, withProvider = true) => {
         let params = {
