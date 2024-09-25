@@ -13,8 +13,8 @@ import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
-import { useStateBoolean, useStateNumber } from '../../../hooks/use-states';
 import CustomColumnDialog from './custom-column-dialog';
+import { useStateBoolean, useStateNumber } from '@gridsuite/commons-ui';
 
 export type CustomColumnsConfigProps = {
     indexTab: number;
