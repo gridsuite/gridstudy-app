@@ -142,7 +142,7 @@ function NetworkAreaDiagramContent(props) {
         return diagramStates
             .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
             .map((diagram) => diagram.id)
-            .sort()
+            .sort((a, b) => a.localeCompare(b))
             .join(',');
     }, [diagramStates]);
 

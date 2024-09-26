@@ -1388,7 +1388,7 @@ export const reducer = createReducer(initialState, (builder) => {
             const openNadIds = state.diagramStates
                 .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
                 .map((diagram) => diagram.id)
-                .sort()
+                .sort((a, b) => a.localeCompare(b))
                 .join(',');
 
             const correspondingMovement = state.nadNodeMovements.filter(
