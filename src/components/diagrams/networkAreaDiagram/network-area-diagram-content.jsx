@@ -176,7 +176,7 @@ function NetworkAreaDiagramContent(props) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
 
-            // APPLYING THE SAVED MOVEMENTS ON THIS NAD'S NODES (if there are saved movements for the current NAD)
+            // Repositioning the previously moved nodes
             if (!props.loadingState) {
                 const correspondingMovements = nadNodeMovements.filter(
                     (movement) => movement.nadIdentifier === nadIdentifier
