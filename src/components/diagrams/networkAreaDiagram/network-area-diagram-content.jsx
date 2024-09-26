@@ -131,16 +131,16 @@ function NetworkAreaDiagramContent(props) {
     const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
     const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
 
-    const onMoveNodeCallback = useCallback(
-        (equipmentId, nodeId, x, y, xOrig, yOrig) => {
-            dispatch(storeNetworkAreaDiagramNodeMovement(equipmentId, x, y));
-        },
-        [dispatch]
-    );
-
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, networkAreaDiagramDepth, initNadWithGeoData);
     }, [diagramStates, networkAreaDiagramDepth, initNadWithGeoData]);
+
+    const onMoveNodeCallback = useCallback(
+        (equipmentId, nodeId, x, y, xOrig, yOrig) => {
+            dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+        },
+        [dispatch, nadIdentifier]
+    );
 
     /**
      * DIAGRAM CONTENT BUILDING

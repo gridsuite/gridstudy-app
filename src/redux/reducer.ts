@@ -273,7 +273,6 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { getNadIdentifier } from '../components/diagrams/diagram-utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -1383,17 +1382,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            const nadIdentifier = getNadIdentifier(
-                state.diagramStates,
-                state.networkAreaDiagramDepth,
-                state[PARAM_INIT_NAD_WITH_GEO_DATA]
-            );
             const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) => movement.nadIdentifier === nadIdentifier && movement.equipmentId === action.equipmentId
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadNodeMovements.push({
-                    nadIdentifier: nadIdentifier,
+                    nadIdentifier: action.nadIdentifier,
                     equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,

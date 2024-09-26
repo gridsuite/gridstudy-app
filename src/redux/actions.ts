@@ -909,17 +909,20 @@ export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAG
 export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
     Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
 > & {
+    nadIdentifier: string;
     equipmentId: string;
     x: number;
     y: number;
 };
 export function storeNetworkAreaDiagramNodeMovement(
+    nadIdentifier: string,
     equipmentId: string,
     x: number,
     y: number
 ): StoreNetworkAreaDiagramNodeMovementAction {
     return {
         type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        nadIdentifier: nadIdentifier,
         equipmentId: equipmentId,
         x: x,
         y: y,
