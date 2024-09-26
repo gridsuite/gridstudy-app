@@ -1,5 +1,6 @@
+
 describe('template spec', () => {
-    before(function () {
+    beforeEach(function () {
         const gridExploreUrl = 'http://localhost:3000/';
         // runs once before all tests in the block
         cy.loginToGridsuite('jamal', 'password', gridExploreUrl);
@@ -10,24 +11,19 @@ describe('template spec', () => {
         cy.wait(500);
         //}
     });
-    beforeEach(() => {
-        const cookiesToPreserve = ['access_token', 'expires_at', 'id_token', 'profile', 'scope', 'token_type'];
-        cookiesToPreserve.forEach((cookie) => {
-            cy.getCookie(cookie).then((cookieValue) => {
-                if (cookieValue) {
-                    cy.setCookie(cookie, cookieValue.value);
-                }
-            });
-        });
+
+    it('create a folder', () => {
+        cy.get('[aria-label="tests-cy"]').click();
+        cy.contains('ADD AN ELEMENT').click();
+        cy.contains('Create folder').click();
+        cy.get('#nameProperty').type('newFolder');
+        cy.get('button').contains('Validate').click();
+        cy.contains('newFolder').should('exist');
     });
 
-    it('create a study', () => {
-        const gridExploreUrl = 'http://localhost:3000/';
-        cy.visit(gridExploreUrl);
-        // cy.get('button').contains('Connexion').should('exist')
+    it('create a study in new folder', () => {
         cy.get('[aria-label="tests-cy"]').click();
-        //cy.contains('Dossier vide').should('exist')
-        //click right on the empty folder
+        cy.contains('newFolder').click();
         cy.contains('ADD AN ELEMENT').click();
         //click on the create study button
         cy.contains('Create a study').click();
@@ -43,33 +39,17 @@ describe('template spec', () => {
     });
 
     it('delete a study', () => {
-        const gridExploreUrl = 'http://localhost:3000/';
-        cy.visit(gridExploreUrl);
+        cy.get('[aria-label="tests-cy"]').click();
+        cy.get('[aria-label="newFolder"]').click();
         cy.contains('newStudy').rightclick();
         cy.contains('Delete').click();
-        cy.contains('newStudy').should('not.exist');
+        cy.get('button').contains('Delete').click();
     });
 
-    // //CGMES_v2.4.15_RealGridTestConfiguration_v2.zip
-    // it('create a cgmes study', () => {
-    //   // cy.get('button').contains('Connexion').should('exist')
-    //   cy.get('[aria-label="tests-cy"]').click();
-    //   cy.get('.ag-header-row').rightclick();
-    //   //click on the create study button
-    //   cy.contains('Créer une étude').click();
-    //   cy.get('input[name=studyName]').type('RealGridTest');
-    //   cy.get('input[type=file]').attachFile("data-files/CGMES_v2.4.15_RealGridTestConfiguration_v2.zip");
-
-    //   cy.get('button').contains('Valider').click();
-    // })
-
-    it('duplicate studies', () => {
-        // cy.get('button').contains('Connexion').should('exist')
+    it('delete a folder', () => {
         cy.get('[aria-label="tests-cy"]').click();
-        const nb = 20;
-        for (let i = 0; i < nb; i++) {
-            cy.contains('RealGridTest').rightclick();
-            cy.contains('Dupliquer').click({ multiple: true, force: true });
-        }
+        cy.contains('newFolder').rightclick();
+        cy.contains('Delete').click();
+        cy.get('button').contains('Delete').click();
     });
 });

@@ -91,3 +91,25 @@ Cypress.Commands.add('loginToGridsuite', (username: string, password: string, ur
     log.snapshot('after');
     log.end();
 });
+
+
+const preserveSession = () => {
+    // Preserve cookies
+    cy.getCookies().then((cookies) => {
+        cookies.forEach((cookie) => {
+            cy.setCookie(cookie.name, cookie.value);
+        });
+    });
+
+    // Preserve local storage
+    cy.window().then((window) => {
+        Object.keys(localStorage).forEach((key) => {
+            window.localStorage.setItem(key, localStorage.getItem(key));
+        });
+    });
+};
+
+// Use cy.session() to preserve session data
+afterEach(() => {
+    cy.session('preserveSession', preserveSession);
+});
