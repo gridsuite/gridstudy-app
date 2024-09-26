@@ -187,7 +187,7 @@
     "startVoltageInitError": "Une erreur est survenue lors de l'initialisation du plan de tension",
     "VoltageInitParametersGeneralTabLabel": "Général",
     "VoltageInitParametersGeneralApplyModificationsLabel": "Appliquer automatiquement la modification du plan de tension",
-    "VoltageInitParametersGeneralSaveInfo": "Les paramètres de cet onglet ne seront pas enregistrés et seront mis aux valeurs par défaut en cas de sélection de paramètres externes",
+    "VoltageInitParametersGeneralSaveInfo": "Cette option ne sera pas enregistrée et sera mise à la valeur par défaut en cas d'insertion de paramètres depuis GridExplore",
     "VoltageInitParametersGeneralUpdateBusVoltageLabel": "Mettre à jour tension des nœuds électriques",
     "VoltageLimits": "Limites de tension",
     "VoltageLevelFilter": "Filtre poste",
@@ -767,6 +767,7 @@
     "SusceptanceLabel": "Susceptance (S)",
     "LimitsTab": "Limites",
     "LineCharacteristicsTab": "Caractéristiques",
+    "ConnectivityTab": "Connectivité",
     "TemporaryCurrentLimitsText": "Limites d'intensité temporaires",
     "TemporaryLimitDuration": "Tempo (s)",
     "TemporaryLimitName": "Nom",
@@ -1372,5 +1373,6 @@
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
     "guidancePopUp.secondVariant":"Appuyez sur {symbol} Entrée pour enregistrer la sélection ou Échap pour annuler.",
     "guidancePopUp.action":"Fermer l'éditeur",
-    "generateNad": "Générer"
+    "generateNad": "Générer",
+    "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification"
 }
