@@ -1,5 +1,4 @@
-
-describe('template spec', () => {
+describe('element creation in gridexplore', () => {
     beforeEach(function () {
         const gridExploreUrl = 'http://localhost:3000/';
         // runs once before all tests in the block
@@ -18,6 +17,10 @@ describe('template spec', () => {
         cy.contains('Create folder').click();
         cy.get('#nameProperty').type('newFolder');
         cy.get('button').contains('Validate').click();
+        cy.intercept('GET', '**/api/gateway/directory/v1/directories/**/elements').as('getElements');
+        cy.wait('@getElements').then((interception) => {
+            console.log('interception ####### ', interception?.response?.body.elements);
+        });
         cy.contains('newFolder').should('exist');
     });
 

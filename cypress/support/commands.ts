@@ -68,7 +68,6 @@ Cypress.Commands.add('loginToGridsuite', (username: string, password: string, ur
     const log = Cypress.log({
         displayName: 'AUTH LOGIN',
         message: [`🔐 Authenticating | ${username}`],
-        // @ts-ignore
         autoEnd: false,
     });
     log.snapshot('before');
@@ -81,9 +80,7 @@ Cypress.Commands.add('loginToGridsuite', (username: string, password: string, ur
         {
             validate: () => {
                 // Validate presence of access token in localStorage.
-                // cy.wrap(localStorage)
-                //     .invoke('getItem', 'oidc.hack.authority')
-                //     .should('exist');
+                // cy.wrap(localStorage).invoke('getItem', 'oidc.hack.authority').should('exist');
             },
         }
     );
@@ -92,24 +89,4 @@ Cypress.Commands.add('loginToGridsuite', (username: string, password: string, ur
     log.end();
 });
 
-
-const preserveSession = () => {
-    // Preserve cookies
-    cy.getCookies().then((cookies) => {
-        cookies.forEach((cookie) => {
-            cy.setCookie(cookie.name, cookie.value);
-        });
-    });
-
-    // Preserve local storage
-    cy.window().then((window) => {
-        Object.keys(localStorage).forEach((key) => {
-            window.localStorage.setItem(key, localStorage.getItem(key));
-        });
-    });
-};
-
-// Use cy.session() to preserve session data
-afterEach(() => {
-    cy.session('preserveSession', preserveSession);
-});
+// cypress/support/commands.ts
