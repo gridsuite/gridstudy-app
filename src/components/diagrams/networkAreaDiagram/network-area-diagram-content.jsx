@@ -15,7 +15,6 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
-    DiagramType,
 } from '../diagram-common';
 import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -23,6 +22,8 @@ import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from 'components/computing-status/computing-type';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
+import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
+import { getNadIdentifier } from '../diagram-utils.js';
 
 const dynamicCssRules = [
     {
@@ -127,31 +128,26 @@ function NetworkAreaDiagramContent(props) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
     const diagramStates = useSelector((state) => state.diagramStates);
+    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
+    const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId, nodeId, x, y, xOrig, yOrig) => {
-            dispatch(storeNetworkAreaDiagramNodeMovement(nodeId, x, y));
+            dispatch(storeNetworkAreaDiagramNodeMovement(equipmentId, x, y));
         },
         [dispatch]
     );
 
-    // TODO CHARLY Pour le moment, la liste des IDs n'est pas la bonne solution : si on transforme un VL en VL avec ring
-    // TODO dans un autre node de l'arbre, alors on a des bugs visuels.
-    // TODO De même, on ne gère pas correctement la profondeur : openNadIds reste le même.
-    const openNadIds = useMemo(() => {
-        return diagramStates
-            .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-            .map((diagram) => diagram.id)
-            .sort((a, b) => a.localeCompare(b))
-            .join(',');
-    }, [diagramStates]);
+    const nadIdentifier = useMemo(() => {
+        return getNadIdentifier(diagramStates, networkAreaDiagramDepth, initNadWithGeoData);
+    }, [diagramStates, networkAreaDiagramDepth, initNadWithGeoData]);
 
     /**
      * DIAGRAM CONTENT BUILDING
      */
 
     useLayoutEffect(() => {
-        if (props.svg && !props.loadingState) {
+        if (props.svg) {
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
@@ -181,12 +177,15 @@ function NetworkAreaDiagramContent(props) {
             }
 
             // APPLYING THE SAVED MOVEMENTS ON THIS NAD'S NODES (if there are saved movements for the current NAD)
-            const correspondingMovements = nadNodeMovements.filter((movement) => movement.nadIds === openNadIds);
-            if (correspondingMovements.length > 0) {
-                correspondingMovements.forEach((movement) => {
-                    // TODO CHARLY vérifier qu'on ne repasse pas dans onMoveNodeCallback à chaque itération et que ça ne repasse pas par le redux pour rien
-                    diagramViewer.moveNodeToCoordonates(movement.id, movement.x, movement.y);
-                });
+            if (!props.loadingState) {
+                const correspondingMovements = nadNodeMovements.filter(
+                    (movement) => movement.nadIdentifier === nadIdentifier
+                );
+                if (correspondingMovements.length > 0) {
+                    correspondingMovements.forEach((movement) => {
+                        diagramViewer.moveNodeToCoordonates(movement.equipmentId, movement.x, movement.y);
+                    });
+                }
             }
             diagramViewerRef.current = diagramViewer;
         }
@@ -198,8 +197,8 @@ function NetworkAreaDiagramContent(props) {
         props.loadingState,
         diagramSizeSetter,
         onMoveNodeCallback,
-        openNadIds,
-        nadNodeMovements, // TODO CHARLY attention, ça ressemble à de la dépendance cyclique
+        nadIdentifier,
+        nadNodeMovements,
     ]);
 
     /**

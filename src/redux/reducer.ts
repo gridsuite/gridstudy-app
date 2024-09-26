@@ -273,6 +273,7 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { getNadIdentifier } from '../components/diagrams/diagram-utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -383,8 +384,8 @@ export type DiagramState = {
 };
 
 export type NadNodeMovement = {
-    nadIds: string;
-    id: string;
+    nadIdentifier: string;
+    equipmentId: string;
     x: number;
     y: number;
 };
@@ -1382,22 +1383,18 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            // TODO CHARLY Pour le moment, la liste des IDs n'est pas la bonne solution : si on transforme un VL en VL avec ring
-            // TODO dans un autre node de l'arbre, alors on a des bugs visuels.
-            // TODO De même, on ne gère pas correctement la profondeur : openNadIds reste le même.
-            const openNadIds = state.diagramStates
-                .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
-                .map((diagram) => diagram.id)
-                .sort((a, b) => a.localeCompare(b))
-                .join(',');
-
-            const correspondingMovement = state.nadNodeMovements.filter(
-                (movement) => movement.nadIds === openNadIds && movement.id === action.id
+            const nadIdentifier = getNadIdentifier(
+                state.diagramStates,
+                state.networkAreaDiagramDepth,
+                state[PARAM_INIT_NAD_WITH_GEO_DATA]
+            );
+            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
+                (movement) => movement.nadIdentifier === nadIdentifier && movement.equipmentId === action.equipmentId
             );
             if (correspondingMovement.length === 0) {
                 state.nadNodeMovements.push({
-                    nadIds: openNadIds,
-                    id: action.id,
+                    nadIdentifier: nadIdentifier,
+                    equipmentId: action.equipmentId,
                     x: action.x,
                     y: action.y,
                 } as NadNodeMovement);
