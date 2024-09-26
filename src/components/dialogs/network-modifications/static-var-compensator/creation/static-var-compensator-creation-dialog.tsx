@@ -17,6 +17,7 @@ import {
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICE_AUTOMATON,
+    CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
@@ -315,6 +316,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
             } = connectivity;
 
             const {
+                [CHARACTERISTICS_CHOICE]: characteristicsChoice,
                 [MAX_SUSCEPTANCE]: maxSusceptance,
                 [MIN_SUSCEPTANCE]: minSusceptance,
                 [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
@@ -334,6 +336,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 [HIGH_VOLTAGE_SET_POINT]: highVoltageSetpoint,
                 [LOW_VOLTAGE_THRESHOLD]: lowVoltageThreshold,
                 [HIGH_VOLTAGE_THRESHOLD]: highVoltageThreshold,
+                [CHARACTERISTICS_CHOICE_AUTOMATON]: characteristicsChoiceAutomaton,
                 [B0]: b0,
                 [Q0]: q0,
             } = automaton;
@@ -351,10 +354,10 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
                 connectionPosition,
                 terminalConnected,
-                maxSusceptance,
-                minSusceptance,
-                maxQAtNominalV,
-                minQAtNominalV,
+                characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? maxSusceptance : null,
+                characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? minSusceptance : null,
+                characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? maxQAtNominalV : null,
+                characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? minQAtNominalV : null,
                 voltageRegulationMode,
                 voltageSetpoint,
                 reactivePowerSetpoint,
@@ -368,8 +371,12 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 addStandbyAutomaton ? highVoltageSetpoint : null,
                 addStandbyAutomaton ? lowVoltageThreshold : null,
                 addStandbyAutomaton ? highVoltageThreshold : null,
-                addStandbyAutomaton ? b0 : null,
-                addStandbyAutomaton ? q0 : null,
+                addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+                    ? b0
+                    : null,
+                addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                    ? q0
+                    : null,
                 !!editData,
                 editData?.uuid,
                 toModificationProperties(staticCompensator)
