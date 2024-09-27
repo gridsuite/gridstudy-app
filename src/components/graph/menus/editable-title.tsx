@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
+import React, { FunctionComponent, useState } from 'react';
 import { IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import CloseIcon from '@mui/icons-material/Close';
 import AskTextDialog from '../../utils/ask-text-dialog';
 import { lighten, darken } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { OverflowableText } from '@gridsuite/commons-ui';
-import { Box } from '@mui/system';
+import { Box, Theme } from '@mui/system';
 
 const styles = {
-    header: (theme) => ({
+    header: (theme: Theme) => ({
         backgroundColor:
             theme.palette.mode === 'light'
                 ? darken(theme.palette.background.paper, 0.1)
@@ -37,7 +36,13 @@ const styles = {
     },
 };
 
-export const EditableTitle = ({ name, onClose, onChange }) => {
+interface EditableTitleProps {
+    name: string;
+    onClose: () => void;
+    onChange?: (value: string) => void;
+}
+
+export const EditableTitle: FunctionComponent<EditableTitleProps> = ({ name, onClose, onChange }) => {
     const [openEditTitle, setOpenEditTitle] = useState(false);
     const intl = useIntl();
 
@@ -55,16 +60,12 @@ export const EditableTitle = ({ name, onClose, onChange }) => {
                 title={intl.formatMessage({ id: 'NewName' })}
                 value={name}
                 onValidate={(e) => {
-                    onChange(e);
+                    if (onChange) {
+                        onChange(e);
+                    }
                 }}
                 onClose={() => setOpenEditTitle(false)}
             />
         </Box>
     );
-};
-
-EditableTitle.propTypes = {
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    onClose: PropTypes.func,
 };
