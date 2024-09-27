@@ -11,7 +11,7 @@ import { styled } from '@mui/system';
 import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
 import { FilterButton } from './filter-button';
-import { TextFilterButton } from './text-filter-button.jsx';
+import { TextFilterButton } from './text-filter-button.tsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { setReportFilters } from '../../redux/actions';

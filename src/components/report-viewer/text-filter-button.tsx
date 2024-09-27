@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState } from 'react';
+import React, { ChangeEvent, Dispatch, FunctionComponent, SetStateAction, useState } from 'react';
 import { Box, IconButton, TextField } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useIntl } from 'react-intl';
@@ -31,34 +31,36 @@ const styles = {
 
 /**
  * FilterButton wraps a MultiSelectList with a button which has a visual indication to indicate when the user alters the default state of the list
- * @param {Object} filterText - Value of the filter
+ * @param {String} filterText - Value of the filter
  * @param {Function} setFilterText - Setter needed to update the filter
  */
 
-export const TextFilterButton = ({ filterText, setFilterText }) => {
+interface TextFilterButtonProps {
+    filterText: string;
+    setFilterText: Dispatch<SetStateAction<string>>;
+}
+
+export const TextFilterButton: FunctionComponent<TextFilterButtonProps> = ({ filterText, setFilterText }) => {
     const intl = useIntl();
 
-    const [anchorEl, setAnchorEl] = useState();
+    const [anchorEl, setAnchorEl] = useState<HTMLAnchorElement>();
 
-    const handleClick = (event) => {
+    const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleClose = (event) => {
+    const handleClose = () => {
         setAnchorEl(null);
-        //To remove the focus of the button when closing the menu by pressing "Enter"
-        if (event) {
-            event.target.blur();
-        }
     };
 
-    const handleChange = (event) => {
+    const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
         setFilterText(event.target.value);
     };
 
-    const handleKeyUp = (event) => {
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
         if (event.key === 'Enter') {
-            handleClose(event);
+            event.preventDefault();
+            handleClose();
         }
     };
 
@@ -74,7 +76,7 @@ export const TextFilterButton = ({ filterText, setFilterText }) => {
                     fullWidth
                     value={filterText || ''}
                     onChange={handleChange}
-                    onKeyUp={handleKeyUp}
+                    onKeyDown={handleKeyDown}
                     placeholder={intl.formatMessage({
                         id: 'filter.filterOoo',
                     })}
