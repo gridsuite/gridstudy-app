@@ -64,6 +64,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { SeverityFilter } from '../types/report.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -1122,5 +1123,23 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
+    };
+}
+export const REPORT_FILTER = 'REPORT_FILTER';
+export type ReportFilterAction = Readonly<Action<typeof REPORT_FILTER>> & {
+    reportId: string | null | undefined;
+    messageFilter: string | undefined;
+    severityFilter: SeverityFilter | undefined;
+};
+export function setReportFilters(
+    reportId: string,
+    messageFilter: string,
+    severityFilter: SeverityFilter
+): ReportFilterAction {
+    return {
+        type: REPORT_FILTER,
+        reportId,
+        messageFilter,
+        severityFilter,
     };
 }
