@@ -37,13 +37,13 @@ const styles = {
 
 interface TextFilterButtonProps {
     filterText: string;
-    setFilterText: Dispatch<SetStateAction<string>>;
+    setFilterText: (text: string) => void;
 }
 
 export const TextFilterButton: FunctionComponent<TextFilterButtonProps> = ({ filterText, setFilterText }) => {
     const intl = useIntl();
 
-    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>();
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
