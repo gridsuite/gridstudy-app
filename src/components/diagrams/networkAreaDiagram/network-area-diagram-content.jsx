@@ -183,7 +183,7 @@ function NetworkAreaDiagramContent(props) {
                 );
                 if (correspondingMovements.length > 0) {
                     correspondingMovements.forEach((movement) => {
-                        diagramViewer.moveNodeToCoordonates(movement.equipmentId, movement.x, movement.y);
+                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                     });
                 }
             }
