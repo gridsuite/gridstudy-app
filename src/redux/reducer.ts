@@ -176,8 +176,6 @@ import {
     SpreadsheetFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
-    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-    StoreNetworkAreaDiagramNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
@@ -382,13 +380,6 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
-export type NadNodeMovement = {
-    nadIdentifier: string;
-    equipmentId: string;
-    x: number;
-    y: number;
-};
-
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: string | null;
@@ -427,7 +418,6 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
-    nadNodeMovements: NadNodeMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -548,7 +538,6 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
-    nadNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1378,27 +1367,6 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkAreaDiagramDepth = state.networkAreaDiagramDepth - 1;
         }
     });
-
-    builder.addCase(
-        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
-        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
-                (movement) =>
-                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
-            );
-            if (correspondingMovement.length === 0) {
-                state.nadNodeMovements.push({
-                    nadIdentifier: action.nadIdentifier,
-                    equipmentId: action.equipmentId,
-                    x: action.x,
-                    y: action.y,
-                });
-            } else {
-                correspondingMovement[0].x = action.x;
-                correspondingMovement[0].y = action.y;
-            }
-        }
-    );
 
     builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
