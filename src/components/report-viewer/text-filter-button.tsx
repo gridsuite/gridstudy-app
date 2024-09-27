@@ -43,9 +43,9 @@ interface TextFilterButtonProps {
 export const TextFilterButton: FunctionComponent<TextFilterButtonProps> = ({ filterText, setFilterText }) => {
     const intl = useIntl();
 
-    const [anchorEl, setAnchorEl] = useState<HTMLAnchorElement>();
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>();
 
-    const handleClick = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
     };
 
