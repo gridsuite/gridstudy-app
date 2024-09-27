@@ -27,6 +27,7 @@ import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete.js';
 import IconButton from '@mui/material/IconButton';
+import { toggleElementFromList } from 'components/utils/utils';
 import { DialogActions } from '@mui/material';
 
 function makeButton(onClick, message, disabled) {
@@ -155,21 +156,22 @@ const ContingencyListSelector = (props) => {
     };
 
     const handleSecondaryAction = useCallback(
-        (item) => (
-            <IconButton
-                style={{
-                    alignItems: 'end',
-                }}
-                edge="end"
-                onClick={(e) => {
-                    e.stopPropagation();
-                    removeFromFavorites([item]);
-                }}
-                size={'small'}
-            >
-                <DeleteIcon />
-            </IconButton>
-        ),
+        (item, isItemHovered) =>
+            isItemHovered && (
+                <IconButton
+                    style={{
+                        alignItems: 'end',
+                    }}
+                    edge="end"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromFavorites([item]);
+                    }}
+                    size={'small'}
+                >
+                    <DeleteIcon />
+                </IconButton>
+            ),
         [removeFromFavorites]
     );
 
@@ -189,7 +191,11 @@ const ContingencyListSelector = (props) => {
                         selectedItems={checkedContingencyList}
                         onSelectionChange={setCheckedContingencyList}
                         secondaryAction={handleSecondaryAction}
-                        enableSecondaryActionOnHover
+                        onItemClick={(contingencyList) =>
+                            setCheckedContingencyList((oldCheckedElements) => [
+                                ...toggleElementFromList(contingencyList, oldCheckedElements, (element) => element.id),
+                            ])
+                        }
                     />
                     <Alert variant="standard" severity="info">
                         <FormattedMessage

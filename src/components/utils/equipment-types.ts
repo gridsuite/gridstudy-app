@@ -5,6 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Identifiable } from '@gridsuite/commons-ui';
+
 type EquipmentInfosTypesStruct<T extends string = string> = { type: T };
 //TODO: rename to PascalCase
 export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = {
@@ -74,4 +76,8 @@ export function equipmentTypeToLabel(equipmentType: EQUIPMENT_TYPES) {
         default:
             return equipmentType;
     }
+}
+
+export interface VoltageLevel extends Identifiable {
+    nominalV: number;
 }
