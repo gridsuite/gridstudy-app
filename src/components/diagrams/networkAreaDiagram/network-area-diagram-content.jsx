@@ -177,6 +177,8 @@ function NetworkAreaDiagramContent(props) {
             }
 
             // Repositioning the previously moved nodes
+            /*
+            // NEEDS THE NEXT POWSYBL-DIAGRAM-VIEWER VERSION
             if (!props.loadingState) {
                 const correspondingMovements = nadNodeMovements.filter(
                     (movement) => movement.nadIdentifier === nadIdentifier
@@ -186,7 +188,7 @@ function NetworkAreaDiagramContent(props) {
                         diagramViewer.moveNodeToCoordonates(movement.equipmentId, movement.x, movement.y);
                     });
                 }
-            }
+            }*/
             diagramViewerRef.current = diagramViewer;
         }
     }, [
