@@ -7,22 +7,19 @@
 
 import { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Badge, Box } from '@mui/material';
-import { LoadingButton } from '@mui/lab';
+import { Badge, Button } from '@mui/material';
 import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
-import CustomColumnDialog from './custom-columns-dialog';
 import { useStateBoolean, useStateNumber } from '@gridsuite/commons-ui';
+import CustomColumnDialog from './custom-columns-dialog';
 
 export type CustomColumnsConfigProps = {
     indexTab: number;
 };
 
 export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
-    const formulaCalculating = useStateBoolean(false);
-    const formulaError = useStateBoolean(false);
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
     const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
@@ -31,37 +28,21 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
         numberColumns.setValue(allDefinitions.columns.length);
     }, [allDefinitions.columns.length, numberColumns]);
 
-    /* eslint-enable react-hooks/rules-of-hooks */
     return (
         <>
-            <LoadingButton
-                variant="text"
-                color={formulaError.value ? 'error' : 'inherit'}
-                endIcon={
-                    <Badge
-                        color="secondary"
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                        max={9}
-                        badgeContent={numberColumns.value}
-                    >
-                        <CalculateIcon />
-                    </Badge>
-                }
-                loadingPosition="start"
-                loading={formulaCalculating.value}
-                onClick={dialogOpen.setTrue}
-            >
-                <FormattedMessage id="spreadsheet/custom_column/main_button">
-                    {(txt) => (
-                        <Box component="span" data-note="anti-translate-crash">
-                            {txt}
-                        </Box>
-                    )}
-                </FormattedMessage>
-            </LoadingButton>
+            <Button color="inherit" onClick={dialogOpen.setTrue}>
+                <FormattedMessage id="spreadsheet/custom_column/main_button" />
+                <Badge
+                    color="secondary"
+                    anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                    badgeContent={numberColumns.value}
+                >
+                    <CalculateIcon />
+                </Badge>
+            </Button>
             <CustomColumnDialog indexTab={indexTab} open={dialogOpen} />
         </>
     );
