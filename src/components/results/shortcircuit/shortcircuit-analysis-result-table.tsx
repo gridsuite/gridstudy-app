@@ -25,6 +25,7 @@ import {
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { unitToKiloUnit } from '../../../utils/unit-converter';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { BranchSide } from 'components/utils/constants';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -66,6 +67,7 @@ interface ShortCircuitAnalysisResultsFeederResult {
     connectableId: string;
     current: number;
     linkedElementId: string;
+    side?: string;
 }
 
 const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisResultProps> = ({
@@ -134,6 +136,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 filterProps: filterProps,
                 filterParams: numericFilterParams,
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
+            }),
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'Side' }),
+                field: 'side',
+                sortProps: sortPropsCheckedForAllBusesAnalysisType,
+                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                hide: analysisType !== ShortCircuitAnalysisType.ONE_BUS,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -281,6 +290,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
                 const current = getCurrent(faultResult);
 
+                const convertSide = (side: string | undefined) => {
+                    return side === BranchSide.ONE
+                        ? intl.formatMessage({ id: 'Side1' })
+                        : side === BranchSide.TWO
+                        ? intl.formatMessage({ id: 'Side2' })
+                        : undefined;
+                };
                 const deltaCurrentIpMax = faultResult.shortCircuitLimits.deltaCurrentIpMax;
                 const deltaCurrentIpMin = faultResult.shortCircuitLimits.deltaCurrentIpMin;
 
@@ -313,6 +329,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 const feederResults = faultResult.feederResults ?? [];
                 feederResults.forEach((feederResult) => {
                     const current = getCurrent(feederResult);
+                    const side = analysisType === ShortCircuitAnalysisType.ONE_BUS ? feederResult.side : undefined;
 
                     rows.push({
                         connectableId: feederResult.connectableId,
@@ -321,12 +338,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         elementId: '', // we have to add this otherwise it's automatically filtered
                         faultType: '', // we have to add this otherwise it's automatically filtered
                         limitType: '', // we have to add this otherwise it's automatically filtered
+                        side: convertSide(side),
                     });
                 });
             });
             return rows;
         },
-        [getCurrent, intl]
+        [getCurrent, intl, analysisType]
     );
     const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
 
