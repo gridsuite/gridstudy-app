@@ -122,10 +122,10 @@ export function useCustomColumn(tabIndex: number, gridRef: any) {
                 headerName: colWithFormula.name,
                 field: colWithFormula.name,
                 numeric: true,
-                /*   sortProps: {
+                sortProps: {
                     onSortChanged,
                     sortConfig,
-                }, */
+                },
                 filterProps: {
                     updateFilter,
                     filterSelector,

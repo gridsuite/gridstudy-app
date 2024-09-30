@@ -65,7 +65,8 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { ColumnWithFormula, FormulaFilter } from 'components/spreadsheet/custom-columns/custom-columns.types';
+import { SeverityFilter } from '../types/report.type';
+import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 
 type MutableUnknownArray = unknown[];
 
@@ -908,6 +909,30 @@ export function decrementNetworkAreaDiagramDepth(): DecrementNetworkAreaDiagramD
     };
 }
 
+export const STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT';
+export type StoreNetworkAreaDiagramNodeMovementAction = Readonly<
+    Action<typeof STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT>
+> & {
+    nadIdentifier: string;
+    equipmentId: string;
+    x: number;
+    y: number;
+};
+export function storeNetworkAreaDiagramNodeMovement(
+    nadIdentifier: string,
+    equipmentId: string,
+    x: number,
+    y: number
+): StoreNetworkAreaDiagramNodeMovementAction {
+    return {
+        type: STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        nadIdentifier: nadIdentifier,
+        equipmentId: equipmentId,
+        x: x,
+        y: y,
+    };
+}
+
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>
@@ -1144,5 +1169,23 @@ export function setCustomColumDefinitions(
         table,
         definitions: customColumns,
         filter: filter,
+    };
+}
+export const REPORT_FILTER = 'REPORT_FILTER';
+export type ReportFilterAction = Readonly<Action<typeof REPORT_FILTER>> & {
+    reportId: string | null | undefined;
+    messageFilter: string | undefined;
+    severityFilter: SeverityFilter | undefined;
+};
+export function setReportFilters(
+    reportId: string,
+    messageFilter: string,
+    severityFilter: SeverityFilter
+): ReportFilterAction {
+    return {
+        type: REPORT_FILTER,
+        reportId,
+        messageFilter,
+        severityFilter,
     };
 }

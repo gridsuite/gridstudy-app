@@ -41,3 +41,9 @@ export type Log = {
     severity: ReportSeverity;
     parentId: string;
 };
+
+export type ReportLog = {
+    message: string;
+    severity: string[];
+    parentId: string;
+};
