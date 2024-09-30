@@ -37,7 +37,7 @@ export default function CustomColumnTable() {
                 initialValue: null,
                 editable: true,
                 titleId: 'FiltersListsSelection',
-                width: '250px',
+                width: '30%',
             },
             {
                 label: 'spreadsheet/custom_column/column_content',
@@ -45,6 +45,7 @@ export default function CustomColumnTable() {
                 initialValue: null,
                 editable: true,
                 extra: CustomColumnTooltip,
+                width: '70%',
             },
         ].map((column) => ({
             ...column,
@@ -72,7 +73,7 @@ export default function CustomColumnTable() {
             columnsDefinition={CUSTOM_COLUMNS_DEFINITIONS}
             useFieldArrayOutput={useTabCustomColumnFieldArrayOutput}
             createRows={createCustomColumnRows}
-            tableHeight={270}
+            tableHeight={380}
             withAddRowsDialog={false}
             withLeftButtons={false}
         />

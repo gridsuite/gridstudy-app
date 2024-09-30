@@ -164,7 +164,6 @@ const DndTable = ({
                     getPreviousValue ? getPreviousValue(rowIndex, column, arrayFormName, previousValues) : undefined
                 }
                 valueModified={isValueModified ? isValueModified(rowIndex, arrayFormName) : false}
-                sx={{ width: column?.width }}
             />
         );
     }
@@ -286,7 +285,7 @@ const DndTable = ({
                         />
                     </TableCell>
                     {columnsDefinition.map((column) => (
-                        <TableCell key={column.dataKey} sx={{ width: column?.width }}>
+                        <TableCell key={column.dataKey} sx={{ width: column.width }}>
                             <Box sx={styles.columnsStyle}>
                                 {column.label}
                                 {column.extra}

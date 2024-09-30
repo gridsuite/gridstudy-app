@@ -277,7 +277,7 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { CustomEntry } from 'components/spreadsheet/custom-columns/custom-columns.types';
+import { CustomEntry } from 'types/custom-columns.types';
 
 export enum NotificationType {
     STUDY = 'study',

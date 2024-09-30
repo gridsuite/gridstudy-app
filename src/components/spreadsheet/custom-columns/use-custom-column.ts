@@ -8,13 +8,32 @@ import { useMemo, useCallback } from 'react';
 import { AppState } from 'redux/reducer';
 import { create, all, bignumber } from 'mathjs';
 import { useSelector } from 'react-redux';
-import { TABLES_NAMES } from '../utils/config-tables';
-import { ColumnWithFormula } from './custom-columns.types';
+import { defaultNumericFilterConfig, TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { useAgGridSort } from 'hooks/use-aggrid-sort';
+import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
+import { setSpreadsheetFilter } from 'redux/actions';
+import { FilterParams } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { ColumnWithFormula } from 'types/custom-columns.types';
+import { createDependencyGraph, topologicalSort } from './custom-columns-utils';
 
-export function useCustomColumn(tabIndex: number) {
-    const customColumnDefinitions = useSelector(
+export function useCustomColumn(tabIndex: number, gridRef: any) {
+    const customColumnsDefinitions = useSelector(
         (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]].columns
     );
+
+    const { onSortChanged, sortConfig } = useAgGridSort(
+        SPREADSHEET_SORT_STORE,
+        TABLES_DEFINITION_INDEXES.get(tabIndex)!.type as string
+    );
+
+    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
+        filterType: SPREADSHEET_STORE_FIELD,
+        filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex)!.type as string,
+        // @ts-expect-error TODO
+        filterStoreAction: setSpreadsheetFilter,
+    });
 
     const math = useMemo(() => {
         const instance = create(all, {
@@ -54,64 +73,15 @@ export function useCustomColumn(tabIndex: number) {
         return { limitedEvaluate };
     }, []);
 
-    const createDependencyGraph = (customColumnDefinitions: ColumnWithFormula[]): Map<string, Set<string>> => {
-        const graph = new Map<string, Set<string>>();
-
-        // Initialize the graph with all columns
-        customColumnDefinitions.forEach((col) => {
-            graph.set(col.name, new Set());
-        });
-
-        // Build the graph by adding dependencies between columns
-        customColumnDefinitions.forEach((col) => {
-            customColumnDefinitions.forEach((depCol) => {
-                if (col.formula.includes(depCol.name) && col.name !== depCol.name) {
-                    graph.get(col.name)!.add(depCol.name);
-                }
-            });
-        });
-
-        return graph;
-    };
-
-    const topologicalSort = (graph: Map<string, Set<string>>): string[] => {
-        const sorted: string[] = [];
-        const visited = new Set<string>();
-        const visiting = new Set<string>(); // Temporary set for detecting cycles
-
-        const dfs = (node: string) => {
-            if (visiting.has(node)) {
-                throw new Error(`Circular dependency detected at column: ${node}`);
-            }
-            if (!visited.has(node)) {
-                visiting.add(node); // Mark the node as currently being visited
-                const dependencies = graph.get(node) || new Set();
-                dependencies.forEach(dfs);
-                visiting.delete(node);
-                visited.add(node);
-                sorted.push(node);
-            }
-        };
-
-        // Start DFS from each node
-        for (const node of graph.keys()) {
-            if (!visited.has(node)) {
-                dfs(node);
-            }
-        }
-
-        return sorted;
-    };
-
     // Main function to sort columns by dependencies and calculate values
     const sortedColumnDefinitions = useMemo(() => {
-        const graph = createDependencyGraph(customColumnDefinitions);
+        const graph = createDependencyGraph(customColumnsDefinitions);
         const sortedColumns = topologicalSort(graph);
 
         return sortedColumns.map((name) =>
-            customColumnDefinitions.find((col) => col.name === name)
+            customColumnsDefinitions.find((col) => col.name === name)
         ) as ColumnWithFormula[];
-    }, [customColumnDefinitions]);
+    }, [customColumnsDefinitions]);
 
     const calcAllColumnValues = useCallback(
         (lineData: Record<string, unknown>): Map<string, unknown> => {
@@ -138,7 +108,6 @@ export function useCustomColumn(tabIndex: number) {
                     scope[column.name] = result; // Add calculated result to scope for future columns
                 } catch (error: any) {
                     console.error(`Error evaluating formula for column ${column.name}: ${error.message}`);
-                    customColumnsValues.set(column.name, '#ERR');
                 }
             });
 
@@ -147,5 +116,31 @@ export function useCustomColumn(tabIndex: number) {
         [math, sortedColumnDefinitions]
     );
 
-    return { calcAllColumnValues };
+    const createCustomColumn = useCallback(() => {
+        return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
+            return makeAgGridCustomHeaderColumn({
+                headerName: colWithFormula.name,
+                field: colWithFormula.name,
+                numeric: true,
+                /*   sortProps: {
+                    onSortChanged,
+                    sortConfig,
+                }, */
+                filterProps: {
+                    updateFilter,
+                    filterSelector,
+                },
+                filterParams: { ...defaultNumericFilterConfig() } as FilterParams,
+                valueGetter: (params) => {
+                    const allValues = calcAllColumnValues(params.data);
+                    return allValues.get(colWithFormula.name);
+                },
+                editable: false,
+                cellDataType: true,
+                suppressMovable: true,
+            });
+        });
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, updateFilter, filterSelector, calcAllColumnValues]);
+
+    return { createCustomColumn };
 }

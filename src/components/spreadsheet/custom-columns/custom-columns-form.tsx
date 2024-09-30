@@ -32,6 +32,7 @@ export const customColumnFormSchema = yup.object().shape({
                 [FORMULA]: yup.string().required(),
             })
         )
+        .required()
         .min(1, 'The array must have at least one item'),
 });
 

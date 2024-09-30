@@ -8,26 +8,17 @@
 import { useCallback, useEffect } from 'react';
 import { useIntl } from 'react-intl';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
-import { CancelButton, CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
-import { UseStateBooleanReturn } from '../../../hooks/use-states';
-import { ColumnWithFormula } from './custom-columns.types';
+import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import {
-    COLUMN_NAME,
     CustomColumnForm,
     customColumnFormSchema,
-    FORMULA,
     initialCustomColumnForm,
     TAB_CUSTOM_COLUMN,
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import CustomColumnTable from './custom-column-table';
-//TODO
-/* import SaveIcon from '@mui/icons-material/Save';
-import UploadIcon from '@mui/icons-material/Upload';
-import DownloadIcon from '@mui/icons-material/Download';
-import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder'; */
+import CustomColumnTable from './custom-columns-table';
 import { setCustomColumDefinitions } from 'redux/actions';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { useDispatch } from 'react-redux';
@@ -42,7 +33,8 @@ export type CustomColumnDialogProps = {
 
 const styles = {
     dialogContent: {
-        width: '35%',
+        width: '50%',
+        height: '60%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -63,12 +55,8 @@ export default function CustomColumnDialog({ open, indexTab }: Readonly<CustomCo
 
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
-            dispatch(
-                setCustomColumDefinitions(TABLES_NAMES[indexTab], newParams.TAB_CUSTOM_COLUMN as ColumnWithFormula[])
-            );
-            reset({
-                [TAB_CUSTOM_COLUMN]: [{ [COLUMN_NAME]: '', [FORMULA]: '' }],
-            });
+            dispatch(setCustomColumDefinitions(TABLES_NAMES[indexTab], newParams[TAB_CUSTOM_COLUMN]));
+            reset(initialCustomColumnForm);
             open.setFalse();
         },
 
@@ -81,9 +69,7 @@ export default function CustomColumnDialog({ open, indexTab }: Readonly<CustomCo
                 [TAB_CUSTOM_COLUMN]: [...columnsDefinitions[TABLES_NAMES[indexTab]].columns],
             });
         } else {
-            reset({
-                [TAB_CUSTOM_COLUMN]: [{ [COLUMN_NAME]: '', [FORMULA]: '' }],
-            });
+            reset(initialCustomColumnForm);
         }
     }, [columnsDefinitions, indexTab, open.value, reset]);
 
@@ -99,33 +85,6 @@ export default function CustomColumnDialog({ open, indexTab }: Readonly<CustomCo
                 <DialogTitle id="custom-column-dialog-edit-title">
                     {intl.formatMessage({ id: 'spreadsheet/custom_column/main_button' })}
                 </DialogTitle>
-                {/* TODO  import/export json, save to GridExplore, select from GridExplore */}
-
-                {/*  <Box display="flex" justifyContent="end" padding="10px">
-                    <Tooltip title="Import">
-                        <IconButton color="primary" >
-                            <DownloadIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title="Export">
-                        <IconButton color="primary" >
-                            <UploadIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title="Save to GridExplore">
-                        <IconButton color="primary" >
-                            <SaveIcon />
-                        </IconButton>
-                    </Tooltip>
-
-                    <Tooltip title="select from GridExplore">
-                        <IconButton color="primary">
-                            <CreateNewFolderIcon />
-                        </IconButton>
-                    </Tooltip>
-                </Box> */}
                 <DialogContent dividers>
                     <CustomColumnTable />
                 </DialogContent>

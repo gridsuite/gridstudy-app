@@ -13,7 +13,7 @@ import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
-import CustomColumnDialog from './custom-column-dialog';
+import CustomColumnDialog from './custom-columns-dialog';
 import { useStateBoolean, useStateNumber } from '@gridsuite/commons-ui';
 
 export type CustomColumnsConfigProps = {
@@ -26,10 +26,10 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
     const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
-    const uEffectNumberColumnsSetValue = numberColumns.setValue; // eslint detection
+
     useEffect(() => {
-        uEffectNumberColumnsSetValue(allDefinitions.columns.length);
-    }, [allDefinitions.columns.length, uEffectNumberColumnsSetValue]);
+        numberColumns.setValue(allDefinitions.columns.length);
+    }, [allDefinitions.columns.length, numberColumns]);
 
     /* eslint-enable react-hooks/rules-of-hooks */
     return (
@@ -37,7 +37,6 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
             <LoadingButton
                 variant="text"
                 color={formulaError.value ? 'error' : 'inherit'}
-                aria-label={`Open custom columns config (actual ${numberColumns.value} columns)`}
                 endIcon={
                     <Badge
                         color="secondary"

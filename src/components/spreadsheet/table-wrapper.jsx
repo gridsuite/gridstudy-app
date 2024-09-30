@@ -78,8 +78,8 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import CustomColumnsConfig from './custom-columns/columns-config-custom';
 import { useCustomColumn } from './custom-columns/use-custom-column';
+import CustomColumnsConfig from './custom-columns/custom-columns-config';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -167,22 +167,11 @@ const TableWrapper = (props) => {
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
     const [customColumnData, setCustomColumnData] = useState([]);
     const [mergedColumnData, setMergedColumnData] = useState([]);
-    const { calcAllColumnValues } = useCustomColumn(tabIndex);
+    const { createCustomColumn } = useCustomColumn(tabIndex, gridRef);
 
     useEffect(() => {
-        setCustomColumnData(
-            customColumnsDefinitions.columns.map((colWithFormula, idx, arr) => ({
-                coldId: `custom-${tabIndex}-${idx}`,
-                headerName: colWithFormula.name,
-                valueGetter: (params) => {
-                    const allValues = calcAllColumnValues(params.data);
-                    return allValues.get(colWithFormula.name);
-                },
-                editable: false,
-                cellDataType: true, // true<=>auto, infer the data type from the row data ('text', 'number', 'boolean', 'date', 'dateString' or 'object')
-            }))
-        );
-    }, [tabIndex, customColumnsDefinitions, calcAllColumnValues]);
+        setCustomColumnData(createCustomColumn());
+    }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
 
     const globalFilterRef = useRef();
 
