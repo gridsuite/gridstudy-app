@@ -176,11 +176,14 @@ import {
     SpreadsheetFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
+    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    StoreNetworkAreaDiagramNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
     TABLE_SORT,
+    REPORT_FILTER,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
@@ -188,6 +191,7 @@ import {
     UpdateEquipmentsAction,
     USE_NAME,
     UseNameAction,
+    ReportFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -271,6 +275,8 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { SeverityFilter } from '../types/report.type';
+import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -380,6 +386,13 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
+export type NadNodeMovement = {
+    nadIdentifier: string;
+    equipmentId: string;
+    x: number;
+    y: number;
+};
+
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: string | null;
@@ -411,6 +424,9 @@ export interface AppState extends CommonStoreState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
+    reportMessageFilter: string;
+    reportSeverityFilter: SeverityFilter;
+    reportSelectedReportId: string | null;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -418,6 +434,7 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
+    nadNodeMovements: NadNodeMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -538,6 +555,7 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
+    nadNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -562,6 +580,9 @@ const initialState: AppState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     limitReductionModified: false,
+    reportMessageFilter: '',
+    reportSeverityFilter: getDefaultSeverityFilter([]),
+    reportSelectedReportId: null,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1369,6 +1390,27 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
+            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadNodeMovements.push({
+                    nadIdentifier: action.nadIdentifier,
+                    equipmentId: action.equipmentId,
+                    x: action.x,
+                    y: action.y,
+                });
+            } else {
+                correspondingMovement[0].x = action.x;
+                correspondingMovement[0].y = action.y;
+            }
+        }
+    );
+
+    builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
             state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
@@ -1542,6 +1584,18 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
+        if (action.messageFilter !== undefined) {
+            state.reportMessageFilter = action.messageFilter;
+        }
+        if (action.severityFilter !== undefined) {
+            state.reportSeverityFilter = action.severityFilter;
+        }
+        if (action.reportId !== undefined) {
+            state.reportSelectedReportId = action.reportId;
+        }
     });
 });
 

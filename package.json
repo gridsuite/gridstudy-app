@@ -13,7 +13,7 @@
         "@mui/lab": "5.0.0-alpha.169",
         "@mui/material": "^5.15.14",
         "@mui/x-tree-view": "^6.17.0",
-        "@powsybl/diagram-viewer": "0.5.5",
+        "@powsybl/diagram-viewer": "0.5.6",
         "@reduxjs/toolkit": "^2.2.3",
         "@svgdotjs/svg.js": "^3.2.0",
         "@svgdotjs/svg.panzoom.js": "^2.1.2",
@@ -49,6 +49,7 @@
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",
         "typeface-roboto": "^1.1.13",
+        "use-debounce": "^10.0.3",
         "uuid": "^9.0.1",
         "yup": "^1.4.0"
     },
