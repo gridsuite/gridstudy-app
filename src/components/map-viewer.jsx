@@ -25,7 +25,7 @@ import NetworkMapTab from './network/network-map-tab';
 import { DiagramPane } from './diagrams/diagram-pane';
 import { StudyView } from './study-pane';
 import { darken } from '@mui/material/styles';
-import ComputationType from './computing-status/computation-type';
+import ComputingType from './computing-status/computing-type';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -162,9 +162,7 @@ const MapViewer = ({
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const oneBusShortCircuitStatus = useSelector(
-        (state) => state.computingStatus[ComputationType.SHORT_CIRCUIT_ONE_BUS]
-    );
+    const oneBusShortCircuitStatus = useSelector((state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]);
     const previousStudyDisplayMode = useRef(undefined);
 
     const [nominalVoltages, setNominalVoltages] = useState();

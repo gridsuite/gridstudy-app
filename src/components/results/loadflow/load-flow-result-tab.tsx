@@ -16,7 +16,7 @@ import { useNodeData } from '../../study-container';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
-import ComputationType from 'components/computing-status/computation-type';
+import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
@@ -74,7 +74,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     const loadflowResultInvalidations = ['loadflowResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputationType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const { onSortChanged, sortConfig } = useAgGridSort(LOADFLOW_RESULT_SORT_STORE, mappingTabs(tabIndex));
 
@@ -320,7 +320,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             )}
             {tabIndex === 3 &&
                 (loadFlowStatus === RunningStatus.SUCCEED || loadFlowStatus === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={ComputationType.LOAD_FLOW} />
+                    <ComputationReportViewer reportType={ComputingType.LOAD_FLOW} />
                 )}
         </>
     );

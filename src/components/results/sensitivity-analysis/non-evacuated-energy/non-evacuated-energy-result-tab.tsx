@@ -18,7 +18,7 @@ import { RunningStatus } from '../../../utils/running-status';
 import { ComputationReportViewer } from '../../common/computation-report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import { ComputationType } from '../../../computing-status/computation-type';
+import { ComputingType } from '../../../computing-status/computing-type';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
 
 const styles = {
@@ -48,7 +48,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
     const LOGS_TAB_INDEX = 1;
 
     const nonEvacuatedEnergyStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputationType.NON_EVACUATED_ENERGY_ANALYSIS]
+        (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );
 
     const [nonEvacuatedEnergyResult] = useNodeData(
@@ -85,7 +85,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
                 {tabIndex === LOGS_TAB_INDEX &&
                     (nonEvacuatedEnergyStatus === RunningStatus.SUCCEED ||
                         nonEvacuatedEnergyStatus === RunningStatus.FAILED) && (
-                        <ComputationReportViewer reportType={ComputationType.NON_EVACUATED_ENERGY_ANALYSIS} />
+                        <ComputationReportViewer reportType={ComputingType.NON_EVACUATED_ENERGY_ANALYSIS} />
                     )}
             </Box>
         </>

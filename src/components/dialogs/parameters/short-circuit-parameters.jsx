@@ -44,7 +44,7 @@ import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
-import ComputationType from '../../computing-status/computation-type';
+import ComputingType from '../../computing-status/computing-type';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
 
 export const useGetShortCircuitParameters = () => {
@@ -83,7 +83,7 @@ export const useGetShortCircuitParameters = () => {
         if (
             studyUuid &&
             shortCircuitAvailability === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputationType.SHORT_CIRCUIT, studyUpdated)
+            isComputationParametersUpdated(ComputingType.SHORT_CIRCUIT, studyUpdated)
         ) {
             fetchShortCircuitParameters(studyUuid);
         }

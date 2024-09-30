@@ -14,7 +14,7 @@ import { ShortCircuitAnalysisResult } from 'components/results/shortcircuit/shor
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { FunctionComponent, useCallback, useState } from 'react';
-import { ComputationType } from 'components/computing-status/computation-type';
+import { ComputingType } from 'components/computing-status/computing-type';
 import { GridReadyEvent } from 'ag-grid-community';
 
 interface ShortCircuitAnalysisAllBusResultProps {
@@ -27,7 +27,7 @@ export const ShortCircuitAnalysisAllBusesResult: FunctionComponent<ShortCircuitA
     onRowDataUpdated,
 }) => {
     const allBusesShortCircuitAnalysisStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
 
     const [result, setResult] = useState<SCAFaultResult[]>([]);

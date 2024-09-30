@@ -65,7 +65,7 @@ import {
     getMonitoredBranchesParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
-import ComputationType from '../../../computing-status/computation-type';
+import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
@@ -97,7 +97,7 @@ export const useGetNonEvacuatedEnergyParameters = () => {
 
     // fetch the parameter if NON_EVACUATED_ENERGY_ANALYSIS  notification type is received.
     useEffect(() => {
-        if (studyUuid && isComputationParametersUpdated(ComputationType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)) {
+        if (studyUuid && isComputationParametersUpdated(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)) {
             fetchNonEvacuatedEnergyParameters(studyUuid);
         }
     }, [studyUuid, fetchNonEvacuatedEnergyParameters, studyUpdated]);

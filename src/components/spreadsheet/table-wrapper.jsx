@@ -71,7 +71,7 @@ import { fetchNetworkElementInfos } from 'services/study/network';
 import { toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialogUtils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
-import ComputationType from 'components/computing-status/computation-type';
+import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
@@ -138,7 +138,7 @@ const TableWrapper = (props) => {
 
     const { snackError } = useSnackMessage();
 
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputationType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const allDisplayedColumnsNames = useSelector((state) => state.allDisplayedColumnsNames);
     const allLockedColumnsNames = useSelector((state) => state.allLockedColumnsNames);

@@ -9,7 +9,7 @@ import { useNodeData } from './study-container';
 import WaitingLoader from './utils/waiting-loader';
 import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
-import { ComputationType } from './computing-status/computation-type';
+import { ComputingType } from './computing-status/computing-type';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
 import { useState } from 'react';
 import RunningStatus from './utils/running-status';
@@ -18,7 +18,7 @@ const voltageInitResultInvalidations = ['voltageInitResult'];
 
 export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
-    const voltageInitStatus = useSelector((state) => state.computingStatus[ComputationType.VOLTAGE_INITIALIZATION]);
+    const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
 
     const [voltageInitResult, isWaiting] = useNodeData(
         studyUuid,

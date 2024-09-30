@@ -229,7 +229,7 @@ import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-st
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
 import { CopyType } from 'components/network-modification-tree-pane';
-import { ComputationType } from 'components/computing-status/computation-type';
+import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
@@ -298,7 +298,7 @@ export interface StudyUpdatedEventDataHeader {
     nodes?: UUID[];
     error?: string;
     userId?: string;
-    computationType?: ComputationType;
+    computationType?: ComputingType;
 }
 
 // Payloads
@@ -349,15 +349,15 @@ export interface TreeNodeData {
 export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
 
 export interface ComputingStatus {
-    [ComputationType.LOAD_FLOW]: RunningStatus;
-    [ComputationType.SECURITY_ANALYSIS]: RunningStatus;
-    [ComputationType.SENSITIVITY_ANALYSIS]: RunningStatus;
-    [ComputationType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
-    [ComputationType.SHORT_CIRCUIT]: RunningStatus;
-    [ComputationType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
-    [ComputationType.DYNAMIC_SIMULATION]: RunningStatus;
-    [ComputationType.VOLTAGE_INITIALIZATION]: RunningStatus;
-    [ComputationType.STATE_ESTIMATION]: RunningStatus;
+    [ComputingType.LOAD_FLOW]: RunningStatus;
+    [ComputingType.SECURITY_ANALYSIS]: RunningStatus;
+    [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus;
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus;
+    [ComputingType.SHORT_CIRCUIT]: RunningStatus;
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus;
+    [ComputingType.DYNAMIC_SIMULATION]: RunningStatus;
+    [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus;
+    [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
 export type TableSortConfig = Record<string, SortConfigType[]>;
@@ -399,7 +399,7 @@ export interface AppState extends CommonStoreState {
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     computingStatus: ComputingStatus;
-    lastCompletedComputation: ComputationType | null;
+    lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
     optionalServices: IOptionalService[];
     oneBusShortCircuitAnalysisDiagram: OneBusShortCircuitAnalysisDiagram | null;
@@ -545,15 +545,15 @@ const initialState: AppState = {
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
     computingStatus: {
-        [ComputationType.LOAD_FLOW]: RunningStatus.IDLE,
-        [ComputationType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputationType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputationType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
-        [ComputationType.SHORT_CIRCUIT]: RunningStatus.IDLE,
-        [ComputationType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
-        [ComputationType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
-        [ComputationType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
-        [ComputationType.STATE_ESTIMATION]: RunningStatus.IDLE,
+        [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
+        [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputingType.SENSITIVITY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: RunningStatus.IDLE,
+        [ComputingType.SHORT_CIRCUIT]: RunningStatus.IDLE,
+        [ComputingType.SHORT_CIRCUIT_ONE_BUS]: RunningStatus.IDLE,
+        [ComputingType.DYNAMIC_SIMULATION]: RunningStatus.IDLE,
+        [ComputingType.VOLTAGE_INITIALIZATION]: RunningStatus.IDLE,
+        [ComputingType.STATE_ESTIMATION]: RunningStatus.IDLE,
     },
     computationStarting: false,
     optionalServices: (Object.keys(OptionalServicesNames) as OptionalServicesNames[]).map((key) => ({

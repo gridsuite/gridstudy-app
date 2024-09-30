@@ -48,7 +48,7 @@ import {
     StudyUpdatedEventData,
     TableSortKeysType,
 } from './reducer';
-import { ComputationType } from '../components/computing-status/computation-type';
+import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
@@ -920,11 +920,11 @@ export function setNetworkAreaDiagramNbVoltageLevels(nbVoltageLevels: number): N
 
 export const SET_COMPUTING_STATUS = 'SET_COMPUTING_STATUS';
 export type SetComputingStatusAction = Readonly<Action<typeof SET_COMPUTING_STATUS>> & {
-    computingType: ComputationType;
+    computingType: ComputingType;
     runningStatus: RunningStatus;
 };
 export function setComputingStatus(
-    computingType: ComputationType,
+    computingType: ComputingType,
     runningStatus: RunningStatus
 ): SetComputingStatusAction {
     return {
@@ -1003,10 +1003,10 @@ export function addToRecentGlobalFilters(globalFilters: Filter[]): AddToRecentGl
 
 export const SET_LAST_COMPLETED_COMPUTATION = 'SET_LAST_COMPLETED_COMPUTATION';
 export type SetLastCompletedComputationAction = Readonly<Action<typeof SET_LAST_COMPLETED_COMPUTATION>> & {
-    lastCompletedComputation: ComputationType | null;
+    lastCompletedComputation: ComputingType | null;
 };
 export function setLastCompletedComputation(
-    lastCompletedComputation?: ComputationType
+    lastCompletedComputation?: ComputingType
 ): SetLastCompletedComputationAction {
     return {
         type: SET_LAST_COMPLETED_COMPUTATION,

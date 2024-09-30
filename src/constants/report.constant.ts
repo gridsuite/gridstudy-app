@@ -6,7 +6,7 @@
  */
 
 import { ReportSeverity, SeverityLevel } from '../types/report.type';
-import ComputationType from '../components/computing-status/computation-type';
+import ComputingType from '../components/computing-status/computing-type';
 
 export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     UNKNOWN: {
@@ -69,6 +69,6 @@ export const GLOBAL_REPORT_NODE_LABEL = 'Logs';
 
 // must be in-sync with ReportType in study-server
 export const COMPUTING_AND_NETWORK_MODIFICATION_TYPE = {
-    ...ComputationType,
+    ...ComputingType,
     NETWORK_MODIFICATION: 'NETWORK_MODIFICATION',
 };

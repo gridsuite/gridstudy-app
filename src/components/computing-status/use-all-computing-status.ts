@@ -18,7 +18,7 @@ import {
 } from '../utils/running-status';
 
 import { UUID } from 'crypto';
-import { ComputationType } from './computation-type';
+import { ComputingType } from './computing-type';
 import { fetchSensitivityAnalysisStatus } from '../../services/study/sensitivity-analysis';
 import { fetchSecurityAnalysisStatus } from '../../services/study/security-analysis';
 import { fetchDynamicSimulationStatus } from '../../services/study/dynamic-simulation';
@@ -76,7 +76,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         loadFlowStatusInvalidations,
         loadFlowStatusCompletions,
         getLoadFlowRunningStatus,
-        ComputationType.LOAD_FLOW
+        ComputingType.LOAD_FLOW
     );
 
     useComputingStatus(
@@ -86,7 +86,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         securityAnalysisStatusInvalidations,
         securityAnalysisStatusCompletions,
         getSecurityAnalysisRunningStatus,
-        ComputationType.SECURITY_ANALYSIS,
+        ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability
     );
 
@@ -97,7 +97,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         sensitivityAnalysisStatusInvalidations,
         sensitivityAnalysisStatusCompletions,
         getSensitivityAnalysisRunningStatus,
-        ComputationType.SENSITIVITY_ANALYSIS,
+        ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability
     );
 
@@ -108,7 +108,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         nonEvacuatedEnergyStatusInvalidations,
         nonEvacuatedEnergyStatusCompletions,
         getNonEvacuatedEnergyRunningStatus,
-        ComputationType.NON_EVACUATED_ENERGY_ANALYSIS,
+        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
         nonEvacuatedEnergyAvailability
     );
 
@@ -119,7 +119,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         shortCircuitAnalysisStatusInvalidations,
         shortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
-        ComputationType.SHORT_CIRCUIT,
+        ComputingType.SHORT_CIRCUIT,
         shortCircuitAvailability
     );
 
@@ -130,7 +130,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         oneBusShortCircuitAnalysisStatusInvalidations,
         oneBusShortCircuitAnalysisStatusCompletions,
         getShortCircuitAnalysisRunningStatus,
-        ComputationType.SHORT_CIRCUIT_ONE_BUS,
+        ComputingType.SHORT_CIRCUIT_ONE_BUS,
         shortCircuitAvailability
     );
 
@@ -141,7 +141,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         dynamicSimulationStatusInvalidations,
         dynamicSimulationStatusCompletions,
         getDynamicSimulationRunningStatus,
-        ComputationType.DYNAMIC_SIMULATION,
+        ComputingType.DYNAMIC_SIMULATION,
         dynamicSimulationAvailability
     );
 
@@ -152,7 +152,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         voltageInitStatusInvalidations,
         voltageInitStatusCompletions,
         getVoltageInitRunningStatus,
-        ComputationType.VOLTAGE_INITIALIZATION,
+        ComputingType.VOLTAGE_INITIALIZATION,
         voltageInitAvailability
     );
 
@@ -163,7 +163,7 @@ export const useAllComputingStatus = (studyUuid: UUID, currentNodeUuid: UUID): v
         stateEstimationStatusInvalidations,
         stateEstimationStatusCompletions,
         getStateEstimationRunningStatus,
-        ComputationType.STATE_ESTIMATION,
+        ComputingType.STATE_ESTIMATION,
         stateEstimationAvailability
     );
 };

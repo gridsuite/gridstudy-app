@@ -9,7 +9,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import ComputationType from '../../computing-status/computation-type';
+import ComputingType from '../../computing-status/computing-type';
 import RunningStatus from '../../utils/running-status';
 import { useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useIntl } from 'react-intl';
@@ -17,7 +17,7 @@ import Overlay from '../common/Overlay';
 
 const DynamicSimulationResultLogs = memo(() => {
     const dynamicSimulationStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputationType.DYNAMIC_SIMULATION]
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
 
     const intl = useIntl();
@@ -39,7 +39,7 @@ const DynamicSimulationResultLogs = memo(() => {
     return (
         <>
             <Overlay message={overlayMessage}>
-                <ComputationReportViewer reportType={ComputationType.DYNAMIC_SIMULATION} />
+                <ComputationReportViewer reportType={ComputingType.DYNAMIC_SIMULATION} />
             </Overlay>
         </>
     );

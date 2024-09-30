@@ -18,7 +18,7 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import ComputationType from '../../computing-status/computation-type';
+import ComputingType from '../../computing-status/computing-type';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
 
@@ -149,7 +149,7 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
 
     // messages to show when no data
     const dynamicSimulationStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputationType.DYNAMIC_SIMULATION]
+        (state: AppState) => state.computingStatus[ComputingType.DYNAMIC_SIMULATION]
     );
     const messages = useIntlResultStatusMessages(intl, true);
     const overlayMessage = useMemo(

@@ -9,13 +9,13 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import ReportViewer from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { ComputationType } from '../../computing-status/computation-type';
+import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
 import { Report } from '../../../types/report.type';
 
 interface ComputationReportViewerProps {
-    reportType: ComputationType;
+    reportType: ComputingType;
 }
 
 export const ComputationReportViewer: FunctionComponent<ComputationReportViewerProps> = ({ reportType }) => {

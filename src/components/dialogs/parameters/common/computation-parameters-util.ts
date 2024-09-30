@@ -6,12 +6,12 @@
  */
 
 import { NotificationType, StudyUpdated } from '../../../../redux/reducer';
-import ComputationType, { isValidComputationType } from '../../../computing-status/computation-type';
+import ComputingType, { isValidComputationType } from '../../../computing-status/computing-type';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 export const COMPUTATION_TYPE_HEADER = 'computationType';
 
-export const isComputationParametersUpdated = (type: ComputationType, studyUpdated: StudyUpdated) => {
+export const isComputationParametersUpdated = (type: ComputingType, studyUpdated: StudyUpdated) => {
     return (
         studyUpdated.eventData.headers &&
         studyUpdated.eventData.headers[UPDATE_TYPE_HEADER] === NotificationType.COMPUTATION_PARAMETERS_UPDATED &&

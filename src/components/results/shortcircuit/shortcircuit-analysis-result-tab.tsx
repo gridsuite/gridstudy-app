@@ -18,7 +18,7 @@ import { ComputationReportViewer } from '../common/computation-report-viewer';
 
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { ComputationType } from '../../computing-status/computation-type';
+import { ComputingType } from '../../computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
 import { ShortCircuitAnalysisOneBusResult } from './shortcircuit-analysis-one-bus-result';
 import { ShortCircuitAnalysisAllBusesResult } from 'components/results/shortcircuit/shortcircuit-analysis-all-buses-result';
@@ -60,10 +60,10 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
     const [resultOrLogIndex, setResultOrLogIndex] = useState(0);
 
     const AllBusesShortCircuitStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT]
     );
     const OneBusShortCircuitStatus = useSelector(
-        (state: AppState) => state.computingStatus[ComputationType.SHORT_CIRCUIT_ONE_BUS]
+        (state: AppState) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]
     );
 
     const setRedirectionLock = useResultsTab(resultTabIndexRedirection, setTabIndex, view);
@@ -169,8 +169,8 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         <ComputationReportViewer
                             reportType={
                                 tabIndex === ShortCircuitAnalysisResultTabs.ALL_BUSES
-                                    ? ComputationType.SHORT_CIRCUIT
-                                    : ComputationType.SHORT_CIRCUIT_ONE_BUS
+                                    ? ComputingType.SHORT_CIRCUIT
+                                    : ComputingType.SHORT_CIRCUIT_ONE_BUS
                             }
                         />
                     )}

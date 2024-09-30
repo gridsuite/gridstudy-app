@@ -56,7 +56,7 @@ import {
     NonEvacuatedEnergyParameters,
     useGetNonEvacuatedEnergyParameters,
 } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
-import ComputationType from './computing-status/computation-type';
+import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { NetworkAreaDiagramParameters } from './dialogs/parameters/network-area-diagram-parameters';
@@ -174,7 +174,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const loadFlowParametersBackend = useParametersBackend(
         user,
-        ComputationType.LOAD_FLOW,
+        ComputingType.LOAD_FLOW,
         OptionalServicesStatus.Up,
         getLoadFlowProviders,
         null,
@@ -187,7 +187,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const securityAnalysisParametersBackend = useParametersBackend(
         user,
-        ComputationType.SECURITY_ANALYSIS,
+        ComputingType.SECURITY_ANALYSIS,
         securityAnalysisAvailability,
         fetchSecurityAnalysisProviders,
         null,
@@ -199,7 +199,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const sensitivityAnalysisBackend = useParametersBackend(
         user,
-        ComputationType.SENSITIVITY_ANALYSIS,
+        ComputingType.SENSITIVITY_ANALYSIS,
         sensitivityAnalysisAvailability,
         fetchSensitivityAnalysisProviders,
         null,
@@ -210,7 +210,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
         user,
-        ComputationType.NON_EVACUATED_ENERGY_ANALYSIS,
+        ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
         nonEvacuatedEnergyAvailability,
         fetchSensitivityAnalysisProviders, // same providers list as those for sensitivity-analysis
         fetchNonEvacuatedEnergyProvider,
@@ -257,7 +257,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         });
     }, [enableDeveloperMode]);
 
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputationType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
             case TAB_VALUES.sldParamsTabValue:

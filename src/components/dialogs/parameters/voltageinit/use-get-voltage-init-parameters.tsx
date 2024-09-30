@@ -13,7 +13,7 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useOptionalServiceStatus } from '../../../../hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from '../../../utils/optional-services';
 import { getVoltageInitStudyParameters } from '../../../../services/study/voltage-init';
-import ComputationType from '../../../computing-status/computation-type';
+import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { UUID } from 'crypto';
 
@@ -54,7 +54,7 @@ export const useGetVoltageInitParameters = (): [
         if (
             studyUuid &&
             voltageInitAvailability === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputationType.VOLTAGE_INITIALIZATION, studyUpdated)
+            isComputationParametersUpdated(ComputingType.VOLTAGE_INITIALIZATION, studyUpdated)
         ) {
             fetchVoltageInitStudyParameters(studyUuid);
         }

@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { useTheme } from '@mui/material';
 import { GridReadyEvent, RowClassParams } from 'ag-grid-community';
 
-import { ComputationType } from '../../computing-status/computation-type';
+import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
 
 import { LimitViolationResultProps } from './load-flow-result.type';
@@ -34,7 +34,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
     const intl = useIntl();
     const gridRef = useRef();
 
-    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputationType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] = useState(false);
 

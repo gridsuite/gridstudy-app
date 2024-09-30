@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import ComputationType from 'components/computing-status/computation-type';
+import ComputingType from 'components/computing-status/computing-type';
 import { IService } from 'components/result-view-tab';
 import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ const useResultsTabRedirectionLock = (): [boolean, Dispatch<SetStateAction<boole
 //function to convert computing type to the index corresponding to the resulting computation tab.
 //the list of services must also be passed as parameter because its content is dynamic depending on the state of the application (e.g. developer mode disabled)
 export const computingTypeToRootTabRedirection = (
-    computingType: ComputationType,
+    computingType: ComputingType,
     availableServices?: IService[]
 ): ResultTabIndexRedirection => {
     return availableServices
@@ -76,12 +76,12 @@ export const computingTypeToRootTabRedirection = (
 };
 
 export const computingTypeToShortcircuitTabRedirection = (
-    computingType: ComputationType | undefined
+    computingType: ComputingType | undefined
 ): ResultTabIndexRedirection => {
     switch (computingType) {
-        case ComputationType.SHORT_CIRCUIT:
+        case ComputingType.SHORT_CIRCUIT:
             return ShortCircuitAnalysisResultTabs.ALL_BUSES;
-        case ComputationType.SHORT_CIRCUIT_ONE_BUS:
+        case ComputingType.SHORT_CIRCUIT_ONE_BUS:
             return ShortCircuitAnalysisResultTabs.ONE_BUS;
         default:
             return ShortCircuitAnalysisResultTabs.ALL_BUSES;

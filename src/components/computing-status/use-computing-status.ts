@@ -10,7 +10,7 @@ import { RunningStatus } from 'components/utils/running-status';
 import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ComputationType } from './computation-type';
+import { ComputingType } from './computing-type';
 import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
@@ -24,7 +24,7 @@ interface UseComputingStatusProps {
         invalidations: string[],
         completions: string[],
         resultConversion: (x: string) => RunningStatus,
-        computingType: ComputationType,
+        computingType: ComputingType,
         optionalServiceAvailabilityStatus?: OptionalServicesStatus
     ): void;
 }
@@ -78,7 +78,7 @@ function isWorthUpdate(
  * @param fetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
- * @param computingType ComputationType targeted by this hook
+ * @param computingType ComputingType targeted by this hook
  * @param optionalServiceAvailabilityStatus status of an optional service
  */
 export const useComputingStatus: UseComputingStatusProps = (
