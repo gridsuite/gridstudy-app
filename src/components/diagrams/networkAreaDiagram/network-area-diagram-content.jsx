@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useLayoutEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useLayoutEffect, useRef, useMemo, useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -21,6 +21,9 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from 'components/computing-status/computing-type';
+import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
+import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
+import { getNadIdentifier } from '../diagram-utils.js';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 
 const dynamicCssRules = [
@@ -119,15 +122,31 @@ const dynamicCssRules = [
 
 function NetworkAreaDiagramContent(props) {
     const { diagramSizeSetter } = props;
+    const dispatch = useDispatch();
     const svgRef = useRef();
     const diagramViewerRef = useRef();
     const currentNode = useSelector((state) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
+    const diagramStates = useSelector((state) => state.diagramStates);
+    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
+    const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const studyUuid = useSelector((state) => state.studyUuid);
+
+    const nadIdentifier = useMemo(() => {
+        return getNadIdentifier(diagramStates, networkAreaDiagramDepth, initNadWithGeoData);
+    }, [diagramStates, networkAreaDiagramDepth, initNadWithGeoData]);
+
+    const onMoveNodeCallback = useCallback(
+        (equipmentId, nodeId, x, y, xOrig, yOrig) => {
+            dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+        },
+        [dispatch, nadIdentifier]
+    );
 
     const handleTogglePopover = useCallback(
         (shouldDisplay, mousePosition, equipmentId, equipmentType) => {
@@ -135,14 +154,10 @@ function NetworkAreaDiagramContent(props) {
 
             if (shouldDisplay) {
                 setAnchorPosition({
-                    top: mousePosition.y + 10, // Adjust for better positioning
+                    top: mousePosition.y + 10,
                     left: mousePosition.x + 10,
                 });
                 setHoveredEquipmentId(equipmentId);
-                setAnchorPosition({
-                    top: mousePosition.y + 10, // Adjust for better positioning
-                    left: mousePosition.x + 10,
-                });
                 setHoveredEquipmentType(equipmentType);
             } else {
                 setHoveredEquipmentId('');
@@ -164,7 +179,7 @@ function NetworkAreaDiagramContent(props) {
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-                null,
+                onMoveNodeCallback,
                 null,
                 null,
                 true,
@@ -177,7 +192,7 @@ function NetworkAreaDiagramContent(props) {
             diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
-            // the user's zoom and scoll state for the current render.
+            // the user's zoom and scroll state for the current render.
             if (
                 diagramViewerRef.current &&
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
@@ -186,6 +201,17 @@ function NetworkAreaDiagramContent(props) {
                 diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
             }
 
+            // Repositioning the previously moved nodes
+            if (!props.loadingState) {
+                const correspondingMovements = nadNodeMovements.filter(
+                    (movement) => movement.nadIdentifier === nadIdentifier
+                );
+                if (correspondingMovements.length > 0) {
+                    correspondingMovements.forEach((movement) => {
+                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                    });
+                }
+            }
             diagramViewerRef.current = diagramViewer;
         }
     }, [
@@ -196,19 +222,11 @@ function NetworkAreaDiagramContent(props) {
         props.loadingState,
         diagramSizeSetter,
         handleTogglePopover,
+        onMoveNodeCallback,
+        nadIdentifier,
+        nadNodeMovements,
     ]);
 
-    const displayTooltip = () => {
-        return (
-            <EquipmentPopover
-                studyUuid={studyUuid}
-                anchorPosition={anchorPosition}
-                equipmentType={hoveredEquipmentType}
-                equipmentId={hoveredEquipmentId}
-                loadFlowStatus={loadFlowStatus}
-            />
-        );
-    };
     /**
      * RENDER
      */
@@ -216,7 +234,15 @@ function NetworkAreaDiagramContent(props) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
-            {shouldDisplayTooltip && displayTooltip()}
+            {shouldDisplayTooltip && (
+                <EquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorPosition={anchorPosition}
+                    equipmentType={hoveredEquipmentType}
+                    equipmentId={hoveredEquipmentId}
+                    loadFlowStatus={loadFlowStatus}
+                />
+            )}{' '}
             <Box
                 ref={svgRef}
                 sx={mergeSx(
