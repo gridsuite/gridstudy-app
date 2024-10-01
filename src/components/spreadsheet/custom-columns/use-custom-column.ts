@@ -11,12 +11,11 @@ import { useSelector } from 'react-redux';
 import { defaultNumericFilterConfig, TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
-import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
-import { setSpreadsheetFilter } from 'redux/actions';
+import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { FilterParams } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { createDependencyGraph, topologicalSort } from './custom-columns-utils';
+import { PropertiesCellRenderer } from '../utils/cell-renderers';
 
 export function useCustomColumn(tabIndex: number, gridRef: any) {
     const customColumnsDefinitions = useSelector(
@@ -27,13 +26,6 @@ export function useCustomColumn(tabIndex: number, gridRef: any) {
         SPREADSHEET_SORT_STORE,
         TABLES_DEFINITION_INDEXES.get(tabIndex)!.type as string
     );
-
-    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-        filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex)!.type as string,
-        // @ts-expect-error TODO
-        filterStoreAction: setSpreadsheetFilter,
-    });
 
     const math = useMemo(() => {
         const instance = create(all, {
@@ -122,15 +114,13 @@ export function useCustomColumn(tabIndex: number, gridRef: any) {
                 headerName: colWithFormula.name,
                 field: colWithFormula.name,
                 numeric: true,
+                cellRenderer: PropertiesCellRenderer,
                 sortProps: {
                     onSortChanged,
                     sortConfig,
                 },
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-                filterParams: { ...defaultNumericFilterConfig() } as FilterParams,
+
+                filterParams: { ...defaultNumericFilterConfig().customFilterParams } as FilterParams,
                 valueGetter: (params) => {
                     const allValues = calcAllColumnValues(params.data);
                     return allValues.get(colWithFormula.name);
@@ -140,7 +130,7 @@ export function useCustomColumn(tabIndex: number, gridRef: any) {
                 suppressMovable: true,
             });
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, updateFilter, filterSelector, calcAllColumnValues]);
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, calcAllColumnValues]);
 
     return { createCustomColumn };
 }
