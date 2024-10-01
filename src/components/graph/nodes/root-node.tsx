@@ -8,14 +8,15 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import PhotoIcon from '@mui/icons-material/Photo';
-import React from 'react';
-import { Handle } from 'react-flow-renderer';
+import { Handle, Position } from 'react-flow-renderer';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
+import { AppState } from 'redux/reducer';
+import { Theme } from '@mui/material/styles';
 
 const styles = {
-    rootSelected: (theme) => ({
+    rootSelected: (theme: Theme) => ({
         background: theme.node.background,
         borderRadius: '30%',
         boxShadow:
@@ -29,7 +30,7 @@ const styles = {
             background: theme.node.background,
         },
     }),
-    root: (theme) => ({
+    root: (theme: Theme) => ({
         background: 'darkseagreen',
         borderRadius: '30%',
         '&:hover': {
@@ -38,8 +39,16 @@ const styles = {
     }),
 };
 
-const RootNode = (props) => {
-    const currentNode = useSelector((state) => state.currentTreeNode);
+interface RootNodeProps {
+    id: string;
+    data: {
+        caseName: string;
+        globalBuildStatus: string;
+    };
+}
+
+const RootNode = (props: RootNodeProps) => {
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
     };
@@ -47,7 +56,7 @@ const RootNode = (props) => {
         <>
             <Handle
                 type="source"
-                position="bottom"
+                position={Position.Bottom}
                 style={{
                     background: '#555',
                     zIndex: '1',
