@@ -844,17 +844,18 @@ const NetworkModificationNodeEditor = () => {
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata) => {
+    const getModificationLabel = (modif: NetworkModificationMetadata): string => {
         if (!modif) {
-            return null;
+            return '';
         }
-        return intl.formatMessage(
+        const label: string = intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
             {
                 ...modif,
                 ...computeLabel(modif),
             }
-        );
+        ) as string; //FIXME(jamal): type definition
+        return label;
     };
 
     const handleSecondaryAction = useCallback(

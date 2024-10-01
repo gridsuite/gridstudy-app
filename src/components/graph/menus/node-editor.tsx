@@ -17,9 +17,10 @@ import { setModificationsDrawerOpen } from '../../../redux/actions';
 import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/system';
 import { AppState } from '../../../redux/reducer';
+import { Theme } from '@mui/material/styles';
 
 const styles = {
-    paper: (theme) => ({
+    paper: (theme: Theme) => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -35,7 +36,7 @@ const NodeEditor = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const studyUuid = decodeURIComponent(useParams().studyUuid ?? '');
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
@@ -57,7 +58,7 @@ const NodeEditor = () => {
     return (
         <Box sx={styles.paper}>
             <EditableTitle
-                name={currentTreeNode?.data?.label}
+                name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
             />

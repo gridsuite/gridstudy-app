@@ -8,7 +8,6 @@
 import React, { useCallback, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import { CopyType } from '../../network-modification-tree-pane';
@@ -17,6 +16,7 @@ import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
+import { AppState } from 'redux/reducer';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -24,24 +24,24 @@ export const NodeActions = {
     NO_ACTION: 'NO_ACTION',
 };
 
-export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
-    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid));
+export const getNodeChildren = (treeModel: any, sourceNodeIds: any, allChildren: any) => {
+    const children = treeModel.treeNodes.filter((node: any) => sourceNodeIds.includes(node.data.parentNodeUuid));
     if (children.length > 0) {
-        children.forEach((item) => {
+        children.forEach((item: any) => {
             allChildren?.push({ ...item });
         });
-        const ids = children.map((el) => el.id);
+        const ids = children.map((el: any) => el.id);
         // get next level of children
         getNodeChildren(treeModel, ids, allChildren);
     }
 };
 
-export const getNodesFromSubTree = (treeModel, id) => {
+export const getNodesFromSubTree = (treeModel: any, id: any) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
-        const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.data.parentNodeUuid === id);
-        const allChildren = [];
-        activeNodeDirectChildren.forEach((child) => {
+        const activeNodeDirectChildren = treeModel.treeNodes.filter((item: any) => item.data.parentNodeUuid === id);
+        const allChildren: any[] = [];
+        activeNodeDirectChildren.forEach((child: any) => {
             allChildren.push(child);
             // get the children of each child
             getNodeChildren(treeModel, [child.id], allChildren);
@@ -50,7 +50,28 @@ export const getNodesFromSubTree = (treeModel, id) => {
     }
 };
 
-const CreateNodeMenu = ({
+interface CreateNodeMenuProps {
+    position: any;
+    handleNodeCreation: (activeNode: any, type: string, insertMode: any) => void;
+    handleNodeRemoval: (activeNode: any) => void;
+    handleClose: () => void;
+    handleBuildNode: (activeNode: any) => void;
+    handleUnbuildNode: (activeNode: any) => void;
+    handleExportCaseOnNode: (activeNode: any) => void;
+    activeNode: any;
+    selectionForCopy: any;
+    handleCopyNode: (activeNode: any) => void;
+    handleCutNode: (activeNode: any) => void;
+    handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
+    handleRemovalSubtree: (activeNode: any) => void;
+    handleCutSubtree: (activeNode: any) => void;
+    handleCopySubtree: (activeNode: any) => void;
+    handlePasteSubtree: (activeNode: any) => void;
+    handleOpenRestoreNodesDialog: (activeNode: any) => void;
+    disableRestoreNodes: boolean;
+}
+
+const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     position,
     handleClose,
     handleBuildNode,
@@ -72,9 +93,9 @@ const CreateNodeMenu = ({
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
-    const mapDataLoading = useSelector((state) => state.mapDataLoading);
-    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const isModificationsInProgress = useSelector((state: AppState) => state.isModificationsInProgress);
+    const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
@@ -83,12 +104,12 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function createNetworkModificationNode(insertMode) {
+    function createNetworkModificationNode(insertMode: NodeInsertModes) {
         handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
         handleClose();
     }
 
-    function pasteNetworkModificationNode(insertMode) {
+    function pasteNetworkModificationNode(insertMode: NodeInsertModes) {
         handlePasteNode(activeNode.id, insertMode);
         handleClose();
     }
@@ -389,11 +410,5 @@ const CreateNodeMenu = ({
     );
 };
 
-CreateNodeMenu.propTypes = {
-    position: PropTypes.object.isRequired,
-    handleNodeCreation: PropTypes.func.isRequired,
-    handleNodeRemoval: PropTypes.func.isRequired,
-    handleClose: PropTypes.func.isRequired,
-};
 
 export default CreateNodeMenu;
