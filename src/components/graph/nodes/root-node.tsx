@@ -52,6 +52,7 @@ const RootNode = (props: RootNodeProps) => {
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
     };
+
     return (
         <>
             <Handle
@@ -64,7 +65,7 @@ const RootNode = (props: RootNodeProps) => {
                 isConnectable={false}
             />
             <Tooltip title={props.data.caseName} placement="top" disableHoverListener={!props.data.caseName}>
-                <IconButton variant="outlined" sx={isSelectedNode() ? styles.rootSelected : styles.root}>
+                <IconButton sx={isSelectedNode() ? styles.rootSelected : styles.root}>
                     {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (
                         <PhotoIcon />
                     )}
