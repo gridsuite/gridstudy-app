@@ -347,9 +347,10 @@ export type StudyUpdated = {
 export interface TreeNodeData {
     parentNodeUuid: UUID;
     label: string;
-    description: string;
+    description: string | null;
     buildStatus: BUILD_STATUS;
-    readonly: boolean;
+    readonly: boolean | null;
+    globalBuildStatus?: BUILD_STATUS;
 }
 export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
 

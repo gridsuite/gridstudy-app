@@ -56,7 +56,7 @@ const NodeEditor = () => {
     };
 
     return (
-        <Box sx={styles.paper}>
+        <Box sx={styles.paper as any}>
             <EditableTitle
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}

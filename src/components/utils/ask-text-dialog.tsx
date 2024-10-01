@@ -47,19 +47,21 @@ export const AskTextDialog: FunctionComponent<AskTextDialogProps> = ({ title, va
     };
 
     return (
-        <Dialog open={show} onClose={onClose} maxWidth={'xs'} fullWidth={true}>
-            <DialogTitle id={'modal-title'}>{title}</DialogTitle>
-            <DialogContent>
-                {nameField}
-                {!isNameOK && nameError !== undefined && <Alert severity="error">{nameError}</Alert>}
-            </DialogContent>
-            <DialogActions>
-                <CancelButton onClick={handleClose} />
-                <Button onClick={handleValidate} variant={'outlined'} disabled={!isNameOK}>
-                    {intl.formatMessage({ id: 'validate' })}
-                </Button>
-            </DialogActions>
-        </Dialog>
+        <>
+            <Dialog open={show} onClose={onClose} maxWidth={'xs'} fullWidth={true}>
+                <DialogTitle id={'modal-title'}>{title}</DialogTitle>
+                <DialogContent>
+                    {nameField}
+                    {!isNameOK && nameError !== undefined && <Alert severity="error">{nameError}</Alert>}
+                </DialogContent>
+                <DialogActions>
+                    <CancelButton onClick={handleClose} />
+                    <Button onClick={handleValidate} variant={'outlined'} disabled={!isNameOK}>
+                        {intl.formatMessage({ id: 'validate' })}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 };
 

@@ -10,13 +10,14 @@ import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
-import { CopyType } from '../../network-modification-tree-pane';
 import ChildMenuItem from './create-child-menu-item';
 import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
-import { AppState } from 'redux/reducer';
+import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { UUID } from 'crypto';
+import { CopyType } from 'components/network-modification-tree-pane';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -50,24 +51,29 @@ export const getNodesFromSubTree = (treeModel: any, id: any) => {
     }
 };
 
+interface Identifiable {
+    id: string;
+    [key: string]: any; // Allows any other fields
+}
+
 interface CreateNodeMenuProps {
-    position: any;
-    handleNodeCreation: (activeNode: any, type: string, insertMode: any) => void;
+    position: { x: number; y: number };
+    handleNodeCreation: (element: any, type: string, insertMode: any) => void;
     handleNodeRemoval: (activeNode: any) => void;
     handleClose: () => void;
-    handleBuildNode: (activeNode: any) => void;
-    handleUnbuildNode: (activeNode: any) => void;
-    handleExportCaseOnNode: (activeNode: any) => void;
-    activeNode: any;
-    selectionForCopy: any;
-    handleCopyNode: (activeNode: any) => void;
-    handleCutNode: (activeNode: any) => void;
+    handleBuildNode: (element: CurrentTreeNode) => void;
+    handleUnbuildNode: (element: Identifiable) => void;
+    handleExportCaseOnNode: (node: CurrentTreeNode) => void;
+    activeNode: CurrentTreeNode;
+    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: string; allChildrenIds: string[] }; //TODO(jamal): change copyType to enum
+    handleCopyNode: (nodeId: string) => void;
+    handleCutNode: (nodeId: UUID | null) => void;
     handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
-    handleRemovalSubtree: (activeNode: any) => void;
-    handleCutSubtree: (activeNode: any) => void;
-    handleCopySubtree: (activeNode: any) => void;
-    handlePasteSubtree: (activeNode: any) => void;
-    handleOpenRestoreNodesDialog: (activeNode: any) => void;
+    handleRemovalSubtree: (element: Identifiable) => void;
+    handleCutSubtree: (nodeId: UUID | null) => void;
+    handleCopySubtree: (nodeId: UUID) => void;
+    handlePasteSubtree: (referenceNodeId: string) => void;
+    handleOpenRestoreNodesDialog: (nodeId: UUID) => void;
     disableRestoreNodes: boolean;
 }
 
@@ -209,8 +215,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function isSubtreeAlreadySelectedForCut() {
         return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
-    function isNodeHasChildren(node, treeModel) {
-        return treeModel.treeNodes.some((item) => item.data.parentNodeUuid === node.id);
+    function isNodeHasChildren(node: any, treeModel: any) {
+        return treeModel.treeNodes.some((item: any) => item.data.parentNodeUuid === node.id);
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
@@ -338,8 +344,9 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     };
 
     const renderMenuItems = useCallback(
-        (nodeMenuItems) => {
-            return Object.values(nodeMenuItems).map((item) => {
+        (nodeMenuItems: any) => {
+            //TODO(jamal): fix type
+            return Object.values(nodeMenuItems).map((item: any) => {
                 if (activeNode?.type === 'ROOT' && !item.onRoot) {
                     return undefined; // do not show this item in menu
                 }
@@ -388,7 +395,6 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             <Menu
                 anchorReference="anchorPosition"
                 anchorPosition={{
-                    position: 'absolute',
                     left: position.x,
                     top: position.y,
                 }}
@@ -409,6 +415,5 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         </>
     );
 };
-
 
 export default CreateNodeMenu;
