@@ -57,7 +57,7 @@ export default function CustomColumnTable() {
     }, [CustomColumnTooltip, intl]);
 
     const useTabCustomColumnFieldArrayOutput = useFieldArray({
-        name: `${TAB_CUSTOM_COLUMN}`,
+        name: TAB_CUSTOM_COLUMN,
     });
 
     const newCustomColumnRowData = useMemo(() => {
@@ -69,7 +69,7 @@ export default function CustomColumnTable() {
     const createCustomColumnRows = () => [newCustomColumnRowData];
     return (
         <DndTableTyped
-            arrayFormName={`${TAB_CUSTOM_COLUMN}`}
+            arrayFormName={TAB_CUSTOM_COLUMN}
             columnsDefinition={CUSTOM_COLUMNS_DEFINITIONS}
             useFieldArrayOutput={useTabCustomColumnFieldArrayOutput}
             createRows={createCustomColumnRows}

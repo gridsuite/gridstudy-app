@@ -22,11 +22,13 @@ export type CustomColumnsConfigProps = {
 export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
-    const allDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]);
+    const customColumnsDefinitions = useSelector(
+        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
+    );
 
     useEffect(() => {
-        numberColumns.setValue(allDefinitions.columns.length);
-    }, [allDefinitions.columns.length, numberColumns]);
+        numberColumns.setValue(customColumnsDefinitions.columns.length);
+    }, [customColumnsDefinitions.columns.length, numberColumns]);
 
     return (
         <>
@@ -43,7 +45,11 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
                     <CalculateIcon />
                 </Badge>
             </Button>
-            <CustomColumnDialog indexTab={indexTab} open={dialogOpen} />
+            <CustomColumnDialog
+                indexTab={indexTab}
+                open={dialogOpen}
+                customColumnsDefinitions={customColumnsDefinitions.columns}
+            />
         </>
     );
 }

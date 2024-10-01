@@ -23,12 +23,12 @@ import { setCustomColumDefinitions } from 'redux/actions';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/store';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { ColumnWithFormula } from 'types/custom-columns.types';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
     indexTab: number;
+    customColumnsDefinitions: ColumnWithFormula[];
 };
 
 const styles = {
@@ -41,7 +41,11 @@ const styles = {
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;
 
-export default function CustomColumnDialog({ open, indexTab }: Readonly<CustomColumnDialogProps>) {
+export default function CustomColumnDialog({
+    open,
+    indexTab,
+    customColumnsDefinitions,
+}: Readonly<CustomColumnDialogProps>) {
     const formMethods = useForm({
         defaultValues: initialCustomColumnForm,
         resolver: yupResolver(customColumnFormSchema),
@@ -49,7 +53,6 @@ export default function CustomColumnDialog({ open, indexTab }: Readonly<CustomCo
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
-    const columnsDefinitions = useSelector((state: AppState) => state.allCustomColumnsDefinitions);
 
     const intl = useIntl();
 
@@ -64,14 +67,14 @@ export default function CustomColumnDialog({ open, indexTab }: Readonly<CustomCo
     );
 
     useEffect(() => {
-        if (open.value && columnsDefinitions[TABLES_NAMES[indexTab]]?.columns.length !== 0) {
+        if (open.value && customColumnsDefinitions.length !== 0) {
             reset({
-                [TAB_CUSTOM_COLUMN]: [...columnsDefinitions[TABLES_NAMES[indexTab]].columns],
+                [TAB_CUSTOM_COLUMN]: customColumnsDefinitions,
             });
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [columnsDefinitions, indexTab, open.value, reset]);
+    }, [customColumnsDefinitions, indexTab, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>

@@ -729,7 +729,7 @@ const initialState: AppState = {
     },
 
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName, idx, arr) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
+        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as AppState['allCustomColumnsDefinitions']
     ),
 
@@ -1605,7 +1605,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
         state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
-        //state.allCustomColumnsDefinitions[action.table].filter = action.filter;
     });
     builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
         if (action.messageFilter !== undefined) {
