@@ -16,6 +16,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { usePredefinedProperties } from '@gridsuite/commons-ui';
 import { EQUIPMENTS_FIELDS } from './assignment/assignment-constants';
+import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
 
 interface ModificationByAssignmentFormProps {}
 
@@ -36,6 +37,8 @@ const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () =
         setEquipmentType(equipmentType);
     }, [equipmentType, setEquipmentType]);
 
+    const getOptionLabel = useGetLabelEquipmentTypes();
+
     const equipmentTypeField = (
         <SelectWithConfirmationInput
             name={EQUIPMENT_TYPE_FIELD}
@@ -49,6 +52,7 @@ const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () =
                     }))
                 );
             }}
+            getOptionLabel={getOptionLabel}
         />
     );
 

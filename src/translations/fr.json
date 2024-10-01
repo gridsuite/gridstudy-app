@@ -1265,7 +1265,7 @@
     "ValueMustBeRefWhenPercentageError": "Lors de l'utilisation de %, ce champ doit être une référence de champ valide",
     "addNewFormula": "Ajouter une nouvelle formule",
     "addNewAssignment": "Modifier un autre champ",
-    "byFormulaChangeTypeConfirmation": "Le type va être modifié. Toutes les valeurs des champs seront effacées.",
+    "changeTypeConfirmation": "Le type va être modifié. Toutes les valeurs des champs seront effacées.",
     "RatioLowTapPosition": "Prise min régleur",
     "RatioTapPosition": "Prise courante du régleur",
     "RatioDeadBand": "Bande morte du régleur",

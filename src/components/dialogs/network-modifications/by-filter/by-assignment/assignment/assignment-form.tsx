@@ -24,11 +24,12 @@ import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
+import { PredefinedProperties } from '../../../common/properties/property-utils';
 
 interface AssignmentFormProps {
     name: string;
     index: number;
-    predefinedProperties: any;
+    predefinedProperties: PredefinedProperties;
     equipmentFields: FieldOptionType[];
     equipmentType: string;
 }
@@ -123,7 +124,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         }
 
         if (dataType === DataType.INTEGER) {
-            return <IntegerInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
+            return <IntegerInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
         }
 
         if (dataType === DataType.BOOLEAN) {
@@ -137,20 +138,18 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         }
 
         // by default is a numeric type
-        return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label={'Value'} />;
+        return <FloatInput name={`${name}.${index}.${VALUE_FIELD}`} label="Value" />;
     }, [dataType, name, index, predefinedPropertiesValues, options]);
 
     return (
         <>
-            {gridItem(filtersField, 2.25)}
+            {gridItem(filtersField, 3.25)}
             {gridItem(editedField, 3)}
-            {dataType === DataType.PROPERTY && (
-                <>
-                    {gridItem(propertyNameField, 2.0)}
-                    {gridItem(<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />, 0.25)}
-                </>
-            )}
-            {gridItem(valueField, dataType === DataType.PROPERTY ? 3.25 : 5.5)}
+            <>
+                {dataType === DataType.PROPERTY && gridItem(propertyNameField, 2.0)}
+                {gridItem(<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />, 0.25)}
+            </>
+            {gridItem(valueField, dataType === DataType.PROPERTY ? 2.25 : 4.25)}
         </>
     );
 };

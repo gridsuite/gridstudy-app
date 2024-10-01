@@ -1266,7 +1266,7 @@
     "ValueMustBeRefWhenPercentageError": "When using %, this field must be a valid field reference",
     "addNewFormula": "Add new formula",
     "addNewAssignment": "Modify another field",
-    "byFormulaChangeTypeConfirmation": "The type will be changed. All fields values will be erased.",
+    "changeTypeConfirmation": "The type will be changed. All fields values will be erased.",
     "RatioLowTapPosition": "Ratio low tap position",
     "RatioTapPosition": "Ratio tap position",
     "RatioDeadBand": "Ratio deadband",

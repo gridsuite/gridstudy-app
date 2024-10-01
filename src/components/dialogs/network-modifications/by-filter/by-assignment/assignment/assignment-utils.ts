@@ -44,7 +44,7 @@ export function getAssignmentsSchema() {
                         })
                     )
                     .required()
-                    .min(1, 'FieldIsRequired'),
+                    .min(1, 'YupRequired'),
                 [EDITED_FIELD]: yup.string().required(),
                 [PROPERTY_NAME_FIELD]: yup.string().when([EDITED_FIELD], ([editedField], schema) => {
                     const dataType = getDataType(editedField);
