@@ -13,8 +13,9 @@ import ReportTree from './report-tree';
 import ReportItem from './report-item';
 import { getDefaultSeverityFilter } from '../../utils/report-severity.utils';
 import { useReportFetcher } from '../../hooks/use-report-fetcher';
-import { mapReportLog } from '../../utils/report-log.mapper';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
+import { useDispatch, useSelector } from 'react-redux';
+import { setReportFilters } from '../../redux/actions';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -25,13 +26,17 @@ const styles = {
 };
 
 export default function ReportViewer({ report, reportType }) {
-    const [selectedReportId, setSelectedReportId] = useState(null);
+    const dispatch = useDispatch();
+
     const [expandedTreeReports, setExpandedTreeReports] = useState([]);
     const [logs, setLogs] = useState(null);
     const [highlightedReportId, setHighlightedReportId] = useState();
-    const [severityFilter, setSeverityFilter] = useState(getDefaultSeverityFilter());
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
-    const [isLogLoading, , fetchLogs] = useReportFetcher(reportType);
+    const [isLogLoading, , fetchReportLogs] = useReportFetcher(reportType);
+
+    const selectedReportId = useSelector((state) => state.reportSelectedReportId);
+    const severityFilter = useSelector((state) => state.reportSeverityFilter);
+    const messageFilter = useSelector((state) => state.reportMessageFilter);
 
     const reportTreeData = useRef({});
     const treeView = useRef(null);
@@ -56,41 +61,43 @@ export default function ReportViewer({ report, reportType }) {
     }, []);
 
     const refreshLogsOnSelectedReport = useCallback(
-        (reportId, severityFilter) => {
-            let severityList = [];
-            for (const [severity, selected] of Object.entries(severityFilter)) {
-                if (selected) {
-                    severityList.push(severity);
+        (selectedReportId, severityFilter, messageFilter) => {
+            //we need to do this check because selectedReportId can be outdated when switching between the different place we have this component
+            if (reportTreeData.current[selectedReportId] != null) {
+                let severityList = [];
+                for (const [severity, selected] of Object.entries(severityFilter)) {
+                    if (selected) {
+                        severityList.push(severity);
+                    }
                 }
-            }
-
-            if (severityList.length === 0) {
-                // no severity => there is no log to fetch, no need to request the back-end
-                setSelectedReportId(reportId);
-                setLogs([]);
-                setHighlightedReportId(null);
-                return;
-            }
-
-            fetchLogs(reportId, severityList, reportTreeData.current[reportId].type).then((logs) => {
-                if (logs !== undefined) {
-                    setLogs(logs);
-                    setSelectedReportId(reportId);
+                if (severityList.length === 0) {
+                    setLogs([]);
                     setHighlightedReportId(null);
+                    return;
                 }
-            });
+                fetchReportLogs(
+                    selectedReportId,
+                    severityList,
+                    reportTreeData.current[selectedReportId].type,
+                    messageFilter
+                ).then((reportLogs) => {
+                    setLogs(reportLogs);
+                });
+            }
         },
-        [fetchLogs]
+        [fetchReportLogs]
     );
+
+    useEffect(() => {
+        refreshLogsOnSelectedReport(selectedReportId, severityFilter, messageFilter);
+    }, [messageFilter, severityFilter, selectedReportId, refreshLogsOnSelectedReport]);
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
         treeView.current = initializeTreeDataAndComponent(reportTree);
-        setSelectedReportId(report.id);
         setExpandedTreeReports([report.id]);
-        setLogs(mapReportLog(report, reportTree.severities));
-        setSeverityFilter(getDefaultSeverityFilter(reportTree.severities));
-    }, [report, initializeTreeDataAndComponent, refreshLogsOnSelectedReport]);
+        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
+    }, [report, initializeTreeDataAndComponent, dispatch]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
@@ -98,15 +105,10 @@ export default function ReportViewer({ report, reportType }) {
 
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
-            const updatedSeverityFilter = getDefaultSeverityFilter(reportTreeData.current[reportId].severities);
-            setSeverityFilter(updatedSeverityFilter);
-            refreshLogsOnSelectedReport(reportId, updatedSeverityFilter);
+            dispatch(
+                setReportFilters(reportId, '', getDefaultSeverityFilter(reportTreeData.current[reportId].severities))
+            );
         }
-    };
-
-    const onSeverityChange = (newSeverityFilter) => {
-        refreshLogsOnSelectedReport(selectedReportId, newSeverityFilter);
-        setSeverityFilter(newSeverityFilter);
     };
 
     // The MUI TreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
@@ -163,12 +165,7 @@ export default function ReportViewer({ report, reportType }) {
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     <WaitingLoader loading={isLogLoading} message={'loadingReport'}>
-                        <LogTable
-                            logs={logs}
-                            onRowClick={onLogRowClick}
-                            selectedSeverity={severityFilter}
-                            setSelectedSeverity={onSeverityChange}
-                        />
+                        <LogTable logs={logs} onRowClick={onLogRowClick} severityFilter={severityFilter} />
                     </WaitingLoader>
                 </Grid>
             </Grid>

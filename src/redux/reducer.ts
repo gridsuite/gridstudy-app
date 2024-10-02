@@ -54,6 +54,8 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
+    CUSTOM_COLUMNS_DEFINITIONS,
+    CustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -176,11 +178,14 @@ import {
     SpreadsheetFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
+    STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    StoreNetworkAreaDiagramNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
     TABLE_SORT,
+    REPORT_FILTER,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
@@ -188,6 +193,7 @@ import {
     UpdateEquipmentsAction,
     USE_NAME,
     UseNameAction,
+    ReportFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -196,7 +202,11 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON, TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -271,6 +281,9 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { CustomEntry } from 'types/custom-columns.types';
+import { SeverityFilter } from '../types/report.type';
+import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -381,6 +394,13 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
+export type NadNodeMovement = {
+    nadIdentifier: string;
+    equipmentId: string;
+    x: number;
+    y: number;
+};
+
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: string | null;
@@ -389,6 +409,10 @@ export type SelectionForCopy = {
 };
 
 export type Actions = AppActions | AuthenticationActions;
+
+export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
+export type TablesDefinitionsKeys = keyof TablesDefinitionsType;
+export type TablesDefinitionsNames = TablesDefinitionsType[TablesDefinitionsKeys]['name'];
 
 export interface AppState extends CommonStoreState {
     signInCallbackError: Error | null;
@@ -412,6 +436,9 @@ export interface AppState extends CommonStoreState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
+    reportMessageFilter: string;
+    reportSeverityFilter: SeverityFilter;
+    reportSelectedReportId: string | null;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -419,6 +446,7 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
+    nadNodeMovements: NadNodeMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -436,6 +464,7 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -539,6 +568,7 @@ const initialState: AppState = {
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
+    nadNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -563,6 +593,9 @@ const initialState: AppState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     limitReductionModified: false,
+    reportMessageFilter: '',
+    reportSeverityFilter: getDefaultSeverityFilter([]),
+    reportSelectedReportId: null,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -695,6 +728,11 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
+
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
+        {} as AppState['allCustomColumnsDefinitions']
+    ),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1370,6 +1408,27 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
+            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadNodeMovements.push({
+                    nadIdentifier: action.nadIdentifier,
+                    equipmentId: action.equipmentId,
+                    x: action.x,
+                    y: action.y,
+                });
+            } else {
+                correspondingMovement[0].x = action.x;
+                correspondingMovement[0].y = action.y;
+            }
+        }
+    );
+
+    builder.addCase(
         NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS,
         (state, action: NetworkAreaDiagramNbVoltageLevelsAction) => {
             state.networkAreaDiagramNbVoltageLevels = action.nbVoltageLevels;
@@ -1543,6 +1602,21 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
+        state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+    });
+    builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
+        if (action.messageFilter !== undefined) {
+            state.reportMessageFilter = action.messageFilter;
+        }
+        if (action.severityFilter !== undefined) {
+            state.reportSeverityFilter = action.severityFilter;
+        }
+        if (action.reportId !== undefined) {
+            state.reportSelectedReportId = action.reportId;
+        }
     });
 });
 
