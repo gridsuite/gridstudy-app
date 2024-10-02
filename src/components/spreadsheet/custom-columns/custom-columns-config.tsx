@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Badge, Button } from '@mui/material';
 import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { TABLES_NAMES } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
-import { useStateBoolean, useStateNumber } from '@gridsuite/commons-ui';
+import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
 
 export type CustomColumnsConfigProps = {
@@ -20,15 +19,10 @@ export type CustomColumnsConfigProps = {
 };
 
 export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
-    const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]].columns
     );
-
-    useEffect(() => {
-        numberColumns.setValue(customColumnsDefinitions.length);
-    }, [customColumnsDefinitions.length, numberColumns]);
 
     return (
         <>
@@ -40,7 +34,7 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
                         vertical: 'top',
                         horizontal: 'left',
                     }}
-                    badgeContent={numberColumns.value}
+                    badgeContent={customColumnsDefinitions.length}
                 >
                     <CalculateIcon />
                 </Badge>
