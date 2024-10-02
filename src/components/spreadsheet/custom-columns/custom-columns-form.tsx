@@ -32,7 +32,12 @@ export const customColumnFormSchema = yup.object().shape({
                 [FORMULA]: yup.string().required(),
             })
         )
-        .required(),
+        .required()
+        .test('unique-column-names', 'Column names must be unique', function (columns) {
+            const columnNames = columns.map((col) => col[COLUMN_NAME]);
+            const uniqueNames = new Set(columnNames);
+            return uniqueNames.size === columnNames.length; // Checks that each name is unique
+        }),
 });
 
 export type CustomColumnForm = yup.InferType<typeof customColumnFormSchema>;

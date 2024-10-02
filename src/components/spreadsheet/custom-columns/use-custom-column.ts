@@ -8,14 +8,12 @@ import { useMemo, useCallback } from 'react';
 import { AppState } from 'redux/reducer';
 import { create, all, bignumber } from 'mathjs';
 import { useSelector } from 'react-redux';
-import { defaultNumericFilterConfig, TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
+import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
-import { FilterParams } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { createDependencyGraph, topologicalSort } from './custom-columns-utils';
-import { PropertiesCellRenderer } from '../utils/cell-renderers';
 
 export function useCustomColumn(tabIndex: number, gridRef: any) {
     const customColumnsDefinitions = useSelector(
@@ -113,20 +111,15 @@ export function useCustomColumn(tabIndex: number, gridRef: any) {
             return makeAgGridCustomHeaderColumn({
                 headerName: colWithFormula.name,
                 field: colWithFormula.name,
-                numeric: true,
-                cellRenderer: PropertiesCellRenderer,
                 sortProps: {
                     onSortChanged,
                     sortConfig,
                 },
-
-                filterParams: { ...defaultNumericFilterConfig().customFilterParams } as FilterParams,
                 valueGetter: (params) => {
                     const allValues = calcAllColumnValues(params.data);
                     return allValues.get(colWithFormula.name);
                 },
                 editable: false,
-                cellDataType: true,
                 suppressMovable: true,
             });
         });

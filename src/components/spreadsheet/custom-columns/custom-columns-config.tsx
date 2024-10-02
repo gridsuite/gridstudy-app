@@ -23,12 +23,12 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
     const numberColumns = useStateNumber(0);
     const dialogOpen = useStateBoolean(false);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]]
+        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]].columns
     );
 
     useEffect(() => {
-        numberColumns.setValue(customColumnsDefinitions.columns.length);
-    }, [customColumnsDefinitions.columns.length, numberColumns]);
+        numberColumns.setValue(customColumnsDefinitions.length);
+    }, [customColumnsDefinitions.length, numberColumns]);
 
     return (
         <>
@@ -48,7 +48,7 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
             <CustomColumnDialog
                 indexTab={indexTab}
                 open={dialogOpen}
-                customColumnsDefinitions={customColumnsDefinitions.columns}
+                customColumnsDefinitions={customColumnsDefinitions}
             />
         </>
     );
