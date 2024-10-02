@@ -16,6 +16,7 @@ export type ReportSeverity = {
     colorName: string;
     colorHexCode: string;
     displayedByDefault: boolean;
+    displayedByDefaultForReportContainer: boolean;
 };
 
 type ReportTypeKeys = keyof typeof REPORT_TYPE;
