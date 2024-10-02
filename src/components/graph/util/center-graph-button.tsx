@@ -12,7 +12,7 @@ import { ControlButton, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 
-const CenterGraphButton = ({ currentNode }) => {
+const CenterGraphButton = ({ currentNode }: { currentNode: any }) => {
     const { setCenter, getZoom } = useReactFlow();
     const intl = useIntl();
 
