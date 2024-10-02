@@ -54,9 +54,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [isCsvExportSuccessful, setIsCsvExportSuccessful] = useState(false);
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
     const [page, setPage] = useState(0);
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,

@@ -40,9 +40,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
 
     const securityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]);
 
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
     const nonEvacuatedEnergyStatus = useSelector(
         (state) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
     );

@@ -43,9 +43,7 @@ const SensitivityAnalysisResult = ({
 }) => {
     const gridRef = useRef(null);
     const intl = useIntl();
-    const sensitivityAnalysisStatus = useSelector(
-        (state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]
-    );
+    const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
     const { onGridColumnsChanged } = props;
 
     const messages = useIntlResultStatusMessages(intl, true);
