@@ -28,7 +28,7 @@ export enum FILTER_NUMBER_COMPARATORS {
     GREATER_THAN = 'greaterThan',
 }
 
-type FilterParams = {
+export type FilterParams = {
     filterDataType?: string;
     isDuration?: boolean;
     filterComparators?: string[];

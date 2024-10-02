@@ -27,6 +27,13 @@ export function getDefaultSeverityList(): string[] {
         .map((s) => s.name);
 }
 
+export function getContainerDefaultSeverityList(): string[] {
+    // return name list like ['WARN', 'INFO']
+    return Object.values(REPORT_SEVERITY)
+        .filter((s) => s.displayedByDefaultForReportContainer)
+        .map((s) => s.name);
+}
+
 export function getHighestSeverity(severityList: string[]) {
     // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
     // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
