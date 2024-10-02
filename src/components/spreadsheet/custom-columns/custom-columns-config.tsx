@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, Button } from '@mui/material';
+import { Badge, IconButton } from '@mui/material';
 import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { TABLES_NAMES } from '../utils/config-tables';
@@ -26,8 +26,10 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
 
     return (
         <>
-            <Button color="inherit" onClick={dialogOpen.setTrue}>
+            <span>
                 <FormattedMessage id="spreadsheet/custom_column/main_button" />
+            </span>
+            <IconButton aria-label="dialog" onClick={dialogOpen.setTrue}>
                 <Badge
                     color="secondary"
                     anchorOrigin={{
@@ -38,7 +40,8 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
                 >
                     <CalculateIcon />
                 </Badge>
-            </Button>
+            </IconButton>
+
             <CustomColumnDialog
                 indexTab={indexTab}
                 open={dialogOpen}
