@@ -532,7 +532,7 @@
     "LossFactor": "Facteur de perte",
     "StopComputation": "Arrêter le calcul",
     "ColumnsList": "Liste des colonnes",
-    "LabelSelectList": "Configurer colonnes",
+    "LabelSelectList": "Afficher / masquer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 

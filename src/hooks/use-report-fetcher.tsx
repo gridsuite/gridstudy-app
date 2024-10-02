@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Log, Report, ReportLog, ReportType } from '../types/report.type';
-import { getDefaultSeverityList } from '../utils/report-severity.utils';
+import { getContainerDefaultSeverityList } from '../utils/report-severity.utils';
 import {
     COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
     GLOBAL_REPORT_NODE_LABEL,
@@ -105,7 +105,7 @@ export const useReportFetcher = (
                         studyUuid,
                         currentNode.id,
                         nodeOnlyReport ?? true,
-                        getDefaultSeverityList(),
+                        getContainerDefaultSeverityList(),
                         computingAndNetworkModificationType
                     )
                 );
