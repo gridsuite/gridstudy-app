@@ -127,7 +127,8 @@ const styles = {
     },
 };
 
-const NetworkModificationNode = (props: any) => { //TODO add types
+//TODO(jamal) add types
+const NetworkModificationNode = (props: any) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
