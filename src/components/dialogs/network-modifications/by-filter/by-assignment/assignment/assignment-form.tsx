@@ -62,7 +62,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
     }, [predefinedProperties]);
 
     const predefinedPropertiesValues = useMemo(() => {
-        return predefinedProperties?.[watchPropertyName]?.sort(comparatorStrIgnoreCase) ?? [];
+        return [...(predefinedProperties?.[watchPropertyName] ?? [])].sort(comparatorStrIgnoreCase);
     }, [watchPropertyName, predefinedProperties]);
 
     const options = useMemo(() => {
