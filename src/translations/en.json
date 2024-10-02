@@ -530,7 +530,7 @@
     "LossFactor": "Loss Factor",
     "StopComputation": "Stop computation",
     "ColumnsList": "Column list",
-    "LabelSelectList": "Edit columns",
+    "LabelSelectList": "Show / hide columns",
     "CheckAll": "Select all / none",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
 
