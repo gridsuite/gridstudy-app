@@ -15,6 +15,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'cornflowerblue',
         colorHexCode: '#6495ED',
         displayedByDefault: false,
+        displayedByDefaultForReportContainer: false,
     },
     TRACE: {
         name: 'TRACE',
@@ -22,6 +23,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'SlateGray',
         colorHexCode: '#708090',
         displayedByDefault: false,
+        displayedByDefaultForReportContainer: true,
     },
     DEBUG: {
         name: 'DEBUG',
@@ -29,6 +31,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'DarkCyan',
         colorHexCode: '#008B8B',
         displayedByDefault: false,
+        displayedByDefaultForReportContainer: true,
     },
     INFO: {
         name: 'INFO',
@@ -36,6 +39,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'mediumseagreen',
         colorHexCode: '#3CB371',
         displayedByDefault: true,
+        displayedByDefaultForReportContainer: true,
     },
     WARN: {
         name: 'WARN',
@@ -43,6 +47,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'orange',
         colorHexCode: '#FFA500',
         displayedByDefault: true,
+        displayedByDefaultForReportContainer: true,
     },
     ERROR: {
         name: 'ERROR',
@@ -50,6 +55,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'crimson',
         colorHexCode: '#DC143C',
         displayedByDefault: true,
+        displayedByDefaultForReportContainer: true,
     },
     FATAL: {
         name: 'FATAL',
@@ -57,6 +63,7 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
         colorName: 'mediumorchid',
         colorHexCode: '#BA55D3',
         displayedByDefault: true,
+        displayedByDefaultForReportContainer: true,
     },
 };
 

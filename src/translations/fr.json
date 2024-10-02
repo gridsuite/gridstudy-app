@@ -532,7 +532,7 @@
     "LossFactor": "Facteur de perte",
     "StopComputation": "Arrêter le calcul",
     "ColumnsList": "Liste des colonnes",
-    "LabelSelectList": "Configurer colonnes",
+    "LabelSelectList": "Afficher / masquer colonnes",
     "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
@@ -1247,7 +1247,7 @@
     "ConnectedT3WSide1": "Connecté 1",
     "ConnectedT3WSide2": "Connecté 2",
     "ConnectedT3WSide3": "Connecté 3",
-    "disconnected": "Disconnecté",
+    "disconnected": "Déconnecté",
     "converterStationId": "ID de la station",
     "converterStationName": "Nom de la station",
     "converterStation1": "Station 1",
