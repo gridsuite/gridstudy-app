@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
@@ -67,6 +67,8 @@ import {
 import { mergeSx } from 'components/utils/functions';
 import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
+import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
+import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -74,6 +76,10 @@ export const useGetNonEvacuatedEnergyParameters = () => {
 
     const { snackError } = useSnackMessage();
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
+
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const nonEvacuatedEnergyAvailabilityRef = useRef(nonEvacuatedEnergyAvailability);
+    nonEvacuatedEnergyAvailabilityRef.current = nonEvacuatedEnergyAvailability;
 
     const fetchNonEvacuatedEnergyParameters = useCallback(
         (studyUuid) => {
@@ -90,14 +96,18 @@ export const useGetNonEvacuatedEnergyParameters = () => {
     );
 
     useEffect(() => {
-        if (studyUuid) {
+        if (studyUuid && nonEvacuatedEnergyAvailability === OptionalServicesStatus.Up) {
             fetchNonEvacuatedEnergyParameters(studyUuid);
         }
-    }, [studyUuid, fetchNonEvacuatedEnergyParameters]);
+    }, [nonEvacuatedEnergyAvailability, studyUuid, fetchNonEvacuatedEnergyParameters]);
 
     // fetch the parameter if NON_EVACUATED_ENERGY_ANALYSIS  notification type is received.
     useEffect(() => {
-        if (studyUuid && isComputationParametersUpdated(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)) {
+        if (
+            studyUuid &&
+            nonEvacuatedEnergyAvailabilityRef.current === OptionalServicesStatus.Up &&
+            isComputationParametersUpdated(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)
+        ) {
             fetchNonEvacuatedEnergyParameters(studyUuid);
         }
     }, [studyUuid, fetchNonEvacuatedEnergyParameters, studyUpdated]);
