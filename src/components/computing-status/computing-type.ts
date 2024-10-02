@@ -20,3 +20,5 @@ export enum ComputingType {
 export const isValidComputingType = (value: string | undefined): boolean => {
     return Object.values(ComputingType).includes(value as ComputingType);
 };
+
+export default ComputingType;
