@@ -9,6 +9,47 @@ import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
 import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
+import { UUID } from 'crypto';
+
+export enum NodeType {
+    ROOT = 'ROOT',
+    NETWORK_MODIFICATION = 'NETWORK_MODIFICATION',
+}
+
+export interface AbstractNode {
+    id: UUID;
+    name: string;
+    children: AbstractNode[];
+    childrenIds: UUID[];
+    description?: string;
+    readOnly?: boolean;
+    reportUuid?: UUID;
+    type: NodeType;
+}
+export interface NodeBuildStatus {
+    globalBuildStatus: BUILD_STATUS;
+    localBuildStatus: BUILD_STATUS;
+}
+
+export interface RootNode extends AbstractNode {
+    studyId: UUID;
+}
+
+export interface NetworkModificationNode extends AbstractNode {
+    modificationGroupUuid?: UUID;
+    variantId?: string;
+    modificationsToExclude?: UUID[];
+    loadFlowResultUuid?: UUID;
+    shortCircuitAnalysisResultUuid?: UUID;
+    oneBusShortCircuitAnalysisResultUuid?: UUID;
+    voltageInitResultUuid?: UUID;
+    securityAnalysisResultUuid?: UUID;
+    sensitivityAnalysisResultUuid?: UUID;
+    nonEvacuatedEnergyResultUuid?: UUID;
+    dynamicSimulationResultUuid?: UUID;
+    stateEstimationResultUuid?: UUID;
+    nodeBuildStatus?: NodeBuildStatus;
+}
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
@@ -176,7 +217,7 @@ export default class NetworkModificationTreeModel {
         this.treeNodes = [...this.treeNodes];
     }
 
-    setTreeElements(elements) {
+    setTreeElements(elements: RootNode | NetworkModificationNode) {
         // handle root node
         this.treeNodes.push(convertNodetoReactFlowModelNode(elements, undefined));
         // handle root children
@@ -197,7 +238,7 @@ export default class NetworkModificationTreeModel {
             this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
     }
 
-    setCaseName(newCaseName) {
+    setCaseName(newCaseName: string) {
         if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
             this.treeNodes[0].data = {
                 ...this.treeNodes[0].data,
