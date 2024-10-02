@@ -1132,7 +1132,7 @@ const TableWrapper = (props) => {
                         />
                     </Grid>
                     {developerMode && (
-                        <Grid item>
+                        <Grid item sx={{ marginLeft: '15px' }}>
                             <CustomColumnsConfig indexTab={tabIndex} />
                         </Grid>
                     )}
