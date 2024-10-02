@@ -167,7 +167,7 @@ const countryEnumFilterConfig = {
     isCountry: true,
 };
 
-const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
+export const defaultNumericFilterConfig = (applyFluxConvention, getFluxConvention) => {
     return {
         filter: 'agNumberColumnFilter',
         agGridFilterParams: {

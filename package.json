@@ -26,6 +26,7 @@
         "eventemitter3": "^5.0.1",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",
+        "mathjs": "^13.1.1",
         "mjolnir.js": "^2.7.1",
         "mui-nested-menu": "^3.3.0",
         "notistack": "^3.0.1",
