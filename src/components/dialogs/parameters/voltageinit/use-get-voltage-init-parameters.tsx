@@ -6,7 +6,7 @@
  */
 
 import { VoltageInitParam } from './voltage-init-utils';
-import { Dispatch, SetStateAction, useCallback, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -27,6 +27,8 @@ export const useGetVoltageInitParameters = (): [
     const [voltageInitParams, setVoltageInitParams] = useState<VoltageInitParam | null>(null);
 
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
+    const voltageInitAvailabilityRef = useRef(voltageInitAvailability);
+    voltageInitAvailabilityRef.current = voltageInitAvailability;
 
     const fetchVoltageInitStudyParameters = useCallback(
         (studyUuid: UUID) => {
@@ -53,12 +55,12 @@ export const useGetVoltageInitParameters = (): [
     useEffect(() => {
         if (
             studyUuid &&
-            voltageInitAvailability === OptionalServicesStatus.Up &&
+            voltageInitAvailabilityRef.current === OptionalServicesStatus.Up &&
             isComputationParametersUpdated(ComputingType.VOLTAGE_INITIALIZATION, studyUpdated)
         ) {
             fetchVoltageInitStudyParameters(studyUuid);
         }
-    }, [studyUuid, voltageInitAvailability, fetchVoltageInitStudyParameters, studyUpdated]);
+    }, [studyUuid, fetchVoltageInitStudyParameters, studyUpdated]);
 
     return [voltageInitParams, setVoltageInitParams];
 };
