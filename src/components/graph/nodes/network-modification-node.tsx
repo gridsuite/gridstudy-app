@@ -7,7 +7,7 @@
 
 import React from 'react';
 import Button from '@mui/material/Button';
-import { Handle } from 'react-flow-renderer';
+import { Handle, Position } from 'react-flow-renderer';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
@@ -16,6 +16,8 @@ import { CopyType } from '../../network-modification-tree-pane';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { Box } from '@mui/system';
+import { Theme } from '@mui/material';
+import { AppState } from 'redux/reducer';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
@@ -41,7 +43,7 @@ const bottomBuildBanner = {
 };
 
 const styles = {
-    networkModificationSelected: (theme) => ({
+    networkModificationSelected: (theme: Theme) => ({
         position: 'relative',
         variant: 'contained',
         background: theme.node.background,
@@ -59,7 +61,7 @@ const styles = {
             theme.node.border +
             ' 0px 0px 5px 1px',
     }),
-    networkModification: (theme) => ({
+    networkModification: (theme: Theme) => ({
         background: theme.palette.text.secondary,
         textTransform: 'none',
         color: theme.palette.primary.contrastText,
@@ -117,7 +119,7 @@ const styles = {
         background: NOT_BUILT_NODE_BANNER_COLOR,
     },
 
-    margin: (theme) => ({
+    margin: (theme: Theme) => ({
         marginLeft: theme.spacing(1.25),
     }),
     tooltip: {
@@ -125,9 +127,9 @@ const styles = {
     },
 };
 
-const NetworkModificationNode = (props) => {
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const selectionForCopy = useSelector((state) => state.selectionForCopy);
+const NetworkModificationNode = (props: any) => { //TODO add types
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
     const isSelectedNode = () => {
         // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
@@ -146,7 +148,7 @@ const NetworkModificationNode = (props) => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
     };
 
-    function getStyleForBanner(buildStatus) {
+    function getStyleForBanner(buildStatus: BUILD_STATUS) {
         switch (buildStatus) {
             case BUILD_STATUS.BUILT:
                 return styles.buildBannerOK;
@@ -159,7 +161,7 @@ const NetworkModificationNode = (props) => {
         }
     }
 
-    function getStyleForBottomBanner(buildStatus) {
+    function getStyleForBottomBanner(buildStatus: BUILD_STATUS) {
         switch (buildStatus) {
             case BUILD_STATUS.BUILT:
                 return styles.bottomBuildBannerOK;
@@ -174,8 +176,8 @@ const NetworkModificationNode = (props) => {
 
     return (
         <>
-            <Handle type="source" position="bottom" style={{ background: '#555' }} isConnectable={false} />
-            <Handle type="target" position="top" style={{ background: '#555' }} isConnectable={false} />
+            <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />
+            <Handle type="target" position={Position.Top} style={{ background: '#555' }} isConnectable={false} />
             <Button
                 style={{
                     opacity: getNodeOpacity(),
