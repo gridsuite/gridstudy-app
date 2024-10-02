@@ -1731,7 +1731,7 @@ function unravelSubTree(treeModel: NetworkModificationTreeModel, subtreeParentId
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
+        treeModel.addChild(node, subtreeParentId as UUID, NodeInsertModes.After, undefined);
 
         // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
         if (node.children.length > 0) {

@@ -10,6 +10,7 @@ import { convertNodetoReactFlowModelNode } from './util/model-functions';
 import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
+import { CurrentTreeNode } from 'redux/reducer';
 
 export enum NodeType {
     ROOT = 'ROOT',
@@ -53,8 +54,8 @@ export interface NetworkModificationNode extends AbstractNode {
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
-const countNodes = (nodes, parentId) => {
-    return nodes.reduce((acc, n) => {
+const countNodes = (nodes: any[], parentId: any) => {
+    return nodes.reduce((acc: number, n: any) => {
         if (n.data.parentNodeUuid === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
         }
@@ -63,8 +64,8 @@ const countNodes = (nodes, parentId) => {
 };
 
 export default class NetworkModificationTreeModel {
-    treeNodes = [];
-    treeEdges = [];
+    treeNodes: any[] = [];
+    treeEdges: any[] = [];
 
     isAnyNodeBuilding = false;
 
@@ -73,7 +74,7 @@ export default class NetworkModificationTreeModel {
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
 
-    addChild(newNode, parentId, insertMode, referenceNodeId) {
+    addChild(newNode: any, parentId: UUID, insertMode: NodeInsertModes | undefined, referenceNodeId: UUID | undefined) {
         // we have to keep a precise order of nodes in the array to avoid gettings children
         // nodes before their parents when building graph in dagre library which have uncontrolled results
         // We also need to do this to keep a correct order when inserting nodes and not loose the user.
@@ -125,7 +126,7 @@ export default class NetworkModificationTreeModel {
                 );
             });
             // create new edges between node and its children
-            newNode.childrenIds.forEach((childId) => {
+            newNode.childrenIds.forEach((childId: UUID) => {
                 filteredEdges.push({
                     id: 'e' + newNode.id + '-' + childId,
                     source: newNode.id,
@@ -151,16 +152,16 @@ export default class NetworkModificationTreeModel {
 
         // Add children of this node recursively
         if (newNode.children) {
-            newNode.children.forEach((child) => {
-                this.addChild(child, newNode.id);
+            newNode.children.forEach((child: UUID) => {
+                this.addChild(child, newNode.id, undefined, undefined);
             });
         }
     }
 
     // Remove nodes AND reparent their children
     // TODO: support the case where children are deleted too (no reparenting)
-    removeNodes(deletedNodes) {
-        deletedNodes.forEach((nodeId) => {
+    removeNodes(deletedNodes: any[]) {
+        deletedNodes.forEach((nodeId: any) => {
             // get edges which have the deleted node as source or target
             const edges = this.treeEdges.filter((edge) => edge.source === nodeId || edge.target === nodeId);
             // From the edges array
@@ -201,9 +202,9 @@ export default class NetworkModificationTreeModel {
         });
     }
 
-    updateNodes(updatedNodes) {
-        updatedNodes.forEach((node) => {
-            const indexModifiedNode = this.treeNodes.findIndex((othernode) => othernode.id === node.id);
+    updateNodes(updatedNodes: any[]) {
+        updatedNodes.forEach((node: any) => {
+            const indexModifiedNode = this.treeNodes.findIndex((othernode: any) => othernode.id === node.id);
             if (indexModifiedNode !== -1) {
                 this.treeNodes[indexModifiedNode].data = {
                     ...this.treeNodes[indexModifiedNode].data,
@@ -222,7 +223,7 @@ export default class NetworkModificationTreeModel {
         this.treeNodes.push(convertNodetoReactFlowModelNode(elements, undefined));
         // handle root children
         elements.children.forEach((child) => {
-            this.addChild(child, elements.id);
+            this.addChild(child, elements.id, undefined, undefined);
         });
         this.setBuildingStatus();
     }
