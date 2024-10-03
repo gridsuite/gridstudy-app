@@ -16,6 +16,7 @@ export type ReportSeverity = {
     colorName: string;
     colorHexCode: string;
     displayedByDefault: boolean;
+    displayedByDefaultForReportContainer: boolean;
 };
 
 type ReportTypeKeys = keyof typeof REPORT_TYPE;
@@ -39,5 +40,11 @@ export type Report = {
 export type Log = {
     message: string;
     severity: ReportSeverity;
+    parentId: string;
+};
+
+export type ReportLog = {
+    message: string;
+    severity: string[];
     parentId: string;
 };

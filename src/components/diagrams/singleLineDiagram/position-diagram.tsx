@@ -52,8 +52,8 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
 
     // using many useState() calls with literal values only to
     // easily avoid recomputing stuff when updating with the same values
-    const [serverHeight, setServerHeight] = useState(0);
-    const [serverWidth, setServerWidth] = useState(0);
+    const [serverHeight, setServerHeight] = useState<number>(0);
+    const [serverWidth, setServerWidth] = useState<number>(0);
 
     useEffect(() => {
         if (props.svgUrl) {

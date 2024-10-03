@@ -5,33 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Log, Report, ReportSeverity } from '../types/report.type';
+import { Log, ReportLog, ReportSeverity } from '../types/report.type';
 import { REPORT_SEVERITY } from '../constants/report.constant';
 
-export const mapReportLog = (report: Report, severities: string[]) => {
+export const mapReportLogs = (reportLogs: ReportLog[]) => {
     const formattedLogs: Log[] = [];
-    formatReportLog(report, severities, formattedLogs);
+    reportLogs.forEach((reportLog) => {
+        formatLog(reportLog, formattedLogs);
+    });
     return formattedLogs;
 };
 
-const formatReportLog = (report: Report, severities: string[], formattedLogs: Log[]) => {
-    const highestSeverity = mapSeverity(report.severities ?? [REPORT_SEVERITY.UNKNOWN.name]);
-    // We display a report line in the "log" view for both
-    // - a leaf (no sub-report)
-    // - and a container (have sub-reports), if its highest severity belongs to the severity filter (or unknown)
-    if (
-        report.parentId != null &&
-        (report.subReports.length === 0 ||
-            severities.includes(highestSeverity.name) ||
-            highestSeverity === REPORT_SEVERITY.UNKNOWN)
-    ) {
-        formattedLogs.push({
-            message: report.message,
-            severity: highestSeverity,
-            parentId: report.parentId,
-        });
-    }
-    report.subReports.forEach((subReport: Report) => formatReportLog(subReport, severities, formattedLogs));
+const formatLog = (reportLog: ReportLog, formattedLogs: Log[]) => {
+    const highestSeverity = mapSeverity(reportLog.severity ?? [REPORT_SEVERITY.UNKNOWN.name]);
+    formattedLogs.push({
+        message: reportLog.message,
+        severity: highestSeverity,
+        parentId: reportLog.parentId,
+    });
 };
 
 const mapSeverity = (severities: string[]) => {

@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
@@ -21,6 +21,9 @@ import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
+import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
+import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
+import { getNadIdentifier } from '../diagram-utils.js';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -117,18 +120,35 @@ const dynamicCssRules: CSS_RULE[] = [
 ];
 
 type NetworkAreaDiagramContentProps = {
-    svgType: string;
-    svg: string;
-    loadingState: boolean;
-    diagramSizeSetter: (id: string, type: string, width: number, height: number) => void;
-    diagramId: string;
+    readonly svgType: string;
+    readonly svg: string;
+    readonly loadingState: boolean;
+    readonly diagramSizeSetter: (id: string, type: string, width: number, height: number) => void;
+    readonly diagramId: string;
 };
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter } = props;
+    const dispatch = useDispatch();
     const svgRef = useRef();
+
     const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
+    const diagramStates = useSelector((state: AppState) => state.diagramStates);
+    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
+    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+
+    const nadIdentifier = useMemo(() => {
+        return getNadIdentifier(diagramStates, networkAreaDiagramDepth, initNadWithGeoData);
+    }, [diagramStates, networkAreaDiagramDepth, initNadWithGeoData]);
+
+    const onMoveNodeCallback = useCallback(
+        (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
+            dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+        },
+        [dispatch, nadIdentifier]
+    );
 
     /**
      * DIAGRAM CONTENT BUILDING
@@ -143,7 +163,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
-                null,
+                onMoveNodeCallback,
                 null,
                 null,
                 true,
@@ -155,7 +175,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // If a previous diagram was loaded and the diagram's size remained the same, we keep
-            // the user's zoom and scoll state for the current render.
+            // the user's zoom and scroll state for the current render.
             if (
                 diagramViewerRef.current &&
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
@@ -167,9 +187,30 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
 
+            // Repositioning the previously moved nodes
+            if (!props.loadingState) {
+                const correspondingMovements = nadNodeMovements.filter(
+                    (movement) => movement.nadIdentifier === nadIdentifier
+                );
+                if (correspondingMovements.length > 0) {
+                    correspondingMovements.forEach((movement) => {
+                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                    });
+                }
+            }
             diagramViewerRef.current = diagramViewer;
         }
-    }, [props.diagramId, props.svgType, props.svg, currentNode, props.loadingState, diagramSizeSetter]);
+    }, [
+        props.diagramId,
+        props.svgType,
+        props.svg,
+        currentNode,
+        props.loadingState,
+        diagramSizeSetter,
+        onMoveNodeCallback,
+        nadIdentifier,
+        nadNodeMovements,
+    ]);
 
     /**
      * RENDER
