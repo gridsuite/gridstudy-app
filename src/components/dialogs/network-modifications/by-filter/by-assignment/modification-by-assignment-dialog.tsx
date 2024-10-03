@@ -111,7 +111,7 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 fullWidth
                 onClear={clear}
                 onSave={onSubmit}
-                aria-labelledby="dialog-modify-by-simple-modification"
+                aria-labelledby="dialog-modify-by-assignment-modification"
                 titleId="ModifyByAssignment"
                 open={open}
                 maxWidth={'xl'}
