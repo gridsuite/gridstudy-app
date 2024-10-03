@@ -6,6 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
+import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
 import { getAvailableComponentLibraries } from '../../../services/study';
 import {
@@ -36,7 +37,7 @@ export const useGetAvailableComponentLibraries = (user) => {
 
 export const SingleLineDiagramParameters = ({ componentLibraries }) => {
     const componentLibsRenderCache = useMemo(
-        () => Array.from(componentLibraries).reduce((prev, val, idx) => ({ ...prev, [val]: val }), {}),
+        () => Object.fromEntries(componentLibraries.filter(Boolean).map((libLabel) => [libLabel, libLabel])),
         [componentLibraries]
     );
 
@@ -80,4 +81,8 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
             </Grid>
         </>
     );
+};
+
+SingleLineDiagramParameters.propTypes = {
+    componentLibraries: PropTypes.arrayOf(PropTypes.string),
 };
