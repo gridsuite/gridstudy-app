@@ -5,15 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-
-interface Filter {
-    id: string;
-    name: string;
-    specificMetadata: {
-        type?: string;
-    };
-}
+import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { Filter } from '../commons/by-filter.type';
 
 export interface ByFilterDeletionEditData {
     uuid: string;
