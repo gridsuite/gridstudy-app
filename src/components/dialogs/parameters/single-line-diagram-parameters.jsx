@@ -36,7 +36,11 @@ export const useGetAvailableComponentLibraries = (user) => {
 
 export const SingleLineDiagramParameters = ({ componentLibraries }) => {
     const componentLibsRenderCache = useMemo(
-        () => Array.from(componentLibraries).reduce((prev, val, idx) => ({ ...prev, [val]: val }), {}),
+        () =>
+            Array.from(componentLibraries).reduce((prev, val) => {
+                prev[val] = val;
+                return prev;
+            }, {}),
         [componentLibraries]
     );
 
