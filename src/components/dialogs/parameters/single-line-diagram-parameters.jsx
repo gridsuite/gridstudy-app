@@ -26,7 +26,9 @@ export const useGetAvailableComponentLibraries = (user) => {
     useEffect(() => {
         if (user !== null) {
             getAvailableComponentLibraries().then((libraries) => {
-                setComponentLibraries(libraries);
+                if (libraries != null) {
+                    setComponentLibraries(libraries);
+                }
             });
         }
     }, [user]);
