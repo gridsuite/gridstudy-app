@@ -7,16 +7,16 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { FILTERS, ID, NAME, SPECIFIC_METADATA, TYPE } from '../../../utils/field-constants';
+import { FILTERS, ID, NAME, TYPE } from '../../../../utils/field-constants';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { FunctionComponent, useCallback, useEffect } from 'react';
-import ModificationDialog from '../../commons/modificationDialog';
+import ModificationDialog from '../../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
-import { deleteEquipmentByFilter } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
+import { deleteEquipmentByFilter } from '../../../../../services/study/network-modifications';
+import { FetchStatus } from '../../../../../services/utils';
 import ByFilterDeletionForm from './by-filter-deletion-form';
 import {
     ByFilterDeletionDialogProps,
@@ -34,9 +34,6 @@ const formSchema = yup
                 yup.object().shape({
                     [ID]: yup.string().required(),
                     [NAME]: yup.string().required(),
-                    [SPECIFIC_METADATA]: yup.object().shape({
-                        [TYPE]: yup.string(),
-                    }),
                 })
             )
             .required()

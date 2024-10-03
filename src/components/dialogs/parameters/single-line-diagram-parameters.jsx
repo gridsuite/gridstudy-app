@@ -6,6 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
+import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
 import { getAvailableComponentLibraries } from '../../../services/study';
 import {
@@ -82,4 +83,8 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
             </Grid>
         </>
     );
+};
+
+SingleLineDiagramParameters.propTypes = {
+    componentLibraries: PropTypes.arrayOf(PropTypes.string),
 };
