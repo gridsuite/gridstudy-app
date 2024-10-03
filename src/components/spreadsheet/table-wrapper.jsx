@@ -21,7 +21,7 @@ import {
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
     DefaultCellRenderer,
@@ -78,6 +78,8 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useCustomColumn } from './custom-columns/use-custom-column';
+import CustomColumnsConfig from './custom-columns/custom-columns-config';
 
 const useEditBuffer = () => {
     //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -137,12 +139,15 @@ const TableWrapper = (props) => {
     const { translate } = useLocalizedCountries();
 
     const { snackError } = useSnackMessage();
+    const [tabIndex, setTabIndex] = useState(0);
 
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const allDisplayedColumnsNames = useSelector((state) => state.allDisplayedColumnsNames);
     const allLockedColumnsNames = useSelector((state) => state.allLockedColumnsNames);
     const allReorderedTableDefinitionIndexes = useSelector((state) => state.allReorderedTableDefinitionIndexes);
+    const customColumnsDefinitions = useSelector((state) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]);
+    const developerMode = useSelector((state) => state[PARAM_DEVELOPER_MODE]);
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
@@ -153,7 +158,6 @@ const TableWrapper = (props) => {
 
     const [lastModifiedEquipment, setLastModifiedEquipment] = useState();
 
-    const [tabIndex, setTabIndex] = useState(0);
     const [manualTabSwitch, setManualTabSwitch] = useState(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
@@ -161,10 +165,21 @@ const TableWrapper = (props) => {
     const editingDataRef = useRef(editingData);
 
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
+    const [customColumnData, setCustomColumnData] = useState([]);
+    const [mergedColumnData, setMergedColumnData] = useState([]);
+    const { createCustomColumn } = useCustomColumn(tabIndex, gridRef);
+
+    useEffect(() => {
+        setCustomColumnData(createCustomColumn());
+    }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
 
     const globalFilterRef = useRef();
 
     const [columnData, setColumnData] = useState([]);
+
+    useEffect(() => {
+        setMergedColumnData([...columnData, ...customColumnData]);
+    }, [columnData, customColumnData]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
@@ -1116,6 +1131,11 @@ const TableWrapper = (props) => {
                             setLockedColumnsNames={setLockedColumnsNames}
                         />
                     </Grid>
+                    {developerMode && (
+                        <Grid item sx={{ marginLeft: '15px' }}>
+                            <CustomColumnsConfig indexTab={tabIndex} />
+                        </Grid>
+                    )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport
@@ -1138,7 +1158,7 @@ const TableWrapper = (props) => {
                         studyUuid={props.studyUuid}
                         currentNode={props.currentNode}
                         rowData={rowData}
-                        columnData={columnData}
+                        columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
                         visible={props.visible}
