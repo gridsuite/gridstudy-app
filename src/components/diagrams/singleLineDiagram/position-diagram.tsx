@@ -46,7 +46,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
 
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const [loadingState, updateLoadingState] = useState(false);
+    const [loadingState, updateLoadingState] = useState<boolean>(false);
 
     const theme = useTheme();
 
