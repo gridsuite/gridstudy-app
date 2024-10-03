@@ -6,9 +6,12 @@
  */
 
 import { UUID } from 'crypto';
-import NetworkModificationTreeModel from '../network-modification-tree-model';
+import NetworkModificationTreeModel, { NetworkModificationNode } from '../network-modification-tree-model';
 
-export function convertNodetoReactFlowModelNode(node: any, parentNodeUuid: UUID | undefined) {
+export function convertNodetoReactFlowModelNode(
+    node: NetworkModificationNode | null,
+    parentNodeUuid: UUID | undefined
+) {
     if (!node) {
         return undefined;
     }

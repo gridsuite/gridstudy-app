@@ -7,30 +7,31 @@
 
 import dagre from 'dagre';
 import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
+import { NodeType } from './network-modification-tree-model';
 
-export function getLayoutedNodes(nodes, edges) {
+export function getLayoutedNodes(nodes: any, edges: any) {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
+    dagreGraph.setGraph({ rankdir: 'TB', align: 'UL' });
 
-    nodes.forEach((node) => {
+    nodes.forEach((node: any) => {
         dagreGraph.setNode(node.id, {
-            width: node?.type === 'ROOT' ? rootNodeWidth : nodeWidth,
-            height: node?.type === 'ROOT' ? rootNodeHeight : nodeHeight,
+            width: node?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth,
+            height: node?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight,
         });
     });
-    edges.forEach((edge) => {
+    edges.forEach((edge: any) => {
         dagreGraph.setEdge(edge.source, edge.target);
     });
 
-    dagre.layout(dagreGraph, { debugTiming: true });
+    dagre.layout(dagreGraph);
 
-    return nodes.map((el) => {
+    return nodes.map((el: any) => {
         const nodeWithPosition = dagreGraph.node(el.id);
         el.targetPosition = 'top';
         el.sourcePosition = 'bottom';
-        const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
-        const height = el?.type === 'ROOT' ? rootNodeHeight : nodeHeight;
+        const width = el?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth;
+        const height = el?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight;
 
         el.position = {
             x: nodeWithPosition.x - width / 2,

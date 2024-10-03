@@ -72,8 +72,12 @@ export default class NetworkModificationTreeModel {
         this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
-
-    addChild(newNode: any, parentId: UUID, insertMode: NodeInsertModes | undefined, referenceNodeId: UUID | undefined) {
+    addChild(
+        newNode: NetworkModificationNode,
+        parentId: UUID,
+        insertMode: NodeInsertModes | undefined,
+        referenceNodeId: UUID | undefined
+    ) {
         // we have to keep a precise order of nodes in the array to avoid gettings children
         // nodes before their parents when building graph in dagre library which have uncontrolled results
         // We also need to do this to keep a correct order when inserting nodes and not loose the user.
@@ -151,7 +155,7 @@ export default class NetworkModificationTreeModel {
 
         // Add children of this node recursively
         if (newNode.children) {
-            newNode.children.forEach((child: UUID) => {
+            newNode.children.forEach((child: AbstractNode) => {
                 this.addChild(child, newNode.id, undefined, undefined);
             });
         }
