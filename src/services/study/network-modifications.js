@@ -8,17 +8,19 @@
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrlWithNodeUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 
-export function changeNetworkModificationOrder(studyUuid, currentNodeUuid, itemUuid, beforeUuid) {
-    console.info('reorder node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
+function getNetworkModificationUrl(studyUuid, nodeUuid) {
+    return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
+}
+
+export function changeNetworkModificationOrder(studyUuid, nodeUuid, itemUuid, beforeUuid) {
+    console.info('reorder node ' + nodeUuid + ' of study ' + studyUuid + ' ...');
     const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-modification/' +
-        itemUuid +
-        '?' +
+        getNetworkModificationUrl(studyUuid, nodeUuid) +
+        `/${itemUuid}?` +
         new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' });
@@ -28,15 +30,7 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('stashed', true);
     urlSearchParams.append('uuids', modificationUuids);
-    const modificationDeleteUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications' +
-        '?' +
-        urlSearchParams.toString();
+    const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
         method: 'PUT',
@@ -48,14 +42,7 @@ export function setModificationActivated(studyUuid, nodeUuid, modificationUuid, 
     urlSearchParams.append('activated', activated);
     urlSearchParams.append('uuids', [modificationUuid]);
     const modificationUpdateActiveUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications' +
-        '?' +
-        urlSearchParams.toString();
+        getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationUpdateActiveUrl);
     return backendFetch(modificationUpdateActiveUrl, {
         method: 'PUT',
@@ -66,15 +53,7 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('stashed', false);
     urlSearchParams.append('uuids', modificationUuids);
-    const RestoreModificationsUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications' +
-        '?' +
-        urlSearchParams.toString();
+    const RestoreModificationsUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
 
     console.debug(RestoreModificationsUrl);
     return backendFetch(RestoreModificationsUrl, {
@@ -86,14 +65,7 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('uuids', modificationUuids);
 
-    const modificationDeleteUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications?' +
-        urlSearchParams.toString();
+    const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
 
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
@@ -101,9 +73,9 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
-export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
+export function requestNetworkChange(studyUuid, nodeUuid, groovyScript) {
     console.info('Creating groovy script (request network change)');
-    const changeUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    const changeUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug(changeUrl);
     return backendFetchText(changeUrl, {
         method: 'POST',
@@ -118,8 +90,8 @@ export function requestNetworkChange(studyUuid, currentNodeUuid, groovyScript) {
     });
 }
 
-function changeOperatingStatus(studyUuid, currentNodeUuid, equipment, action) {
-    const changeOperatingStatusUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+function changeOperatingStatus(studyUuid, nodeUuid, equipment, action) {
+    const changeOperatingStatusUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug('%s with action: %s', changeOperatingStatusUrl, action);
 
     let energizedVoltageLevelId;
@@ -149,21 +121,21 @@ function changeOperatingStatus(studyUuid, currentNodeUuid, equipment, action) {
     });
 }
 
-export function lockoutEquipment(studyUuid, currentNodeUuid, equipment) {
+export function lockoutEquipment(studyUuid, nodeUuid, equipment) {
     console.info('locking out equipment ' + equipment.id + ' ...');
-    return changeOperatingStatus(studyUuid, currentNodeUuid, equipment, OPERATING_STATUS_ACTION.LOCKOUT);
+    return changeOperatingStatus(studyUuid, nodeUuid, equipment, OPERATING_STATUS_ACTION.LOCKOUT);
 }
 
-export function tripEquipment(studyUuid, currentNodeUuid, equipment) {
+export function tripEquipment(studyUuid, nodeUuid, equipment) {
     console.info('tripping equipment ' + equipment.id + ' ...');
-    return changeOperatingStatus(studyUuid, currentNodeUuid, equipment, OPERATING_STATUS_ACTION.TRIP);
+    return changeOperatingStatus(studyUuid, nodeUuid, equipment, OPERATING_STATUS_ACTION.TRIP);
 }
 
-export function energiseEquipmentEnd(studyUuid, currentNodeUuid, branch, branchSide) {
+export function energiseEquipmentEnd(studyUuid, nodeUuid, branch, branchSide) {
     console.info('energise branch ' + branch.id + ' on side ' + branchSide + ' ...');
     return changeOperatingStatus(
         studyUuid,
-        currentNodeUuid,
+        nodeUuid,
         branch,
         branchSide === BRANCH_SIDE.ONE
             ? OPERATING_STATUS_ACTION.ENERGISE_END_ONE
@@ -171,14 +143,14 @@ export function energiseEquipmentEnd(studyUuid, currentNodeUuid, branch, branchS
     );
 }
 
-export function switchOnEquipment(studyUuid, currentNodeUuid, branch) {
+export function switchOnEquipment(studyUuid, nodeUuid, branch) {
     console.info('switching on branch ' + branch.id + ' ...');
-    return changeOperatingStatus(studyUuid, currentNodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
+    return changeOperatingStatus(studyUuid, nodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
 }
 
 export function generationDispatch(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationUuid,
     lossCoefficient,
     defaultOutageRate,
@@ -197,7 +169,7 @@ export function generationDispatch(
         substationsGeneratorsOrdering: substationsGeneratorsOrdering,
     });
 
-    let generationDispatchUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let generationDispatchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         console.info('Updating generation dispatch ', body);
         generationDispatchUrl = generationDispatchUrl + '/' + encodeURIComponent(modificationUuid);
@@ -215,14 +187,14 @@ export function generationDispatch(
     });
 }
 
-export function generatorScaling(studyUuid, currentNodeUuid, modificationUuid, variationType, variations) {
+export function generatorScaling(studyUuid, nodeUuid, modificationUuid, variationType, variations) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATOR_SCALING.type,
         variationType,
         variations,
     });
 
-    let generatorScalingUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let generatorScalingUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         console.info('generator scaling update', body);
         generatorScalingUrl = generatorScalingUrl + '/' + encodeURIComponent(modificationUuid);
@@ -240,7 +212,7 @@ export function generatorScaling(studyUuid, currentNodeUuid, modificationUuid, v
 
 export function createBattery(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     voltageLevelId,
@@ -263,7 +235,7 @@ export function createBattery(
     modificationUuid,
     properties
 ) {
-    let createBatteryUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createBatteryUrl += '/' + encodeURIComponent(modificationUuid);
@@ -305,7 +277,7 @@ export function createBattery(
 
 export function modifyBattery(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     batteryId,
     name,
     minP,
@@ -327,7 +299,7 @@ export function modifyBattery(
     reactiveCapabilityCurve,
     properties
 ) {
-    let modificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationId) {
         modificationUrl += '/' + encodeURIComponent(modificationId);
@@ -370,7 +342,7 @@ export function modifyBattery(
 
 export function createLoad(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     loadType,
@@ -386,7 +358,7 @@ export function createLoad(
     terminalConnected,
     properties
 ) {
-    let createLoadUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createLoadUrl += '/' + encodeURIComponent(modificationUuid);
@@ -421,7 +393,7 @@ export function createLoad(
 
 export function modifyLoad(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     loadType,
@@ -437,7 +409,7 @@ export function modifyLoad(
     modificationUuid,
     properties
 ) {
-    let modifyLoadUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modifyLoadUrl += '/' + encodeURIComponent(modificationUuid);
@@ -472,7 +444,7 @@ export function modifyLoad(
 
 export function modifyGenerator(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     generatorId,
     name,
     energySource,
@@ -509,7 +481,7 @@ export function modifyGenerator(
     reactiveCapabilityCurve,
     properties
 ) {
-    let modificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationId) {
         modificationUrl += '/' + encodeURIComponent(modificationId);
@@ -567,7 +539,7 @@ export function modifyGenerator(
 
 export function createGenerator(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     energySource,
@@ -604,7 +576,7 @@ export function createGenerator(
     terminalConnected,
     properties
 ) {
-    let createGeneratorUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createGeneratorUrl += '/' + encodeURIComponent(modificationUuid);
@@ -660,7 +632,7 @@ export function createGenerator(
 
 export function createShuntCompensator(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
     maxSusceptance,
@@ -677,7 +649,7 @@ export function createShuntCompensator(
     terminalConnected,
     properties
 ) {
-    let createShuntUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createShuntUrl += '/' + encodeURIComponent(modificationUuid);
@@ -714,7 +686,7 @@ export function createShuntCompensator(
 
 export function modifyShuntCompensator(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     shuntCompensatorId,
     shuntCompensatorName,
     maximumSectionCount,
@@ -732,7 +704,7 @@ export function modifyShuntCompensator(
     modificationUuid,
     properties
 ) {
-    let modificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -852,7 +824,7 @@ export function createStaticVarCompensator(
 
 export function createLine(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     lineId,
     lineName,
     r,
@@ -881,7 +853,7 @@ export function createLine(
     connected2,
     properties
 ) {
-    let createLineUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createLineUrl += '/' + encodeURIComponent(modificationUuid);
@@ -933,7 +905,7 @@ export function createLine(
 
 export function modifyLine(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     lineId,
     lineName,
     r,
@@ -960,7 +932,7 @@ export function modifyLine(
     modificationUuid,
     properties
 ) {
-    let modifyLineUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modifyLineUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1006,7 +978,7 @@ export function modifyLine(
 
 export function createTwoWindingsTransformer(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
     r,
@@ -1036,8 +1008,7 @@ export function createTwoWindingsTransformer(
     connected2,
     properties
 ) {
-    let createTwoWindingsTransformerUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createTwoWindingsTransformerUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1086,7 +1057,7 @@ export function createTwoWindingsTransformer(
 
 export function modifyTwoWindingsTransformer(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     twoWindingsTransformerId,
     twoWindingsTransformerName,
     r,
@@ -1116,8 +1087,7 @@ export function modifyTwoWindingsTransformer(
     modificationUuid,
     properties
 ) {
-    let modifyTwoWindingsTransformerUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modifyTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modifyTwoWindingsTransformerUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1166,13 +1136,13 @@ export function modifyTwoWindingsTransformer(
 
 export function createTabulareModification(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationType,
     modifications,
     isUpdate,
     modificationUuid
 ) {
-    let createTabulareModificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createTabulareModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createTabulareModificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1197,7 +1167,7 @@ export function createTabulareModification(
 
 export function createSubstation(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     substationId,
     substationName,
     country,
@@ -1205,7 +1175,7 @@ export function createSubstation(
     modificationUuid,
     properties
 ) {
-    let url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let url = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
@@ -1286,7 +1256,7 @@ export function formatPropertiesForBackend(previousProperties, newProperties) {
 
 export function modifySubstation(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     country,
@@ -1294,7 +1264,7 @@ export function modifySubstation(
     modificationUuid,
     properties
 ) {
-    let modifyUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modifyUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1321,7 +1291,7 @@ export function modifySubstation(
 
 export function createVoltageLevel({
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     voltageLevelId,
     voltageLevelName,
     substationId,
@@ -1338,7 +1308,7 @@ export function createVoltageLevel({
     modificationUuid,
     properties,
 }) {
-    let createVoltageLevelUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createVoltageLevelUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createVoltageLevelUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1376,7 +1346,7 @@ export function createVoltageLevel({
 
 export function modifyVoltageLevel(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     voltageLevelId,
     voltageLevelName,
     nominalV,
@@ -1388,7 +1358,7 @@ export function modifyVoltageLevel(
     modificationUuid,
     properties
 ) {
-    let modificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1419,7 +1389,7 @@ export function modifyVoltageLevel(
 
 export function divideLine(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationUuid,
     lineToSplitId,
     percent,
@@ -1444,7 +1414,7 @@ export function divideLine(
         newLine2Name,
     });
 
-    let lineSplitUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let lineSplitUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         lineSplitUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1465,7 +1435,7 @@ export function divideLine(
 
 export function attachLine(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationUuid,
     lineToAttachToId,
     percent,
@@ -1496,7 +1466,7 @@ export function attachLine(
         newLine2Name,
     });
 
-    let lineAttachUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1515,14 +1485,14 @@ export function attachLine(
     });
 }
 
-export function loadScaling(studyUuid, currentNodeUuid, modificationUuid, variationType, variations) {
+export function loadScaling(studyUuid, nodeUuid, modificationUuid, variationType, variations) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LOAD_SCALING.type,
         variationType,
         variations,
     });
 
-    let loadScalingUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let loadScalingUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         console.info('load scaling update', body);
         loadScalingUrl = loadScalingUrl + '/' + encodeURIComponent(modificationUuid);
@@ -1540,7 +1510,7 @@ export function loadScaling(studyUuid, currentNodeUuid, modificationUuid, variat
 
 export function linesAttachToSplitLines(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationUuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
@@ -1565,7 +1535,7 @@ export function linesAttachToSplitLines(
         replacingLine2Name,
     });
 
-    let lineAttachUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let lineAttachUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         lineAttachUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1586,7 +1556,7 @@ export function linesAttachToSplitLines(
 
 export function deleteVoltageLevelOnLine(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationUuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
@@ -1601,7 +1571,7 @@ export function deleteVoltageLevelOnLine(
         replacingLine1Name,
     });
 
-    let deleteVoltageLevelOnLineUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let deleteVoltageLevelOnLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         console.info('Updating delete voltage level on line', body);
         deleteVoltageLevelOnLineUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1621,7 +1591,7 @@ export function deleteVoltageLevelOnLine(
 
 export function deleteAttachingLine(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     modificationUuid,
     lineToAttachTo1Id,
     lineToAttachTo2Id,
@@ -1638,7 +1608,7 @@ export function deleteAttachingLine(
         replacingLine1Name,
     });
 
-    let deleteVoltageLevelOnLineUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let deleteVoltageLevelOnLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     if (modificationUuid) {
         console.info('Updating delete attaching line', body);
         deleteVoltageLevelOnLineUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1656,15 +1626,8 @@ export function deleteAttachingLine(
     });
 }
 
-export function deleteEquipment(
-    studyUuid,
-    currentNodeUuid,
-    equipmentType,
-    equipmentId,
-    modificationUuid,
-    equipmentInfos
-) {
-    let deleteEquipmentUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+export function deleteEquipment(studyUuid, nodeUuid, equipmentType, equipmentId, modificationUuid, equipmentInfos) {
+    let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1688,8 +1651,8 @@ export function deleteEquipment(
     });
 }
 
-export function deleteEquipmentByFilter(studyUuid, currentNodeUuid, equipmentType, filters, modificationUuid) {
-    let deleteEquipmentUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+export function deleteEquipmentByFilter(studyUuid, nodeUuid, equipmentType, filters, modificationUuid) {
+    let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1717,21 +1680,14 @@ export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('onlyStashed', onlyStashed);
     urlSearchParams.append('onlyMetadata', true);
-    const modificationsGetUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/nodes/' +
-        encodeURIComponent(nodeUuid) +
-        '/network-modifications?' +
-        urlSearchParams.toString();
+    const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
 
-export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
+export function updateSwitchState(studyUuid, nodeUuid, switchId, open) {
     console.info('updating switch ' + switchId + ' ...');
-    const updateSwitchUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    const updateSwitchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug(updateSwitchUrl);
     return backendFetch(updateSwitchUrl, {
         method: 'POST',
@@ -1751,7 +1707,7 @@ export function updateSwitchState(studyUuid, currentNodeUuid, switchId, open) {
 
 export function createVsc(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     nominalV,
@@ -1770,7 +1726,7 @@ export function createVsc(
     isUpdate,
     modificationUuid
 ) {
-    let createVscUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createVscUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1810,7 +1766,7 @@ export function createVsc(
 
 export function modifyVsc(
     studyUuid,
-    currentNodeUuid,
+    nodeUuid,
     id,
     name,
     nominalV,
@@ -1829,7 +1785,7 @@ export function modifyVsc(
     isUpdate,
     modificationUuid
 ) {
-    let modificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1866,8 +1822,8 @@ export function modifyVsc(
         body: JSON.stringify(vscModification),
     });
 }
-export function modifyByFormula(studyUuid, currentNodeUuid, equipmentType, formulas, isUpdate, modificationUuid) {
-    let modificationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+export function modifyByFormula(studyUuid, nodeUuid, equipmentType, formulas, isUpdate, modificationUuid) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         modificationUrl += '/' + encodeURIComponent(modificationUuid);
@@ -1892,8 +1848,34 @@ export function modifyByFormula(studyUuid, currentNodeUuid, equipmentType, formu
     });
 }
 
-export function createTabularCreation(studyUuid, currentNodeUuid, creationType, creations, isUpdate, modificationUuid) {
-    let createTabularCreationUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+export function modifyByAssignment(studyUuid, nodeUuid, equipmentType, assignmentsList, isUpdate, modificationUuid) {
+    let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating modification by assignment');
+    } else {
+        console.info('Creating modification by assignment');
+    }
+
+    const body = JSON.stringify({
+        type: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
+        equipmentType: equipmentType,
+        assignmentInfosList: assignmentsList,
+    });
+
+    return backendFetchText(modificationUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: body,
+    });
+}
+
+export function createTabularCreation(studyUuid, nodeUuid, creationType, creations, isUpdate, modificationUuid) {
+    let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createTabularCreationUrl += '/' + encodeURIComponent(modificationUuid);
