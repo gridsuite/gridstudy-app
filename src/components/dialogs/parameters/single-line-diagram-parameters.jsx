@@ -37,10 +37,9 @@ export const useGetAvailableComponentLibraries = (user) => {
 export const SingleLineDiagramParameters = ({ componentLibraries }) => {
     const componentLibsRenderCache = useMemo(
         () =>
-            componentLibraries.reduce((prev, val) => {
-                prev[val] = val;
-                return prev;
-            }, {}),
+            Object.fromEntries(componentLibraries)
+                .filter(Boolean)
+                .map((libLabel) => [libLabel, libLabel]),
         [componentLibraries]
     );
 
