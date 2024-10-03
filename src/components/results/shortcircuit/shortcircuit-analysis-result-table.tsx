@@ -25,7 +25,7 @@ import {
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { unitToKiloUnit } from '../../../utils/unit-converter';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { BranchSide } from 'components/utils/constants';
+import { convertSide } from '../loadflow/load-flow-result-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -289,14 +289,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 }
 
                 const current = getCurrent(faultResult);
-
-                const convertSide = (side: string | undefined) => {
-                    return side === BranchSide.ONE
-                        ? intl.formatMessage({ id: 'Side1' })
-                        : side === BranchSide.TWO
-                        ? intl.formatMessage({ id: 'Side2' })
-                        : undefined;
-                };
                 const deltaCurrentIpMax = faultResult.shortCircuitLimits.deltaCurrentIpMax;
                 const deltaCurrentIpMin = faultResult.shortCircuitLimits.deltaCurrentIpMin;
 
@@ -338,7 +330,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         elementId: '', // we have to add this otherwise it's automatically filtered
                         faultType: '', // we have to add this otherwise it's automatically filtered
                         limitType: '', // we have to add this otherwise it's automatically filtered
-                        side: convertSide(side),
+                        side: convertSide(side, intl),
                     });
                 });
             });
