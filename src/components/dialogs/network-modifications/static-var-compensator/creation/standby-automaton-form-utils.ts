@@ -24,7 +24,6 @@ import {
 } from 'components/utils/field-constants';
 import yup from '../../../../utils/yup-config';
 import { computeQAtNominalV } from '../../../../utils/utils';
-import { Schema } from 'yup';
 
 export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     [id]: {
@@ -42,8 +41,8 @@ export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     },
 });
 
-const requiredIfAddStandbyAutomaton = (schema: Schema) =>
-    schema.nullable().when([ADD_STAND_BY_AUTOMATON], {
+const requiredIfAddStandbyAutomaton = (yup: any) =>
+    yup.nullable().when([ADD_STAND_BY_AUTOMATON], {
         is: true,
         then: (schema: any) => schema.required(),
     });
@@ -80,8 +79,8 @@ export const getStandbyAutomatonFormValidationSchema = () =>
                     addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
                 then: (schema) => schema.required(),
             }),
-        [SLIDER_SUSCEPTANCE]: yup.number().nullable(),
-        [SLIDER_Q_NOMINAL]: yup.number().nullable(),
+        [SLIDER_SUSCEPTANCE]: requiredIfAddStandbyAutomaton(yup.number()),
+        [SLIDER_Q_NOMINAL]: requiredIfAddStandbyAutomaton(yup.number()),
     });
 
 export const getStandbyAutomatonFormData = ({

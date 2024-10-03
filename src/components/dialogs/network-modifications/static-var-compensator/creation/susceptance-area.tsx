@@ -41,9 +41,7 @@ export const SusceptanceArea = () => {
     useEffect(() => {
         let avgSfixeValue = (getFloatNumber(minS) + getFloatNumber(maxS)) / 2;
         let avgQfixeValue = (getFloatNumber(minQ) + getFloatNumber(maxQ)) / 2;
-        setValue(`${id}.${B0}`, getFloatNumber(avgSfixeValue));
         setValue(`${id}.${SLIDER_SUSCEPTANCE}`, getFloatNumber(avgSfixeValue));
-        setValue(`${id}.${Q0}`, getFloatNumber(avgQfixeValue));
         setValue(`${id}.${SLIDER_Q_NOMINAL}`, getFloatNumber(avgQfixeValue));
     }, [setValue, minS, minQ, maxS, maxQ, id]);
 

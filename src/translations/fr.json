@@ -139,7 +139,7 @@
     "ActivePowerT3WSide3": "p3 (MW)",
     "ActivePowerSide3": "p3 (MW)",
     "ReactivePower": "q (MVar)",
-    "q0": "Q constant (MVar)",
+    "q0": "Q constant",
     "p0": "P constant (MW)",
     "ReactivePowerSide1": "q1 (MVar)",
     "ReactivePowerSide2": "q2 (MVar)",

@@ -52,53 +52,26 @@ const requiredWhenDistantVoltageMode = (schema: Schema) =>
         then: (schema) => schema.required(),
     });
 
+const requiredWhenSusceptanceChoice = (schema: Schema) =>
+    schema.when([CHARACTERISTICS_CHOICE], {
+        is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+        then: (schema: any) => schema.required(),
+        otherwise: (schema) => schema.notRequired(),
+    });
+
+const requiredWhenQatNominalVChoice = (schema: Schema) =>
+    schema.when([CHARACTERISTICS_CHOICE], {
+        is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        then: (schema) => schema.required(),
+        otherwise: (schema) => schema.notRequired(),
+    });
+
 export const getReactiveFormValidationSchema = () =>
     yup.object().shape({
-        [MAX_SUSCEPTANCE]: yup
-            .number()
-            .nullable()
-            .when([CHARACTERISTICS_CHOICE], {
-                is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
-                then: (schema) =>
-                    schema
-                        .min(yup.ref(MIN_SUSCEPTANCE), 'StaticVarCompensatorErrorSMaxAtNominalVoltageGreaterThanSMin')
-                        .required(),
-            }),
-        [MIN_SUSCEPTANCE]: yup
-            .number()
-            .nullable()
-            .when([CHARACTERISTICS_CHOICE], {
-                is: (characteristicsChoice: string) => characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
-                then: (schema) =>
-                    schema
-                        .max(yup.ref(MAX_SUSCEPTANCE), 'StaticVarCompensatorErrorSMinAtNominalVoltageLessThanSMax')
-                        .required(),
-            }),
-        [MAX_Q_AT_NOMINAL_V]: yup
-            .number()
-            .nullable()
-            .when([CHARACTERISTICS_CHOICE], {
-                is: (characteristicsChoice: string) =>
-                    characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-                then: (schema) =>
-                    schema
-                        .min(
-                            yup.ref(MIN_Q_AT_NOMINAL_V),
-                            'StaticVarCompensatorErrorQMaxAtNominalVoltageGreaterThanQMin'
-                        )
-                        .required(),
-            }),
-        [MIN_Q_AT_NOMINAL_V]: yup
-            .number()
-            .nullable()
-            .when([CHARACTERISTICS_CHOICE], {
-                is: (characteristicsChoice: string) =>
-                    characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-                then: (schema) =>
-                    schema
-                        .max(yup.ref(MAX_Q_AT_NOMINAL_V), 'StaticVarCompensatorErrorQMinAtNominalVoltageLessThanQMax')
-                        .required(),
-            }),
+        [MAX_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
+        [MIN_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
+        [MAX_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
+        [MIN_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
         [VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
