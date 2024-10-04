@@ -126,7 +126,7 @@ export const SusceptanceArea = () => {
     const qAtNominalVField = (
         <TextInput
             name={`${id}.${Q0}`}
-            label="q0"
+            label="q0Fixe"
             adornment={ReactivePowerAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleQnomValueChange}
