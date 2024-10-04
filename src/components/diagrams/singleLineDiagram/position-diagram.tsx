@@ -29,7 +29,6 @@ interface PositionDiagramProps {
 }
 
 const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDivElement>) => {
-    // fixme : HTMLDivElement is the correct type ?
     const [svg, setSvg] = useState<Svg>({
         svg: null,
         metadata: null,

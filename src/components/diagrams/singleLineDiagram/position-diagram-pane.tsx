@@ -21,13 +21,14 @@ import { DiagramType } from '../diagram-common';
 import { getVoltageLevelSingleLineDiagram } from '../../../services/study/network';
 import { FC } from 'react';
 import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 
 interface PositionDiagramPaneProps {
     open: boolean;
     onClose: () => void;
-    voltageLevelId: any;
-    currentNodeUuid: string;
-    studyUuid: string;
+    voltageLevelId?: { id: UUID };
+    currentNodeUuid: UUID;
+    studyUuid: UUID;
 }
 
 const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
