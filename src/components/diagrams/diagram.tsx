@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
@@ -67,10 +66,11 @@ const Diagram: React.FC<DiagramProps> = ({
 
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
 
-    const shouldBeHidden =
-        fullScreenDiagram?.id && (fullScreenDiagram.id !== diagramId || fullScreenDiagram.svgType !== svgType);
+    const shouldBeHidden: boolean =
+        Boolean(fullScreenDiagram?.id) &&
+        (fullScreenDiagram?.id !== diagramId || fullScreenDiagram?.svgType !== svgType);
 
-    const shouldBeFullscreen = fullScreenDiagram?.id === diagramId && fullScreenDiagram?.svgType === svgType;
+    const shouldBeFullscreen: boolean = fullScreenDiagram?.id === diagramId && fullScreenDiagram?.svgType === svgType;
 
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
