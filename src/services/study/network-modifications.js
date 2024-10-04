@@ -19,8 +19,10 @@ function getNetworkModificationUrl(studyUuid, nodeUuid) {
 export function changeNetworkModificationOrder(studyUuid, nodeUuid, itemUuid, beforeUuid) {
     console.info('reorder node ' + nodeUuid + ' of study ' + studyUuid + ' ...');
     const url =
-        getNetworkModificationUrl(studyUuid, nodeUuid) +
-        `/${itemUuid}?` +
+        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        '/network-modification/' +
+        itemUuid +
+        '?' +
         new URLSearchParams({ beforeUuid: beforeUuid || '' }).toString();
     console.debug(url);
     return backendFetch(url, { method: 'put' });
