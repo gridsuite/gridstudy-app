@@ -96,7 +96,7 @@ export default function ReportViewer({ report, reportType }) {
         const reportTree = mapReportsTree(report);
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
-        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
+        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities), true));
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -106,7 +106,12 @@ export default function ReportViewer({ report, reportType }) {
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
             dispatch(
-                setReportFilters(reportId, '', getDefaultSeverityFilter(reportTreeData.current[reportId].severities))
+                setReportFilters(
+                    reportId,
+                    '',
+                    getDefaultSeverityFilter(reportTreeData.current[reportId].severities),
+                    true
+                )
             );
         }
     };
@@ -165,7 +170,7 @@ export default function ReportViewer({ report, reportType }) {
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     <WaitingLoader loading={isLogLoading} message={'loadingReport'}>
-                        <LogTable logs={logs} onRowClick={onLogRowClick} severityFilter={severityFilter} />
+                        <LogTable logs={logs} onRowClick={onLogRowClick} />
                     </WaitingLoader>
                 </Grid>
             </Grid>

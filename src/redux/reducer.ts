@@ -438,6 +438,7 @@ export interface AppState extends CommonStoreState {
     reportMessageFilter: string;
     reportSeverityFilter: SeverityFilter;
     reportSelectedReportId: string | null;
+    reportResetFilters: boolean;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -595,6 +596,7 @@ const initialState: AppState = {
     reportMessageFilter: '',
     reportSeverityFilter: getDefaultSeverityFilter([]),
     reportSelectedReportId: null,
+    reportResetFilters: false,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -1615,6 +1617,9 @@ export const reducer = createReducer(initialState, (builder) => {
         }
         if (action.reportId !== undefined) {
             state.reportSelectedReportId = action.reportId;
+        }
+        if (action.reportResetFilters !== undefined) {
+            state.reportResetFilters = action.reportResetFilters;
         }
     });
 });

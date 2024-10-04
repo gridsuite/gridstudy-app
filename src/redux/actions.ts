@@ -1176,16 +1176,19 @@ export type ReportFilterAction = Readonly<Action<typeof REPORT_FILTER>> & {
     reportId: string | null | undefined;
     messageFilter: string | undefined;
     severityFilter: SeverityFilter | undefined;
+    reportResetFilters: boolean;
 };
 export function setReportFilters(
     reportId: string,
     messageFilter: string,
-    severityFilter: SeverityFilter
+    severityFilter: SeverityFilter,
+    reportResetFilters: boolean
 ): ReportFilterAction {
     return {
         type: REPORT_FILTER,
         reportId,
         messageFilter,
         severityFilter,
+        reportResetFilters,
     };
 }

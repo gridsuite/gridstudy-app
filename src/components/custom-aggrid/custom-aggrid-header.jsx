@@ -7,7 +7,19 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
-import { Autocomplete, Badge, debounce, Grid, IconButton, MenuItem, Popover, Select, TextField } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import {
+    Autocomplete,
+    Badge,
+    debounce,
+    Grid,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Popover,
+    Select,
+    TextField,
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SortWay } from '../../hooks/use-aggrid-sort';
@@ -51,6 +63,8 @@ const CustomHeaderComponent = ({
     filterParams = {},
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
+    defaultFilterValue,
+    onResetFilter,
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -85,12 +99,29 @@ const CustomHeaderComponent = ({
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
-    const [selectedFilterData, setSelectedFilterData] = useState(undefined);
+    const [selectedFilterData, setSelectedFilterData] = useState(defaultFilterValue);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
         !!selectedFilterData?.length || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
+
+    useEffect(() => {
+        if (onResetFilter) {
+            onResetFilter((defaultValue) => {
+                setSelectedFilterData(defaultValue);
+            });
+        }
+    }, [onResetFilter]);
+
+    const handleClearFilter = () => {
+        setSelectedFilterData(defaultFilterValue);
+        updateFilter(field, {
+            value: defaultFilterValue,
+            type: selectedFilterComparator,
+            dataType: filterDataType,
+        });
+    };
 
     const handleShowFilter = (event) => {
         setFilterAnchorElement(event.currentTarget);
@@ -183,17 +214,17 @@ const CustomHeaderComponent = ({
 
     useEffect(() => {
         if (!filterSelector?.length) {
-            setSelectedFilterData(undefined);
+            setSelectedFilterData(defaultFilterValue);
         } else {
             const filterObject = filterSelector?.find((filter) => filter.column === field);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
                 setSelectedFilterComparator(filterObject.type);
             } else {
-                setSelectedFilterData(undefined);
+                setSelectedFilterData(defaultFilterValue);
             }
         }
-    }, [filterSelector, field]);
+    }, [filterSelector, field, defaultFilterValue]);
     const getOptionLabel = useCallback(
         (option) =>
             isCountry
@@ -372,6 +403,20 @@ const CustomHeaderComponent = ({
                                         type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
                                     }}
                                     sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                                    InputProps={{
+                                        endAdornment: selectedFilterData ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="clear filter"
+                                                    onClick={handleClearFilter}
+                                                    edge="end"
+                                                    size="small"
+                                                >
+                                                    <ClearIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    }}
                                 />
                             )}
                         </Grid>

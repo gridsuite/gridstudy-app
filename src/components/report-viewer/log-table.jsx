@@ -4,40 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TableCell from '@mui/material/TableCell';
-import { styled } from '@mui/system';
-import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { FilterButton } from './filter-button';
-import { TextFilterButton } from './text-filter-button.tsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebounce } from 'use-debounce';
 import { setReportFilters } from '../../redux/actions';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
-
-const styles = {
-    flexContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        boxSizing: 'border-box',
-    },
-    table: (theme) => ({
-        // temporary right-to-left patch, waiting for
-        // https://github.com/bvaughn/react-virtualized/issues/454
-        '& .ReactVirtualized__Table__headerRow': {
-            flip: false,
-            paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
-        },
-    }),
-    header: { variant: 'header' },
-};
-
-const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
 
 const LogTable = ({ logs, onRowClick }) => {
     const intl = useIntl();
@@ -47,111 +27,166 @@ const LogTable = ({ logs, onRowClick }) => {
     const dispatch = useDispatch();
 
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
+    const [rowData, setRowData] = useState(null);
 
     const severityFilter = useSelector((state) => state.reportSeverityFilter);
+    const messageFilter = useSelector((state) => state.reportMessageFilter);
+    const resetFilters = useSelector((state) => state.reportResetFilters);
 
-    const selectedReportId = useSelector((state) => state.reportSelectedReportId);
-
-    //messageFilter is only used for display, debouncedMessageFilter is used for triggering fetch
-    const [messageFilter, setMessageFilter] = useState('');
+    const [resetSeverityFilter, setResetSeverityFilter] = useState(null);
+    const [resetMessageFilter, setResetMessageFilter] = useState(null);
 
     const [debouncedMessageFilter] = useDebounce(messageFilter, 500);
+
+    const filterWrapperData = useMemo(() => Object.keys(severityFilter), [severityFilter]);
+
+    const defaultSeverityFilter = useMemo(() => {
+        // return only severity that have true as value
+        return Object.keys(severityFilter).filter((severity) => severityFilter[severity]);
+    }, [severityFilter]);
+
+    const handleResetFilter = useCallback(() => {
+        if (resetFilters) {
+            if (resetSeverityFilter) {
+                resetSeverityFilter(defaultSeverityFilter);
+            }
+            if (resetMessageFilter) {
+                resetMessageFilter('');
+            }
+            dispatch(setReportFilters(undefined, undefined, undefined, false));
+        }
+    }, [defaultSeverityFilter, resetFilters, resetSeverityFilter, resetMessageFilter, dispatch]);
+
+    useEffect(() => {
+        handleResetFilter();
+    }, [handleResetFilter]);
 
     useEffect(() => {
         dispatch(setReportFilters(undefined, debouncedMessageFilter, undefined));
     }, [debouncedMessageFilter, dispatch]);
 
-    //We reset the displayed message filter when we switch reports
-    useEffect(() => {
-        setMessageFilter('');
-    }, [selectedReportId]);
-
-    const setSeverityFilter = (selectedSeverity) => {
-        dispatch(setReportFilters(undefined, undefined, selectedSeverity));
-    };
-
-    const severityCellRender = (cellData) => {
-        return (
-            <TableCell
-                component="div"
-                variant="body"
-                style={{
-                    display: 'flex',
-                    flex: '1',
-                    backgroundColor: cellData.rowData.backgroundColor,
-                }}
-                align="center"
-            >
-                {cellData.rowData.severity}
-            </TableCell>
-        );
-    };
-
-    const COLUMNS_DEFINITIONS = [
-        {
-            label: intl.formatMessage({ id: 'report_viewer/severity' }).toUpperCase(),
-            id: 'severity',
-            dataKey: 'severity',
-            maxWidth: SEVERITY_COLUMN_FIXED_WIDTH,
-            minWidth: SEVERITY_COLUMN_FIXED_WIDTH,
-            cellRenderer: severityCellRender,
-            extra: <FilterButton selectedItems={severityFilter} setSelectedItems={setSeverityFilter} />,
+    const setSeverityFilter = useCallback(
+        (selectedSeverity) => {
+            dispatch(setReportFilters(undefined, undefined, selectedSeverity));
         },
-        {
-            label: intl.formatMessage({ id: 'report_viewer/message' }).toUpperCase(),
-            id: 'message',
-            dataKey: 'message',
-            extra: <TextFilterButton filterText={messageFilter} setFilterText={setMessageFilter} />,
+        [dispatch]
+    );
+
+    const formatUpdateFilter = useCallback(
+        (field, data) => {
+            const filterConfig = {};
+            Object.keys(severityFilter).forEach((severity) => {
+                filterConfig[severity] = !!data.value.includes(severity);
+            });
+            setSeverityFilter(filterConfig);
         },
-    ];
+        [severityFilter, setSeverityFilter]
+    );
 
-    const generateTableColumns = () => {
-        return Object.values(COLUMNS_DEFINITIONS).map((c) => {
-            return c;
-        });
-    };
+    const updateMessageFilter = useCallback(
+        (field, data) => {
+            dispatch(setReportFilters(undefined, data.value, undefined));
+        },
+        [dispatch]
+    );
 
-    const generateTableRows = () => {
-        return !logs
-            ? []
-            : logs.map((log) => {
-                  return {
-                      severity: log.severity.name,
-                      message: log.message,
-                      parentId: log.parentId,
-                      backgroundColor: log.severity.colorName,
-                  };
-              });
-    };
+    const COLUMNS_DEFINITIONS = useMemo(
+        () => [
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
+                width: SEVERITY_COLUMN_FIXED_WIDTH,
+                field: 'severity',
+                filterProps: {
+                    updateFilter: formatUpdateFilter,
+                },
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterEnums: {
+                        severity: filterWrapperData,
+                    },
+                },
+                defaultFilterValue: defaultSeverityFilter,
+                onResetFilter: (resetFilter) => {
+                    setResetSeverityFilter(() => resetFilter);
+                },
+                cellStyle: (params) => ({
+                    backgroundColor: params.data.backgroundColor,
+                    textAlign: 'center',
+                }),
+            }),
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'report_viewer/message' }),
+                field: 'message',
+                filterProps: {
+                    updateFilter: updateMessageFilter,
+                },
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                },
+                defaultFilterValue: '',
+                onResetFilter: (resetFilter) => {
+                    setResetMessageFilter(() => resetFilter);
+                },
+                flex: 1,
+                cellRenderer: DefaultCellRenderer,
+            }),
+        ],
+        [intl, formatUpdateFilter, filterWrapperData, defaultSeverityFilter, updateMessageFilter]
+    );
 
-    const handleRowClick = (event) => {
-        setSelectedRowIndex(event.index);
-        onRowClick(event.rowData);
-    };
+    const generateTableRows = useCallback(() => {
+        return logs
+            ? logs.map((log) => ({
+                  severity: log.severity.name,
+                  message: log.message,
+                  parentId: log.parentId,
+                  backgroundColor: log.severity.colorName,
+              }))
+            : [];
+    }, [logs]);
 
-    const rowStyleFormat = (row) => {
-        if (row.index < 0) {
-            return;
-        }
-        if (selectedRowIndex === row.index) {
-            return {
-                backgroundColor: theme.palette.action.selected,
-            };
-        }
-    };
+    const handleRowClick = useCallback(
+        (row) => {
+            setSelectedRowIndex(row.rowIndex);
+            onRowClick(row.data);
+        },
+        [onRowClick]
+    );
+
+    const rowStyleFormat = useCallback(
+        (row) => {
+            if (row.index < 0) {
+                return {};
+            }
+            return selectedRowIndex === row.rowIndex ? { backgroundColor: theme.palette.action.selected } : {};
+        },
+        [selectedRowIndex, theme]
+    );
 
     useEffect(() => {
         setSelectedRowIndex(-1);
-    }, [logs]);
+        setRowData(generateTableRows());
+    }, [generateTableRows, logs]);
+
+    const onGridReady = ({ api }) => {
+        api?.sizeColumnsToFit();
+    };
+
+    const defaultColumnDefinition = {
+        sortable: false,
+        resizable: false,
+        suppressMovable: true,
+    };
 
     return (
-        //TODO do we need to useMemo/useCallback these props to avoid rerenders ?
-        <VirtualizedTable
-            columns={generateTableColumns()}
-            rows={generateTableRows()}
-            sortable={false}
-            onRowClick={handleRowClick}
-            rowStyle={rowStyleFormat}
+        <CustomAGGrid
+            columnDefs={COLUMNS_DEFINITIONS}
+            rowData={rowData}
+            onCellClicked={handleRowClick}
+            getRowStyle={rowStyleFormat}
+            onGridReady={onGridReady}
+            defaultColDef={defaultColumnDefinition}
         />
     );
 };
