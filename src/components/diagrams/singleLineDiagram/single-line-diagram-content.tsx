@@ -132,13 +132,13 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         });
     }, []);
 
-    const handleOpenModificationDialog = (equipmentId: string, equipmentType: any) => {
+    const handleOpenModificationDialog = (equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
         closeEquipmentMenu();
         setEquipmentToModify({ equipmentId, equipmentType });
     };
 
     const handleOpenDeletionDialog = useCallback(
-        (equipmentId: any, equipmentType: any) => {
+        (equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
             closeEquipmentMenu();
             setEquipmentToDelete({ equipmentId, equipmentType });
         },
@@ -243,10 +243,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         [handleTogglePopover]
     );
     const closeBusMenu = useCallback(() => {
-        // setBusMenu((prevState) => ({
-        //     ...prevState,//FIXME: shloud i reset all other values ?
-        //     display: false,
-        // }));
         setBusMenu({
             position: [-1, -1],
             busId: null,
@@ -528,9 +524,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             // Rotate clicked switch while waiting for updated sld data
             if (locallySwitchedBreaker?.id) {
                 const breakerToSwitchDom: HTMLElement | null = document.getElementById(locallySwitchedBreaker.id);
-                if (breakerToSwitchDom && breakerToSwitchDom.classList.value.includes('sld-closed')) {
+                if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
                     breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
-                } else if (breakerToSwitchDom && breakerToSwitchDom.classList.value.includes('sld-open')) {
+                } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {
                     breakerToSwitchDom.classList.replace('sld-open', 'sld-closed');
                 }
             }
