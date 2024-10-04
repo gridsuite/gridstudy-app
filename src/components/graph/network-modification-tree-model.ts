@@ -73,7 +73,7 @@ export default class NetworkModificationTreeModel {
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
     addChild(
-        newNode: NetworkModificationNode,
+        newNode: NetworkModificationNode | RootNode,
         parentId: UUID,
         insertMode: NodeInsertModes | undefined,
         referenceNodeId: UUID | undefined

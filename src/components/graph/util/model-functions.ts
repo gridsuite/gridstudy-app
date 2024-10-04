@@ -6,15 +6,25 @@
  */
 
 import { UUID } from 'crypto';
-import NetworkModificationTreeModel, { NetworkModificationNode } from '../network-modification-tree-model';
+import NetworkModificationTreeModel, { NetworkModificationNode, RootNode } from '../network-modification-tree-model';
+import { CurrentTreeNode, TreeNodeData } from 'redux/reducer';
 
 export function convertNodetoReactFlowModelNode(
-    node: NetworkModificationNode | null,
+    node: NetworkModificationNode | RootNode | null,
     parentNodeUuid: UUID | undefined
-) {
+): CurrentTreeNode | undefined {
+    console.log('debug', 'convertNodetoReactFlowModelNode', node);
     if (!node) {
         return undefined;
     }
+
+    function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
+        return 'nodeBuildStatus' in n;
+    }
+    // Use the type guard to safely access nodeBuildStatus
+    const globalBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.globalBuildStatus : undefined;
+    const localBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.localBuildStatus : undefined;
+
     // This is the ReactFlow format (Cf documentation)
     // {
     //  id: '1',
@@ -22,17 +32,19 @@ export function convertNodetoReactFlowModelNode(
     //  data: { label: 'Node 1' }, <- use data for customization
     //  position: { x: 250, y: 5 }
     // }
+    const data: TreeNodeData = {
+        parentNodeUuid: parentNodeUuid!,
+        label: node.name,
+        description: node.description ?? null,
+        globalBuildStatus: globalBuildStatus,
+        localBuildStatus: localBuildStatus,
+    };
+
     return {
         id: node.id,
         type: node.type,
-        data: {
-            parentNodeUuid: parentNodeUuid,
-            label: node.name,
-            description: node.description,
-            globalBuildStatus: node.nodeBuildStatus?.globalBuildStatus,
-            localBuildStatus: node.nodeBuildStatus?.localBuildStatus,
-            readOnly: node.readOnly,
-        },
+        position: { x: 0, y: 0 },
+        data: data,
     };
 }
 

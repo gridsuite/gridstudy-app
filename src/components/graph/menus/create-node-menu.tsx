@@ -18,6 +18,7 @@ import { BUILD_STATUS } from '../../network/constants';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { CopyType } from 'components/network-modification-tree-pane';
+import NetworkModificationTreeModel from '../network-modification-tree-model';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -25,7 +26,7 @@ export const NodeActions = {
     NO_ACTION: 'NO_ACTION',
 };
 
-export const getNodeChildren = (treeModel: any, sourceNodeIds: any, allChildren: any) => {
+export const getNodeChildren = (treeModel: NetworkModificationTreeModel, sourceNodeIds: any, allChildren: any) => {
     const children = treeModel.treeNodes.filter((node: any) => sourceNodeIds.includes(node.data.parentNodeUuid));
     if (children.length > 0) {
         children.forEach((item: any) => {
@@ -37,7 +38,7 @@ export const getNodeChildren = (treeModel: any, sourceNodeIds: any, allChildren:
     }
 };
 
-export const getNodesFromSubTree = (treeModel: any, id: any) => {
+export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel, id: any) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
         const activeNodeDirectChildren = treeModel.treeNodes.filter((item: any) => item.data.parentNodeUuid === id);
@@ -215,12 +216,12 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function isSubtreeAlreadySelectedForCut() {
         return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
-    function isNodeHasChildren(node: any, treeModel: any) {
+    function isNodeHasChildren(node: any, treeModel: NetworkModificationTreeModel): boolean {
         return treeModel.treeNodes.some((item: any) => item.data.parentNodeUuid === node.id);
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
-        return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel);
+        return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel!);
     }
     const NODE_MENU_ITEMS = {
         BUILD_NODE: {
@@ -373,7 +374,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         {
             nodeName: activeNode?.data?.label,
-            nodesNumber: getNodesFromSubTree(treeModel, activeNode?.id),
+            nodesNumber: getNodesFromSubTree(treeModel!, activeNode?.id),
         }
     );
     const handleOnClose = useCallback(() => {

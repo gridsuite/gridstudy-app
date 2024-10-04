@@ -227,7 +227,10 @@ import {
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
-import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
+import NetworkModificationTreeModel, {
+    NetworkModificationNode,
+    RootNode,
+} from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
@@ -348,9 +351,8 @@ export interface TreeNodeData {
     parentNodeUuid: UUID;
     label: string;
     description: string | null;
-    buildStatus: BUILD_STATUS;
-    readonly: boolean | null;
     globalBuildStatus?: BUILD_STATUS;
+    localBuildStatus?: BUILD_STATUS;
 }
 export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
 
@@ -1726,16 +1728,19 @@ function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: string) {
     state.currentTreeNode = { ...nextCurrentNode };
 }
 
-function unravelSubTree(treeModel: NetworkModificationTreeModel, subtreeParentId: string, node: Node<TreeNodeData>) {
+function unravelSubTree(
+    treeModel: NetworkModificationTreeModel,
+    subtreeParentId: string,
+    node: NetworkModificationNode | RootNode | null
+) {
+    console.log('debug', 'unravelSubTree', node);
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
         treeModel.addChild(node, subtreeParentId as UUID, NodeInsertModes.After, undefined);
 
-        // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
         if (node.children.length > 0) {
-            // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
             node.children.forEach((child) => {
                 unravelSubTree(treeModel, node.id, child);
             });
