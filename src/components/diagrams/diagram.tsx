@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
@@ -30,53 +29,80 @@ import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
+import { AppState } from 'redux/reducer';
 
-const Diagram = (props) => {
+interface DiagramProps {
+    align?: 'left' | 'right' | 'center';
+    diagramId: string;
+    diagramTitle: string;
+    warningToDisplay?: string;
+    pinned?: boolean;
+    svgType: DiagramType;
+    children?: React.ReactNode;
+    width?: number;
+    height?: number;
+    fullscreenWidth?: number;
+    fullscreenHeight?: number;
+    loadingState?: boolean;
+}
+
+const Diagram: React.FC<DiagramProps> = ({
+    align = 'left',
+    diagramId,
+    diagramTitle,
+    warningToDisplay = '',
+    pinned = false,
+    svgType,
+    children,
+    width = LOADING_WIDTH,
+    height = LOADING_HEIGHT,
+    fullscreenWidth = LOADING_WIDTH,
+    fullscreenHeight = LOADING_HEIGHT,
+    loadingState,
+}) => {
     const dispatch = useDispatch();
     const intl = useIntl();
 
     const { minimizeDiagramView, togglePinDiagramView, closeDiagramView } = useDiagram();
 
-    const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
+    const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
 
     const shouldBeHidden =
-        fullScreenDiagram?.id &&
-        (fullScreenDiagram.id !== props.diagramId || fullScreenDiagram.svgType !== props.svgType);
+        fullScreenDiagram?.id && (fullScreenDiagram.id !== diagramId || fullScreenDiagram.svgType !== svgType);
 
-    const shouldBeFullscreen =
-        fullScreenDiagram?.id === props.diagramId && fullScreenDiagram?.svgType === props.svgType;
+    const shouldBeFullscreen = fullScreenDiagram?.id === diagramId && fullScreenDiagram?.svgType === svgType;
 
-    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
+    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
 
-    const nbVoltageLevels = useSelector((state) => state.networkAreaDiagramNbVoltageLevels);
+    const nbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
 
-    const incrementCounterDisabled = props.loadingState || nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
+    const incrementCounterDisabled = loadingState || nbVoltageLevels > NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS;
 
-    const decrementCounterDisabled = props.loadingState || networkAreaDiagramDepth === 0;
+    const decrementCounterDisabled = loadingState || networkAreaDiagramDepth === 0;
 
     /**
      * DIAGRAM CONTROL HANDLERS
      */
 
     const onMinimizeHandler = () => {
-        minimizeDiagramView(props.diagramId, props.svgType);
+        minimizeDiagramView(diagramId, svgType);
         dispatch(setFullScreenDiagram(null));
     };
 
     const onTogglePinHandler = () => {
-        togglePinDiagramView(props.diagramId, props.svgType);
+        togglePinDiagramView(diagramId, svgType);
     };
 
     const onCloseHandler = () => {
         dispatch(setFullScreenDiagram(null));
-        closeDiagramView(props.diagramId, props.svgType);
-        if (props.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+        closeDiagramView(diagramId, svgType);
+        if (svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
             dispatch(resetNetworkAreaDiagramDepth());
         }
     };
 
     const onShowFullScreenHandler = () => {
-        dispatch(setFullScreenDiagram(props.diagramId, props.svgType));
+        dispatch(setFullScreenDiagram(diagramId, svgType));
     };
 
     const onHideFullScreenHandler = () => {
@@ -97,9 +123,9 @@ const Diagram = (props) => {
 
     return (
         <DiagramResizableBox
-            align={props.align}
-            height={shouldBeFullscreen ? props.fullscreenHeight : props.height}
-            width={shouldBeFullscreen ? props.fullscreenWidth : props.width}
+            align={align}
+            height={shouldBeFullscreen ? fullscreenHeight : height}
+            width={shouldBeFullscreen ? fullscreenWidth : width}
             // We disable the resizeBox if a diagram is in fullscreen
             disableResize={!!fullScreenDiagram?.id}
             // We hide this diagram if another diagram is in fullscreen mode.
@@ -119,26 +145,26 @@ const Diagram = (props) => {
                 }}
             >
                 <DiagramHeader
-                    diagramTitle={props.diagramTitle}
-                    svgType={props.svgType}
-                    diagramId={props.diagramId}
+                    diagramTitle={diagramTitle}
+                    svgType={svgType}
+                    diagramId={diagramId}
                     showMinimizeControl
                     onMinimize={onMinimizeHandler}
-                    showTogglePinControl={props.svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
+                    showTogglePinControl={svgType !== DiagramType.NETWORK_AREA_DIAGRAM}
                     onTogglePin={onTogglePinHandler}
-                    pinned={props.pinned}
+                    pinned={pinned}
                     showCloseControl
                     onClose={onCloseHandler}
                 />
                 <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
-                    {props.warningToDisplay ? (
-                        <AlertCustomMessageNode message={props.warningToDisplay} noMargin />
+                    {warningToDisplay ? (
+                        <AlertCustomMessageNode message={warningToDisplay} noMargin />
                     ) : (
-                        <>{props.children}</>
+                        <>{children}</>
                     )}
                 </Box>
                 <DiagramFooter
-                    showCounterControls={props.svgType === DiagramType.NETWORK_AREA_DIAGRAM}
+                    showCounterControls={svgType === DiagramType.NETWORK_AREA_DIAGRAM}
                     counterText={intl.formatMessage({
                         id: 'depth',
                     })}
@@ -155,31 +181,6 @@ const Diagram = (props) => {
             </Paper>
         </DiagramResizableBox>
     );
-};
-
-Diagram.defaultProps = {
-    pinned: false,
-    warningToDisplay: '',
-    align: 'left',
-    width: LOADING_WIDTH,
-    height: LOADING_HEIGHT,
-    fullscreenWidth: LOADING_WIDTH,
-    fullscreenHeight: LOADING_HEIGHT,
-};
-
-Diagram.propTypes = {
-    align: PropTypes.string,
-    diagramId: PropTypes.string,
-    diagramTitle: PropTypes.string.isRequired,
-    warningToDisplay: PropTypes.string,
-    pinned: PropTypes.bool,
-    svgType: PropTypes.string.isRequired,
-    children: PropTypes.node,
-    width: PropTypes.number,
-    height: PropTypes.number,
-    fullscreenWidth: PropTypes.number,
-    fullscreenHeight: PropTypes.number,
-    loadingState: PropTypes.bool,
 };
 
 export default Diagram;
