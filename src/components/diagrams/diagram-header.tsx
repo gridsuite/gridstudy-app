@@ -14,14 +14,15 @@ import MinimizeIcon from '@mui/icons-material/Minimize';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
 import CloseIcon from '@mui/icons-material/Close';
-import PropTypes from 'prop-types';
 import { stopDiagramBlink } from '../../redux/actions';
 import { mergeSx } from '../utils/functions';
+import { Theme } from '@mui/material';
+import { AppState } from 'redux/reducer';
 
 const BLINK_LENGTH_MS = 1800;
 
 const styles = {
-    header: (theme) => ({
+    header: (theme: Theme) => ({
         // prevent header from making the window wider, prevent bugs when displaying a lot of different voltage levels
         position: 'absolute',
         width: '100%',
@@ -34,20 +35,20 @@ const styles = {
         borderBottom: 'solid 1px',
         borderBottomColor: theme.palette.mode === 'light' ? theme.palette.action.selected : 'transparent',
     }),
-    actionIcon: (theme) => ({
+    actionIcon: (theme: Theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
     }),
-    pinRotate: (theme) => ({
+    pinRotate: (theme: Theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
         transform: 'rotate(45deg)',
     }),
-    close: (theme) => ({
+    close: (theme: Theme) => ({
         padding: 0,
         borderRight: theme.spacing(1),
     }),
-    blink: (theme) => ({
+    blink: (theme: Theme) => ({
         animation: 'diagramHeaderBlinkAnimation ' + BLINK_LENGTH_MS + 'ms',
         '@keyframes diagramHeaderBlinkAnimation': {
             // This adds a global css rule, so we keep the rule's name specific.
@@ -62,10 +63,33 @@ const styles = {
     }),
 };
 
-const DiagramHeader = (props) => {
+interface DiagramHeaderProps {
+    diagramTitle?: string;
+    showMinimizeControl?: boolean;
+    onMinimize?: () => void;
+    showTogglePinControl?: boolean;
+    onTogglePin?: () => void;
+    pinned?: boolean;
+    showCloseControl?: boolean;
+    onClose?: () => void;
+    diagramId?: string;
+    svgType?: string;
+}
+
+const DiagramHeader: React.FC<DiagramHeaderProps> = ({
+    diagramTitle,
+    showMinimizeControl = false,
+    onMinimize,
+    showTogglePinControl = false,
+    onTogglePin,
+    pinned,
+    showCloseControl = false,
+    onClose,
+    diagramId,
+    svgType,
+}) => {
     const dispatch = useDispatch();
 
-    const { onMinimize, onTogglePin, onClose } = props;
     const handleMinimize = useCallback(() => onMinimize && onMinimize(), [onMinimize]);
     const handleTogglePin = useCallback(() => onTogglePin && onTogglePin(), [onTogglePin]);
     const handleClose = useCallback(() => onClose && onClose(), [onClose]);
@@ -76,9 +100,8 @@ const DiagramHeader = (props) => {
 
     const [blinking, setBlinking] = useState(false);
     const needsToBlink = useSelector(
-        (state) =>
-            state.diagramStates.find((diagram) => diagram.svgType === props?.svgType && diagram.id === props?.diagramId)
-                ?.needsToBlink
+        (state: AppState) =>
+            state.diagramStates.find((diagram) => diagram.svgType === svgType && diagram.id === diagramId)?.needsToBlink
     );
 
     useEffect(() => {
@@ -99,7 +122,7 @@ const DiagramHeader = (props) => {
 
     return (
         <Box sx={mergeSx(styles.header, blinking && styles.blink)}>
-            <OverflowableText sx={{ flexGrow: '1' }} text={props.diagramTitle} />
+            <OverflowableText sx={{ flexGrow: '1' }} text={diagramTitle} />
             <Box>
                 <Box
                     sx={{
@@ -107,17 +130,17 @@ const DiagramHeader = (props) => {
                         flexDirection: 'row',
                     }}
                 >
-                    {props.showMinimizeControl && (
+                    {showMinimizeControl && (
                         <IconButton sx={styles.actionIcon} onClick={handleMinimize}>
                             <MinimizeIcon />
                         </IconButton>
                     )}
-                    {props.showTogglePinControl && (
-                        <IconButton sx={props.pinned ? styles.actionIcon : styles.pinRotate} onClick={handleTogglePin}>
-                            {props.pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
+                    {showTogglePinControl && (
+                        <IconButton sx={pinned ? styles.actionIcon : styles.pinRotate} onClick={handleTogglePin}>
+                            {pinned ? <PushPinIcon /> : <PushPinOutlinedIcon />}
                         </IconButton>
                     )}
-                    {props.showCloseControl && (
+                    {showCloseControl && (
                         <IconButton sx={styles.close} onClick={handleClose}>
                             <CloseIcon />
                         </IconButton>
@@ -126,25 +149,6 @@ const DiagramHeader = (props) => {
             </Box>
         </Box>
     );
-};
-
-DiagramHeader.defaultProps = {
-    showMinimizeControl: false,
-    showTogglePinControl: false,
-    showCloseControl: false,
-};
-
-DiagramHeader.propTypes = {
-    diagramTitle: PropTypes.string,
-    showMinimizeControl: PropTypes.bool,
-    onMinimize: PropTypes.func,
-    showTogglePinControl: PropTypes.bool,
-    onTogglePin: PropTypes.func,
-    pinned: PropTypes.bool,
-    showCloseControl: PropTypes.bool,
-    onClose: PropTypes.func,
-    diagramId: PropTypes.string,
-    svgType: PropTypes.string,
 };
 
 export default DiagramHeader;

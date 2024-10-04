@@ -75,29 +75,31 @@ type LocallySwitchedBreaker = {
     id: string;
     [key: string]: any; // Allows for additional attributes
 };
+
+type EquipmentToModify = {
+    equipmentId: string;
+    equipmentType: EQUIPMENT_TYPES;
+};
+
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
     const svgRef = useRef<HTMLDivElement>();
-    const diagramViewerRef = useRef<SingleLineDiagramViewer | undefined>(undefined);
+    const diagramViewerRef = useRef<SingleLineDiagramViewer>();
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const [modificationInProgress, setModificationInProgress] = useState<boolean>(false);
+    const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<LocallySwitchedBreaker | undefined>();
+    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<LocallySwitchedBreaker>();
     const [errorMessage, setErrorMessage] = useState<string>('');
     const { openDiagramView } = useDiagram();
-    const [equipmentToModify, setEquipmentToModify] = useState<
-        { equipmentId: string; equipmentType: EQUIPMENT_TYPES } | undefined
-    >();
-    const [equipmentToDelete, setEquipmentToDelete] = useState<
-        { equipmentId: string; equipmentType: EQUIPMENT_TYPES } | undefined
-    >();
-    const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState<boolean>(false);
+    const [equipmentToModify, setEquipmentToModify] = useState<EquipmentToModify>();
+    const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentToModify>();
+    const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
     const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
-    const [hoveredEquipmentId, setHoveredEquipmentId] = useState<string>('');
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const computationStarting = useSelector((state: AppState) => state.computationStarting);
