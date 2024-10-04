@@ -289,19 +289,21 @@ const styles = {
     },
 };
 
+interface DiagramPaneProps {
+    studyUuid: UUID;
+    currentNode: Node<TreeNodeData>;
+    showInSpreadsheet: (id: string, type: string) => void;
+    oneBusShortCircuitStatus: string;
+    visible: boolean;
+}
+
 export function DiagramPane({
     studyUuid,
-    showInSpreadsheet,
     currentNode,
-    visible,
+    showInSpreadsheet,
     oneBusShortCircuitStatus,
-}: {
-    studyUuid: UUID;
-    showInSpreadsheet: boolean;
-    currentNode: any;
-    visible: boolean;
-    oneBusShortCircuitStatus: boolean;
-}) {
+    visible,
+}: DiagramPaneProps) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
@@ -431,7 +433,7 @@ export function DiagramPane({
 
     // Add a new NAD in the 'views' (if a NAD is already present, we replace it)
     const addOrReplaceNAD = useCallback(
-        (networkAreaIds, networkAreaViewState, networkAreaDiagramDepth) => {
+        (networkAreaIds: UUID[], networkAreaViewState: ViewState, networkAreaDiagramDepth: number) => {
             // First we add the empty diagram in the views
             setViews((views) => {
                 const newDiagram = {
@@ -494,7 +496,7 @@ export function DiagramPane({
     const updateNAD = useCallback(
         (diagramStates) => {
             previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
-            const networkAreaIds = [];
+            const networkAreaIds: UUID[] = [];
             let networkAreaViewState = ViewState.OPENED;
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -587,7 +589,7 @@ export function DiagramPane({
     // and then stop before we get too close to
     // NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS
     const shouldDebounceUpdateNAD = useCallback(
-        (networkAreaDiagramDepth) => {
+        (networkAreaDiagramDepth: number) => {
             const estimatedNbVoltageLevels = getEstimatedNbVoltageLevels(
                 previousNetworkAreaDiagramDepth.current,
                 networkAreaDiagramDepth,
@@ -762,7 +764,7 @@ export function DiagramPane({
      */
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
-    const setDiagramSize = (diagramId, diagramType, width, height) => {
+    const setDiagramSize = (diagramId, diagramType, width: number, height: number) => {
         // Let's update the stored values if they are new
         const storedValues = diagramContentSizes?.get(diagramType + diagramId);
         if (!storedValues || storedValues.width !== width || storedValues.height !== height) {
@@ -813,13 +815,13 @@ export function DiagramPane({
     );
 
     const getDiagramOrDefaultWidth = useCallback(
-        (diagramId, diagramType) => {
+        (diagramId: UUID, diagramType: DiagramType) => {
             return diagramContentSizes.get(diagramType + diagramId)?.width ?? getDefaultWidthByDiagramType(diagramType);
         },
         [diagramContentSizes]
     );
 
-    const getRatioWidthByHeight = (width, height) => {
+    const getRatioWidthByHeight = (width: number, height: number) => {
         if (Number(height) > 0) {
             return Number(width) / Number(height);
         }
@@ -847,7 +849,7 @@ export function DiagramPane({
             // Then, we find the maximum height from these diagrams
             if (matchingDiagrams.length > 0) {
                 return matchingDiagrams.reduce(
-                    (maxFoundHeight, currentDiagram) =>
+                    (maxFoundHeight: number, currentDiagram) =>
                         (maxFoundHeight || 1) >
                         diagramContentSizes.get(currentDiagram.svgType + currentDiagram.id).height
                             ? maxFoundHeight
@@ -867,7 +869,7 @@ export function DiagramPane({
      * share their heights, whereas a network area diagram will have its own height).
      */
     const getWidthForPaneDisplay = useCallback(
-        (diagramId, diagramType) => {
+        (diagramId: UUID, diagramType) => {
             const diagramWidth = getDiagramOrDefaultWidth(diagramId, diagramType);
 
             const diagramHeight = getDiagramOrDefaultHeight(diagramId, diagramType);
@@ -882,7 +884,7 @@ export function DiagramPane({
      * the pane, and the other diagrams' sizes.
      */
     const getHeightForPaneDisplay = useCallback(
-        (diagramType, availableWidth, availableHeight) => {
+        (diagramType, availableWidth: number, availableHeight: number) => {
             let result;
 
             const maxHeightFromDisplayedDiagrams = getMaxHeightFromDisplayedDiagrams(diagramType);
@@ -1050,11 +1052,3 @@ export function DiagramPane({
         </AutoSizer>
     );
 }
-
-DiagramPane.propTypes = {
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    showInSpreadsheet: PropTypes.func,
-    oneBusShortCircuitStatus: PropTypes.string.isRequired,
-    visible: PropTypes.bool,
-};
