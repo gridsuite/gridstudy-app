@@ -304,9 +304,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     busId={busMenu.busId ?? ''}
                     position={busMenu.position}
                     onClose={closeBusMenu}
-                    setModificationInProgress={function (progress: boolean): void {
-                        throw new Error('Function not implemented.');
-                    }}
+                    setModificationInProgress={() => {}}
                 />
             )
         );
