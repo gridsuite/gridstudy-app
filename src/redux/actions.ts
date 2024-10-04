@@ -327,10 +327,10 @@ export const NETWORK_MODIFICATION_TREE_NODES_REMOVED = 'NETWORK_MODIFICATION_TRE
 export type NetworkModificationTreeNodesRemovedAction = Readonly<
     Action<typeof NETWORK_MODIFICATION_TREE_NODES_REMOVED>
 > & {
-    networkModificationTreeNodes: CurrentTreeNode[];
+    networkModificationTreeNodes: UUID[];
 };
 export function networkModificationTreeNodesRemoved(
-    networkModificationTreeNodes: CurrentTreeNode[]
+    networkModificationTreeNodes: UUID[]
 ): NetworkModificationTreeNodesRemovedAction {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,

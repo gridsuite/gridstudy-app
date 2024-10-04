@@ -10,14 +10,9 @@ import NetworkModificationTreeModel, { NetworkModificationNode, RootNode } from 
 import { CurrentTreeNode, TreeNodeData } from 'redux/reducer';
 
 export function convertNodetoReactFlowModelNode(
-    node: NetworkModificationNode | RootNode | null,
+    node: NetworkModificationNode | RootNode,
     parentNodeUuid: UUID | undefined
-): CurrentTreeNode | undefined {
-    console.log('debug', 'convertNodetoReactFlowModelNode', node);
-    if (!node) {
-        return undefined;
-    }
-
+): CurrentTreeNode {
     function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
         return 'nodeBuildStatus' in n;
     }
@@ -125,6 +120,10 @@ export function getAllChildren(elements: NetworkModificationTreeModel | null, no
         return [];
     }
     const selectedNode = elements.treeNodes.find((node: any) => node.id === nodeId);
+    //TODO(jamal) is this can happen ?
+    if (!selectedNode) {
+        return [];
+    }
     const directChildren = elements.treeNodes.filter((node: any) => node.data.parentNodeUuid === selectedNode.id);
     let allChildren = [...directChildren];
     directChildren.forEach((child: any) => {

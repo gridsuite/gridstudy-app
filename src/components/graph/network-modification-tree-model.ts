@@ -10,6 +10,7 @@ import { convertNodetoReactFlowModelNode } from './util/model-functions';
 import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
+import { CurrentTreeNode } from 'redux/reducer';
 
 export enum NodeType {
     ROOT = 'ROOT',
@@ -63,7 +64,7 @@ const countNodes = (nodes: any[], parentId: any) => {
 };
 
 export default class NetworkModificationTreeModel {
-    treeNodes: any[] = [];
+    treeNodes: CurrentTreeNode[] = [];
     treeEdges: any[] = [];
 
     isAnyNodeBuilding = false;
@@ -163,8 +164,8 @@ export default class NetworkModificationTreeModel {
 
     // Remove nodes AND reparent their children
     // TODO: support the case where children are deleted too (no reparenting)
-    removeNodes(deletedNodes: any[]) {
-        deletedNodes.forEach((nodeId: any) => {
+    removeNodes(deletedNodesUUIDs: UUID[]) {
+        deletedNodesUUIDs.forEach((nodeId: UUID) => {
             // get edges which have the deleted node as source or target
             const edges = this.treeEdges.filter((edge) => edge.source === nodeId || edge.target === nodeId);
             // From the edges array
@@ -195,7 +196,7 @@ export default class NetworkModificationTreeModel {
                 if (node.data?.parentNodeUuid === nodeId) {
                     node.data = {
                         ...node.data,
-                        parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
+                        parentNodeUuid: nodeToDelete!.data?.parentNodeUuid,
                     };
                 }
                 return node;

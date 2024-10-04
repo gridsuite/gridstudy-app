@@ -216,8 +216,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     function isSubtreeAlreadySelectedForCut() {
         return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
-    function isNodeHasChildren(node: any, treeModel: NetworkModificationTreeModel): boolean {
-        return treeModel.treeNodes.some((item: any) => item.data.parentNodeUuid === node.id);
+    function isNodeHasChildren(node: any, treeModel: NetworkModificationTreeModel | null): boolean {
+        return treeModel?.treeNodes.some((item: any) => item.data.parentNodeUuid === node.id) ?? false;
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children

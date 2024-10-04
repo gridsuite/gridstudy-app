@@ -353,6 +353,8 @@ export interface TreeNodeData {
     description: string | null;
     globalBuildStatus?: BUILD_STATUS;
     localBuildStatus?: BUILD_STATUS;
+    readOnly?: boolean;
+    caseName?: string;
 }
 export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
 
@@ -795,7 +797,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                // @ts-expect-error TODO: what to do if current node null?
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -819,7 +820,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                // @ts-expect-error TODO: what to do if current node null?
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -843,12 +843,13 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         NETWORK_MODIFICATION_TREE_NODES_REMOVED,
         (state, action: NetworkModificationTreeNodesRemovedAction) => {
+            console.log('debug', 'NETWORK_MODIFICATION_TREE_NODES_REMOVED', action.networkModificationTreeNodes);
             if (state.networkModificationTreeModel) {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate() as NetworkModificationTreeModel;
 
                 //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
-                const nextCurrentNodeUuid = newModel.treeNodes
+                const nextCurrentNodeUuid: UUID | undefined = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
                     .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
@@ -873,7 +874,6 @@ export const reducer = createReducer(initialState, (builder) => {
                     )
                 ) {
                     // Then must overwrite currentTreeNode to get new parentNodeUuid
-                    // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }
@@ -890,7 +890,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.networkModificationTreeModel?.setBuildingStatus();
                 // check if current node is in the nodes updated list
                 if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
-                    // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                     // current node has changed, then will need to reload Geo Data
                     state.reloadMap = true;
@@ -1720,12 +1719,14 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
     return currentEquipments;
 }
 
-function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: string) {
+function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: UUID | undefined) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );
-    //  we need to overwrite state.currentTreeNode to consider label change for example.
-    state.currentTreeNode = { ...nextCurrentNode };
+    if (nextCurrentNode) {
+        //  we need to overwrite state.currentTreeNode to consider label change for example.
+        state.currentTreeNode = { ...nextCurrentNode };
+    }
 }
 
 function unravelSubTree(
@@ -1733,7 +1734,6 @@ function unravelSubTree(
     subtreeParentId: string,
     node: NetworkModificationNode | RootNode | null
 ) {
-    console.log('debug', 'unravelSubTree', node);
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
