@@ -17,7 +17,7 @@ import {
     PARAM_USE_NAME,
 } from '../../utils/config-params';
 import PropTypes from 'prop-types';
-import { Chip, Stack } from '@mui/material';
+import { Chip, Stack, Theme } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import {
@@ -52,20 +52,22 @@ import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { UUID } from 'crypto';
+import { AppState, DiagramState } from 'redux/reducer';
 
 // Returns a callback that returns a promise
-const useDisplayView = (studyUuid, currentNode) => {
+const useDisplayView = (studyUuid: UUID, currentNode: CurrentNode) => {
     const { snackError } = useSnackMessage();
-    const paramUseName = useSelector((state) => state[PARAM_USE_NAME]);
+    const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
-    const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
-    const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
-    const substationLayout = useSelector((state) => state[PARAM_SUBSTATION_LAYOUT]);
-    const componentLibrary = useSelector((state) => state[PARAM_COMPONENT_LIBRARY]);
-    const language = useSelector((state) => state[PARAM_LANGUAGE]);
+    const centerName = useSelector((state: AppState) => state[PARAM_CENTER_LABEL]);
+    const diagonalName = useSelector((state: AppState) => state[PARAM_DIAGONAL_LABEL]);
+    const substationLayout = useSelector((state: AppState) => state[PARAM_SUBSTATION_LAYOUT]);
+    const componentLibrary = useSelector((state: AppState) => state[PARAM_COMPONENT_LIBRARY]);
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
-        (voltageLevelId) =>
+        (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
@@ -83,7 +85,7 @@ const useDisplayView = (studyUuid, currentNode) => {
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
-        (voltageLevelId) =>
+        (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
@@ -99,9 +101,9 @@ const useDisplayView = (studyUuid, currentNode) => {
                 : null,
         [centerName, componentLibrary, diagonalName, studyUuid, substationLayout, paramUseName, currentNode, language]
     );
-    const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
-        (voltageLevelsIds, depth) =>
+        (voltageLevelsIds: UUID[], depth: number) =>
             isNodeBuilt(currentNode)
                 ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id, voltageLevelsIds, depth, initNadWithGeoData)
                 : null,
@@ -110,7 +112,7 @@ const useDisplayView = (studyUuid, currentNode) => {
 
     // this callback returns a promise
     const fetchSvgData = useCallback(
-        (svgUrl, svgType) => {
+        (svgUrl: string | null, svgType: DiagramType) => {
             if (svgUrl) {
                 return fetchSvg(svgUrl)
                     .then((data) => {
@@ -162,7 +164,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                 return Promise.reject();
             }
 
-            function createSubstationDiagramView(id, state) {
+            function createSubstationDiagramView(id: UUID, state: DiagramState) {
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then((svg) => {
                     let label = getNameOrId(svg.additionalMetadata) ?? id;
@@ -179,7 +181,7 @@ const useDisplayView = (studyUuid, currentNode) => {
                 });
             }
 
-            function createVoltageLevelDiagramView(id, state) {
+            function createVoltageLevelDiagramView(id: UUID, state: DiagramState) {
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then((svg) => {
                     let label = getNameOrId(svg.additionalMetadata) ?? id;
@@ -198,19 +200,24 @@ const useDisplayView = (studyUuid, currentNode) => {
                 });
             }
 
-            function createNetworkAreaDiagramView(ids, state, depth = 0) {
+            function createNetworkAreaDiagramView(ids: UUID[], state: DiagramState, depth = 0) {
                 if (ids?.length) {
-                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth, initNadWithGeoData);
+                    const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
                     return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
                         let nadTitle = '';
-                        let substationsIds = [];
+                        let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
-                            .map((vl) => ({
+                            .map((vl: { name: string; substationId: UUID }) => ({
                                 name: getNameOrId(vl),
                                 substationId: vl.substationId,
                             }))
-                            .sort((vlA, vlB) => vlA.name.toLowerCase().localeCompare(vlB.name.toLowerCase()))
-                            .forEach((voltageLevel) => {
+                            .sort(
+                                (
+                                    vlA: { name: string; substationId: UUID },
+                                    vlB: { name: string; substationId: UUID }
+                                ) => vlA.name.toLowerCase().localeCompare(vlB.name.toLowerCase())
+                            )
+                            .forEach((voltageLevel: { name: string; substationId: UUID }) => {
                                 const name = voltageLevel.name;
                                 if (name !== null) {
                                     nadTitle += (nadTitle !== '' ? ', ' : '') + name;
@@ -252,7 +259,6 @@ const useDisplayView = (studyUuid, currentNode) => {
             studyUuid,
             currentNode,
             fetchSvgData,
-            initNadWithGeoData,
         ]
     );
 };
@@ -272,7 +278,7 @@ const styles = {
         display: 'flex',
         overflow: 'hidden',
     },
-    availableDiagramSurfaceArea: (theme) => ({
+    availableDiagramSurfaceArea: (theme: Theme) => ({
         flexDirection: 'row',
         display: 'inline-flex',
         paddingRight: theme.spacing(6),
@@ -282,22 +288,34 @@ const styles = {
     },
 };
 
-export function DiagramPane({ studyUuid, showInSpreadsheet, currentNode, visible, oneBusShortCircuitStatus }) {
+export function DiagramPane({
+    studyUuid,
+    showInSpreadsheet,
+    currentNode,
+    visible,
+    oneBusShortCircuitStatus,
+}: {
+    studyUuid: UUID;
+    showInSpreadsheet: boolean;
+    currentNode: CurrentNode;
+    visible: boolean;
+    oneBusShortCircuitStatus: boolean;
+}) {
     const dispatch = useDispatch();
     const intl = useIntl();
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [views, setViews] = useState([]);
-    const fullScreenDiagram = useSelector((state) => state.fullScreenDiagram);
+    const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
     const createView = useDisplayView(studyUuid, currentNode);
-    const diagramStates = useSelector((state) => state.diagramStates);
-    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
+    const diagramStates = useSelector((state: AppState) => state.diagramStates);
+    const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);
 
-    const networkAreaDiagramNbVoltageLevels = useSelector((state) => state.networkAreaDiagramNbVoltageLevels);
+    const networkAreaDiagramNbVoltageLevels = useSelector((state: AppState) => state.networkAreaDiagramNbVoltageLevels);
 
     const { translate } = useLocalizedCountries();
 
-    const notificationIdList = useSelector((state) => state.notificationIdList);
+    const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const [diagramContentSizes, setDiagramContentSizes] = useState(new Map()); // When a diagram content gets its size from the backend, it will update this map of sizes.
 
     useEffect(() => {
@@ -321,13 +339,13 @@ export function DiagramPane({ studyUuid, showInSpreadsheet, currentNode, visible
 
     // Check if we need to add new SLDs in the 'views' and add them if necessary
     const addMissingSLDs = useCallback(
-        (diagramStates) => {
+        (diagramStates: DiagramState[]) => {
             // We check if we need to add new diagrams
-            const diagramsToAdd = [];
+            const diagramsToAdd: DiagramState[] = [];
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                     const diagramAlreadyPresentInViews = viewsRef.current.find(
-                        (diagramView) =>
+                        (diagramView: DiagramState) =>
                             diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                             diagramView.id === diagramState.id
                     );
