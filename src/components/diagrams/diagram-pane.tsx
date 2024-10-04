@@ -53,10 +53,11 @@ import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, DiagramState } from 'redux/reducer';
+import { AppState, DiagramState, TreeNodeData } from 'redux/reducer';
+import { Node } from 'react-flow-renderer';
 
 // Returns a callback that returns a promise
-const useDisplayView = (studyUuid: UUID, currentNode: CurrentNode) => {
+const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
     const { snackError } = useSnackMessage();
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
@@ -297,7 +298,7 @@ export function DiagramPane({
 }: {
     studyUuid: UUID;
     showInSpreadsheet: boolean;
-    currentNode: CurrentNode;
+    currentNode: any;
     visible: boolean;
     oneBusShortCircuitStatus: boolean;
 }) {
@@ -948,6 +949,7 @@ export function DiagramPane({
         },
         [currentNode]
     );
+    console.log('debug', 'displayedDiagrams', displayedDiagrams);
     return (
         <AutoSizer>
             {({ width, height }) => (
