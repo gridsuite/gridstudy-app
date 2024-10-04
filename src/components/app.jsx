@@ -8,21 +8,10 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import {
     getOptionalServiceByServerName,
     OptionalServicesNames,
-    OptionalServicesStatus,
-} from './utils/optional-services';
-import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-    Navigate,
-    Route,
-    Routes,
-    useLocation,
-    useMatch,
-    useNavigate,
-} from 'react-router-dom';
-import {
-    getOptionalServiceByServerName,
     OptionalServicesStatus,
 } from './utils/optional-services';
 
@@ -34,7 +23,7 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
-    Websocket
+    Websocket,
 } from '@gridsuite/commons-ui';
 
 import { FormattedMessage } from 'react-intl';
@@ -53,6 +42,7 @@ import {
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
     selectFluxConvention,
+    selectInitNadWithGeoData,
     selectLanguage,
     selectLimitReduction,
     selectLineFlowAlertThreshold,
@@ -68,18 +58,11 @@ import {
     setOptionalServices,
     setParamsLoaded,
 } from '../redux/actions';
-import { defaultOptionalServicesState } from '../redux/reducer';
-import {
-    fetchConfigParameter,
-    fetchConfigParameters,
-} from '../services/config';
+import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
 import { getOptionalServices } from '../services/study';
 import { fetchValidateUser } from '../services/user-admin';
-import {
-    fetchDefaultParametersValues,
-    fetchIdpSettings,
-} from '../services/utils';
+import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -113,39 +96,6 @@ import {
     TABLES_NAMES_INDEXES,
 } from './spreadsheet/utils/config-tables';
 import { StudyContainer } from './study-container';
-import { fetchValidateUser } from '../services/user-admin';
-import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
-import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
-import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
-import { getOptionalServices } from '../services/study';
-import {
-    changeDisplayedColumns,
-    changeLockedColumns,
-    changeReorderedColumns,
-    limitReductionModified,
-    selectCenterLabelState,
-    selectComponentLibrary,
-    selectComputedLanguage,
-    selectDiagonalLabelState,
-    selectEnableDeveloperMode,
-    selectFavoriteContingencyLists,
-    selectFluxConvention,
-    selectInitNadWithGeoData,
-    selectLanguage,
-    selectLimitReduction,
-    selectLineFlowAlertThreshold,
-    selectLineFlowColorMode,
-    selectLineFlowMode,
-    selectLineFullPathState,
-    selectLineParallelPathState,
-    selectMapBaseMap,
-    selectMapManualRefresh,
-    selectSubstationLayout,
-    selectTheme,
-    selectUseName,
-    setOptionalServices,
-    setParamsLoaded,
-} from '../redux/actions';
 
 const noUserManager = { instance: null, error: null };
 
@@ -332,6 +282,7 @@ const App = () => {
         const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
+            console.log("🚀 QCA :  ~ connectNotificationsUpdateConfig ~ event:", event);
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
@@ -498,60 +449,59 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-         <Websocket urls={urlMapper}>
-
-            <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
-            <CardErrorBoundary>
-                <div
-                    className="singlestretch-parent"
-                    style={{
-                        flexGrow: 1,
-                        //Study pane needs 'hidden' when displaying a
-                        //fullscreen sld or when displaying the results or
-                        //elements tables for certain screen sizes because
-                        //width/heights are computed programmaticaly and
-                        //resizing the page trigger render loops due to
-                        //appearing and disappearing scrollbars.
-                        //For all other cases, auto is better because it will
-                        //be easier to see that we have a layout problem when
-                        //scrollbars appear when they should not.
-                        overflow: isStudyPane ? 'hidden' : 'auto',
-                    }}
-                >
-                    {user !== null ? (
-                        <Routes>
-                            <Route
-                                path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+            <Websocket urls={urlMapper}>
+                <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
+                <CardErrorBoundary>
+                    <div
+                        className="singlestretch-parent"
+                        style={{
+                            flexGrow: 1,
+                            //Study pane needs 'hidden' when displaying a
+                            //fullscreen sld or when displaying the results or
+                            //elements tables for certain screen sizes because
+                            //width/heights are computed programmaticaly and
+                            //resizing the page trigger render loops due to
+                            //appearing and disappearing scrollbars.
+                            //For all other cases, auto is better because it will
+                            //be easier to see that we have a layout problem when
+                            //scrollbars appear when they should not.
+                            overflow: isStudyPane ? 'hidden' : 'auto',
+                        }}
+                    >
+                        {user !== null ? (
+                            <Routes>
+                                <Route
+                                    path="/studies/:studyUuid"
+                                    element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+                                />
+                                <Route
+                                    path="/sign-in-callback"
+                                    element={<Navigate replace to={getPreLoginPath() || '/'} />}
+                                />
+                                <Route
+                                    path="/logout-callback"
+                                    element={<h1>Error: logout failed; you are still logged in.</h1>}
+                                />
+                                <Route
+                                    path="*"
+                                    element={<PageNotFound message={<FormattedMessage id="PageNotFound" />} />}
+                                />
+                            </Routes>
+                        ) : (
+                            <AuthenticationRouter
+                                userManager={userManager}
+                                signInCallbackError={signInCallbackError}
+                                authenticationRouterError={authenticationRouterError}
+                                showAuthenticationRouterLogin={showAuthenticationRouterLogin}
+                                dispatch={dispatch}
+                                navigate={navigate}
+                                location={location}
                             />
-                            <Route
-                                path="/sign-in-callback"
-                                element={<Navigate replace to={getPreLoginPath() || '/'} />}
-                            />
-                            <Route
-                                path="/logout-callback"
-                                element={<h1>Error: logout failed; you are still logged in.</h1>}
-                            />
-                            <Route
-                                path="*"
-                                element={<PageNotFound message={<FormattedMessage id="PageNotFound" />} />}
-                            />
-                        </Routes>
-                    ) : (
-                        <AuthenticationRouter
-                            userManager={userManager}
-                            signInCallbackError={signInCallbackError}
-                            authenticationRouterError={authenticationRouterError}
-                            showAuthenticationRouterLogin={showAuthenticationRouterLogin}
-                            dispatch={dispatch}
-                            navigate={navigate}
-                            location={location}
-                        />
-                    )}
-                </div>
-            </CardErrorBoundary>
-        </Websocket>
-    </div>
+                        )}
+                    </div>
+                </CardErrorBoundary>
+            </Websocket>
+        </div>
     );
 };
 
