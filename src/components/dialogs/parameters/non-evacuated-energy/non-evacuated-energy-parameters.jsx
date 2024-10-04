@@ -5,11 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, MuiSelectInput, SubmitButton } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -46,10 +45,6 @@ import {
     STAGES_SELECTION,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-import {
-    getNonEvacuatedEnergyParameters,
-    setNonEvacuatedEnergyParameters,
-} from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
 import { LineSeparator } from '../../dialogUtils';
 import {
@@ -65,55 +60,6 @@ import {
     getMonitoredBranchesParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
-import ComputingType from '../../../computing-status/computing-type';
-import { isComputationParametersUpdated } from '../common/computation-parameters-util';
-import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
-import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
-
-export const useGetNonEvacuatedEnergyParameters = () => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const studyUpdated = useSelector((state) => state.studyUpdated);
-
-    const { snackError } = useSnackMessage();
-    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
-
-    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
-    const nonEvacuatedEnergyAvailabilityRef = useRef(nonEvacuatedEnergyAvailability);
-    nonEvacuatedEnergyAvailabilityRef.current = nonEvacuatedEnergyAvailability;
-
-    const fetchNonEvacuatedEnergyParameters = useCallback(
-        (studyUuid) => {
-            getNonEvacuatedEnergyParameters(studyUuid)
-                .then((params) => setNonEvacuatedEnergyParams(params))
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsRetrievingError',
-                    });
-                });
-        },
-        [snackError]
-    );
-
-    useEffect(() => {
-        if (studyUuid && nonEvacuatedEnergyAvailability === OptionalServicesStatus.Up) {
-            fetchNonEvacuatedEnergyParameters(studyUuid);
-        }
-    }, [nonEvacuatedEnergyAvailability, studyUuid, fetchNonEvacuatedEnergyParameters]);
-
-    // fetch the parameter if NON_EVACUATED_ENERGY_ANALYSIS  notification type is received.
-    useEffect(() => {
-        if (
-            studyUuid &&
-            nonEvacuatedEnergyAvailabilityRef.current === OptionalServicesStatus.Up &&
-            isComputationParametersUpdated(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)
-        ) {
-            fetchNonEvacuatedEnergyParameters(studyUuid);
-        }
-    }, [studyUuid, fetchNonEvacuatedEnergyParameters, studyUpdated]);
-
-    return [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams];
-};
 
 const formSchema = yup
     .object()
@@ -127,10 +73,16 @@ const formSchema = yup
     })
     .required();
 
-export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuatedEnergyParameters }) => {
-    const { snackError } = useSnackMessage();
-
-    const [providers, provider, updateProvider, resetProvider] = parametersBackend;
+export const NonEvacuatedEnergyParameters = ({ parametersBackend }) => {
+    const [
+        providers,
+        provider,
+        updateProvider,
+        resetProvider,
+        nonEvacuatedEnergyParams,
+        updateNonEvacuatedEnergyParams,
+        resetNonEvacuatedEnergyParams,
+    ] = parametersBackend;
 
     const emptyFormData = useMemo(() => {
         return {
@@ -195,18 +147,6 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
     });
 
     const { reset, handleSubmit, setValue, getValues, watch } = formMethods;
-    const studyUuid = useSelector((state) => state.studyUuid);
-
-    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useNonEvacuatedEnergyParameters;
-
-    const resetNonEvacuatedEnergyParameters = useCallback(() => {
-        setNonEvacuatedEnergyParameters(studyUuid, emptyFormData).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
-        });
-    }, [studyUuid, emptyFormData, snackError]);
 
     const formatNewParams = useCallback((newParams, withProvider = true) => {
         let params = {
@@ -226,19 +166,10 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
 
     const onSubmit = useCallback(
         (newParams) => {
-            setNonEvacuatedEnergyParameters(studyUuid, formatNewParams(newParams, true))
-                .then(() => {
-                    setNonEvacuatedEnergyParams(formatNewParams(newParams, false));
-                    updateProvider(newParams[PROVIDER]);
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'NonEvacuatedEnergyParametersError',
-                    });
-                });
+            updateNonEvacuatedEnergyParams(formatNewParams(newParams, false));
+            updateProvider(newParams[PROVIDER]);
         },
-        [setNonEvacuatedEnergyParams, snackError, studyUuid, formatNewParams, updateProvider]
+        [updateNonEvacuatedEnergyParams, formatNewParams, updateProvider]
     );
 
     const fromNonEvacuatedEnergyParamsDataToFormValues = useCallback(
@@ -387,7 +318,7 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
                 ? nonEvacuatedEnergyParams
                 : emptyFormData;
         fromNonEvacuatedEnergyParamsDataToFormValues(params);
-    }, [fromNonEvacuatedEnergyParamsDataToFormValues, nonEvacuatedEnergyParams, parametersBackend, emptyFormData]);
+    }, [fromNonEvacuatedEnergyParamsDataToFormValues, nonEvacuatedEnergyParams, emptyFormData]);
 
     useEffect(() => {
         const subscription = watch((value, { name, type }) => {
@@ -403,8 +334,8 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
     const clear = useCallback(() => {
         reset(emptyFormData);
         resetProvider();
-        resetNonEvacuatedEnergyParameters();
-    }, [emptyFormData, reset, resetProvider, resetNonEvacuatedEnergyParameters]);
+        resetNonEvacuatedEnergyParams();
+    }, [emptyFormData, reset, resetProvider, resetNonEvacuatedEnergyParams]);
 
     const onFormChanged = () => {};
     const onChangeParams = () => {};
