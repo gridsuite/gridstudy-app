@@ -9,6 +9,7 @@ import { Grid, MenuItem, Select } from '@mui/material';
 import { SelectInputProps } from '@mui/material/Select/SelectInput';
 import { FormattedMessage } from 'react-intl';
 import { styles, useParameterState } from '../parameters';
+import { useMemo } from 'react';
 
 type DropDownParameterLineProps = {
     readonly paramNameId: string;
@@ -30,6 +31,17 @@ const ParameterLineDropdown = ({
 }: DropDownParameterLineProps) => {
     const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
 
+    const currentValue = useMemo(() => {
+        // To avoid warning setting a value without options in the Select
+        if (Object.entries<string>(values).length === 0) {
+            return '';
+        }
+        if (defaultValueIfNull && !parameterValue) {
+            return Object.entries<string>(values)[0];
+        }
+        return parameterValue;
+    }, [defaultValueIfNull, parameterValue, values]);
+
     return (
         <>
             <Grid item xs={5} sx={styles.parameterName}>
@@ -38,7 +50,7 @@ const ParameterLineDropdown = ({
             <Grid item container xs={4} sx={styles.controlItem}>
                 <Select
                     labelId={labelValue}
-                    value={defaultValueIfNull && !parameterValue ? Object.entries<string>(values)[0] : parameterValue}
+                    value={currentValue}
                     onChange={(event, child) => {
                         onPreChange?.(event, child);
                         handleChangeParameterValue(event.target.value);
