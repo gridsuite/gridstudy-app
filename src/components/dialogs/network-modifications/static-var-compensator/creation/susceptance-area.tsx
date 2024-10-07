@@ -120,6 +120,7 @@ export const SusceptanceArea = () => {
             adornment={SusceptanceAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleSusceptanceValueChange}
+            inputTransform={(value) => (value ? getFloatNumber(value).toString() : '')}
         />
     );
 
@@ -130,6 +131,7 @@ export const SusceptanceArea = () => {
             adornment={ReactivePowerAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleQnomValueChange}
+            inputTransform={(value) => (value ? getFloatNumber(value).toString() : '')}
         />
     );
 
