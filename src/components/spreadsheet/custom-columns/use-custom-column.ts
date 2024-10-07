@@ -15,7 +15,7 @@ import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { createDependencyGraph, topologicalSort } from './custom-columns-utils';
 
-export function useCustomColumn(tabIndex: number, gridRef: any) {
+export function useCustomColumn(tabIndex: number) {
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]].columns
     );

@@ -21,7 +21,7 @@ import {
 } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
     DefaultCellRenderer,
@@ -78,6 +78,8 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useCustomColumn } from './custom-columns/use-custom-column';
+import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -88,6 +90,7 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
+import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 
 const useEditBuffer = () => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -162,6 +165,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
     const { snackError } = useSnackMessage();
+    const [tabIndex, setTabIndex] = useState<number>(0);
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
@@ -170,6 +174,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
     );
+    const customColumnsDefinitions = useSelector(
+        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]
+    );
+    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState<Set<string>>(new Set());
     const [lockedColumnsNames, setLockedColumnsNames] = useState<Set<string>>(new Set());
@@ -180,7 +188,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const [lastModifiedEquipment, setLastModifiedEquipment] = useState<any>();
 
-    const [tabIndex, setTabIndex] = useState<number>(0);
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
@@ -189,9 +196,20 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
 
+    const [columnData, setColumnData] = useState<any>([]);
+    const [customColumnData, setCustomColumnData] = useState<CustomColDef[]>([]);
+    const [mergedColumnData, setMergedColumnData] = useState<any>([]);
+    const { createCustomColumn } = useCustomColumn(tabIndex);
+
     const globalFilterRef = useRef<any>();
 
-    const [columnData, setColumnData] = useState<any>([]);
+    useEffect(() => {
+        setCustomColumnData(createCustomColumn());
+    }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
+
+    useEffect(() => {
+        setMergedColumnData([...columnData, ...customColumnData]);
+    }, [columnData, customColumnData]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
@@ -1210,6 +1228,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             setLockedColumnsNames={setLockedColumnsNames}
                         />
                     </Grid>
+                    {developerMode && (
+                        <Grid item sx={{ marginLeft: '15px' }}>
+                            <CustomColumnsConfig indexTab={tabIndex} />
+                        </Grid>
+                    )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport
@@ -1232,7 +1255,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         rowData={rowData}
-                        columnData={columnData}
+                        columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
                         handleColumnDrag={handleColumnDrag}
