@@ -32,6 +32,7 @@ import {
     MAP_BOTTOM_OFFSET,
     NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS,
     NoSvg,
+    Svg,
     useDiagram,
     ViewState,
 } from './diagram-common';
@@ -55,6 +56,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { UUID } from 'crypto';
 import { AppState, DiagramState, TreeNodeData } from 'redux/reducer';
 import { Node } from 'react-flow-renderer';
+import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
@@ -113,16 +115,17 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
 
     // this callback returns a promise
     const fetchSvgData = useCallback(
-        (svgUrl: string | null, svgType: DiagramType) => {
+        (svgUrl: string | null, svgType: DiagramType): Promise<Svg> => {
             if (svgUrl) {
-                return fetchSvg(svgUrl)
-                    .then((data) => {
+                const fetchSvgPromise: Promise<Svg> = fetchSvg(svgUrl);
+                return fetchSvgPromise
+                    .then((data: Svg | null) => {
                         if (data !== null) {
                             return {
                                 svg: data.svg,
                                 metadata: data.metadata,
                                 additionalMetadata: data.additionalMetadata,
-                                error: null,
+                                error: undefined,
                             };
                         } else {
                             return NoSvg;
@@ -160,7 +163,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
 
     // this callback returns a promise
     return useCallback(
-        (diagramState) => {
+        (diagramState: any) => {
             if (!studyUuid || !currentNode) {
                 return Promise.reject();
             }
@@ -245,9 +248,9 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
             }
 
             if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
-                return createVoltageLevelDiagramView(diagramState.id, diagramState.state);
+                return createVoltageLevelDiagramView(diagramState.id as UUID, diagramState.state );
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
-                return createSubstationDiagramView(diagramState.id, diagramState.state);
+                return createSubstationDiagramView(diagramState.id as UUID, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
             }
@@ -326,8 +329,8 @@ export function DiagramPane({
     }, [diagramStates, studyUuid]);
 
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
-    const currentNodeRef = useRef();
-    currentNodeRef.current = currentNode;
+    const currentNodeRef = useRef(currentNode);
+
     const viewsRef = useRef([]);
     viewsRef.current = views;
 
@@ -344,6 +347,7 @@ export function DiagramPane({
     const addMissingSLDs = useCallback(
         (diagramStates: DiagramState[]) => {
             // We check if we need to add new diagrams
+            console.log('debug', 'addMissingSLDs', diagramStates);
             const diagramsToAdd: DiagramState[] = [];
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -367,12 +371,23 @@ export function DiagramPane({
             if (diagramsToAdd?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
+                    /*
+                        {
+                            id: "4ba71b59-ee2f-450b-9f7d-cc2f1cc5e386",
+                            svgType: "voltage-level",
+                            state: "opened",
+                            name: "Loading of 4ba71b59-ee2f-450b-9f7d-cc2f1cc5e386...",
+                            align: "left",
+                            loadingState: true,
+                        }
+                    */
                     const updatedViews = views.concat(diagramsToAdd);
                     return updatedViews;
                 });
 
                 // Then we add the data when the fetch is finished
                 diagramsToAdd.forEach((diagramState) => {
+                    console.log('debug', 'diagramState', diagramState);
                     createView(diagramState).then((singleLineDiagramView) => {
                         setViews((views) => {
                             const diagramViewId = views.findIndex(
@@ -398,7 +413,7 @@ export function DiagramPane({
     // Check if we need to remove old SLDs from the 'views' and remove them if necessary
     const removeObsoleteSLDs = useCallback((diagramStates) => {
         // We check if we need to remove old diagrams
-        const diagramIdsToRemove = [];
+        const diagramIdsToRemove: UUID[] = [];
         viewsRef.current.forEach((diagramView) => {
             if (diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramStillPresentInRedux = diagramStates.find(

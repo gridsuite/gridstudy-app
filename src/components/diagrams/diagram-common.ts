@@ -264,14 +264,14 @@ export interface Svg {
     svg: string | null;
     metadata: SLDMetadata | null;
     additionalMetadata: SLDMetadata | null;
-    error: string | null;
-    svgUrl: string | null;
+    error?: string | null;
+    svgUrl?: string | null;
 }
 
 export const NoSvg: Svg = {
     svg: null,
     metadata: null,
     additionalMetadata: null,
-    error: null,
-    svgUrl: null,
+    error: undefined,
+    svgUrl: undefined,
 };
