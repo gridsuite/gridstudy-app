@@ -14,6 +14,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
 import { SLDMetadata } from '@powsybl/diagram-viewer';
+import { UUID } from 'crypto';
 
 export const LOADING_WIDTH = 300;
 export const LOADING_HEIGHT = 300;
@@ -263,7 +264,14 @@ export const useDiagram = () => {
 export interface Svg {
     svg: string | null;
     metadata: SLDMetadata | null;
-    additionalMetadata: SLDMetadata | null;
+    additionalMetadata:
+        | (SLDMetadata & {
+              country: string;
+              substationId?: string;
+              voltageLevels: { name: string; substationId: UUID }[];
+              nbVoltageLevels?: number;
+          })
+        | null;
     error?: string | null;
     svgUrl?: string | null;
 }

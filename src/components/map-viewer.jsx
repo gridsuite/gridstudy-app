@@ -25,7 +25,6 @@ import NetworkMapTab from './network/network-map-tab';
 import { DiagramPane } from './diagrams/diagram-pane';
 import { StudyView } from './study-pane';
 import { darken } from '@mui/material/styles';
-import ComputingType from './computing-status/computing-type';
 
 import { Global, css } from '@emotion/react';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
@@ -162,7 +161,6 @@ const MapViewer = ({
 
     const studyDisplayMode = useSelector((state) => state.studyDisplayMode);
 
-    const oneBusShortCircuitStatus = useSelector((state) => state.computingStatus[ComputingType.SHORT_CIRCUIT_ONE_BUS]);
     const previousStudyDisplayMode = useRef(undefined);
 
     const [nominalVoltages, setNominalVoltages] = useState();
@@ -357,7 +355,6 @@ const MapViewer = ({
                                     view === StudyView.MAP &&
                                     studyDisplayMode !== StudyDisplayMode.TREE
                                 }
-                                oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                             />
 
                             <Box

@@ -16,7 +16,6 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import PropTypes from 'prop-types';
 import { Chip, Stack, Theme } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -45,7 +44,7 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
@@ -56,7 +55,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { UUID } from 'crypto';
 import { AppState, DiagramState, TreeNodeData } from 'redux/reducer';
 import { Node } from 'react-flow-renderer';
-import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
+import { SLDMetadata } from '@powsybl/diagram-viewer';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
@@ -248,7 +247,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
             }
 
             if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
-                return createVoltageLevelDiagramView(diagramState.id as UUID, diagramState.state );
+                return createVoltageLevelDiagramView(diagramState.id as UUID, diagramState.state);
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
                 return createSubstationDiagramView(diagramState.id as UUID, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
@@ -295,22 +294,37 @@ const styles = {
 interface DiagramPaneProps {
     studyUuid: UUID;
     currentNode: Node<TreeNodeData>;
-    showInSpreadsheet: (id: string, type: string) => void;
-    oneBusShortCircuitStatus: string;
+    showInSpreadsheet: (equipment: { equipmentId: UUID; type: EquipmentType }) => void;
     visible: boolean;
 }
 
-export function DiagramPane({
-    studyUuid,
-    currentNode,
-    showInSpreadsheet,
-    oneBusShortCircuitStatus,
-    visible,
-}: DiagramPaneProps) {
+type DiagramView = {
+    id: UUID;
+    ids?: UUID[];
+    svgType: DiagramType;
+    state: ViewState;
+    name: string;
+    align: 'left' | 'right' | 'center';
+    loadingState: boolean;
+    metadata?: SLDMetadata;
+    svg?: string;
+    country?: string;
+    depth?: number;
+    error?: string;
+    nodeId?: UUID;
+    additionalMetadata?: any;
+    fetchSvg?: () => Promise<Partial<DiagramView>>;
+    // substationId?: UUID;
+    // substationIds?: UUID[];
+    // depth?: number;
+    // nbVoltageLevels?: number;
+};
+
+export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible }: DiagramPaneProps) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
-    const [views, setViews] = useState([]);
+    const [views, setViews] = useState<DiagramView[]>([]);
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
     const createView = useDisplayView(studyUuid, currentNode);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
@@ -331,9 +345,9 @@ export function DiagramPane({
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
     const currentNodeRef = useRef(currentNode);
 
-    const viewsRef = useRef([]);
+    const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
-
+    console.log('debug', 'displayedDiagrams', views);
     /**
      * BUILDS THE DIAGRAMS LIST
      *
@@ -348,7 +362,14 @@ export function DiagramPane({
         (diagramStates: DiagramState[]) => {
             // We check if we need to add new diagrams
             console.log('debug', 'addMissingSLDs', diagramStates);
-            const diagramsToAdd: DiagramState[] = [];
+            const diagramsToAdd: {
+                id: UUID;
+                svgType: DiagramType;
+                state: ViewState;
+                loadingState: boolean;
+                align: 'left' | 'right' | 'center';
+                name: string;
+            }[] = [];
             diagramStates.forEach((diagramState) => {
                 if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                     const diagramAlreadyPresentInViews = viewsRef.current.find(
@@ -371,16 +392,6 @@ export function DiagramPane({
             if (diagramsToAdd?.length) {
                 // First we add the empty diagrams in the views
                 setViews((views) => {
-                    /*
-                        {
-                            id: "4ba71b59-ee2f-450b-9f7d-cc2f1cc5e386",
-                            svgType: "voltage-level",
-                            state: "opened",
-                            name: "Loading of 4ba71b59-ee2f-450b-9f7d-cc2f1cc5e386...",
-                            align: "left",
-                            loadingState: true,
-                        }
-                    */
                     const updatedViews = views.concat(diagramsToAdd);
                     return updatedViews;
                 });
@@ -388,7 +399,7 @@ export function DiagramPane({
                 // Then we add the data when the fetch is finished
                 diagramsToAdd.forEach((diagramState) => {
                     console.log('debug', 'diagramState', diagramState);
-                    createView(diagramState).then((singleLineDiagramView) => {
+                    createView(diagramState)?.then((singleLineDiagramView) => {
                         setViews((views) => {
                             const diagramViewId = views.findIndex(
                                 (view) =>
@@ -400,7 +411,7 @@ export function DiagramPane({
                                 ...updatedViews[diagramViewId],
                                 ...singleLineDiagramView,
                                 loadingState: false,
-                            };
+                            } as unknown as DiagramView;
                             return updatedViews;
                         });
                     });
@@ -411,13 +422,13 @@ export function DiagramPane({
     );
 
     // Check if we need to remove old SLDs from the 'views' and remove them if necessary
-    const removeObsoleteSLDs = useCallback((diagramStates) => {
+    const removeObsoleteSLDs = useCallback((diagramStates: DiagramState[]) => {
         // We check if we need to remove old diagrams
         const diagramIdsToRemove: UUID[] = [];
         viewsRef.current.forEach((diagramView) => {
             if (diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramStillPresentInRedux = diagramStates.find(
-                    (diagramState) =>
+                    (diagramState: DiagramState) =>
                         diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && diagramState.id === diagramView.id
                 );
                 if (!diagramStillPresentInRedux) {
@@ -439,7 +450,7 @@ export function DiagramPane({
 
     // Check if we need to remove or add SLDs
     const updateSLDs = useCallback(
-        (diagramStates) => {
+        (diagramStates: DiagramState[]) => {
             removeObsoleteSLDs(diagramStates);
             addMissingSLDs(diagramStates);
         },
@@ -451,7 +462,7 @@ export function DiagramPane({
         (networkAreaIds: UUID[], networkAreaViewState: ViewState, networkAreaDiagramDepth: number) => {
             // First we add the empty diagram in the views
             setViews((views) => {
-                const newDiagram = {
+                const newDiagram: DiagramView = {
                     id: networkAreaIds[0],
                     ids: networkAreaIds,
                     name: intl.formatMessage({ id: 'LoadingOf' }, { value: networkAreaIds.toString() }),
@@ -482,7 +493,7 @@ export function DiagramPane({
                 state: networkAreaViewState,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 depth: networkAreaDiagramDepth,
-            }).then((networkAreaDiagramView) => {
+            })?.then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
                     const nadViewId = views.findIndex((view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM);
@@ -490,9 +501,11 @@ export function DiagramPane({
                         ...updatedViews[nadViewId],
                         ...networkAreaDiagramView,
                         loadingState: false,
-                    };
+                    } as unknown as DiagramView;
                     dispatch(
-                        setNetworkAreaDiagramNbVoltageLevels(networkAreaDiagramView.additionalMetadata?.nbVoltageLevels)
+                        setNetworkAreaDiagramNbVoltageLevels(
+                            networkAreaDiagramView.additionalMetadata?.nbVoltageLevels ?? 0
+                        )
                     );
                     return updatedViews;
                 });
@@ -509,7 +522,7 @@ export function DiagramPane({
     }, []);
 
     const updateNAD = useCallback(
-        (diagramStates) => {
+        (diagramStates: DiagramState[]) => {
             previousNetworkAreaDiagramDepth.current = networkAreaDiagramDepth;
             const networkAreaIds: UUID[] = [];
             let networkAreaViewState = ViewState.OPENED;
@@ -540,14 +553,14 @@ export function DiagramPane({
     );
 
     // Update the state of the diagrams (opened, minimized, etc) in the 'views'
-    const updateDiagramStates = useCallback((diagramStates) => {
+    const updateDiagramStates = useCallback((diagramStates: DiagramState[]) => {
         // We check if we need to update some diagrams
-        let diagramsToUpdate = [];
-        diagramStates.forEach((diagramState) => {
+        let diagramsToUpdate: { index: number; state: ViewState }[] = [];
+        diagramStates.forEach((diagramState: DiagramState) => {
             // if SLD
             if (diagramState.svgType !== DiagramType.NETWORK_AREA_DIAGRAM) {
                 const diagramIndex = viewsRef.current.findIndex(
-                    (diagramView) =>
+                    (diagramView: DiagramView) =>
                         diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagramView.id === diagramState.id &&
                         diagramView.state !== diagramState.state
@@ -565,7 +578,7 @@ export function DiagramPane({
                 // no need to check the ID because we have only one NAD in the views
                 // diagramIndex can only be -1 (if no match) or viewsRef.current.length - 1 (if match)
                 const diagramIndex = viewsRef.current.findIndex(
-                    (diagramView) =>
+                    (diagramView: DiagramView) =>
                         diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM &&
                         diagramView.state !== diagramState.state
                 );
@@ -655,7 +668,6 @@ export function DiagramPane({
         .filter((view) => [ViewState.OPENED, ViewState.PINNED].includes(view.state))
         .sort(makeDiagramSorter(diagramStates));
     const minimizedDiagrams = views.filter((view) => [ViewState.MINIMIZED].includes(view.state));
-
     /**
      * MINIMIZED DIAGRAMS' CONTROLS
      */
@@ -709,16 +721,17 @@ export function DiagramPane({
                         if (fromScratch) {
                             updatedDiagramPromise = createView(currentView);
                         } else {
-                            updatedDiagramPromise = currentView.fetchSvg();
+                            updatedDiagramPromise = currentView.fetchSvg?.();
                         }
-                        updatedDiagramPromise.then((svg) => {
+                        updatedDiagramPromise?.then((svg) => {
                             setViews((views) => {
                                 const updatedViews = views.slice();
-                                updatedViews[i] = {
+                                const data: DiagramView = {
                                     ...updatedViews[i],
                                     ...svg,
                                     loadingState: false,
-                                };
+                                } as unknown as DiagramView;
+                                updatedViews[i] = data;
                                 if (fromScratch && svg.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                                     dispatch(
                                         setNetworkAreaDiagramNbVoltageLevels(svg.additionalMetadata?.nbVoltageLevels)
@@ -944,7 +957,7 @@ export function DiagramPane({
         [displayedDiagrams, diagramContentSizes, getMaxHeightFromDisplayedDiagrams]
     );
 
-    const getDiagramTitle = (diagramView) => {
+    const getDiagramTitle = (diagramView: DiagramView) => {
         return diagramView.svgType !== DiagramType.NETWORK_AREA_DIAGRAM
             ? diagramView.name + ' - ' + translate(diagramView.country)
             : diagramView.name;
@@ -955,7 +968,7 @@ export function DiagramPane({
      */
 
     const handleWarningToDisplay = useCallback(
-        (diagramView) => {
+        (diagramView: DiagramView) => {
             if (!isNodeBuilt(currentNode)) {
                 return 'InvalidNode';
             }
@@ -966,7 +979,6 @@ export function DiagramPane({
         },
         [currentNode]
     );
-    console.log('debug', 'displayedDiagrams', displayedDiagrams);
     return (
         <AutoSizer>
             {({ width, height }) => (
@@ -1007,7 +1019,6 @@ export function DiagramPane({
                                 {(diagramView.svgType === DiagramType.VOLTAGE_LEVEL ||
                                     diagramView.svgType === DiagramType.SUBSTATION) && (
                                     <SingleLineDiagramContent
-                                        oneBusShortCircuitStatus={oneBusShortCircuitStatus}
                                         showInSpreadsheet={showInSpreadsheet}
                                         studyUuid={studyUuid}
                                         diagramId={diagramView.id}

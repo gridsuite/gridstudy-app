@@ -52,6 +52,7 @@ import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -63,12 +64,12 @@ type EquipmentMenuState = {
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: any) => void;
     readonly studyUuid: string;
-    readonly svgType: string;
-    readonly svg: string;
-    readonly svgMetadata: SLDMetadata | null;
+    readonly svgType: DiagramType;
+    readonly svg?: string;
+    readonly svgMetadata?: SLDMetadata;
     readonly loadingState: boolean;
-    readonly diagramSizeSetter: (id: string, type: string, width: number, height: number) => void;
-    readonly diagramId: string;
+    readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
+    readonly diagramId: UUID;
 }
 
 type LocallySwitchedBreaker = {
@@ -486,7 +487,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current!, //container
                 props.svg, //svgContent
-                props.svgMetadata, //svg metadata
+                props.svgMetadata ?? null, //svg metadata
                 props.svgType, //svg type
                 MIN_WIDTH, // minWidth
                 MIN_HEIGHT, // minHeight

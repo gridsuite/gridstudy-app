@@ -14,6 +14,7 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
+    DiagramType,
 } from '../diagram-common';
 import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -24,6 +25,7 @@ import { AppState } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
 import { getNadIdentifier } from '../diagram-utils.js';
+import { UUID } from 'crypto';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -120,11 +122,11 @@ const dynamicCssRules: CSS_RULE[] = [
 ];
 
 type NetworkAreaDiagramContentProps = {
-    readonly svgType: string;
-    readonly svg: string;
+    readonly svgType: DiagramType;
+    readonly svg?: string;
     readonly loadingState: boolean;
-    readonly diagramSizeSetter: (id: string, type: string, width: number, height: number) => void;
-    readonly diagramId: string;
+    readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
+    readonly diagramId: UUID;
 };
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter } = props;
