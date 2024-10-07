@@ -661,14 +661,14 @@ export function DiagramPane({
      */
 
     const handleCloseDiagramView = useCallback(
-        (id, type) => {
+        (id: UUID, type: DiagramType) => {
             closeDiagramView(id, type);
         },
         [closeDiagramView]
     );
 
     const handleOpenDiagramView = useCallback(
-        (id, type) => {
+        (id: UUID, type: DiagramType) => {
             if (!studyUuid || !currentNode) {
                 return;
             }
@@ -683,7 +683,7 @@ export function DiagramPane({
 
     // Updates particular diagrams from their IDs
     const updateDiagramsByIds = useCallback(
-        (ids, fromScratch) => {
+        (ids: UUID[], fromScratch: boolean) => {
             if (ids?.length) {
                 // we remove duplicates (because of NAD)
                 let uniqueIds = ids.filter((id, index) => ids.indexOf(id) === index);
@@ -779,7 +779,7 @@ export function DiagramPane({
      */
 
     // This function is called by the diagram's contents, when they get their sizes from the backend.
-    const setDiagramSize = (diagramId, diagramType, width: number, height: number) => {
+    const setDiagramSize = (diagramId: UUID, diagramType: DiagramType, width: number, height: number) => {
         // Let's update the stored values if they are new
         const storedValues = diagramContentSizes?.get(diagramType + diagramId);
         if (!storedValues || storedValues.width !== width || storedValues.height !== height) {
@@ -792,7 +792,7 @@ export function DiagramPane({
         }
     };
 
-    const getDefaultHeightByDiagramType = (diagramType) => {
+    const getDefaultHeightByDiagramType = (diagramType: DiagramType) => {
         switch (diagramType) {
             case DiagramType.SUBSTATION:
                 return DEFAULT_HEIGHT_SUBSTATION;
@@ -806,7 +806,7 @@ export function DiagramPane({
         }
     };
 
-    const getDefaultWidthByDiagramType = (diagramType) => {
+    const getDefaultWidthByDiagramType = (diagramType: DiagramType) => {
         switch (diagramType) {
             case DiagramType.SUBSTATION:
                 return DEFAULT_WIDTH_SUBSTATION;
@@ -821,7 +821,7 @@ export function DiagramPane({
     };
 
     const getDiagramOrDefaultHeight = useCallback(
-        (diagramId, diagramType) => {
+        (diagramId: UUID, diagramType: DiagramType) => {
             return (
                 diagramContentSizes.get(diagramType + diagramId)?.height ?? getDefaultHeightByDiagramType(diagramType)
             );
@@ -849,7 +849,7 @@ export function DiagramPane({
      * diagram will have its own height.
      */
     const getMaxHeightFromDisplayedDiagrams = useCallback(
-        (svgType) => {
+        (svgType: DiagramType) => {
             // First, we check which diagrams are displayed in the pane with a compatible svgType
             // and for which we stored a height in diagramContentSizes.
             const matchingDiagrams = displayedDiagrams
@@ -884,7 +884,7 @@ export function DiagramPane({
      * share their heights, whereas a network area diagram will have its own height).
      */
     const getWidthForPaneDisplay = useCallback(
-        (diagramId: UUID, diagramType) => {
+        (diagramId: UUID, diagramType: DiagramType) => {
             const diagramWidth = getDiagramOrDefaultWidth(diagramId, diagramType);
 
             const diagramHeight = getDiagramOrDefaultHeight(diagramId, diagramType);
@@ -899,7 +899,7 @@ export function DiagramPane({
      * the pane, and the other diagrams' sizes.
      */
     const getHeightForPaneDisplay = useCallback(
-        (diagramType, availableWidth: number, availableHeight: number) => {
+        (diagramType: DiagramType, availableWidth: number, availableHeight: number) => {
             let result;
 
             const maxHeightFromDisplayedDiagrams = getMaxHeightFromDisplayedDiagrams(diagramType);
