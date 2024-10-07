@@ -46,6 +46,7 @@ import {
     SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
+    TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
@@ -65,6 +66,7 @@ import {
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { SeverityFilter } from '../types/report.type';
+import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 
 type MutableUnknownArray = unknown[];
 
@@ -151,7 +153,8 @@ export type AppActions =
     | SensitivityAnalysisResultFilterAction
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
-    | SpreadsheetFilterAction;
+    | SpreadsheetFilterAction
+    | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1147,6 +1150,25 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
         table,
         tab,
         sort,
+    };
+}
+
+export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
+export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
+    table: TablesDefinitionsNames;
+    definitions: ColumnWithFormula[];
+    filter?: FormulaFilter;
+};
+export function setCustomColumDefinitions(
+    table: TablesDefinitionsNames,
+    customColumns: ColumnWithFormula[],
+    filter?: FormulaFilter
+): CustomColumnsDefinitionsAction {
+    return {
+        type: CUSTOM_COLUMNS_DEFINITIONS,
+        table,
+        definitions: customColumns,
+        filter: filter,
     };
 }
 export const REPORT_FILTER = 'REPORT_FILTER';

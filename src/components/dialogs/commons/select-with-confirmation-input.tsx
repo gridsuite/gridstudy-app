@@ -8,8 +8,8 @@ import React, { FunctionComponent, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { Select, SelectChangeEvent } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import { FormattedMessage } from 'react-intl';
-import { CustomDialog } from '../../../utils/custom-dialog';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { CustomDialog } from '../../utils/custom-dialog';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 
@@ -17,6 +17,7 @@ interface SelectWithConfirmationInputProps {
     name: string;
     options: string[];
     onValidate: () => void;
+    getOptionLabel?: (option: string) => string;
     label: string;
 }
 
@@ -24,8 +25,10 @@ const SelectWithConfirmationInput: FunctionComponent<SelectWithConfirmationInput
     name,
     options,
     onValidate,
+    getOptionLabel,
     label,
 }) => {
+    const intl = useIntl();
     const [openConfirmationDialog, setOpenConfirmationDialog] = useState(false);
     const [newValue, setNewValue] = useState('');
     const {
@@ -44,7 +47,7 @@ const SelectWithConfirmationInput: FunctionComponent<SelectWithConfirmationInput
     };
 
     const handleValidate = () => {
-        onValidate && onValidate();
+        onValidate?.();
         onChange(newValue);
     };
 
@@ -61,16 +64,16 @@ const SelectWithConfirmationInput: FunctionComponent<SelectWithConfirmationInput
                     onChange={handleChange}
                     label={<FormattedMessage id={label} />}
                 >
-                    {options.map((option, index) => (
-                        <MenuItem key={index} value={option}>
-                            <FormattedMessage id={option} />
+                    {options.map((option) => (
+                        <MenuItem key={option} value={option}>
+                            {getOptionLabel ? getOptionLabel(option) : intl.formatMessage({ id: option })}
                         </MenuItem>
                     ))}
                 </Select>
             </FormControl>
             {openConfirmationDialog && (
                 <CustomDialog
-                    content={<FormattedMessage id={'byFormulaChangeTypeConfirmation'} />}
+                    content={<FormattedMessage id={'changeTypeConfirmation'} />}
                     onValidate={handleValidate}
                     validateButtonLabel="button.changeType"
                     onClose={() => setOpenConfirmationDialog(false)}

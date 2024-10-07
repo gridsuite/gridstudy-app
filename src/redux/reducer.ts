@@ -54,6 +54,8 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
+    CUSTOM_COLUMNS_DEFINITIONS,
+    CustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -200,7 +202,11 @@ import {
     saveLocalStorageLanguage,
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
-import { TABLES_COLUMNS_NAMES_JSON, TABLES_DEFINITIONS } from '../components/spreadsheet/utils/config-tables';
+import {
+    TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITIONS,
+    TABLES_NAMES,
+} from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -275,6 +281,7 @@ import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
+import { CustomEntry } from 'types/custom-columns.types';
 import { SeverityFilter } from '../types/report.type';
 import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 
@@ -402,6 +409,10 @@ export type SelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
+export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
+export type TablesDefinitionsKeys = keyof TablesDefinitionsType;
+export type TablesDefinitionsNames = TablesDefinitionsType[TablesDefinitionsKeys]['name'];
+
 export interface AppState extends CommonStoreState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -452,6 +463,7 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -715,6 +727,11 @@ const initialState: AppState = {
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
     },
+
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
+        {} as AppState['allCustomColumnsDefinitions']
+    ),
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -1586,6 +1603,9 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[action.table][action.tab] = action.sort;
     });
 
+    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
+        state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+    });
     builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
         if (action.messageFilter !== undefined) {
             state.reportMessageFilter = action.messageFilter;

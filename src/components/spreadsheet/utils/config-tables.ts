@@ -175,7 +175,7 @@ const countryEnumFilterConfig = {
     isCountry: true,
 };
 
-const defaultNumericFilterConfig = () => {
+export const defaultNumericFilterConfig = () => {
     return fluxConventionNumericFilterConfig();
 };
 
