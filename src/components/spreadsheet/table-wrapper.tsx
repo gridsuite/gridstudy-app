@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box } from '@mui/system';
 import { Alert, Grid } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import {
     EDIT_COLUMN,
     MIN_COLUMN_WIDTH,
@@ -78,13 +78,23 @@ import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { AgGridReact } from 'ag-grid-react';
+import {
+    CellEditingStartedEvent,
+    CellEditingStoppedEvent,
+    ColumnMovedEvent,
+    ColumnState,
+    ICellRendererParams,
+} from 'ag-grid-community';
+import { mergeSx } from '../utils/functions';
 
 const useEditBuffer = () => {
-    //the data is feeded and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
-    const data = useRef({});
+    //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
+    const data = useRef<any>({});
 
     const addDataToBuffer = useCallback(
-        (field, value) => {
+        (field: string, value: any) => {
             data.current[field] = value;
         },
         [data]
@@ -98,7 +108,7 @@ const useEditBuffer = () => {
 };
 
 const styles = {
-    table: (theme) => ({
+    table: (theme: Theme) => ({
         marginTop: theme.spacing(2.5),
         lineHeight: 'unset',
         flexGrow: 1,
@@ -119,106 +129,130 @@ const styles = {
         top: '30%',
         left: '43%',
     },
-    toolbar: (theme) => ({
+    toolbar: (theme: Theme) => ({
         marginTop: theme.spacing(2),
     }),
-    filter: (theme) => ({
+    filter: (theme: Theme) => ({
         marginLeft: theme.spacing(1),
     }),
-    selectColumns: (theme) => ({
+    selectColumns: (theme: Theme) => ({
         marginLeft: theme.spacing(6),
     }),
 };
 
-const TableWrapper = (props) => {
-    const gridRef = useRef();
-    const timerRef = useRef(null);
+interface TableWrapperProps {
+    studyUuid: string;
+    currentNode: CurrentTreeNode;
+    equipmentId: string;
+    equipmentType: EQUIPMENT_TYPES;
+    equipmentChanged: boolean;
+    disabled: boolean;
+}
+
+const TableWrapper: FunctionComponent<TableWrapperProps> = ({
+    studyUuid,
+    currentNode,
+    equipmentId,
+    equipmentType,
+    equipmentChanged,
+    disabled,
+}) => {
+    const gridRef = useRef<AgGridReact>(null);
+    const timerRef = useRef<NodeJS.Timeout>();
     const intl = useIntl();
     const { translate } = useLocalizedCountries();
-
     const { snackError } = useSnackMessage();
 
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const allDisplayedColumnsNames = useSelector((state) => state.allDisplayedColumnsNames);
-    const allLockedColumnsNames = useSelector((state) => state.allLockedColumnsNames);
-    const allReorderedTableDefinitionIndexes = useSelector((state) => state.allReorderedTableDefinitionIndexes);
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state: AppState) => state.allReorderedTableDefinitionIndexes
+    );
 
-    const [selectedColumnsNames, setSelectedColumnsNames] = useState(new Set());
-    const [lockedColumnsNames, setLockedColumnsNames] = useState(new Set());
-    const [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes] = useState([]);
+    const [selectedColumnsNames, setSelectedColumnsNames] = useState<Set<string>>(new Set());
+    const [lockedColumnsNames, setLockedColumnsNames] = useState<Set<string>>(new Set());
+    const [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes] = useState<string[]>([]);
 
-    const fluxConvention = useSelector((state) => state[PARAM_FLUX_CONVENTION]);
-    const studyUpdatedForce = useSelector((state) => state.studyUpdated);
+    const fluxConvention = useSelector((state: AppState) => state[PARAM_FLUX_CONVENTION]);
+    const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
 
-    const [lastModifiedEquipment, setLastModifiedEquipment] = useState();
+    const [lastModifiedEquipment, setLastModifiedEquipment] = useState<any>();
 
-    const [tabIndex, setTabIndex] = useState(0);
-    const [manualTabSwitch, setManualTabSwitch] = useState(true);
+    const [tabIndex, setTabIndex] = useState<number>(0);
+    const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
-    const [editingData, setEditingData] = useState();
+    const [editingData, setEditingData] = useState<any>();
     const editingDataRef = useRef(editingData);
 
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
 
-    const globalFilterRef = useRef();
+    const globalFilterRef = useRef<any>();
 
-    const [columnData, setColumnData] = useState([]);
+    const [columnData, setColumnData] = useState<any>([]);
 
     const rollbackEdit = useCallback(() => {
         resetBuffer();
-        setEditingData();
+        setEditingData(undefined);
         editingDataRef.current = editingData;
     }, [resetBuffer, editingData]);
 
     const cleanTableState = useCallback(() => {
-        globalFilterRef.current.resetFilter();
+        globalFilterRef.current?.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
-        gridRef?.current?.columnApi.applyColumnState({
+        gridRef?.current?.api.applyColumnState({
             defaultState: { sort: null },
         });
         rollbackEdit();
     }, [rollbackEdit]);
 
+    const currentColumns = useCallback(() => {
+        const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
+        return equipment ? equipment.columns : [];
+    }, [tabIndex]);
+
+    const currentType = useCallback(() => {
+        const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
+        return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
+    }, [tabIndex]);
+
     const isEditColumnVisible = useCallback(() => {
         return (
-            !props.disabled &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex).type &&
-            TABLES_DEFINITION_INDEXES.get(tabIndex)
-                .columns.filter((c) => c.editable)
-                .filter((c) => selectedColumnsNames.has(c.id)).length > 0
+            !disabled &&
+            currentType() &&
+            currentColumns()
+                .filter((c: any) => c.editable)
+                .filter((c: any) => selectedColumnsNames.has(c.id)).length > 0
         );
-    }, [props.disabled, selectedColumnsNames, tabIndex]);
+    }, [disabled, selectedColumnsNames, currentType, currentColumns]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(
-        SPREADSHEET_SORT_STORE,
-        TABLES_DEFINITION_INDEXES.get(tabIndex).type
-    );
+    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentType());
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
         filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+        filterTab: currentType().toString(),
         filterStoreAction: setSpreadsheetFilter,
     });
 
     const equipmentDefinition = useMemo(
         () => ({
-            type: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
-            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex).fetchers,
+            type: currentType(),
+            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex)?.fetchers,
         }),
-        [tabIndex]
+        [tabIndex, currentType]
     );
 
     const formatFetchedEquipmentHandler = useCallback(
-        (fetchedEquipment) => {
+        (fetchedEquipment: any) => {
             return formatFetchedEquipment(equipmentDefinition.type, fetchedEquipment);
         },
         [equipmentDefinition.type]
     );
 
     const formatFetchedEquipmentsHandler = useCallback(
-        (fetchedEquipments) => {
+        (fetchedEquipments: any) => {
             //Format the equipments data to set calculated fields, so that the edition validation is consistent with the displayed data
             return formatFetchedEquipments(equipmentDefinition.type, fetchedEquipments);
         },
@@ -232,21 +266,20 @@ const TableWrapper = (props) => {
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
     const getEnumFilterColumns = useCallback(() => {
-        const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex).columns;
-        return generatedTableColumns.filter(({ isEnum }) => isEnum === true);
-    }, [tabIndex]);
+        return currentColumns().filter((c: any) => c.isEnum);
+    }, [currentColumns]);
 
     const generateEquipmentsFilterEnums = useCallback(() => {
         if (!equipments) {
             return {};
         }
-        const filterEnums = {};
-        getEnumFilterColumns().forEach((column) => {
+        const filterEnums: any = {};
+        getEnumFilterColumns().forEach((column: any) => {
             filterEnums[column.field] = [
                 ...new Set(
                     equipments
-                        .map((equipment) => deepFindValue(equipment, column.field))
-                        .filter((value) => value != null)
+                        .map((equipment: any) => deepFindValue(equipment, column.field))
+                        .filter((value: any) => value != null)
                 ),
             ];
         });
@@ -256,7 +289,7 @@ const TableWrapper = (props) => {
     const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
 
     const enrichColumn = useCallback(
-        (column) => {
+        (column: any) => {
             column.headerName = intl.formatMessage({ id: column.id });
 
             if (column.numeric) {
@@ -269,7 +302,7 @@ const TableWrapper = (props) => {
 
                 if (column.normed) {
                     column.cellRendererParams.fluxConvention = fluxConvention;
-                    column.comparator = (valueA, valueB) => {
+                    column.comparator = (valueA: number, valueB: number) => {
                         const normedValueA = valueA !== undefined ? column.normed(fluxConvention, valueA) : undefined;
                         const normedValueB = valueB !== undefined ? column.normed(fluxConvention, valueB) : undefined;
                         if (normedValueA !== undefined && normedValueB !== undefined) {
@@ -297,8 +330,8 @@ const TableWrapper = (props) => {
 
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
             if (column?.isEnum) {
-                column.comparator = (valueA, valueB) => {
-                    const getTranslatedOrOriginalValue = (value) => {
+                column.comparator = (valueA: string, valueB: string) => {
+                    const getTranslatedOrOriginalValue = (value: string) => {
                         if (value === undefined || value === null) {
                             return '';
                         }
@@ -371,12 +404,12 @@ const TableWrapper = (props) => {
     }, [sortConfig, columnData]);
 
     const getRows = useCallback(() => {
-        if (props.disabled || !equipments) {
+        if (disabled || !equipments) {
             return [];
         }
 
         return equipments;
-    }, [equipments, props.disabled]);
+    }, [equipments, disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
     //is reinstanciated in order to notify components using it.
@@ -385,21 +418,22 @@ const TableWrapper = (props) => {
     const rowData = getRows();
 
     const handleSwitchTab = useCallback(
-        (value) => {
+        (value: number) => {
             setManualTabSwitch(true);
             setTabIndex(value);
             cleanTableState();
         },
         [cleanTableState]
     );
+
     useEffect(() => {
         gridRef.current?.api?.showLoadingOverlay();
         return () => clearTimeout(timerRef.current);
     }, [tabIndex]);
+
     useEffect(() => {
         const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-        const newSelectedColumns = new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []);
-        setSelectedColumnsNames(newSelectedColumns);
+        setSelectedColumnsNames(new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []));
     }, [tabIndex, allDisplayedColumnsNames]);
 
     useEffect(() => {
@@ -412,49 +446,44 @@ const TableWrapper = (props) => {
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : TABLES_DEFINITION_INDEXES.get(tabIndex).columns.map((item) => item.id)
+                : TABLES_DEFINITION_INDEXES.get(tabIndex)?.columns.map((item) => item.id)
         );
     }, [allReorderedTableDefinitionIndexes, tabIndex]);
 
     useEffect(() => {
         setManualTabSwitch(false);
-    }, [props.equipmentChanged]);
+    }, [equipmentChanged]);
 
     const scrollToEquipmentIndex = useCallback(() => {
-        if (props.equipmentId !== null && props.equipmentType !== null && !manualTabSwitch) {
+        if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
             //calculate row index to scroll to
             //since all sorting and filtering is done by aggrid, we need to use their APIs to get the actual index
-            const selectedRow = gridRef.current?.api?.getRowNode(props.equipmentId);
+            const selectedRow = gridRef.current?.api?.getRowNode(equipmentId);
             if (selectedRow) {
-                gridRef.current.api?.ensureNodeVisible(selectedRow, 'top');
+                gridRef.current?.api?.ensureNodeVisible(selectedRow, 'top');
                 selectedRow.setSelected(true, true);
             }
         }
-    }, [manualTabSwitch, props.equipmentId, props.equipmentType]);
+    }, [manualTabSwitch, equipmentId, equipmentType]);
 
     useEffect(() => {
-        if (props.equipmentId !== null && props.equipmentType !== null && !manualTabSwitch) {
-            const definition = TABLES_DEFINITION_TYPES.get(props.equipmentType);
-            if (tabIndex === definition.index) {
-                // already in expected tab => explicit call to scroll to expected row
-                scrollToEquipmentIndex();
-            } else {
-                // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
-                setTabIndex(definition.index);
+        if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
+            const definition = TABLES_DEFINITION_TYPES.get(equipmentType);
+            if (definition?.index) {
+                if (tabIndex === definition.index) {
+                    // already in expected tab => explicit call to scroll to expected row
+                    scrollToEquipmentIndex();
+                } else {
+                    // select the right table type. This will trigger handleRowDataUpdated + scrollToEquipmentIndex
+                    setTabIndex(definition.index);
+                }
             }
         }
-    }, [
-        props.equipmentId,
-        props.equipmentType,
-        props.equipmentChanged,
-        manualTabSwitch,
-        tabIndex,
-        scrollToEquipmentIndex,
-    ]);
+    }, [equipmentId, equipmentType, equipmentChanged, manualTabSwitch, tabIndex, scrollToEquipmentIndex]);
 
     const handleGridReady = useCallback(() => {
         if (globalFilterRef.current) {
-            gridRef.current?.api?.setQuickFilter(globalFilterRef.current.getFilterValue());
+            gridRef.current?.api?.setGridOption('quickFilterText', globalFilterRef.current.getFilterValue().value);
         }
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
@@ -470,455 +499,522 @@ const TableWrapper = (props) => {
             }
         }, 50);
     }, [scrollToEquipmentIndex, isFetching, rowData]);
-    useEffect(() => {
-        const lockedColumnsConfig = TABLES_DEFINITION_INDEXES.get(tabIndex)
-            .columns.filter((column) => lockedColumnsNames.has(column.id))
-            .map((column) => {
-                return { colId: column.field, pinned: 'left' };
-            });
 
-        if (isEditColumnVisible()) {
+    useEffect(() => {
+        const lockedColumnsConfig = currentColumns()
+            .filter((column: any) => lockedColumnsNames.has(column.id))
+            .map((column: any) => {
+                const s: ColumnState = {
+                    colId: column.field,
+                    pinned: 'left',
+                };
+                return s;
+            });
+        if (isEditColumnVisible() && lockedColumnsConfig) {
             lockedColumnsConfig.unshift({
                 colId: EDIT_COLUMN,
                 pinned: 'left',
             });
         }
-
-        gridRef.current?.columnApi?.applyColumnState({
+        gridRef.current?.api?.applyColumnState({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
-    }, [isEditColumnVisible, lockedColumnsNames, tabIndex]);
+    }, [isEditColumnVisible, lockedColumnsNames, currentColumns]);
 
     const handleColumnDrag = useCallback(
-        (event) => {
-            if (event.finished && event.column) {
-                const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
-                    reorderedTableDefinitionIndexes.indexOf(event.column.colDef.id),
-                    1
-                );
-                const destinationIndex = isEditColumnVisible() ? event.toIndex - 1 : event.toIndex;
+        (event: ColumnMovedEvent) => {
+            if (event.finished && event.column?.getColDef().colId && event.toIndex) {
+                const colId = event.column.getColDef().colId;
+                if (colId) {
+                    const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
+                        reorderedTableDefinitionIndexes.indexOf(colId),
+                        1
+                    );
 
-                reorderedTableDefinitionIndexes.splice(destinationIndex, 0, reorderedItem);
-                setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexes);
+                    const destinationIndex: number = isEditColumnVisible() ? event.toIndex - 1 : event.toIndex;
 
-                updateConfigParameter(
-                    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-                    JSON.stringify(reorderedTableDefinitionIndexes)
-                ).catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'paramsChangingError',
+                    reorderedTableDefinitionIndexes.splice(destinationIndex, 0, reorderedItem);
+                    setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexes);
+
+                    updateConfigParameter(
+                        REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+                        JSON.stringify(reorderedTableDefinitionIndexes)
+                    ).catch((error) => {
+                        snackError({
+                            messageTxt: error.message,
+                            headerId: 'paramsChangingError',
+                        });
                     });
-                });
 
-                const [reorderedColDef] = columnData.splice(
-                    columnData.findIndex((obj) => {
-                        return obj.id === event.column.colDef.id;
-                    }),
-                    1
-                );
-                columnData.splice(event.toIndex, 0, reorderedColDef);
-                setColumnData(columnData);
+                    const [reorderedColDef] = columnData.splice(
+                        columnData.findIndex((obj: any) => {
+                            return obj.id === colId;
+                        }),
+                        1
+                    );
+                    columnData.splice(event.toIndex, 0, reorderedColDef);
+                    setColumnData(columnData);
+                }
             }
         },
         [columnData, isEditColumnVisible, reorderedTableDefinitionIndexes, snackError, tabIndex]
     );
 
-    const getFieldValue = useCallback((newField, oldField) => {
+    const getFieldValue = useCallback((newField: any, oldField: any) => {
         return newField !== oldField ? newField : null;
     }, []);
 
+    const updateSubstation = useCallback(
+        (editingData: any, propertiesForBackend: any) => {
+            return modifySubstation(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                editingData.name,
+                editingData.country,
+                false,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid]
+    );
+
+    const updateLoad = useCallback(
+        (editingData: any, propertiesForBackend: any) => {
+            return modifyLoad(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                getFieldValue(editingData.name, editingDataRef.current.name),
+                getFieldValue(editingData.type, editingDataRef.current.type),
+                getFieldValue(editingData.p0, editingDataRef.current.p0),
+                getFieldValue(editingData.q0, editingDataRef.current.q0),
+                undefined,
+                undefined,
+                false,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid, getFieldValue]
+    );
+
+    const updateTwoWindingsTransformer = useCallback(
+        (editingData: any, propertiesForBackend: any) => {
+            let ratioTap = null;
+            if (editingData?.ratioTapChanger) {
+                ratioTap = {
+                    [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES],
+                            editingDataRef.current.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES]
+                        )
+                    ),
+                    [TAP_POSITION]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[TAP_POSITION],
+                            editingDataRef.current.ratioTapChanger?.[TAP_POSITION]
+                        )
+                    ),
+                    [LOW_TAP_POSITION]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[LOW_TAP_POSITION],
+                            editingDataRef.current.ratioTapChanger?.[LOW_TAP_POSITION]
+                        )
+                    ),
+                    [REGULATING]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[REGULATING],
+                            editingDataRef.current.ratioTapChanger?.[REGULATING]
+                        )
+                    ),
+                    [REGULATION_TYPE]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[REGULATION_TYPE],
+                            editingDataRef.current.ratioTapChanger?.[REGULATION_TYPE]
+                        )
+                    ),
+                    [REGULATION_SIDE]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[REGULATION_SIDE],
+                            editingDataRef.current.ratioTapChanger?.[REGULATION_SIDE]
+                        )
+                    ),
+                    regulatingTerminalId: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.regulatingTerminalConnectableId,
+                            editingDataRef.current.ratioTapChanger?.['regulatingTerminalConnectableId']
+                        )
+                    ),
+                    regulatingTerminalType: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.regulatingTerminalConnectableType,
+                            editingDataRef.current.ratioTapChanger?.['regulatingTerminalConnectableType']
+                        )
+                    ),
+                    regulatingTerminalVlId: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.regulatingTerminalVlId,
+                            editingDataRef.current.ratioTapChanger?.['regulatingTerminalVlId']
+                        )
+                    ),
+                    [TARGET_V]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[TARGET_V],
+                            editingDataRef.current.ratioTapChanger?.[TARGET_V]
+                        )
+                    ),
+                    [TARGET_DEADBAND]: toModificationOperation(
+                        getFieldValue(
+                            editingData.ratioTapChanger?.[TARGET_DEADBAND],
+                            editingDataRef.current.ratioTapChanger?.[TARGET_DEADBAND]
+                        )
+                    ),
+                    steps: null,
+                };
+            }
+            let phaseTap = null;
+            if (editingData?.phaseTapChanger) {
+                phaseTap = {
+                    [REGULATION_MODE]: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.[REGULATION_MODE],
+                            editingDataRef.current.phaseTapChanger?.[REGULATION_MODE]
+                        )
+                    ),
+                    [TAP_POSITION]: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.[TAP_POSITION],
+                            editingDataRef.current.phaseTapChanger?.[TAP_POSITION]
+                        )
+                    ),
+                    [LOW_TAP_POSITION]: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.[LOW_TAP_POSITION],
+                            editingDataRef.current.phaseTapChanger?.[LOW_TAP_POSITION]
+                        )
+                    ),
+                    [REGULATION_TYPE]: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.[REGULATION_TYPE],
+                            editingDataRef.current.phaseTapChanger?.[REGULATION_TYPE]
+                        )
+                    ),
+                    [REGULATION_SIDE]: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.[REGULATION_SIDE],
+                            editingDataRef.current.phaseTapChanger?.[REGULATION_SIDE]
+                        )
+                    ),
+                    regulatingTerminalId: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.regulatingTerminalConnectableId,
+                            editingDataRef.current.phaseTapChanger?.['regulatingTerminalConnectableId']
+                        )
+                    ),
+                    regulatingTerminalType: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.regulatingTerminalConnectableType,
+                            editingDataRef.current.phaseTapChanger?.['regulatingTerminalConnectableType']
+                        )
+                    ),
+                    regulatingTerminalVlId: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.regulatingTerminalVlId,
+                            editingDataRef.current.phaseTapChanger?.['regulatingTerminalVlId']
+                        )
+                    ),
+                    regulationValue: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.regulationValue,
+                            editingDataRef.current.phaseTapChanger?.regulationValue
+                        )
+                    ),
+                    [TARGET_DEADBAND]: toModificationOperation(
+                        getFieldValue(
+                            editingData.phaseTapChanger?.[TARGET_DEADBAND],
+                            editingDataRef.current.phaseTapChanger?.[TARGET_DEADBAND]
+                        )
+                    ),
+                };
+            }
+            return modifyTwoWindingsTransformer(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                toModificationOperation(sanitizeString(getFieldValue(editingData?.name, editingDataRef.current?.name))),
+                toModificationOperation(getFieldValue(editingData.r, editingDataRef.current.r)),
+                toModificationOperation(getFieldValue(editingData.x, editingDataRef.current.x)),
+                toModificationOperation(getFieldValue(editingData.g, editingDataRef.current.g)),
+                toModificationOperation(getFieldValue(editingData.b, editingDataRef.current.b)),
+                toModificationOperation(getFieldValue(editingData.ratedS, editingDataRef.current.ratedS)),
+                toModificationOperation(getFieldValue(editingData.ratedU1, editingDataRef.current.ratedU1)),
+                toModificationOperation(getFieldValue(editingData.ratedU2, editingDataRef.current.ratedU2)),
+                undefined,
+                undefined,
+                ratioTap,
+                phaseTap,
+                false,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid, getFieldValue]
+    );
+
+    const updateGenerator = useCallback(
+        (editingData: any, propertiesForBackend: any) => {
+            const regulatingTerminalConnectableIdFieldValue = getFieldValue(
+                editingData.regulatingTerminalConnectableId,
+                editingDataRef.current?.regulatingTerminalConnectableId
+            );
+            const regulatingTerminalConnectableTypeFieldValue = getFieldValue(
+                editingData.regulatingTerminalConnectableType,
+                editingDataRef.current?.regulatingTerminalConnectableType
+            );
+            const regulatingTerminalVlIdFieldValue =
+                regulatingTerminalConnectableIdFieldValue !== null ||
+                regulatingTerminalConnectableTypeFieldValue !== null
+                    ? editingData.regulatingTerminalVlId
+                    : null;
+            return modifyGenerator(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                getFieldValue(editingData.name, editingDataRef.current.name),
+                getFieldValue(editingData.energySource, editingDataRef.current.energySource),
+                getFieldValue(editingData.minP, editingDataRef.current.minP),
+                getFieldValue(editingData.maxP, editingDataRef.current.maxP),
+                undefined,
+                getFieldValue(editingData.targetP, editingDataRef.current.targetP),
+                getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
+                getFieldValue(editingData.voltageRegulatorOn, editingDataRef.current.voltageRegulatorOn),
+                getFieldValue(editingData.targetV, editingDataRef.current.targetV),
+                undefined,
+                undefined,
+                undefined,
+                getFieldValue(
+                    editingData?.coordinatedReactiveControl?.qPercent,
+                    editingDataRef.current?.coordinatedReactiveControl?.qPercent
+                ),
+                getFieldValue(
+                    editingData?.generatorStartup?.plannedActivePowerSetPoint,
+                    editingDataRef.current?.generatorStartup?.plannedActivePowerSetPoint
+                ),
+                getFieldValue(
+                    editingData?.generatorStartup?.marginalCost,
+                    editingDataRef.current?.generatorStartup?.marginalCost
+                ),
+                getFieldValue(
+                    editingData?.generatorStartup?.plannedOutageRate,
+                    editingDataRef.current?.generatorStartup?.plannedOutageRate
+                ),
+                getFieldValue(
+                    editingData?.generatorStartup?.forcedOutageRate,
+                    editingDataRef.current?.generatorStartup?.forcedOutageRate
+                ),
+                getFieldValue(
+                    editingData?.generatorShortCircuit?.directTransX,
+                    editingDataRef.current?.generatorShortCircuit?.directTransX
+                ),
+                getFieldValue(
+                    editingData?.generatorShortCircuit?.stepUpTransformerX,
+                    editingDataRef.current?.generatorShortCircuit?.stepUpTransformerX
+                ),
+                getFieldValue(
+                    editingData?.regulatingTerminalVlId || editingData?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id,
+                    editingDataRef.current?.regulatingTerminalVlId ||
+                        editingDataRef.current?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id
+                ),
+                regulatingTerminalConnectableIdFieldValue,
+                regulatingTerminalConnectableTypeFieldValue,
+                regulatingTerminalVlIdFieldValue,
+                undefined,
+                getFieldValue(
+                    editingData?.activePowerControl?.participate,
+                    editingDataRef.current?.activePowerControl?.participate
+                ),
+                getFieldValue(
+                    editingData?.activePowerControl?.droop,
+                    editingDataRef.current?.activePowerControl?.droop
+                ),
+                undefined,
+                undefined,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid, getFieldValue]
+    );
+
+    const updateVoltageLevel = useCallback(
+        (editingData: any, propertiesForBackend: any) => {
+            return modifyVoltageLevel(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                getFieldValue(editingData.name, editingDataRef.current.name),
+                getFieldValue(editingData.nominalV, editingDataRef.current.nominalV),
+                getFieldValue(editingData.lowVoltageLimit, editingDataRef.current.lowVoltageLimit),
+                getFieldValue(editingData.highVoltageLimit, editingDataRef.current.highVoltageLimit),
+                getFieldValue(
+                    editingData.identifiableShortCircuit?.ipMin,
+                    editingDataRef.current.identifiableShortCircuit?.ipMin
+                ),
+                getFieldValue(
+                    editingData.identifiableShortCircuit?.ipMax,
+                    editingDataRef.current.identifiableShortCircuit?.ipMax
+                ),
+                false,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid, getFieldValue]
+    );
+
+    const updateBattery = useCallback(
+        (editingData: any, propertiesForBackend: any) => {
+            return modifyBattery(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                getFieldValue(editingData.name, editingDataRef.current.name),
+                getFieldValue(editingData.minP, editingDataRef.current.minP),
+                getFieldValue(editingData.maxP, editingDataRef.current.maxP),
+                getFieldValue(editingData.targetP, editingDataRef.current.targetP),
+                getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
+                undefined,
+                undefined,
+                undefined,
+                getFieldValue(
+                    editingData.activePowerControl?.participate,
+                    editingDataRef.current.activePowerControl?.participate != null
+                        ? +editingDataRef.current.activePowerControl.participate
+                        : editingDataRef.current.activePowerControl?.participate
+                ),
+                getFieldValue(editingData.activePowerControl?.droop, editingDataRef.current.activePowerControl?.droop),
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid, getFieldValue]
+    );
+
+    const updateShuntCompensator = useCallback(
+        (editingData: any, propertiesForBackend: any, context: any) => {
+            return modifyShuntCompensator(
+                studyUuid,
+                currentNode?.id,
+                editingData.id,
+                getFieldValue(editingData.name, editingDataRef.current.name),
+                getFieldValue(editingData.maximumSectionCount, editingDataRef.current.maximumSectionCount),
+                getFieldValue(editingData.sectionCount, editingDataRef.current.sectionCount),
+                context.lastEditedField === 'maxSusceptance'
+                    ? getFieldValue(editingData.maxSusceptance, editingDataRef.current.maxSusceptance)
+                    : null,
+                context.lastEditedField === 'maxQAtNominalV'
+                    ? getFieldValue(editingData.maxQAtNominalV, editingDataRef.current.maxQAtNominalV)
+                    : null,
+                getFieldValue(
+                    editingData.type,
+                    editingDataRef.current.maxSusceptance > 0
+                        ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
+                        : SHUNT_COMPENSATOR_TYPES.REACTOR.id
+                ),
+                editingData.voltageLevelId,
+                false,
+                undefined,
+                propertiesForBackend
+            );
+        },
+        [currentNode?.id, studyUuid, getFieldValue]
+    );
+
+    // TODO: when 3WT update will use a network modification, remove everything dealing with groovy
+    const groovyUpdate = useCallback(
+        (params: any) => {
+            const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
+            if (equipment && equipment.groovyEquipmentGetter) {
+                let groovyScript =
+                    'equipment = network.' +
+                    equipment.groovyEquipmentGetter +
+                    "('" +
+                    params.data.id.replace(/'/g, "\\'") +
+                    "')\n";
+                const wrappedEditedData = {
+                    data: editingData,
+                };
+                const columns: any[] = equipment.columns;
+                Object.entries(priorValuesBuffer).forEach(([field, value]) => {
+                    const column: any = columns.find((c: any) => c.field === field);
+                    if (column && column.changeCmd) {
+                        const val = column.valueGetter ? column.valueGetter(wrappedEditedData) : editingData[field];
+                        groovyScript += column.changeCmd.replace(/\{\}/g, val) + '\n';
+                    }
+                });
+                return requestNetworkChange(studyUuid, currentNode?.id, groovyScript);
+            }
+        },
+        [currentNode?.id, studyUuid, editingData, priorValuesBuffer, tabIndex]
+    );
+
     const buildEditPromise = useCallback(
-        (editingData, groovyCr, context) => {
+        (editingData: any, params: any) => {
             const propertiesForBackend = formatPropertiesForBackend(
                 editingDataRef.current.properties ?? {},
                 editingData.properties ?? {}
             );
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
-                    return modifySubstation(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        editingData.name,
-                        editingData.country,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateSubstation(editingData, propertiesForBackend);
                 case EQUIPMENT_TYPES.LOAD:
-                    return modifyLoad(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.type, editingDataRef.current.type),
-                        getFieldValue(editingData.p0, editingDataRef.current.p0),
-                        getFieldValue(editingData.q0, editingDataRef.current.q0),
-                        undefined,
-                        undefined,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateLoad(editingData, propertiesForBackend);
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
-                    let ratioTap = null;
-                    if (editingData?.ratioTapChanger) {
-                        ratioTap = {
-                            [LOAD_TAP_CHANGING_CAPABILITIES]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES],
-                                    editingDataRef.current.ratioTapChanger?.[LOAD_TAP_CHANGING_CAPABILITIES]
-                                )
-                            ),
-                            [TAP_POSITION]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[TAP_POSITION],
-                                    editingDataRef.current.ratioTapChanger?.[TAP_POSITION]
-                                )
-                            ),
-                            [LOW_TAP_POSITION]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[LOW_TAP_POSITION],
-                                    editingDataRef.current.ratioTapChanger?.[LOW_TAP_POSITION]
-                                )
-                            ),
-                            [REGULATING]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[REGULATING],
-                                    editingDataRef.current.ratioTapChanger?.[REGULATING]
-                                )
-                            ),
-                            [REGULATION_TYPE]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[REGULATION_TYPE],
-                                    editingDataRef.current.ratioTapChanger?.[REGULATION_TYPE]
-                                )
-                            ),
-                            [REGULATION_SIDE]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[REGULATION_SIDE],
-                                    editingDataRef.current.ratioTapChanger?.[REGULATION_SIDE]
-                                )
-                            ),
-                            regulatingTerminalId: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.regulatingTerminalConnectableId,
-                                    editingDataRef.current.ratioTapChanger?.['regulatingTerminalConnectableId']
-                                )
-                            ),
-                            regulatingTerminalType: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.regulatingTerminalConnectableType,
-                                    editingDataRef.current.ratioTapChanger?.['regulatingTerminalConnectableType']
-                                )
-                            ),
-                            regulatingTerminalVlId: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.regulatingTerminalVlId,
-                                    editingDataRef.current.ratioTapChanger?.['regulatingTerminalVlId']
-                                )
-                            ),
-                            [TARGET_V]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[TARGET_V],
-                                    editingDataRef.current.ratioTapChanger?.[TARGET_V]
-                                )
-                            ),
-                            [TARGET_DEADBAND]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.ratioTapChanger?.[TARGET_DEADBAND],
-                                    editingDataRef.current.ratioTapChanger?.[TARGET_DEADBAND]
-                                )
-                            ),
-                            steps: null,
-                        };
-                    }
-                    let phaseTap = null;
-                    if (editingData?.phaseTapChanger) {
-                        phaseTap = {
-                            [REGULATION_MODE]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.[REGULATION_MODE],
-                                    editingDataRef.current.phaseTapChanger?.[REGULATION_MODE]
-                                )
-                            ),
-                            [TAP_POSITION]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.[TAP_POSITION],
-                                    editingDataRef.current.phaseTapChanger?.[TAP_POSITION]
-                                )
-                            ),
-                            [LOW_TAP_POSITION]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.[LOW_TAP_POSITION],
-                                    editingDataRef.current.phaseTapChanger?.[LOW_TAP_POSITION]
-                                )
-                            ),
-                            [REGULATION_TYPE]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.[REGULATION_TYPE],
-                                    editingDataRef.current.phaseTapChanger?.[REGULATION_TYPE]
-                                )
-                            ),
-                            [REGULATION_SIDE]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.[REGULATION_SIDE],
-                                    editingDataRef.current.phaseTapChanger?.[REGULATION_SIDE]
-                                )
-                            ),
-                            regulatingTerminalId: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.regulatingTerminalConnectableId,
-                                    editingDataRef.current.phaseTapChanger?.['regulatingTerminalConnectableId']
-                                )
-                            ),
-                            regulatingTerminalType: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.regulatingTerminalConnectableType,
-                                    editingDataRef.current.phaseTapChanger?.['regulatingTerminalConnectableType']
-                                )
-                            ),
-                            regulatingTerminalVlId: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.regulatingTerminalVlId,
-                                    editingDataRef.current.phaseTapChanger?.['regulatingTerminalVlId']
-                                )
-                            ),
-                            regulationValue: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.regulationValue,
-                                    editingDataRef.current.phaseTapChanger?.regulationValue
-                                )
-                            ),
-                            [TARGET_DEADBAND]: toModificationOperation(
-                                getFieldValue(
-                                    editingData.phaseTapChanger?.[TARGET_DEADBAND],
-                                    editingDataRef.current.phaseTapChanger?.[TARGET_DEADBAND]
-                                )
-                            ),
-                        };
-                    }
-                    return modifyTwoWindingsTransformer(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        toModificationOperation(
-                            sanitizeString(getFieldValue(editingData?.name, editingDataRef.current?.name))
-                        ),
-                        toModificationOperation(getFieldValue(editingData.r, editingDataRef.current.r)),
-                        toModificationOperation(getFieldValue(editingData.x, editingDataRef.current.x)),
-                        toModificationOperation(getFieldValue(editingData.g, editingDataRef.current.g)),
-                        toModificationOperation(getFieldValue(editingData.b, editingDataRef.current.b)),
-                        toModificationOperation(getFieldValue(editingData.ratedS, editingDataRef.current.ratedS)),
-                        toModificationOperation(getFieldValue(editingData.ratedU1, editingDataRef.current.ratedU1)),
-                        toModificationOperation(getFieldValue(editingData.ratedU2, editingDataRef.current.ratedU2)),
-                        undefined,
-                        undefined,
-                        ratioTap,
-                        phaseTap,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateTwoWindingsTransformer(editingData, propertiesForBackend);
                 case EQUIPMENT_TYPES.GENERATOR:
-                    const regulatingTerminalConnectableIdFieldValue = getFieldValue(
-                        editingData.regulatingTerminalConnectableId,
-                        editingDataRef.current?.regulatingTerminalConnectableId
-                    );
-                    const regulatingTerminalConnectableTypeFieldValue = getFieldValue(
-                        editingData.regulatingTerminalConnectableType,
-                        editingDataRef.current?.regulatingTerminalConnectableType
-                    );
-                    const regulatingTerminalVlIdFieldValue =
-                        regulatingTerminalConnectableIdFieldValue !== null ||
-                        regulatingTerminalConnectableTypeFieldValue !== null
-                            ? editingData.regulatingTerminalVlId
-                            : null;
-                    return modifyGenerator(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.energySource, editingDataRef.current.energySource),
-                        getFieldValue(editingData.minP, editingDataRef.current.minP),
-                        getFieldValue(editingData.maxP, editingDataRef.current.maxP),
-                        undefined,
-                        getFieldValue(editingData.targetP, editingDataRef.current.targetP),
-                        getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
-                        getFieldValue(editingData.voltageRegulatorOn, editingDataRef.current.voltageRegulatorOn),
-                        getFieldValue(editingData.targetV, editingDataRef.current.targetV),
-                        undefined,
-                        undefined,
-                        undefined,
-                        getFieldValue(
-                            editingData?.coordinatedReactiveControl?.qPercent,
-                            editingDataRef.current?.coordinatedReactiveControl?.qPercent
-                        ),
-                        getFieldValue(
-                            editingData?.generatorStartup?.plannedActivePowerSetPoint,
-                            editingDataRef.current?.generatorStartup?.plannedActivePowerSetPoint
-                        ),
-                        getFieldValue(
-                            editingData?.generatorStartup?.marginalCost,
-                            editingDataRef.current?.generatorStartup?.marginalCost
-                        ),
-                        getFieldValue(
-                            editingData?.generatorStartup?.plannedOutageRate,
-                            editingDataRef.current?.generatorStartup?.plannedOutageRate
-                        ),
-                        getFieldValue(
-                            editingData?.generatorStartup?.forcedOutageRate,
-                            editingDataRef.current?.generatorStartup?.forcedOutageRate
-                        ),
-                        getFieldValue(
-                            editingData?.generatorShortCircuit?.directTransX,
-                            editingDataRef.current?.generatorShortCircuit?.directTransX
-                        ),
-                        getFieldValue(
-                            editingData?.generatorShortCircuit?.stepUpTransformerX,
-                            editingDataRef.current?.generatorShortCircuit?.stepUpTransformerX
-                        ),
-                        getFieldValue(
-                            editingData?.regulatingTerminalVlId || editingData?.regulatingTerminalConnectableId
-                                ? REGULATION_TYPES.DISTANT.id
-                                : REGULATION_TYPES.LOCAL.id,
-                            editingDataRef.current?.regulatingTerminalVlId ||
-                                editingDataRef.current?.regulatingTerminalConnectableId
-                                ? REGULATION_TYPES.DISTANT.id
-                                : REGULATION_TYPES.LOCAL.id
-                        ),
-                        regulatingTerminalConnectableIdFieldValue,
-                        regulatingTerminalConnectableTypeFieldValue,
-                        regulatingTerminalVlIdFieldValue,
-                        undefined,
-                        getFieldValue(
-                            editingData?.activePowerControl?.participate,
-                            editingDataRef.current?.activePowerControl?.participate
-                        ),
-                        getFieldValue(
-                            editingData?.activePowerControl?.droop,
-                            editingDataRef.current?.activePowerControl?.droop
-                        ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateGenerator(editingData, propertiesForBackend);
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-                    return modifyVoltageLevel(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.nominalV, editingDataRef.current.nominalV),
-                        getFieldValue(editingData.lowVoltageLimit, editingDataRef.current.lowVoltageLimit),
-                        getFieldValue(editingData.highVoltageLimit, editingDataRef.current.highVoltageLimit),
-                        getFieldValue(
-                            editingData.identifiableShortCircuit?.ipMin,
-                            editingDataRef.current.identifiableShortCircuit?.ipMin
-                        ),
-                        getFieldValue(
-                            editingData.identifiableShortCircuit?.ipMax,
-                            editingDataRef.current.identifiableShortCircuit?.ipMax
-                        ),
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateVoltageLevel(editingData, propertiesForBackend);
                 case EQUIPMENT_TYPES.BATTERY:
-                    return modifyBattery(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.minP, editingDataRef.current.minP),
-                        getFieldValue(editingData.maxP, editingDataRef.current.maxP),
-                        getFieldValue(editingData.targetP, editingDataRef.current.targetP),
-                        getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        getFieldValue(
-                            editingData.activePowerControl?.participate,
-                            editingDataRef.current.activePowerControl?.participate != null
-                                ? +editingDataRef.current.activePowerControl.participate
-                                : editingDataRef.current.activePowerControl?.participate
-                        ),
-                        getFieldValue(
-                            editingData.activePowerControl?.droop,
-                            editingDataRef.current.activePowerControl?.droop
-                        ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateBattery(editingData, propertiesForBackend);
                 case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-                    return modifyShuntCompensator(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.maximumSectionCount, editingDataRef.current.maximumSectionCount),
-                        getFieldValue(editingData.sectionCount, editingDataRef.current.sectionCount),
-                        context.lastEditedField === 'maxSusceptance'
-                            ? getFieldValue(editingData.maxSusceptance, editingDataRef.current.maxSusceptance)
-                            : null,
-                        context.lastEditedField === 'maxQAtNominalV'
-                            ? getFieldValue(editingData.maxQAtNominalV, editingDataRef.current.maxQAtNominalV)
-                            : null,
-                        getFieldValue(
-                            editingData.type,
-                            editingDataRef.current.maxSusceptance > 0
-                                ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
-                                : SHUNT_COMPENSATOR_TYPES.REACTOR.id
-                        ),
-                        editingData.voltageLevelId,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return updateShuntCompensator(editingData, propertiesForBackend, params.context);
                 default:
-                    return requestNetworkChange(props.studyUuid, props.currentNode?.id, groovyCr);
+                    return groovyUpdate(params);
             }
         },
-        [props.currentNode?.id, props.studyUuid, getFieldValue]
+        [
+            updateSubstation,
+            updateLoad,
+            updateTwoWindingsTransformer,
+            updateGenerator,
+            updateVoltageLevel,
+            updateBattery,
+            updateShuntCompensator,
+            groovyUpdate,
+        ]
     );
 
     const validateEdit = useCallback(
-        (params) => {
-            // TODO: generic groovy updates should be replaced by specific hypothesis creations, like modifyLoad() below
-            // TODO: when no more groovy, remove changeCmd everywhere, remove requestNetworkChange()
-            let groovyCr =
-                'equipment = network.' +
-                TABLES_DEFINITION_INDEXES.get(tabIndex).groovyEquipmentGetter +
-                "('" +
-                params.data.id.replace(/'/g, "\\'") +
-                "')\n";
-
-            const wrappedEditedData = {
-                data: editingData,
-            };
-            Object.entries(priorValuesBuffer).forEach(([field, value]) => {
-                const column = gridRef.current.columnApi.getColumn(field);
-                const val = column.colDef.valueGetter
-                    ? column.colDef.valueGetter(wrappedEditedData)
-                    : editingData[field];
-
-                groovyCr += column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
-            });
-
-            const editPromise = buildEditPromise(editingData, groovyCr, params.context);
+        (params: any) => {
+            const editPromise = buildEditPromise(editingData, params);
             Promise.resolve(editPromise)
                 .then(() => {
                     const transaction = {
                         update: [editingData],
                     };
-                    gridRef.current.api.applyTransaction(transaction);
-                    setEditingData();
+                    gridRef.current?.api.applyTransaction(transaction);
+                    setEditingData(undefined);
                     resetBuffer();
                     editingDataRef.current = editingData;
                     setLastModifiedEquipment(editingData);
@@ -932,7 +1028,7 @@ const TableWrapper = (props) => {
                     });
                 });
         },
-        [buildEditPromise, editingData, priorValuesBuffer, resetBuffer, rollbackEdit, snackError, tabIndex]
+        [buildEditPromise, editingData, resetBuffer, rollbackEdit, snackError]
     );
 
     // After the modification has been applied, we need to update the equipment data in the grid
@@ -940,12 +1036,12 @@ const TableWrapper = (props) => {
         if (studyUpdatedForce.eventData.headers) {
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED' &&
-                studyUpdatedForce.eventData.headers['parentNode'] === props.currentNode.id &&
+                studyUpdatedForce.eventData.headers['parentNode'] === currentNode.id &&
                 lastModifiedEquipment
             ) {
                 fetchNetworkElementInfos(
-                    props.studyUuid,
-                    props.currentNode.id,
+                    studyUuid,
+                    currentNode.id,
                     lastModifiedEquipment.metadata.equipmentType,
                     EQUIPMENT_INFOS_TYPES.TAB.type,
                     lastModifiedEquipment.id,
@@ -956,29 +1052,26 @@ const TableWrapper = (props) => {
                         const transaction = {
                             update: [formattedData],
                         };
-                        gridRef.current.api.applyTransaction(transaction);
-                        setLastModifiedEquipment();
-                        gridRef.current.api.refreshCells({
-                            force: true,
-                            rowNodes: [gridRef.current.api.getRowNode(formattedData.id)],
-                        });
+                        gridRef.current?.api.applyTransaction(transaction);
+                        setLastModifiedEquipment(undefined);
+                        const rowNode = gridRef.current?.api.getRowNode(formattedData.id);
+                        if (rowNode) {
+                            gridRef.current?.api.refreshCells({
+                                force: true,
+                                rowNodes: [rowNode],
+                            });
+                        }
                     })
                     .catch((error) => {
                         console.error('equipment data update failed', error);
                     });
             }
         }
-    }, [
-        lastModifiedEquipment,
-        props.currentNode.id,
-        props.studyUuid,
-        studyUpdatedForce,
-        formatFetchedEquipmentHandler,
-    ]);
+    }, [lastModifiedEquipment, currentNode.id, studyUuid, studyUpdatedForce, formatFetchedEquipmentHandler]);
 
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
-        (params) => {
+        (params: CellEditingStoppedEvent) => {
             if (params.oldValue !== params.newValue) {
                 if (params.data.metadata.equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR) {
                     updateShuntCompensatorCells(params);
@@ -995,13 +1088,13 @@ const TableWrapper = (props) => {
         [addDataToBuffer]
     );
 
-    const handleCellEditingStarted = useCallback((params) => {
+    const handleCellEditingStarted = useCallback((params: CellEditingStartedEvent) => {
         // we initialize the dynamicValidation with the initial data
         params.context.dynamicValidation = params.data;
     }, []);
 
     const handleSubmitEditing = useCallback(
-        (params) => {
+        (params: any) => {
             if (Object.values(priorValuesBuffer).length === 0) {
                 rollbackEdit();
             } else {
@@ -1013,7 +1106,7 @@ const TableWrapper = (props) => {
     );
 
     const addEditColumn = useCallback(
-        (columns) => {
+        (equipmentType: EQUIPMENT_TYPES, columns: any[]) => {
             columns.unshift({
                 field: EDIT_COLUMN,
                 locked: true,
@@ -1025,7 +1118,7 @@ const TableWrapper = (props) => {
                 width: 100,
                 headerName: '',
                 cellStyle: { border: 'none' },
-                cellRendererSelector: (params) => {
+                cellRendererSelector: (params: ICellRendererParams) => {
                     if (params.node.rowPinned) {
                         return {
                             component: EditingCellRenderer,
@@ -1043,43 +1136,48 @@ const TableWrapper = (props) => {
                             component: EditableCellRenderer,
                             params: {
                                 setEditingData: setEditingData,
-                                equipmentType: TABLES_DEFINITION_INDEXES.get(tabIndex).type,
+                                equipmentType: equipmentType,
                             },
                         };
                     }
                 },
             });
         },
-        [editingData?.id, handleSubmitEditing, rollbackEdit, tabIndex]
+        [editingData?.id, handleSubmitEditing, rollbackEdit]
     );
 
-    const generateTableColumns = useCallback(
-        (tabIndex) => {
-            const generatedTableColumns = TABLES_DEFINITION_INDEXES.get(tabIndex)
-                .columns.filter((c) => {
-                    return selectedColumnsNames.has(c.id);
-                })
-                .map((column) => enrichColumn(column));
+    const generateTableColumns = useCallback(() => {
+        let selectedTableColumns = currentColumns()
+            .filter((c: any) => {
+                return selectedColumnsNames.has(c.id);
+            })
+            .map((column: any) => enrichColumn(column));
 
-            function sortByIndex(a, b) {
-                return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
-            }
+        function sortByIndex(a: any, b: any) {
+            return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
+        }
 
-            generatedTableColumns.sort(sortByIndex);
+        selectedTableColumns.sort(sortByIndex);
 
-            if (isEditColumnVisible()) {
-                addEditColumn(generatedTableColumns);
-            }
-            return generatedTableColumns;
-        },
-        [addEditColumn, enrichColumn, isEditColumnVisible, reorderedTableDefinitionIndexes, selectedColumnsNames]
-    );
+        if (isEditColumnVisible()) {
+            addEditColumn(currentType(), selectedTableColumns);
+        }
+        return selectedTableColumns;
+    }, [
+        addEditColumn,
+        enrichColumn,
+        isEditColumnVisible,
+        reorderedTableDefinitionIndexes,
+        selectedColumnsNames,
+        currentType,
+        currentColumns,
+    ]);
 
     useEffect(() => {
-        setColumnData(generateTableColumns(tabIndex));
-    }, [generateTableColumns, tabIndex]);
+        setColumnData(generateTableColumns());
+    }, [generateTableColumns]);
 
-    const topPinnedData = useMemo(() => {
+    const topPinnedData = useMemo((): any[] | undefined => {
         if (editingData) {
             editingDataRef.current = { ...editingData };
             return [editingData];
@@ -1087,27 +1185,23 @@ const TableWrapper = (props) => {
             return undefined;
         }
     }, [editingData]);
+
     return (
         <>
             <Grid container justifyContent={'space-between'}>
                 <EquipmentTabs
-                    disabled={!!(props.disabled || editingData)}
+                    disabled={!!(disabled || editingData)}
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
                 <Grid container sx={styles.toolbar}>
                     <Grid item sx={styles.filter}>
-                        <GlobalFilter
-                            disabled={!!(props.disabled || editingData)}
-                            visible={props.visible}
-                            gridRef={gridRef}
-                            ref={globalFilterRef}
-                        />
+                        <GlobalFilter disabled={!!(disabled || editingData)} gridRef={gridRef} ref={globalFilterRef} />
                     </Grid>
                     <Grid item sx={styles.selectColumns}>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={!!(props.disabled || editingData)}
+                            disabled={!!(disabled || editingData)}
                             reorderedTableDefinitionIndexes={reorderedTableDefinitionIndexes}
                             setReorderedTableDefinitionIndexes={setReorderedTableDefinitionIndexes}
                             selectedColumnsNames={selectedColumnsNames}
@@ -1121,27 +1215,26 @@ const TableWrapper = (props) => {
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnData}
-                            tableName={TABLES_DEFINITION_INDEXES.get(tabIndex).name}
-                            disabled={!!(props.disabled || rowData.length === 0 || editingData)}
+                            tableName={TABLES_DEFINITION_INDEXES.get(tabIndex)?.name}
+                            disabled={!!(disabled || rowData.length === 0 || editingData)}
                         />
                     </Grid>
                 </Grid>
             </Grid>
-            {props.disabled ? (
+            {disabled ? (
                 <Alert sx={styles.invalidNode} severity="warning">
                     <FormattedMessage id="InvalidNode" />
                 </Alert>
             ) : (
-                <Box sx={styles.table}>
+                <Box sx={mergeSx(styles.table)}>
                     <EquipmentTable
                         gridRef={gridRef}
-                        studyUuid={props.studyUuid}
-                        currentNode={props.currentNode}
+                        studyUuid={studyUuid}
+                        currentNode={currentNode}
                         rowData={rowData}
                         columnData={columnData}
                         topPinnedData={topPinnedData}
                         fetched={equipments || errorMessage}
-                        visible={props.visible}
                         handleColumnDrag={handleColumnDrag}
                         handleCellEditingStarted={handleCellEditingStarted}
                         handleCellEditingStopped={handleCellEditingStopped}
@@ -1153,24 +1246,6 @@ const TableWrapper = (props) => {
             )}
         </>
     );
-};
-
-TableWrapper.defaultProps = {
-    studyUuid: '',
-    currentNode: null,
-    equipmentId: null,
-    equipmentType: null,
-    equipmentChanged: false,
-    disabled: false,
-};
-
-TableWrapper.propTypes = {
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    equipmentId: PropTypes.string,
-    equipmentType: PropTypes.string,
-    equipmentChanged: PropTypes.bool,
-    disabled: PropTypes.bool,
 };
 
 export default TableWrapper;
