@@ -235,7 +235,6 @@ import { FluxConventions } from '../components/dialogs/parameters/network-parame
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
@@ -277,7 +276,7 @@ import { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from 'react-flow-renderer';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
-import { StudyDisplayMode } from '../components/network-modification.type';
+import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { SeverityFilter } from '../types/report.type';
 import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 

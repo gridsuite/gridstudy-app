@@ -17,8 +17,8 @@ import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { CopyType } from 'components/network-modification-tree-pane';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
+import { CopyType } from 'components/network-modification.type';
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -26,24 +26,30 @@ export const NodeActions = {
     NO_ACTION: 'NO_ACTION',
 };
 
-export const getNodeChildren = (treeModel: NetworkModificationTreeModel, sourceNodeIds: any, allChildren: any) => {
-    const children = treeModel.treeNodes.filter((node: any) => sourceNodeIds.includes(node.data.parentNodeUuid));
+export const getNodeChildren = (
+    treeModel: NetworkModificationTreeModel,
+    sourceNodeIds: UUID[],
+    allChildren: CurrentTreeNode[]
+) => {
+    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid));
     if (children.length > 0) {
-        children.forEach((item: any) => {
+        children.forEach((item) => {
             allChildren?.push({ ...item });
         });
-        const ids = children.map((el: any) => el.id);
+        const ids = children.map((el) => el.id);
         // get next level of children
         getNodeChildren(treeModel, ids, allChildren);
     }
 };
 
-export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel, id: any) => {
+export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel, id: UUID) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
-        const activeNodeDirectChildren = treeModel.treeNodes.filter((item: any) => item.data.parentNodeUuid === id);
-        const allChildren: any[] = [];
-        activeNodeDirectChildren.forEach((child: any) => {
+        const activeNodeDirectChildren = treeModel.treeNodes.filter(
+            (item: CurrentTreeNode) => item.data.parentNodeUuid === id
+        );
+        const allChildren: CurrentTreeNode[] = [];
+        activeNodeDirectChildren.forEach((child) => {
             allChildren.push(child);
             // get the children of each child
             getNodeChildren(treeModel, [child.id], allChildren);
@@ -57,10 +63,27 @@ interface Identifiable {
     [key: string]: any; // Allows any other fields
 }
 
+type SubMenuItem = {
+    onRoot: boolean;
+    action: () => void;
+    id: string;
+    disabled?: boolean;
+};
+
+type MenuItem = {
+    onRoot: boolean;
+    action?: () => void;
+    id: string;
+    disabled?: boolean;
+    subMenuItems?: Record<string, SubMenuItem>;
+    sectionEnd?: boolean;
+};
+type NodeMenuItems = Record<string, MenuItem>;
+
 interface CreateNodeMenuProps {
     position: { x: number; y: number };
-    handleNodeCreation: (element: any, type: string, insertMode: any) => void;
-    handleNodeRemoval: (activeNode: any) => void;
+    handleNodeCreation: (element: CurrentTreeNode, type: string, insertMode: NodeInsertModes) => void;
+    handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
     handleUnbuildNode: (element: Identifiable) => void;
@@ -223,7 +246,8 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         // check if the subtree has children
         return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel!);
     }
-    const NODE_MENU_ITEMS = {
+
+    const NODE_MENU_ITEMS: NodeMenuItems = {
         BUILD_NODE: {
             onRoot: false,
             action: () => buildNode(),
@@ -345,14 +369,15 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     };
 
     const renderMenuItems = useCallback(
-        (nodeMenuItems: any) => {
-            //TODO(jamal): fix type
-            return Object.values(nodeMenuItems).map((item: any) => {
+        (nodeMenuItems: NodeMenuItems) => {
+            return Object.values(nodeMenuItems).map((item) => {
                 if (activeNode?.type === 'ROOT' && !item.onRoot) {
                     return undefined; // do not show this item in menu
                 }
                 if (item.subMenuItems === undefined) {
-                    return <ChildMenuItem key={item.id} item={item} />;
+                    const action = item.action || (() => {});
+                    const disabled = item.disabled ?? false;
+                    return <ChildMenuItem key={item.id} item={{ ...item, action, disabled }} />;
                 }
                 return (
                     <CustomNestedMenuItem

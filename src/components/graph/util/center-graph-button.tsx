@@ -11,14 +11,15 @@ import React, { useCallback } from 'react';
 import { ControlButton, useReactFlow } from 'react-flow-renderer';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
+import { CurrentTreeNode } from 'redux/reducer';
 
-const CenterGraphButton = ({ currentNode }: { currentNode: any }) => {
+const CenterGraphButton = ({ currentNode }: { currentNode: CurrentTreeNode }) => {
     const { setCenter, getZoom } = useReactFlow();
     const intl = useIntl();
 
     const focusNode = useCallback(() => {
-        const x = currentNode.style.width / 2.0 + currentNode.position.x;
-        const y = currentNode.style.height / 2.0 + currentNode.position.y;
+        const x = currentNode.style?.width / 2.0 + currentNode.position.x;
+        const y = currentNode.style?.height / 2.0 + currentNode.position.y;
 
         setCenter(x, y, { zoom: getZoom() });
     }, [setCenter, currentNode, getZoom]);

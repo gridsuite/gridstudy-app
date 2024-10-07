@@ -12,12 +12,12 @@ import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
-import { CopyType } from '../../network-modification-tree-pane';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { Box } from '@mui/system';
 import { Theme } from '@mui/material';
 import { AppState } from 'redux/reducer';
+import { CopyType } from 'components/network-modification.type';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
@@ -128,7 +128,7 @@ const styles = {
 };
 
 //TODO(jamal) add types
-const NetworkModificationNode = (props: any) => {
+const NetworkModificationNode = (props) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
