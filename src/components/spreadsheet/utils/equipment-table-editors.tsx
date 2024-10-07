@@ -71,8 +71,8 @@ export const GeneratorRegulatingTerminalEditor = forwardRef(
 
         const handleSaveRegulatingTerminalPopup = (updatedRegulatedTerminal: any) => {
             const {
-                equipment: { type: equipmentType, id: equipmentId } = {},
-                voltageLevel: { id: voltageLevelId } = {},
+                equipment: { type: equipmentType, id: equipmentId } = { type: '', id: '' },
+                voltageLevel: { id: voltageLevelId } = { id: '' },
             } = updatedRegulatedTerminal || {};
 
             gridContext.dynamicValidation = deepUpdateValue(
@@ -140,8 +140,8 @@ export const TWTRegulatingTerminalEditor = forwardRef(
 
         const handleSaveRegulatingTerminalPopup = (updatedRegulatedTerminal: any) => {
             const {
-                equipment: { type: equipmentType, id: equipmentId } = {},
-                voltageLevel: { id: voltageLevelId } = {},
+                equipment: { type: equipmentType, id: equipmentId } = { type: '', id: '' },
+                voltageLevel: { id: voltageLevelId } = { id: '' },
             } = updatedRegulatedTerminal || {};
             gridContext.dynamicValidation = deepUpdateValue(
                 gridContext.dynamicValidation,

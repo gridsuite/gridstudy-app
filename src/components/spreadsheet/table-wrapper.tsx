@@ -251,6 +251,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
         filterType: SPREADSHEET_STORE_FIELD,
         filterTab: currentType().toString(),
+        // @ts-expect-error TODO: found how to have Action type in props type
         filterStoreAction: setSpreadsheetFilter,
     });
 
