@@ -26,7 +26,7 @@ interface GlobalFilterProps {
 
 export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps, ref) => {
     const intl = useIntl();
-    const inputRef = useRef<string>();
+    const inputRef = useRef<any>();
 
     const applyQuickFilter = useCallback(
         (filterValue: string) => {
@@ -35,14 +35,10 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps
         [gridRef]
     );
 
-    const resetQuickFilter = useCallback(() => {
-        gridRef.current?.api?.resetQuickFilter();
-    }, [gridRef]);
-
     const resetFilter = useCallback(() => {
-        inputRef.current = '';
-        resetQuickFilter();
-    }, [resetQuickFilter]);
+        inputRef.current.value = '';
+        applyQuickFilter('');
+    }, [applyQuickFilter]);
 
     const getFilterValue = useCallback(() => {
         return inputRef.current;
