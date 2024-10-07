@@ -59,7 +59,7 @@ type EquipmentMenuState = {
     equipmentId: string | null;
     equipmentType: EQUIPMENT_TYPES | null;
     svgId: string | null;
-    display: boolean | null;
+    display: boolean;
 };
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; type: string | null }) => void;
@@ -82,21 +82,21 @@ const defaultMenuState: EquipmentMenuState = {
     equipmentId: null,
     equipmentType: null,
     svgId: null,
-    display: null,
+    display: false,
 };
 
 type BusMenuState = {
     position: [number, number];
     busId: string | null;
     svgId: string | null;
-    display: boolean | null;
+    display: boolean;
 };
 
 const defaultBusMenuState: BusMenuState = {
     position: [-1, -1],
     busId: null,
     svgId: null,
-    display: null,
+    display: false,
 };
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {

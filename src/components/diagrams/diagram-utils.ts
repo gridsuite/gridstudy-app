@@ -35,7 +35,6 @@ const sortByAlign = (a: { align: DiagramAlignment }, b: { align: DiagramAlignmen
  * So we keep the same order as in the redux store.
  * We use the ID and type of the objects to identify their indexes.
  */
-//TODO(jamal) fix types
 const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
     return (
         diagramStates.findIndex((diagramState) => diagramState.id === a?.id && diagramState.svgType === a?.svgType) -
@@ -49,7 +48,7 @@ const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
  * @param depth the network area diagram's selected depth
  * @param initNadWithGeoData config parameter specifying if the nad uses geographical data
  * @returns {string}
- */ //TODO(jamal) fix types
+ */
 export const getNadIdentifier = (diagramStates: any[], depth: number, initNadWithGeoData: boolean): string => {
     const result =
         diagramStates

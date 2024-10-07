@@ -162,12 +162,12 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
 
     // this callback returns a promise
     return useCallback(
-        (diagramState: any) => {
+        (diagramState: Partial<DiagramView>) => {
             if (!studyUuid || !currentNode) {
                 return Promise.reject();
             }
 
-            function createSubstationDiagramView(id: UUID, state: DiagramState) {
+            function createSubstationDiagramView(id: UUID, state: ViewState | undefined) {
                 const svgUrl = checkAndGetSubstationSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.SUBSTATION).then((svg) => {
                     let label = getNameOrId(svg.additionalMetadata) ?? id;
@@ -184,7 +184,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
                 });
             }
 
-            function createVoltageLevelDiagramView(id: UUID, state: DiagramState) {
+            function createVoltageLevelDiagramView(id: UUID, state: ViewState | undefined) {
                 const svgUrl = checkAndGetVoltageLevelSingleLineDiagramUrl(id);
                 return fetchSvgData(svgUrl, DiagramType.VOLTAGE_LEVEL).then((svg) => {
                     let label = getNameOrId(svg.additionalMetadata) ?? id;
@@ -203,7 +203,8 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
                 });
             }
 
-            function createNetworkAreaDiagramView(ids: UUID[], state: DiagramState, depth = 0) {
+            function createNetworkAreaDiagramView(ids: UUID[] | undefined, state: ViewState | undefined, depth = 0) {
+                console.log('debug', 'createNetworkAreaDiagramView', state);
                 if (ids?.length) {
                     const svgUrl = checkAndGetNetworkAreaDiagramUrl(ids, depth);
                     return fetchSvgData(svgUrl, DiagramType.NETWORK_AREA_DIAGRAM).then((svg) => {
@@ -247,9 +248,9 @@ const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
             }
 
             if (diagramState.svgType === DiagramType.VOLTAGE_LEVEL) {
-                return createVoltageLevelDiagramView(diagramState.id as UUID, diagramState.state);
+                return createVoltageLevelDiagramView(diagramState.id!, diagramState.state);
             } else if (diagramState.svgType === DiagramType.SUBSTATION) {
-                return createSubstationDiagramView(diagramState.id as UUID, diagramState.state);
+                return createSubstationDiagramView(diagramState.id!, diagramState.state);
             } else if (diagramState.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
                 return createNetworkAreaDiagramView(diagramState.ids, diagramState.state, diagramState.depth);
             }
@@ -485,7 +486,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                 ids: networkAreaIds,
                 state: networkAreaViewState,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                depth: networkAreaDiagramDepth,
+                depth: networkAreaDiagramDepth
             })?.then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
