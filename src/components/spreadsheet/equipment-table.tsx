@@ -5,16 +5,43 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useMemo, useCallback } from 'react';
+import { FunctionComponent, useMemo, useCallback, Ref } from 'react';
 import { useTheme } from '@mui/material';
 import { ALLOWED_KEYS } from './utils/config-tables';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import {
+    CellEditingStartedEvent,
+    CellEditingStoppedEvent,
+    ColumnMovedEvent,
+    GetRowIdParams,
+    RowClassParams,
+    RowHeightParams,
+    RowStyle,
+    SuppressKeyboardEventParams,
+} from 'ag-grid-community';
+import { CurrentTreeNode } from '../../redux/reducer';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
 
-export const EquipmentTable = ({
+interface EquipmentTableProps {
+    rowData: any[];
+    topPinnedData: any[] | undefined;
+    columnData: any[];
+    gridRef: Ref<any> | undefined;
+    studyUuid: string;
+    currentNode: CurrentTreeNode;
+    handleColumnDrag: (e: ColumnMovedEvent) => void;
+    handleCellEditingStarted: (e: CellEditingStartedEvent) => void;
+    handleCellEditingStopped: (e: CellEditingStoppedEvent) => void;
+    handleGridReady: () => void;
+    handleRowDataUpdated: () => void;
+    fetched: boolean;
+    shouldHidePinnedHeaderRightBorder: boolean;
+}
+
+export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
     topPinnedData,
     columnData,
@@ -27,13 +54,13 @@ export const EquipmentTable = ({
     handleGridReady,
     handleRowDataUpdated,
     fetched,
-    network,
     shouldHidePinnedHeaderRightBorder,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+
     const getRowStyle = useCallback(
-        (params) => {
+        (params: RowClassParams): RowStyle | undefined => {
             if (params.rowIndex === 0 && params.node.rowPinned === 'top') {
                 return {
                     borderTop: '1px solid ' + theme.palette.primary.main,
@@ -44,10 +71,10 @@ export const EquipmentTable = ({
         [theme.palette.primary.main]
     );
 
-    const getRowId = useCallback((params) => params.data.id, []);
+    const getRowId = useCallback((params: GetRowIdParams): string => params.data.id, []);
 
     //we filter enter key event to prevent closing or opening edit mode
-    const suppressKeyEvent = (params) => {
+    const suppressKeyEvent = (params: SuppressKeyboardEventParams): boolean => {
         return !ALLOWED_KEYS.includes(params.event.key);
     };
 
@@ -59,25 +86,28 @@ export const EquipmentTable = ({
             lockPinned: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
-            suppressKeyboardEvent: (params) => suppressKeyEvent(params),
+            suppressKeyboardEvent: (params: SuppressKeyboardEventParams): boolean => suppressKeyEvent(params),
         }),
         []
     );
 
     const gridContext = useMemo(() => {
         return {
-            network: network,
             editErrors: {},
             dynamicValidation: {},
-            isEditing: topPinnedData ? true : false,
+            isEditing: !!topPinnedData,
             theme,
             lastEditedField: undefined,
             dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
         };
-    }, [currentNode, network, studyUuid, theme, topPinnedData]);
-    const getRowHeight = useCallback((params) => (params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT), []);
+    }, [currentNode, studyUuid, theme, topPinnedData]);
+
+    const getRowHeight = useCallback(
+        (params: RowHeightParams): number => (params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT),
+        []
+    );
 
     const rowsToShow = useMemo(() => {
         return fetched && rowData.length > 0 ? rowData : [];
@@ -93,7 +123,7 @@ export const EquipmentTable = ({
         return undefined;
     }, [rowData, fetched, intl]);
 
-    const loadingOverlayComponent = (props) => {
+    const loadingOverlayComponent = (props: any) => {
         return <>{props.loadingMessage}</>;
     };
     const loadingOverlayComponentParams = useMemo(() => {

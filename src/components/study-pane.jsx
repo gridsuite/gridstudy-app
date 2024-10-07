@@ -101,7 +101,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
-                        visible={props.view === StudyView.SPREADSHEET}
                     />
                 </Paper>
             </TabPanelLazy>

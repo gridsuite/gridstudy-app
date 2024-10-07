@@ -439,9 +439,9 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allDisplayedColumnsNames: UnknownArray;
-    allLockedColumnsNames: UnknownArray;
-    allReorderedTableDefinitionIndexes: UnknownArray;
+    allDisplayedColumnsNames: string[];
+    allLockedColumnsNames: string[];
+    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -1040,7 +1040,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
         action.displayedColumnsNamesParams.forEach((param) => {
             if (param) {
-                newDisplayedColumnsNames[param.index] = param.value;
+                newDisplayedColumnsNames[param.index] = String(param.value);
             }
         });
         state.allDisplayedColumnsNames = newDisplayedColumnsNames;
@@ -1050,7 +1050,7 @@ export const reducer = createReducer(initialState, (builder) => {
         let newLockedColumnsNames = [...state.allLockedColumnsNames];
         action.lockedColumnsNamesParams.forEach((param) => {
             if (param) {
-                newLockedColumnsNames[param.index] = param.value;
+                newLockedColumnsNames[param.index] = String(param.value);
             }
         });
         state.allLockedColumnsNames = newLockedColumnsNames;
@@ -1060,7 +1060,7 @@ export const reducer = createReducer(initialState, (builder) => {
         let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
         action.reorderedColumnsParams.forEach((param) => {
             if (param) {
-                newReorderedColumns[param.index] = param.value;
+                newReorderedColumns[param.index] = String(param.value);
             }
         });
         state.allReorderedTableDefinitionIndexes = newReorderedColumns;

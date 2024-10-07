@@ -68,7 +68,7 @@ import { SeverityFilter } from '../types/report.type';
 
 type MutableUnknownArray = unknown[];
 
-type ColumnName<TValue = unknown> = {
+export type ColumnName<TValue = unknown> = {
     index: number;
     value: TValue;
 };

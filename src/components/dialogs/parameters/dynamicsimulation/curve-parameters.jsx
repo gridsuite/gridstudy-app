@@ -157,7 +157,12 @@ const CurveParameters = ({ path }) => {
                 {/* header toolbar of the aggrid */}
                 <Grid container item sx={{ marginBottom: theme.spacing(1) }}>
                     <Grid container item xs={'auto'}>
-                        <GlobalFilter key={'curve-quick-filter'} ref={quickFilterRef} gridRef={gridRef} />
+                        <GlobalFilter
+                            key={'curve-quick-filter'}
+                            ref={quickFilterRef}
+                            gridRef={gridRef}
+                            disabled={false}
+                        />
                     </Grid>
                     <Grid
                         container

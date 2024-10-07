@@ -7,10 +7,11 @@
 import { getEnumLabelById } from 'components/utils/utils';
 import React from 'react';
 import { useIntl } from 'react-intl';
+import { EnumOption } from '../utils/config-tables';
 
 interface EnumCellRendererProps {
     value: string;
-    enumOptions: { id: string; label: string }[];
+    enumOptions: EnumOption[];
 }
 
 const EnumCellRenderer: React.FC<EnumCellRendererProps> = ({ value, enumOptions }) => {

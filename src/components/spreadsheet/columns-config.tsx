@@ -7,7 +7,8 @@
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
-import { useCallback, useState } from 'react';
+import { Theme } from '@mui/material/styles';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
@@ -22,12 +23,13 @@ import {
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
+import { AppState } from '../../redux/reducer';
 
 const styles = {
-    checkboxSelectAll: (theme) => ({
+    checkboxSelectAll: (theme: Theme) => ({
         padding: theme.spacing(0, 3, 2, 2),
         fontWeight: 'bold',
         cursor: 'pointer',
@@ -35,17 +37,28 @@ const styles = {
     checkboxItem: {
         cursor: 'pointer',
     },
-    columnConfigClosedLock: (theme) => ({
+    columnConfigClosedLock: (theme: Theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.active,
     }),
-    columnConfigOpenLock: (theme) => ({
+    columnConfigOpenLock: (theme: Theme) => ({
         fontSize: '1.2em',
         color: theme.palette.action.disabled,
     }),
 };
 
-export const ColumnsConfig = ({
+interface ColumnsConfigProps {
+    tabIndex: number;
+    reorderedTableDefinitionIndexes: string[];
+    setReorderedTableDefinitionIndexes: (indices: string[]) => void;
+    selectedColumnsNames: Set<string>;
+    setSelectedColumnsNames: (names: Set<string>) => void;
+    lockedColumnsNames: Set<string>;
+    setLockedColumnsNames: (names: Set<string>) => void;
+    disabled: boolean;
+}
+
+export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     tabIndex,
     reorderedTableDefinitionIndexes,
     setReorderedTableDefinitionIndexes,
@@ -55,11 +68,13 @@ export const ColumnsConfig = ({
     setLockedColumnsNames,
     disabled,
 }) => {
-    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState(false);
+    const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
 
-    const allDisplayedColumnsNames = useSelector((state) => state.allDisplayedColumnsNames);
-    const allLockedColumnsNames = useSelector((state) => state.allLockedColumnsNames);
-    const allReorderedTableDefinitionIndexes = useSelector((state) => state.allReorderedTableDefinitionIndexes);
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+    const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state: AppState) => state.allReorderedTableDefinitionIndexes
+    );
 
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -78,7 +93,7 @@ export const ColumnsConfig = ({
         const allLockedTemp = allLockedColumnsNames[tabIndex];
         setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
         const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
-        setReorderedTableDefinitionIndexes(allReorderedTemp ? JSON.parse(allReorderedTemp) : []);
+        setReorderedTableDefinitionIndexes(allReorderedTemp ? JSON.parse(String(allReorderedTemp)) : []);
         handleCloseColumnsSettingDialog();
     }, [
         allDisplayedColumnsNames,
@@ -141,7 +156,7 @@ export const ColumnsConfig = ({
         allLockedColumnsNames,
     ]);
 
-    const handleToggle = (value) => () => {
+    const handleToggle = (value: string) => () => {
         const newChecked = new Set(selectedColumnsNames.values());
         const newLocked = new Set(lockedColumnsNames.values());
         if (selectedColumnsNames.has(value)) {
@@ -165,7 +180,7 @@ export const ColumnsConfig = ({
         }
     };
 
-    const handleClickOnLock = (value) => () => {
+    const handleClickOnLock = (value: string) => () => {
         const newLocked = new Set(lockedColumnsNames.values());
         if (lockedColumnsNames.has(value)) {
             newLocked.delete(value);
@@ -178,18 +193,18 @@ export const ColumnsConfig = ({
     };
 
     const handleDrag = useCallback(
-        ({ source, destination }) => {
-            if (destination) {
+        (result: DropResult) => {
+            if (result.destination) {
                 let reorderedTableDefinitionIndexesTemp = [...reorderedTableDefinitionIndexes];
-                const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
-                reorderedTableDefinitionIndexesTemp.splice(destination.index, 0, reorderedItem);
+                const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(result.source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(result.destination.index, 0, reorderedItem);
                 setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexesTemp);
             }
         },
         [reorderedTableDefinitionIndexes, setReorderedTableDefinitionIndexes]
     );
 
-    const renderColumnConfigLockIcon = (value) => {
+    const renderColumnConfigLockIcon = (value: string) => {
         if (selectedColumnsNames.has(value)) {
             if (lockedColumnsNames.has(value)) {
                 return <LockIcon sx={styles.columnConfigClosedLock} />;
@@ -233,7 +248,7 @@ export const ColumnsConfig = ({
                                                     }}
                                                 >
                                                     <IconButton {...provided.dragHandleProps} size={'small'}>
-                                                        <DragIndicatorIcon edge="start" spacing={0} />
+                                                        <DragIndicatorIcon spacing={3} edgeMode={'start'} />
                                                     </IconButton>
 
                                                     <ListItemIcon
@@ -285,7 +300,7 @@ export const ColumnsConfig = ({
                     id: 'ColumnsList',
                 })}
                 child={checkListColumnsNames()}
-                //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beatiful-dnd warning related to nested scroll containers
+                //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beautiful-dnd warning related to nested scroll containers
                 style={{
                     '& .MuiPaper-root': {
                         overflowY: 'visible',
