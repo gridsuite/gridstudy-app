@@ -23,7 +23,7 @@ import {
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withOperatingStatusMenu from '../../menus/operating-status-menu';
-import { SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
+import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
@@ -62,7 +62,7 @@ type EquipmentMenuState = {
     display: boolean | null;
 };
 interface SingleLineDiagramContentProps {
-    readonly showInSpreadsheet: (menu: any) => void;
+    readonly showInSpreadsheet: (menu: { equipmentId: string | null; type: string | null }) => void;
     readonly studyUuid: string;
     readonly svgType: DiagramType;
     readonly svg?: string;
@@ -72,14 +72,31 @@ interface SingleLineDiagramContentProps {
     readonly diagramId: UUID;
 }
 
-type LocallySwitchedBreaker = {
-    id: string;
-    [key: string]: any; // Allows for additional attributes
-};
-
 type EquipmentToModify = {
     equipmentId: string;
     equipmentType: EQUIPMENT_TYPES;
+};
+
+const defaultMenuState: EquipmentMenuState = {
+    position: [-1, -1],
+    equipmentId: null,
+    equipmentType: null,
+    svgId: null,
+    display: null,
+};
+
+type BusMenuState = {
+    position: [number, number];
+    busId: string | null;
+    svgId: string | null;
+    display: boolean | null;
+};
+
+const defaultBusMenuState: BusMenuState = {
+    position: [-1, -1],
+    busId: null,
+    svgId: null,
+    display: null,
 };
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
@@ -93,8 +110,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<LocallySwitchedBreaker>();
-    const [errorMessage, setErrorMessage] = useState<string>('');
+    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
+    const [errorMessage, setErrorMessage] = useState('');
     const { openDiagramView } = useDiagram();
     const [equipmentToModify, setEquipmentToModify] = useState<EquipmentToModify>();
     const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentToModify>();
@@ -114,9 +131,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!);
 
     // dynamic simulation event configuration states
-    const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] = useState<
-        { equipmentId: string; equipmentType: EQUIPMENT_TYPES } | undefined
-    >();
+    const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] =
+        useState<EquipmentToModify>();
     const [dynamicSimulationEventDialogTitle, setDynamicSimulationEventDialogTitle] = useState('');
 
     /**
@@ -125,10 +141,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({
-            position: [-1, -1],
-            equipmentId: null,
-            equipmentType: null,
-            svgId: null,
+            ...defaultMenuState,
             display: false,
         });
     }, []);
@@ -169,11 +182,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         [setShouldDisplayTooltip]
     );
 
-    const handleBreakerClick = useCallback(
-        (breakerId: string, newSwitchState: any, switchElement: any) => {
+    const handleBreakerClick: OnBreakerCallbackType = useCallback(
+        (breakerId, newSwitchState, switchElement) => {
             if (!modificationInProgress) {
                 setModificationInProgress(true);
-                setLocallySwitchedBreaker(switchElement);
+                setLocallySwitchedBreaker(switchElement?.id);
 
                 updateSwitchState(studyUuid, currentNode?.id, breakerId, newSwitchState).catch((error) => {
                     console.error(error.message);
@@ -196,27 +209,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         [studyUuid, currentNode, openDiagramView]
     );
 
-    const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>({
-        position: [-1, -1],
-        equipmentId: null,
-        equipmentType: null,
-        svgId: null,
-        display: null,
-    });
+    const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>(defaultMenuState);
 
-    type BusMenuState = {
-        position: [number, number];
-        busId: string | null;
-        svgId: string | null;
-        display: boolean | null;
-    };
-
-    const [busMenu, setBusMenu] = useState<BusMenuState>({
-        position: [-1, -1],
-        busId: null,
-        svgId: null,
-        display: null,
-    });
+    const [busMenu, setBusMenu] = useState<BusMenuState>(defaultBusMenuState);
 
     const showBusMenu = useCallback(
         (busId: string, svgId: string, x: number, y: number) => {
@@ -253,7 +248,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     }, []);
 
     const handleViewInSpreadsheet = () => {
-        props.showInSpreadsheet(equipmentMenu);
+        props.showInSpreadsheet({ equipmentId: equipmentMenu.equipmentId, type: equipmentMenu.equipmentType });
         closeEquipmentMenu();
     };
 
@@ -521,8 +516,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // Rotate clicked switch while waiting for updated sld data
-            if (locallySwitchedBreaker?.id) {
-                const breakerToSwitchDom: HTMLElement | null = document.getElementById(locallySwitchedBreaker.id);
+            if (locallySwitchedBreaker) {
+                const breakerToSwitchDom: HTMLElement | null = document.getElementById(locallySwitchedBreaker);
                 if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
                     breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
                 } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {

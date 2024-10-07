@@ -111,9 +111,9 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     }, [busId, onClose, handleRunShortcircuitAnalysis]);
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: string, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EQUIPMENT_TYPES, dialogTitle: string) => {
             onClose();
-            onOpenDynamicSimulationEventDialog(equipmentId, equipmentType as EQUIPMENT_TYPES, dialogTitle);
+            onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
         },
         [onClose, onOpenDynamicSimulationEventDialog]
     );

@@ -44,7 +44,7 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { EquipmentType, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
@@ -294,7 +294,7 @@ const styles = {
 interface DiagramPaneProps {
     studyUuid: UUID;
     currentNode: Node<TreeNodeData>;
-    showInSpreadsheet: (equipment: { equipmentId: UUID; type: EquipmentType }) => void;
+    showInSpreadsheet: (equipment: { equipmentId: string | null; type: string | null }) => void;
     visible: boolean;
 }
 
@@ -314,10 +314,6 @@ type DiagramView = {
     nodeId?: UUID;
     additionalMetadata?: any;
     fetchSvg?: () => Promise<Partial<DiagramView>>;
-    // substationId?: UUID;
-    // substationIds?: UUID[];
-    // depth?: number;
-    // nbVoltageLevels?: number;
 };
 
 export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible }: DiagramPaneProps) {
@@ -347,7 +343,6 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
-    console.log('debug', 'displayedDiagrams', views);
     /**
      * BUILDS THE DIAGRAMS LIST
      *
@@ -361,7 +356,6 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
     const addMissingSLDs = useCallback(
         (diagramStates: DiagramState[]) => {
             // We check if we need to add new diagrams
-            console.log('debug', 'addMissingSLDs', diagramStates);
             const diagramsToAdd: {
                 id: UUID;
                 svgType: DiagramType;
@@ -398,7 +392,6 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
                 // Then we add the data when the fetch is finished
                 diagramsToAdd.forEach((diagramState) => {
-                    console.log('debug', 'diagramState', diagramState);
                     createView(diagramState)?.then((singleLineDiagramView) => {
                         setViews((views) => {
                             const diagramViewId = views.findIndex(
