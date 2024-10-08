@@ -12,8 +12,6 @@ import { Edge, Position } from 'react-flow-renderer';
 import { CurrentTreeNode } from 'redux/reducer';
 
 export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {
-    console.log('debug', 'nodes', nodes);
-    console.log('debug', 'edges', edges);
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
     dagreGraph.setGraph({ rankdir: 'TB', align: 'UL' });
