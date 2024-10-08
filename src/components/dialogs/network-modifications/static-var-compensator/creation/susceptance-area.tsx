@@ -38,12 +38,14 @@ export const SusceptanceArea = () => {
     const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_NOMINAL_V}` });
 
     useEffect(() => {
-        const floatMinS = parseFloat(minS);
-        const floatMaxS = parseFloat(maxS);
-        const avgSfixeValue = Number.isNaN(floatMinS) || Number.isNaN(floatMaxS) ? null : (floatMinS + floatMaxS) / 2;
-        const floatMinQ = parseFloat(minQ);
-        const floatMaxQ = parseFloat(maxQ);
-        const avgQfixeValue = Number.isNaN(floatMinQ) || Number.isNaN(floatMaxQ) ? null : (floatMinQ + floatMaxQ) / 2;
+        const avgSfixeValue =
+            Number.isNaN(parseFloat(minS)) || Number.isNaN(parseFloat(maxS))
+                ? null
+                : (parseFloat(minS) + parseFloat(maxS)) / 2;
+        const avgQfixeValue =
+            Number.isNaN(parseFloat(minQ)) || Number.isNaN(parseFloat(maxQ))
+                ? null
+                : (parseFloat(minQ) + parseFloat(maxQ)) / 2;
         setValue(`${id}.${SLIDER_SUSCEPTANCE}`, avgSfixeValue);
         setValue(`${id}.${SLIDER_Q_NOMINAL}`, avgQfixeValue);
     }, [setValue, minS, minQ, maxS, maxQ, id]);
@@ -59,15 +61,13 @@ export const SusceptanceArea = () => {
     };
 
     const handleSusceptanceValueChange = (value: string) => {
-        const parsedValue = parseFloat(value);
-        const outputValue = Number.isNaN(parsedValue) ? null : parsedValue;
+        const outputValue = Number.isNaN(parseFloat(value)) ? null : parseFloat(value);
         setValue(`${id}.${SLIDER_SUSCEPTANCE}`, outputValue);
         return outputValue;
     };
 
     const handleQnomValueChange = (value: string) => {
-        const parsedValue = parseFloat(value);
-        const outputValue = Number.isNaN(parsedValue) ? null : parsedValue;
+        const outputValue = Number.isNaN(parseFloat(value)) ? null : parseFloat(value);
         setValue(`${id}.${SLIDER_Q_NOMINAL}`, outputValue);
         return outputValue;
     };
@@ -152,14 +152,11 @@ export const SusceptanceArea = () => {
         />
     );
 
-    const sliderMinS = Number.isNaN(parseFloat(minS)) ? 0 : parseFloat(minS);
-    const sliderMaxS = Number.isNaN(parseFloat(maxS)) ? 0 : parseFloat(maxS);
-
     const sliderS = (
         <SliderInput
             name={`${id}.${SLIDER_SUSCEPTANCE}`}
-            min={sliderMinS}
-            max={sliderMaxS}
+            min={Number.isNaN(parseFloat(minS)) ? 0 : parseFloat(minS)}
+            max={Number.isNaN(parseFloat(maxS)) ? 0 : parseFloat(maxS)}
             step={0.1}
             onValueChanged={onSliderSusceptanceChange}
         />
@@ -167,8 +164,8 @@ export const SusceptanceArea = () => {
     const sliderQ = (
         <SliderInput
             name={`${id}.${SLIDER_Q_NOMINAL}`}
-            min={sliderMinS}
-            max={sliderMaxS}
+            min={Number.isNaN(parseFloat(minQ)) ? 0 : parseFloat(minQ)}
+            max={Number.isNaN(parseFloat(maxQ)) ? 0 : parseFloat(maxQ)}
             step={0.1}
             onValueChanged={onSliderQnomChange}
         />
