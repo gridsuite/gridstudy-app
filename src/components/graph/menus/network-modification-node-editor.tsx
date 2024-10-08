@@ -861,7 +861,7 @@ const NetworkModificationNodeEditor = () => {
                 ...modif,
                 ...computeLabel(modif),
             }
-        ) as string; //FIXME(jamal): type definition
+        );
         return label;
     };
 

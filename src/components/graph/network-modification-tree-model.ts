@@ -12,6 +12,7 @@ import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
 import { Edge } from 'react-flow-renderer';
+import { isNetworkModificationNode } from './util/model-functions';
 
 export enum NodeType {
     ROOT = 'ROOT',
@@ -210,15 +211,21 @@ export default class NetworkModificationTreeModel {
         });
     }
 
-    updateNodes(updatedNodes: any[]) {
-        updatedNodes.forEach((node: any) => {
-            const indexModifiedNode = this.treeNodes.findIndex((othernode: any) => othernode.id === node.id);
+    updateNodes(updatedNodes: (NetworkModificationNode | RootNode)[]) {
+        updatedNodes.forEach((node) => {
+            const indexModifiedNode = this.treeNodes.findIndex((othernode) => othernode.id === node.id);
             if (indexModifiedNode !== -1) {
+                const globalBuildStatus = isNetworkModificationNode(node)
+                    ? node.nodeBuildStatus?.globalBuildStatus
+                    : undefined;
+                const localBuildStatus = isNetworkModificationNode(node)
+                    ? node.nodeBuildStatus?.localBuildStatus
+                    : undefined;
                 this.treeNodes[indexModifiedNode].data = {
                     ...this.treeNodes[indexModifiedNode].data,
                     label: node.name,
-                    globalBuildStatus: node.nodeBuildStatus?.globalBuildStatus,
-                    localBuildStatus: node.nodeBuildStatus?.localBuildStatus,
+                    globalBuildStatus: globalBuildStatus,
+                    localBuildStatus: localBuildStatus,
                     readOnly: node.readOnly,
                 };
             }

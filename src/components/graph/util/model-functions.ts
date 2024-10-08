@@ -58,7 +58,7 @@ export function getFirstNodeOfType(
         buildStatusList
     );
 }
-function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
+export function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
     return 'nodeBuildStatus' in n;
 }
 

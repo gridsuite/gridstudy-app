@@ -58,11 +58,6 @@ export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel, id:
     }
 };
 
-interface Identifiable {
-    id: string;
-    [key: string]: any; // Allows any other fields
-}
-
 type SubMenuItem = {
     onRoot: boolean;
     action: () => void;
@@ -86,14 +81,14 @@ interface CreateNodeMenuProps {
     handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
     handleClose: () => void;
     handleBuildNode: (element: CurrentTreeNode) => void;
-    handleUnbuildNode: (element: Identifiable) => void;
+    handleUnbuildNode: (element: { id: UUID }) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
     activeNode: CurrentTreeNode;
-    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: string; allChildrenIds: string[] }; //TODO(jamal): change copyType to enum
+    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: CopyType; allChildrenIds: string[] };
     handleCopyNode: (nodeId: string) => void;
     handleCutNode: (nodeId: UUID | null) => void;
     handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
-    handleRemovalSubtree: (element: Identifiable) => void;
+    handleRemovalSubtree: (element: { id: UUID }) => void;
     handleCutSubtree: (nodeId: UUID | null) => void;
     handleCopySubtree: (nodeId: UUID) => void;
     handlePasteSubtree: (referenceNodeId: string) => void;
