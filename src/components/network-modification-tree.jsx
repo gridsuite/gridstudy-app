@@ -6,7 +6,7 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import ReactFlow, { Controls, useStore, useReactFlow, ControlButton, MiniMap } from 'react-flow-renderer';
+import ReactFlow, { Controls, useStore, useReactFlow, ControlButton, MiniMap } from 'reactflow';
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
