@@ -17,3 +17,12 @@ export interface VoltageRange {
     minimumNominalVoltage: number;
     maximumNominalVoltage: number;
 }
+
+export interface ShortCircuitParameters {
+    withFeederResult: boolean;
+    withLoads: boolean;
+    withVSCConverterStations: boolean;
+    withShuntCompensators: boolean;
+    withNeutralPosition: boolean;
+    initialVoltageProfileMode: INITIAL_VOLTAGE;
+}

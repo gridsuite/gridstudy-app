@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
@@ -65,14 +65,24 @@ import {
     getMonitoredBranchesParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
+import ComputingType from '../../../computing-status/computing-type';
+import { isComputationParametersUpdated } from '../common/computation-parameters-util';
+import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
+import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
+    const studyUpdated = useSelector((state) => state.studyUpdated);
+
     const { snackError } = useSnackMessage();
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
 
-    useEffect(() => {
-        if (studyUuid) {
+    const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
+    const nonEvacuatedEnergyAvailabilityRef = useRef(nonEvacuatedEnergyAvailability);
+    nonEvacuatedEnergyAvailabilityRef.current = nonEvacuatedEnergyAvailability;
+
+    const fetchNonEvacuatedEnergyParameters = useCallback(
+        (studyUuid) => {
             getNonEvacuatedEnergyParameters(studyUuid)
                 .then((params) => setNonEvacuatedEnergyParams(params))
                 .catch((error) => {
@@ -81,8 +91,26 @@ export const useGetNonEvacuatedEnergyParameters = () => {
                         headerId: 'paramsRetrievingError',
                     });
                 });
+        },
+        [snackError]
+    );
+
+    useEffect(() => {
+        if (studyUuid && nonEvacuatedEnergyAvailability === OptionalServicesStatus.Up) {
+            fetchNonEvacuatedEnergyParameters(studyUuid);
         }
-    }, [studyUuid, snackError]);
+    }, [nonEvacuatedEnergyAvailability, studyUuid, fetchNonEvacuatedEnergyParameters]);
+
+    // fetch the parameter if NON_EVACUATED_ENERGY_ANALYSIS  notification type is received.
+    useEffect(() => {
+        if (
+            studyUuid &&
+            nonEvacuatedEnergyAvailabilityRef.current === OptionalServicesStatus.Up &&
+            isComputationParametersUpdated(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, studyUpdated)
+        ) {
+            fetchNonEvacuatedEnergyParameters(studyUuid);
+        }
+    }, [studyUuid, fetchNonEvacuatedEnergyParameters, studyUpdated]);
 
     return [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams];
 };
@@ -172,24 +200,13 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useNonEvacuatedEnergyParameters;
 
     const resetNonEvacuatedEnergyParameters = useCallback(() => {
-        setNonEvacuatedEnergyParameters(studyUuid, emptyFormData)
-            .then(() => {
-                return getNonEvacuatedEnergyParameters(studyUuid)
-                    .then((params) => setNonEvacuatedEnergyParams(params))
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
+        setNonEvacuatedEnergyParameters(studyUuid, emptyFormData).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'paramsChangingError',
             });
-    }, [studyUuid, emptyFormData, setNonEvacuatedEnergyParams, snackError]);
+        });
+    }, [studyUuid, emptyFormData, snackError]);
 
     const formatNewParams = useCallback((newParams, withProvider = true) => {
         let params = {
