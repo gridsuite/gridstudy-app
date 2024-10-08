@@ -111,8 +111,8 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                                     {formatValue(
                                         Math.round(
                                             side === '1'
-                                                ? (Math.abs(equipmentInfo.i1) * 100) / currentLimits.permanentLimit
-                                                : (Math.abs(equipmentInfo.i2) * 100) / currentLimits.permanentLimit
+                                                ? (Math.abs(equipmentInfo?.i1) * 100) / currentLimits.permanentLimit
+                                                : (Math.abs(equipmentInfo?.i2) * 100) / currentLimits.permanentLimit
                                         )
                                     )}
                                 </TableCell>
