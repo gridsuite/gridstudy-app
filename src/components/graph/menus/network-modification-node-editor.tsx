@@ -767,7 +767,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copiedModifications, currentNode?.id, copyInfos, snackError, studyUuid]);
 
-    const removeNullFields = useCallback((data) => {
+    const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
         if (dataTemp) {
             Object.keys(dataTemp).forEach((key) => {
@@ -791,13 +791,13 @@ const NetworkModificationNodeEditor = () => {
             const modification = fetchNetworkModification(modificationUuid);
             modification
                 .then((res) => {
-                    return res.json().then((data) => {
+                    return res.json().then((data: NetworkModificationData) => {
                         //remove all null values to avoid showing a "null" in the forms
                         setEditData(removeNullFields(data));
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
-                .catch((error) => {
+                .catch((error: Error) => {
                     snackError({
                         messageTxt: error.message,
                     });

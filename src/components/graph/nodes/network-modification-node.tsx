@@ -18,6 +18,7 @@ import { Box } from '@mui/system';
 import { Theme } from '@mui/material';
 import { AppState } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
+import { UUID } from 'crypto';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
@@ -127,8 +128,17 @@ const styles = {
     },
 };
 
-//TODO(jamal) add types
-const NetworkModificationNode = (props) => {
+interface NetworkModificationNodeProps {
+    id: UUID;
+    data: {
+        localBuildStatus: BUILD_STATUS;
+        globalBuildStatus: BUILD_STATUS;
+        label: string;
+        readOnly: boolean;
+    };
+}
+
+const NetworkModificationNode = (props: NetworkModificationNodeProps) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 

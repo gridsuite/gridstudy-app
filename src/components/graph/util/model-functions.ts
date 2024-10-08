@@ -6,16 +6,17 @@
  */
 
 import { UUID } from 'crypto';
-import NetworkModificationTreeModel, { NetworkModificationNode, RootNode } from '../network-modification-tree-model';
+import NetworkModificationTreeModel, {
+    NetworkModificationNode,
+    NodeType,
+    RootNode,
+} from '../network-modification-tree-model';
 import { CurrentTreeNode, TreeNodeData } from 'redux/reducer';
 
 export function convertNodetoReactFlowModelNode(
     node: NetworkModificationNode | RootNode,
     parentNodeUuid: UUID | undefined
 ): CurrentTreeNode {
-    function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
-        return 'nodeBuildStatus' in n;
-    }
     // Use the type guard to safely access nodeBuildStatus
     const globalBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.globalBuildStatus : undefined;
     const localBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.localBuildStatus : undefined;
@@ -45,7 +46,11 @@ export function convertNodetoReactFlowModelNode(
 
 // Return the first node of type nodeType and specific buildStatus
 // in the tree model
-export function getFirstNodeOfType(elements: any, nodeType: string, buildStatusList: string[]) {
+export function getFirstNodeOfType(
+    elements: NetworkModificationNode | RootNode,
+    nodeType: string,
+    buildStatusList: string[] | undefined
+) {
     return recursiveSearchFirstNodeOfType(
         elements,
         undefined, // first is Root node without parent node
@@ -53,51 +58,60 @@ export function getFirstNodeOfType(elements: any, nodeType: string, buildStatusL
         buildStatusList
     );
 }
+function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
+    return 'nodeBuildStatus' in n;
+}
 
 // Recursive search of a node of type and buildStatus specified
 export function recursiveSearchFirstNodeOfType(
-    elements: any,
+    elements: NetworkModificationNode | RootNode,
     parentNodeUuid: UUID | undefined,
     nodeType: string,
-    buildStatusList: string[]
-): any {
+    buildStatusList: string[] | undefined
+): CurrentTreeNode | null {
+    const globalBuildStatus = isNetworkModificationNode(elements)
+        ? elements.nodeBuildStatus?.globalBuildStatus
+        : undefined;
+
     if (
         elements.type === nodeType &&
-        (buildStatusList === undefined || buildStatusList.includes(elements.nodeBuildStatus?.globalBuildStatus))
+        globalBuildStatus !== undefined &&
+        (buildStatusList === undefined || buildStatusList.includes(globalBuildStatus))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
 
-    for (const child of elements.children) {
+    for (const child of elements.children ?? []) {
         const found = recursiveSearchFirstNodeOfType(child, elements.id, nodeType, buildStatusList);
         if (found) {
             return found;
         }
     }
+    return null;
 }
 
-export function isNodeReadOnly(node: any) {
-    if (node?.type === 'ROOT') {
+export function isNodeReadOnly(node: CurrentTreeNode | null) {
+    if (node?.type === NodeType.ROOT) {
         return true;
     }
     return node?.data?.readOnly ? true : false; // ternary operator because of potential undefined
 }
 
-export function isNodeBuilt(node: any) {
+export function isNodeBuilt(node: CurrentTreeNode | null) {
     if (!node) {
         return false;
     }
-    if (node.type === 'ROOT') {
+    if (node.type === NodeType.ROOT) {
         return true;
     }
     return node.data?.globalBuildStatus?.startsWith('BUILT');
 }
 
-export function isSameNode(node1: any, node2: any) {
+export function isSameNode(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
     return node1?.id === node2?.id;
 }
 
-export function isNodeRenamed(node1: any, node2: any) {
+export function isNodeRenamed(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
     if (!node1 || !node2) {
         return false;
     }
@@ -111,7 +125,7 @@ export function isNodeInNotificationList(node: any, notificationIdList: any) {
     return notificationIdList.includes(node.id);
 }
 
-export function isSameNodeAndBuilt(node1: any, node2: any) {
+export function isSameNodeAndBuilt(node1: CurrentTreeNode | null, node2: CurrentTreeNode | null) {
     return isSameNode(node1, node2) && isNodeBuilt(node1);
 }
 
@@ -119,14 +133,13 @@ export function getAllChildren(elements: NetworkModificationTreeModel | null, no
     if (!elements) {
         return [];
     }
-    const selectedNode = elements.treeNodes.find((node: any) => node.id === nodeId);
-    //TODO(jamal) is this can happen ?
+    const selectedNode = elements.treeNodes.find((node) => node.id === nodeId);
     if (!selectedNode) {
         return [];
     }
-    const directChildren = elements.treeNodes.filter((node: any) => node.data.parentNodeUuid === selectedNode.id);
+    const directChildren = elements.treeNodes.filter((node) => node.data.parentNodeUuid === selectedNode.id);
     let allChildren = [...directChildren];
-    directChildren.forEach((child: any) => {
+    directChildren.forEach((child) => {
         allChildren = allChildren.concat(getAllChildren(elements, child.id));
     });
     return allChildren;

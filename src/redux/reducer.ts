@@ -362,7 +362,7 @@ export interface TreeNodeData {
     readOnly?: boolean;
     caseName?: string;
 }
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID; childrenIds?: UUID[]; children?: CurrentTreeNode[] };
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -809,8 +809,8 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
-                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+                state.currentTreeNode?.id &&
+                action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
@@ -832,8 +832,8 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
-                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+                state.currentTreeNode?.id &&
+                action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
@@ -859,7 +859,6 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         NETWORK_MODIFICATION_TREE_NODES_REMOVED,
         (state, action: NetworkModificationTreeNodesRemovedAction) => {
-            console.log('debug', 'NETWORK_MODIFICATION_TREE_NODES_REMOVED', action.networkModificationTreeNodes);
             if (state.networkModificationTreeModel) {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate() as NetworkModificationTreeModel;
 
