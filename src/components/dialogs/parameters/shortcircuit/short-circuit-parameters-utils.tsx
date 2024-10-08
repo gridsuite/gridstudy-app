@@ -55,7 +55,7 @@ export const getStatus = (status: STATUS, styles: any) => {
 export const formatShortCircuitParameters = (
     parameters: ShortCircuitParameters,
     predefinedParameters: PREDEFINED_PARAMETERS
-): any => {
+): Object => {
     return {
         [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters.withFeederResult,
         [SHORT_CIRCUIT_PREDEFINED_PARAMS]: predefinedParameters,
