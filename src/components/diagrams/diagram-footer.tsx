@@ -48,7 +48,7 @@ interface DiagramFooterProps {
     showFullscreenControl?: boolean;
     counterText: string;
     counterValue: number;
-    fullScreenActive?: any;
+    fullScreenActive?: boolean;
     decrementCounterDisabled?: boolean;
     incrementCounterDisabled?: boolean;
     onIncrementCounter?: () => void;

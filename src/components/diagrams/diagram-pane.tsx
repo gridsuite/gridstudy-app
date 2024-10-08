@@ -486,7 +486,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                 ids: networkAreaIds,
                 state: networkAreaViewState,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
-                depth: networkAreaDiagramDepth
+                depth: networkAreaDiagramDepth,
             })?.then((networkAreaDiagramView) => {
                 setViews((views) => {
                     const updatedViews = views.slice();
