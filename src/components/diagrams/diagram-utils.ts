@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { DiagramState } from '../../redux/reducer';
 import { DiagramType } from './diagram-common';
 
 /**
@@ -45,19 +46,17 @@ const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
 /**
  * Will build a distinctive identifier to differenciate between network area diagram instances
  * @param diagramStates the diagrams array of the redux store
- * @param depth the network area diagram's selected depth
  * @param initNadWithGeoData config parameter specifying if the nad uses geographical data
  * @returns {string}
  */
-export const getNadIdentifier = (diagramStates: any[], depth: number, initNadWithGeoData: boolean): string => {
+
+export const getNadIdentifier = (diagramStates: DiagramState[], initNadWithGeoData: boolean): string => {
     const result =
         diagramStates
             .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
             .map((diagram) => diagram.id)
             .sort((a, b) => a.localeCompare(b))
             .join(',') +
-        'depth' +
-        depth +
         'geo' +
         initNadWithGeoData;
     return result;
