@@ -915,8 +915,8 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities != null
-                                ? Boolean(params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities)
-                                : false,
+                                ? +params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -1998,8 +1998,8 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl?.participate != null
-                                ? Boolean(params.data?.activePowerControl?.participate)
-                                : false,
+                                ? +params.data?.activePowerControl?.participate
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -2160,8 +2160,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: BooleanListField,
                 cellEditorParams: (params: any) => {
                     return {
-                        defaultValue:
-                            params.data?.voltageRegulatorOn != null ? Boolean(params.data?.voltageRegulatorOn) : false,
+                        defaultValue: params.data.voltageRegulatorOn | 0,
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,
@@ -3005,8 +3004,8 @@ export const TABLES_DEFINITIONS = {
                     return {
                         defaultValue:
                             params.data?.activePowerControl?.participate != null
-                                ? Boolean(params.data?.activePowerControl?.participate)
-                                : false,
+                                ? +params.data?.activePowerControl?.participate
+                                : '',
                         gridContext: params.context,
                         gridApi: params.api,
                         colDef: params.colDef,

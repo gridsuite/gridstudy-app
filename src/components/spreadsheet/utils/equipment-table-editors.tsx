@@ -29,7 +29,7 @@ interface EquipmentTableNumberEditorProps extends EquipmentTableDataEditorProps 
     defaultValue: number;
 }
 interface EquipmentTableBooleanListEditorProps extends EquipmentTableEditorProps {
-    defaultValue: boolean;
+    defaultValue: any; // TODO should be boolean
 }
 interface EquipmentTableEnumEditorProps extends EquipmentTableEditorProps {
     defaultValue: string;
@@ -330,8 +330,8 @@ export const BooleanListField = forwardRef(
         );
 
         const validateChange = useCallback(
-            (ev: SelectChangeEvent) => {
-                const val = Boolean(ev.target.value);
+            (ev: any) => {
+                const val = ev.target.value;
                 setValue(val);
                 gridContext.dynamicValidation = deepUpdateValue(gridContext.dynamicValidation, colDef.field, val);
                 checkValidationsAndRefreshCells(gridApi, gridContext);
@@ -341,7 +341,7 @@ export const BooleanListField = forwardRef(
 
         return (
             <Select
-                value={value?.toString()}
+                value={value}
                 onChange={validateChange}
                 size={'medium'}
                 margin={'none'}
