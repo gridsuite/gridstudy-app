@@ -128,12 +128,11 @@ function NetworkAreaDiagramContent(props) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
     const diagramStates = useSelector((state) => state.diagramStates);
-    const networkAreaDiagramDepth = useSelector((state) => state.networkAreaDiagramDepth);
     const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
 
     const nadIdentifier = useMemo(() => {
-        return getNadIdentifier(diagramStates, networkAreaDiagramDepth, initNadWithGeoData);
-    }, [diagramStates, networkAreaDiagramDepth, initNadWithGeoData]);
+        return getNadIdentifier(diagramStates, initNadWithGeoData);
+    }, [diagramStates, initNadWithGeoData]);
 
     const onMoveNodeCallback = useCallback(
         (equipmentId, nodeId, x, y, xOrig, yOrig) => {
@@ -177,15 +176,13 @@ function NetworkAreaDiagramContent(props) {
             }
 
             // Repositioning the previously moved nodes
-            if (!props.loadingState) {
-                const correspondingMovements = nadNodeMovements.filter(
-                    (movement) => movement.nadIdentifier === nadIdentifier
-                );
-                if (correspondingMovements.length > 0) {
-                    correspondingMovements.forEach((movement) => {
-                        diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
-                    });
-                }
+            const correspondingMovements = nadNodeMovements.filter(
+                (movement) => movement.nadIdentifier === nadIdentifier
+            );
+            if (correspondingMovements.length > 0) {
+                correspondingMovements.forEach((movement) => {
+                    diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                });
             }
             diagramViewerRef.current = diagramViewer;
         }
@@ -194,7 +191,6 @@ function NetworkAreaDiagramContent(props) {
         props.svgType,
         props.svg,
         currentNode,
-        props.loadingState,
         diagramSizeSetter,
         onMoveNodeCallback,
         nadIdentifier,
@@ -215,7 +211,6 @@ function NetworkAreaDiagramContent(props) {
                     styles.divNetworkAreaDiagram,
                     loadFlowStatus !== RunningStatus.SUCCEED && styles.divDiagramInvalid
                 )}
-                style={{ height: '100%' }}
             />
         </>
     );
