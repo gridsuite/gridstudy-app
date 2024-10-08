@@ -191,7 +191,6 @@ function NetworkAreaDiagramContent(props) {
         props.svgType,
         props.svg,
         currentNode,
-        props.loadingState,
         diagramSizeSetter,
         onMoveNodeCallback,
         nadIdentifier,
