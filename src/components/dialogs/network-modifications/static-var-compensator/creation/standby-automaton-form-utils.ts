@@ -119,7 +119,3 @@ export const getStandbyAutomatonFormData = ({
         [SLIDER_Q_NOMINAL]: q0 ?? computeQAtNominalV(b0, nominalV),
     },
 });
-
-export function getFloatNumber(value: any) {
-    return !isNaN(value) ? parseFloat(value) : 0;
-}

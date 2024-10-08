@@ -24,7 +24,6 @@ import { SliderInput, TextInput } from '@gridsuite/commons-ui';
 import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
 import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { getFloatNumber } from './standby-automaton-form-utils';
 import { isValidPercentage } from '../../../percentage-area/percentage-area-utils';
 import { InputAdornment, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -39,30 +38,38 @@ export const SusceptanceArea = () => {
     const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_NOMINAL_V}` });
 
     useEffect(() => {
-        let avgSfixeValue = (getFloatNumber(minS) + getFloatNumber(maxS)) / 2;
-        let avgQfixeValue = (getFloatNumber(minQ) + getFloatNumber(maxQ)) / 2;
-        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, getFloatNumber(avgSfixeValue));
-        setValue(`${id}.${SLIDER_Q_NOMINAL}`, getFloatNumber(avgQfixeValue));
+        const floatMinS = parseFloat(minS);
+        const floatMaxS = parseFloat(maxS);
+        const avgSfixeValue = Number.isNaN(floatMinS) || Number.isNaN(floatMaxS) ? null : (floatMinS + floatMaxS) / 2;
+        const floatMinQ = parseFloat(minQ);
+        const floatMaxQ = parseFloat(maxQ);
+        const avgQfixeValue = Number.isNaN(floatMinQ) || Number.isNaN(floatMaxQ) ? null : (floatMinQ + floatMaxQ) / 2;
+        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, avgSfixeValue);
+        setValue(`${id}.${SLIDER_Q_NOMINAL}`, avgQfixeValue);
     }, [setValue, minS, minQ, maxS, maxQ, id]);
 
-    const onSliderSusceptanceChange = (value: string) => {
-        setValue(`${id}.${B0}`, getFloatNumber(value));
+    const onSliderSusceptanceChange = (value?: number) => {
+        setValue(`${id}.${B0}`, value);
         return value;
     };
 
-    const onSliderQnomChange = (value: string) => {
-        setValue(`${id}.${Q0}`, getFloatNumber(value));
+    const onSliderQnomChange = (value?: number) => {
+        setValue(`${id}.${Q0}`, value);
         return value;
     };
 
     const handleSusceptanceValueChange = (value: string) => {
-        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, getFloatNumber(value));
-        return value;
+        const parsedValue = parseFloat(value);
+        const outputValue = Number.isNaN(parsedValue) ? null : parsedValue;
+        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, outputValue);
+        return outputValue;
     };
 
     const handleQnomValueChange = (value: string) => {
-        setValue(`${id}.${SLIDER_Q_NOMINAL}`, getFloatNumber(value));
-        return value;
+        const parsedValue = parseFloat(value);
+        const outputValue = Number.isNaN(parsedValue) ? null : parsedValue;
+        setValue(`${id}.${SLIDER_Q_NOMINAL}`, outputValue);
+        return outputValue;
     };
 
     const minSusceptanceField = (
@@ -120,7 +127,12 @@ export const SusceptanceArea = () => {
             adornment={SusceptanceAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleSusceptanceValueChange}
-            inputTransform={(value) => (value ? getFloatNumber(value).toString() : '')}
+            inputTransform={(value) => {
+                if (typeof value === 'number') {
+                    return isNaN(value) ? '' : value.toString();
+                }
+                return value ?? '';
+            }}
         />
     );
 
@@ -131,15 +143,23 @@ export const SusceptanceArea = () => {
             adornment={ReactivePowerAdornment}
             acceptValue={isValidPercentage}
             outputTransform={handleQnomValueChange}
-            inputTransform={(value) => (value ? getFloatNumber(value).toString() : '')}
+            inputTransform={(value) => {
+                if (typeof value === 'number') {
+                    return isNaN(value) ? '' : value.toString();
+                }
+                return value ?? '';
+            }}
         />
     );
+
+    const sliderMinS = Number.isNaN(parseFloat(minS)) ? 0 : parseFloat(minS);
+    const sliderMaxS = Number.isNaN(parseFloat(maxS)) ? 0 : parseFloat(maxS);
 
     const sliderS = (
         <SliderInput
             name={`${id}.${SLIDER_SUSCEPTANCE}`}
-            min={getFloatNumber(minS)}
-            max={getFloatNumber(maxS)}
+            min={sliderMinS}
+            max={sliderMaxS}
             step={0.1}
             onValueChanged={onSliderSusceptanceChange}
         />
@@ -147,8 +167,8 @@ export const SusceptanceArea = () => {
     const sliderQ = (
         <SliderInput
             name={`${id}.${SLIDER_Q_NOMINAL}`}
-            min={getFloatNumber(minQ)}
-            max={getFloatNumber(maxQ)}
+            min={sliderMinS}
+            max={sliderMaxS}
             step={0.1}
             onValueChanged={onSliderQnomChange}
         />
