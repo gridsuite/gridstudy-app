@@ -543,22 +543,17 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const handleColumnDrag = useCallback(
         (event: ColumnMovedEvent) => {
-            if (event.finished && event.column?.getColDef().colId && event.toIndex) {
-                const colId = event.column.getColDef().colId;
-                if (colId) {
-                    const [reorderedItem] = reorderedTableDefinitionIndexes.splice(
-                        reorderedTableDefinitionIndexes.indexOf(colId),
-                        1
-                    );
-
-                    const destinationIndex: number = isEditColumnVisible() ? event.toIndex - 1 : event.toIndex;
-
-                    reorderedTableDefinitionIndexes.splice(destinationIndex, 0, reorderedItem);
-                    setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexes);
-
+            if (event.finished && event.column?.getUserProvidedColDef()?.headerName && event.toIndex !== undefined) {
+                const colHeaderName: any = event.column?.getUserProvidedColDef()?.headerName;
+                let tmpIndexes = Object.assign([], reorderedTableDefinitionIndexes);
+                const [reorderedItem] = tmpIndexes.splice(tmpIndexes.indexOf(colHeaderName), 1);
+                const destinationIndex: number = isEditColumnVisible() ? event.toIndex - 1 : event.toIndex;
+                tmpIndexes.splice(destinationIndex, 0, reorderedItem);
+                if (reorderedTableDefinitionIndexes.toString() !== tmpIndexes.toString()) {
+                    setReorderedTableDefinitionIndexes(tmpIndexes);
                     updateConfigParameter(
                         REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-                        JSON.stringify(reorderedTableDefinitionIndexes)
+                        JSON.stringify(tmpIndexes)
                     ).catch((error) => {
                         snackError({
                             messageTxt: error.message,
@@ -566,14 +561,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         });
                     });
 
-                    const [reorderedColDef] = columnData.splice(
-                        columnData.findIndex((obj: any) => {
-                            return obj.id === colId;
+                    let tmpData = Object.assign([], columnData);
+                    const [reorderedColDef] = tmpData.splice(
+                        tmpData.findIndex((obj: any) => {
+                            return obj.id === colHeaderName;
                         }),
                         1
                     );
-                    columnData.splice(event.toIndex, 0, reorderedColDef);
-                    setColumnData(columnData);
+                    tmpData.splice(event.toIndex, 0, reorderedColDef);
+                    setColumnData(tmpData);
                 }
             }
         },
