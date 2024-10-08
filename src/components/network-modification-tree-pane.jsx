@@ -529,7 +529,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
                 <StudyDrawer
                     open={isStudyDrawerOpen}
-                    anchor={prevTreeDisplay.display === StudyDisplayMode.TREE ? 'right' : 'left'}
+                    anchor={prevTreeDisplay?.display === StudyDisplayMode.TREE ? 'right' : 'left'}
                 >
                     {isModificationsDrawerOpen && <NodeEditor />}
                     {isEventScenarioDrawerOpen && <ScenarioEditor />}
@@ -574,7 +574,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     open={openRestoreDialog}
                     onClose={() => setOpenRestoreDialog(false)}
                     studyUuid={studyUuid}
-                    anchorNodeId={activeNode.id}
+                    anchorNodeId={activeNode?.id}
                 />
             )}
             <iframe id={DownloadIframe} name={DownloadIframe} title={DownloadIframe} style={{ display: 'none' }} />
