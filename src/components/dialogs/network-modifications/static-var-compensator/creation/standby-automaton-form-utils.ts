@@ -47,6 +47,20 @@ const requiredIfAddStandbyAutomaton = (yup: any) =>
         then: (schema: any) => schema.required(),
     });
 
+const requiredIfAddStandbyAutomatonAndSusceptanceChoice = (yup: any) =>
+    yup.nullable().when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+        is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+            addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+        then: (schema: any) => schema.required(),
+    });
+
+const requiredIfAddStandbyAutomatonAndQaTNominalVChoice = (yup: any) =>
+    yup.nullable().when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+        is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+            addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        then: (schema: any) => schema.required(),
+    });
+
 export const getStandbyAutomatonFormValidationSchema = () =>
     yup.object().shape({
         [ADD_STAND_BY_AUTOMATON]: yup.boolean().nullable(),
@@ -63,24 +77,10 @@ export const getStandbyAutomatonFormValidationSchema = () =>
         [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number()),
         [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number()),
         [CHARACTERISTICS_CHOICE_AUTOMATON]: requiredIfAddStandbyAutomaton(yup.string()),
-        [B0]: yup
-            .number()
-            .nullable()
-            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
-                is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
-                    addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
-                then: (schema) => schema.required(),
-            }),
-        [Q0]: yup
-            .number()
-            .nullable()
-            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
-                is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
-                    addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-                then: (schema) => schema.required(),
-            }),
-        [SLIDER_SUSCEPTANCE]: requiredIfAddStandbyAutomaton(yup.number()),
-        [SLIDER_Q_NOMINAL]: requiredIfAddStandbyAutomaton(yup.number()),
+        [B0]: requiredIfAddStandbyAutomatonAndSusceptanceChoice(yup.number()),
+        [Q0]: requiredIfAddStandbyAutomatonAndQaTNominalVChoice(yup.number()),
+        [SLIDER_SUSCEPTANCE]: requiredIfAddStandbyAutomatonAndSusceptanceChoice(yup.number()),
+        [SLIDER_Q_NOMINAL]: requiredIfAddStandbyAutomatonAndQaTNominalVChoice(yup.number()),
     });
 
 export const getStandbyAutomatonFormData = ({

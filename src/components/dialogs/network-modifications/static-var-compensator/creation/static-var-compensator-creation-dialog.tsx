@@ -407,7 +407,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
 
     const onValidationError = useCallback(
         (errors: any) => {
-            console.log('AAAA', { errors });
             const tabsInError = [];
             if (errors?.[CONNECTIVITY]) {
                 tabsInError.push(StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB);
