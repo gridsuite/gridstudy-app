@@ -528,7 +528,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
 
     const formSchema = useMemo(() => {
         return getLimitReductionsFormSchema(
-            params?.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
+            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
         );
     }, [params]);
 
@@ -539,7 +539,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
 
     const toLimitReductions = useCallback(
         (formLimits) => {
-            return params?.limitReductions.map((vlLimits, indexVl) => {
+            return params.limitReductions.map((vlLimits, indexVl) => {
                 let vlLNewLimits = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],
@@ -570,8 +570,8 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
 
     const { reset } = formMethods;
     useEffect(() => {
-        reset(toFormValuesLimitReductions(params?.limitReductions));
-    }, [params?.limitReductions, reset]);
+        reset(toFormValuesLimitReductions(params.limitReductions));
+    }, [params.limitReductions, reset]);
 
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
@@ -662,7 +662,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                             specificParamsDescrWithoutNanVals[provider]
                                                         }
                                                         specificCurrentParams={
-                                                            params?.specificParametersPerProvider[provider] || {}
+                                                            params.specificParametersPerProvider[provider] || {}
                                                         }
                                                         onSpecificParamChange={onSpecificParamChange}
                                                     />
@@ -683,10 +683,8 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                         paddingLeft={2}
                                                         sx={{ width: '100%' }}
                                                     >
-                                                        {params?.limitReductions !== null ? (
-                                                            <LimitReductionsTableForm
-                                                                limits={params?.limitReductions}
-                                                            />
+                                                        {params.limitReductions !== null ? (
+                                                            <LimitReductionsTableForm limits={params.limitReductions} />
                                                         ) : (
                                                             <ParameterLineSlider
                                                                 paramNameId={PARAM_LIMIT_REDUCTION}
