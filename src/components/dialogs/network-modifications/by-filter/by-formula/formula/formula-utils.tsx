@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import {
     EDITED_FIELD,
     EQUIPMENT_TYPE_FIELD,
@@ -17,7 +17,7 @@ import {
     REFERENCE_FIELD_OR_VALUE_2,
     SPECIFIC_METADATA,
     TYPE,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { AnyObject, TestContext, TestFunction } from 'yup';
 

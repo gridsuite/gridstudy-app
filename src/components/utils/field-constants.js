@@ -328,6 +328,11 @@ export const REFERENCE_FIELD_OR_VALUE_1 = 'referenceFieldOrValue1';
 export const REFERENCE_FIELD_OR_VALUE_2 = 'referenceFieldOrValue2';
 export const EQUIPMENT_FIELD = 'equipmentField';
 
+// By filter
+export const ASSIGNMENTS = 'assignments';
+export const PROPERTY_NAME_FIELD = 'propertyName';
+export const VALUE_FIELD = 'value';
+
 // non evacuated energy
 export const GENERATION_STAGES_KIND = 'energySource';
 export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
