@@ -446,6 +446,11 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         updateParameters(fusionSpecificWithOtherParams(params, specParamsToSave));
     };
 
+    //update the specific parameters
+    useEffect(() => {
+        setSpecificCurrentParams(params['specificParametersPerProvider']);
+    }, [params]);
+
     const specificParamsDescrWithoutNanVals = useMemo(() => {
         let specificParamsDescrCopy = {};
         specificParamsDescriptions &&

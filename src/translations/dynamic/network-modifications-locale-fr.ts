@@ -54,6 +54,7 @@ const network_modifications_locale_fr = {
     'network_modifications.tabular.GENERATOR_MODIFICATION': 'modifications de générateurs',
     'network_modifications.tabular.LOAD_MODIFICATION': 'modifications de consommations',
     'network_modifications.BY_FORMULA_MODIFICATION': 'Modification par formule {computedLabel}',
+    'network_modifications.MODIFICATION_BY_ASSIGNMENT': 'Modification par filtre {computedLabel}',
     'network_modifications.tabular.LINE_MODIFICATION': 'modifications de lignes',
     'network_modifications.tabular.BATTERY_MODIFICATION': 'modifications de batteries',
     'network_modifications.tabular.VOLTAGE_LEVEL_MODIFICATION': 'modifications de postes',
