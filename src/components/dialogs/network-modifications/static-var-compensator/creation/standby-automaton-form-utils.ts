@@ -79,8 +79,22 @@ export const getStandbyAutomatonFormValidationSchema = () =>
                     addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
                 then: (schema) => schema.required(),
             }),
-        [SLIDER_SUSCEPTANCE]: requiredIfAddStandbyAutomaton(yup.number()),
-        [SLIDER_Q_NOMINAL]: requiredIfAddStandbyAutomaton(yup.number()),
+        [SLIDER_SUSCEPTANCE]: yup
+            .number()
+            .nullable()
+            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+                is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+                    addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+                then: (schema) => schema.required(),
+            }),
+        [SLIDER_Q_NOMINAL]: yup
+            .number()
+            .nullable()
+            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+                is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+                    addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+                then: (schema) => schema.required(),
+            }),
     });
 
 export const getStandbyAutomatonFormData = ({
@@ -119,7 +133,3 @@ export const getStandbyAutomatonFormData = ({
         [SLIDER_Q_NOMINAL]: q0 ?? computeQAtNominalV(b0, nominalV),
     },
 });
-
-export function getFloatNumber(value: any) {
-    return !isNaN(value) ? parseFloat(value) : 0;
-}
