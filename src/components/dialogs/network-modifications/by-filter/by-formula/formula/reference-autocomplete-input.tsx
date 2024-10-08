@@ -10,7 +10,7 @@ import { useController } from 'react-hook-form';
 import { FilterOptionsState } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { areIdsEqual } from '../../../../utils/utils';
+import { areIdsEqual } from '../../../../../utils/utils';
 
 const ReferenceAutocompleteInput: FunctionComponent<{
     name: string;
