@@ -176,7 +176,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
                 <DiagramHeader diagramTitle={props.diagramTitle} showCloseControl onClose={onCloseHandler} />
             </Box>
             {<Box height={2}>{loadingState && <LinearProgress />}</Box>}
-            <Box position="relative">
+            <Box sx={{ position: 'relative', top: '2em', height: '100%' }}>
                 <Box
                     ref={svgRef}
                     sx={mergeSx(styles.divDiagram, styles.divSingleLineDiagram, styles.divDiagramReadOnly)}
