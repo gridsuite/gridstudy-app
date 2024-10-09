@@ -449,6 +449,11 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         updateParameters(commitParameters);
     };
 
+    //update the specific parameters
+    useEffect(() => {
+        setSpecificCurrentParams(params['specificParametersPerProvider']);
+    }, [params]);
+
     const specificParamsDescrWithoutNanVals = useMemo(() => {
         let specificParamsDescrCopy = {};
         specificParamsDescriptions &&
