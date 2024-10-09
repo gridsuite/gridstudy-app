@@ -277,7 +277,7 @@ export function createBattery(
     });
 }
 
-export function modifyBattery(
+export function modifyBattery({
     studyUuid,
     nodeUuid,
     batteryId,
@@ -299,8 +299,8 @@ export function modifyBattery(
     maxQ,
     minQ,
     reactiveCapabilityCurve,
-    properties
-) {
+    properties,
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationId) {
@@ -393,7 +393,7 @@ export function createLoad(
     });
 }
 
-export function modifyLoad(
+export function modifyLoad({
     studyUuid,
     nodeUuid,
     id,
@@ -409,8 +409,8 @@ export function modifyLoad(
     terminalConnected,
     isUpdate = false,
     modificationUuid,
-    properties
-) {
+    properties,
+}) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -444,7 +444,7 @@ export function modifyLoad(
     });
 }
 
-export function modifyGenerator(
+export function modifyGenerator({
     studyUuid,
     nodeUuid,
     generatorId,
@@ -481,8 +481,8 @@ export function modifyGenerator(
     maxQ,
     minQ,
     reactiveCapabilityCurve,
-    properties
-) {
+    properties,
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationId) {
@@ -686,7 +686,7 @@ export function createShuntCompensator(
     });
 }
 
-export function modifyShuntCompensator(
+export function modifyShuntCompensator({
     studyUuid,
     nodeUuid,
     shuntCompensatorId,
@@ -704,8 +704,8 @@ export function modifyShuntCompensator(
     terminalConnected,
     isUpdate,
     modificationUuid,
-    properties
-) {
+    properties,
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -974,7 +974,7 @@ export function createTwoWindingsTransformer(
     });
 }
 
-export function modifyTwoWindingsTransformer(
+export function modifyTwoWindingsTransformer({
     studyUuid,
     nodeUuid,
     twoWindingsTransformerId,
@@ -1004,8 +1004,8 @@ export function modifyTwoWindingsTransformer(
     connected2,
     isUpdate,
     modificationUuid,
-    properties
-) {
+    properties: propertiesForBackend,
+}) {
     let modifyTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1048,7 +1048,7 @@ export function modifyTwoWindingsTransformer(
             connectionPosition2: toModificationOperation(connectionPosition2),
             terminal1Connected: toModificationOperation(connected1),
             terminal2Connected: toModificationOperation(connected2),
-            properties,
+            properties: propertiesForBackend,
         }),
     });
 }
@@ -1173,7 +1173,7 @@ export function formatPropertiesForBackend(previousProperties, newProperties) {
     return propertiesModifications;
 }
 
-export function modifySubstation(
+export function modifySubstation({
     studyUuid,
     nodeUuid,
     id,
@@ -1181,8 +1181,8 @@ export function modifySubstation(
     country,
     isUpdate = false,
     modificationUuid,
-    properties
-) {
+    properties,
+}) {
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1263,7 +1263,7 @@ export function createVoltageLevel({
     });
 }
 
-export function modifyVoltageLevel(
+export function modifyVoltageLevel({
     studyUuid,
     nodeUuid,
     voltageLevelId,
@@ -1275,8 +1275,8 @@ export function modifyVoltageLevel(
     highShortCircuitCurrentLimit,
     isUpdate,
     modificationUuid,
-    properties
-) {
+    properties,
+}) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
