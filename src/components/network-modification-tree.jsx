@@ -26,17 +26,6 @@ import { StudyDisplayMode } from './network-modification.type';
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
 
-const styles = {
-    controls: {
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        // Unset default properties of ReactFlow controls
-        left: 'unset',
-        bottom: 'unset',
-    },
-};
-
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
     prevTreeDisplay,
@@ -178,7 +167,8 @@ const NetworkModificationTree = ({
                 snapGrid={snapGrid}
             >
                 <Controls
-                    style={styles.controls} // This component uses "style" instead of "sx"
+                    style={{ margin: '10px' }} // This component uses "style" instead of "sx"
+                    position="top-right"
                     showZoom={false}
                     showInteractive={false}
                     showFitView={false}
