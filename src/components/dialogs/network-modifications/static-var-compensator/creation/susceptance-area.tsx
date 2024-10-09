@@ -20,11 +20,10 @@ import {
     SLIDER_Q_NOMINAL,
     SLIDER_SUSCEPTANCE,
 } from 'components/utils/field-constants';
-import { SliderInput, TextInput } from '@gridsuite/commons-ui';
+import { FloatInput, SliderInput } from '@gridsuite/commons-ui';
 import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
 import React, { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { isValidPercentage } from '../../../percentage-area/percentage-area-utils';
 import { InputAdornment, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
@@ -58,18 +57,6 @@ export const SusceptanceArea = () => {
     const onSliderQnomChange = (value?: number) => {
         setValue(`${id}.${Q0}`, value);
         return value;
-    };
-
-    const handleSusceptanceValueChange = (value: string) => {
-        const outputValue = Number.isNaN(parseFloat(value)) ? null : parseFloat(value);
-        setValue(`${id}.${SLIDER_SUSCEPTANCE}`, outputValue);
-        return outputValue;
-    };
-
-    const handleQnomValueChange = (value: string) => {
-        const outputValue = Number.isNaN(parseFloat(value)) ? null : parseFloat(value);
-        setValue(`${id}.${SLIDER_Q_NOMINAL}`, outputValue);
-        return outputValue;
     };
 
     const minSusceptanceField = (
@@ -120,37 +107,9 @@ export const SusceptanceArea = () => {
         />
     );
 
-    const susceptanceField = (
-        <TextInput
-            name={`${id}.${B0}`}
-            label="b0"
-            adornment={SusceptanceAdornment}
-            acceptValue={isValidPercentage}
-            outputTransform={handleSusceptanceValueChange}
-            inputTransform={(value) => {
-                if (typeof value === 'number') {
-                    return isNaN(value) ? '' : value.toString();
-                }
-                return value ?? '';
-            }}
-        />
-    );
+    const susceptanceField = <FloatInput name={`${id}.${B0}`} label="b0" adornment={SusceptanceAdornment} />;
 
-    const qAtNominalVField = (
-        <TextInput
-            name={`${id}.${Q0}`}
-            label="q0Fixe"
-            adornment={ReactivePowerAdornment}
-            acceptValue={isValidPercentage}
-            outputTransform={handleQnomValueChange}
-            inputTransform={(value) => {
-                if (typeof value === 'number') {
-                    return isNaN(value) ? '' : value.toString();
-                }
-                return value ?? '';
-            }}
-        />
-    );
+    const qAtNominalVField = <FloatInput name={`${id}.${Q0}`} label="q0Fixe" adornment={ReactivePowerAdornment} />;
 
     const sliderS = (
         <SliderInput
