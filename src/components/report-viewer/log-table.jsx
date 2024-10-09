@@ -4,91 +4,77 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useCallback, useEffect, useState, useMemo } from 'react';
+import { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce';
-import { setReportFilters } from '../../redux/actions';
+import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { getColumnValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
+import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useReportFetcher } from 'hooks/use-report-fetcher';
+import { useDispatch } from 'react-redux';
+import { getDefaultSeverityFilter } from 'utils/report-severity.utils';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
-const LogTable = ({ logs, onRowClick }) => {
+const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }) => {
     const intl = useIntl();
 
     const theme = useTheme();
 
+    const [logs, setLogs] = useState([]);
+
     const dispatch = useDispatch();
+
+    const [, , fetchReportLogs] = useReportFetcher(reportType);
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: LOGS_STORE_FIELD,
+        filterTab: reportType,
+        filterStoreAction: setLogsFilter,
+    });
 
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
     const [rowData, setRowData] = useState(null);
 
-    const severityFilter = useSelector((state) => state.reportSeverityFilter);
-    const messageFilter = useSelector((state) => state.reportMessageFilter);
-    const resetFilters = useSelector((state) => state.reportResetFilters);
-
-    const [resetSeverityFilter, setResetSeverityFilter] = useState(null);
-    const [resetMessageFilter, setResetMessageFilter] = useState(null);
-
-    const [debouncedMessageFilter] = useDebounce(messageFilter, 500);
-
-    const filterWrapperData = useMemo(() => Object.keys(severityFilter), [severityFilter]);
-
-    const defaultSeverityFilter = useMemo(() => {
-        // return only severity that have true as value
-        return Object.keys(severityFilter).filter((severity) => severityFilter[severity]);
-    }, [severityFilter]);
-
-    const handleResetFilter = useCallback(() => {
-        if (resetFilters) {
-            if (resetSeverityFilter) {
-                resetSeverityFilter(defaultSeverityFilter);
-            }
-            if (resetMessageFilter) {
-                resetMessageFilter('');
-            }
-            dispatch(setReportFilters(undefined, undefined, undefined, false));
+    // initialize the filter with the severities
+    useEffect(() => {
+        if (filterSelector.length === 0 && severities?.length > 0) {
+            dispatch(
+                setLogsFilter(reportType, [
+                    {
+                        column: 'severity',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.EQUALS,
+                        value: getDefaultSeverityFilter(severities),
+                    },
+                ])
+            );
         }
-    }, [defaultSeverityFilter, resetFilters, resetSeverityFilter, resetMessageFilter, dispatch]);
+    }, [dispatch, filterSelector.length, reportType, severities]);
+
+    const severityList = useMemo(() => getColumnValue(filterSelector, 'severity') ?? [], [filterSelector]);
+    const messageFilter = useMemo(() => getColumnValue(filterSelector, 'message'), [filterSelector]);
+
+    const refreshLogsOnSelectedReport = useCallback(() => {
+        if (severityList?.length === 0) {
+            setLogs([]);
+            return;
+        }
+        fetchReportLogs(selectedReportId, severityList, reportNature, messageFilter).then((reportLogs) => {
+            setLogs(reportLogs);
+        });
+    }, [fetchReportLogs, messageFilter, reportNature, severityList, selectedReportId]);
 
     useEffect(() => {
-        handleResetFilter();
-    }, [handleResetFilter]);
-
-    useEffect(() => {
-        dispatch(setReportFilters(undefined, debouncedMessageFilter, undefined));
-    }, [debouncedMessageFilter, dispatch]);
-
-    const setSeverityFilter = useCallback(
-        (selectedSeverity) => {
-            dispatch(setReportFilters(undefined, undefined, selectedSeverity));
-        },
-        [dispatch]
-    );
-
-    const formatUpdateFilter = useCallback(
-        (field, data) => {
-            const filterConfig = {};
-            Object.keys(severityFilter).forEach((severity) => {
-                filterConfig[severity] = !!data.value.includes(severity);
-            });
-            setSeverityFilter(filterConfig);
-        },
-        [severityFilter, setSeverityFilter]
-    );
-
-    const updateMessageFilter = useCallback(
-        (field, data) => {
-            dispatch(setReportFilters(undefined, data.value, undefined));
-        },
-        [dispatch]
-    );
+        if (selectedReportId && reportNature) {
+            refreshLogsOnSelectedReport();
+        }
+    }, [selectedReportId, refreshLogsOnSelectedReport, reportNature]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -97,17 +83,14 @@ const LogTable = ({ logs, onRowClick }) => {
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
                 field: 'severity',
                 filterProps: {
-                    updateFilter: formatUpdateFilter,
+                    updateFilter,
+                    filterSelector,
                 },
                 filterParams: {
                     filterDataType: FILTER_DATA_TYPES.TEXT,
                     filterEnums: {
-                        severity: filterWrapperData,
+                        severity: severities,
                     },
-                },
-                defaultFilterValue: defaultSeverityFilter,
-                onResetFilter: (resetFilter) => {
-                    setResetSeverityFilter(() => resetFilter);
                 },
                 cellStyle: (params) => ({
                     backgroundColor: params.data.backgroundColor,
@@ -118,21 +101,18 @@ const LogTable = ({ logs, onRowClick }) => {
                 headerName: intl.formatMessage({ id: 'report_viewer/message' }),
                 field: 'message',
                 filterProps: {
-                    updateFilter: updateMessageFilter,
+                    updateFilter,
+                    filterSelector,
                 },
                 filterParams: {
                     filterDataType: FILTER_DATA_TYPES.TEXT,
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
-                defaultFilterValue: '',
-                onResetFilter: (resetFilter) => {
-                    setResetMessageFilter(() => resetFilter);
-                },
                 flex: 1,
                 cellRenderer: DefaultCellRenderer,
             }),
         ],
-        [intl, formatUpdateFilter, filterWrapperData, defaultSeverityFilter, updateMessageFilter]
+        [intl, updateFilter, filterSelector, severities]
     );
 
     const generateTableRows = useCallback(() => {

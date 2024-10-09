@@ -63,8 +63,6 @@ const CustomHeaderComponent = ({
     filterParams = {},
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
-    defaultFilterValue,
-    onResetFilter,
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -99,25 +97,17 @@ const CustomHeaderComponent = ({
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
-    const [selectedFilterData, setSelectedFilterData] = useState(defaultFilterValue);
+    const [selectedFilterData, setSelectedFilterData] = useState();
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
         !!selectedFilterData?.length || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
 
-    useEffect(() => {
-        if (onResetFilter) {
-            onResetFilter((defaultValue) => {
-                setSelectedFilterData(defaultValue);
-            });
-        }
-    }, [onResetFilter]);
-
     const handleClearFilter = () => {
-        setSelectedFilterData(defaultFilterValue);
+        setSelectedFilterData(undefined);
         updateFilter(field, {
-            value: defaultFilterValue,
+            value: undefined,
             type: selectedFilterComparator,
             dataType: filterDataType,
         });
@@ -214,17 +204,17 @@ const CustomHeaderComponent = ({
 
     useEffect(() => {
         if (!filterSelector?.length) {
-            setSelectedFilterData(defaultFilterValue);
+            setSelectedFilterData(undefined);
         } else {
             const filterObject = filterSelector?.find((filter) => filter.column === field);
             if (filterObject) {
                 setSelectedFilterData(filterObject.value);
                 setSelectedFilterComparator(filterObject.type);
             } else {
-                setSelectedFilterData(defaultFilterValue);
+                setSelectedFilterData(undefined);
             }
         }
-    }, [filterSelector, field, defaultFilterValue]);
+    }, [filterSelector, field]);
     const getOptionLabel = useCallback(
         (option) =>
             isCountry

@@ -66,6 +66,8 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     setReport(r);
                 }
             });
+        } else {
+            setReport();
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.
