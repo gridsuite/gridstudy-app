@@ -12,11 +12,12 @@ import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { getColumnValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
+import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter } from 'utils/report-severity.utils';
+import PropTypes from 'prop-types';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -57,8 +58,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         }
     }, [dispatch, filterSelector.length, reportType, severities]);
 
-    const severityList = useMemo(() => getColumnValue(filterSelector, 'severity') ?? [], [filterSelector]);
-    const messageFilter = useMemo(() => getColumnValue(filterSelector, 'message'), [filterSelector]);
+    const severityList = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
+    const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
 
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityList?.length === 0) {
@@ -169,6 +170,14 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             defaultColDef={defaultColumnDefinition}
         />
     );
+};
+
+LogTable.propTypes = {
+    selectedReportId: PropTypes.string,
+    reportType: PropTypes.string,
+    reportNature: PropTypes.string,
+    severities: PropTypes.arrayOf(PropTypes.string),
+    onRowClick: PropTypes.func,
 };
 
 export default memo(LogTable);

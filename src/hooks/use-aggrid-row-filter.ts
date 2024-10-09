@@ -88,7 +88,7 @@ export const useAggridRowFilter = (
     return { updateFilter, filterSelector: filterStore };
 };
 
-export const getColumnValue = (array: FilterSelectorType[], columnName: string) => {
+export const getColumnFilterValue = (array: FilterSelectorType[], columnName: string) => {
     const result = array?.filter((item) => item.column === columnName).map((item) => item.value);
     return result?.length > 0 ? result[0] : null;
 };

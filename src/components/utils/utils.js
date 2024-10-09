@@ -254,8 +254,3 @@ export function toggleElementFromList(elementToToggle, list, getFieldId) {
 export const comparatorStrIgnoreCase = (str1, str2) => {
     return str1.toLowerCase().localeCompare(str2.toLowerCase());
 };
-
-export const isUUID = (str) => {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    return uuidRegex.test(str);
-};

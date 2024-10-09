@@ -12,6 +12,7 @@ import ReportTree from './report-tree';
 import ReportItem from './report-item';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
 import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -140,3 +141,16 @@ export default function ReportViewer({ report, reportType }) {
         )
     );
 }
+
+ReportViewer.propTypes = {
+    report: PropTypes.shape({
+        id: PropTypes.string,
+        message: PropTypes.string,
+        highestSeverity: PropTypes.shape({
+            colorName: PropTypes.string,
+        }),
+        subReports: PropTypes.arrayOf(PropTypes.object),
+        severities: PropTypes.arrayOf(PropTypes.string),
+    }),
+    reportType: PropTypes.string.isRequired,
+};
