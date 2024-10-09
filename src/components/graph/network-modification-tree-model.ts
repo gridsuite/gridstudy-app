@@ -7,11 +7,11 @@
 
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
-import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
+import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
-import { Edge } from 'react-flow-renderer';
+import { Edge } from 'reactflow';
 import { isNetworkModificationNode } from './util/model-functions';
 
 export enum NodeType {

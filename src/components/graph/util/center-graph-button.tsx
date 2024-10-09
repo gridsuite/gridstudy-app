@@ -8,7 +8,7 @@
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import { Tooltip } from '@mui/material';
 import React, { useCallback } from 'react';
-import { ControlButton, useReactFlow } from 'react-flow-renderer';
+import { ControlButton, useReactFlow } from 'reactflow';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import { CurrentTreeNode } from 'redux/reducer';

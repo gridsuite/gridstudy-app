@@ -279,7 +279,7 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from 'react-flow-renderer';
+import { Node } from 'reactflow';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';

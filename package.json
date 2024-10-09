@@ -7,7 +7,7 @@
     "dependencies": {
         "@emotion/react": "^11.11.4",
         "@emotion/styled": "^11.11.5",
-        "@gridsuite/commons-ui": "0.66.1",
+        "@gridsuite/commons-ui": "0.67.0",
         "@hookform/resolvers": "^3.3.4",
         "@mui/icons-material": "^5.15.14",
         "@mui/lab": "5.0.0-alpha.169",
@@ -36,7 +36,7 @@
         "react-beautiful-dnd": "^13.1.1",
         "react-csv-downloader": "^3.1.0",
         "react-dom": "^18.2.0",
-        "react-flow-renderer": "^10.3.17",
+        "reactflow": "^11.11.4",
         "react-grid-layout": "^1.4.4",
         "react-hook-form": "^7.51.2",
         "react-intl": "^6.6.4",

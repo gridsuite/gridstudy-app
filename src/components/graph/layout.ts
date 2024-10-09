@@ -8,7 +8,7 @@
 import dagre from 'dagre';
 import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
 import { NodeType } from './network-modification-tree-model';
-import { Edge, Position } from 'react-flow-renderer';
+import { Edge, Position } from 'reactflow';
 import { CurrentTreeNode } from 'redux/reducer';
 
 export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {

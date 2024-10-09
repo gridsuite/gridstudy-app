@@ -8,7 +8,8 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import PhotoIcon from '@mui/icons-material/Photo';
-import { Handle, Position } from 'react-flow-renderer';
+import React from 'react';
+import { Handle, Position } from 'reactflow';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
