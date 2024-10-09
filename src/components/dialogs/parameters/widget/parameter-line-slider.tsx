@@ -8,7 +8,7 @@
 import { mergeSx } from '@gridsuite/commons-ui';
 import { Mark } from '@mui/base/useSlider';
 import { Grid, Slider } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { styles, useParameterState } from '../parameters';
 
@@ -31,6 +31,12 @@ const ParameterLineSlider = ({
 }: SliderParameterLineProps) => {
     const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
     const [sliderValue, setSliderValue] = useState(Number(parameterValue));
+
+    useEffect(() => {
+        if (parameterValue) {
+            setSliderValue(Number(parameterValue));
+        }
+    }, [parameterValue]);
 
     return (
         <>
