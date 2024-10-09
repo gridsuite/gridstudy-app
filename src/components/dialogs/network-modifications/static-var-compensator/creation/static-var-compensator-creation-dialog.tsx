@@ -460,7 +460,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 PaperProps={{
                     sx: {
-                        height: '55vh', // we want the dialog height to be fixed even when switching tabs
+                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
                 {...dialogProps}
