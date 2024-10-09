@@ -277,7 +277,7 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from 'react-flow-renderer';
+import { Node } from 'reactflow';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
@@ -287,6 +287,7 @@ import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 
 export enum NotificationType {
     STUDY = 'study',
+    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -310,6 +311,7 @@ export interface StudyUpdatedEventDataHeader {
     nodes?: UUID[];
     error?: string;
     userId?: string;
+    computationType?: ComputingType;
 }
 
 // Payloads
@@ -323,7 +325,6 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
-
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;

@@ -17,4 +17,8 @@ export enum ComputingType {
     STATE_ESTIMATION = 'STATE_ESTIMATION',
 }
 
+export const isValidComputingType = (value: string | undefined): boolean => {
+    return Object.values(ComputingType).includes(value as ComputingType);
+};
+
 export default ComputingType;
