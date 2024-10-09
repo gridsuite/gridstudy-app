@@ -170,7 +170,7 @@ export const NetworkMapTab = ({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         isUpdate={true}
-                        defaultIdValue={equipmentToModify.equipmentId}
+                        defaultIdValue={equipmentToModify?.equipmentId}
                         onClose={() => closeModificationDialog()}
                     />
                 );
@@ -181,7 +181,7 @@ export const NetworkMapTab = ({
                         studyUuid={studyUuid}
                         currentNode={currentNode}
                         isUpdate={true}
-                        defaultIdValue={equipmentToModify.equipmentId}
+                        defaultIdValue={equipmentToModify?.equipmentId}
                         onClose={() => closeModificationDialog()}
                     />
                 );
