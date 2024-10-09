@@ -399,7 +399,7 @@ function SingleLineDiagramContent(props) {
                 open={true}
                 studyUuid={studyUuid}
                 currentNode={currentNode}
-                defaultIdValue={equipmentToModify.equipmentId}
+                defaultIdValue={equipmentToModify?.equipmentId}
                 isUpdate={true}
                 onClose={() => closeModificationDialog()}
             />
@@ -414,7 +414,7 @@ function SingleLineDiagramContent(props) {
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        defaultIdValue={equipmentToDelete.equipmentId}
+                        defaultIdValue={equipmentToDelete?.equipmentId}
                         isUpdate={true}
                         onClose={() => closeDeletionDialog()}
                     />
