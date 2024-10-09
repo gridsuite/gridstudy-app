@@ -475,12 +475,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg) {
+        if (props.svg && svgRef.current) {
             const isReadyForInteraction =
                 !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !props.loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
-                svgRef.current!, //container
+                svgRef.current, //container
                 props.svg, //svgContent
                 props.svgMetadata ?? null, //svg metadata
                 props.svgType, //svg type

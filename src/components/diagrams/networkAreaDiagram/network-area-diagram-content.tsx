@@ -140,7 +140,6 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
 
-
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, initNadWithGeoData);
     }, [diagramStates, initNadWithGeoData]);
