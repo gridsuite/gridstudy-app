@@ -125,6 +125,10 @@ const styles = {
         paddingRight: 8,
         height: '100%',
     },
+    dividerTab: (theme: Theme) => ({
+        padding: 0,
+        minHeight: theme.spacing(1),
+    }),
 };
 
 enum TAB_VALUES {
@@ -377,7 +381,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
-                            <Divider />
+                            <Tab sx={styles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
                             <Tab
                                 label={<FormattedMessage id="SingleLineDiagram" />}
                                 value={TAB_VALUES.sldParamsTabValue}
