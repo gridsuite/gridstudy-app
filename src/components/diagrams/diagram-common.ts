@@ -56,6 +56,7 @@ export const styles = {
         overflow: 'hidden',
     },
     divNetworkAreaDiagram: (theme: Theme) => ({
+        height: '100%',
         '& .nad-label-box': {
             color: theme.palette.text.primary,
             fontFamily: theme.typography.fontFamily,

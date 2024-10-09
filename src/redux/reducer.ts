@@ -289,6 +289,7 @@ import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
 
 export enum NotificationType {
     STUDY = 'study',
+    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
 }
 
 export enum StudyIndexationStatus {
@@ -312,6 +313,7 @@ export interface StudyUpdatedEventDataHeader {
     nodes?: UUID[];
     error?: string;
     userId?: string;
+    computationType?: ComputingType;
 }
 
 // Payloads
@@ -325,7 +327,6 @@ export interface NetworkImpactsInfos {
     deletedEquipments: DeletedEquipment[];
     impactedElementTypes: string[];
 }
-
 // EventData
 export interface StudyUpdatedEventData {
     headers: StudyUpdatedEventDataHeader;
