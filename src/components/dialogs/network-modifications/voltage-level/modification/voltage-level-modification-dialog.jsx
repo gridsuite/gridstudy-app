@@ -167,20 +167,20 @@ const VoltageLevelModificationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            modifyVoltageLevel(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                voltageLevel[EQUIPMENT_NAME],
-                voltageLevel[NOMINAL_V],
-                voltageLevel[LOW_VOLTAGE_LIMIT],
-                voltageLevel[HIGH_VOLTAGE_LIMIT],
-                kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(voltageLevel)
-            ).catch((error) => {
+            modifyVoltageLevel({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                voltageLevelId: selectedId,
+                voltageLevelName: voltageLevel[EQUIPMENT_NAME],
+                nominalV: voltageLevel[NOMINAL_V],
+                lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
+                highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
+                lowShortCircuitCurrentLimit: kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                highShortCircuitCurrentLimit: kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                isUpdate: !!editData,
+                modificationUuid: editData?.uuid,
+                properties: toModificationProperties(voltageLevel),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'VoltageLevelModificationError',

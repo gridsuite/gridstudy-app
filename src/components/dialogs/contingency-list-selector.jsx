@@ -19,7 +19,7 @@ import Grid from '@mui/material/Grid';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
-import { useSnackMessage, CheckboxList } from '@gridsuite/commons-ui';
+import { useSnackMessage, CheckBoxList } from '@gridsuite/commons-ui';
 import { updateConfigParameter } from '../../services/config';
 import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
@@ -184,7 +184,7 @@ const ContingencyListSelector = (props) => {
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
-                    <CheckboxList
+                    <CheckBoxList
                         items={contingencyList || []}
                         getItemId={(v) => v.id}
                         getItemLabel={(v) => v.name}

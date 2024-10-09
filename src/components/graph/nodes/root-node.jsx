@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
-import { Handle } from 'react-flow-renderer';
+import { Handle } from 'reactflow';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
