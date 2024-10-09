@@ -6,7 +6,7 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -240,7 +240,7 @@ const EventModificationScenarioEditor = () => {
 
     const renderEventList = () => {
         return (
-            <CheckboxList
+            <CheckBoxList
                 sx={{
                     items: {
                         checkboxListItem: {

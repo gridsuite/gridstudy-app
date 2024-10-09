@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { EquipmentType, yup } from '@gridsuite/commons-ui';
+import { EquipmentType, yupConfig as yup } from '@gridsuite/commons-ui';
 import {
     DESTINATION_FOLDER,
     EQUIPMENT_TYPE_FIELD,
