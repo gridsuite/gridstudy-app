@@ -15,7 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, DialogContentText } from '@mui/material';
 import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
-import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
+import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { toggleElementFromList } from 'components/utils/utils';
 
@@ -90,7 +90,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     />
                 )}
                 {!isLoading && nodes && (
-                    <CheckboxList
+                    <CheckBoxList
                         items={nodes}
                         addSelectAllCheckbox
                         selectAllCheckBoxLabel={'SelectAll'}
