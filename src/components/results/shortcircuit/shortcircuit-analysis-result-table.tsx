@@ -85,10 +85,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const columns = useMemo(() => {
         const isAllBusesAnalysisType = analysisType === ShortCircuitAnalysisType.ALL_BUSES;
+        const isOneBusAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
         const sortPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType ? sortProps : undefined;
 
         const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType ? filterProps : undefined;
+
+        const filterPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType ? filterProps : undefined;
 
         const textFilterParams = {
             filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -141,8 +144,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 headerName: intl.formatMessage({ id: 'Side' }),
                 field: 'side',
                 sortProps,
-                hide: analysisType !== ShortCircuitAnalysisType.ONE_BUS,
-                filterProps: filterProps,
+                hide: !isOneBusAnalysisType,
+                filterProps: filterPropsCheckedForOneBusAnalysisType,
                 filterParams: autoCompleteFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
