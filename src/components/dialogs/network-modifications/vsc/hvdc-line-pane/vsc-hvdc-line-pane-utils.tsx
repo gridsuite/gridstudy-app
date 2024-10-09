@@ -34,6 +34,11 @@ export function getVscHvdcLinePaneSchema(id: string) {
                 [P0]: yup
                     .number()
                     .nullable()
+                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL], {
+                        is: (angleDroopActivePowerControl) => angleDroopActivePowerControl,
+                        then: () =>
+                            yup.number().notOneOf([0], 'NumericFieldNotZeroWhenAngleDroopActivePowerControlIsEnabled'),
+                    })
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
                         is: (angleDroopActivePowerControl: boolean, droop: number) =>
                             angleDroopActivePowerControl || droop,
@@ -42,6 +47,11 @@ export function getVscHvdcLinePaneSchema(id: string) {
                 [DROOP]: yup
                     .number()
                     .nullable()
+                    .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL], {
+                        is: (angleDroopActivePowerControl) => angleDroopActivePowerControl,
+                        then: () =>
+                            yup.number().notOneOf([0], 'NumericFieldNotZeroWhenAngleDroopActivePowerControlIsEnabled'),
+                    })
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
                         is: (angleDroopActivePowerControl: boolean, p0: number) => angleDroopActivePowerControl || p0,
                         then: (schema) => schema.required(),
