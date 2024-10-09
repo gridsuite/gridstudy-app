@@ -7,7 +7,7 @@
 
 import React from 'react';
 import Button from '@mui/material/Button';
-import { Handle } from 'reactflow';
+import { Handle } from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
