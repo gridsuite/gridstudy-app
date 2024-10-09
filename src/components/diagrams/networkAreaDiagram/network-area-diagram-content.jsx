@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useLayoutEffect, useRef, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
@@ -24,6 +24,7 @@ import ComputingType from 'components/computing-status/computing-type';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
 import { getNadIdentifier } from '../diagram-utils.js';
+import EquipmentPopover from 'components/tooltips/equipment-popover';
 
 const dynamicCssRules = [
     {
@@ -129,6 +130,11 @@ function NetworkAreaDiagramContent(props) {
     const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
     const diagramStates = useSelector((state) => state.diagramStates);
     const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+    const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
+    const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const studyUuid = useSelector((state) => state.studyUuid);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, initNadWithGeoData);
@@ -141,6 +147,24 @@ function NetworkAreaDiagramContent(props) {
         [dispatch, nadIdentifier]
     );
 
+    const handleTogglePopover = useCallback(
+        (shouldDisplay, mousePosition, equipmentId, equipmentType) => {
+            setShouldDisplayTooltip(shouldDisplay);
+
+            if (shouldDisplay) {
+                setAnchorPosition({
+                    top: mousePosition.y + 10,
+                    left: mousePosition.x + 10,
+                });
+                setHoveredEquipmentId(equipmentId);
+                setHoveredEquipmentType(equipmentType);
+            } else {
+                setHoveredEquipmentId('');
+                setHoveredEquipmentType('');
+            }
+        },
+        [setShouldDisplayTooltip, setAnchorPosition]
+    );
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -159,7 +183,8 @@ function NetworkAreaDiagramContent(props) {
                 null,
                 true,
                 true,
-                dynamicCssRules
+                dynamicCssRules,
+                handleTogglePopover
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -192,6 +217,7 @@ function NetworkAreaDiagramContent(props) {
         props.svg,
         currentNode,
         diagramSizeSetter,
+        handleTogglePopover,
         onMoveNodeCallback,
         nadIdentifier,
         nadNodeMovements,
@@ -204,6 +230,15 @@ function NetworkAreaDiagramContent(props) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
+            {shouldDisplayTooltip && (
+                <EquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorPosition={anchorPosition}
+                    equipmentType={hoveredEquipmentType}
+                    equipmentId={hoveredEquipmentId}
+                    loadFlowStatus={loadFlowStatus}
+                />
+            )}{' '}
             <Box
                 ref={svgRef}
                 sx={mergeSx(
