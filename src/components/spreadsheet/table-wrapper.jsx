@@ -469,7 +469,7 @@ const TableWrapper = (props) => {
 
     const handleGridReady = useCallback(() => {
         if (globalFilterRef.current) {
-            gridRef.current?.api?.setQuickFilter(globalFilterRef.current.getFilterValue());
+            gridRef.current?.api?.setGridOption('quickFilterText', globalFilterRef.current.getFilterValue());
         }
         scrollToEquipmentIndex();
     }, [scrollToEquipmentIndex]);
