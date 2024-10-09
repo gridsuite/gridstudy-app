@@ -917,7 +917,7 @@ const TableWrapper = (props) => {
                 const column = gridRef.current.columnApi.getColumn(field);
                 const val = column.colDef.valueGetter
                     ? column.colDef.valueGetter(wrappedEditedData)
-                    : editingData[field];
+                    : editingData?.[field];
 
                 groovyCr += column.colDef.changeCmd?.replace(/\{\}/g, val) + '\n';
             });
