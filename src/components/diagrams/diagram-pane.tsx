@@ -54,7 +54,7 @@ import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, DiagramState, TreeNodeData } from 'redux/reducer';
-import { Node } from 'react-flow-renderer';
+import { Node } from 'reactflow';
 import { SLDMetadata } from '@powsybl/diagram-viewer';
 
 // Returns a callback that returns a promise
