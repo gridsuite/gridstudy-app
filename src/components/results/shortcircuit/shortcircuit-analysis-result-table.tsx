@@ -140,9 +140,10 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Side' }),
                 field: 'side',
-                sortProps: sortPropsCheckedForAllBusesAnalysisType,
-                filterProps: filterPropsCheckedForAllBusesAnalysisType,
+                sortProps,
                 hide: analysisType !== ShortCircuitAnalysisType.ONE_BUS,
+                filterProps: filterProps,
+                filterParams: autoCompleteFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),

@@ -42,6 +42,7 @@ import {
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
+import { BranchSide } from 'components/utils/constants';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
@@ -190,12 +191,14 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         const promises = filterTypes.map((filter) =>
             fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.SHORT_CIRCUIT, filter)
         );
+        const branchSidesResult = [BranchSide.ONE, BranchSide.TWO];
 
         Promise.all(promises)
             .then(([faultTypesResult, limitViolationTypesResult]) => {
                 setFilterEnums({
                     limitType: limitViolationTypesResult,
                     faultType: faultTypesResult,
+                    side: branchSidesResult,
                 });
             })
             .catch((err) =>
