@@ -162,7 +162,7 @@ export const NetworkMapTab = ({
     };
 
     function renderModificationDialog() {
-        switch (equipmentToModify.equipmentType) {
+        switch (equipmentToModify?.equipmentType) {
             case EQUIPMENT_TYPES.SUBSTATION:
                 return (
                     <SubstationModificationDialog
@@ -191,7 +191,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        defaultIdValue={equipmentToModify.equipmentId}
+                        defaultIdValue={equipmentToModify?.equipmentId}
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
                     />
@@ -202,14 +202,14 @@ export const NetworkMapTab = ({
     }
 
     function renderDeletionDialog() {
-        switch (equipmentToModify.equipmentType) {
+        switch (equipmentToModify?.equipmentType) {
             case EQUIPMENT_TYPES.HVDC_LINE:
                 return (
                     <EquipmentDeletionDialog
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        defaultIdValue={equipmentToModify.equipmentId}
+                        defaultIdValue={equipmentToModify?.equipmentId}
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
                     />
