@@ -277,7 +277,7 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from 'reactflow';
+import { Node } from '@xyflow/react';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
@@ -352,14 +352,17 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-export interface TreeNodeData {
+export type TreeNodeData = {
     parentNodeUuid: UUID;
     label: string;
     description: string;
     buildStatus: BUILD_STATUS;
     readonly: boolean;
-}
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+};
+export type ModificationNode = Node<TreeNodeData, 'NETWORK_MODIFICATION'> & { id: UUID };
+export type RootNode = Node<TreeNodeData, 'ROOT'> & { id: UUID };
+
+export type CurrentTreeNode = ModificationNode | RootNode;
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
