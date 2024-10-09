@@ -11,23 +11,10 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { AppState, StudyUpdated } from 'redux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
-import { AppDispatch } from '../../redux/store';
-
-interface UseComputingStatusProps {
-    (
-        studyUuid: UUID,
-        nodeUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
-        invalidations: string[],
-        completions: string[],
-        resultConversion: (x: string) => RunningStatus,
-        computingType: ComputingType,
-        optionalServiceAvailabilityStatus?: OptionalServicesStatus
-    ): void;
-}
+import { AppState, StudyUpdated } from 'redux/reducer';
+import useStudyUuid from 'hooks/use-study-uuid';
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
@@ -71,10 +58,38 @@ function isWorthUpdate(
     return false;
 }
 
+const genetateStatusFromComputingType = (base: string) => ({
+    invalidations: [`${base}_status`, `${base}_failed`],
+    completions: [`${base}Result`, `${base}_failed`],
+});
+
+type AnalysisStatusType = {
+    invalidations: string[];
+    completions: string[];
+};
+type ComputingTypeToStatusMapperType = Record<ComputingType, AnalysisStatusType>;
+const computingTypeToStatusMapper: ComputingTypeToStatusMapperType = {
+    [ComputingType.LOAD_FLOW]: genetateStatusFromComputingType('loadflow'),
+    [ComputingType.SECURITY_ANALYSIS]: genetateStatusFromComputingType('securityAnalysis'),
+    [ComputingType.SENSITIVITY_ANALYSIS]: genetateStatusFromComputingType('sensitivityAnalysis'),
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: genetateStatusFromComputingType('nonEvacuatedEnergy'),
+    [ComputingType.SHORT_CIRCUIT]: genetateStatusFromComputingType('shortCircuitAnalysis'),
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: genetateStatusFromComputingType('oneBusShortCircuitAnalysis'),
+    [ComputingType.DYNAMIC_SIMULATION]: genetateStatusFromComputingType('dynamicSimulation'),
+    [ComputingType.VOLTAGE_INITIALIZATION]: genetateStatusFromComputingType('voltageInit'),
+    [ComputingType.STATE_ESTIMATION]: genetateStatusFromComputingType('stateEstimation'),
+};
+
+interface UseComputingStatusProps {
+    (
+        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+        resultConversion: (x: string) => RunningStatus,
+        computingType: ComputingType,
+        optionalServiceAvailabilityStatus?: OptionalServicesStatus
+    ): void;
+}
 /**
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
- * @param studyUuid current study uuid
- * @param nodeUuid current node uuid
  * @param fetcher method fetching current <computingType> state
  * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
@@ -82,27 +97,25 @@ function isWorthUpdate(
  * @param optionalServiceAvailabilityStatus status of an optional service
  */
 export const useComputingStatus: UseComputingStatusProps = (
-    studyUuid,
-    nodeUuid,
     fetcher,
-    invalidations,
-    completions,
     resultConversion,
     computingType,
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
+    const nodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const studyUuid = useStudyUuid();
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
-    const dispatch = useDispatch<AppDispatch>();
-
+    const dispatch = useDispatch();
+    const status = computingTypeToStatusMapper[computingType];
     //the callback crosschecks the computation status and the content of the last update reference
     //in order to determine which computation just ended
     const isComputationCompleted = useCallback(
-        (status: RunningStatus) =>
-            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(status) &&
-            completions.includes(lastUpdateRef.current?.studyUpdatedForce.eventData?.headers?.updateType ?? ''),
-        [completions]
+        (runningStatus: RunningStatus) =>
+            [RunningStatus.FAILED, RunningStatus.SUCCEED].includes(runningStatus) &&
+            status.completions.includes(lastUpdateRef.current?.studyUpdatedForce.eventData?.headers?.updateType ?? ''),
+        [status.completions]
     );
 
     const update = useCallback(() => {
@@ -113,23 +126,24 @@ export const useComputingStatus: UseComputingStatusProps = (
         //upon changing node we reset the last completed computation to prevent results misredirection
         dispatch(setLastCompletedComputation());
 
-        nodeUuidRef.current = nodeUuid;
-        fetcher(studyUuid, nodeUuid)
-            .then((res: string) => {
-                if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
-                    const status = resultConversion(res);
-                    dispatch(setComputingStatus(computingType, status));
-                    if (isComputationCompleted(status)) {
-                        dispatch(setLastCompletedComputation(computingType));
+        nodeUuidRef.current = nodeUuid ?? null;
+        if (nodeUuid && studyUuid) {
+            fetcher(studyUuid, nodeUuid)
+                .then((res: string) => {
+                    if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
+                        const status = resultConversion(res);
+                        dispatch(setComputingStatus(computingType, status));
+                        if (isComputationCompleted(status)) {
+                            dispatch(setLastCompletedComputation(computingType));
+                        }
                     }
-                }
-            })
-            .catch(() => {
-                if (!canceledRequest) {
-                    dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
-                }
-            });
-
+                })
+                .catch(() => {
+                    if (!canceledRequest) {
+                        dispatch(setComputingStatus(computingType, RunningStatus.FAILED));
+                    }
+                });
+        }
         return () => {
             canceledRequest = true;
         };
@@ -147,11 +161,19 @@ export const useComputingStatus: UseComputingStatusProps = (
             lastUpdateRef,
             nodeUuidRef,
             nodeUuid,
-            invalidations
+            status.invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {
             update();
         }
-    }, [update, fetcher, nodeUuid, invalidations, studyUpdatedForce, studyUuid, optionalServiceAvailabilityStatus]);
+    }, [
+        update,
+        fetcher,
+        nodeUuid,
+        status.invalidations,
+        studyUpdatedForce,
+        studyUuid,
+        optionalServiceAvailabilityStatus,
+    ]);
 };
