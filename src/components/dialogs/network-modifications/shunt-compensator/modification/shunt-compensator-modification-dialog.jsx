@@ -222,32 +222,35 @@ const ShuntCompensatorModificationDialog = ({
 
     const onSubmit = useCallback(
         (shuntCompensator) => {
-            modifyShuntCompensator(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
-                shuntCompensator[MAXIMUM_SECTION_COUNT],
-                shuntCompensator[SECTION_COUNT],
-                shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                    ? shuntCompensator[MAX_SUSCEPTANCE]
-                    : null,
-                shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
-                    : null,
-                shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
-                    : null,
-                shuntCompensator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                shuntCompensator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
-                shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION],
-                shuntCompensator[CONNECTIVITY]?.[CONNECTED],
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(shuntCompensator)
-            ).catch((error) => {
+            modifyShuntCompensator({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                shuntCompensatorId: selectedId,
+                shuntCompensatorName: sanitizeString(shuntCompensator[EQUIPMENT_NAME]),
+                maximumSectionCount: shuntCompensator[MAXIMUM_SECTION_COUNT],
+                sectionCount: shuntCompensator[SECTION_COUNT],
+                maxSusceptance:
+                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
+                        ? shuntCompensator[MAX_SUSCEPTANCE]
+                        : null,
+                maxQAtNominalV:
+                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                        ? shuntCompensator[MAX_Q_AT_NOMINAL_V]
+                        : null,
+                shuntCompensatorType:
+                    shuntCompensator[CHARACTERISTICS_CHOICE] === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                        ? shuntCompensator[SHUNT_COMPENSATOR_TYPE]
+                        : null,
+                voltageLevelId: shuntCompensator[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                busOrBusbarSectionId: shuntCompensator[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                connectionName: sanitizeString(shuntCompensator[CONNECTIVITY]?.[CONNECTION_NAME]),
+                connectionDirection: shuntCompensator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
+                connectionPosition: shuntCompensator[CONNECTIVITY]?.[CONNECTION_POSITION],
+                terminalConnected: shuntCompensator[CONNECTIVITY]?.[CONNECTED],
+                isUpdate: !!editData,
+                modificationUuid: editData?.uuid,
+                properties: toModificationProperties(shuntCompensator),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'ShuntCompensatorModificationError',

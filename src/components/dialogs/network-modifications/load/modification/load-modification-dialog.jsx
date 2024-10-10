@@ -180,24 +180,24 @@ const LoadModificationDialog = ({
 
     const onSubmit = useCallback(
         (load) => {
-            modifyLoad(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(load?.equipmentName),
-                load?.loadType,
-                load?.p0,
-                load?.q0,
-                load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
-                load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
-                load[CONNECTIVITY]?.[CONNECTION_POSITION],
-                load[CONNECTIVITY]?.[CONNECTED],
-                !!editData,
-                editData ? editData.uuid : undefined,
-                toModificationProperties(load)
-            ).catch((error) => {
+            modifyLoad({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                id: selectedId,
+                name: sanitizeString(load?.equipmentName),
+                loadType: load?.loadType,
+                p0: load?.p0,
+                q0: load?.q0,
+                voltageLevelId: load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                busOrBusbarSectionId: load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                connectionName: sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
+                connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
+                connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
+                terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                properties: toModificationProperties(load),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LoadModificationError',

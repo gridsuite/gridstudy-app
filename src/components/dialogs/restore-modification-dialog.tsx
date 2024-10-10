@@ -12,7 +12,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, DialogContentText, Theme } from '@mui/material';
-import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
+import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
@@ -122,7 +122,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                         })}
                     </DialogContentText>
                 </Box>
-                <CheckboxList
+                <CheckBoxList
                     items={stashedModifications}
                     selectedItems={selectedItems}
                     onSelectionChange={setSelectedItems}

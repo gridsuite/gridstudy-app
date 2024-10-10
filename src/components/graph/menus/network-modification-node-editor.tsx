@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -892,7 +892,7 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsList = () => {
         return (
-            <CheckboxList
+            <CheckBoxList
                 sx={{
                     items: (modification) => ({
                         label: {
