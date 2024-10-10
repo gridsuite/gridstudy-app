@@ -214,9 +214,6 @@ export const PERCENTAGE_AREA = 'percentageArea';
 export const LEFT_SIDE_PERCENTAGE = 'leftSidePercentage';
 export const RIGHT_SIDE_PERCENTAGE = 'rightSidePercentage';
 export const SLIDER_PERCENTAGE = 'sliderPercentage';
-export const SLIDER_SUSCEPTANCE = 'sliderSusceptance';
-export const SLIDER_Q_NOMINAL = 'sliderQatNominal';
-
 // voltage-level-on-line, attach line to another line, etc
 export const LINE_TO_ATTACH_TO_1_ID = 'lineToAttachTo1Id';
 export const LINE_TO_ATTACH_TO_2_ID = 'lineToAttachTo2Id';
