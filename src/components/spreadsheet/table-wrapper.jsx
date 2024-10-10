@@ -552,31 +552,27 @@ const TableWrapper = (props) => {
             );
             switch (editingData?.metadata.equipmentType) {
                 case EQUIPMENT_TYPES.SUBSTATION:
-                    return modifySubstation(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        editingData.name,
-                        editingData.country,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return modifySubstation({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        id: editingData.id,
+                        name: editingData.name,
+                        country: editingData.country,
+                        isUpdate: false,
+                        properties: propertiesForBackend,
+                    });
                 case EQUIPMENT_TYPES.LOAD:
-                    return modifyLoad(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.type, editingDataRef.current.type),
-                        getFieldValue(editingData.p0, editingDataRef.current.p0),
-                        getFieldValue(editingData.q0, editingDataRef.current.q0),
-                        undefined,
-                        undefined,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                    return modifyLoad({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        id: editingData.id,
+                        name: getFieldValue(editingData.name, editingDataRef.current.name),
+                        loadType: getFieldValue(editingData.type, editingDataRef.current.type),
+                        p0: getFieldValue(editingData.p0, editingDataRef.current.p0),
+                        q0: getFieldValue(editingData.q0, editingDataRef.current.q0),
+                        isUpdate: false,
+                        properties: propertiesForBackend,
+                    });
                 case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
                     let ratioTap = null;
                     if (editingData?.ratioTapChanger) {
@@ -715,28 +711,31 @@ const TableWrapper = (props) => {
                             ),
                         };
                     }
-                    return modifyTwoWindingsTransformer(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        toModificationOperation(
+                    return modifyTwoWindingsTransformer({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        twoWindingsTransformerId: editingData.id,
+                        twoWindingsTransformerName: toModificationOperation(
                             sanitizeString(getFieldValue(editingData?.name, editingDataRef.current?.name))
                         ),
-                        toModificationOperation(getFieldValue(editingData.r, editingDataRef.current.r)),
-                        toModificationOperation(getFieldValue(editingData.x, editingDataRef.current.x)),
-                        toModificationOperation(getFieldValue(editingData.g, editingDataRef.current.g)),
-                        toModificationOperation(getFieldValue(editingData.b, editingDataRef.current.b)),
-                        toModificationOperation(getFieldValue(editingData.ratedS, editingDataRef.current.ratedS)),
-                        toModificationOperation(getFieldValue(editingData.ratedU1, editingDataRef.current.ratedU1)),
-                        toModificationOperation(getFieldValue(editingData.ratedU2, editingDataRef.current.ratedU2)),
-                        undefined,
-                        undefined,
-                        ratioTap,
-                        phaseTap,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                        r: toModificationOperation(getFieldValue(editingData.r, editingDataRef.current.r)),
+                        x: toModificationOperation(getFieldValue(editingData.x, editingDataRef.current.x)),
+                        g: toModificationOperation(getFieldValue(editingData.g, editingDataRef.current.g)),
+                        b: toModificationOperation(getFieldValue(editingData.b, editingDataRef.current.b)),
+                        ratedS: toModificationOperation(
+                            getFieldValue(editingData.ratedS, editingDataRef.current.ratedS)
+                        ),
+                        ratedU1: toModificationOperation(
+                            getFieldValue(editingData.ratedU1, editingDataRef.current.ratedU1)
+                        ),
+                        ratedU2: toModificationOperation(
+                            getFieldValue(editingData.ratedU2, editingDataRef.current.ratedU2)
+                        ),
+                        ratioTapChanger: ratioTap,
+                        phaseTapChanger: phaseTap,
+                        isUpdate: false,
+                        properties: propertiesForBackend,
+                    });
                 case EQUIPMENT_TYPES.GENERATOR:
                     const regulatingTerminalConnectableIdFieldValue = getFieldValue(
                         editingData.regulatingTerminalConnectableId,
@@ -751,51 +750,50 @@ const TableWrapper = (props) => {
                         regulatingTerminalConnectableTypeFieldValue !== null
                             ? editingData.regulatingTerminalVlId
                             : null;
-                    return modifyGenerator(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.energySource, editingDataRef.current.energySource),
-                        getFieldValue(editingData.minP, editingDataRef.current.minP),
-                        getFieldValue(editingData.maxP, editingDataRef.current.maxP),
-                        undefined,
-                        getFieldValue(editingData.targetP, editingDataRef.current.targetP),
-                        getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
-                        getFieldValue(editingData.voltageRegulatorOn, editingDataRef.current.voltageRegulatorOn),
-                        getFieldValue(editingData.targetV, editingDataRef.current.targetV),
-                        undefined,
-                        undefined,
-                        undefined,
-                        getFieldValue(
+                    return modifyGenerator({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        generatorId: editingData.id,
+                        name: getFieldValue(editingData.name, editingDataRef.current.name),
+                        energySource: getFieldValue(editingData.energySource, editingDataRef.current.energySource),
+                        minP: getFieldValue(editingData.minP, editingDataRef.current.minP),
+                        maxP: getFieldValue(editingData.maxP, editingDataRef.current.maxP),
+                        targetP: getFieldValue(editingData.targetP, editingDataRef.current.targetP),
+                        targetQ: getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
+                        voltageRegulation: getFieldValue(
+                            editingData.voltageRegulatorOn,
+                            editingDataRef.current.voltageRegulatorOn
+                        ),
+                        targetV: getFieldValue(editingData.targetV, editingDataRef.current.targetV),
+                        qPercent: getFieldValue(
                             editingData?.coordinatedReactiveControl?.qPercent,
                             editingDataRef.current?.coordinatedReactiveControl?.qPercent
                         ),
-                        getFieldValue(
+                        plannedActivePowerSetPoint: getFieldValue(
                             editingData?.generatorStartup?.plannedActivePowerSetPoint,
                             editingDataRef.current?.generatorStartup?.plannedActivePowerSetPoint
                         ),
-                        getFieldValue(
+                        marginalCost: getFieldValue(
                             editingData?.generatorStartup?.marginalCost,
                             editingDataRef.current?.generatorStartup?.marginalCost
                         ),
-                        getFieldValue(
+                        plannedOutageRate: getFieldValue(
                             editingData?.generatorStartup?.plannedOutageRate,
                             editingDataRef.current?.generatorStartup?.plannedOutageRate
                         ),
-                        getFieldValue(
+                        forcedOutageRate: getFieldValue(
                             editingData?.generatorStartup?.forcedOutageRate,
                             editingDataRef.current?.generatorStartup?.forcedOutageRate
                         ),
-                        getFieldValue(
+                        directTransX: getFieldValue(
                             editingData?.generatorShortCircuit?.directTransX,
                             editingDataRef.current?.generatorShortCircuit?.directTransX
                         ),
-                        getFieldValue(
+                        stepUpTransformerX: getFieldValue(
                             editingData?.generatorShortCircuit?.stepUpTransformerX,
                             editingDataRef.current?.generatorShortCircuit?.stepUpTransformerX
                         ),
-                        getFieldValue(
+                        voltageRegulationType: getFieldValue(
                             editingData?.regulatingTerminalVlId || editingData?.regulatingTerminalConnectableId
                                 ? REGULATION_TYPES.DISTANT.id
                                 : REGULATION_TYPES.LOCAL.id,
@@ -804,98 +802,96 @@ const TableWrapper = (props) => {
                                 ? REGULATION_TYPES.DISTANT.id
                                 : REGULATION_TYPES.LOCAL.id
                         ),
-                        regulatingTerminalConnectableIdFieldValue,
-                        regulatingTerminalConnectableTypeFieldValue,
-                        regulatingTerminalVlIdFieldValue,
-                        undefined,
-                        getFieldValue(
+                        regulatingTerminalId: regulatingTerminalConnectableIdFieldValue,
+                        regulatingTerminalType: regulatingTerminalConnectableTypeFieldValue,
+                        regulatingTerminalVlId: regulatingTerminalVlIdFieldValue,
+                        participate: getFieldValue(
                             editingData?.activePowerControl?.participate,
                             editingDataRef.current?.activePowerControl?.participate
                         ),
-                        getFieldValue(
+                        droop: getFieldValue(
                             editingData?.activePowerControl?.droop,
                             editingDataRef.current?.activePowerControl?.droop
                         ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        propertiesForBackend
-                    );
+                        properties: propertiesForBackend,
+                    });
                 case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
-                    return modifyVoltageLevel(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.nominalV, editingDataRef.current.nominalV),
-                        getFieldValue(editingData.lowVoltageLimit, editingDataRef.current.lowVoltageLimit),
-                        getFieldValue(editingData.highVoltageLimit, editingDataRef.current.highVoltageLimit),
-                        getFieldValue(
+                    return modifyVoltageLevel({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        voltageLevelId: editingData.id,
+                        voltageLevelName: getFieldValue(editingData.name, editingDataRef.current.name),
+                        nominalV: getFieldValue(editingData.nominalV, editingDataRef.current.nominalV),
+                        lowVoltageLimit: getFieldValue(
+                            editingData.lowVoltageLimit,
+                            editingDataRef.current.lowVoltageLimit
+                        ),
+                        highVoltageLimit: getFieldValue(
+                            editingData.highVoltageLimit,
+                            editingDataRef.current.highVoltageLimit
+                        ),
+                        lowShortCircuitCurrentLimit: getFieldValue(
                             editingData.identifiableShortCircuit?.ipMin,
                             editingDataRef.current.identifiableShortCircuit?.ipMin
                         ),
-                        getFieldValue(
+                        highShortCircuitCurrentLimit: getFieldValue(
                             editingData.identifiableShortCircuit?.ipMax,
                             editingDataRef.current.identifiableShortCircuit?.ipMax
                         ),
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                        isUpdate: false,
+                        properties: propertiesForBackend,
+                    });
                 case EQUIPMENT_TYPES.BATTERY:
-                    return modifyBattery(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.minP, editingDataRef.current.minP),
-                        getFieldValue(editingData.maxP, editingDataRef.current.maxP),
-                        getFieldValue(editingData.targetP, editingDataRef.current.targetP),
-                        getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        getFieldValue(
+                    return modifyBattery({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        batteryId: editingData.id,
+                        name: getFieldValue(editingData.name, editingDataRef.current.name),
+                        minP: getFieldValue(editingData.minP, editingDataRef.current.minP),
+                        maxP: getFieldValue(editingData.maxP, editingDataRef.current.maxP),
+                        targetP: getFieldValue(editingData.targetP, editingDataRef.current.targetP),
+                        targetQ: getFieldValue(editingData.targetQ, editingDataRef.current.targetQ),
+                        participate: getFieldValue(
                             editingData.activePowerControl?.participate,
                             editingDataRef.current.activePowerControl?.participate != null
                                 ? +editingDataRef.current.activePowerControl.participate
                                 : editingDataRef.current.activePowerControl?.participate
                         ),
-                        getFieldValue(
+                        droop: getFieldValue(
                             editingData.activePowerControl?.droop,
                             editingDataRef.current.activePowerControl?.droop
                         ),
-                        undefined,
-                        undefined,
-                        undefined,
-                        undefined,
-                        propertiesForBackend
-                    );
+                        properties: propertiesForBackend,
+                    });
                 case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
-                    return modifyShuntCompensator(
-                        props.studyUuid,
-                        props.currentNode?.id,
-                        editingData.id,
-                        getFieldValue(editingData.name, editingDataRef.current.name),
-                        getFieldValue(editingData.maximumSectionCount, editingDataRef.current.maximumSectionCount),
-                        getFieldValue(editingData.sectionCount, editingDataRef.current.sectionCount),
-                        context.lastEditedField === 'maxSusceptance'
-                            ? getFieldValue(editingData.maxSusceptance, editingDataRef.current.maxSusceptance)
-                            : null,
-                        context.lastEditedField === 'maxQAtNominalV'
-                            ? getFieldValue(editingData.maxQAtNominalV, editingDataRef.current.maxQAtNominalV)
-                            : null,
-                        getFieldValue(
+                    return modifyShuntCompensator({
+                        studyUuid: props.studyUuid,
+                        nodeUuid: props.currentNode?.id,
+                        shuntCompensatorId: editingData.id,
+                        shuntCompensatorName: getFieldValue(editingData.name, editingDataRef.current.name),
+                        maximumSectionCount: getFieldValue(
+                            editingData.maximumSectionCount,
+                            editingDataRef.current.maximumSectionCount
+                        ),
+                        sectionCount: getFieldValue(editingData.sectionCount, editingDataRef.current.sectionCount),
+                        maxSusceptance:
+                            context.lastEditedField === 'maxSusceptance'
+                                ? getFieldValue(editingData.maxSusceptance, editingDataRef.current.maxSusceptance)
+                                : null,
+                        maxQAtNominalV:
+                            context.lastEditedField === 'maxQAtNominalV'
+                                ? getFieldValue(editingData.maxQAtNominalV, editingDataRef.current.maxQAtNominalV)
+                                : null,
+                        shuntCompensatorType: getFieldValue(
                             editingData.type,
                             editingDataRef.current.maxSusceptance > 0
                                 ? SHUNT_COMPENSATOR_TYPES.CAPACITOR.id
                                 : SHUNT_COMPENSATOR_TYPES.REACTOR.id
                         ),
-                        editingData.voltageLevelId,
-                        false,
-                        undefined,
-                        propertiesForBackend
-                    );
+                        voltageLevelId: editingData.voltageLevelId,
+                        isUpdate: false,
+                        properties: propertiesForBackend,
+                    });
                 default:
                     return requestNetworkChange(props.studyUuid, props.currentNode?.id, groovyCr);
             }
