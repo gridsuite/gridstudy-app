@@ -41,7 +41,7 @@ import {
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study';
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
-import { StudyDisplayMode } from './network-modification.type';
+import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
 
 const styles = {
     container: {
@@ -62,17 +62,6 @@ const usePreviousTreeDisplay = (display, width) => {
         }
     }, [display, width]);
     return ref.current;
-};
-
-export const CopyType = {
-    NODE_COPY: 'NODE_COPY',
-    NODE_CUT: 'NODE_CUT',
-    SUBTREE_COPY: 'SUBTREE_COPY',
-    SUBTREE_CUT: 'SUBTREE_CUT',
-};
-export const UpdateType = {
-    NODE_CREATED: 'nodeCreated',
-    NODE_DELETED: 'nodeDeleted',
 };
 
 const noSelectionForCopy = {

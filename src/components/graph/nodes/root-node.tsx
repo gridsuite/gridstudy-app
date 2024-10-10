@@ -9,13 +9,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
-import { Handle } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
+import { AppState } from 'redux/reducer';
+import { Theme } from '@mui/material/styles';
 
 const styles = {
-    rootSelected: (theme) => ({
+    rootSelected: (theme: Theme) => ({
         background: theme.node.background,
         borderRadius: '30%',
         boxShadow:
@@ -29,7 +31,7 @@ const styles = {
             background: theme.node.background,
         },
     }),
-    root: (theme) => ({
+    root: (theme: Theme) => ({
         background: 'darkseagreen',
         borderRadius: '30%',
         '&:hover': {
@@ -38,16 +40,25 @@ const styles = {
     }),
 };
 
-const RootNode = (props) => {
-    const currentNode = useSelector((state) => state.currentTreeNode);
+interface RootNodeProps {
+    id: string;
+    data: {
+        caseName: string;
+        globalBuildStatus: string;
+    };
+}
+
+const RootNode = (props: RootNodeProps) => {
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
     };
+
     return (
         <>
             <Handle
                 type="source"
-                position="bottom"
+                position={Position.Bottom}
                 style={{
                     background: '#555',
                     zIndex: '1',
@@ -55,7 +66,7 @@ const RootNode = (props) => {
                 isConnectable={false}
             />
             <Tooltip title={props.data.caseName} placement="top" disableHoverListener={!props.data.caseName}>
-                <IconButton variant="outlined" sx={isSelectedNode() ? styles.rootSelected : styles.root}>
+                <IconButton sx={isSelectedNode() ? styles.rootSelected : styles.root}>
                     {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (
                         <PhotoIcon />
                     )}

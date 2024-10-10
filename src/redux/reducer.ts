@@ -238,7 +238,6 @@ import { FluxConventions } from '../components/dialogs/parameters/network-parame
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
@@ -280,10 +279,11 @@ import { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from 'reactflow';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
-import { StudyDisplayMode } from '../components/network-modification.type';
+import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { SeverityFilter } from '../types/report.type';
 import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
+import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -355,11 +355,13 @@ export type StudyUpdated = {
 export interface TreeNodeData {
     parentNodeUuid: UUID;
     label: string;
-    description: string;
-    buildStatus: BUILD_STATUS;
-    readonly: boolean;
+    description: string | null;
+    globalBuildStatus?: BUILD_STATUS;
+    localBuildStatus?: BUILD_STATUS;
+    readOnly?: boolean;
+    caseName?: string;
 }
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID; childrenIds?: UUID[]; children?: CurrentTreeNode[] };
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -403,7 +405,7 @@ export type NadNodeMovement = {
 
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
-    nodeId: string | null;
+    nodeId: UUID | null;
     copyType: ValueOf<typeof CopyType> | null;
     allChildrenIds: string[] | null;
 };
@@ -806,11 +808,10 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
-                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+                state.currentTreeNode?.id &&
+                action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                // @ts-expect-error TODO: what to do if current node null?
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -830,11 +831,10 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
-                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+                state.currentTreeNode?.id &&
+                action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                // @ts-expect-error TODO: what to do if current node null?
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -842,6 +842,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NETWORK_MODIFICATION_HANDLE_SUBTREE, (state, action: NetworkModificationHandleSubtreeAction) => {
         if (state.networkModificationTreeModel) {
+            console.log('debug', action.networkModificationTreeNodes);
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(
                 newModel,
@@ -888,7 +889,6 @@ export const reducer = createReducer(initialState, (builder) => {
                     )
                 ) {
                     // Then must overwrite currentTreeNode to get new parentNodeUuid
-                    // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }
@@ -905,7 +905,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.networkModificationTreeModel?.setBuildingStatus();
                 // check if current node is in the nodes updated list
                 if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
-                    // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                     // current node has changed, then will need to reload Geo Data
                     state.reloadMap = true;
@@ -1738,24 +1737,28 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
     return currentEquipments;
 }
 
-function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: string) {
+function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );
+
     //  we need to overwrite state.currentTreeNode to consider label change for example.
+    // @ts-ignore
     state.currentTreeNode = { ...nextCurrentNode };
 }
 
-function unravelSubTree(treeModel: NetworkModificationTreeModel, subtreeParentId: string, node: Node<TreeNodeData>) {
+function unravelSubTree(
+    treeModel: NetworkModificationTreeModel,
+    subtreeParentId: UUID,
+    node: NetworkModificationNode | RootNode | null
+) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After, undefined);
 
-        // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
         if (node.children.length > 0) {
-            // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
             node.children.forEach((child) => {
                 unravelSubTree(treeModel, node.id, child);
             });

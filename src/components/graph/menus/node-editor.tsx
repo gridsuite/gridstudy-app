@@ -12,13 +12,14 @@ import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
 import { setModificationsDrawerOpen } from '../../../redux/actions';
 import { updateTreeNode } from '../../../services/study/tree-subtree';
-import { Box } from '@mui/system';
+import { Box } from '@mui/material';
+import { AppState } from '../../../redux/reducer';
+import { Theme } from '@mui/material/styles';
 
 const styles = {
-    paper: (theme) => ({
+    paper: (theme: Theme) => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -33,14 +34,14 @@ const styles = {
 const NodeEditor = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
-    const currentTreeNode = useSelector((state) => state.currentTreeNode);
-    const studyUuid = decodeURIComponent(useParams().studyUuid);
+    const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
     };
 
-    const changeNodeName = (newName) => {
+    const changeNodeName = (newName: string) => {
         updateTreeNode(studyUuid, {
             id: currentTreeNode?.id,
             type: currentTreeNode?.type,
@@ -56,7 +57,7 @@ const NodeEditor = () => {
     return (
         <Box sx={styles.paper}>
             <EditableTitle
-                name={currentTreeNode?.data?.label}
+                name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
             />

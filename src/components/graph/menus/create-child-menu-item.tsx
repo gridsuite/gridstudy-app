@@ -7,10 +7,9 @@
 
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
 import { CustomMenuItem } from '../../utils/custom-nested-menu';
+import { FunctionComponent } from 'react';
 
 const styles = {
     menuItem: {
@@ -20,8 +19,14 @@ const styles = {
         paddingLeft: '12px',
     },
 };
-
-const ChildMenuItem = ({ item }) => {
+interface ChildMenuItemProps {
+    item: {
+        id: string;
+        action: () => void;
+        disabled: boolean;
+    };
+}
+const ChildMenuItem: FunctionComponent<ChildMenuItemProps> = ({ item }) => {
     return (
         <CustomMenuItem sx={styles.menuItem} onClick={item.action} disabled={item.disabled}>
             <ListItemText
@@ -35,7 +40,4 @@ const ChildMenuItem = ({ item }) => {
     );
 };
 
-ChildMenuItem.protoTypes = {
-    item: PropTypes.object.isRequired,
-};
 export default ChildMenuItem;
