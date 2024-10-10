@@ -23,7 +23,7 @@ import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import { useStore } from 'react-flow-renderer';
+import { useStore } from 'reactflow';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 import {
@@ -529,7 +529,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
                 <StudyDrawer
                     open={isStudyDrawerOpen}
-                    anchor={prevTreeDisplay === StudyDisplayMode.TREE ? 'right' : 'left'}
+                    anchor={prevTreeDisplay?.display === StudyDisplayMode.TREE ? 'right' : 'left'}
                 >
                     {isModificationsDrawerOpen && <NodeEditor />}
                     {isEventScenarioDrawerOpen && <ScenarioEditor />}
@@ -563,7 +563,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportStudy}
                     studyUuid={studyUuid}
-                    nodeUuid={activeNode.id}
+                    nodeUuid={activeNode?.id}
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',
                     })}
@@ -574,7 +574,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     open={openRestoreDialog}
                     onClose={() => setOpenRestoreDialog(false)}
                     studyUuid={studyUuid}
-                    anchorNodeId={activeNode.id}
+                    anchorNodeId={activeNode?.id}
                 />
             )}
             <iframe id={DownloadIframe} name={DownloadIframe} title={DownloadIframe} style={{ display: 'none' }} />
