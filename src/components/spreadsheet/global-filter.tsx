@@ -8,7 +8,7 @@
 import { InputAdornment, TextField } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
-import { forwardRef, RefObject, useCallback, useImperativeHandle, useRef } from 'react';
+import { ChangeEvent, forwardRef, RefObject, useCallback, useImperativeHandle, useRef } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
 import { AgGridReact } from 'ag-grid-react';
 
@@ -21,7 +21,7 @@ const styles = {
 
 interface GlobalFilterProps {
     gridRef: RefObject<AgGridReact>;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps, ref) => {
@@ -41,7 +41,7 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps
     }, [applyQuickFilter]);
 
     const getFilterValue = useCallback(() => {
-        return inputRef.current;
+        return inputRef.current.value;
     }, []);
 
     useImperativeHandle(
@@ -56,7 +56,7 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps
     );
 
     const handleChangeFilter = useCallback(
-        (event: any) => {
+        (event: ChangeEvent<HTMLInputElement>) => {
             applyQuickFilter(event.target.value);
         },
         [applyQuickFilter]

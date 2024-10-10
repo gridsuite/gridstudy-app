@@ -97,7 +97,7 @@ const useEditBuffer = () => {
     const data = useRef<any>({});
 
     const addDataToBuffer = useCallback(
-        (field: string, value: any) => {
+        (field: string, value: unknown) => {
             data.current[field] = value;
         },
         [data]

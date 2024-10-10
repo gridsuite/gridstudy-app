@@ -11,11 +11,11 @@ import { EDIT_COLUMN } from './utils/config-tables';
 import { ExportButton } from 'components/utils/export-button';
 import { formatNAValue } from './utils/cell-renderers';
 import { AgGridReact } from 'ag-grid-react';
-import { ProcessCellForExportParams } from 'ag-grid-community';
+import { ColDef, ProcessCellForExportParams } from 'ag-grid-community';
 
 interface CsvExportProps {
     gridRef: RefObject<AgGridReact>;
-    columns: any[];
+    columns: ColDef[];
     tableName?: string;
     disabled: boolean;
     tableNamePrefix?: string;
@@ -41,9 +41,13 @@ export const CsvExport: FunctionComponent<CsvExportProps> = ({
     }, [intl, tableName]);
 
     const downloadCSVData = useCallback(() => {
+        const isFieldDefined = (field: string | undefined): field is string => {
+            return field !== undefined;
+        };
         const filteredColumnsKeys = columns
-            .filter((column) => column.field !== EDIT_COLUMN)
-            .map((column) => column.field);
+            .map((column) => column.field)
+            .filter(isFieldDefined) // TODO should not be required with recent TS version
+            .filter((field) => field !== EDIT_COLUMN);
 
         const processCell = (params: ProcessCellForExportParams): string => {
             if (params.column.getColId() === 'limitName') {

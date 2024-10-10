@@ -23,7 +23,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
-                onChange={(event, value: number) => {
+                onChange={(_event, value: number) => {
                     handleSwitchTab(value);
                 }}
                 aria-label="tables"

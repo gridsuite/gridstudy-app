@@ -1058,7 +1058,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
         action.displayedColumnsNamesParams.forEach((param) => {
             if (param) {
-                newDisplayedColumnsNames[param.index] = String(param.value);
+                newDisplayedColumnsNames[param.index] = param.value;
             }
         });
         state.allDisplayedColumnsNames = newDisplayedColumnsNames;
@@ -1068,7 +1068,7 @@ export const reducer = createReducer(initialState, (builder) => {
         let newLockedColumnsNames = [...state.allLockedColumnsNames];
         action.lockedColumnsNamesParams.forEach((param) => {
             if (param) {
-                newLockedColumnsNames[param.index] = String(param.value);
+                newLockedColumnsNames[param.index] = param.value;
             }
         });
         state.allLockedColumnsNames = newLockedColumnsNames;
@@ -1078,7 +1078,7 @@ export const reducer = createReducer(initialState, (builder) => {
         let newReorderedColumns = [...state.allReorderedTableDefinitionIndexes];
         action.reorderedColumnsParams.forEach((param) => {
             if (param) {
-                newReorderedColumns[param.index] = String(param.value);
+                newReorderedColumns[param.index] = param.value;
             }
         });
         state.allReorderedTableDefinitionIndexes = newReorderedColumns;

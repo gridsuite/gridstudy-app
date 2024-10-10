@@ -32,7 +32,6 @@ import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
 import { useParameterState } from './dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import ComputingType from './computing-status/computing-type';
-import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
     container: {
@@ -107,7 +106,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
     const closePreviewModificationsDialog = () => {
         setPreviewModificationsDialogOpen(false);
     };
-    const gridRef = useRef < AgGridReact > null;
+    const gridRef = useRef();
     const defaultColDef = useMemo(
         () => ({
             filter: true,

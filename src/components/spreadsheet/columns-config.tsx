@@ -93,7 +93,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
         const allLockedTemp = allLockedColumnsNames[tabIndex];
         setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
         const allReorderedTemp = allReorderedTableDefinitionIndexes[tabIndex];
-        setReorderedTableDefinitionIndexes(allReorderedTemp ? JSON.parse(String(allReorderedTemp)) : []);
+        setReorderedTableDefinitionIndexes(allReorderedTemp ? JSON.parse(allReorderedTemp) : []);
         handleCloseColumnsSettingDialog();
     }, [
         allDisplayedColumnsNames,
@@ -193,11 +193,11 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     };
 
     const handleDrag = useCallback(
-        (result: DropResult) => {
-            if (result.destination) {
+        ({ source, destination }: DropResult) => {
+            if (destination) {
                 let reorderedTableDefinitionIndexesTemp = [...reorderedTableDefinitionIndexes];
-                const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(result.source.index, 1);
-                reorderedTableDefinitionIndexesTemp.splice(result.destination.index, 0, reorderedItem);
+                const [reorderedItem] = reorderedTableDefinitionIndexesTemp.splice(source.index, 1);
+                reorderedTableDefinitionIndexesTemp.splice(destination.index, 0, reorderedItem);
                 setReorderedTableDefinitionIndexes(reorderedTableDefinitionIndexesTemp);
             }
         },
@@ -248,7 +248,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
                                                     }}
                                                 >
                                                     <IconButton {...provided.dragHandleProps} size={'small'}>
-                                                        <DragIndicatorIcon spacing={3} edgeMode={'start'} />
+                                                        <DragIndicatorIcon spacing={0} edgeMode={'start'} />
                                                     </IconButton>
 
                                                     <ListItemIcon

@@ -659,9 +659,11 @@ export function setFullScreenDiagram(
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: ColumnName[];
+    displayedColumnsNamesParams: ColumnName<string>[];
 };
-export function changeDisplayedColumns(displayedColumnsParams: ColumnName[]): ChangeDisplayedColumnsNamesAction {
+export function changeDisplayedColumns(
+    displayedColumnsParams: ColumnName<string>[]
+): ChangeDisplayedColumnsNamesAction {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
         displayedColumnsNamesParams: displayedColumnsParams,
@@ -670,9 +672,9 @@ export function changeDisplayedColumns(displayedColumnsParams: ColumnName[]): Ch
 
 export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
 export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: ColumnName[];
+    lockedColumnsNamesParams: ColumnName<string>[];
 };
-export function changeLockedColumns(lockedColumnsParams: ColumnName[]): ChangeLockedColumnsNamesAction {
+export function changeLockedColumns(lockedColumnsParams: ColumnName<string>[]): ChangeLockedColumnsNamesAction {
     return {
         type: CHANGE_LOCKED_COLUMNS_NAMES,
         lockedColumnsNamesParams: lockedColumnsParams,
@@ -681,9 +683,9 @@ export function changeLockedColumns(lockedColumnsParams: ColumnName[]): ChangeLo
 
 export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
 export type ChangeReorderedColumnsAction = Readonly<Action<typeof CHANGE_REORDERED_COLUMNS>> & {
-    reorderedColumnsParams: ColumnName[];
+    reorderedColumnsParams: ColumnName<string>[];
 };
-export function changeReorderedColumns(reorderedColumnsParams: ColumnName[]): ChangeReorderedColumnsAction {
+export function changeReorderedColumns(reorderedColumnsParams: ColumnName<string>[]): ChangeReorderedColumnsAction {
     return {
         type: CHANGE_REORDERED_COLUMNS,
         reorderedColumnsParams: reorderedColumnsParams,

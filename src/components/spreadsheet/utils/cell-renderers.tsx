@@ -9,7 +9,7 @@ import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -179,7 +179,7 @@ export const PropertiesCellRenderer = (props: any) => {
     );
 };
 
-export const ContingencyCellRenderer = ({ value }: { value: any }) => {
+export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {
     const { cellValue, tooltipValue } = value ?? {};
 
     if (cellValue == null || tooltipValue == null) {

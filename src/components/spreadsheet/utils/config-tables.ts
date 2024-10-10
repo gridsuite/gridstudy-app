@@ -42,9 +42,15 @@ import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-heade
 import { useSelector } from 'react-redux';
 import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import { AppState } from '../../../redux/reducer';
+import { EnumOption } from '../../utils/utils-type';
 import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 
-const generateTapPositions = (params: any) => {
+type TapPositionsType = {
+    lowTapPosition: number;
+    highTapPosition: number;
+};
+
+const generateTapPositions = (params: TapPositionsType) => {
     return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];
 };
 
@@ -63,7 +69,7 @@ const editableCellStyle = (params: CellClassParams) => {
     return null;
 };
 
-const applyFluxConvention = (convention: FluxConventions, val: any): any => {
+const applyFluxConvention = (convention: FluxConventions, val: number): any => {
     if (convention === FluxConventions.TARGET && val !== undefined) {
         return -val;
     }
@@ -146,11 +152,6 @@ const defaultBooleanFilterConfig = {
     },
 };
 
-export interface EnumOption {
-    id: string;
-    label: string;
-}
-
 // This function is used to generate the default configuration for an enum filter
 // It generates configuration for filtering, sorting and rendering
 const getDefaultEnumConfig = (enumOptions: EnumOption[]) => ({
@@ -180,7 +181,7 @@ export const defaultNumericFilterConfig = () => {
 };
 
 const fluxConventionNumericFilterConfig = (
-    applyFluxConvention?: (convention: FluxConventions, val: any) => any,
+    applyFluxConvention?: (convention: FluxConventions, val: number) => number,
     getFluxConvention?: any
 ) => {
     return {
@@ -190,7 +191,7 @@ const fluxConventionNumericFilterConfig = (
                 {
                     displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
                     displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                    predicate: ([filterValue]: [any], cellValue: any) => {
+                    predicate: ([filterValue]: [number], cellValue: number) => {
                         const transformedValue =
                             applyFluxConvention && getFluxConvention
                                 ? applyFluxConvention(getFluxConvention(), cellValue)
@@ -201,7 +202,7 @@ const fluxConventionNumericFilterConfig = (
                 {
                     displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
                     displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
-                    predicate: ([filterValue]: [any], cellValue: any) => {
+                    predicate: ([filterValue]: [number], cellValue: number) => {
                         const transformedValue =
                             applyFluxConvention && getFluxConvention
                                 ? applyFluxConvention(getFluxConvention(), cellValue)
@@ -212,7 +213,7 @@ const fluxConventionNumericFilterConfig = (
                 {
                     displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
                     displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                    predicate: ([filterValue]: [any], cellValue: any) => {
+                    predicate: ([filterValue]: [number], cellValue: number) => {
                         const transformedValue =
                             applyFluxConvention && getFluxConvention
                                 ? applyFluxConvention(getFluxConvention(), cellValue)
@@ -223,7 +224,7 @@ const fluxConventionNumericFilterConfig = (
                 {
                     displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN,
                     displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN,
-                    predicate: ([filterValue]: [any], cellValue: any) => {
+                    predicate: ([filterValue]: [number], cellValue: number) => {
                         const transformedValue =
                             applyFluxConvention && getFluxConvention
                                 ? applyFluxConvention(getFluxConvention(), cellValue)

@@ -13,6 +13,7 @@ import { CustomAGGrid } from '@gridsuite/commons-ui';
 import {
     CellEditingStartedEvent,
     CellEditingStoppedEvent,
+    ColDef,
     ColumnMovedEvent,
     GetRowIdParams,
     RowClassParams,
@@ -26,9 +27,9 @@ const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
 
 interface EquipmentTableProps {
-    rowData: any[];
-    topPinnedData: any[] | undefined;
-    columnData: any[];
+    rowData: unknown[];
+    topPinnedData: unknown[] | undefined;
+    columnData: ColDef[];
     gridRef: Ref<any> | undefined;
     studyUuid: string;
     currentNode: CurrentTreeNode;
@@ -71,10 +72,10 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [theme.palette.primary.main]
     );
 
-    const getRowId = useCallback((params: GetRowIdParams): string => params.data.id, []);
+    const getRowId = useCallback((params: GetRowIdParams<{ id: string }>) => params.data.id, []);
 
     //we filter enter key event to prevent closing or opening edit mode
-    const suppressKeyEvent = (params: SuppressKeyboardEventParams): boolean => {
+    const suppressKeyEvent = (params: SuppressKeyboardEventParams) => {
         return !ALLOWED_KEYS.includes(params.event.key);
     };
 
@@ -86,7 +87,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             lockPinned: true,
             wrapHeaderText: true,
             autoHeaderHeight: true,
-            suppressKeyboardEvent: (params: SuppressKeyboardEventParams): boolean => suppressKeyEvent(params),
+            suppressKeyboardEvent: (params: SuppressKeyboardEventParams) => suppressKeyEvent(params),
         }),
         []
     );
@@ -123,7 +124,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         return undefined;
     }, [rowData, fetched, intl]);
 
-    const loadingOverlayComponent = (props: any) => {
+    const loadingOverlayComponent = (props: { loadingMessage: string }) => {
         return <>{props.loadingMessage}</>;
     };
     const loadingOverlayComponentParams = useMemo(() => {
