@@ -13,7 +13,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
 import { Edge } from 'reactflow';
 import { isNetworkModificationNode } from './util/model-functions';
-import { AbstractNode, NetworkModificationNode, RootNode } from './tree-node.type';
+import { NetworkModificationNode, RootNode } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
