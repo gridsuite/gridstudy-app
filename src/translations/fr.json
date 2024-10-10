@@ -508,7 +508,6 @@
     "Constraint": "Contrainte",
     "EquipmentType": "Type d'ouvrage",
     "selectionType": "Type de sélection",
-    "StaticVarCompensators": "CSPR",
     "loadType": "Type",
     "ConstantP": "P constant (MW)",
     "ConstantQ": "Q constant (MVar)",
