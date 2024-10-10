@@ -408,7 +408,7 @@ export const TABLES_DEFINITIONS = {
                 cellEditor: SelectCountryField,
                 cellRenderer: CountryCellRenderer,
                 valueSetter: (params: ValueSetterParams) => {
-                    params.data.country = params?.newValue?.countryCode;
+                    params.data.country = params?.newValue;
                     return params;
                 },
                 ...countryEnumFilterConfig,
