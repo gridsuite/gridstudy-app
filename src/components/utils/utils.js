@@ -190,6 +190,10 @@ export const computeSwitchedOnValue = (sectionCount, maximumSectionCount, linked
     return (linkedSwitchedOnValue / maximumSectionCount) * sectionCount;
 };
 
+export const computeQAtNominalV = (susceptance, nominalVoltage) => {
+    return Math.abs(susceptance * Math.pow(nominalVoltage, 2));
+};
+
 export const computeMaxQAtNominalV = (maxSucepctance, nominalVoltage) => {
     return Math.abs(maxSucepctance * Math.pow(nominalVoltage, 2));
 };
