@@ -842,6 +842,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(NETWORK_MODIFICATION_HANDLE_SUBTREE, (state, action: NetworkModificationHandleSubtreeAction) => {
         if (state.networkModificationTreeModel) {
+            console.log('debug', action.networkModificationTreeNodes);
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(
                 newModel,

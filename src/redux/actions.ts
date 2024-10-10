@@ -312,11 +312,11 @@ export function networkModificationTreeNodeMoved(
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {
-    networkModificationTreeNodes: CurrentTreeNode[];
+    networkModificationTreeNodes: CurrentTreeNode;
     parentNodeId: UUID;
 };
 export function networkModificationHandleSubtree(
-    networkModificationTreeNodes: CurrentTreeNode[],
+    networkModificationTreeNodes: CurrentTreeNode,
     parentNodeId: UUID
 ): NetworkModificationHandleSubtreeAction {
     return {
