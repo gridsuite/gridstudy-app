@@ -32,7 +32,6 @@ import {
     LOW_VOLTAGE_THRESHOLD,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
-    MAX_Q_AT_V_NOMINAL,
     MIN_SUSCEPTANCE,
     Q0,
     REACTIVE_POWER_SET_POINT,
@@ -102,7 +101,7 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [MAX_SUSCEPTANCE]?: number;
         [MIN_SUSCEPTANCE]?: number;
         [MAX_Q_AT_NOMINAL_V]?: number;
-        [MAX_Q_AT_V_NOMINAL]?: number;
+        [MIN_Q_AT_NOMINAL_V]?: number;
         [CHARACTERISTICS_CHOICE]?: string;
         [VOLTAGE_REGULATION_MODE]?: string;
         [VOLTAGE_REGULATION_TYPE]?: string;
@@ -317,7 +316,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 [CHARACTERISTICS_CHOICE]: characteristicsChoice,
                 [MAX_SUSCEPTANCE]: maxSusceptance,
                 [MIN_SUSCEPTANCE]: minSusceptance,
-                [MAX_Q_AT_V_NOMINAL]: maxQAtNominalV,
+                [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
                 [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
                 [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
                 [VOLTAGE_REGULATION_MODE]: voltageRegulationMode,

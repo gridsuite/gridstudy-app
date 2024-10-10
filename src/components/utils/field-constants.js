@@ -140,8 +140,6 @@ export const MAX_SUSCEPTANCE = 'maxSusceptance';
 export const MIN_SUSCEPTANCE = 'minSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 export const MIN_Q_AT_NOMINAL_V = 'minQAtNominalV';
-export const MAX_Q_AT_V_NOMINAL = 'maxQAtVnominal';
-export const MAXIMUM_SUSCEPTANCE = 'maximumSusceptance';
 //line
 export const G1 = 'g1';
 export const B0 = 'b0';
@@ -380,4 +378,5 @@ export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';
 export const LOW_VOLTAGE_THRESHOLD = 'lowVoltageThreshold';
 export const HIGH_VOLTAGE_THRESHOLD = 'highVoltageThreshold';
+export const CHARACTERISTICS_CHOICE_AUTOMATON = 'characteristicsChoiceAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';

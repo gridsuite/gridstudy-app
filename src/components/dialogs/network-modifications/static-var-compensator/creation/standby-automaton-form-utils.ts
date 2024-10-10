@@ -9,7 +9,7 @@ import {
     ADD_STAND_BY_AUTOMATON,
     AUTOMATON,
     B0,
-    CHARACTERISTICS_CHOICE,
+    CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
@@ -33,6 +33,7 @@ export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
         [HIGH_VOLTAGE_SET_POINT]: null,
         [LOW_VOLTAGE_THRESHOLD]: null,
         [HIGH_VOLTAGE_THRESHOLD]: null,
+        [CHARACTERISTICS_CHOICE_AUTOMATON]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [SLIDER_SUSCEPTANCE]: null,
         [SLIDER_Q_NOMINAL]: null,
         [B0]: null,
@@ -47,17 +48,17 @@ const requiredIfAddStandbyAutomaton = (yup: any) =>
     });
 
 const requiredWhenSusceptanceChoice = (schema: Schema) =>
-    schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE], {
-        is: (addStandbyAutomaton: boolean, characteristicsChoice: string) =>
-            addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+    schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+        is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+            addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
         then: (schema: any) => schema.required(),
         otherwise: (schema) => schema.notRequired(),
     });
 
 const requiredWhenQatNominalVChoice = (schema: Schema) =>
-    schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE], {
-        is: (addStandbyAutomaton: boolean, characteristicsChoice: string) =>
-            addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+    schema.when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
+        is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
+            addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         then: (schema) => schema.required(),
         otherwise: (schema) => schema.notRequired(),
     });

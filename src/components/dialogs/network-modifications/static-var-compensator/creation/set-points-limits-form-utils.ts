@@ -10,7 +10,7 @@ import {
     CHARACTERISTICS_CHOICES,
     EQUIPMENT,
     ID,
-    MAX_Q_AT_V_NOMINAL,
+    MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
@@ -32,7 +32,7 @@ export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {
         [MAX_SUSCEPTANCE]: null,
         [MIN_SUSCEPTANCE]: null,
-        [MAX_Q_AT_V_NOMINAL]: null,
+        [MAX_Q_AT_NOMINAL_V]: null,
         [MIN_Q_AT_NOMINAL_V]: null,
         [VOLTAGE_SET_POINT]: null,
         [REACTIVE_POWER_SET_POINT]: null,
@@ -70,7 +70,7 @@ export const getReactiveFormValidationSchema = () =>
     yup.object().shape({
         [MAX_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [MIN_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
-        [MAX_Q_AT_V_NOMINAL]: requiredWhenQatNominalVChoice(yup.number().nullable()),
+        [MAX_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
         [MIN_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
         [VOLTAGE_SET_POINT]: yup
             .number()
@@ -146,7 +146,7 @@ export const getReactiveFormData = ({
         [VOLTAGE_REGULATION_MODE]: regulationMode,
         [MAX_SUSCEPTANCE]: maxSusceptance,
         [MIN_SUSCEPTANCE]: minSusceptance,
-        [MAX_Q_AT_V_NOMINAL]:
+        [MAX_Q_AT_NOMINAL_V]:
             nominalV !== null && maxSusceptance !== null
                 ? computeQAtNominalV(maxSusceptance, nominalV)
                 : maxQAtNominalV,

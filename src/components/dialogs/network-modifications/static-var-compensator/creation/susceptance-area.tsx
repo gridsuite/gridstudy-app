@@ -10,8 +10,9 @@ import {
     AUTOMATON,
     B0,
     CHARACTERISTICS_CHOICE,
+    CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
-    MAX_Q_AT_V_NOMINAL,
+    MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
@@ -34,7 +35,7 @@ export const SusceptanceArea = () => {
     const minS = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_SUSCEPTANCE}` });
     const maxS = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_SUSCEPTANCE}` });
     const minQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_Q_AT_NOMINAL_V}` });
-    const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_V_NOMINAL}` });
+    const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_NOMINAL_V}` });
 
     useEffect(() => {
         const avgSfixeValue =
@@ -47,7 +48,8 @@ export const SusceptanceArea = () => {
                 : (parseFloat(minQ) + parseFloat(maxQ)) / 2;
         setValue(`${id}.${SLIDER_SUSCEPTANCE}`, avgSfixeValue);
         setValue(`${id}.${SLIDER_Q_NOMINAL}`, avgQfixeValue);
-    }, [setValue, minS, minQ, maxS, maxQ, id]);
+        setValue(`${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}`, watchChoiceAutomaton);
+    }, [setValue, minS, minQ, maxS, maxQ, id, watchChoiceAutomaton]);
 
     const onSliderSusceptanceChange = (value?: number) => {
         setValue(`${id}.${B0}`, value);
