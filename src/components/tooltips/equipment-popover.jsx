@@ -111,14 +111,14 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                                     {formatValue(
                                         Math.round(
                                             side === '1'
-                                                ? (Math.abs(equipmentInfo.i1) * 100) / currentLimits.permanentLimit
-                                                : (Math.abs(equipmentInfo.i2) * 100) / currentLimits.permanentLimit
+                                                ? (Math.abs(equipmentInfo?.i1) * 100) / currentLimits.permanentLimit
+                                                : (Math.abs(equipmentInfo?.i2) * 100) / currentLimits.permanentLimit
                                         )
                                     )}
                                 </TableCell>
                                 <TableCell sx={styles.tableCells}>
                                     {formatValue(
-                                        side === '1' ? equipmentInfo.voltageLevelId1 : equipmentInfo.voltageLevelId2
+                                        side === '1' ? equipmentInfo?.voltageLevelId1 : equipmentInfo?.voltageLevelId2
                                     )}
                                 </TableCell>
                             </TableRow>
@@ -144,20 +144,20 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                                                 {side === '1'
                                                     ? formatValue(
                                                           Math.round(
-                                                              (Math.abs(equipmentInfo.i1) * 100) / temporaryLimit.value
+                                                              (Math.abs(equipmentInfo?.i1) * 100) / temporaryLimit.value
                                                           )
                                                       )
                                                     : formatValue(
                                                           Math.round(
-                                                              (Math.abs(equipmentInfo.i2) * 100) / temporaryLimit.value
+                                                              (Math.abs(equipmentInfo?.i2) * 100) / temporaryLimit.value
                                                           )
                                                       )}
                                             </TableCell>
                                             <TableCell sx={styles.tableCells}>
                                                 {formatValue(
                                                     side === '1'
-                                                        ? equipmentInfo.voltageLevelId1
-                                                        : equipmentInfo.voltageLevelId2
+                                                        ? equipmentInfo?.voltageLevelId1
+                                                        : equipmentInfo?.voltageLevelId2
                                                 )}
                                             </TableCell>
                                         </TableRow>
@@ -306,10 +306,10 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                                                         })}
                                                     </TableCell>
                                                     <TableCell sx={styles.tableCells}>
-                                                        {formatValue(equipmentInfo.voltageLevelId1)}
+                                                        {formatValue(equipmentInfo?.voltageLevelId1)}
                                                     </TableCell>
                                                     <TableCell sx={styles.tableCells}>
-                                                        {formatValue(equipmentInfo.voltageLevelId2)}
+                                                        {formatValue(equipmentInfo?.voltageLevelId2)}
                                                     </TableCell>
                                                 </TableRow>
                                             </TableHead>
@@ -325,14 +325,14 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                                                             opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                                         })}
                                                     >
-                                                        {formatValue(Math.round(equipmentInfo.i1))}
+                                                        {formatValue(Math.round(equipmentInfo?.i1))}
                                                     </TableCell>
                                                     <TableCell
                                                         sx={mergeSx(styles.tableCells, {
                                                             opacity: loadFlowStatus === RunningStatus.SUCCEED ? 1 : 0.2,
                                                         })}
                                                     >
-                                                        {formatValue(Math.round(equipmentInfo.i2))}
+                                                        {formatValue(Math.round(equipmentInfo?.i2))}
                                                     </TableCell>
                                                 </TableRow>
                                             </TableBody>
@@ -368,8 +368,8 @@ const EquipmentPopover = ({ studyUuid, anchorEl, equipmentId, equipmentType, loa
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
-                                                {generateRows(equipmentInfo.currentLimits1, '1')}
-                                                {generateRows(equipmentInfo.currentLimits2, '2')}
+                                                {generateRows(equipmentInfo?.currentLimits1, '1')}
+                                                {generateRows(equipmentInfo?.currentLimits2, '2')}
                                             </TableBody>
                                         </Table>
                                     </TableContainer>

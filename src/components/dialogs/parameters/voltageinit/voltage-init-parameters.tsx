@@ -22,14 +22,13 @@ import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
-import { getVoltageInitStudyParameters, updateVoltageInitParameters } from '../../../../services/study/voltage-init';
+import { updateVoltageInitParameters } from '../../../../services/study/voltage-init';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import {
     fromStudyVoltageInitParamsDataToFormValues,
     fromVoltageInitParametersFormToParamValues,
     fromVoltageInitParamsDataToFormValues,
-    VoltageInitParam,
 } from './voltage-init-utils';
 import { getVoltageInitParameters } from 'services/voltage-init';
 import { mergeSx } from 'components/utils/functions';
@@ -75,26 +74,13 @@ export const VoltageInitParameters = ({
         updateVoltageInitParameters(
             studyUuid,
             fromVoltageInitParametersFormToParamValues(initialVoltageInitParametersForm)
-        )
-            .then(() => {
-                return getVoltageInitStudyParameters(studyUuid)
-                    .then((params: VoltageInitParam) => {
-                        setVoltageInitParams(params);
-                    })
-                    .catch((error) => {
-                        snackError({
-                            messageTxt: error.message,
-                            headerId: 'paramsRetrievingError',
-                        });
-                    });
-            })
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'paramsChangingError',
-                });
+        ).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'paramsChangingError',
             });
-    }, [studyUuid, setVoltageInitParams, snackError]);
+        });
+    }, [studyUuid, snackError]);
 
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TabValue[]>([]);
 

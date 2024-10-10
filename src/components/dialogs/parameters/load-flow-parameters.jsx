@@ -415,7 +415,6 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         },
     ];
 
-    const [specificCurrentParams, setSpecificCurrentParams] = useState(params['specificParametersPerProvider']);
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const { snackError } = useSnackMessage();
@@ -429,24 +428,22 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         let specParamsToSave;
         if (specificParamDescr.defaultValue !== newValue) {
             specParamsToSave = {
-                ...specificCurrentParams,
+                ...params.specificParametersPerProvider,
                 [provider]: {
-                    ...specificCurrentParams[provider],
+                    ...params.specificParametersPerProvider[provider],
                     [specificParamDescr.name]: newValue,
                 },
             };
         } else {
-            const { [specificParamDescr.name]: value, ...otherProviderParams } = specificCurrentParams[provider] || {};
+            const { [specificParamDescr.name]: value, ...otherProviderParams } =
+                params.specificParametersPerProvider[provider] || {};
             specParamsToSave = {
-                ...specificCurrentParams,
+                ...params.specificParametersPerProvider,
                 [provider]: otherProviderParams,
             };
         }
 
-        setSpecificCurrentParams(specParamsToSave);
-
-        const commitParameters = fusionSpecificWithOtherParams(params, specParamsToSave);
-        updateParameters(commitParameters);
+        updateParameters(fusionSpecificWithOtherParams(params, specParamsToSave));
     };
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
@@ -469,19 +466,8 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     );
 
     const resetLfParametersAndLfProvider = useCallback(() => {
-        setSpecificCurrentParams({});
         resetParameters().then(resetProvider);
     }, [resetParameters, resetProvider]);
-
-    const resetLfParameters = useCallback(() => {
-        setSpecificCurrentParams((prevCurrentParameters) => {
-            return {
-                ...prevCurrentParameters,
-                [provider]: {},
-            };
-        });
-        resetParameters();
-    }, [resetParameters, provider]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
     useEffect(() => {
@@ -507,7 +493,6 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                         };
                         const commitParameters = fusionSpecificWithOtherParams(parameters, specParamsToSave);
                         updateParameters(commitParameters);
-                        setSpecificCurrentParams(specParamsToSave);
                     })
                     .catch((error) => {
                         console.error(error);
@@ -580,8 +565,8 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
 
     const { reset } = formMethods;
     useEffect(() => {
-        reset(toFormValuesLimitReductions(params?.limitReductions));
-    }, [params?.limitReductions, reset]);
+        reset(toFormValuesLimitReductions(params.limitReductions));
+    }, [params.limitReductions, reset]);
 
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
@@ -671,7 +656,9 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                         specificParamsDescription={
                                                             specificParamsDescrWithoutNanVals[provider]
                                                         }
-                                                        specificCurrentParams={specificCurrentParams[provider]}
+                                                        specificCurrentParams={
+                                                            params.specificParametersPerProvider[provider] || {}
+                                                        }
                                                         onSpecificParamChange={onSpecificParamChange}
                                                     />
                                                 </>
@@ -692,9 +679,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                         sx={{ width: '100%' }}
                                                     >
                                                         {params.limitReductions !== null ? (
-                                                            <LimitReductionsTableForm
-                                                                limits={params?.limitReductions}
-                                                            />
+                                                            <LimitReductionsTableForm limits={params.limitReductions} />
                                                         ) : (
                                                             <ParameterLineSlider
                                                                 paramNameId={PARAM_LIMIT_REDUCTION}
@@ -725,7 +710,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                             />
                             <LabelledButton callback={() => setOpenCreateParameterDialog(true)} label="save" />
                             <LabelledButton callback={resetLfParametersAndLfProvider} label="resetToDefault" />
-                            <LabelledButton callback={resetLfParameters} label="resetProviderValuesToDefault" />
+                            <LabelledButton callback={resetParameters} label="resetProviderValuesToDefault" />
                             <SubmitButton onClick={handleSubmit(updateLimitReductions)} variant="outlined">
                                 <FormattedMessage id="validate" />
                             </SubmitButton>

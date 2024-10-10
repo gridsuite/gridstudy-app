@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckboxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import SaveIcon from '@mui/icons-material/Save';
 import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import ByFormulaDialog from 'components//dialogs/network-modifications/by-formula/by-formula-dialog';
+
 import BatteryCreationDialog from 'components/dialogs/network-modifications/battery/creation/battery-creation-dialog';
 import BatteryModificationDialog from 'components/dialogs/network-modifications/battery/modification/battery-modification-dialog';
 import DeleteAttachingLineDialog from 'components/dialogs/network-modifications/delete-attaching-line/delete-attaching-line-dialog';
@@ -73,7 +73,6 @@ import { FetchStatus } from '../../../services/utils';
 import CreateCompositeModificationDialog, {
     ICompositeCreateModificationDialog,
 } from '../../dialogs/create-composite-modification-dialog';
-import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter-deletion/by-filter-deletion-dialog';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import {
     MenuDefinition,
@@ -85,6 +84,9 @@ import {
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
 import { SwitchNetworkModificationActive } from './switch-network-modification-active';
+import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
+import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
+import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -380,6 +382,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.BY_FORMULA_MODIFICATION.type,
                     label: 'BY_FORMULA',
                     action: () => withDefaultParams(ByFormulaDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.MODIFICATION_BY_ASSIGNMENT.type,
+                    label: 'BY_FILTER',
+                    action: () => withDefaultParams(ModificationByAssignmentDialog),
                 },
             ],
         },
@@ -879,7 +886,7 @@ const NetworkModificationNodeEditor = () => {
 
     const renderNetworkModificationsList = () => {
         return (
-            <CheckboxList
+            <CheckBoxList
                 sx={{
                     items: (modification) => ({
                         label: {

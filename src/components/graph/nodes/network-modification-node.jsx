@@ -7,7 +7,7 @@
 
 import React from 'react';
 import Button from '@mui/material/Button';
-import { Handle } from 'react-flow-renderer';
+import { Handle } from 'reactflow';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
@@ -130,7 +130,6 @@ const NetworkModificationNode = (props) => {
     const selectionForCopy = useSelector((state) => state.selectionForCopy);
 
     const isSelectedNode = () => {
-        // TODO This is a hack, when ReactFlow v10 is available, we should remove this.
         return props.id === currentNode?.id;
     };
 
