@@ -23,6 +23,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
+import { AgGridReact } from 'ag-grid-react';
 
 export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> = ({
     result,
@@ -32,7 +33,7 @@ export const LimitViolationResult: FunctionComponent<LimitViolationResultProps> 
 }) => {
     const theme = useTheme();
     const intl = useIntl();
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact>(null);
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 

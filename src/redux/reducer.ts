@@ -451,9 +451,9 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allDisplayedColumnsNames: UnknownArray;
-    allLockedColumnsNames: UnknownArray;
-    allReorderedTableDefinitionIndexes: UnknownArray;
+    allDisplayedColumnsNames: string[];
+    allLockedColumnsNames: string[];
+    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;

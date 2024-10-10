@@ -23,6 +23,7 @@ import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { formatComponentResult } from './load-flow-result-utils';
+import { AgGridReact } from 'ag-grid-react';
 
 export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result, isLoadingResult, columnDefs }) => {
     const theme = useTheme();
@@ -30,7 +31,7 @@ export const LoadFlowResult: FunctionComponent<LoadflowResultProps> = ({ result,
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact>(null);
 
     const openLoaderStatusTab = useOpenLoaderShortWait({
         isLoading:

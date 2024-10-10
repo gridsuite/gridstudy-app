@@ -346,6 +346,7 @@ const GeneratorModificationDialog = ({
             modifyGenerator({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 generatorId: selectedId,
                 name: sanitizeString(generator[EQUIPMENT_NAME]),
                 energySource: generator[ENERGY_SOURCE],
@@ -362,7 +363,6 @@ const GeneratorModificationDialog = ({
                 connectionDirection: generator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: generator[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: generator[CONNECTIVITY]?.[CONNECTED],
-                modificationId: editData?.uuid,
                 qPercent: generator[Q_PERCENT],
                 plannedActivePowerSetPoint: generator[PLANNED_ACTIVE_POWER_SET_POINT],
                 marginalCost: generator[MARGINAL_COST],

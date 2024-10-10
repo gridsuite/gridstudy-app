@@ -139,11 +139,10 @@ const SubstationModificationDialog = ({
             modifySubstation({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 id: selectedId,
                 name: sanitizeString(substation[EQUIPMENT_NAME]),
                 country: substation[COUNTRY],
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
                 properties: toModificationProperties(substation),
             }).catch((error) => {
                 snackError({
