@@ -4,18 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
-import WaitingLoader from '../utils/waiting-loader';
 import ReportTree from './report-tree';
 import ReportItem from './report-item';
-import { getDefaultSeverityFilter } from '../../utils/report-severity.utils';
-import { useReportFetcher } from '../../hooks/use-report-fetcher';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
-import { useDispatch, useSelector } from 'react-redux';
-import { setReportFilters } from '../../redux/actions';
+import { useDispatch } from 'react-redux';
+import PropTypes from 'prop-types';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -29,14 +26,12 @@ export default function ReportViewer({ report, reportType }) {
     const dispatch = useDispatch();
 
     const [expandedTreeReports, setExpandedTreeReports] = useState([]);
-    const [logs, setLogs] = useState(null);
     const [highlightedReportId, setHighlightedReportId] = useState();
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
-    const [isLogLoading, , fetchReportLogs] = useReportFetcher(reportType);
 
-    const selectedReportId = useSelector((state) => state.reportSelectedReportId);
-    const severityFilter = useSelector((state) => state.reportSeverityFilter);
-    const messageFilter = useSelector((state) => state.reportMessageFilter);
+    const [selectedReportId, setSelectedReportId] = useState(report?.id);
+    const [severities, setSeverities] = useState([]);
+    const [selectedReportType, setSelectedReportType] = useState();
 
     const reportTreeData = useRef({});
     const treeView = useRef(null);
@@ -60,43 +55,13 @@ export default function ReportViewer({ report, reportType }) {
         );
     }, []);
 
-    const refreshLogsOnSelectedReport = useCallback(
-        (selectedReportId, severityFilter, messageFilter) => {
-            //we need to do this check because selectedReportId can be outdated when switching between the different place we have this component
-            if (reportTreeData.current[selectedReportId] != null) {
-                let severityList = [];
-                for (const [severity, selected] of Object.entries(severityFilter)) {
-                    if (selected) {
-                        severityList.push(severity);
-                    }
-                }
-                if (severityList.length === 0) {
-                    setLogs([]);
-                    setHighlightedReportId(null);
-                    return;
-                }
-                fetchReportLogs(
-                    selectedReportId,
-                    severityList,
-                    reportTreeData.current[selectedReportId].type,
-                    messageFilter
-                ).then((reportLogs) => {
-                    setLogs(reportLogs);
-                });
-            }
-        },
-        [fetchReportLogs]
-    );
-
-    useEffect(() => {
-        refreshLogsOnSelectedReport(selectedReportId, severityFilter, messageFilter);
-    }, [messageFilter, severityFilter, selectedReportId, refreshLogsOnSelectedReport]);
-
     useEffect(() => {
         const reportTree = mapReportsTree(report);
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
-        dispatch(setReportFilters(report.id, '', getDefaultSeverityFilter(reportTree.severities)));
+        setSelectedReportId(report.id);
+        setSeverities(reportTree.severities);
+        setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
     const handleReportVerticalPositionFromTop = useCallback((node) => {
@@ -105,9 +70,9 @@ export default function ReportViewer({ report, reportType }) {
 
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
-            dispatch(
-                setReportFilters(reportId, '', getDefaultSeverityFilter(reportTreeData.current[reportId].severities))
-            );
+            setSelectedReportId(reportId);
+            setSeverities(reportTreeData.current[reportId].severities);
+            setSelectedReportType(reportTreeData.current[reportId].type);
         }
     };
 
@@ -164,11 +129,28 @@ export default function ReportViewer({ report, reportType }) {
                     </ReportTree>
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
-                    <WaitingLoader loading={isLogLoading} message={'loadingReport'}>
-                        <LogTable logs={logs} onRowClick={onLogRowClick} severityFilter={severityFilter} />
-                    </WaitingLoader>
+                    <LogTable
+                        selectedReportId={selectedReportId}
+                        reportType={reportType}
+                        reportNature={selectedReportType} // GlobalReport or NodeReport
+                        severities={severities}
+                        onRowClick={onLogRowClick}
+                    />
                 </Grid>
             </Grid>
         )
     );
 }
+
+ReportViewer.propTypes = {
+    report: PropTypes.shape({
+        id: PropTypes.string,
+        message: PropTypes.string,
+        highestSeverity: PropTypes.shape({
+            colorName: PropTypes.string,
+        }),
+        subReports: PropTypes.arrayOf(PropTypes.object),
+        severities: PropTypes.arrayOf(PropTypes.string),
+    }),
+    reportType: PropTypes.string.isRequired,
+};
