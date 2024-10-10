@@ -36,7 +36,7 @@ const NodeEditor = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyUuid = decodeURIComponent(useParams().studyUuid ?? '');
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
@@ -56,7 +56,7 @@ const NodeEditor = () => {
     };
 
     return (
-        <Box sx={styles.paper as any}>
+        <Box sx={styles.paper}>
             <EditableTitle
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}

@@ -19,6 +19,45 @@ import { AppState, CurrentTreeNode } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
+import { NodeType } from '../tree-node.type';
+
+type SubMenuItem = {
+    onRoot: boolean;
+    action: () => void;
+    id: string;
+    disabled?: boolean;
+};
+
+type MenuItem = {
+    onRoot: boolean;
+    action?: () => void;
+    id: string;
+    disabled?: boolean;
+    subMenuItems?: Record<string, SubMenuItem>;
+    sectionEnd?: boolean;
+};
+type NodeMenuItems = Record<string, MenuItem>;
+
+interface CreateNodeMenuProps {
+    position: { x: number; y: number };
+    handleNodeCreation: (element: CurrentTreeNode, type: NodeType, insertMode: NodeInsertModes) => void;
+    handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
+    handleClose: () => void;
+    handleBuildNode: (element: CurrentTreeNode) => void;
+    handleUnbuildNode: (element: CurrentTreeNode) => void;
+    handleExportCaseOnNode: (node: CurrentTreeNode) => void;
+    activeNode: CurrentTreeNode;
+    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: CopyType; allChildrenIds: string[] };
+    handleCopyNode: (nodeId: string) => void;
+    handleCutNode: (nodeId: UUID | null) => void;
+    handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
+    handleRemovalSubtree: (node: CurrentTreeNode) => void;
+    handleCutSubtree: (nodeId: UUID | null) => void;
+    handleCopySubtree: (nodeId: UUID) => void;
+    handlePasteSubtree: (referenceNodeId: string) => void;
+    handleOpenRestoreNodesDialog: (nodeId: UUID) => void;
+    disableRestoreNodes: boolean;
+}
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -42,12 +81,10 @@ export const getNodeChildren = (
     }
 };
 
-export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel, id: UUID) => {
+export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
-        const activeNodeDirectChildren = treeModel.treeNodes.filter(
-            (item: CurrentTreeNode) => item.data.parentNodeUuid === id
-        );
+        const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.data.parentNodeUuid === id);
         const allChildren: CurrentTreeNode[] = [];
         activeNodeDirectChildren.forEach((child) => {
             allChildren.push(child);
@@ -57,44 +94,6 @@ export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel, id:
         return allChildren.length;
     }
 };
-
-type SubMenuItem = {
-    onRoot: boolean;
-    action: () => void;
-    id: string;
-    disabled?: boolean;
-};
-
-type MenuItem = {
-    onRoot: boolean;
-    action?: () => void;
-    id: string;
-    disabled?: boolean;
-    subMenuItems?: Record<string, SubMenuItem>;
-    sectionEnd?: boolean;
-};
-type NodeMenuItems = Record<string, MenuItem>;
-
-interface CreateNodeMenuProps {
-    position: { x: number; y: number };
-    handleNodeCreation: (element: CurrentTreeNode, type: string, insertMode: NodeInsertModes) => void;
-    handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
-    handleClose: () => void;
-    handleBuildNode: (element: CurrentTreeNode) => void;
-    handleUnbuildNode: (element: { id: UUID }) => void;
-    handleExportCaseOnNode: (node: CurrentTreeNode) => void;
-    activeNode: CurrentTreeNode;
-    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: CopyType; allChildrenIds: string[] };
-    handleCopyNode: (nodeId: string) => void;
-    handleCutNode: (nodeId: UUID | null) => void;
-    handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
-    handleRemovalSubtree: (element: { id: UUID }) => void;
-    handleCutSubtree: (nodeId: UUID | null) => void;
-    handleCopySubtree: (nodeId: UUID) => void;
-    handlePasteSubtree: (referenceNodeId: string) => void;
-    handleOpenRestoreNodesDialog: (nodeId: UUID) => void;
-    disableRestoreNodes: boolean;
-}
 
 const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     position,
@@ -130,7 +129,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     }
 
     function createNetworkModificationNode(insertMode: NodeInsertModes) {
-        handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
+        handleNodeCreation(activeNode, NodeType.NETWORK_MODIFICATION, insertMode);
         handleClose();
     }
 
@@ -235,11 +234,11 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
     function isNodeHasChildren(node: CurrentTreeNode, treeModel: NetworkModificationTreeModel | null): boolean {
-        return treeModel?.treeNodes.some((item: CurrentTreeNode) => item.data.parentNodeUuid === node.id) ?? false;
+        return treeModel?.treeNodes.some((item) => item.data.parentNodeUuid === node.id) ?? false;
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
-        return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel!);
+        return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel);
     }
 
     const NODE_MENU_ITEMS: NodeMenuItems = {
@@ -359,18 +358,18 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
             onRoot: true,
             action: () => exportCaseOnNode(),
             id: 'exportCaseOnNode',
-            disabled: activeNode?.type !== 'ROOT' && !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
+            disabled: activeNode?.type !== NodeType.ROOT && !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
         },
     };
 
     const renderMenuItems = useCallback(
         (nodeMenuItems: NodeMenuItems) => {
             return Object.values(nodeMenuItems).map((item) => {
-                if (activeNode?.type === 'ROOT' && !item.onRoot) {
+                if (activeNode?.type === NodeType.ROOT && !item.onRoot) {
                     return undefined; // do not show this item in menu
                 }
                 if (item.subMenuItems === undefined) {
-                    const action = item.action || (() => {});
+                    const action = item.action ?? (() => {});
                     const disabled = item.disabled ?? false;
                     return <ChildMenuItem key={item.id} item={{ ...item, action, disabled }} />;
                 }
@@ -394,7 +393,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         },
         {
             nodeName: activeNode?.data?.label,
-            nodesNumber: getNodesFromSubTree(treeModel!, activeNode?.id),
+            nodesNumber: getNodesFromSubTree(treeModel, activeNode.id),
         }
     );
     const handleOnClose = useCallback(() => {

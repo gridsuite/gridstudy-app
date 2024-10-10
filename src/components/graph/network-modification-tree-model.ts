@@ -13,51 +13,12 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
 import { Edge } from 'reactflow';
 import { isNetworkModificationNode } from './util/model-functions';
-
-export enum NodeType {
-    ROOT = 'ROOT',
-    NETWORK_MODIFICATION = 'NETWORK_MODIFICATION',
-}
-
-export interface AbstractNode {
-    id: UUID;
-    name: string;
-    children: AbstractNode[];
-    childrenIds: UUID[];
-    description?: string;
-    readOnly?: boolean;
-    reportUuid?: UUID;
-    type: NodeType;
-}
-export interface NodeBuildStatus {
-    globalBuildStatus: BUILD_STATUS;
-    localBuildStatus: BUILD_STATUS;
-}
-
-export interface RootNode extends AbstractNode {
-    studyId: UUID;
-}
-
-export interface NetworkModificationNode extends AbstractNode {
-    modificationGroupUuid?: UUID;
-    variantId?: string;
-    modificationsToExclude?: UUID[];
-    loadFlowResultUuid?: UUID;
-    shortCircuitAnalysisResultUuid?: UUID;
-    oneBusShortCircuitAnalysisResultUuid?: UUID;
-    voltageInitResultUuid?: UUID;
-    securityAnalysisResultUuid?: UUID;
-    sensitivityAnalysisResultUuid?: UUID;
-    nonEvacuatedEnergyResultUuid?: UUID;
-    dynamicSimulationResultUuid?: UUID;
-    stateEstimationResultUuid?: UUID;
-    nodeBuildStatus?: NodeBuildStatus;
-}
+import { AbstractNode, NetworkModificationNode, RootNode } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
 const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
-    return nodes.reduce((acc: number, n) => {
+    return nodes.reduce((acc, n) => {
         if (n.data.parentNodeUuid === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
         }
@@ -135,7 +96,7 @@ export default class NetworkModificationTreeModel {
                 );
             });
             // create new edges between node and its children
-            newNode.childrenIds.forEach((childId: UUID) => {
+            newNode.childrenIds.forEach((childId) => {
                 filteredEdges.push({
                     id: 'e' + newNode.id + '-' + childId,
                     source: newNode.id,
@@ -161,7 +122,7 @@ export default class NetworkModificationTreeModel {
 
         // Add children of this node recursively
         if (newNode.children) {
-            newNode.children.forEach((child: AbstractNode) => {
+            newNode.children.forEach((child) => {
                 this.addChild(child, newNode.id, undefined, undefined);
             });
         }
@@ -170,7 +131,7 @@ export default class NetworkModificationTreeModel {
     // Remove nodes AND reparent their children
     // TODO: support the case where children are deleted too (no reparenting)
     removeNodes(deletedNodesUUIDs: UUID[]) {
-        deletedNodesUUIDs.forEach((nodeId: UUID) => {
+        deletedNodesUUIDs.forEach((nodeId) => {
             // get edges which have the deleted node as source or target
             const edges = this.treeEdges.filter((edge) => edge.source === nodeId || edge.target === nodeId);
             // From the edges array
@@ -196,12 +157,14 @@ export default class NetworkModificationTreeModel {
 
             // fix parentNodeUuid of children
             const nodeToDelete = this.treeNodes.find((el) => el.id === nodeId);
-
+            if (!nodeToDelete) {
+                return;
+            }
             const nextTreeNodes = filteredNodes.map((node) => {
                 if (node.data?.parentNodeUuid === nodeId) {
                     node.data = {
                         ...node.data,
-                        parentNodeUuid: nodeToDelete!.data?.parentNodeUuid,
+                        parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
                     };
                 }
                 return node;

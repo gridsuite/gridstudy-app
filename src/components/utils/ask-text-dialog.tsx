@@ -23,6 +23,16 @@ interface AskTextDialogProps {
     onClose: () => void;
 }
 
+/**
+ * Display a modal window asking for a single string
+ * @param title : string title of the modal box
+ * @param value : string initial value
+ * @param show : boolean modal showing
+ * @param onValidate : function called when validate button is pressed with the new string as parameter
+ * @param onClose : function called when exiting the box (and after onValidate)
+ * @returns {JSX.Element}
+ * @constructor
+ */
 export const AskTextDialog: FunctionComponent<AskTextDialogProps> = ({ title, value, show, onValidate, onClose }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

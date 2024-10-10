@@ -233,10 +233,7 @@ import {
     PARAM_USE_NAME,
     PARAMS_LOADED,
 } from '../utils/config-params';
-import NetworkModificationTreeModel, {
-    NetworkModificationNode,
-    RootNode,
-} from '../components/graph/network-modification-tree-model';
+import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
@@ -286,6 +283,7 @@ import { CopyType, StudyDisplayMode } from '../components/network-modification.t
 import { CustomEntry } from 'types/custom-columns.types';
 import { SeverityFilter } from '../types/report.type';
 import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
+import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -407,7 +405,7 @@ export type NadNodeMovement = {
 
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
-    nodeId: string | null;
+    nodeId: UUID | null;
     copyType: ValueOf<typeof CopyType> | null;
     allChildrenIds: string[] | null;
 };
@@ -865,7 +863,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
                 //we assume all the deleted nodes are contiguous, so the new parent selected will be the nearest upstream node.
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
-                const nextCurrentNodeUuid: UUID | undefined = newModel.treeNodes
+                const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
                     .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
@@ -1738,26 +1736,26 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
     return currentEquipments;
 }
 
-function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: UUID | undefined) {
+function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );
-    if (nextCurrentNode) {
-        //  we need to overwrite state.currentTreeNode to consider label change for example.
-        state.currentTreeNode = { ...nextCurrentNode };
-    }
+
+    //  we need to overwrite state.currentTreeNode to consider label change for example.
+    // @ts-ignore
+    state.currentTreeNode = { ...nextCurrentNode };
 }
 
 function unravelSubTree(
     treeModel: NetworkModificationTreeModel,
-    subtreeParentId: string,
+    subtreeParentId: UUID,
     node: NetworkModificationNode | RootNode | null
 ) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId as UUID, NodeInsertModes.After, undefined);
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After, undefined);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

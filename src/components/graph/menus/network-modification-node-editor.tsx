@@ -797,7 +797,7 @@ const NetworkModificationNodeEditor = () => {
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
                     });
                 })
-                .catch((error: Error) => {
+                .catch((error) => {
                     snackError({
                         messageTxt: error.message,
                     });
@@ -855,14 +855,13 @@ const NetworkModificationNodeEditor = () => {
         if (!modif) {
             return '';
         }
-        const label: string = intl.formatMessage(
+        return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
             {
                 ...modif,
                 ...computeLabel(modif),
             }
         );
-        return label;
     };
 
     const handleSecondaryAction = useCallback(

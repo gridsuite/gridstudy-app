@@ -16,7 +16,7 @@ import { getLocalStorageTheme } from '../../../redux/session-storage/local-stora
 import { BUILD_STATUS } from '../../network/constants';
 import { Box } from '@mui/system';
 import { Theme } from '@mui/material';
-import { AppState } from 'redux/reducer';
+import { AppState, TreeNodeData } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 import { UUID } from 'crypto';
 
@@ -130,12 +130,7 @@ const styles = {
 
 interface NetworkModificationNodeProps {
     id: UUID;
-    data: {
-        localBuildStatus: BUILD_STATUS;
-        globalBuildStatus: BUILD_STATUS;
-        label: string;
-        readOnly: boolean;
-    };
+    data: TreeNodeData;
 }
 
 const NetworkModificationNode = (props: NetworkModificationNodeProps) => {
@@ -158,7 +153,7 @@ const NetworkModificationNode = (props: NetworkModificationNodeProps) => {
         return isSelectedForCut() ? (getLocalStorageTheme() === LIGHT_THEME ? 0.3 : 0.6) : 'unset';
     };
 
-    function getStyleForBanner(buildStatus: BUILD_STATUS) {
+    function getStyleForBanner(buildStatus: BUILD_STATUS | undefined) {
         switch (buildStatus) {
             case BUILD_STATUS.BUILT:
                 return styles.buildBannerOK;
@@ -171,7 +166,7 @@ const NetworkModificationNode = (props: NetworkModificationNodeProps) => {
         }
     }
 
-    function getStyleForBottomBanner(buildStatus: BUILD_STATUS) {
+    function getStyleForBottomBanner(buildStatus: BUILD_STATUS | undefined) {
         switch (buildStatus) {
             case BUILD_STATUS.BUILT:
                 return styles.bottomBuildBannerOK;

@@ -60,9 +60,7 @@ export const EditableTitle: FunctionComponent<EditableTitleProps> = ({ name, onC
                 title={intl.formatMessage({ id: 'NewName' })}
                 value={name}
                 onValidate={(e) => {
-                    if (onChange) {
-                        onChange(e);
-                    }
+                    onChange?.(e);
                 }}
                 onClose={() => setOpenEditTitle(false)}
             />
