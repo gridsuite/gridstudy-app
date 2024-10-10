@@ -42,7 +42,8 @@ import {
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT, MIN_Q_AT_NOMINAL_V,
+    VOLTAGE_SET_POINT,
+    MIN_Q_AT_NOMINAL_V,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { FC, useCallback, useEffect, useState } from 'react';

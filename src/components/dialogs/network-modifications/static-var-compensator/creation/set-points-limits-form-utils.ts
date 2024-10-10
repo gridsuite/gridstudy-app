@@ -146,8 +146,14 @@ export const getReactiveFormData = ({
         [VOLTAGE_REGULATION_MODE]: regulationMode,
         [MAX_SUSCEPTANCE]: maxSusceptance,
         [MIN_SUSCEPTANCE]: minSusceptance,
-        [MAX_Q_AT_V_NOMINAL]: nominalV !== null ? computeQAtNominalV(maxSusceptance, nominalV) : maxQAtNominalV,
-        [MIN_Q_AT_NOMINAL_V]: nominalV !== null ? computeQAtNominalV(minSusceptance, nominalV) : minQAtNominalV,
+        [MAX_Q_AT_V_NOMINAL]:
+            nominalV !== null && maxSusceptance !== null
+                ? computeQAtNominalV(maxSusceptance, nominalV)
+                : maxQAtNominalV,
+        [MIN_Q_AT_NOMINAL_V]:
+            nominalV !== null && minSusceptance !== null
+                ? computeQAtNominalV(minSusceptance, nominalV)
+                : minQAtNominalV,
         [VOLTAGE_SET_POINT]: voltageSetpoint,
         [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
         [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
