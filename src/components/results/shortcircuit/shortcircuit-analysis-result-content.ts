@@ -33,6 +33,7 @@ export const FROM_COLUMN_TO_FIELD_ONE_BUS: Record<string, string> = {
     ...FROM_COLUMN_TO_FIELD,
     connectableId: 'connectableId',
     current: 'fortescueCurrent.positiveMagnitude',
+    side: 'side',
 };
 
 export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {

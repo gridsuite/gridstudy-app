@@ -185,18 +185,32 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             return;
         }
 
-        const filterTypes = ['fault-types', 'limit-violation-types'];
+        const allBusesFilterTypes = ['fault-types', 'limit-violation-types'];
+        const oneBusFilterTypes = ['branch-sides'];
+        const currentComputingType = isOneBusShortCircuitAnalysisType
+            ? computingType.SHORT_CIRCUIT_ONE_BUS
+            : computingType.SHORT_CIRCUIT;
+
+        const filterTypes = isOneBusShortCircuitAnalysisType ? oneBusFilterTypes : allBusesFilterTypes;
 
         const promises = filterTypes.map((filter) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.SHORT_CIRCUIT, filter)
+            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, currentComputingType, filter)
         );
 
         Promise.all(promises)
-            .then(([faultTypesResult, limitViolationTypesResult]) => {
-                setFilterEnums({
-                    limitType: limitViolationTypesResult,
-                    faultType: faultTypesResult,
-                });
+            .then((results) => {
+                if (isOneBusShortCircuitAnalysisType) {
+                    const [branchSidesResult] = results;
+                    setFilterEnums({
+                        side: branchSidesResult,
+                    });
+                } else {
+                    const [faultTypesResult, limitViolationTypesResult] = results;
+                    setFilterEnums({
+                        limitType: limitViolationTypesResult,
+                        faultType: faultTypesResult,
+                    });
+                }
             })
             .catch((err) =>
                 snackError({
@@ -204,7 +218,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [analysisStatus, intl, snackError, studyUuid, currentNode?.id]);
+    }, [analysisStatus, intl, snackError, isOneBusShortCircuitAnalysisType, studyUuid, currentNode?.id]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

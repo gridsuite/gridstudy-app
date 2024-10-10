@@ -13,6 +13,7 @@ import { downloadShortCircuitResultZippedCsv } from '../../../services/study/sho
 import { downloadZipFile } from '../../../services/utils';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { UUID } from 'crypto';
+import { BranchSide } from 'components/utils/constants';
 
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
@@ -47,6 +48,8 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
             'HIGH_VOLTAGE',
             'LOW_SHORT_CIRCUIT_CURRENT',
             'HIGH_SHORT_CIRCUIT_CURRENT',
+            BranchSide.ONE,
+            BranchSide.TWO,
             'OTHER',
         ];
 
