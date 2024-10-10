@@ -446,12 +446,7 @@ export const SelectCountryField = forwardRef(({ colDef }: EquipmentTableEditorPr
             options={countryCodes}
             getOptionLabel={(countryCode) => translate(countryCode)}
             style={{ width: '100%' }}
-            onChange={(event: any, newValue) => {
-                setValue({
-                    countryName: event?.target?.childNodes[0]?.data || '',
-                    countryCode: newValue,
-                });
-            }}
+            onChange={(_event, newValue) => setValue(newValue)}
             renderInput={(params) => <TextField {...params} label={<FormattedMessage id={'descLfAllCountries'} />} />}
         />
     );
