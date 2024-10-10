@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-    MAX_Q_AT_NOMINAL_V,
+    MAX_Q_AT_V_NOMINAL,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
@@ -55,14 +55,14 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
         <FloatInput name={`${id}.${MIN_SUSCEPTANCE}`} label={'minSusceptance'} adornment={SusceptanceAdornment} />
     );
     const maxSusceptanceField = (
-        <FloatInput name={`${id}.${MAX_SUSCEPTANCE}`} label={'maxSusceptance'} adornment={SusceptanceAdornment} />
+        <FloatInput name={`${id}.${MAX_SUSCEPTANCE}`} label={'maximumSusceptance'} adornment={SusceptanceAdornment} />
     );
 
     const minQAtNominalVField = (
         <FloatInput name={`${id}.${MIN_Q_AT_NOMINAL_V}`} label={'minQAtNominalV'} adornment={ReactivePowerAdornment} />
     );
     const maxQAtNominalVField = (
-        <FloatInput name={`${id}.${MAX_Q_AT_NOMINAL_V}`} label={'maxQAtNominalV'} adornment={ReactivePowerAdornment} />
+        <FloatInput name={`${id}.${MAX_Q_AT_V_NOMINAL}`} label={'maxQAtVnominal'} adornment={ReactivePowerAdornment} />
     );
 
     const voltageSetPointField = (

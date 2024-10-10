@@ -9,7 +9,7 @@ import {
     ADD_STAND_BY_AUTOMATON,
     AUTOMATON,
     B0,
-    CHARACTERISTICS_CHOICE_AUTOMATON,
+    CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
@@ -23,12 +23,10 @@ import {
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import yup from '../../../../utils/yup-config';
-import { computeQAtNominalV } from '../../../../utils/utils';
 
 export const getStandbyAutomatonEmptyFormData = (id = AUTOMATON) => ({
     [id]: {
         [ADD_STAND_BY_AUTOMATON]: false,
-        [CHARACTERISTICS_CHOICE_AUTOMATON]: CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [STAND_BY_AUTOMATON]: false,
         [LOW_VOLTAGE_SET_POINT]: null,
         [HIGH_VOLTAGE_SET_POINT]: null,
@@ -47,20 +45,6 @@ const requiredIfAddStandbyAutomaton = (yup: any) =>
         then: (schema: any) => schema.required(),
     });
 
-const requiredIfAddStandbyAutomatonAndSusceptanceChoice = (yup: any) =>
-    yup.nullable().when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
-        is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
-            addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
-        then: (schema: any) => schema.required(),
-    });
-
-const requiredIfAddStandbyAutomatonAndQaTNominalVChoice = (yup: any) =>
-    yup.nullable().when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE_AUTOMATON], {
-        is: (addStandbyAutomaton: boolean, characteristicsChoiceAutomaton: string) =>
-            addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
-        then: (schema: any) => schema.required(),
-    });
-
 export const getStandbyAutomatonFormValidationSchema = () =>
     yup.object().shape({
         [ADD_STAND_BY_AUTOMATON]: yup.boolean().nullable(),
@@ -76,18 +60,28 @@ export const getStandbyAutomatonFormValidationSchema = () =>
         [HIGH_VOLTAGE_SET_POINT]: requiredIfAddStandbyAutomaton(yup.number()),
         [LOW_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number()),
         [HIGH_VOLTAGE_THRESHOLD]: requiredIfAddStandbyAutomaton(yup.number()),
-        [CHARACTERISTICS_CHOICE_AUTOMATON]: requiredIfAddStandbyAutomaton(yup.string()),
-        [B0]: requiredIfAddStandbyAutomatonAndSusceptanceChoice(yup.number()),
-        [Q0]: requiredIfAddStandbyAutomatonAndQaTNominalVChoice(yup.number()),
-        [SLIDER_SUSCEPTANCE]: requiredIfAddStandbyAutomatonAndSusceptanceChoice(yup.number()),
-        [SLIDER_Q_NOMINAL]: requiredIfAddStandbyAutomatonAndQaTNominalVChoice(yup.number()),
+        [B0]: yup
+            .number()
+            .nullable()
+            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE], {
+                is: (addStandbyAutomaton: boolean, characteristicsChoice: string) =>
+                    addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
+                then: (schema) => schema.required(),
+            }),
+        [Q0]: yup
+            .number()
+            .nullable()
+            .when([ADD_STAND_BY_AUTOMATON, CHARACTERISTICS_CHOICE], {
+                is: (addStandbyAutomaton: boolean, characteristicsChoice: string) =>
+                    addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+                then: (schema) => schema.required(),
+            }),
     });
 
 export const getStandbyAutomatonFormData = ({
     addStandbyAutomaton,
     standby,
     b0,
-    nominalV,
     q0,
     lVoltageSetpoint,
     hVoltageSetpoint,
@@ -111,11 +105,7 @@ export const getStandbyAutomatonFormData = ({
         [HIGH_VOLTAGE_SET_POINT]: hVoltageSetpoint,
         [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
         [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
-        [CHARACTERISTICS_CHOICE_AUTOMATON]:
-            b0 != null ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
         [B0]: b0,
-        [Q0]: q0 ?? computeQAtNominalV(b0, nominalV),
-        [SLIDER_SUSCEPTANCE]: b0,
-        [SLIDER_Q_NOMINAL]: q0 ?? computeQAtNominalV(b0, nominalV),
+        [Q0]: q0,
     },
 });

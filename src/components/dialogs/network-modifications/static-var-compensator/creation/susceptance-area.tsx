@@ -9,9 +9,9 @@ import Grid from '@mui/material/Grid';
 import {
     AUTOMATON,
     B0,
-    CHARACTERISTICS_CHOICE_AUTOMATON,
+    CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
-    MAX_Q_AT_NOMINAL_V,
+    MAX_Q_AT_V_NOMINAL,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
@@ -30,11 +30,11 @@ import { FormattedMessage } from 'react-intl';
 export const SusceptanceArea = () => {
     const id = AUTOMATON;
     const { setValue } = useFormContext();
-    const watchChoiceAutomaton = useWatch({ name: `${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}` });
+    const watchChoiceAutomaton = useWatch({ name: `${SETPOINTS_LIMITS}.${CHARACTERISTICS_CHOICE}` });
     const minS = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_SUSCEPTANCE}` });
     const maxS = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_SUSCEPTANCE}` });
     const minQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_Q_AT_NOMINAL_V}` });
-    const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_NOMINAL_V}` });
+    const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_V_NOMINAL}` });
 
     useEffect(() => {
         const avgSfixeValue =
@@ -74,7 +74,7 @@ export const SusceptanceArea = () => {
     const maxSusceptanceField = (
         <TextField
             value={maxS}
-            label={<FormattedMessage id={'maxSusceptance'} />}
+            label={<FormattedMessage id={'maximumSusceptance'} />}
             disabled={true}
             size={'small'}
             InputProps={{
@@ -109,13 +109,15 @@ export const SusceptanceArea = () => {
 
     const susceptanceField = <FloatInput name={`${id}.${B0}`} label="b0" adornment={SusceptanceAdornment} />;
 
-    const qAtNominalVField = <FloatInput name={`${id}.${Q0}`} label="q0Fixe" adornment={ReactivePowerAdornment} />;
+    const qAtNominalVField = (
+        <FloatInput name={`${id}.${Q0}`} label="ConstantQWithoutUnit" adornment={ReactivePowerAdornment} />
+    );
 
     const sliderS = (
         <SliderInput
             name={`${id}.${SLIDER_SUSCEPTANCE}`}
-            min={Number.isNaN(parseFloat(minS)) ? 0 : parseFloat(minS)}
-            max={Number.isNaN(parseFloat(maxS)) ? 0 : parseFloat(maxS)}
+            min={parseFloat(minS)}
+            max={parseFloat(maxS)}
             step={0.1}
             onValueChanged={onSliderSusceptanceChange}
         />
@@ -123,31 +125,33 @@ export const SusceptanceArea = () => {
     const sliderQ = (
         <SliderInput
             name={`${id}.${SLIDER_Q_NOMINAL}`}
-            min={Number.isNaN(parseFloat(minQ)) ? 0 : parseFloat(minQ)}
-            max={Number.isNaN(parseFloat(maxQ)) ? 0 : parseFloat(maxQ)}
+            min={parseFloat(minQ)}
+            max={parseFloat(maxQ)}
             step={0.1}
             onValueChanged={onSliderQnomChange}
         />
     );
 
+    const sliderSDisable = Number.isNaN(parseFloat(minS)) || Number.isNaN(parseFloat(maxS));
+    const sliderQDisable = Number.isNaN(parseFloat(minQ)) || Number.isNaN(parseFloat(maxQ));
     return (
-        <>
+        <Grid container spacing={2} padding={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
-                <Grid container spacing={2} padding={2}>
+                <>
                     {gridItem(minSusceptanceField, 3)}
-                    {gridItem(sliderS, 3)}
+                    {!sliderSDisable && gridItem(sliderS, 3)}
                     {gridItem(maxSusceptanceField, 3)}
                     {gridItem(susceptanceField, 3)}
-                </Grid>
+                </>
             )}
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
-                <Grid container spacing={2} padding={2}>
+                <>
                     {gridItem(minQAtNominalVField, 3)}
-                    {gridItem(sliderQ, 3)}
+                    {!sliderQDisable && gridItem(sliderQ, 3)}
                     {gridItem(maxQAtNominalVField, 3)}
                     {gridItem(qAtNominalVField, 3)}
-                </Grid>
+                </>
             )}
-        </>
+        </Grid>
     );
 };

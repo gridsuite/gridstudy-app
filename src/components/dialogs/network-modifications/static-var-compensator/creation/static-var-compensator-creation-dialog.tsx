@@ -16,7 +16,6 @@ import {
     B0,
     BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     CONNECTED,
     CONNECTION_DIRECTION,
@@ -33,19 +32,17 @@ import {
     LOW_VOLTAGE_THRESHOLD,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
-    MIN_Q_AT_NOMINAL_V,
+    MAX_Q_AT_V_NOMINAL,
     MIN_SUSCEPTANCE,
     Q0,
     REACTIVE_POWER_SET_POINT,
     SETPOINTS_LIMITS,
-    SLIDER_Q_NOMINAL,
-    SLIDER_SUSCEPTANCE,
     STAND_BY_AUTOMATON,
     TYPE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_TYPE,
-    VOLTAGE_SET_POINT,
+    VOLTAGE_SET_POINT, MIN_Q_AT_NOMINAL_V,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { FC, useCallback, useEffect, useState } from 'react';
@@ -104,7 +101,7 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [MAX_SUSCEPTANCE]?: number;
         [MIN_SUSCEPTANCE]?: number;
         [MAX_Q_AT_NOMINAL_V]?: number;
-        [MIN_Q_AT_NOMINAL_V]?: number;
+        [MAX_Q_AT_V_NOMINAL]?: number;
         [CHARACTERISTICS_CHOICE]?: string;
         [VOLTAGE_REGULATION_MODE]?: string;
         [VOLTAGE_REGULATION_TYPE]?: string;
@@ -126,11 +123,8 @@ export type StaticVarCompensatorCreationSchemaForm = {
         [HIGH_VOLTAGE_SET_POINT]?: number;
         [LOW_VOLTAGE_THRESHOLD]?: number;
         [HIGH_VOLTAGE_THRESHOLD]?: number;
-        [CHARACTERISTICS_CHOICE_AUTOMATON]?: string;
         [B0]?: number;
         [Q0]?: number;
-        [SLIDER_SUSCEPTANCE]?: number;
-        [SLIDER_Q_NOMINAL]?: number;
     };
     // Properties
     [ADDITIONAL_PROPERTIES]?: Property[];
@@ -223,7 +217,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
                     standby: staticCompensator.standbyAutomatonInfos?.standby,
                     b0: staticCompensator.standbyAutomatonInfos?.b0,
-                    nominalV: staticCompensator.nominalV,
                     q0: null,
                     lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
                     hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
@@ -273,7 +266,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     addStandbyAutomaton: staticCompensator.standbyAutomatonOn,
                     standby: staticCompensator.standby,
                     b0: staticCompensator.b0 ?? null,
-                    nominalV: null,
                     q0: staticCompensator.q0 ?? null,
                     lVoltageSetpoint: staticCompensator.lowVoltageSetpoint ?? null,
                     hVoltageSetpoint: staticCompensator.highVoltageSetpoint ?? null,
@@ -324,7 +316,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 [CHARACTERISTICS_CHOICE]: characteristicsChoice,
                 [MAX_SUSCEPTANCE]: maxSusceptance,
                 [MIN_SUSCEPTANCE]: minSusceptance,
-                [MAX_Q_AT_NOMINAL_V]: maxQAtNominalV,
+                [MAX_Q_AT_V_NOMINAL]: maxQAtNominalV,
                 [MIN_Q_AT_NOMINAL_V]: minQAtNominalV,
                 [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
                 [VOLTAGE_REGULATION_MODE]: voltageRegulationMode,
@@ -341,7 +333,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 [HIGH_VOLTAGE_SET_POINT]: highVoltageSetpoint,
                 [LOW_VOLTAGE_THRESHOLD]: lowVoltageThreshold,
                 [HIGH_VOLTAGE_THRESHOLD]: highVoltageThreshold,
-                [CHARACTERISTICS_CHOICE_AUTOMATON]: characteristicsChoiceAutomaton,
                 [B0]: b0,
                 [Q0]: q0,
             } = automaton;
@@ -376,12 +367,8 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 addStandbyAutomaton ? highVoltageSetpoint : null,
                 addStandbyAutomaton ? lowVoltageThreshold : null,
                 addStandbyAutomaton ? highVoltageThreshold : null,
-                addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-                    ? b0
-                    : null,
-                addStandbyAutomaton && characteristicsChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
-                    ? q0
-                    : null,
+                addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? b0 : null,
+                addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? q0 : null,
                 !!editData,
                 editData?.uuid,
                 toModificationProperties(staticCompensator)
@@ -460,7 +447,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 PaperProps={{
                     sx: {
-                        height: '95vh', // we want the dialog height to be fixed even when switching tabs
+                        height: '75vh', // we want the dialog height to be fixed even when switching tabs
                     },
                 }}
                 {...dialogProps}

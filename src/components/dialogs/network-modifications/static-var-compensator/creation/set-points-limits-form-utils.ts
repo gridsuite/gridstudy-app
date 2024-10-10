@@ -10,7 +10,7 @@ import {
     CHARACTERISTICS_CHOICES,
     EQUIPMENT,
     ID,
-    MAX_Q_AT_NOMINAL_V,
+    MAX_Q_AT_V_NOMINAL,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
@@ -32,7 +32,7 @@ export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
     [id]: {
         [MAX_SUSCEPTANCE]: null,
         [MIN_SUSCEPTANCE]: null,
-        [MAX_Q_AT_NOMINAL_V]: null,
+        [MAX_Q_AT_V_NOMINAL]: null,
         [MIN_Q_AT_NOMINAL_V]: null,
         [VOLTAGE_SET_POINT]: null,
         [REACTIVE_POWER_SET_POINT]: null,
@@ -70,13 +70,13 @@ export const getReactiveFormValidationSchema = () =>
     yup.object().shape({
         [MAX_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
         [MIN_SUSCEPTANCE]: requiredWhenSusceptanceChoice(yup.number().nullable()),
-        [MAX_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
+        [MAX_Q_AT_V_NOMINAL]: requiredWhenQatNominalVChoice(yup.number().nullable()),
         [MIN_Q_AT_NOMINAL_V]: requiredWhenQatNominalVChoice(yup.number().nullable()),
         [VOLTAGE_SET_POINT]: yup
             .number()
             .nullable()
             .when([VOLTAGE_REGULATION_MODE], {
-                is: (characteristicsChoice: string) => characteristicsChoice === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
+                is: (voltageRegulationMode: string) => voltageRegulationMode === VOLTAGE_REGULATION_MODES.VOLTAGE.id,
                 then: (schema) => schema.required(),
                 otherwise: (schema) => schema.notRequired(),
             }),
@@ -84,8 +84,8 @@ export const getReactiveFormValidationSchema = () =>
             .number()
             .nullable()
             .when([VOLTAGE_REGULATION_MODE], {
-                is: (characteristicsChoice: string) =>
-                    characteristicsChoice === VOLTAGE_REGULATION_MODES.REACTIVE_POWER.id,
+                is: (voltageRegulationMode: string) =>
+                    voltageRegulationMode === VOLTAGE_REGULATION_MODES.REACTIVE_POWER.id,
                 then: (schema) => schema.required(),
                 otherwise: (schema) => schema.notRequired(),
             }),
@@ -146,7 +146,7 @@ export const getReactiveFormData = ({
         [VOLTAGE_REGULATION_MODE]: regulationMode,
         [MAX_SUSCEPTANCE]: maxSusceptance,
         [MIN_SUSCEPTANCE]: minSusceptance,
-        [MAX_Q_AT_NOMINAL_V]: nominalV !== null ? computeQAtNominalV(maxSusceptance, nominalV) : maxQAtNominalV,
+        [MAX_Q_AT_V_NOMINAL]: nominalV !== null ? computeQAtNominalV(maxSusceptance, nominalV) : maxQAtNominalV,
         [MIN_Q_AT_NOMINAL_V]: nominalV !== null ? computeQAtNominalV(minSusceptance, nominalV) : minQAtNominalV,
         [VOLTAGE_SET_POINT]: voltageSetpoint,
         [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,

@@ -131,7 +131,7 @@ export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
     REACTIVE_POWER: { id: 'REACTIVE_POWER', label: 'ReactivePowerRegulationText' },
-    OFF: { id: 'OFF', label: 'OffRegulationText' },
+    OFF: { id: 'OFF', label: 'Off' },
 };
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
@@ -140,6 +140,8 @@ export const MAX_SUSCEPTANCE = 'maxSusceptance';
 export const MIN_SUSCEPTANCE = 'minSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
 export const MIN_Q_AT_NOMINAL_V = 'minQAtNominalV';
+export const MAX_Q_AT_V_NOMINAL = 'maxQAtVnominal';
+export const MAXIMUM_SUSCEPTANCE = 'maximumSusceptance';
 //line
 export const G1 = 'g1';
 export const B0 = 'b0';
@@ -374,7 +376,6 @@ export const STAGES_DEFINITION_GENERATORS = 'generators';
 export const PMAX_PERCENTS = 'pMaxPercents';
 export const GENERATORS_LIMIT = 'generatorsCappings';
 export const ADD_STAND_BY_AUTOMATON = 'addStandbyAutomaton';
-export const CHARACTERISTICS_CHOICE_AUTOMATON = 'characteristicsChoiceAutomaton';
 export const LOW_VOLTAGE_SET_POINT = 'lowVoltageSetpoint';
 export const HIGH_VOLTAGE_SET_POINT = 'highVoltageSetpoint';
 export const LOW_VOLTAGE_THRESHOLD = 'lowVoltageThreshold';
