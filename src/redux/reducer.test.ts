@@ -22,6 +22,7 @@ import {
 } from './actions';
 import { DiagramType, ViewState } from '../components/diagrams/diagram-common';
 import { Reducer } from 'redux';
+import { UUID } from 'crypto';
 
 const reducer = appReducer as Reducer<Partial<AppState>, Actions>;
 
@@ -57,7 +58,7 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     // From initial values
     const initialState = { fullScreenDiagram: null };
     const expectedState = {
-        fullScreenDiagram: { id: '3', svgType: DiagramType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: '3' as UUID, svgType: DiagramType.VOLTAGE_LEVEL },
     };
 
     expect(reducer(initialState, setFullScreenDiagram('3', DiagramType.VOLTAGE_LEVEL))).toEqual(expectedState);
@@ -65,12 +66,12 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     // Changing the fullscreen diagram
     const initialState2 = {
         fullScreenDiagram: {
-            id: '6',
+            id: '6' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
     const expectedState2 = {
-        fullScreenDiagram: { id: '12', svgType: DiagramType.SUBSTATION },
+        fullScreenDiagram: { id: '12' as UUID, svgType: DiagramType.SUBSTATION },
     };
 
     expect(reducer(initialState2, setFullScreenDiagram('12', DiagramType.SUBSTATION))).toEqual(expectedState2);
@@ -78,7 +79,7 @@ test('reducer.SET_FULLSCREEN_DIAGRAM', () => {
     // Removing the fullscreen
     const initialState3 = {
         fullScreenDiagram: {
-            id: '18',
+            id: '18' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
@@ -93,7 +94,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '65',
+                id: '65' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
@@ -106,7 +107,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: '174',
+                id: '174' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -115,7 +116,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: '174',
+                id: '174' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
                 needsToBlink: true,
@@ -129,12 +130,12 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const initialState3 = {
         diagramStates: [
             {
-                id: '34',
+                id: '34' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '35',
+                id: '35' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -143,25 +144,25 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: '35',
+                id: '35' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '34',
+                id: '34' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
         ],
     };
 
-    expect(reducer(initialState3, openDiagram('34', DiagramType.SUBSTATION))).toEqual(expectedState3);
+    expect(reducer(initialState3, openDiagram('34' as UUID, DiagramType.SUBSTATION))).toEqual(expectedState3);
 
     // Open a SLD that is already pinned
     const initialState4 = {
         diagramStates: [
             {
-                id: '99',
+                id: '99' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -170,7 +171,7 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState4 = {
         diagramStates: [
             {
-                id: '99',
+                id: '99' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
                 needsToBlink: true,
@@ -178,13 +179,13 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
         ],
     };
 
-    expect(reducer(initialState4, openDiagram('99', DiagramType.VOLTAGE_LEVEL))).toEqual(expectedState4);
+    expect(reducer(initialState4, openDiagram('99' as UUID, DiagramType.VOLTAGE_LEVEL))).toEqual(expectedState4);
 
     // Open a SLD when a NAD with the same ID is already opened
     const initialState5 = {
         diagramStates: [
             {
-                id: '50',
+                id: '50' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -193,12 +194,12 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState5 = {
         diagramStates: [
             {
-                id: '50',
+                id: '50' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '50',
+                id: '50' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
@@ -211,32 +212,32 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const initialState6 = {
         diagramStates: [
             {
-                id: '101',
+                id: '101' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '102',
+                id: '102' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '103',
+                id: '103' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '104',
+                id: '104' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             }, // Should be minimized
             {
-                id: '105',
+                id: '105' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '106',
+                id: '106' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -245,37 +246,37 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState6 = {
         diagramStates: [
             {
-                id: '101',
+                id: '101' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '102',
+                id: '102' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '103',
+                id: '103' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '104',
+                id: '104' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '105',
+                id: '105' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '106',
+                id: '106' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '107',
+                id: '107' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             }, // The new SLD is the only opened SLD
@@ -288,12 +289,12 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const initialState7 = {
         diagramStates: [
             {
-                id: '82',
+                id: '82' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '83',
+                id: '83' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
@@ -303,17 +304,17 @@ test('reducer.OPEN_DIAGRAM.sld_specific', () => {
     const expectedState7 = {
         diagramStates: [
             {
-                id: '82',
+                id: '82' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '83',
+                id: '83' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '503',
+                id: '503' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -330,7 +331,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '37',
+                id: '37' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -343,7 +344,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: '18',
+                id: '18' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -352,7 +353,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: '18',
+                id: '18' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -365,7 +366,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const initialState3 = {
         diagramStates: [
             {
-                id: '51',
+                id: '51' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
@@ -374,7 +375,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: '51',
+                id: '51' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -387,7 +388,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const initialState4 = {
         diagramStates: [
             {
-                id: '74',
+                id: '74' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -396,12 +397,12 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const expectedState4 = {
         diagramStates: [
             {
-                id: '74',
+                id: '74' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '22',
+                id: '22' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -414,7 +415,7 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const initialState5 = {
         diagramStates: [
             {
-                id: '33',
+                id: '33' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
@@ -423,72 +424,72 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const expectedState5 = {
         diagramStates: [
             {
-                id: '33',
+                id: '33' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '44',
+                id: '44' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
     };
 
-    expect(reducer(initialState5, openDiagram('44', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState5);
+    expect(reducer(initialState5, openDiagram('44' as UUID, DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState5);
 
     // Open a NAD when there is no other NAD and an SLD is in fullscreen
     const initialState6 = {
         diagramStates: [
             {
-                id: '38',
+                id: '38' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
         ],
-        fullScreenDiagram: { id: '38', svgType: DiagramType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: '38' as UUID, svgType: DiagramType.VOLTAGE_LEVEL },
     };
     const expectedState6 = {
         diagramStates: [
             {
-                id: '38',
+                id: '38' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '28',
+                id: '28' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
         fullScreenDiagram: {
-            id: '28',
+            id: '28' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
 
-    expect(reducer(initialState6, openDiagram('28', DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState6);
+    expect(reducer(initialState6, openDiagram('28' as UUID, DiagramType.NETWORK_AREA_DIAGRAM))).toEqual(expectedState6);
 
     // Open a NAD when there is another opened NAD and an SLD is in fullscreen
     const initialState7 = {
         diagramStates: [
             {
-                id: '14',
+                id: '14' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
-                id: '14',
+                id: '14' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
         ],
-        fullScreenDiagram: { id: '14', svgType: DiagramType.VOLTAGE_LEVEL },
+        fullScreenDiagram: { id: '14' as UUID, svgType: DiagramType.VOLTAGE_LEVEL },
     };
     const expectedState7 = {
         diagramStates: [
             {
-                id: '14',
+                id: '14' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -498,13 +499,13 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
                 state: ViewState.OPENED,
             },
             {
-                id: '39',
+                id: '39' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
         ],
         fullScreenDiagram: {
-            id: '14',
+            id: '14' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
@@ -515,31 +516,31 @@ test('reducer.OPEN_DIAGRAM.nad_specific', () => {
     const initialState8 = {
         diagramStates: [
             {
-                id: '85',
+                id: '85' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
         fullScreenDiagram: {
-            id: '85',
+            id: '85' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
     const expectedState8 = {
         diagramStates: [
             {
-                id: '85',
+                id: '85' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
-                id: '79',
+                id: '79' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
         ],
         fullScreenDiagram: {
-            id: '85',
+            id: '85' as UUID,
             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
         },
     };
@@ -558,7 +559,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: '12',
+                id: '12' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -567,7 +568,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: '12',
+                id: '12' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
@@ -580,7 +581,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const initialState3 = {
         diagramStates: [
             {
-                id: '7',
+                id: '7' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
@@ -589,7 +590,7 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: '7',
+                id: '7' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
@@ -602,17 +603,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const initialState4 = {
         diagramStates: [
             {
-                id: '63',
+                id: '63' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '47',
+                id: '47' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '25',
+                id: '25' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -621,17 +622,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const expectedState4 = {
         diagramStates: [
             {
-                id: '63',
+                id: '63' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '47',
+                id: '47' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '25',
+                id: '25' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -644,17 +645,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const initialState5 = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '22',
+                id: '22' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -663,17 +664,17 @@ test('reducer.MINIMIZE_DIAGRAM.sld_specific', () => {
     const expectedState5 = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '22',
+                id: '22' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -688,32 +689,32 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
     const initialState = {
         diagramStates: [
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '200',
+                id: '200' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '200',
+                id: '200' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '4',
+                id: '4' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -722,32 +723,32 @@ test('reducer.MINIMIZE_DIAGRAM.nad_specific', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '200',
+                id: '200' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '200',
+                id: '200' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '4',
+                id: '4' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.MINIMIZED,
             },
@@ -762,12 +763,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const initialState = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
@@ -776,12 +777,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
@@ -794,12 +795,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
@@ -808,12 +809,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
@@ -826,17 +827,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const initialState3 = {
         diagramStates: [
             {
-                id: '31',
+                id: '31' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '32',
+                id: '32' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '33',
+                id: '33' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -845,17 +846,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: '31',
+                id: '31' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '32',
+                id: '32' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '33',
+                id: '33' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -868,27 +869,27 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const initialState4 = {
         diagramStates: [
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '20',
+                id: '20' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '30',
+                id: '30' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '40',
+                id: '40' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '50',
+                id: '50' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -897,27 +898,27 @@ test('reducer.TOGGLE_PIN_DIAGRAM.sld_specific', () => {
     const expectedState4 = {
         diagramStates: [
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '20',
+                id: '20' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '30',
+                id: '30' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '40',
+                id: '40' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '50',
+                id: '50' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -932,12 +933,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     const initialState = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
@@ -946,12 +947,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.OPENED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
@@ -964,17 +965,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
@@ -983,17 +984,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: '1',
+                id: '1' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '2',
+                id: '2' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -1006,17 +1007,17 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     const initialState3 = {
         diagramStates: [
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '4',
+                id: '4' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '5',
+                id: '5' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -1025,12 +1026,12 @@ test('reducer.TOGGLE_PIN_DIAGRAM.nad_specific', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
-                id: '4',
+                id: '4' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.MINIMIZED,
             },
@@ -1050,7 +1051,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
     const initialState = {
         diagramStates: [
             {
-                id: '6',
+                id: '6' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -1059,7 +1060,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '6',
+                id: '6' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -1072,12 +1073,12 @@ test('reducer.CLOSE_DIAGRAM', () => {
     const initialState2 = {
         diagramStates: [
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '54',
+                id: '54' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
@@ -1086,7 +1087,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
     const expectedState2 = {
         diagramStates: [
             {
-                id: '3',
+                id: '3' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
@@ -1099,22 +1100,22 @@ test('reducer.CLOSE_DIAGRAM', () => {
     const initialState3 = {
         diagramStates: [
             {
-                id: '32',
+                id: '32' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
-                id: '64',
+                id: '64' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
             {
-                id: '64',
+                id: '64' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '82',
+                id: '82' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.PINNED,
             },
@@ -1123,7 +1124,7 @@ test('reducer.CLOSE_DIAGRAM', () => {
     const expectedState3 = {
         diagramStates: [
             {
-                id: '64',
+                id: '64' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
@@ -1138,32 +1139,32 @@ test('reducer.CLOSE_DIAGRAMS', () => {
     const initialState = {
         diagramStates: [
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '20',
+                id: '20' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '30',
+                id: '30' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },
             {
-                id: '5',
+                id: '5' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.VOLTAGE_LEVEL,
                 state: ViewState.PINNED,
             },
             {
-                id: '10',
+                id: '10' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -1172,12 +1173,12 @@ test('reducer.CLOSE_DIAGRAMS', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '20',
+                id: '20' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '5',
+                id: '5' as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             },
@@ -1191,18 +1192,18 @@ test('reducer.STOP_DIAGRAM_BLINK', () => {
     const initialState = {
         diagramStates: [
             {
-                id: '102',
+                id: '102' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '202',
+                id: '202' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
                 needsToBlink: true,
             },
             {
-                id: '302',
+                id: '302' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
                 needsToBlink: true,
@@ -1212,17 +1213,17 @@ test('reducer.STOP_DIAGRAM_BLINK', () => {
     const expectedState = {
         diagramStates: [
             {
-                id: '102',
+                id: '102' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.MINIMIZED,
             },
             {
-                id: '202',
+                id: '202' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.PINNED,
             },
             {
-                id: '302',
+                id: '302' as UUID,
                 svgType: DiagramType.SUBSTATION,
                 state: ViewState.OPENED,
             },

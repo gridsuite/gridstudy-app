@@ -388,7 +388,7 @@ export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION'
 export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
 
 export type DiagramState = {
-    id: string;
+    id: UUID;
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
@@ -1180,7 +1180,7 @@ export const reducer = createReducer(initialState, (builder) => {
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
                 diagramStates.push({
-                    id: action.id,
+                    id: action.id as UUID,
                     svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     state: ViewState.OPENED,
                 });
@@ -1204,7 +1204,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // If the NAD to open is not already in the diagramStates, we add it.
                 if (diagramToOpenIndex < 0) {
                     diagramStates.push({
-                        id: action.id,
+                        id: action.id as UUID,
                         svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                         state: diagramStates[firstNadIndex].state,
                     });
@@ -1261,7 +1261,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 });
                 // And we add the new one.
                 diagramStates.push({
-                    id: action.id,
+                    id: action.id as UUID,
                     svgType: action.svgType,
                     state: ViewState.OPENED,
                 });
@@ -1288,7 +1288,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.diagramStates = diagramStatesWithoutNad.concat(
             uniqueIds.map((id) => ({
-                id: id,
+                id: id as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             }))

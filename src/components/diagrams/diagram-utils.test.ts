@@ -21,14 +21,14 @@ test('diagram-common.sortDiagrams', () => {
     ].sort(makeDiagramSorter(diagramStates));
 
     expect(table.length).toBe(7);
-    expect(table[0].align).toBe('left');
-    expect(table[0].id).toBe(3);
-    expect(table[1].align).toBe('left');
-    expect(table[1].id).toBe(2);
-    expect(table[2].align).toBe('right');
-    expect(table[2].id).toBe(4);
-    expect(table[3].align).toBe('right');
-    expect(table[3].id).toBe(1);
+    expect(table[0]!.align).toBe('left');
+    expect(table[0]!.id).toBe(3);
+    expect(table[1]!.align).toBe('left');
+    expect(table[1]!.id).toBe(2);
+    expect(table[2]!.align).toBe('right');
+    expect(table[2]!.id).toBe(4);
+    expect(table[3]!.align).toBe('right');
+    expect(table[3]!.id).toBe(1);
     expect(table[4]?.align).not.toBe('left');
     expect(table[4]?.align).not.toBe('right');
     expect(table[5]?.align).not.toBe('left');
