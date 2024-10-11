@@ -85,6 +85,7 @@ import { AgGridReact } from 'ag-grid-react';
 import {
     CellEditingStartedEvent,
     CellEditingStoppedEvent,
+    ColDef,
     ColumnMovedEvent,
     ColumnState,
     ICellRendererParams,
@@ -196,9 +197,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
 
-    const [columnData, setColumnData] = useState<any>([]);
+    const [columnData, setColumnData] = useState<ColDef[]>([]);
     const [customColumnData, setCustomColumnData] = useState<CustomColDef[]>([]);
-    const [mergedColumnData, setMergedColumnData] = useState<any>([]);
+    const [mergedColumnData, setMergedColumnData] = useState<ColDef[]>([]);
     const { createCustomColumn } = useCustomColumn(tabIndex);
 
     const globalFilterRef = useRef<any>();
