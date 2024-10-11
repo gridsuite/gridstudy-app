@@ -21,7 +21,7 @@ import {
 } from 'components/utils/field-constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { InputAdornment, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
@@ -34,10 +34,10 @@ export const SusceptanceArea = () => {
     const maxS = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_SUSCEPTANCE}` });
     const minQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MIN_Q_AT_NOMINAL_V}` });
     const maxQ = useWatch({ name: `${SETPOINTS_LIMITS}.${MAX_Q_AT_NOMINAL_V}` });
-
+    // CHARACTERISTICS_CHOICE_AUTOMATON used only to validate the schema (work around)
     useEffect(() => {
         setValue(`${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}`, watchChoiceAutomaton);
-    }, [setValue, minS, minQ, maxS, maxQ, id, watchChoiceAutomaton]);
+    }, [setValue, id, watchChoiceAutomaton]);
 
     const minSusceptanceField = (
         <TextField

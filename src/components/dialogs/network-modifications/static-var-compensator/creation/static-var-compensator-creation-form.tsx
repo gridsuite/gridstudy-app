@@ -6,7 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 
 import { gridItem } from '../../../dialogUtils';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';

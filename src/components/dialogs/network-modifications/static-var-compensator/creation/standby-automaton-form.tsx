@@ -23,7 +23,7 @@ import {
 import { CheckboxInput, FloatInput, SwitchInput } from '@gridsuite/commons-ui';
 import { SusceptanceAdornment, VoltageAdornment } from '../../../dialogUtils';
 import { Box } from '@mui/system';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';

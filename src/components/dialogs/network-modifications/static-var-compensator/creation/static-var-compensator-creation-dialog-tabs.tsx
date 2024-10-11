@@ -6,7 +6,7 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getTabStyle } from '../../../../utils/tab-utils';
 

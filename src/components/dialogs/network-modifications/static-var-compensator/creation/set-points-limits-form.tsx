@@ -29,7 +29,7 @@ import {
     VoltageAdornment,
 } from '../../../dialogUtils';
 import { useWatch } from 'react-hook-form';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { UUID } from 'crypto';
 import { REGULATION_TYPES } from '../../../../network/constants';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
