@@ -14,7 +14,11 @@ export const FetchStatus = {
     RUNNING: 'RUNNING',
 };
 
-export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
+export const getWsBase = () =>
+    document.baseURI
+        .replace(/^http:\/\//, 'ws://')
+        .replace(/^https:\/\//, 'wss://')
+        .replace(/:3004/, ':84');
 
 export const getRequestParamFromList = (params, paramName) => {
     return new URLSearchParams(params?.length ? params.map((param) => [paramName, param]) : []);
