@@ -12,7 +12,7 @@ import { NetworkModificationNode, NodeType, RootNode } from '../tree-node.type';
 
 export function convertNodetoReactFlowModelNode(
     node: NetworkModificationNode | RootNode,
-    parentNodeUuid: UUID | undefined
+    parentNodeUuid?: UUID
 ): CurrentTreeNode {
     // Use the type guard to safely access nodeBuildStatus
     const globalBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.globalBuildStatus : undefined;

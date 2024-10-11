@@ -39,8 +39,8 @@ export default class NetworkModificationTreeModel {
     addChild(
         newNode: NetworkModificationNode | RootNode,
         parentId: UUID,
-        insertMode: NodeInsertModes | undefined,
-        referenceNodeId: UUID | undefined
+        insertMode?: NodeInsertModes,
+        referenceNodeId?: UUID
     ) {
         // we have to keep a precise order of nodes in the array to avoid gettings children
         // nodes before their parents when building graph in dagre library which have uncontrolled results
@@ -123,7 +123,7 @@ export default class NetworkModificationTreeModel {
         // Add children of this node recursively
         if (newNode.children) {
             newNode.children.forEach((child) => {
-                this.addChild(child, newNode.id, undefined, undefined);
+                this.addChild(child, newNode.id);
             });
         }
     }
@@ -198,10 +198,10 @@ export default class NetworkModificationTreeModel {
 
     setTreeElements(elements: RootNode | NetworkModificationNode) {
         // handle root node
-        this.treeNodes.push(convertNodetoReactFlowModelNode(elements, undefined));
+        this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
         // handle root children
         elements.children.forEach((child) => {
-            this.addChild(child, elements.id, undefined, undefined);
+            this.addChild(child, elements.id);
         });
         this.setBuildingStatus();
     }

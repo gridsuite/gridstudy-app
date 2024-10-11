@@ -14,7 +14,7 @@ import { NodeType } from './tree-node.type';
 export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ rankdir: 'TB', align: 'UL' });
+    dagreGraph.setGraph({ align: 'UL' });
 
     nodes.forEach((node) => {
         dagreGraph.setNode(node.id, {
