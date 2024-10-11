@@ -356,10 +356,10 @@ export interface TreeNodeData {
     parentNodeUuid: UUID;
     label: string;
     description: string;
-    buildStatus: BUILD_STATUS;
+    globalBuildStatus: BUILD_STATUS;
     readonly: boolean;
 }
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID } & { data: TreeNodeData };
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;

@@ -28,8 +28,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     const theme = useTheme();
 
-    const [logs, setLogs] = useState([]);
-
     const dispatch = useDispatch();
 
     const [, , fetchReportLogs] = useReportFetcher(reportType);
@@ -42,8 +40,28 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
     const [rowData, setRowData] = useState(null);
 
-    // initialize the filter with the severities
+    const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
+    const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
+
+    const refreshLogsOnSelectedReport = useCallback(() => {
+        if (severityFilter?.length === 0) {
+            setRowData([]);
+            return;
+        }
+        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
+            const transformedLogs = reportLogs.map((log) => ({
+                severity: log.severity.name,
+                message: log.message,
+                parentId: log.parentId,
+                backgroundColor: log.severity.colorName,
+            }));
+            setSelectedRowIndex(-1);
+            setRowData(transformedLogs);
+        });
+    }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId]);
+
     useEffect(() => {
+        // initialize the filter with the severities
         if (filterSelector.length === 0 && severities?.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
@@ -56,26 +74,18 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 ])
             );
         }
-    }, [dispatch, filterSelector.length, reportType, severities]);
-
-    const severityList = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
-    const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
-
-    const refreshLogsOnSelectedReport = useCallback(() => {
-        if (severityList?.length === 0) {
-            setLogs([]);
-            return;
-        }
-        fetchReportLogs(selectedReportId, severityList, reportNature, messageFilter).then((reportLogs) => {
-            setLogs(reportLogs);
-        });
-    }, [fetchReportLogs, messageFilter, reportNature, severityList, selectedReportId]);
-
-    useEffect(() => {
         if (selectedReportId && reportNature) {
             refreshLogsOnSelectedReport();
         }
-    }, [selectedReportId, refreshLogsOnSelectedReport, reportNature]);
+    }, [
+        dispatch,
+        filterSelector.length,
+        reportType,
+        severities,
+        selectedReportId,
+        reportNature,
+        refreshLogsOnSelectedReport,
+    ]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -116,17 +126,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         [intl, updateFilter, filterSelector, severities]
     );
 
-    const generateTableRows = useCallback(() => {
-        return logs
-            ? logs.map((log) => ({
-                  severity: log.severity.name,
-                  message: log.message,
-                  parentId: log.parentId,
-                  backgroundColor: log.severity.colorName,
-              }))
-            : [];
-    }, [logs]);
-
     const handleRowClick = useCallback(
         (row) => {
             setSelectedRowIndex(row.rowIndex);
@@ -144,11 +143,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         },
         [selectedRowIndex, theme]
     );
-
-    useEffect(() => {
-        setSelectedRowIndex(-1);
-        setRowData(generateTableRows());
-    }, [generateTableRows, logs]);
 
     const onGridReady = ({ api }) => {
         api?.sizeColumnsToFit();
