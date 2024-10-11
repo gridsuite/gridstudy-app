@@ -1756,7 +1756,7 @@ function unravelSubTree(
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After, undefined);
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {
