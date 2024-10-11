@@ -11,7 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { EllipsisCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
@@ -120,7 +120,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
                 flex: 1,
-                cellRenderer: DefaultCellRenderer,
+                cellRenderer: EllipsisCellRenderer,
             }),
         ],
         [intl, updateFilter, filterSelector, severities]
