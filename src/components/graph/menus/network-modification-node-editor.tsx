@@ -84,6 +84,7 @@ import {
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
 import { SwitchNetworkModificationActive } from './switch-network-modification-active';
+import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
@@ -305,6 +306,11 @@ const NetworkModificationNodeEditor = () => {
                     id: MODIFICATION_TYPES.SHUNT_COMPENSATOR_CREATION.type,
                     label: 'ShuntCompensator',
                     action: () => withDefaultParams(ShuntCompensatorCreationDialog),
+                },
+                {
+                    id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
+                    label: 'StaticVarCompensator',
+                    action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
                 },
                 {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,
