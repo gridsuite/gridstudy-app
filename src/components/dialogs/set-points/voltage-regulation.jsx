@@ -21,7 +21,7 @@ const VoltageRegulation = ({
     currentNodeUuid,
     voltageLevelOptions,
     previousValues,
-    isEquipmentModification = false,
+    isEquipmentModification,
 }) => {
     const intl = useIntl();
     const previousRegulationType = useMemo(() => {
