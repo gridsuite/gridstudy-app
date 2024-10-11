@@ -181,8 +181,7 @@ export const DefaultCellRenderer = (props) => {
     );
 };
 
-export const EllipsisCellRenderer = (props) => {
-    const cellValue = props.value;
+export const EllipsisCellRenderer = ({ value }) => {
     const textRef = useRef(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
 
@@ -190,13 +189,13 @@ export const EllipsisCellRenderer = (props) => {
         if (textRef.current) {
             setIsEllipsisActive(textRef.current.scrollWidth > textRef.current.clientWidth);
         }
-    }, [cellValue]);
+    }, [value]);
 
     return (
         <Box sx={styles.tableCell}>
-            <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? cellValue : ''}>
+            <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? value : ''}>
                 <Box ref={textRef} sx={styles.overflow}>
-                    {cellValue}
+                    {value}
                 </Box>
             </Tooltip>
         </Box>
