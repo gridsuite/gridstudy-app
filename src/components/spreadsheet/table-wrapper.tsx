@@ -488,7 +488,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
             const definition = TABLES_DEFINITION_TYPES.get(equipmentType);
-            if (definition?.index) {
+            if (definition) {
                 if (tabIndex === definition.index) {
                     // already in expected tab => explicit call to scroll to expected row
                     scrollToEquipmentIndex();
