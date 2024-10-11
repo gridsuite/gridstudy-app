@@ -16,7 +16,7 @@ export function connectNotificationsWebsocket(studyUuid, options) {
     const wsBase = getWsBase();
     const wsAdress = `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`;
 
-    console.log("🚀 QCA :  ~ connectNotificationsWebsocket ~ wsAdress:", wsAdress);
+    console.log('🚀 QCA :  ~ connectNotificationsWebsocket ~ wsAdress:', wsAdress);
     const rws = new ReconnectingWebSocket(() => getUrlWithToken(wsAdress), [], options);
     // don't log the token, it's private
     rws.onopen = function () {
