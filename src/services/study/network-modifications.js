@@ -744,7 +744,7 @@ export function modifyShuntCompensator({
 export function createStaticVarCompensator(staticVarCompensatorCreationParameters) {
     const {
         studyUuid,
-        currentNodeUuid,
+        nodeUuid,
         staticCompensatorId,
         staticCompensatorName,
         voltageLevelId,
@@ -776,7 +776,7 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
         modificationUuid,
         properties,
     } = staticVarCompensatorCreationParameters;
-    let createShuntUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-modifications';
+    let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
         createShuntUrl += '/' + encodeURIComponent(modificationUuid);

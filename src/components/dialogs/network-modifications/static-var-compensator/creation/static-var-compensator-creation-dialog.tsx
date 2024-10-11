@@ -10,7 +10,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import {
     ADD_STAND_BY_AUTOMATON,
-    ADDIONAL_INFOS,
     ADDITIONAL_PROPERTIES,
     AUTOMATON,
     B0,
@@ -32,6 +31,7 @@ import {
     LOW_VOLTAGE_THRESHOLD,
     MAX_Q_AT_NOMINAL_V,
     MAX_SUSCEPTANCE,
+    MIN_Q_AT_NOMINAL_V,
     MIN_SUSCEPTANCE,
     Q0,
     REACTIVE_POWER_SET_POINT,
@@ -42,7 +42,6 @@ import {
     VOLTAGE_REGULATION_MODE,
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
-    MIN_Q_AT_NOMINAL_V,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import React, { FC, useCallback, useEffect, useState } from 'react';
@@ -341,7 +340,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
 
             createStaticVarCompensator({
                 studyUuid,
-                currentNodeUuid,
+                nodeUuid: currentNodeUuid,
                 staticCompensatorId: equipmentId,
                 staticCompensatorName: sanitizeString(equipmentName),
                 voltageLevelId: voltageLevel?.[ID],
@@ -411,7 +410,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
             if (errors?.[AUTOMATON]) {
                 tabsInError.push(StaticVarCompensatorCreationDialogTab.AUTOMATON_TAB);
             }
-            if (errors?.[ADDIONAL_INFOS]) {
+            if (errors?.[ADDITIONAL_PROPERTIES]) {
                 tabsInError.push(StaticVarCompensatorCreationDialogTab.ADDITIONAL_INFO_TAB);
             }
 
