@@ -339,40 +339,47 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
 
             const isDistantRegulation = voltageRegulationType === REGULATION_TYPES.DISTANT.id;
 
-            createStaticVarCompensator(
+            createStaticVarCompensator({
                 studyUuid,
                 currentNodeUuid,
-                equipmentId,
-                sanitizeString(equipmentName),
-                voltageLevel?.[ID],
-                busOrBusbarSection?.[ID],
-                sanitizeString(connectionName),
-                connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
+                staticCompensatorId: equipmentId,
+                staticCompensatorName: sanitizeString(equipmentName),
+                voltageLevelId: voltageLevel?.[ID],
+                busOrBusbarSectionId: busOrBusbarSection?.[ID],
+                connectionName: sanitizeString(connectionName),
+                connectionDirection: connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
                 connectionPosition,
                 terminalConnected,
-                characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? maxSusceptance : null,
-                characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? minSusceptance : null,
-                characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? maxQAtNominalV : null,
-                characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? minQAtNominalV : null,
-                voltageRegulationMode,
+                maxSusceptance:
+                    characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? maxSusceptance : null,
+                minSusceptance:
+                    characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? minSusceptance : null,
+                maxQAtNominalV:
+                    characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? maxQAtNominalV : null,
+                minQAtNominalV:
+                    characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? minQAtNominalV : null,
+                regulationMode: voltageRegulationMode,
                 voltageSetpoint,
                 reactivePowerSetpoint,
                 voltageRegulationType,
-                isDistantRegulation ? regulationEquipment?.id : null,
-                isDistantRegulation ? regulationEquipment?.type : null,
-                isDistantRegulation ? regulationVoltageLevel?.id : null,
-                addStandbyAutomaton,
-                StandbyAutomaton,
-                addStandbyAutomaton ? lowVoltageSetpoint : null,
-                addStandbyAutomaton ? highVoltageSetpoint : null,
-                addStandbyAutomaton ? lowVoltageThreshold : null,
-                addStandbyAutomaton ? highVoltageThreshold : null,
-                addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? b0 : null,
-                addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id ? q0 : null,
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(staticCompensator)
-            ).catch((error) => {
+                regulatingTerminalId: isDistantRegulation ? regulationEquipment?.id : null,
+                regulatingTerminalType: isDistantRegulation ? regulationEquipment?.type : null,
+                regulatingTerminalVlId: isDistantRegulation ? regulationVoltageLevel?.id : null,
+                standbyAutomatonOn: addStandbyAutomaton,
+                standby: StandbyAutomaton,
+                lowVoltageSetpoint: addStandbyAutomaton ? lowVoltageSetpoint : null,
+                highVoltageSetpoint: addStandbyAutomaton ? highVoltageSetpoint : null,
+                lowVoltageThreshold: addStandbyAutomaton ? lowVoltageThreshold : null,
+                highVoltageThreshold: addStandbyAutomaton ? highVoltageThreshold : null,
+                b0: addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id ? b0 : null,
+                q0:
+                    addStandbyAutomaton && characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                        ? q0
+                        : null,
+                isUpdate: !!editData,
+                modificationUuid: editData?.uuid,
+                properties: toModificationProperties(staticCompensator),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'StaticVarCompensatorCreationError',
