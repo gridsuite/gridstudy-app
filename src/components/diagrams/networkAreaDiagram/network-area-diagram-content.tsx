@@ -156,9 +156,9 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg) {
+        if (props.svg && svgRef.current) {
             const diagramViewer = new NetworkAreaDiagramViewer(
-                svgRef.current!,
+                svgRef.current,
                 props.svg,
                 MIN_WIDTH,
                 MIN_HEIGHT,
