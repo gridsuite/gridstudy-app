@@ -183,7 +183,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const handleBreakerClick: OnBreakerCallbackType = useCallback(
-        (breakerId, newSwitchState, switchElement) => {
+        // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-diagram-viewer/pull/106/ is merged
+        (breakerId, newSwitchState, switchElement: any) => {
             if (!modificationInProgress) {
                 setModificationInProgress(true);
                 setLocallySwitchedBreaker(switchElement?.id);
