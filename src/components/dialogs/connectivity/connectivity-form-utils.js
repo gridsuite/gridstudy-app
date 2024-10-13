@@ -53,8 +53,8 @@ export const getCon1andCon2WithPositionValidationSchema = (isEquipmentModificati
     }),
 });
 
-export const getConnectivityWithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
-    [id]: yup.object().shape({
+export const getConnectivityWithPositionSchema = (isEquipmentModification = false) =>
+    yup.object().shape({
         [CONNECTION_DIRECTION]: yup.string().nullable(),
         [CONNECTION_NAME]: yup.string(),
         [CONNECTION_POSITION]: yup.number().nullable(),
@@ -66,7 +66,10 @@ export const getConnectivityWithPositionValidationSchema = (isEquipmentModificat
                 then: (schema) => schema.required(),
             }),
         ...getConnectivityPropertiesValidationSchema(isEquipmentModification),
-    }),
+    });
+
+export const getConnectivityWithPositionValidationSchema = (isEquipmentModification = false, id = CONNECTIVITY) => ({
+    [id]: getConnectivityWithPositionSchema(isEquipmentModification),
 });
 
 export const getConnectivityWithoutPositionValidationSchema = (id = CONNECTIVITY) => {

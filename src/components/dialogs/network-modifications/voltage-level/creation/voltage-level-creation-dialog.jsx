@@ -207,8 +207,8 @@ const VoltageLevelCreationDialog = ({
     const onSubmit = useCallback(
         (voltageLevel) => {
             onCreateVoltageLevel({
-                studyUuid,
-                currentNodeUuid,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: voltageLevel[SUBSTATION_ID],
