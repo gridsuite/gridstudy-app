@@ -160,9 +160,10 @@ export const DefaultCellRenderer = (props: any) => {
     );
 };
 
-export const EllipsisCellRenderer = ({ value }) => {
-    const textRef = useRef(null);
+export const EllipsisCellRenderer = ({ value }: { value: any }) => {
+    const textRef = useRef<any>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+    console.log('DBG DBR elip', styles.tableCell, mergeSx(styles.tableCell));
 
     useEffect(() => {
         if (textRef.current) {
@@ -171,7 +172,7 @@ export const EllipsisCellRenderer = ({ value }) => {
     }, [value]);
 
     return (
-        <Box sx={styles.tableCell}>
+        <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? value : ''}>
                 <Box ref={textRef} sx={styles.overflow}>
                     {value}
