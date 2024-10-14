@@ -12,29 +12,29 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import IconButton from '@mui/material/IconButton';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import PropTypes from 'prop-types';
+import { Theme } from '@mui/material';
 
 const styles = {
-    counterText: (theme) => ({
+    counterText: (theme: Theme) => ({
         bottom: theme.spacing(4),
         left: theme.spacing(1),
         position: 'absolute',
     }),
-    incrementCounterIcon: (theme) => ({
+    incrementCounterIcon: (theme: Theme) => ({
         padding: 0,
         bottom: theme.spacing(1),
         left: theme.spacing(5.5),
         position: 'absolute',
         cursor: 'pointer',
     }),
-    decrementCounterIcon: (theme) => ({
+    decrementCounterIcon: (theme: Theme) => ({
         padding: 0,
         bottom: theme.spacing(1),
         left: theme.spacing(2),
         position: 'absolute',
         cursor: 'pointer',
     }),
-    fullScreenIcon: (theme) => ({
+    fullScreenIcon: (theme: Theme) => ({
         bottom: theme.spacing(1),
         right: theme.spacing(2),
         position: 'absolute',
@@ -42,8 +42,46 @@ const styles = {
     }),
 };
 
-const DiagramFooter = (props) => {
-    const { onStopFullScreen, onStartFullScreen, onIncrementCounter, onDecrementCounter } = props;
+interface DiagramFooterProps {
+    showCounterControls?: boolean;
+    showCounterValue?: boolean;
+    showFullscreenControl?: boolean;
+    counterText: string;
+    counterValue: number;
+    fullScreenActive?: boolean;
+    decrementCounterDisabled?: boolean;
+    incrementCounterDisabled?: boolean;
+    onIncrementCounter?: () => void;
+    onDecrementCounter?: () => void;
+    onStopFullScreen?: () => void;
+    onStartFullScreen?: () => void;
+}
+
+const defaultProps: DiagramFooterProps = {
+    showCounterControls: false,
+    showCounterValue: true,
+    showFullscreenControl: false,
+    counterText: '',
+    counterValue: 0,
+    fullScreenActive: false,
+    decrementCounterDisabled: true,
+    incrementCounterDisabled: false,
+};
+
+const DiagramFooter: React.FC<DiagramFooterProps> = ({
+    showCounterControls = defaultProps.showCounterControls,
+    showCounterValue = defaultProps.showCounterValue,
+    showFullscreenControl = defaultProps.showFullscreenControl,
+    counterText = defaultProps.counterText,
+    counterValue = defaultProps.counterValue,
+    fullScreenActive = defaultProps.fullScreenActive,
+    decrementCounterDisabled = defaultProps.decrementCounterDisabled,
+    incrementCounterDisabled = defaultProps.incrementCounterDisabled,
+    onIncrementCounter,
+    onDecrementCounter,
+    onStopFullScreen,
+    onStartFullScreen,
+}) => {
     const handleStopFullScreen = useCallback(() => onStopFullScreen && onStopFullScreen(), [onStopFullScreen]);
     const handleStartFullScreen = useCallback(() => onStartFullScreen && onStartFullScreen(), [onStartFullScreen]);
     const handleIncrementCounter = useCallback(() => onIncrementCounter && onIncrementCounter(), [onIncrementCounter]);
@@ -51,65 +89,35 @@ const DiagramFooter = (props) => {
 
     return (
         <div style={{ display: 'flex' }}>
-            {props.showCounterControls && (
+            {showCounterControls && (
                 <>
-                    {props.showCounterValue && (
-                        <Typography sx={styles.counterText}>{props.counterText + props.counterValue}</Typography>
-                    )}
+                    {showCounterValue && <Typography sx={styles.counterText}>{counterText + counterValue}</Typography>}
                     <IconButton
                         onClick={handleIncrementCounter}
-                        disabled={props.incrementCounterDisabled}
+                        disabled={incrementCounterDisabled}
                         sx={styles.incrementCounterIcon}
                     >
                         <AddCircleIcon />
                     </IconButton>
                     <IconButton
                         onClick={handleDecrementCounter}
-                        disabled={props.decrementCounterDisabled}
+                        disabled={decrementCounterDisabled}
                         sx={styles.decrementCounterIcon}
                     >
                         <RemoveCircleIcon />
                     </IconButton>
                 </>
             )}
-            {props.showFullscreenControl && (
+            {showFullscreenControl && (
                 <>
-                    {props.fullScreenActive && (
+                    {fullScreenActive && (
                         <FullscreenExitIcon onClick={handleStopFullScreen} sx={styles.fullScreenIcon} />
                     )}
-                    {!props.fullScreenActive && (
-                        <FullscreenIcon onClick={handleStartFullScreen} sx={styles.fullScreenIcon} />
-                    )}
+                    {!fullScreenActive && <FullscreenIcon onClick={handleStartFullScreen} sx={styles.fullScreenIcon} />}
                 </>
             )}
         </div>
     );
-};
-
-DiagramFooter.defaultProps = {
-    showCounterControls: false,
-    showCounterValue: true,
-    showFullscreenControl: false,
-    counterText: '',
-    counterValue: 0,
-    fullscreenActive: false,
-    decrementCounterDisabled: true,
-    incrementCounterDisabled: false,
-};
-
-DiagramFooter.propTypes = {
-    showCounterControls: PropTypes.bool,
-    showCounterValue: PropTypes.bool,
-    counterText: PropTypes.string,
-    counterValue: PropTypes.number,
-    onIncrementCounter: PropTypes.func,
-    onDecrementCounter: PropTypes.func,
-    showFullscreenControl: PropTypes.bool,
-    fullScreenActive: PropTypes.any,
-    onStopFullScreen: PropTypes.func,
-    onStartFullScreen: PropTypes.func,
-    decrementCounterDisabled: PropTypes.bool,
-    incrementCounterDisabled: PropTypes.bool,
 };
 
 export default DiagramFooter;

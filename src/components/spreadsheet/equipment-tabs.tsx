@@ -8,15 +8,22 @@
 import { Grid, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { TABLES_NAMES } from './utils/config-tables';
+import { FunctionComponent } from 'react';
 
-export const EquipmentTabs = ({ tabIndex, handleSwitchTab, disabled }) => {
+interface EquipmentTabsProps {
+    tabIndex: number;
+    handleSwitchTab: (value: number) => void;
+    disabled: boolean;
+}
+
+export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
     const intl = useIntl();
     return (
         <Grid container justifyContent={'space-between'} item>
             <Tabs
                 value={tabIndex}
                 variant="scrollable"
-                onChange={(event, value) => {
+                onChange={(_event, value) => {
                     handleSwitchTab(value);
                 }}
                 aria-label="tables"

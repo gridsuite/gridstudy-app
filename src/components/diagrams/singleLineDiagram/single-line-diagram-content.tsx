@@ -7,7 +7,6 @@
 
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
 import {
     DiagramType,
@@ -24,7 +23,7 @@ import {
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu from '../../menus/base-equipment-menu';
 import withOperatingStatusMenu from '../../menus/operating-status-menu';
-import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
+import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
@@ -52,40 +51,88 @@ import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
 import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
+import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 
-function SingleLineDiagramContent(props) {
+type EquipmentMenuState = {
+    position: [number, number];
+    equipmentId: string | null;
+    equipmentType: EQUIPMENT_TYPES | null;
+    svgId: string | null;
+    display: boolean;
+};
+interface SingleLineDiagramContentProps {
+    readonly showInSpreadsheet: (menu: { equipmentId: string | null; type: string | null }) => void;
+    readonly studyUuid: string;
+    readonly svgType: DiagramType;
+    readonly svg?: string;
+    readonly svgMetadata?: SLDMetadata;
+    readonly loadingState: boolean;
+    readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
+    readonly diagramId: UUID;
+}
+
+type EquipmentToModify = {
+    equipmentId: string;
+    equipmentType: EQUIPMENT_TYPES;
+};
+
+const defaultMenuState: EquipmentMenuState = {
+    position: [-1, -1],
+    equipmentId: null,
+    equipmentType: null,
+    svgId: null,
+    display: false,
+};
+
+type BusMenuState = {
+    position: [number, number];
+    busId: string | null;
+    svgId: string | null;
+    display: boolean;
+};
+
+const defaultBusMenuState: BusMenuState = {
+    position: [-1, -1],
+    busId: null,
+    svgId: null,
+    display: false,
+};
+
+function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { diagramSizeSetter, studyUuid } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
-    const svgRef = useRef();
-    const diagramViewerRef = useRef();
+    const svgRef = useRef<HTMLDivElement>();
+    const diagramViewerRef = useRef<SingleLineDiagramViewer>();
     const { snackError } = useSnackMessage();
-    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState();
+    const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
     const [errorMessage, setErrorMessage] = useState('');
     const { openDiagramView } = useDiagram();
-    const [equipmentToModify, setEquipmentToModify] = useState();
-    const [equipmentToDelete, setEquipmentToDelete] = useState();
+    const [equipmentToModify, setEquipmentToModify] = useState<EquipmentToModify>();
+    const [equipmentToDelete, setEquipmentToDelete] = useState<EquipmentToModify>();
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
-    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState(null);
+    const [equipmentPopoverAnchorEl, setEquipmentPopoverAnchorEl] = useState<EventTarget | null>(null);
     const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
     const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const computationStarting = useSelector((state) => state.computationStarting);
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const computationStarting = useSelector((state: AppState) => state.computationStarting);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const [
         oneBusShortcircuitAnalysisLoaderMessage,
         isDiagramRunningOneBusShortcircuitAnalysis,
         displayOneBusShortcircuitAnalysisLoader,
         resetOneBusShortcircuitAnalysisLoader,
-    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode.id);
+    ] = useOneBusShortcircuitAnalysisLoader(props.diagramId, currentNode?.id!);
 
     // dynamic simulation event configuration states
-    const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] = useState();
+    const [equipmentToConfigDynamicSimulationEvent, setEquipmentToConfigDynamicSimulationEvent] =
+        useState<EquipmentToModify>();
     const [dynamicSimulationEventDialogTitle, setDynamicSimulationEventDialogTitle] = useState('');
 
     /**
@@ -94,17 +141,18 @@ function SingleLineDiagramContent(props) {
 
     const closeEquipmentMenu = useCallback(() => {
         setEquipmentMenu({
+            ...defaultMenuState,
             display: false,
         });
     }, []);
 
-    const handleOpenModificationDialog = (equipmentId, equipmentType) => {
+    const handleOpenModificationDialog = (equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
         closeEquipmentMenu();
         setEquipmentToModify({ equipmentId, equipmentType });
     };
 
     const handleOpenDeletionDialog = useCallback(
-        (equipmentId, equipmentType) => {
+        (equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
             closeEquipmentMenu();
             setEquipmentToDelete({ equipmentId, equipmentType });
         },
@@ -112,15 +160,14 @@ function SingleLineDiagramContent(props) {
     );
 
     const closeModificationDialog = () => {
-        setEquipmentToModify();
+        setEquipmentToModify(undefined);
     };
 
     const closeDeletionDialog = () => {
-        setEquipmentToDelete();
+        setEquipmentToDelete(undefined);
     };
-
     const handleTogglePopover = useCallback(
-        (shouldDisplay, currentTarget, equipmentId, equipmentType) => {
+        (shouldDisplay: boolean, currentTarget: EventTarget | null, equipmentId: string, equipmentType: string) => {
             setShouldDisplayTooltip(shouldDisplay);
             if (shouldDisplay) {
                 setHoveredEquipmentId(equipmentId);
@@ -135,11 +182,12 @@ function SingleLineDiagramContent(props) {
         [setShouldDisplayTooltip]
     );
 
-    const handleBreakerClick = useCallback(
-        (breakerId, newSwitchState, switchElement) => {
+    const handleBreakerClick: OnBreakerCallbackType = useCallback(
+        // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-diagram-viewer/pull/106/ is merged
+        (breakerId, newSwitchState, switchElement: any) => {
             if (!modificationInProgress) {
                 setModificationInProgress(true);
-                setLocallySwitchedBreaker(switchElement);
+                setLocallySwitchedBreaker(switchElement?.id);
 
                 updateSwitchState(studyUuid, currentNode?.id, breakerId, newSwitchState).catch((error) => {
                     console.error(error.message);
@@ -151,7 +199,7 @@ function SingleLineDiagramContent(props) {
     );
 
     const handleNextVoltageLevelClick = useCallback(
-        (id) => {
+        (id: string) => {
             // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
             // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
             if (!studyUuid || !currentNode) {
@@ -162,24 +210,13 @@ function SingleLineDiagramContent(props) {
         [studyUuid, currentNode, openDiagramView]
     );
 
-    const [equipmentMenu, setEquipmentMenu] = useState({
-        position: [-1, -1],
-        equipmentId: null,
-        equipmentType: null,
-        svgId: null,
-        display: null,
-    });
+    const [equipmentMenu, setEquipmentMenu] = useState<EquipmentMenuState>(defaultMenuState);
 
-    const [busMenu, setBusMenu] = useState({
-        position: [-1, -1],
-        busId: null,
-        svgId: null,
-        display: null,
-    });
+    const [busMenu, setBusMenu] = useState<BusMenuState>(defaultBusMenuState);
 
     const showBusMenu = useCallback(
-        (busId, svgId, x, y) => {
-            handleTogglePopover(false, null, null);
+        (busId: string, svgId: string, x: number, y: number) => {
+            handleTogglePopover(false, null, '', '');
             setBusMenu({
                 position: [x, y],
                 busId: busId,
@@ -189,10 +226,9 @@ function SingleLineDiagramContent(props) {
         },
         [setBusMenu, handleTogglePopover]
     );
-
     const showEquipmentMenu = useCallback(
-        (equipmentId, equipmentType, svgId, x, y) => {
-            handleTogglePopover(false, null, null);
+        (equipmentId: string, equipmentType: string | null, svgId: string, x: number, y: number) => {
+            handleTogglePopover(false, null, '', '');
             setEquipmentMenu({
                 position: [x, y],
                 equipmentId: equipmentId,
@@ -203,20 +239,22 @@ function SingleLineDiagramContent(props) {
         },
         [handleTogglePopover]
     );
-
     const closeBusMenu = useCallback(() => {
         setBusMenu({
+            position: [-1, -1],
+            busId: null,
+            svgId: null,
             display: false,
         });
     }, []);
 
     const handleViewInSpreadsheet = () => {
-        props.showInSpreadsheet(equipmentMenu);
+        props.showInSpreadsheet({ equipmentId: equipmentMenu.equipmentId, type: equipmentMenu.equipmentType });
         closeEquipmentMenu();
     };
 
     const removeEquipment = useCallback(
-        (equipmentType, equipmentId) => {
+        (equipmentType: string, equipmentId: string) => {
             deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -229,7 +267,7 @@ function SingleLineDiagramContent(props) {
     );
 
     const handleRunShortcircuitAnalysis = useCallback(
-        (busId) => {
+        (busId: string) => {
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
@@ -260,16 +298,17 @@ function SingleLineDiagramContent(props) {
                 <BusMenu
                     handleRunShortcircuitAnalysis={handleRunShortcircuitAnalysis}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                    busId={busMenu.busId}
+                    busId={busMenu.busId ?? ''}
                     position={busMenu.position}
                     onClose={closeBusMenu}
+                    setModificationInProgress={() => {}}
                 />
             )
         );
     };
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType, equipmentId) => {
+        (equipmentType: EQUIPMENT_TYPES, equipmentId: string) => {
             if (equipmentType !== EQUIPMENT_TYPES.HVDC_LINE) {
                 removeEquipment(equipmentType, equipmentId);
             } else {
@@ -301,13 +340,16 @@ function SingleLineDiagramContent(props) {
         [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, removeEquipment]
     );
 
-    const handleOpenDynamicSimulationEventDialog = useCallback((equipmentId, equipmentType, dialogTitle) => {
-        setDynamicSimulationEventDialogTitle(dialogTitle);
-        setEquipmentToConfigDynamicSimulationEvent({
-            equipmentId,
-            equipmentType,
-        });
-    }, []);
+    const handleOpenDynamicSimulationEventDialog = useCallback(
+        (equipmentId: string, equipmentType: EQUIPMENT_TYPES, dialogTitle: string) => {
+            setDynamicSimulationEventDialogTitle(dialogTitle);
+            setEquipmentToConfigDynamicSimulationEvent({
+                equipmentId,
+                equipmentType,
+            });
+        },
+        []
+    );
 
     const handleCloseDynamicSimulationEventDialog = useCallback(() => {
         setEquipmentToConfigDynamicSimulationEvent(undefined);
@@ -316,6 +358,7 @@ function SingleLineDiagramContent(props) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
+            equipmentMenu.equipmentType &&
             [
                 EQUIPMENT_TYPES.LINE,
                 EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
@@ -340,7 +383,7 @@ function SingleLineDiagramContent(props) {
         );
     };
 
-    const displayMenu = (equipmentType, menuId) => {
+    const displayMenu = (equipmentType: EQUIPMENT_TYPES, menuId: string) => {
         const Menu = withEquipmentMenu(BaseEquipmentMenu, menuId, equipmentType);
         return (
             equipmentMenu.display &&
@@ -372,7 +415,7 @@ function SingleLineDiagramContent(props) {
 
     const displayModificationDialog = () => {
         let CurrentModificationDialog;
-        switch (equipmentToModify.equipmentType) {
+        switch (equipmentToModify?.equipmentType) {
             case EQUIPMENT_TYPES.BATTERY:
                 CurrentModificationDialog = BatteryModificationDialog;
                 break;
@@ -399,24 +442,28 @@ function SingleLineDiagramContent(props) {
                 open={true}
                 studyUuid={studyUuid}
                 currentNode={currentNode}
-                defaultIdValue={equipmentToModify.equipmentId}
+                defaultIdValue={equipmentToModify?.equipmentId}
                 isUpdate={true}
                 onClose={() => closeModificationDialog()}
+                editData={undefined}
+                editDataFetchStatus={undefined}
             />
         );
     };
 
     const displayDeletionDialog = () => {
-        switch (equipmentToDelete.equipmentType) {
+        switch (equipmentToDelete?.equipmentType) {
             case EQUIPMENT_TYPES.HVDC_LINE:
                 return (
                     <EquipmentDeletionDialog
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        defaultIdValue={equipmentToDelete.equipmentId}
+                        defaultIdValue={equipmentToDelete?.equipmentId}
                         isUpdate={true}
                         onClose={() => closeDeletionDialog()}
+                        editData={undefined}
+                        editDataFetchStatus={undefined}
                     />
                 );
             default:
@@ -429,14 +476,14 @@ function SingleLineDiagramContent(props) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg) {
+        if (props.svg && svgRef.current) {
             const isReadyForInteraction =
                 !computationStarting && !isAnyNodeBuilding && !modificationInProgress && !props.loadingState;
 
             const diagramViewer = new SingleLineDiagramViewer(
                 svgRef.current, //container
                 props.svg, //svgContent
-                props.svgMetadata, //svg metadata
+                props.svgMetadata ?? null, //svg metadata
                 props.svgType, //svg type
                 MIN_WIDTH, // minWidth
                 MIN_HEIGHT, // minHeight
@@ -470,11 +517,11 @@ function SingleLineDiagramContent(props) {
             diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
 
             // Rotate clicked switch while waiting for updated sld data
-            if (locallySwitchedBreaker?.id) {
-                const breakerToSwitchDom = document.getElementById(locallySwitchedBreaker.id);
-                if (breakerToSwitchDom.classList.value.includes('sld-closed')) {
+            if (locallySwitchedBreaker) {
+                const breakerToSwitchDom: HTMLElement | null = document.getElementById(locallySwitchedBreaker);
+                if (breakerToSwitchDom?.classList.value.includes('sld-closed')) {
                     breakerToSwitchDom.classList.replace('sld-closed', 'sld-open');
-                } else if (breakerToSwitchDom.classList.value.includes('sld-open')) {
+                } else if (breakerToSwitchDom?.classList.value.includes('sld-open')) {
                     breakerToSwitchDom.classList.replace('sld-open', 'sld-closed');
                 }
             }
@@ -486,13 +533,15 @@ function SingleLineDiagramContent(props) {
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
                 diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
             ) {
-                diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
+                const viewBox = diagramViewerRef.current.getViewBox();
+                if (viewBox) {
+                    diagramViewer.setViewBox(viewBox);
+                }
             }
 
             diagramViewerRef.current = diagramViewer;
         }
     }, [
-        props.svgUrl,
         props.svg,
         props.svgMetadata,
         currentNode,
@@ -518,7 +567,7 @@ function SingleLineDiagramContent(props) {
     useLayoutEffect(() => {
         if (!props.loadingState) {
             setModificationInProgress(false);
-            setLocallySwitchedBreaker(null);
+            setLocallySwitchedBreaker(undefined);
         }
     }, [
         props.loadingState, // the only one changing
@@ -564,7 +613,7 @@ function SingleLineDiagramContent(props) {
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
                     studyUuid={studyUuid}
-                    currentNodeId={currentNode?.id}
+                    currentNodeId={currentNode?.id ?? ''}
                     equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
                     equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}
@@ -574,16 +623,5 @@ function SingleLineDiagramContent(props) {
         </>
     );
 }
-
-SingleLineDiagramContent.propTypes = {
-    showInSpreadsheet: PropTypes.func,
-    studyUuid: PropTypes.string,
-    svgType: PropTypes.string,
-    svg: PropTypes.string,
-    svgMetadata: PropTypes.object,
-    loadingState: PropTypes.bool,
-    diagramSizeSetter: PropTypes.func,
-    diagramId: PropTypes.string,
-};
 
 export default SingleLineDiagramContent;

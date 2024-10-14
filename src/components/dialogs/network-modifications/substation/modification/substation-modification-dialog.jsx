@@ -136,16 +136,15 @@ const SubstationModificationDialog = ({
 
     const onSubmit = useCallback(
         (substation) => {
-            modifySubstation(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(substation[EQUIPMENT_NAME]),
-                substation[COUNTRY],
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(substation)
-            ).catch((error) => {
+            modifySubstation({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                id: selectedId,
+                name: sanitizeString(substation[EQUIPMENT_NAME]),
+                country: substation[COUNTRY],
+                properties: toModificationProperties(substation),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'SubstationModificationError',

@@ -6,7 +6,7 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import ReactFlow, { Controls, useStore, useReactFlow, ControlButton, MiniMap } from 'react-flow-renderer';
+import ReactFlow, { Controls, useStore, useReactFlow, ControlButton, MiniMap } from 'reactflow';
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -25,17 +25,6 @@ import { StudyDisplayMode } from './network-modification.type';
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
 const snapGrid = [15, 15];
-
-const styles = {
-    controls: {
-        position: 'absolute',
-        top: '10px',
-        right: '10px',
-        // Unset default properties of ReactFlow controls
-        left: 'unset',
-        bottom: 'unset',
-    },
-};
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -178,7 +167,8 @@ const NetworkModificationTree = ({
                 snapGrid={snapGrid}
             >
                 <Controls
-                    style={styles.controls} // This component uses "style" instead of "sx"
+                    style={{ margin: '10px' }} // This component uses "style" instead of "sx"
+                    position="top-right"
                     showZoom={false}
                     showInteractive={false}
                     showFitView={false}
