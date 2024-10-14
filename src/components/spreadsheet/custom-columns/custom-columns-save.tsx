@@ -5,15 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { IconButton } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
 import CreateCompositeModificationDialog, {
     ICompositeCreateModificationDialog,
 } from '../../dialogs/create-composite-modification-dialog';
-import React from 'react';
+import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
+import { useSelector } from 'react-redux';
+import { AppState } from '../../../redux/reducer';
+import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
+import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 
 export type CustomColumnsSaveProps = {
     indexTab: number;
@@ -21,7 +25,28 @@ export type CustomColumnsSaveProps = {
 
 export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSaveProps>) {
     const { snackInfo, snackError } = useSnackMessage();
+    const intl = useIntl();
+
+    const customColumnsDefinitions = useSelector(
+        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]].columns
+    );
     const dialogOpen = useStateBoolean(false);
+
+    const currentType = useMemo(() => {
+        const equipment: any = TABLES_DEFINITION_INDEXES.get(indexTab);
+        return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
+    }, [indexTab]);
+
+    const customColumns = useMemo(() => {
+        return customColumnsDefinitions.map(({ name, formula }) => ({ name, formula }));
+    }, [customColumnsDefinitions]);
+
+    const staticColumns = useMemo(() => {
+        const equipment: any = TABLES_DEFINITION_INDEXES.get(indexTab);
+        return equipment
+            ? equipment.columns.map((x: any) => ({ name: intl.formatMessage({ id: x.id }), formula: x.field }))
+            : [];
+    }, [indexTab]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
@@ -29,16 +54,12 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
         folderName,
         folderId,
     }: ICompositeCreateModificationDialog) => {
-        var spreadsheetConfigObject = {
-            id: '1580be4f-9d92-4a8c-8813-d9ed9b2cbd38',
-            sheetType: 'BATTERIES',
-            customColumns: [
-                {
-                    name: 'cust_a',
-                    formula: 'country',
-                },
-            ],
+        const spreadsheetConfigObject = {
+            sheetType: currentType,
+            customColumns: [...staticColumns, ...customColumns],
         };
+
+        console.log('DBG DBR save', customColumnsDefinitions, staticColumns, spreadsheetConfigObject);
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfigObject)
             .then(() => {
