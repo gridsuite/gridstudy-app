@@ -743,6 +743,90 @@ export function modifyShuntCompensator({
     });
 }
 
+export function createStaticVarCompensator(staticVarCompensatorCreationParameters) {
+    const {
+        studyUuid,
+        nodeUuid,
+        staticCompensatorId,
+        staticCompensatorName,
+        voltageLevelId,
+        busOrBusbarSectionId,
+        connectionName,
+        connectionDirection,
+        connectionPosition,
+        terminalConnected,
+        maxSusceptance,
+        minSusceptance,
+        maxQAtNominalV,
+        minQAtNominalV,
+        regulationMode,
+        voltageSetpoint,
+        reactivePowerSetpoint,
+        voltageRegulationType,
+        regulatingTerminalId,
+        regulatingTerminalType,
+        regulatingTerminalVlId,
+        standbyAutomatonOn,
+        standby,
+        lowVoltageSetpoint,
+        highVoltageSetpoint,
+        lowVoltageThreshold,
+        highVoltageThreshold,
+        b0,
+        q0,
+        isUpdate,
+        modificationUuid,
+        properties,
+    } = staticVarCompensatorCreationParameters;
+    let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        createShuntUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating static var compensator creation');
+    } else {
+        console.info('Creating static var compensator creation');
+    }
+
+    return backendFetchText(createShuntUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
+            equipmentId: staticCompensatorId,
+            equipmentName: staticCompensatorName,
+            voltageLevelId: voltageLevelId,
+            busOrBusbarSectionId: busOrBusbarSectionId,
+            connectionDirection: connectionDirection,
+            connectionName: connectionName,
+            connectionPosition: connectionPosition,
+            terminalConnected: terminalConnected,
+            maxSusceptance: maxSusceptance,
+            minSusceptance: minSusceptance,
+            maxQAtNominalV: maxQAtNominalV,
+            minQAtNominalV: minQAtNominalV,
+            regulationMode: regulationMode,
+            voltageSetpoint: voltageSetpoint,
+            reactivePowerSetpoint: reactivePowerSetpoint,
+            voltageRegulationType: voltageRegulationType,
+            regulatingTerminalId: regulatingTerminalId,
+            regulatingTerminalType: regulatingTerminalType,
+            regulatingTerminalVlId: regulatingTerminalVlId,
+            standbyAutomatonOn: standbyAutomatonOn,
+            standby: standby,
+            lowVoltageSetpoint: lowVoltageSetpoint,
+            highVoltageSetpoint: highVoltageSetpoint,
+            lowVoltageThreshold: lowVoltageThreshold,
+            highVoltageThreshold: highVoltageThreshold,
+            b0: b0,
+            q0: q0,
+            properties,
+        }),
+    });
+}
+
 export function createLine(
     studyUuid,
     nodeUuid,

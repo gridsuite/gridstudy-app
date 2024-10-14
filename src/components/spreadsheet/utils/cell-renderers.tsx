@@ -9,7 +9,7 @@ import { Checkbox, Tooltip, IconButton } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { ReactNode, useCallback, useMemo } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -155,6 +155,27 @@ export const DefaultCellRenderer = (props: any) => {
                     )}
                     children={cellValue.value}
                 />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const EllipsisCellRenderer = ({ value }) => {
+    const textRef = useRef(null);
+    const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+
+    useEffect(() => {
+        if (textRef.current) {
+            setIsEllipsisActive(textRef.current.scrollWidth > textRef.current.clientWidth);
+        }
+    }, [value]);
+
+    return (
+        <Box sx={styles.tableCell}>
+            <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? value : ''}>
+                <Box ref={textRef} sx={styles.overflow}>
+                    {value}
+                </Box>
             </Tooltip>
         </Box>
     );

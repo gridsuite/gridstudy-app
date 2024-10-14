@@ -58,6 +58,7 @@ import { Filter } from '../components/results/common/results-global-filter';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
+    LOGS_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
@@ -65,7 +66,6 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { SeverityFilter } from '../types/report.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 
 type MutableUnknownArray = unknown[];
@@ -154,6 +154,7 @@ export type AppActions =
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
+    | LogsFilterAction
     | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
@@ -1140,6 +1141,22 @@ export function setSpreadsheetFilter(
     };
 }
 
+export const LOGS_FILTER = 'LOGS_FILTER';
+export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
+    filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
+    [LOGS_STORE_FIELD]: MutableUnknownArray;
+};
+export function setLogsFilter(
+    filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
+    logsFilter: MutableUnknownArray
+): LogsFilterAction {
+    return {
+        type: LOGS_FILTER,
+        filterTab: filterTab,
+        [LOGS_STORE_FIELD]: logsFilter,
+    };
+}
+
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
     table: TableSortKeysType;
@@ -1171,23 +1188,5 @@ export function setCustomColumDefinitions(
         table,
         definitions: customColumns,
         filter: filter,
-    };
-}
-export const REPORT_FILTER = 'REPORT_FILTER';
-export type ReportFilterAction = Readonly<Action<typeof REPORT_FILTER>> & {
-    reportId: string | null | undefined;
-    messageFilter: string | undefined;
-    severityFilter: SeverityFilter | undefined;
-};
-export function setReportFilters(
-    reportId: string,
-    messageFilter: string,
-    severityFilter: SeverityFilter
-): ReportFilterAction {
-    return {
-        type: REPORT_FILTER,
-        reportId,
-        messageFilter,
-        severityFilter,
     };
 }
