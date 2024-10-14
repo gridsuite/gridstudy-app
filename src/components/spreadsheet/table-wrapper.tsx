@@ -93,9 +93,9 @@ import {
 import { mergeSx } from '../utils/functions';
 import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 
-const useEditBuffer = () => {
+const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
-    const data = useRef<any>({});
+    const data = useRef<Record<string, unknown>>({});
 
     const addDataToBuffer = useCallback(
         (field: string, value: unknown) => {
@@ -961,7 +961,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     data: editingData,
                 };
                 const columns: any[] = equipment.columns;
-                Object.entries(priorValuesBuffer).forEach(([field, value]) => {
+                Object.entries(priorValuesBuffer).forEach(([field, _value]) => {
                     const column: any = columns.find((c: any) => c.field === field);
                     if (column && column.changeCmd) {
                         const val = column.valueGetter ? column.valueGetter(wrappedEditedData) : editingData?.[field];
@@ -1078,7 +1078,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(
         (params: CellEditingStoppedEvent) => {
-            if (params.oldValue !== params.newValue) {
+            if (params.colDef.field != null && params.oldValue !== params.newValue) {
                 if (params.data.metadata.equipmentType === EQUIPMENT_TYPES.SHUNT_COMPENSATOR) {
                     updateShuntCompensatorCells(params);
                 } else if (params.data.metadata?.equipmentType === EQUIPMENT_TYPES.GENERATOR) {
