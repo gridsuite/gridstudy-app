@@ -37,7 +37,6 @@ import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
 import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
-import { useGetAvailableComponentLibraries } from './dialogs/parameters/single-line-diagram-parameters';
 import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
@@ -56,7 +55,7 @@ import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
-import { NetworkMapParameters } from './dialogs/parameters/network-map/network-map-parameters';
+import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -132,7 +131,7 @@ enum TAB_VALUES {
     dynamicSimulationParamsTabValue = 'DynamicSimulation',
     advancedParamsTabValue = 'Advanced',
     voltageInitParamsTabValue = 'VoltageInit',
-    networkMapParams = 'NetworkMap',
+    networkVisualizationsParams = 'NetworkVisualizations',
 }
 
 const hasValidationTabs = [
@@ -151,7 +150,7 @@ type OwnProps = {
 
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const user = useSelector((state: AppState) => state.user);
-    const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkMapParams);
+    const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkVisualizationsParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
 
@@ -216,8 +215,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
-
-    const componentLibraries = useGetAvailableComponentLibraries(user);
 
     const handleChangeTab = (newValue: string) => {
         if (hasValidationTabs.includes(tabValue as TAB_VALUES) && haveDirtyFields) {
@@ -295,11 +292,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.advancedParamsTabValue:
                 return <NetworkParameters />;
-            case TAB_VALUES.networkMapParams:
-                return <NetworkMapParameters componentLibraries={componentLibraries} />;
+            case TAB_VALUES.networkVisualizationsParams:
+                return <NetworkVisualizationsParameters />;
         }
     }, [
-        componentLibraries,
         loadFlowParametersBackend,
         securityAnalysisParametersBackend,
         sensitivityAnalysisBackend,
@@ -368,7 +364,10 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
                             <Divider />
-                            <Tab label={<FormattedMessage id="NetworkMap" />} value={TAB_VALUES.networkMapParams} />
+                            <Tab
+                                label={<FormattedMessage id="NetworkVisualizations" />}
+                                value={TAB_VALUES.networkVisualizationsParams}
+                            />
                             <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />
                         </Tabs>
                     </Grid>

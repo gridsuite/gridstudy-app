@@ -8,18 +8,18 @@
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
-import { getAvailableComponentLibraries } from '../../../services/study';
+import { getAvailableComponentLibraries } from '../../../../services/study/index.js';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
-} from '../../../utils/config-params';
-import { SubstationLayout } from '../../diagrams/diagram-common';
-import { LineSeparator } from '../dialogUtils';
-import { styles } from './parameters';
-import ParameterLineDropdown from './widget/parameter-line-dropdown';
-import ParameterLineSwitch from './widget/parameter-line-switch';
+} from '../../../../utils/config-params.js';
+import { LineSeparator } from '../../dialogUtils.jsx';
+import { styles } from '../parameters.jsx';
+import { SubstationLayout } from '../../../diagrams/diagram-common';
+import ParameterLineDropdown from '../widget/parameter-line-dropdown';
+import ParameterLineSwitch from '../widget/parameter-line-switch';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);

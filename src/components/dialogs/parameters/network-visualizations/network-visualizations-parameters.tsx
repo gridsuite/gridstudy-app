@@ -8,9 +8,9 @@ import React, { FunctionComponent, SyntheticEvent, useCallback, useState } from 
 import { Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { TabPanel } from '../parameters';
-import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from '../single-line-diagram-parameters';
-import { NetworkAreaDiagramParameters } from '../network-area-diagram-parameters';
-import { MapParameters } from '../map-parameters';
+import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
+import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
+import { MapParameters } from './map-parameters';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 
@@ -20,7 +20,7 @@ enum TabValue {
     NETWORK_AREA_DIAGRAM = 'NetworkAreaDiagram',
 }
 
-export const NetworkMapParameters: FunctionComponent = () => {
+export const NetworkVisualizationsParameters: FunctionComponent = () => {
     const user = useSelector((state: AppState) => state.user);
     const componentLibraries = useGetAvailableComponentLibraries(user);
     const [tabValue, setTabValue] = useState(TabValue.MAP);
