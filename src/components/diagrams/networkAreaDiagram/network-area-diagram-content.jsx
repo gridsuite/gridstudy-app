@@ -119,6 +119,7 @@ const dynamicCssRules = [
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
 ];
+const equipmentsWithPopover = ['LINE', 'TWO_WINDINGS_TRANSFORMER', 'PHASE_SHIFT_TRANSFORMER'];
 
 function NetworkAreaDiagramContent(props) {
     const { diagramSizeSetter } = props;
@@ -184,7 +185,8 @@ function NetworkAreaDiagramContent(props) {
                 true,
                 true,
                 dynamicCssRules,
-                handleTogglePopover
+                handleTogglePopover,
+                equipmentsWithPopover
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
