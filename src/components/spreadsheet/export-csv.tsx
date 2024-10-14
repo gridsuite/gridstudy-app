@@ -6,12 +6,23 @@
  */
 
 import { useIntl } from 'react-intl';
-import { useCallback } from 'react';
+import { FunctionComponent, RefObject, useCallback } from 'react';
 import { EDIT_COLUMN } from './utils/config-tables';
 import { ExportButton } from 'components/utils/export-button';
 import { formatNAValue } from './utils/cell-renderers';
+import { AgGridReact } from 'ag-grid-react';
+import { ColDef, ProcessCellForExportParams } from 'ag-grid-community';
 
-export const CsvExport = ({
+interface CsvExportProps {
+    gridRef: RefObject<AgGridReact>;
+    columns: ColDef[];
+    tableName?: string;
+    disabled: boolean;
+    tableNamePrefix?: string;
+    skipColumnHeaders?: boolean;
+}
+
+export const CsvExport: FunctionComponent<CsvExportProps> = ({
     gridRef,
     columns,
     tableNamePrefix = '',
@@ -30,18 +41,19 @@ export const CsvExport = ({
     }, [intl, tableName]);
 
     const downloadCSVData = useCallback(() => {
+        const isFieldDefined = (field: string | undefined): field is string => {
+            return field !== undefined;
+        };
         const filteredColumnsKeys = columns
-            .filter((column) => column.field !== EDIT_COLUMN)
-            .map((column) => column.field);
+            .map((column) => column.field)
+            .filter(isFieldDefined) // TODO should not be required with recent TS version
+            .filter((field) => field !== EDIT_COLUMN);
 
-        const processData = () => {
-            const gridData = gridRef?.current?.api?.getModel()?.rowsToDisplay.map((node) => node.data) || [];
-            Object.keys(gridData).forEach((item) => {
-                if (gridData[item].limitName) {
-                    gridData[item].limitName = formatNAValue(gridData[item].limitName, intl);
-                }
-            });
-            return gridData;
+        const processCell = (params: ProcessCellForExportParams): string => {
+            if (params.column.getColId() === 'limitName') {
+                return formatNAValue(params.value, intl);
+            }
+            return params.value;
         };
 
         gridRef?.current?.api?.exportDataAsCsv({
@@ -49,7 +61,7 @@ export const CsvExport = ({
             columnKeys: filteredColumnsKeys,
             skipColumnHeaders: skipColumnHeaders,
             fileName: tableNamePrefix.concat(getCSVFilename()),
-            rowData: processData(),
+            processCellCallback: processCell,
         });
     }, [columns, getCSVFilename, gridRef, tableNamePrefix, skipColumnHeaders, intl]);
 
