@@ -76,6 +76,7 @@
     "CBAll": "All",
     "CBNone": "None",
     "Map": "Map",
+    "NetworkMap": "Network map",
     "lineFullPath": "Line full path",
     "lineParallelPath": "Spread overlapping lines",
     "LineFlowMode": "Line flow mode",

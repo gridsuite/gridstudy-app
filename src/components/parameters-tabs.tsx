@@ -37,11 +37,7 @@ import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
 import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
-import {
-    SingleLineDiagramParameters,
-    useGetAvailableComponentLibraries,
-} from './dialogs/parameters/single-line-diagram-parameters';
-import { MapParameters } from './dialogs/parameters/map-parameters';
+import { useGetAvailableComponentLibraries } from './dialogs/parameters/single-line-diagram-parameters';
 import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
 import { NetworkParameters } from './dialogs/parameters/network-parameters';
@@ -59,8 +55,8 @@ import {
 import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
-import { NetworkAreaDiagramParameters } from './dialogs/parameters/network-area-diagram-parameters';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
+import { NetworkMapParameters } from './dialogs/parameters/network-map/network-map-parameters';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -128,9 +124,6 @@ const styles = {
 };
 
 enum TAB_VALUES {
-    sldParamsTabValue = 'SingleLineDiagram',
-    networkAreaDiagram = 'NetworkAreaDiagram',
-    mapParamsTabValue = 'Map',
     lfParamsTabValue = 'LoadFlow',
     securityAnalysisParamsTabValue = 'SecurityAnalysis',
     sensitivityAnalysisParamsTabValue = 'SensitivityAnalysis',
@@ -139,6 +132,7 @@ enum TAB_VALUES {
     dynamicSimulationParamsTabValue = 'DynamicSimulation',
     advancedParamsTabValue = 'Advanced',
     voltageInitParamsTabValue = 'VoltageInit',
+    networkMapParams = 'NetworkMap',
 }
 
 const hasValidationTabs = [
@@ -157,7 +151,7 @@ type OwnProps = {
 
 const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const user = useSelector((state: AppState) => state.user);
-    const [tabValue, setTabValue] = useState<string>(TAB_VALUES.sldParamsTabValue);
+    const [tabValue, setTabValue] = useState<string>(TAB_VALUES.networkMapParams);
     const [nextTabValue, setNextTabValue] = useState<string | undefined>(undefined);
     const [haveDirtyFields, setHaveDirtyFields] = useState<boolean>(false);
 
@@ -260,12 +254,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const displayTab = useCallback(() => {
         switch (tabValue) {
-            case TAB_VALUES.sldParamsTabValue:
-                return <SingleLineDiagramParameters componentLibraries={componentLibraries} />;
-            case TAB_VALUES.networkAreaDiagram:
-                return <NetworkAreaDiagramParameters />;
-            case TAB_VALUES.mapParamsTabValue:
-                return <MapParameters />;
             case TAB_VALUES.lfParamsTabValue:
                 return (
                     <LoadFlowParameters
@@ -307,6 +295,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                 return <VoltageInitParameters setHaveDirtyFields={setHaveDirtyFields} />;
             case TAB_VALUES.advancedParamsTabValue:
                 return <NetworkParameters />;
+            case TAB_VALUES.networkMapParams:
+                return <NetworkMapParameters componentLibraries={componentLibraries} />;
         }
     }, [
         componentLibraries,
@@ -378,15 +368,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
                             <Divider />
-                            <Tab
-                                label={<FormattedMessage id="SingleLineDiagram" />}
-                                value={TAB_VALUES.sldParamsTabValue}
-                            />
-                            <Tab
-                                label={<FormattedMessage id="NetworkAreaDiagram" />}
-                                value={TAB_VALUES.networkAreaDiagram}
-                            />
-                            <Tab label={<FormattedMessage id="Map" />} value={TAB_VALUES.mapParamsTabValue} />
+                            <Tab label={<FormattedMessage id="NetworkMap" />} value={TAB_VALUES.networkMapParams} />
                             <Tab label={<FormattedMessage id="Advanced" />} value={TAB_VALUES.advancedParamsTabValue} />
                         </Tabs>
                     </Grid>

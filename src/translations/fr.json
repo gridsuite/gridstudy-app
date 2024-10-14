@@ -77,6 +77,7 @@
     "CBAll": "Tous",
     "CBNone": "Aucun",
     "Map": "Carte",
+    "NetworkMap": "Images réseau",
     "lineFullPath": "Afficher le chemin complet des lignes",
     "lineParallelPath": "Écarter les lignes superposées",
     "LineFlowMode": "Mode de représentation des flux sur les lignes",
