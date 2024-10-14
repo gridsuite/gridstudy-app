@@ -821,7 +821,6 @@ export const reducer = createReducer(initialState, (builder) => {
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
-                // @ts-ignore (jamal)
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
@@ -845,7 +844,6 @@ export const reducer = createReducer(initialState, (builder) => {
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
-                // @ts-ignore (jamal)
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
@@ -857,7 +855,6 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(NETWORK_MODIFICATION_HANDLE_SUBTREE, (state, action: NetworkModificationHandleSubtreeAction) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
-            // @ts-ignore (jamal)
             unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
 
             newModel.updateLayout();

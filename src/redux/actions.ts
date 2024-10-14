@@ -67,6 +67,7 @@ import {
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
+import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -269,13 +270,13 @@ export function loadNetworkModificationTreeSuccess(
 
 export const NETWORK_MODIFICATION_TREE_NODE_ADDED = 'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 export type NetworkModificationTreeNodeAddedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_ADDED>> & {
-    networkModificationTreeNode: CurrentTreeNode;
+    networkModificationTreeNode: NetworkModificationNode;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeAdded(
-    networkModificationTreeNode: CurrentTreeNode,
+    networkModificationTreeNode: NetworkModificationNode,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -291,13 +292,13 @@ export function networkModificationTreeNodeAdded(
 
 export const NETWORK_MODIFICATION_TREE_NODE_MOVED = 'NETWORK_MODIFICATION_TREE_NODE_MOVED';
 export type NetworkModificationTreeNodeMovedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_MOVED>> & {
-    networkModificationTreeNode: CurrentTreeNode;
+    networkModificationTreeNode: RootNode | NetworkModificationNode;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeMoved(
-    networkModificationTreeNode: CurrentTreeNode,
+    networkModificationTreeNode: RootNode | NetworkModificationNode,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -313,11 +314,11 @@ export function networkModificationTreeNodeMoved(
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {
-    networkModificationTreeNodes: CurrentTreeNode;
+    networkModificationTreeNodes: NetworkModificationNode | RootNode;
     parentNodeId: UUID;
 };
 export function networkModificationHandleSubtree(
-    networkModificationTreeNodes: CurrentTreeNode,
+    networkModificationTreeNodes: NetworkModificationNode | RootNode,
     parentNodeId: UUID
 ): NetworkModificationHandleSubtreeAction {
     return {
