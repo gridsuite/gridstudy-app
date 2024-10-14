@@ -5,13 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { DiagramState } from '../../redux/reducer';
 import { DiagramType } from './diagram-common';
 
 /**
  * SORTING FUNCTIONS
  */
 
-const innerSortByAlign = (align) => {
+type DiagramAlignment = 'left' | 'right' | undefined;
+
+const innerSortByAlign = (align: DiagramAlignment): number => {
     if (align === 'left') {
         return 10;
     }
@@ -24,7 +27,7 @@ const innerSortByAlign = (align) => {
 /*
  * Sorts by the object's "align" parameter. Values equal to "left" will be before "right" values, and others or undefined will be last.
  */
-const sortByAlign = (a, b) => {
+const sortByAlign = (a: { align: DiagramAlignment }, b: { align: DiagramAlignment }) => {
     return innerSortByAlign(a?.align) - innerSortByAlign(b?.align);
 };
 
@@ -33,7 +36,7 @@ const sortByAlign = (a, b) => {
  * So we keep the same order as in the redux store.
  * We use the ID and type of the objects to identify their indexes.
  */
-const sortByIndex = (a, b, diagramStates) => {
+const sortByIndex = (a: any, b: any, diagramStates: any[]) => {
     return (
         diagramStates.findIndex((diagramState) => diagramState.id === a?.id && diagramState.svgType === a?.svgType) -
         diagramStates.findIndex((diagramState) => diagramState.id === b?.id && diagramState.svgType === b?.svgType)
@@ -46,7 +49,8 @@ const sortByIndex = (a, b, diagramStates) => {
  * @param initNadWithGeoData config parameter specifying if the nad uses geographical data
  * @returns {string}
  */
-export const getNadIdentifier = (diagramStates, initNadWithGeoData) => {
+
+export const getNadIdentifier = (diagramStates: DiagramState[], initNadWithGeoData: boolean): string => {
     const result =
         diagramStates
             .filter((diagram) => diagram.svgType === DiagramType.NETWORK_AREA_DIAGRAM)
@@ -63,8 +67,8 @@ export const getNadIdentifier = (diagramStates, initNadWithGeoData) => {
  * @param diagramStates the diagrams array of the redux store
  * @returns {(function(*, *): (*))|*} new array sorting function based on diagramStates
  */
-export const makeDiagramSorter = (diagramStates) => {
-    return (a, b) => sortByAlign(a, b) || sortByIndex(a, b, diagramStates);
+export const makeDiagramSorter = (diagramStates: any[]): ((a: any, b: any) => number) => {
+    return (a: any, b: any): number => sortByAlign(a, b) || sortByIndex(a, b, diagramStates);
 };
 
 // estimate the number of voltage levels for a requested depth
@@ -75,7 +79,11 @@ export const makeDiagramSorter = (diagramStates) => {
 // we want this estimation to be slightly pessimistic to avoid bad UX of going to far
 // and not being able to do the same thing step by step.
 const VL_DEPTH_GROWTH_RATE = 2;
-export function getEstimatedNbVoltageLevels(currentDepth, requestedDepth, previousVoltagesNB) {
+export function getEstimatedNbVoltageLevels(
+    currentDepth: number,
+    requestedDepth: number,
+    previousVoltagesNB: number
+): number {
     // We assume that the number of vl grows exponentially
     // real world example :
     // depth : number of voltage levels

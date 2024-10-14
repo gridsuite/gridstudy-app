@@ -7,7 +7,6 @@
 
 import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { RunningStatus } from '../../utils/running-status';
 import {
     MIN_HEIGHT,
@@ -15,17 +14,20 @@ import {
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
     styles,
+    DiagramType,
 } from '../diagram-common';
-import { NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
+import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
-import ComputingType from 'components/computing-status/computing-type';
+import ComputingType from '../../computing-status/computing-type';
+import { AppState } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
 import { getNadIdentifier } from '../diagram-utils.js';
+import { UUID } from 'crypto';
 
-const dynamicCssRules = [
+const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
         belowThresholdCssDeclaration: { display: 'block' },
@@ -119,23 +121,31 @@ const dynamicCssRules = [
     },
 ];
 
-function NetworkAreaDiagramContent(props) {
+type NetworkAreaDiagramContentProps = {
+    readonly svgType: DiagramType;
+    readonly svg?: string;
+    readonly loadingState: boolean;
+    readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
+    readonly diagramId: UUID;
+};
+function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const { diagramSizeSetter } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
-    const diagramViewerRef = useRef();
-    const currentNode = useSelector((state) => state.currentTreeNode);
-    const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
-    const nadNodeMovements = useSelector((state) => state.nadNodeMovements);
-    const diagramStates = useSelector((state) => state.diagramStates);
-    const initNadWithGeoData = useSelector((state) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+
+    const diagramViewerRef = useRef<NetworkAreaDiagramViewer>();
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
+    const diagramStates = useSelector((state: AppState) => state.diagramStates);
+    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, initNadWithGeoData);
     }, [diagramStates, initNadWithGeoData]);
 
     const onMoveNodeCallback = useCallback(
-        (equipmentId, nodeId, x, y, xOrig, yOrig) => {
+        (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
             dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
         },
         [dispatch, nadIdentifier]
@@ -146,7 +156,7 @@ function NetworkAreaDiagramContent(props) {
      */
 
     useLayoutEffect(() => {
-        if (props.svg) {
+        if (props.svg && svgRef.current) {
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
@@ -172,7 +182,10 @@ function NetworkAreaDiagramContent(props) {
                 diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
                 diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
             ) {
-                diagramViewer.setViewBox(diagramViewerRef.current.getViewBox());
+                const viewBox = diagramViewerRef.current.getViewBox();
+                if (viewBox) {
+                    diagramViewer.setViewBox(viewBox);
+                }
             }
 
             // Repositioning the previously moved nodes
@@ -215,13 +228,5 @@ function NetworkAreaDiagramContent(props) {
         </>
     );
 }
-
-NetworkAreaDiagramContent.propTypes = {
-    svgType: PropTypes.string,
-    svg: PropTypes.string,
-    loadingState: PropTypes.bool,
-    diagramSizeSetter: PropTypes.func,
-    diagramId: PropTypes.string,
-};
 
 export default NetworkAreaDiagramContent;
