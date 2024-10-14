@@ -19,15 +19,32 @@ import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { DiagramType } from '../diagram-common';
 import { getVoltageLevelSingleLineDiagram } from '../../../services/study/network';
+import { FC } from 'react';
+import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 
-const PositionDiagramPane = ({ open, onClose, voltageLevelId, currentNodeUuid, studyUuid }) => {
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
-    const centerName = useSelector((state) => state[PARAM_CENTER_LABEL]);
-    const diagonalName = useSelector((state) => state[PARAM_DIAGONAL_LABEL]);
-    const componentLibrary = useSelector((state) => state[PARAM_COMPONENT_LIBRARY]);
-    const language = useSelector((state) => state[PARAM_LANGUAGE]);
+interface PositionDiagramPaneProps {
+    open: boolean;
+    onClose: () => void;
+    voltageLevelId?: { id: UUID };
+    currentNodeUuid: UUID;
+    studyUuid: UUID;
+}
 
-    const [svgUrl, setSvgUrl] = useState(null);
+const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
+    open,
+    onClose,
+    voltageLevelId,
+    currentNodeUuid,
+    studyUuid,
+}) => {
+    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
+    const centerName = useSelector((state: AppState) => state[PARAM_CENTER_LABEL]);
+    const diagonalName = useSelector((state: AppState) => state[PARAM_DIAGONAL_LABEL]);
+    const componentLibrary = useSelector((state: AppState) => state[PARAM_COMPONENT_LIBRARY]);
+    const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+
+    const [svgUrl, setSvgUrl] = useState<string | null>(null);
     const handleClose = () => {
         setSvgUrl(null);
         onClose();

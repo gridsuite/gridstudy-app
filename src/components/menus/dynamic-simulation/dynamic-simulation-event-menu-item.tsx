@@ -13,6 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import { CustomMenuItem } from '../../utils/custom-nested-menu';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     menuItem: {
@@ -25,8 +26,12 @@ const styles = {
 
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
-    equipmentType: string;
-    onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
+    equipmentType: EQUIPMENT_TYPES;
+    onOpenDynamicSimulationEventDialog: (
+        equipmentId: string,
+        equipmentType: EQUIPMENT_TYPES,
+        dialogTitle: string
+    ) => void;
     disabled: boolean;
 }
 
