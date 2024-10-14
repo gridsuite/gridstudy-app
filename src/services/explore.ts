@@ -53,6 +53,25 @@ export function createCompositeModifications(
     );
 }
 
+export function createSpreadsheetModel(
+    name: string,
+    description: string,
+    parentDirectoryUuid: UUID,
+    spreadsheetConfigDto: any
+) {
+    let urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('name', name);
+    urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
+    return backendFetch(
+        PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/spreadsheet-configs?' + urlSearchParams.toString(),
+        {
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(spreadsheetConfigDto),
+        }
+    );
+}
+
 /**
  * Create Contingency List
  * @returns {Promise<Response>}
