@@ -190,7 +190,7 @@ const TableWrapper = (props) => {
     const cleanTableState = useCallback(() => {
         globalFilterRef.current.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
-        gridRef?.current?.columnApi.applyColumnState({
+        gridRef?.current?.api.applyColumnState({
             defaultState: { sort: null },
         });
         rollbackEdit();
@@ -499,7 +499,7 @@ const TableWrapper = (props) => {
             });
         }
 
-        gridRef.current?.columnApi?.applyColumnState({
+        gridRef.current?.api?.applyColumnState({
             state: lockedColumnsConfig,
             defaultState: { pinned: null },
         });
