@@ -7,9 +7,10 @@
 
 import { Box } from '@mui/system';
 import { CsvExport } from '../spreadsheet/export-csv';
-import React, { FunctionComponent, Ref } from 'react';
+import React, { FunctionComponent, RefObject } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
     gridContainer: {
@@ -28,7 +29,7 @@ const styles = {
 };
 
 interface RenderTableAndExportCsvProps {
-    gridRef: Ref<any> | undefined;
+    gridRef: RefObject<AgGridReact>;
     columns: any[];
     defaultColDef: ColDef;
     tableName: string;
