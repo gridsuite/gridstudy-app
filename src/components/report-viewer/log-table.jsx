@@ -4,156 +4,174 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import TableCell from '@mui/material/TableCell';
-import { styled } from '@mui/system';
-import { MuiVirtualizedTable } from '@gridsuite/commons-ui';
+import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { FilterButton } from './filter-button';
-import { TextFilterButton } from './text-filter-button.tsx';
-import { useDispatch, useSelector } from 'react-redux';
-import { useDebounce } from 'use-debounce';
-import { setReportFilters } from '../../redux/actions';
+import { setLogsFilter } from '../../redux/actions';
+import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
+import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { EllipsisCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
+import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useReportFetcher } from 'hooks/use-report-fetcher';
+import { useDispatch } from 'react-redux';
+import { getDefaultSeverityFilter } from 'utils/report-severity.utils';
+import PropTypes from 'prop-types';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
-const styles = {
-    flexContainer: {
-        display: 'flex',
-        alignItems: 'center',
-        boxSizing: 'border-box',
-    },
-    table: (theme) => ({
-        // temporary right-to-left patch, waiting for
-        // https://github.com/bvaughn/react-virtualized/issues/454
-        '& .ReactVirtualized__Table__headerRow': {
-            flip: false,
-            paddingRight: theme.direction === 'rtl' ? '0 !important' : undefined,
-        },
-    }),
-    header: { variant: 'header' },
-};
-
-const VirtualizedTable = styled(MuiVirtualizedTable)(styles);
-
-const LogTable = ({ logs, onRowClick }) => {
+const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }) => {
     const intl = useIntl();
 
     const theme = useTheme();
 
     const dispatch = useDispatch();
 
+    const [, , fetchReportLogs] = useReportFetcher(reportType);
+    const { updateFilter, filterSelector } = useAggridRowFilter({
+        filterType: LOGS_STORE_FIELD,
+        filterTab: reportType,
+        filterStoreAction: setLogsFilter,
+    });
+
     const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
+    const [rowData, setRowData] = useState(null);
 
-    const severityFilter = useSelector((state) => state.reportSeverityFilter);
+    const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
+    const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
 
-    const selectedReportId = useSelector((state) => state.reportSelectedReportId);
-
-    //messageFilter is only used for display, debouncedMessageFilter is used for triggering fetch
-    const [messageFilter, setMessageFilter] = useState('');
-
-    const [debouncedMessageFilter] = useDebounce(messageFilter, 500);
-
-    useEffect(() => {
-        dispatch(setReportFilters(undefined, debouncedMessageFilter, undefined));
-    }, [debouncedMessageFilter, dispatch]);
-
-    //We reset the displayed message filter when we switch reports
-    useEffect(() => {
-        setMessageFilter('');
-    }, [selectedReportId]);
-
-    const setSeverityFilter = (selectedSeverity) => {
-        dispatch(setReportFilters(undefined, undefined, selectedSeverity));
-    };
-
-    const severityCellRender = (cellData) => {
-        return (
-            <TableCell
-                component="div"
-                variant="body"
-                style={{
-                    display: 'flex',
-                    flex: '1',
-                    backgroundColor: cellData.rowData.backgroundColor,
-                }}
-                align="center"
-            >
-                {cellData.rowData.severity}
-            </TableCell>
-        );
-    };
-
-    const COLUMNS_DEFINITIONS = [
-        {
-            label: intl.formatMessage({ id: 'report_viewer/severity' }).toUpperCase(),
-            id: 'severity',
-            dataKey: 'severity',
-            maxWidth: SEVERITY_COLUMN_FIXED_WIDTH,
-            minWidth: SEVERITY_COLUMN_FIXED_WIDTH,
-            cellRenderer: severityCellRender,
-            extra: <FilterButton selectedItems={severityFilter} setSelectedItems={setSeverityFilter} />,
-        },
-        {
-            label: intl.formatMessage({ id: 'report_viewer/message' }).toUpperCase(),
-            id: 'message',
-            dataKey: 'message',
-            extra: <TextFilterButton filterText={messageFilter} setFilterText={setMessageFilter} />,
-        },
-    ];
-
-    const generateTableColumns = () => {
-        return Object.values(COLUMNS_DEFINITIONS).map((c) => {
-            return c;
-        });
-    };
-
-    const generateTableRows = () => {
-        return !logs
-            ? []
-            : logs.map((log) => {
-                  return {
-                      severity: log.severity.name,
-                      message: log.message,
-                      parentId: log.parentId,
-                      backgroundColor: log.severity.colorName,
-                  };
-              });
-    };
-
-    const handleRowClick = (event) => {
-        setSelectedRowIndex(event.index);
-        onRowClick(event.rowData);
-    };
-
-    const rowStyleFormat = (row) => {
-        if (row.index < 0) {
+    const refreshLogsOnSelectedReport = useCallback(() => {
+        if (severityFilter?.length === 0) {
+            setRowData([]);
             return;
         }
-        if (selectedRowIndex === row.index) {
-            return {
-                backgroundColor: theme.palette.action.selected,
-            };
-        }
-    };
+        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
+            const transformedLogs = reportLogs.map((log) => ({
+                severity: log.severity.name,
+                message: log.message,
+                parentId: log.parentId,
+                backgroundColor: log.severity.colorName,
+            }));
+            setSelectedRowIndex(-1);
+            setRowData(transformedLogs);
+        });
+    }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId]);
 
     useEffect(() => {
-        setSelectedRowIndex(-1);
-    }, [logs]);
+        // initialize the filter with the severities
+        if (filterSelector.length === 0 && severities?.length > 0) {
+            dispatch(
+                setLogsFilter(reportType, [
+                    {
+                        column: 'severity',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.EQUALS,
+                        value: getDefaultSeverityFilter(severities),
+                    },
+                ])
+            );
+        }
+        if (selectedReportId && reportNature) {
+            refreshLogsOnSelectedReport();
+        }
+    }, [
+        dispatch,
+        filterSelector.length,
+        reportType,
+        severities,
+        selectedReportId,
+        reportNature,
+        refreshLogsOnSelectedReport,
+    ]);
+
+    const COLUMNS_DEFINITIONS = useMemo(
+        () => [
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
+                width: SEVERITY_COLUMN_FIXED_WIDTH,
+                field: 'severity',
+                filterProps: {
+                    updateFilter,
+                    filterSelector,
+                },
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterEnums: {
+                        severity: severities,
+                    },
+                },
+                cellStyle: (params) => ({
+                    backgroundColor: params.data.backgroundColor,
+                    textAlign: 'center',
+                }),
+            }),
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'report_viewer/message' }),
+                field: 'message',
+                filterProps: {
+                    updateFilter,
+                    filterSelector,
+                },
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                },
+                flex: 1,
+                cellRenderer: EllipsisCellRenderer,
+            }),
+        ],
+        [intl, updateFilter, filterSelector, severities]
+    );
+
+    const handleRowClick = useCallback(
+        (row) => {
+            setSelectedRowIndex(row.rowIndex);
+            onRowClick(row.data);
+        },
+        [onRowClick]
+    );
+
+    const rowStyleFormat = useCallback(
+        (row) => {
+            if (row.index < 0) {
+                return {};
+            }
+            return selectedRowIndex === row.rowIndex ? { backgroundColor: theme.palette.action.selected } : {};
+        },
+        [selectedRowIndex, theme]
+    );
+
+    const onGridReady = ({ api }) => {
+        api?.sizeColumnsToFit();
+    };
+
+    const defaultColumnDefinition = {
+        sortable: false,
+        resizable: false,
+        suppressMovable: true,
+    };
 
     return (
-        //TODO do we need to useMemo/useCallback these props to avoid rerenders ?
-        <VirtualizedTable
-            columns={generateTableColumns()}
-            rows={generateTableRows()}
-            sortable={false}
-            onRowClick={handleRowClick}
-            rowStyle={rowStyleFormat}
+        <CustomAGGrid
+            columnDefs={COLUMNS_DEFINITIONS}
+            rowData={rowData}
+            onCellClicked={handleRowClick}
+            getRowStyle={rowStyleFormat}
+            onGridReady={onGridReady}
+            defaultColDef={defaultColumnDefinition}
         />
     );
+};
+
+LogTable.propTypes = {
+    selectedReportId: PropTypes.string,
+    reportType: PropTypes.string,
+    reportNature: PropTypes.string,
+    severities: PropTypes.arrayOf(PropTypes.string),
+    onRowClick: PropTypes.func,
 };
 
 export default memo(LogTable);

@@ -66,6 +66,10 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     setReport(r);
                 }
             });
+        } else {
+            // if the user unbuilds a node, the report needs to be reset.
+            // otherwise, the report will be kept in the state and useless report fetches with previous id will be made when the user rebuilds the node.
+            setReport();
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.

@@ -5,34 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
-
+import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState, Ref } from 'react';
 import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
 import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
-import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH } from '../diagram-common';
+import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH, Svg } from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';
 import DiagramHeader from '../diagram-header';
 import { fetchSvg } from '../../../services/study';
 import { mergeSx } from '../../utils/functions';
+import { AppState } from 'redux/reducer';
 
-const PositionDiagram = forwardRef((props, ref) => {
-    const [svg, setSvg] = useState(NoSvg);
+interface PositionDiagramProps {
+    diagramTitle: string;
+    svgUrl: string | null;
+    onClose: () => void;
+    svgType: string;
+    disabled?: boolean;
+}
+
+const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDivElement>) => {
+    const [svg, setSvg] = useState<Svg>({
+        svg: null,
+        metadata: null,
+        additionalMetadata: null,
+        error: null,
+        svgUrl: null,
+    });
     const svgUrl = useRef('');
-    const svgDraw = useRef();
+    const svgDraw = useRef<SingleLineDiagramViewer | null>(null);
     const { snackError } = useSnackMessage();
     const intlRef = useIntlRef();
-    const svgRef = useRef();
+    const svgRef = useRef<HTMLDivElement>();
     const { svgType, disabled } = props;
 
-    const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
-    const [loadingState, updateLoadingState] = useState(false);
+    const [loadingState, updateLoadingState] = useState<boolean>(false);
 
     const theme = useTheme();
 
@@ -50,6 +63,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                         setSvg({
                             svg: data.svg,
                             metadata: data.metadata,
+                            additionalMetadata: data.additionalMetadata,
                             error: null,
                             svgUrl: props.svgUrl,
                         });
@@ -63,6 +77,7 @@ const PositionDiagram = forwardRef((props, ref) => {
                     setSvg({
                         svg: null,
                         metadata: null,
+                        additionalMetadata: null,
                         error: errorMessage,
                         svgUrl: props.svgUrl,
                     });
@@ -85,9 +100,13 @@ const PositionDiagram = forwardRef((props, ref) => {
             let viewboxMaxWidth = MAX_WIDTH_VOLTAGE_LEVEL;
             let viewboxMaxHeight = MAX_HEIGHT_VOLTAGE_LEVEL;
             let selectionBackColor = theme.palette.background.paper;
+            const container = svgRef.current;
+            if (!container) {
+                return;
+            }
 
             const sldViewer = new SingleLineDiagramViewer(
-                svgRef.current, //container
+                container, //container
                 svg.svg, //svgContent
                 svg.metadata, //svg metadata
                 svgType,
@@ -95,16 +114,25 @@ const PositionDiagram = forwardRef((props, ref) => {
                 0,
                 viewboxMaxWidth,
                 viewboxMaxHeight,
-                selectionBackColor //arrows color
+                null,
+                null,
+                null,
+                null,
+                selectionBackColor, //arrows color
+                null
             );
 
             setServerHeight(sldViewer.getHeight());
             setServerWidth(sldViewer.getWidth());
-
             if (svgDraw.current && svgUrl.current === svg.svgUrl) {
-                sldViewer.setViewBox(svgDraw.current.getViewBox());
+                const viewBox = svgDraw.current.getViewBox();
+                if (viewBox) {
+                    sldViewer.setViewBox(viewBox);
+                }
             }
-            svgUrl.current = svg.svgUrl;
+            if (svg.svgUrl) {
+                svgUrl.current = svg.svgUrl;
+            }
             svgDraw.current = sldViewer;
         }
     }, [svg, currentNode, svgType, theme, ref, disabled, loadingState]);
@@ -113,10 +141,10 @@ const PositionDiagram = forwardRef((props, ref) => {
         if (serverWidth && serverHeight) {
             const divElt = svgRef.current;
             if (divElt != null) {
-                const svgEl = divElt.getElementsByTagName('svg')[0];
+                const svgEl = divElt.getElementsByTagName('svg')[0] as SVGElement;
                 if (svgEl != null) {
-                    svgEl.setAttribute('width', serverWidth);
-                    svgEl.setAttribute('height', serverHeight);
+                    svgEl.setAttribute('width', serverWidth.toString());
+                    svgEl.setAttribute('height', serverHeight.toString());
                 }
             }
         }
@@ -159,13 +187,5 @@ const PositionDiagram = forwardRef((props, ref) => {
         <></>
     );
 });
-
-PositionDiagram.propTypes = {
-    diagramTitle: PropTypes.string.isRequired,
-    svgUrl: PropTypes.string,
-    onClose: PropTypes.func,
-    svgType: PropTypes.string.isRequired,
-    disabled: PropTypes.bool,
-};
 
 export default PositionDiagram;

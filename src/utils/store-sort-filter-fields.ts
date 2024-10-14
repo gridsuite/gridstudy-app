@@ -43,5 +43,8 @@ export const TIMELINE = 'timeline';
 export const SPREADSHEET_STORE_FIELD = 'spreadsheetFilter';
 export const SPREADSHEET_SORT_STORE = 'spreadsheet';
 
+//logs store fields
+export const LOGS_STORE_FIELD = 'logsFilter';
+
 //table sort store field
 export const TABLE_SORT_STORE = 'tableSort';
