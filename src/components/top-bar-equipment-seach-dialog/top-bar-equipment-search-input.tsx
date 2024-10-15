@@ -43,7 +43,7 @@ export const TopBarEquipmentSearchInput = (props: TopBarEquipmentSearchInputProp
                     params.disabled
                         ? displayedValue
                         : intl.formatMessage({
-                              id: 'EquipmentSearchPlaceholder',
+                              id: 'searchPlaceholder',
                           })
                 }
                 autoFocus={true}
