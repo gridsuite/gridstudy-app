@@ -60,6 +60,16 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         });
     }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId]);
 
+    // Temporary solution to reset the filter each time reports are fetched.
+    // This approach removes the persistence behavior of the filter.
+    // It will be replaced once we have a better solution to handle the difference
+    // between default severities and excluded severities.
+    useEffect(() => {
+        if (!reportNature) {
+            dispatch(setLogsFilter(reportType, []));
+        }
+    }, [dispatch, reportNature, reportType]);
+
     useEffect(() => {
         // initialize the filter with the severities
         if (filterSelector.length === 0 && severities?.length > 0) {
@@ -80,12 +90,34 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     }, [
         dispatch,
         filterSelector.length,
-        reportType,
-        severities,
-        selectedReportId,
-        reportNature,
         refreshLogsOnSelectedReport,
+        reportNature,
+        reportType,
+        selectedReportId,
+        severities,
+        updateFilter,
     ]);
+
+    const shouldDisplayFilterBadge = useMemo(() => {
+        // Get the default severity filter
+        const defaultSeverityFilter = getDefaultSeverityFilter(severities);
+
+        // Check if both arrays have the same elements using a Set
+        const severitySet = new Set(severityFilter);
+        const defaultSeveritySet = new Set(defaultSeverityFilter);
+
+        if (severitySet.size !== defaultSeveritySet.size) {
+            return true;
+        }
+
+        for (let severity of severitySet) {
+            if (!defaultSeveritySet.has(severity)) {
+                return true;
+            }
+        }
+
+        return false;
+    }, [severityFilter, severities]);
 
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
@@ -103,6 +135,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                         severity: severities,
                     },
                 },
+                shouldDisplayFilterBadge: shouldDisplayFilterBadge,
                 cellStyle: (params) => ({
                     backgroundColor: params.data.backgroundColor,
                     textAlign: 'center',
@@ -123,7 +156,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 cellRenderer: EllipsisCellRenderer,
             }),
         ],
-        [intl, updateFilter, filterSelector, severities]
+        [intl, updateFilter, filterSelector, severities, shouldDisplayFilterBadge]
     );
 
     const handleRowClick = useCallback(

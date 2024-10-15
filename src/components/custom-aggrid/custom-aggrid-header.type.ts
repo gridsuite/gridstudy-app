@@ -44,6 +44,7 @@ export interface CustomColDef extends ColDef {
     filterTab?: string[];
     getEnumLabel?: (value: string) => string;
     isCountry?: boolean;
+    shouldDisplayFilterBadge?: boolean;
 }
 
 export type FilterDataType = {
