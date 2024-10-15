@@ -33,6 +33,11 @@ declare module '@mui/material/styles' {
         palette: {
             tabBackground: string;
         };
+        node: {
+            background: string;
+            hover: string;
+            border: string;
+        };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}
 

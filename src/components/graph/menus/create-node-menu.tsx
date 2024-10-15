@@ -8,15 +8,56 @@
 import React, { useCallback, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
-import { CopyType } from '../../network-modification-tree-pane';
 import ChildMenuItem from './create-child-menu-item';
 import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
+import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { UUID } from 'crypto';
+import NetworkModificationTreeModel from '../network-modification-tree-model';
+import { CopyType } from 'components/network-modification.type';
+import { NodeType } from '../tree-node.type';
+
+type SubMenuItem = {
+    onRoot: boolean;
+    action: () => void;
+    id: string;
+    disabled?: boolean;
+};
+
+type MenuItem = {
+    onRoot: boolean;
+    action?: () => void;
+    id: string;
+    disabled?: boolean;
+    subMenuItems?: Record<string, SubMenuItem>;
+    sectionEnd?: boolean;
+};
+type NodeMenuItems = Record<string, MenuItem>;
+
+interface CreateNodeMenuProps {
+    position: { x: number; y: number };
+    handleNodeCreation: (element: CurrentTreeNode, type: NodeType, insertMode: NodeInsertModes) => void;
+    handleNodeRemoval: (activeNode: CurrentTreeNode) => void;
+    handleClose: () => void;
+    handleBuildNode: (element: CurrentTreeNode) => void;
+    handleUnbuildNode: (element: CurrentTreeNode) => void;
+    handleExportCaseOnNode: (node: CurrentTreeNode) => void;
+    activeNode: CurrentTreeNode;
+    selectionForCopy: { sourceStudyUuid: string; nodeId: UUID; copyType: CopyType; allChildrenIds: string[] };
+    handleCopyNode: (nodeId: string) => void;
+    handleCutNode: (nodeId: UUID | null) => void;
+    handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
+    handleRemovalSubtree: (node: CurrentTreeNode) => void;
+    handleCutSubtree: (nodeId: UUID | null) => void;
+    handleCopySubtree: (nodeId: UUID) => void;
+    handlePasteSubtree: (referenceNodeId: string) => void;
+    handleOpenRestoreNodesDialog: (nodeId: UUID) => void;
+    disableRestoreNodes: boolean;
+}
 
 export const NodeActions = {
     REMOVE_NODE: 'REMOVE_NODE',
@@ -24,7 +65,11 @@ export const NodeActions = {
     NO_ACTION: 'NO_ACTION',
 };
 
-export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
+export const getNodeChildren = (
+    treeModel: NetworkModificationTreeModel,
+    sourceNodeIds: UUID[],
+    allChildren: CurrentTreeNode[]
+) => {
     const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid));
     if (children.length > 0) {
         children.forEach((item) => {
@@ -36,11 +81,11 @@ export const getNodeChildren = (treeModel, sourceNodeIds, allChildren) => {
     }
 };
 
-export const getNodesFromSubTree = (treeModel, id) => {
+export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
         const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.data.parentNodeUuid === id);
-        const allChildren = [];
+        const allChildren: CurrentTreeNode[] = [];
         activeNodeDirectChildren.forEach((child) => {
             allChildren.push(child);
             // get the children of each child
@@ -50,7 +95,7 @@ export const getNodesFromSubTree = (treeModel, id) => {
     }
 };
 
-const CreateNodeMenu = ({
+const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
     position,
     handleClose,
     handleBuildNode,
@@ -72,9 +117,9 @@ const CreateNodeMenu = ({
 }) => {
     const intl = useIntl();
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
-    const isModificationsInProgress = useSelector((state) => state.isModificationsInProgress);
-    const mapDataLoading = useSelector((state) => state.mapDataLoading);
-    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const isModificationsInProgress = useSelector((state: AppState) => state.isModificationsInProgress);
+    const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
+    const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
 
     const [nodeAction, setNodeAction] = useState(NodeActions.NO_ACTION);
 
@@ -83,12 +128,12 @@ const CreateNodeMenu = ({
         handleClose();
     }
 
-    function createNetworkModificationNode(insertMode) {
-        handleNodeCreation(activeNode, 'NETWORK_MODIFICATION', insertMode);
+    function createNetworkModificationNode(insertMode: NodeInsertModes) {
+        handleNodeCreation(activeNode, NodeType.NETWORK_MODIFICATION, insertMode);
         handleClose();
     }
 
-    function pasteNetworkModificationNode(insertMode) {
+    function pasteNetworkModificationNode(insertMode: NodeInsertModes) {
         handlePasteNode(activeNode.id, insertMode);
         handleClose();
     }
@@ -188,14 +233,15 @@ const CreateNodeMenu = ({
     function isSubtreeAlreadySelectedForCut() {
         return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
-    function isNodeHasChildren(node, treeModel) {
-        return treeModel.treeNodes.some((item) => item.data.parentNodeUuid === node.id);
+    function isNodeHasChildren(node: CurrentTreeNode, treeModel: NetworkModificationTreeModel | null): boolean {
+        return treeModel?.treeNodes.some((item) => item.data.parentNodeUuid === node.id) ?? false;
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
         return !isAnyNodeBuilding && !mapDataLoading && isNodeHasChildren(activeNode, treeModel);
     }
-    const NODE_MENU_ITEMS = {
+
+    const NODE_MENU_ITEMS: NodeMenuItems = {
         BUILD_NODE: {
             onRoot: false,
             action: () => buildNode(),
@@ -312,18 +358,20 @@ const CreateNodeMenu = ({
             onRoot: true,
             action: () => exportCaseOnNode(),
             id: 'exportCaseOnNode',
-            disabled: activeNode?.type !== 'ROOT' && !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
+            disabled: activeNode?.type !== NodeType.ROOT && !activeNode?.data?.globalBuildStatus?.startsWith('BUILT'),
         },
     };
 
     const renderMenuItems = useCallback(
-        (nodeMenuItems) => {
+        (nodeMenuItems: NodeMenuItems) => {
             return Object.values(nodeMenuItems).map((item) => {
-                if (activeNode?.type === 'ROOT' && !item.onRoot) {
+                if (activeNode?.type === NodeType.ROOT && !item.onRoot) {
                     return undefined; // do not show this item in menu
                 }
                 if (item.subMenuItems === undefined) {
-                    return <ChildMenuItem key={item.id} item={item} />;
+                    const action = item.action ?? (() => {});
+                    const disabled = item.disabled ?? false;
+                    return <ChildMenuItem key={item.id} item={{ ...item, action, disabled }} />;
                 }
                 return (
                     <CustomNestedMenuItem
@@ -345,7 +393,7 @@ const CreateNodeMenu = ({
         },
         {
             nodeName: activeNode?.data?.label,
-            nodesNumber: getNodesFromSubTree(treeModel, activeNode?.id),
+            nodesNumber: getNodesFromSubTree(treeModel, activeNode.id),
         }
     );
     const handleOnClose = useCallback(() => {
@@ -367,7 +415,6 @@ const CreateNodeMenu = ({
             <Menu
                 anchorReference="anchorPosition"
                 anchorPosition={{
-                    position: 'absolute',
                     left: position.x,
                     top: position.y,
                 }}
@@ -387,13 +434,6 @@ const CreateNodeMenu = ({
             )}
         </>
     );
-};
-
-CreateNodeMenu.propTypes = {
-    position: PropTypes.object.isRequired,
-    handleNodeCreation: PropTypes.func.isRequired,
-    handleNodeRemoval: PropTypes.func.isRequired,
-    handleClose: PropTypes.func.isRequired,
 };
 
 export default CreateNodeMenu;
