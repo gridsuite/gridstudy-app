@@ -190,7 +190,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             const searchTermLower = searchTerm.toLowerCase();
             api.forEachNode((node) => {
                 const { message } = node.data;
-                if (message && message.toLowerCase().includes(searchTermLower)) {
+                if (message?.toLowerCase().includes(searchTermLower)) {
                     matches.push(node.rowIndex);
                 }
             });
@@ -210,7 +210,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 return;
             }
 
-            let newIndex = currentResultIndex;
+            let newIndex;
 
             if (direction === 'next') {
                 newIndex = (currentResultIndex + 1) % searchResults.length;
