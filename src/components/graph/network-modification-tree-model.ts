@@ -7,12 +7,17 @@
 
 import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode } from './util/model-functions';
-import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
+import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from 'redux/reducer';
+import { Edge } from 'reactflow';
+import { isNetworkModificationNode } from './util/model-functions';
+import { NetworkModificationNode, RootNode } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
-const countNodes = (nodes, parentId) => {
+const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     return nodes.reduce((acc, n) => {
         if (n.data.parentNodeUuid === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
@@ -22,8 +27,8 @@ const countNodes = (nodes, parentId) => {
 };
 
 export default class NetworkModificationTreeModel {
-    treeNodes = [];
-    treeEdges = [];
+    treeNodes: CurrentTreeNode[] = [];
+    treeEdges: Edge[] = [];
 
     isAnyNodeBuilding = false;
 
@@ -31,8 +36,12 @@ export default class NetworkModificationTreeModel {
         this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
-
-    addChild(newNode, parentId, insertMode, referenceNodeId) {
+    addChild(
+        newNode: NetworkModificationNode | RootNode,
+        parentId: UUID,
+        insertMode?: NodeInsertModes,
+        referenceNodeId?: UUID
+    ) {
         // we have to keep a precise order of nodes in the array to avoid gettings children
         // nodes before their parents when building graph in dagre library which have uncontrolled results
         // We also need to do this to keep a correct order when inserting nodes and not loose the user.
@@ -50,6 +59,9 @@ export default class NetworkModificationTreeModel {
             }
             case NodeInsertModes.NewBranch: {
                 // We need to insert the node after all children of the active(reference) node
+                if (!referenceNodeId) {
+                    break;
+                }
                 const nbChildren = countNodes(this.treeNodes, referenceNodeId);
                 this.treeNodes.splice(
                     referenceNodeIndex + nbChildren + 1,
@@ -79,8 +91,8 @@ export default class NetworkModificationTreeModel {
             // remove previous edges between parent and node children
             const filteredEdges = this.treeEdges.filter((edge) => {
                 return (
-                    (edge.source !== parentId || !newNode.childrenIds.includes(edge.target)) &&
-                    (edge.target !== parentId || !newNode.childrenIds.includes(edge.source))
+                    (edge.source !== parentId || !newNode.childrenIds.includes(edge.target as UUID)) &&
+                    (edge.target !== parentId || !newNode.childrenIds.includes(edge.source as UUID))
                 );
             });
             // create new edges between node and its children
@@ -118,8 +130,8 @@ export default class NetworkModificationTreeModel {
 
     // Remove nodes AND reparent their children
     // TODO: support the case where children are deleted too (no reparenting)
-    removeNodes(deletedNodes) {
-        deletedNodes.forEach((nodeId) => {
+    removeNodes(deletedNodesUUIDs: UUID[]) {
+        deletedNodesUUIDs.forEach((nodeId) => {
             // get edges which have the deleted node as source or target
             const edges = this.treeEdges.filter((edge) => edge.source === nodeId || edge.target === nodeId);
             // From the edges array
@@ -145,7 +157,9 @@ export default class NetworkModificationTreeModel {
 
             // fix parentNodeUuid of children
             const nodeToDelete = this.treeNodes.find((el) => el.id === nodeId);
-
+            if (!nodeToDelete) {
+                return;
+            }
             const nextTreeNodes = filteredNodes.map((node) => {
                 if (node.data?.parentNodeUuid === nodeId) {
                     node.data = {
@@ -160,15 +174,21 @@ export default class NetworkModificationTreeModel {
         });
     }
 
-    updateNodes(updatedNodes) {
+    updateNodes(updatedNodes: (NetworkModificationNode | RootNode)[]) {
         updatedNodes.forEach((node) => {
             const indexModifiedNode = this.treeNodes.findIndex((othernode) => othernode.id === node.id);
             if (indexModifiedNode !== -1) {
+                const globalBuildStatus = isNetworkModificationNode(node)
+                    ? node.nodeBuildStatus?.globalBuildStatus
+                    : undefined;
+                const localBuildStatus = isNetworkModificationNode(node)
+                    ? node.nodeBuildStatus?.localBuildStatus
+                    : undefined;
                 this.treeNodes[indexModifiedNode].data = {
                     ...this.treeNodes[indexModifiedNode].data,
                     label: node.name,
-                    globalBuildStatus: node.nodeBuildStatus?.globalBuildStatus,
-                    localBuildStatus: node.nodeBuildStatus?.localBuildStatus,
+                    globalBuildStatus: globalBuildStatus,
+                    localBuildStatus: localBuildStatus,
                     readOnly: node.readOnly,
                 };
             }
@@ -176,9 +196,9 @@ export default class NetworkModificationTreeModel {
         this.treeNodes = [...this.treeNodes];
     }
 
-    setTreeElements(elements) {
+    setTreeElements(elements: RootNode | NetworkModificationNode) {
         // handle root node
-        this.treeNodes.push(convertNodetoReactFlowModelNode(elements, undefined));
+        this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
         // handle root children
         elements.children.forEach((child) => {
             this.addChild(child, elements.id);
@@ -197,7 +217,7 @@ export default class NetworkModificationTreeModel {
             this.treeNodes.find((node) => node?.data?.globalBuildStatus === BUILD_STATUS.BUILDING) !== undefined;
     }
 
-    setCaseName(newCaseName) {
+    setCaseName(newCaseName: string) {
         if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
             this.treeNodes[0].data = {
                 ...this.treeNodes[0].data,
