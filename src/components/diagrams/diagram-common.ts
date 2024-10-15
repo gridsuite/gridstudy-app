@@ -112,9 +112,9 @@ export const styles = {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
         '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
-        {
-            animation: 'none',
-        },
+            {
+                animation: 'none',
+            },
     },
     paperBorders: (theme: Theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
