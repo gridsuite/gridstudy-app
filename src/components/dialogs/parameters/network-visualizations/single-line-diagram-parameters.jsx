@@ -44,44 +44,35 @@ export const SingleLineDiagramParameters = ({ componentLibraries }) => {
     );
 
     return (
-        <>
-            <Grid
-                xl={6}
-                container
-                spacing={1}
-                sx={styles.scrollableGrid}
-                marginTop={-3}
-                justifyContent={'space-between'}
-            >
-                <ParameterLineSwitch paramNameId={PARAM_DIAGONAL_LABEL} label="diagonalLabel" />
-                <LineSeparator />
-                <ParameterLineSwitch paramNameId={PARAM_CENTER_LABEL} label="centerLabel" />
-                <LineSeparator />
-                <ParameterLineDropdown
-                    paramNameId={PARAM_SUBSTATION_LAYOUT}
-                    labelTitle="SubstationLayout"
-                    labelValue="substation-layout-select-label"
-                    defaultValueIfNull={true}
-                    values={{
-                        [SubstationLayout.HORIZONTAL]: 'HorizontalSubstationLayout',
-                        [SubstationLayout.VERTICAL]: 'VerticalSubstationLayout',
-                        // the following layouts are not yet supported
-                        //[SubstationLayout.SMART]: 'SmartSubstationLayout',
-                        //[SubstationLayout.SMARTHORIZONTALCOMPACTION]:
-                        //'SmartWithHorizontalCompactionSubstationLayout',
-                        //[SubstationLayout.SMARTVERTICALCOMPACTION]:
-                        //'SmartWithVerticalCompactionSubstationLayout',
-                    }}
-                />
-                <LineSeparator />
-                <ParameterLineDropdown
-                    paramNameId={PARAM_COMPONENT_LIBRARY}
-                    labelTitle="ComponentLibrary"
-                    labelValue="component-library-select-label"
-                    values={componentLibsRenderCache}
-                />
-            </Grid>
-        </>
+        <Grid xl={6} container spacing={1} sx={styles.scrollableGrid} marginTop={-3} justifyContent={'space-between'}>
+            <ParameterLineSwitch paramNameId={PARAM_DIAGONAL_LABEL} label="diagonalLabel" />
+            <LineSeparator />
+            <ParameterLineSwitch paramNameId={PARAM_CENTER_LABEL} label="centerLabel" />
+            <LineSeparator />
+            <ParameterLineDropdown
+                paramNameId={PARAM_SUBSTATION_LAYOUT}
+                labelTitle="SubstationLayout"
+                labelValue="substation-layout-select-label"
+                defaultValueIfNull={true}
+                values={{
+                    [SubstationLayout.HORIZONTAL]: 'HorizontalSubstationLayout',
+                    [SubstationLayout.VERTICAL]: 'VerticalSubstationLayout',
+                    // the following layouts are not yet supported
+                    //[SubstationLayout.SMART]: 'SmartSubstationLayout',
+                    //[SubstationLayout.SMARTHORIZONTALCOMPACTION]:
+                    //'SmartWithHorizontalCompactionSubstationLayout',
+                    //[SubstationLayout.SMARTVERTICALCOMPACTION]:
+                    //'SmartWithVerticalCompactionSubstationLayout',
+                }}
+            />
+            <LineSeparator />
+            <ParameterLineDropdown
+                paramNameId={PARAM_COMPONENT_LIBRARY}
+                labelTitle="ComponentLibrary"
+                labelValue="component-library-select-label"
+                values={componentLibsRenderCache}
+            />
+        </Grid>
     );
 };
 

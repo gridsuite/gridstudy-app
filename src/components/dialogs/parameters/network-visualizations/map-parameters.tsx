@@ -39,69 +39,67 @@ export const MapParameters = () => {
 
     const [lineFlowColorModeLocal] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
 
-    const [isLineFlowNominal, setDisabledFlowAlertThreshold] = useState(
+    const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] = useState(
         lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE
     );
 
     return (
-        <>
-            <Grid
-                xl={6}
-                container
-                spacing={1}
-                sx={styles.scrollableGrid}
-                key={'mapParameters'}
-                marginTop={-3}
-                justifyContent={'space-between'}
-            >
-                <ParameterLineSwitch paramNameId={PARAM_LINE_FULL_PATH} label="lineFullPath" />
-                <LineSeparator />
-                <ParameterLineSwitch paramNameId={PARAM_LINE_PARALLEL_PATH} label="lineParallelPath" />
-                <LineSeparator />
-                <ParameterLineDropdown
-                    paramNameId={PARAM_LINE_FLOW_MODE}
-                    labelTitle="LineFlowMode"
-                    labelValue="line-flow-mode-select-label"
-                    values={{
-                        [LineFlowMode.STATIC_ARROWS]: 'StaticArrows',
-                        [LineFlowMode.ANIMATED_ARROWS]: 'AnimatedArrows',
-                        [LineFlowMode.FEEDERS]: 'Feeders',
-                    }}
-                />
-                <LineSeparator />
-                <ParameterLineDropdown
-                    paramNameId={PARAM_LINE_FLOW_COLOR_MODE}
-                    labelTitle="LineFlowColorMode"
-                    labelValue="line-flow-color-mode-select-label"
-                    values={{
-                        [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
-                        [LineFlowColorMode.OVERLOADS]: 'Overloads',
-                    }}
-                    onPreChange={(event) => {
-                        setDisabledFlowAlertThreshold(event.target.value === LineFlowColorMode.NOMINAL_VOLTAGE);
-                    }}
-                />
-                <LineSeparator />
-                <ParameterLineSlider
-                    paramNameId={PARAM_LINE_FLOW_ALERT_THRESHOLD}
-                    label="AlertThresholdLabel"
-                    disabled={isLineFlowNominal}
-                    marks={alertThresholdMarks}
-                />
-                <LineSeparator />
-                <ParameterLineSwitch paramNameId={PARAM_MAP_MANUAL_REFRESH} label="MapManualRefresh" />
-                <LineSeparator />
-                <ParameterLineDropdown
-                    paramNameId={PARAM_MAP_BASEMAP}
-                    labelTitle="MapBaseMap"
-                    labelValue="map-base-map-select-label"
-                    values={{
-                        [MAP_BASEMAP_MAPBOX]: 'Mapbox',
-                        [MAP_BASEMAP_CARTO]: 'Carto',
-                        [MAP_BASEMAP_CARTO_NOLABEL]: 'CartoNoLabel',
-                    }}
-                />
-            </Grid>
-        </>
+        <Grid
+            xl={6}
+            container
+            spacing={1}
+            sx={styles.scrollableGrid}
+            key={'mapParameters'}
+            marginTop={-3}
+            justifyContent={'space-between'}
+        >
+            <ParameterLineSwitch paramNameId={PARAM_LINE_FULL_PATH} label="lineFullPath" />
+            <LineSeparator />
+            <ParameterLineSwitch paramNameId={PARAM_LINE_PARALLEL_PATH} label="lineParallelPath" />
+            <LineSeparator />
+            <ParameterLineDropdown
+                paramNameId={PARAM_LINE_FLOW_MODE}
+                labelTitle="LineFlowMode"
+                labelValue="line-flow-mode-select-label"
+                values={{
+                    [LineFlowMode.STATIC_ARROWS]: 'StaticArrows',
+                    [LineFlowMode.ANIMATED_ARROWS]: 'AnimatedArrows',
+                    [LineFlowMode.FEEDERS]: 'Feeders',
+                }}
+            />
+            <LineSeparator />
+            <ParameterLineDropdown
+                paramNameId={PARAM_LINE_FLOW_COLOR_MODE}
+                labelTitle="LineFlowColorMode"
+                labelValue="line-flow-color-mode-select-label"
+                values={{
+                    [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
+                    [LineFlowColorMode.OVERLOADS]: 'Overloads',
+                }}
+                onPreChange={(event) => {
+                    setDisabledFlowAlertThreshold(event.target.value === LineFlowColorMode.NOMINAL_VOLTAGE);
+                }}
+            />
+            <LineSeparator />
+            <ParameterLineSlider
+                paramNameId={PARAM_LINE_FLOW_ALERT_THRESHOLD}
+                label="AlertThresholdLabel"
+                disabled={disabledFlowAlertThreshold}
+                marks={alertThresholdMarks}
+            />
+            <LineSeparator />
+            <ParameterLineSwitch paramNameId={PARAM_MAP_MANUAL_REFRESH} label="MapManualRefresh" />
+            <LineSeparator />
+            <ParameterLineDropdown
+                paramNameId={PARAM_MAP_BASEMAP}
+                labelTitle="MapBaseMap"
+                labelValue="map-base-map-select-label"
+                values={{
+                    [MAP_BASEMAP_MAPBOX]: 'Mapbox',
+                    [MAP_BASEMAP_CARTO]: 'Carto',
+                    [MAP_BASEMAP_CARTO_NOLABEL]: 'CartoNoLabel',
+                }}
+            />
+        </Grid>
     );
 };
