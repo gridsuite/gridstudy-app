@@ -8,6 +8,7 @@
 import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
+import { ElementType } from '@gridsuite/commons-ui';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
@@ -24,7 +25,7 @@ export function createParameter(newParameter: any, name: string, parameterType: 
     });
 }
 
-export function elementExists(directoryUuid: UUID, elementName: string, type: string) {
+export function elementExists(directoryUuid: UUID, elementName: string, type: ElementType) {
     const existsElementUrl = `${PREFIX_DIRECTORY_SERVER_QUERIES}/v1/directories/${directoryUuid}/elements/${elementName}/types/${type}`;
 
     console.debug(existsElementUrl);

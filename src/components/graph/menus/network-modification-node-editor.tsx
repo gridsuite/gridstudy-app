@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -983,6 +983,7 @@ const NetworkModificationNodeEditor = () => {
                 open={createCompositeModificationDialogOpen}
                 onSave={doCreateCompositeModificationsElements}
                 onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                type={ElementType.MODIFICATION}
                 titleId={'CreateCompositeModification'}
                 prefixIdForGeneratedName={'GeneratedModification'}
             />

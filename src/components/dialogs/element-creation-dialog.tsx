@@ -40,6 +40,7 @@ interface ElementCreationDialogProps {
     open: boolean;
     onSave: (data: IElementCreationDialog) => void;
     onClose: () => void;
+    type: ElementType;
     titleId: string;
     prefixIdForGeneratedName?: string;
 }
@@ -64,6 +65,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     open,
     onSave,
     onClose,
+    type,
     titleId,
     prefixIdForGeneratedName,
 }) => {
@@ -151,7 +153,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                             <UniqueNameInput
                                 name={NAME}
                                 label={'Name'}
-                                elementType={ElementType.DIRECTORY}
+                                elementType={type}
                                 activeDirectory={destinationFolder?.id as UUID}
                                 autoFocus
                             />
