@@ -22,8 +22,8 @@ export function convertNodetoReactFlowModelNode(
         parentNodeUuid: parentNodeUuid!,
         label: node.name,
         description: node.description ?? null,
-        globalBuildStatus: globalBuildStatus,
-        localBuildStatus: localBuildStatus,
+        ...(globalBuildStatus !== undefined ? { globalBuildStatus } : {}),
+        ...(localBuildStatus !== undefined ? { localBuildStatus } : {}),
     };
 
     // This is the ReactFlow format (Cf documentation)
@@ -73,8 +73,8 @@ export function recursiveSearchFirstNodeOfType(
 
     if (
         elements.type === nodeType &&
-        globalBuildStatus !== undefined &&
-        (buildStatusList === undefined || buildStatusList.includes(globalBuildStatus))
+        (buildStatusList === undefined ||
+            (globalBuildStatus !== undefined && buildStatusList.includes(globalBuildStatus)))
     ) {
         return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
     }
