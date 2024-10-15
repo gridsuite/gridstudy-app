@@ -30,6 +30,9 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]].columns
     );
+    const allReorderedTableDefinitionIndexes = useSelector(
+        (state: AppState) => state.allReorderedTableDefinitionIndexes
+    );
     const dialogOpen = useStateBoolean(false);
 
     const currentType = useMemo(() => {
@@ -41,12 +44,26 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
         return customColumnsDefinitions.map(({ name, formula }) => ({ name, formula }));
     }, [customColumnsDefinitions]);
 
-    const staticColumns = useMemo(() => {
+    const staticColumnIdToField = useMemo(() => {
         const equipment: any = TABLES_DEFINITION_INDEXES.get(indexTab);
-        return equipment
-            ? equipment.columns.map((x: any) => ({ name: intl.formatMessage({ id: x.id }), formula: x.field }))
-            : [];
+        return equipment ? new Map<string, string>(equipment.columns.map((c: any) => [c.id, c.field])) : null;
     }, [indexTab]);
+
+    const reorderedStaticColumnIds = useMemo(() => {
+        const allReorderedColumns = allReorderedTableDefinitionIndexes[indexTab];
+        return allReorderedColumns
+            ? JSON.parse(allReorderedColumns)
+            : TABLES_DEFINITION_INDEXES.get(indexTab)?.columns.map((item) => item.id);
+    }, [indexTab, allReorderedTableDefinitionIndexes]);
+
+    const staticColumnFormulas = useMemo(() => {
+        return reorderedStaticColumnIds && staticColumnIdToField
+            ? reorderedStaticColumnIds.map((colId: string) => ({
+                  name: intl.formatMessage({ id: colId }),
+                  formula: staticColumnIdToField.get(colId),
+              }))
+            : [];
+    }, [reorderedStaticColumnIds, staticColumnIdToField, intl]);
 
     const saveSpreadsheetColumnsConfiguration = ({
         name,
@@ -56,10 +73,8 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     }: ICompositeCreateModificationDialog) => {
         const spreadsheetConfigObject = {
             sheetType: currentType,
-            customColumns: [...staticColumns, ...customColumns],
+            customColumns: [...staticColumnFormulas, ...customColumns],
         };
-
-        console.log('DBG DBR save', customColumnsDefinitions, staticColumns, spreadsheetConfigObject);
 
         createSpreadsheetModel(name, description, folderId, spreadsheetConfigObject)
             .then(() => {
