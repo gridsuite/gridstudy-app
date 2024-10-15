@@ -25,6 +25,7 @@ import {
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { unitToKiloUnit } from '../../../utils/unit-converter';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { convertSide } from '../loadflow/load-flow-result-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -66,6 +67,7 @@ interface ShortCircuitAnalysisResultsFeederResult {
     connectableId: string;
     current: number;
     linkedElementId: string;
+    side?: string;
 }
 
 const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisResultProps> = ({
@@ -83,10 +85,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
 
     const columns = useMemo(() => {
         const isAllBusesAnalysisType = analysisType === ShortCircuitAnalysisType.ALL_BUSES;
+        const isOneBusAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
 
         const sortPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType ? sortProps : undefined;
 
         const filterPropsCheckedForAllBusesAnalysisType = isAllBusesAnalysisType ? filterProps : undefined;
+
+        const filterPropsCheckedForOneBusAnalysisType = isOneBusAnalysisType ? filterProps : undefined;
 
         const textFilterParams = {
             filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -134,6 +139,14 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 filterProps: filterProps,
                 filterParams: numericFilterParams,
                 valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
+            }),
+            makeAgGridCustomHeaderColumn({
+                headerName: intl.formatMessage({ id: 'Side' }),
+                field: 'side',
+                sortProps,
+                hide: !isOneBusAnalysisType,
+                filterProps: filterPropsCheckedForOneBusAnalysisType,
+                filterParams: autoCompleteFilterParams,
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
@@ -280,7 +293,6 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 }
 
                 const current = getCurrent(faultResult);
-
                 const deltaCurrentIpMax = faultResult.shortCircuitLimits.deltaCurrentIpMax;
                 const deltaCurrentIpMin = faultResult.shortCircuitLimits.deltaCurrentIpMin;
 
@@ -313,6 +325,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 const feederResults = faultResult.feederResults ?? [];
                 feederResults.forEach((feederResult) => {
                     const current = getCurrent(feederResult);
+                    const side = analysisType === ShortCircuitAnalysisType.ONE_BUS ? feederResult.side : undefined;
 
                     rows.push({
                         connectableId: feederResult.connectableId,
@@ -321,12 +334,13 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         elementId: '', // we have to add this otherwise it's automatically filtered
                         faultType: '', // we have to add this otherwise it's automatically filtered
                         limitType: '', // we have to add this otherwise it's automatically filtered
+                        side: convertSide(side, intl),
                     });
                 });
             });
             return rows;
         },
-        [getCurrent, intl]
+        [getCurrent, intl, analysisType]
     );
     const rows = useMemo(() => flattenResult(result), [flattenResult, result]);
 

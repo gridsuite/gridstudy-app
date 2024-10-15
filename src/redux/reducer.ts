@@ -185,7 +185,6 @@ import {
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
     TABLE_SORT,
-    REPORT_FILTER,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
@@ -193,7 +192,8 @@ import {
     UpdateEquipmentsAction,
     USE_NAME,
     UseNameAction,
-    ReportFilterAction,
+    LOGS_FILTER,
+    LogsFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -253,6 +253,7 @@ import {
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    LOGS_STORE_FIELD,
     ONE_BUS,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -282,8 +283,7 @@ import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
-import { SeverityFilter } from '../types/report.type';
-import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -356,10 +356,10 @@ export interface TreeNodeData {
     parentNodeUuid: UUID;
     label: string;
     description: string;
-    buildStatus: BUILD_STATUS;
+    globalBuildStatus: BUILD_STATUS;
     readonly: boolean;
 }
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID } & { data: TreeNodeData };
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -388,7 +388,7 @@ export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION'
 export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
 
 export type DiagramState = {
-    id: string;
+    id: UUID;
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
@@ -436,9 +436,6 @@ export interface AppState extends CommonStoreState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
-    reportMessageFilter: string;
-    reportSeverityFilter: SeverityFilter;
-    reportSelectedReportId: string | null;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -451,9 +448,9 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allDisplayedColumnsNames: UnknownArray;
-    allLockedColumnsNames: UnknownArray;
-    allReorderedTableDefinitionIndexes: UnknownArray;
+    allDisplayedColumnsNames: string[];
+    allLockedColumnsNames: string[];
+    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -514,7 +511,23 @@ export interface AppState extends CommonStoreState {
     };
 
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
+
+    [LOGS_STORE_FIELD]: LogsFilterState;
 }
+
+export type LogsFilterState = Record<string, UnknownArray>;
+const initialLogsFilterState: LogsFilterState = {
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SENSITIVITY_ANALYSIS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
+};
 
 export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, Identifiable[] | null>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -593,9 +606,6 @@ const initialState: AppState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     limitReductionModified: false,
-    reportMessageFilter: '',
-    reportSeverityFilter: getDefaultSeverityFilter([]),
-    reportSelectedReportId: null,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -667,6 +677,8 @@ const initialState: AppState = {
         [EQUIPMENT_TYPES.BUS]: [],
         [EQUIPMENT_TYPES.TIE_LINE]: [],
     },
+
+    [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
         [SPREADSHEET_SORT_STORE]: Object.values(TABLES_DEFINITIONS).reduce((acc, current) => {
@@ -1180,7 +1192,7 @@ export const reducer = createReducer(initialState, (builder) => {
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
                 diagramStates.push({
-                    id: action.id,
+                    id: action.id as UUID,
                     svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     state: ViewState.OPENED,
                 });
@@ -1204,7 +1216,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // If the NAD to open is not already in the diagramStates, we add it.
                 if (diagramToOpenIndex < 0) {
                     diagramStates.push({
-                        id: action.id,
+                        id: action.id as UUID,
                         svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                         state: diagramStates[firstNadIndex].state,
                     });
@@ -1261,7 +1273,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 });
                 // And we add the new one.
                 diagramStates.push({
-                    id: action.id,
+                    id: action.id as UUID,
                     svgType: action.svgType,
                     state: ViewState.OPENED,
                 });
@@ -1288,7 +1300,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.diagramStates = diagramStatesWithoutNad.concat(
             uniqueIds.map((id) => ({
-                id: id,
+                id: id as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             }))
@@ -1600,23 +1612,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
 
+    builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
+        state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
+    });
+
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
         state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
-    });
-    builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
-        if (action.messageFilter !== undefined) {
-            state.reportMessageFilter = action.messageFilter;
-        }
-        if (action.severityFilter !== undefined) {
-            state.reportSeverityFilter = action.severityFilter;
-        }
-        if (action.reportId !== undefined) {
-            state.reportSelectedReportId = action.reportId;
-        }
     });
 });
 

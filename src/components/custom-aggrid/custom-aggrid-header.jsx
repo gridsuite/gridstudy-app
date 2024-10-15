@@ -7,7 +7,19 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
-import { Autocomplete, Badge, debounce, Grid, IconButton, MenuItem, Popover, Select, TextField } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import {
+    Autocomplete,
+    Badge,
+    debounce,
+    Grid,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Popover,
+    Select,
+    TextField,
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SortWay } from '../../hooks/use-aggrid-sort';
@@ -85,12 +97,21 @@ const CustomHeaderComponent = ({
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
-    const [selectedFilterData, setSelectedFilterData] = useState(undefined);
+    const [selectedFilterData, setSelectedFilterData] = useState();
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
         !!selectedFilterData?.length || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
+
+    const handleClearFilter = () => {
+        setSelectedFilterData(undefined);
+        updateFilter(field, {
+            value: undefined,
+            type: selectedFilterComparator,
+            dataType: filterDataType,
+        });
+    };
 
     const handleShowFilter = (event) => {
         setFilterAnchorElement(event.currentTarget);
@@ -372,6 +393,20 @@ const CustomHeaderComponent = ({
                                         type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
                                     }}
                                     sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                                    InputProps={{
+                                        endAdornment: selectedFilterData ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="clear filter"
+                                                    onClick={handleClearFilter}
+                                                    edge="end"
+                                                    size="small"
+                                                >
+                                                    <ClearIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    }}
                                 />
                             )}
                         </Grid>
