@@ -6,35 +6,42 @@
  */
 
 import { InputAdornment, TextField } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
-import { forwardRef, useCallback, useImperativeHandle, useRef } from 'react';
+import { ChangeEvent, forwardRef, RefObject, useCallback, useImperativeHandle, useRef } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
+import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
-    searchSection: (theme) => ({
+    searchSection: (theme: Theme) => ({
         paddingRight: theme.spacing(1),
         alignItems: 'center',
     }),
 };
 
-export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
+interface GlobalFilterProps {
+    gridRef: RefObject<AgGridReact>;
+    disabled?: boolean;
+}
+
+export const GlobalFilter = forwardRef(({ gridRef, disabled }: GlobalFilterProps, ref) => {
     const intl = useIntl();
-    const inputRef = useRef();
+    const inputRef = useRef<any>();
 
     const applyQuickFilter = useCallback(
-        (filterValue) => {
-            gridRef.current?.api?.setQuickFilter(filterValue);
+        (filterValue: string) => {
+            gridRef.current?.api?.setGridOption('quickFilterText', filterValue);
         },
         [gridRef]
     );
 
     const resetFilter = useCallback(() => {
         inputRef.current.value = '';
-        applyQuickFilter();
+        applyQuickFilter('');
     }, [applyQuickFilter]);
 
     const getFilterValue = useCallback(() => {
-        return inputRef.current?.value;
+        return inputRef.current.value;
     }, []);
 
     useImperativeHandle(
@@ -49,7 +56,7 @@ export const GlobalFilter = forwardRef(({ gridRef, disabled }, ref) => {
     );
 
     const handleChangeFilter = useCallback(
-        (event) => {
+        (event: ChangeEvent<HTMLInputElement>) => {
             applyQuickFilter(event.target.value);
         },
         [applyQuickFilter]

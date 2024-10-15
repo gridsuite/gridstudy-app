@@ -6,9 +6,10 @@
  */
 
 import { Checkbox, Tooltip, IconButton } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import CheckIcon from '@mui/icons-material/Check';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -17,6 +18,8 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { Box } from '@mui/system';
 import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
+import { AppState } from '../../../redux/reducer';
+import { IntlShape } from 'react-intl';
 
 const styles = {
     editCell: {
@@ -27,13 +30,13 @@ const styles = {
         width: '100%',
         height: '100%',
     },
-    referenceEditRow: (theme) => ({
+    referenceEditRow: (theme: Theme) => ({
         '& button': {
             color: theme.palette.primary.main,
             cursor: 'initial',
         },
     }),
-    tableCell: (theme) => ({
+    tableCell: (theme: Theme) => ({
         fontSize: 'small',
         cursor: 'initial',
         display: 'flex',
@@ -56,7 +59,7 @@ const styles = {
     numericValue: {
         marginLeft: 'inherit',
     },
-    leftFade: (theme) => ({
+    leftFade: (theme: Theme) => ({
         background:
             'linear-gradient(to right, ' +
             theme.palette.primary.main +
@@ -70,7 +73,7 @@ const styles = {
 
 export const NA_Value = 'N/A';
 
-export const BooleanCellRenderer = (props) => {
+export const BooleanCellRenderer = (props: any) => {
     const isChecked = Boolean(props.value);
     return (
         <div>
@@ -81,7 +84,7 @@ export const BooleanCellRenderer = (props) => {
     );
 };
 
-export const BooleanNullableCellRenderer = (props) => {
+export const BooleanNullableCellRenderer = (props: any) => {
     return (
         <div>
             <Checkbox
@@ -95,7 +98,7 @@ export const BooleanNullableCellRenderer = (props) => {
     );
 };
 
-export const formatCell = (props) => {
+export const formatCell = (props: any) => {
     let value = props?.valueFormatted || props.value;
     let tooltipValue = undefined;
     if (props.colDef.valueGetter) {
@@ -117,7 +120,7 @@ export const formatCell = (props) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const convertDuration = (duration) => {
+export const convertDuration = (duration: number) => {
     if (!duration || isNaN(duration)) {
         return '';
     }
@@ -136,34 +139,10 @@ export const convertDuration = (duration) => {
     return `${minutes}' ${seconds}"`;
 };
 
-export const parseDuration = (formattedDuration) => {
-    if (!formattedDuration || typeof formattedDuration !== 'string') {
-        return NaN;
-    }
-
-    const parts = formattedDuration.split(/[ '"]/).filter(Boolean);
-    let totalSeconds = 0;
-
-    if (parts.length === 2) {
-        // Assume the format is "X' Y"", where X is minutes and Y is seconds
-        totalSeconds = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-    } else if (parts.length === 1) {
-        // Only one part, could be either minutes or seconds
-        if (formattedDuration.includes("'")) {
-            // It's minutes
-            totalSeconds = parseInt(parts[0]) * 60;
-        } else if (formattedDuration.includes('"')) {
-            // It's seconds
-            totalSeconds = parseInt(parts[0]);
-        }
-    }
-    return isNaN(totalSeconds) ? '' : totalSeconds.toString();
-};
-
-export const DefaultCellRenderer = (props) => {
+export const DefaultCellRenderer = (props: any) => {
     const cellValue = formatCell(props);
     return (
-        <Box sx={styles.tableCell}>
+        <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
                 disableFocusListener
                 disableTouchListener
@@ -181,9 +160,10 @@ export const DefaultCellRenderer = (props) => {
     );
 };
 
-export const EllipsisCellRenderer = ({ value }) => {
-    const textRef = useRef(null);
+export const EllipsisCellRenderer = ({ value }: { value: any }) => {
+    const textRef = useRef<any>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+    console.log('DBG DBR elip', styles.tableCell, mergeSx(styles.tableCell));
 
     useEffect(() => {
         if (textRef.current) {
@@ -192,7 +172,7 @@ export const EllipsisCellRenderer = ({ value }) => {
     }, [value]);
 
     return (
-        <Box sx={styles.tableCell}>
+        <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? value : ''}>
                 <Box ref={textRef} sx={styles.overflow}>
                     {value}
@@ -202,12 +182,12 @@ export const EllipsisCellRenderer = ({ value }) => {
     );
 };
 
-export const PropertiesCellRenderer = (props) => {
+export const PropertiesCellRenderer = (props: any) => {
     const cellValue = formatCell(props);
     // different properties are seperated with |
     // tooltip message contains properties in seperated lines
     return (
-        <Box sx={styles.tableCell}>
+        <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
                 title={
                     <div style={{ whiteSpace: 'pre-line' }}>
@@ -221,7 +201,7 @@ export const PropertiesCellRenderer = (props) => {
     );
 };
 
-export const ContingencyCellRenderer = ({ value }) => {
+export const ContingencyCellRenderer = ({ value }: { value: { cellValue: ReactNode; tooltipValue: ReactNode } }) => {
     const { cellValue, tooltipValue } = value ?? {};
 
     if (cellValue == null || tooltipValue == null) {
@@ -229,7 +209,7 @@ export const ContingencyCellRenderer = ({ value }) => {
     }
 
     return (
-        <Box sx={styles.tableCell}>
+        <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip title={<div style={{ whiteSpace: 'pre-line' }}>{tooltipValue}</div>}>
                 <Box sx={styles.overflow} children={cellValue} />
             </Tooltip>
@@ -237,8 +217,8 @@ export const ContingencyCellRenderer = ({ value }) => {
     );
 };
 
-export const EditableCellRenderer = (props) => {
-    const currentNode = useSelector((state) => state.currentTreeNode);
+export const EditableCellRenderer = (props: any) => {
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isRootNode = useMemo(() => isNodeReadOnly(currentNode), [currentNode]);
 
     const handleStartEditing = useCallback(() => {
@@ -259,7 +239,7 @@ export const EditableCellRenderer = (props) => {
     );
 };
 
-export const ReferenceLineCellRenderer = (props) => {
+export const ReferenceLineCellRenderer = () => {
     return (
         <Box sx={mergeSx(styles.referenceEditRow, styles.leftFade, styles.editCell)}>
             <IconButton size={'small'} style={{ backgroundColor: 'transparent' }} disableRipple>
@@ -269,7 +249,7 @@ export const ReferenceLineCellRenderer = (props) => {
     );
 };
 
-export const EditingCellRenderer = (props) => {
+export const EditingCellRenderer = (props: any) => {
     const validateEdit = useCallback(() => {
         props.handleSubmitEditing(props);
     }, [props]);
@@ -296,6 +276,6 @@ export const EditingCellRenderer = (props) => {
     );
 };
 
-export const formatNAValue = (value, intl) => {
+export const formatNAValue = (value: string, intl: IntlShape): string => {
     return value === NA_Value ? intl.formatMessage({ id: 'Undefined' }) : value;
 };
