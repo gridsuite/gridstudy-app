@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { SpreadsheetConfig } from '../../../types/custom-columns.types';
 
 export type CustomColumnsSaveProps = {
     indexTab: number;
@@ -69,12 +70,12 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
         folderName,
         folderId,
     }: IElementCreationDialog) => {
-        const spreadsheetConfigObject = {
+        const spreadsheetConfig: SpreadsheetConfig = {
             sheetType: currentType,
             customColumns: [...staticColumnFormulas, ...customColumns],
         };
 
-        createSpreadsheetModel(name, description, folderId, spreadsheetConfigObject)
+        createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
             .then(() => {
                 snackInfo({
                     headerId: 'spreadsheet/custom_column/save_confirmation_message',
