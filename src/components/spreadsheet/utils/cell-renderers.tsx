@@ -163,7 +163,6 @@ export const DefaultCellRenderer = (props: any) => {
 export const EllipsisCellRenderer = ({ value }: { value: any }) => {
     const textRef = useRef<any>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
-    console.log('DBG DBR elip', styles.tableCell, mergeSx(styles.tableCell));
 
     useEffect(() => {
         if (textRef.current) {

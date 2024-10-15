@@ -9,9 +9,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { IconButton } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
-import CreateCompositeModificationDialog, {
-    ICompositeCreateModificationDialog,
-} from '../../dialogs/create-composite-modification-dialog';
+import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
@@ -70,7 +68,7 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
         description,
         folderName,
         folderId,
-    }: ICompositeCreateModificationDialog) => {
+    }: IElementCreationDialog) => {
         const spreadsheetConfigObject = {
             sheetType: currentType,
             customColumns: [...staticColumnFormulas, ...customColumns],
@@ -102,10 +100,11 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
                 <SaveIcon />
             </IconButton>
 
-            <CreateCompositeModificationDialog
+            <ElementCreationDialog
                 open={dialogOpen.value}
                 onSave={saveSpreadsheetColumnsConfiguration}
                 onClose={dialogOpen.setFalse}
+                titleId={'spreadsheet/custom_column/save_dialog_title'}
             />
         </>
     );

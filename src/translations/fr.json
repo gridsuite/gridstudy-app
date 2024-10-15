@@ -448,6 +448,7 @@
     "showSelectDirectoryDialog": "Modifier dossier",
     "showSelectParameterDialog": "Choisir paramètres",
     "nameAlreadyUsed": "Ce nom est déjà utilisé",
+    "studyDirectoryFetchingError": "Une erreur est survenue lors la lecture du dossier de l'étude",
 
     "descLfReadSlackBus": "Utiliser le nœud bilan défini dans le réseau",
     "descLfWriteSlackBus": "Écrire le nœud bilan calculé automatiquement dans le réseau",

@@ -70,9 +70,7 @@ import {
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import CreateCompositeModificationDialog, {
-    ICompositeCreateModificationDialog,
-} from '../../dialogs/create-composite-modification-dialog';
+import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import {
     MenuDefinition,
@@ -703,7 +701,7 @@ const NetworkModificationNodeEditor = () => {
         description,
         folderName,
         folderId,
-    }: ICompositeCreateModificationDialog) => {
+    }: IElementCreationDialog) => {
         const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
 
         setSaveInProgress(true);
@@ -981,10 +979,12 @@ const NetworkModificationNodeEditor = () => {
     };
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
-            <CreateCompositeModificationDialog
+            <ElementCreationDialog
                 open={createCompositeModificationDialogOpen}
                 onSave={doCreateCompositeModificationsElements}
                 onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                titleId={'CreateCompositeModification'}
+                prefixIdForGeneratedName={'GeneratedModification'}
             />
         );
     };

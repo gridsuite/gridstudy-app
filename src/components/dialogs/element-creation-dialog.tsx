@@ -30,16 +30,18 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import { AppState } from '../../redux/reducer';
 
-export interface ICompositeCreateModificationDialog {
+export interface IElementCreationDialog {
     [NAME]: string;
     [DESCRIPTION]: string;
     [FOLDER_NAME]: string;
     [FOLDER_ID]: UUID;
 }
-interface CreateCompositeModificationDialogProps {
+interface ElementCreationDialogProps {
     open: boolean;
-    onSave: (data: ICompositeCreateModificationDialog) => void;
+    onSave: (data: IElementCreationDialog) => void;
     onClose: () => void;
+    titleId: string;
+    prefixIdForGeneratedName?: string;
 }
 
 const formSchema = yup
@@ -58,10 +60,12 @@ const emptyFormData = {
     [FOLDER_ID]: '',
 };
 
-const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDialogProps> = ({
+const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     open,
     onSave,
     onClose,
+    titleId,
+    prefixIdForGeneratedName,
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -78,7 +82,7 @@ const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDia
             if (!res || res.length < 2) {
                 snackError({
                     messageTxt: 'unknown study directory',
-                    headerId: 'errCreateModificationsMsg',
+                    headerId: 'studyDirectoryFetchingError',
                 });
                 return;
             }
@@ -97,15 +101,17 @@ const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDia
     }, [studyUuid, formMethods, snackError]);
 
     useEffect(() => {
-        const getCurrentDateTime = () => new Date().toISOString();
-        const formattedMessage = intl.formatMessage({
-            id: 'GeneratedModification',
-        });
-        const dateTime = getCurrentDateTime();
-        const compositeName = `${formattedMessage}-${dateTime}`;
+        if (prefixIdForGeneratedName) {
+            const getCurrentDateTime = () => new Date().toISOString();
+            const formattedMessage = intl.formatMessage({
+                id: prefixIdForGeneratedName,
+            });
+            const dateTime = getCurrentDateTime();
+            const compositeName = `${formattedMessage}-${dateTime}`;
 
-        formMethods.setValue(NAME, compositeName);
-    }, [intl, formMethods]);
+            formMethods.setValue(NAME, compositeName);
+        }
+    }, [prefixIdForGeneratedName, intl, formMethods]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -128,7 +134,7 @@ const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDia
     const handleSave = useCallback(() => {
         formMethods.trigger().then((isValid) => {
             if (isValid && destinationFolder) {
-                onSave(formMethods.getValues() as ICompositeCreateModificationDialog);
+                onSave(formMethods.getValues() as IElementCreationDialog);
             }
         });
 
@@ -136,8 +142,8 @@ const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDia
     }, [formMethods, destinationFolder, onSave, onClose]);
 
     return (
-        <Dialog fullWidth maxWidth="md" open={open} aria-labelledby="dialog-save-modifications">
-            <DialogTitle>{intl.formatMessage({ id: 'CreateCompositeModification' })}</DialogTitle>
+        <Dialog fullWidth maxWidth="md" open={open} aria-labelledby="dialog-element-creation">
+            <DialogTitle>{intl.formatMessage({ id: titleId })}</DialogTitle>
             <DialogContent>
                 <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
                     <Grid container>
@@ -197,4 +203,4 @@ const CreateCompositeModificationDialog: React.FC<CreateCompositeModificationDia
     );
 };
 
-export default CreateCompositeModificationDialog;
+export default ElementCreationDialog;

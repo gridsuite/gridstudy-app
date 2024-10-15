@@ -446,6 +446,7 @@
     "showSelectDirectoryDialog": "Choose folder",
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
+    "studyDirectoryFetchingError": "An error occured while fetching study directory",
 
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
