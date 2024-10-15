@@ -1,0 +1,83 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: Release version (vX.X)
+        required: true
+      commitSha:
+        description: SHA of the commit from where to release
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        name: Generate app token
+        with:
+          app-id: ${{ vars.GRIDSUITE_ACTIONS_APPID }}
+          private-key: ${{ secrets.GRIDSUITE_ACTIONS_SECRET }}
+
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Extract tag versions
+        run: |
+          regex="v([0-9]+).([0-9]+)"
+          if [[ ${{ github.event.inputs.releaseVersion }} =~ $regex ]]
+          then
+            echo "GITHUB_MAJOR_VERSION=${BASH_REMATCH[1]}" >> $GITHUB_ENV
+            echo "GITHUB_MINOR_VERSION=${BASH_REMATCH[2]}" >> $GITHUB_ENV
+            echo "GITHUB_SHORT_VERSION=${BASH_REMATCH[1]}.${BASH_REMATCH[2]}.0" >> $GITHUB_ENV
+          fi
+
+      - name: Checkout with new branch
+        run: |
+          git checkout -b release/v${{ env.GITHUB_MAJOR_VERSION }}.${{ env.GITHUB_MINOR_VERSION }} ${{ github.event.inputs.commitSha }}
+
+      - name: Commit and tag release version
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          npm version ${{ env.GITHUB_SHORT_VERSION }} 
+          git push origin ${{ env.GITHUB_SHORT_VERSION }}
+          git push origin release/v${{ env.GITHUB_MAJOR_VERSION }}.${{ env.GITHUB_MINOR_VERSION }}
+
+      - name: Install and Build
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+        run: |
+          npm install
+          npm run licenses-check
+          npm run lint
+          npm run test:coverage
+          npm run build
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Build and publish Docker image
+        uses: elgohr/Publish-Docker-Github-Action@33a481be3e179353cb7793a92b57cf9a6c985860 # v4
+        with:
+          name: gridsuite/gridstudy-app
+          username: gridsuiteci
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          tags: ${{ env.GITHUB_SHORT_VERSION }}
+
+      - name: Update SNAPSHOT version on main
+        run: |
+          git checkout main
+          git pull
+          npm version --no-git-tag-version ${{ env.GITHUB_SHORT_VERSION }}
+          git add .
+          git commit -m "Bump version to v${{ env.GITHUB_SHORT_VERSION }}"
+          git push
