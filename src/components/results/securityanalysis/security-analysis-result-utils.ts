@@ -123,6 +123,15 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
     return rows;
 };
 
+const numericFilterParams = {
+    filterDataType: FILTER_DATA_TYPES.NUMBER,
+    filterComparators: [
+        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+    ],
+};
+
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
@@ -170,10 +179,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         fractionDigits: 2,
         sortProps,
         filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-        },
+        filterParams: numericFilterParams,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -183,10 +189,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         fractionDigits: 2,
         sortProps,
         filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-        },
+        filterParams: numericFilterParams,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -196,10 +199,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         fractionDigits: 2,
         sortProps,
         filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-        },
+        filterParams: numericFilterParams,
     }),
 
     makeAgGridCustomHeaderColumn({
@@ -211,9 +211,8 @@ export const securityAnalysisTableNColumnsDefinition = (
         sortProps,
         filterProps,
         filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
+            ...numericFilterParams,
             isDuration: true,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
         },
     }),
 
@@ -298,10 +297,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
             filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            },
+            filterParams: numericFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
@@ -310,10 +306,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
             filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            },
+            filterParams: numericFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
@@ -322,10 +315,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
             filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            },
+            filterParams: numericFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -336,9 +326,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                ...numericFilterParams,
                 isDuration: true,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -429,10 +418,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
             filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            },
+            filterParams: numericFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
@@ -441,10 +427,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
             filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            },
+            filterParams: numericFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
@@ -453,10 +436,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
             filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-            },
+            filterParams: numericFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({
@@ -467,9 +447,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             sortProps: { ...sortProps, children: true },
             filterProps,
             filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                ...numericFilterParams,
                 isDuration: true,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
             },
         }),
         makeAgGridCustomHeaderColumn({

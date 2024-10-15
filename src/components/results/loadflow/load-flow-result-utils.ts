@@ -94,7 +94,11 @@ const translatedFilterParams = {
 
 const numericFilterParams = {
     filterDataType: FILTER_DATA_TYPES.NUMBER,
-    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+    filterComparators: [
+        FILTER_NUMBER_COMPARATORS.NOT_EQUAL,
+        FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+        FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+    ],
 };
 
 export const getIdType = (index: number): string => {
