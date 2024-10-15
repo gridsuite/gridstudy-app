@@ -22,8 +22,8 @@ export function convertNodetoReactFlowModelNode(
         parentNodeUuid: parentNodeUuid!,
         label: node.name,
         description: node.description ?? null,
-        ...(globalBuildStatus !== undefined ? { globalBuildStatus } : {}),
-        ...(localBuildStatus !== undefined ? { localBuildStatus } : {}),
+        globalBuildStatus: globalBuildStatus,
+        localBuildStatus: localBuildStatus,
     };
 
     // This is the ReactFlow format (Cf documentation)
