@@ -556,8 +556,6 @@
     "OnlyMin": "Min:\u202F{min}",
     "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Centrer sur le nœud sélectionné",
-    "DisplayMinimap": "Afficher la mini-carte",
-    "HideMinimap": "Masquer la mini-carte",
     "DisplayTheWholeTree": "Visualiser l'arbre en entier",
 
     "Logs": "Logs",
