@@ -107,6 +107,7 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
                 onClose={dialogOpen.setFalse}
                 type={ElementType.SPREADSHEET_CONFIG}
                 titleId={'spreadsheet/custom_column/save_dialog_title'}
+                withDescription={true}
             />
         </>
     );

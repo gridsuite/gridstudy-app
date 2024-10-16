@@ -44,16 +44,18 @@ interface ElementCreationDialogProps {
     type: ElementType;
     titleId: string;
     prefixIdForGeneratedName?: string;
+    withDescription?: boolean;
 }
 
 const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().trim().required(),
-        [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
+        [DESCRIPTION]: yup.string().optional().max(500, 'descriptionLimitError'),
     })
     .required();
-const emptyFormData = {
+
+const emptyFormData: FormData = {
     [NAME]: '',
     [DESCRIPTION]: '',
 };
@@ -65,6 +67,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     type,
     titleId,
     prefixIdForGeneratedName,
+    withDescription,
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -97,7 +100,6 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                 });
                 return;
             }
-
             const parentFolderIndex = res.length - 2;
             const { elementUuid, elementName } = res[parentFolderIndex];
             setDestinationFolder({
@@ -114,11 +116,10 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                 id: prefixIdForGeneratedName,
             });
             const dateTime = getCurrentDateTime();
-            const compositeName = `${formattedMessage}-${dateTime}`;
             reset(
                 {
                     ...emptyFormData,
-                    [NAME]: compositeName,
+                    [NAME]: `${formattedMessage}-${dateTime}`,
                 },
                 { keepDefaultValues: true }
             );
@@ -145,7 +146,6 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
 
     const handleSave = useCallback(
         (values: FormData) => {
-            console.log('DBG DBR save', values, destinationFolder);
             if (destinationFolder) {
                 const creationData: IElementCreationDialog = {
                     ...values,
@@ -159,7 +159,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     );
 
     const folderChooser = (
-        <Grid container item>
+        <Grid container item paddingTop={1}>
             <Grid item>
                 <Button onClick={handleChangeFolder} variant="contained" size={'small'}>
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
@@ -179,11 +179,12 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                 fullWidth
                 open={open}
                 onClose={onClose}
+                titleId={titleId}
                 onClear={clear}
                 onSave={handleSave}
-                titleId={titleId}
-                disabledSave={disableSave}
+                aria-labelledby="dialog-element-creation"
                 maxWidth={'md'}
+                disabledSave={disableSave}
             >
                 <UniqueNameInput
                     name={NAME}
@@ -192,15 +193,18 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                     activeDirectory={destinationFolder?.id as UUID}
                     autoFocus
                 />
-                <ExpandingTextField
-                    name={DESCRIPTION}
-                    label={'descriptionProperty'}
-                    minRows={3}
-                    rows={3}
-                    sx={{ flexGrow: 1 }}
-                />
+                {withDescription === true && (
+                    <Grid container paddingTop={1}>
+                        <ExpandingTextField
+                            name={DESCRIPTION}
+                            label={'descriptionProperty'}
+                            minRows={3}
+                            rows={3}
+                            sx={{ flexGrow: 1 }}
+                        />
+                    </Grid>
+                )}
                 {folderChooser}
-
                 <DirectoryItemSelector
                     open={directorySelectorOpen}
                     onClose={setSelectedFolder}
