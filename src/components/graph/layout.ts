@@ -7,30 +7,33 @@
 
 import dagre from 'dagre';
 import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
+import { Edge, Position } from 'reactflow';
+import { CurrentTreeNode } from 'redux/reducer';
+import { NodeType } from './tree-node.type';
 
-export function getLayoutedNodes(nodes, edges) {
+export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ direction: 'TB', align: 'UL' });
+    dagreGraph.setGraph({ align: 'UL' });
 
     nodes.forEach((node) => {
         dagreGraph.setNode(node.id, {
-            width: node?.type === 'ROOT' ? rootNodeWidth : nodeWidth,
-            height: node?.type === 'ROOT' ? rootNodeHeight : nodeHeight,
+            width: node?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth,
+            height: node?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight,
         });
     });
-    edges.forEach((edge) => {
+    edges.forEach((edge: Edge) => {
         dagreGraph.setEdge(edge.source, edge.target);
     });
 
-    dagre.layout(dagreGraph, { debugTiming: true });
+    dagre.layout(dagreGraph);
 
     return nodes.map((el) => {
         const nodeWithPosition = dagreGraph.node(el.id);
-        el.targetPosition = 'top';
-        el.sourcePosition = 'bottom';
-        const width = el?.type === 'ROOT' ? rootNodeWidth : nodeWidth;
-        const height = el?.type === 'ROOT' ? rootNodeHeight : nodeHeight;
+        el.targetPosition = Position.Top;
+        el.sourcePosition = Position.Bottom;
+        const width = el?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth;
+        const height = el?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight;
 
         el.position = {
             x: nodeWithPosition.x - width / 2,
