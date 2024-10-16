@@ -99,10 +99,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     ]);
 
     const shouldDisplayFilterBadge = useMemo(() => {
-        // Get the default severity filter
         const defaultSeverityFilter = getDefaultSeverityFilter(severities);
 
-        // Check if both arrays have the same elements using a Set
         const severitySet = new Set(severityFilter);
         const defaultSeveritySet = new Set(defaultSeverityFilter);
 
@@ -110,13 +108,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             return true;
         }
 
-        for (let severity of severitySet) {
-            if (!defaultSeveritySet.has(severity)) {
-                return true;
-            }
-        }
-
-        return false;
+        return ![...severitySet].every((severity) => defaultSeveritySet.has(severity));
     }, [severityFilter, severities]);
 
     const COLUMNS_DEFINITIONS = useMemo(

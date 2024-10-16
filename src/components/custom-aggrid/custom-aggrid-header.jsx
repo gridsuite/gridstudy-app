@@ -296,13 +296,17 @@ const CustomHeaderComponent = ({
                                 overflow: 'visible',
                             }}
                         >
-                            {shouldDisplayFilterIcon && (
+                            {(shouldDisplayFilterIcon || shouldDisplayFilterBadge) && (
                                 <Grid item>
                                     <IconButton size={'small'} onClick={handleShowFilter}>
                                         {shouldDisplayFilterBadge ?? true ? (
                                             <Badge
                                                 color="secondary"
-                                                variant={selectedFilterData?.length ? 'dot' : null}
+                                                variant={
+                                                    selectedFilterData?.length || shouldDisplayFilterBadge
+                                                        ? 'dot'
+                                                        : null
+                                                }
                                                 invisible={!selectedFilterData}
                                             >
                                                 <FilterAlt sx={styles.iconSize} />
