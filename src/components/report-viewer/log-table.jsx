@@ -48,9 +48,15 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
 
+    const resetSearch = useCallback(() => {
+        setSearchResults([]);
+        setCurrentResultIndex(-1);
+    }, []);
+
     const refreshLogsOnSelectedReport = useCallback(() => {
         if (severityFilter?.length === 0) {
             setRowData([]);
+            resetSearch();
             return;
         }
         fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
@@ -62,6 +68,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }));
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
+            resetSearch();
         });
     }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId]);
 
@@ -180,8 +187,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const handleSearch = useCallback(
         (searchTerm) => {
             if (!gridRef.current || !searchTerm) {
-                setSearchResults([]);
-                setCurrentResultIndex(-1);
+                resetSearch();
                 return;
             }
 
