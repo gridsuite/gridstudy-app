@@ -13,7 +13,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
 import { Edge } from '@xyflow/react';
 import { isNetworkModificationNode } from './util/model-functions';
-import { NetworkModificationNode, RootNode } from './tree-node.type';
+import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
@@ -37,7 +37,7 @@ export default class NetworkModificationTreeModel {
         this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
     }
     addChild(
-        newNode: NetworkModificationNode | RootNode,
+        newNode: NetworkModificationNodeData | RootNodeData,
         parentId: UUID,
         insertMode?: NodeInsertModes,
         referenceNodeId?: UUID
@@ -206,7 +206,7 @@ export default class NetworkModificationTreeModel {
         this.treeNodes = [...this.treeNodes];
     }
 
-    setTreeElements(elements: RootNode | NetworkModificationNode) {
+    setTreeElements(elements: RootNodeData | NetworkModificationNodeData) {
         // handle root node
         this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
         // handle root children

@@ -278,11 +278,10 @@ import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
-import { BUILD_STATUS } from '../components/network/constants';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
-import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
+import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
 
 export enum NotificationType {
@@ -352,16 +351,10 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-export type TreeNodeData = {
-    parentNodeUuid: UUID;
-    label: string;
-    description: string | null;
-    globalBuildStatus?: BUILD_STATUS;
-    localBuildStatus?: BUILD_STATUS;
-    readOnly?: boolean;
-    caseName?: string;
-};
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type ModificationNode = Node<NetworkModificationNodeData, 'NETWORK_MODIFICATION'> & { id: UUID };
+export type RootNode = Node<RootNodeData, 'ROOT'> & { id: UUID };
+
+export type CurrentTreeNode = ModificationNode | RootNode;
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -1750,7 +1743,7 @@ function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
 function unravelSubTree(
     treeModel: NetworkModificationTreeModel,
     subtreeParentId: UUID,
-    node: NetworkModificationNode | RootNode | null
+    node: NetworkModificationNodeData | RootNodeData | null
 ) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
