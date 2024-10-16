@@ -70,7 +70,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             setRowData(transformedLogs);
             resetSearch();
         });
-    }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId]);
+    }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId, resetSearch]);
 
     useEffect(() => {
         // initialize the filter with the severities
@@ -207,7 +207,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 highlightAndScrollToMatch(0, matches);
             }
         },
-        [highlightAndScrollToMatch]
+        [highlightAndScrollToMatch, resetSearch]
     );
 
     const handleNavigate = useCallback(
