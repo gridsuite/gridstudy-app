@@ -44,6 +44,6 @@ export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {
             width: width,
             height: height,
         };
-        return el;
+        return { ...el };
     });
 }

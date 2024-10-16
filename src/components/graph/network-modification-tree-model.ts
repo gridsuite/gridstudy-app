@@ -108,9 +108,12 @@ export default class NetworkModificationTreeModel {
             // overwrite old children nodes parentUuid when inserting new nodes
             const nextNodes = this.treeNodes.map((node) => {
                 if (newNode.childrenIds.includes(node.id)) {
-                    node.data = {
-                        ...node.data,
-                        parentNodeUuid: newNode.id,
+                    return {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            parentNodeUuid: newNode.id,
+                        },
                     };
                 }
                 return node;
@@ -162,9 +165,12 @@ export default class NetworkModificationTreeModel {
             }
             const nextTreeNodes = filteredNodes.map((node) => {
                 if (node.data?.parentNodeUuid === nodeId) {
-                    node.data = {
-                        ...node.data,
-                        parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
+                    return {
+                        ...node,
+                        data: {
+                            ...node.data,
+                            parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
+                        },
                     };
                 }
                 return node;
@@ -178,18 +184,22 @@ export default class NetworkModificationTreeModel {
         updatedNodes.forEach((node) => {
             const indexModifiedNode = this.treeNodes.findIndex((othernode) => othernode.id === node.id);
             if (indexModifiedNode !== -1) {
+                const nodeToUpdate = this.treeNodes[indexModifiedNode];
                 const globalBuildStatus = isNetworkModificationNode(node)
                     ? node.nodeBuildStatus?.globalBuildStatus
                     : undefined;
                 const localBuildStatus = isNetworkModificationNode(node)
                     ? node.nodeBuildStatus?.localBuildStatus
                     : undefined;
-                this.treeNodes[indexModifiedNode].data = {
-                    ...this.treeNodes[indexModifiedNode].data,
-                    label: node.name,
-                    globalBuildStatus: globalBuildStatus,
-                    localBuildStatus: localBuildStatus,
-                    readOnly: node.readOnly,
+                this.treeNodes[indexModifiedNode] = {
+                    ...nodeToUpdate,
+                    data: {
+                        ...this.treeNodes[indexModifiedNode].data,
+                        label: node.name,
+                        globalBuildStatus: globalBuildStatus,
+                        localBuildStatus: localBuildStatus,
+                        readOnly: node.readOnly,
+                    },
                 };
             }
         });
@@ -219,9 +229,13 @@ export default class NetworkModificationTreeModel {
 
     setCaseName(newCaseName: string) {
         if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
-            this.treeNodes[0].data = {
-                ...this.treeNodes[0].data,
-                caseName: newCaseName,
+            const nodeWithOldName = this.treeNodes[0];
+            this.treeNodes[0] = {
+                ...nodeWithOldName,
+                data: {
+                    ...this.treeNodes[0].data,
+                    caseName: newCaseName,
+                },
             };
         }
     }
