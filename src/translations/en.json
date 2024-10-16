@@ -555,8 +555,6 @@
     "OnlyMin": "Min:\u202F{min}",
     "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Center on selected node",
-    "DisplayMinimap": "Display minimap",
-    "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
