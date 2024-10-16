@@ -193,6 +193,7 @@ export default class NetworkModificationTreeModel {
                         ...this.treeNodes[indexModifiedNode].data,
                         label: node.name,
                         globalBuildStatus: globalBuildStatus,
+                        // @ts-ignore TODO separate update root and update modification ?
                         localBuildStatus: localBuildStatus,
                         readOnly: node.readOnly,
                     },

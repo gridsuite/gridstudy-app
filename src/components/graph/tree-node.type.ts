@@ -46,4 +46,4 @@ export type NetworkModificationNodeData = AbstractNode & {
     dynamicSimulationResultUuid?: UUID;
     stateEstimationResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;
-}
+};

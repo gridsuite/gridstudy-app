@@ -7,16 +7,19 @@
 
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { CurrentTreeNode } from 'redux/reducer';
-import { NetworkModificationNodeData, RootNodeData, NodeType } from '../tree-node.type';
+import { CurrentTreeNode, ReactFlowModificationNodeDataType, ReactFlowRootNodeDataType } from 'redux/reducer';
+import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
 
-export function getModificationNodeDataOrUndefined(
-    node: NetworkModificationNodeData | RootNodeData
-): NetworkModificationNodeData | undefined {
-    if (node.type === NodeType.NETWORK_MODIFICATION) {
-        return node as NetworkModificationNodeData;
+export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
+    if (isModificationNode(node)) {
+        return node;
     }
     return undefined;
+}
+
+// type guard to check if the node is a modification node
+function isModificationNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
+    return node.type === NodeType.NETWORK_MODIFICATION;
 }
 
 export function convertNodetoReactFlowModelNode(
@@ -24,32 +27,37 @@ export function convertNodetoReactFlowModelNode(
     parentNodeUuid?: UUID
 ): CurrentTreeNode {
     // Use the type guard to safely access nodeBuildStatus
-    const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
-    const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
-    const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
 
-    const data = {
-        parentNodeUuid: parentNodeUuid!,
-        label: node.name,
-        description: node.description ?? null,
-        globalBuildStatus: globalBuildStatus,
-        localBuildStatus: localBuildStatus,
-    };
-
-    // This is the ReactFlow format (Cf documentation)
-    // {
-    //  id: '1',
-    //  type: 'input',
-    //  data: { label: 'Node 1' }, <- use data for customization
-    //  position: { x: 250, y: 5 }
-    // }
-
-    return {
-        id: node.id,
-        type: node.type,
-        position: { x: 0, y: 0 },
-        data: data,
-    };
+    if (node.type === NodeType.ROOT) {
+        const data: ReactFlowRootNodeDataType = {
+            parentNodeUuid: parentNodeUuid,
+            label: node.name,
+            description: node.description ?? undefined,
+        };
+        return {
+            id: node.id,
+            type: node.type,
+            position: { x: 0, y: 0 },
+            data: data,
+        };
+    } else {
+        const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
+        const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
+        const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
+        const data: ReactFlowModificationNodeDataType = {
+            parentNodeUuid: parentNodeUuid,
+            label: node.name,
+            description: node.description ?? undefined,
+            globalBuildStatus: globalBuildStatus,
+            localBuildStatus: localBuildStatus,
+        };
+        return {
+            id: node.id,
+            type: node.type,
+            position: { x: 0, y: 0 },
+            data: data,
+        };
+    }
 }
 
 // Return the first node of type nodeType and specific buildStatus

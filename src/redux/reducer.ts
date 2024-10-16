@@ -354,16 +354,19 @@ export type StudyUpdated = {
 
 type additionalNodeAttr = {
     label: string;
-    parentNodeUuid: UUID;
+    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
+    description?: string;
+    readOnly?: boolean;
 };
-export type ModificationNode = Node<
-    NetworkModificationNodeData & additionalNodeAttr & { localBuildStatus: BUILD_STATUS },
-    'NETWORK_MODIFICATION'
-> & {
+export type ReactFlowModificationNodeDataType = additionalNodeAttr & { localBuildStatus?: BUILD_STATUS };
+
+export type ModificationNode = Node<ReactFlowModificationNodeDataType, 'NETWORK_MODIFICATION'> & {
     id: UUID;
 };
-export type RootNode = Node<RootNodeData & additionalNodeAttr & { caseName: string }, 'ROOT'> & { id: UUID };
+
+export type ReactFlowRootNodeDataType = additionalNodeAttr & { caseName?: string };
+export type RootNode = Node<ReactFlowRootNodeDataType, 'ROOT'> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 
@@ -877,7 +880,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
+                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 newModel.updateLayout();
