@@ -1389,7 +1389,7 @@
     "startStateEstmationError": "An error occurred while launching the state estimation",
     "stateEstimationError": "An error occured when executing the state estimation",
     "NoFilter": "No filter",
-    "EquipmentSearchPlaceholder": "Search",
+    "searchPlaceholder": "Search",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
