@@ -12,7 +12,6 @@ import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
 import { Edge } from '@xyflow/react';
-import { isNetworkModificationNode } from './util/model-functions';
 import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
@@ -227,13 +226,16 @@ export default class NetworkModificationTreeModel {
     setCaseName(newCaseName: string) {
         if (this.treeNodes.length > 0 && this.treeNodes[0].data && newCaseName) {
             const nodeWithOldName = this.treeNodes[0];
-            this.treeNodes[0] = {
-                ...nodeWithOldName,
-                data: {
-                    ...this.treeNodes[0].data,
-                    caseName: newCaseName,
-                },
-            };
+            //check if the node we are modifying is a ROOT node
+            if (nodeWithOldName.type === 'ROOT') {
+                this.treeNodes[0] = {
+                    ...nodeWithOldName,
+                    data: {
+                        ...nodeWithOldName.data,
+                        caseName: newCaseName,
+                    },
+                };
+            }
         }
     }
 }
