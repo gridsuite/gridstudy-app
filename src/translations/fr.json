@@ -548,7 +548,7 @@
     "NetworkModificationTree": "Arbre décisionnel",
     "RestoreModifications": "Restaurer les modifications",
     "CreateCompositeModification": "Créer une modification composite de réseau",
-    "descriptionProperty": "Description (optionnel)",
+    "descriptionProperty": "Description",
     "RestoreModificationText": "Veuillez sélectionner les modifications à restaurer",
     "DeleteModificationText": "{numberToDelete, plural, =0 {Aucune modification à supprimer.} =1 {Une modification va être définitivement supprimée.} other {# modifications vont être définitivement supprimées.}}",
     "HybridDisplay": "Affichage hybride",

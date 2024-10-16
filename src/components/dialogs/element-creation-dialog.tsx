@@ -17,7 +17,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { UniqueNameInput } from './commons/unique-name-input';
 import { DESCRIPTION, FOLDER_ID, FOLDER_NAME, NAME } from '../utils/field-constants';
@@ -25,17 +25,18 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
 import { useSelector } from 'react-redux';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
+import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { AppState } from '../../redux/reducer';
 
-export interface IElementCreationDialog {
+interface FormData {
     [NAME]: string;
     [DESCRIPTION]: string;
+}
+export interface IElementCreationDialog extends FormData {
     [FOLDER_NAME]: string;
     [FOLDER_ID]: UUID;
 }
+
 interface ElementCreationDialogProps {
     open: boolean;
     onSave: (data: IElementCreationDialog) => void;
@@ -48,17 +49,13 @@ interface ElementCreationDialogProps {
 const formSchema = yup
     .object()
     .shape({
-        [NAME]: yup.string().required(),
+        [NAME]: yup.string().trim().required(),
         [DESCRIPTION]: yup.string().max(500, 'descriptionLimitError'),
-        [FOLDER_NAME]: yup.string().required(),
-        [FOLDER_ID]: yup.string().required(),
     })
     .required();
 const emptyFormData = {
     [NAME]: '',
     [DESCRIPTION]: '',
-    [FOLDER_NAME]: '',
-    [FOLDER_ID]: '',
 };
 
 const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
@@ -72,12 +69,24 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
+
+    const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);
+    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
+
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
-    const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);
-    const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
+    const {
+        reset,
+        formState: { errors },
+    } = formMethods;
+    const disableSave = Object.keys(errors).length > 0;
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
+
     const fetchDefaultDirectoryForStudy = useCallback(() => {
         // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((res) => {
@@ -91,16 +100,12 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
 
             const parentFolderIndex = res.length - 2;
             const { elementUuid, elementName } = res[parentFolderIndex];
-
             setDestinationFolder({
                 id: elementUuid,
                 name: elementName,
             });
-
-            formMethods.setValue(FOLDER_NAME, elementName);
-            formMethods.setValue(FOLDER_ID, elementUuid);
         });
-    }, [studyUuid, formMethods, snackError]);
+    }, [studyUuid, snackError]);
 
     useEffect(() => {
         if (prefixIdForGeneratedName) {
@@ -110,10 +115,15 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
             });
             const dateTime = getCurrentDateTime();
             const compositeName = `${formattedMessage}-${dateTime}`;
-
-            formMethods.setValue(NAME, compositeName);
+            reset(
+                {
+                    ...emptyFormData,
+                    [NAME]: compositeName,
+                },
+                { keepDefaultValues: true }
+            );
         }
-    }, [prefixIdForGeneratedName, intl, formMethods]);
+    }, [prefixIdForGeneratedName, intl, reset]);
 
     useEffect(() => {
         if (studyUuid) {
@@ -124,84 +134,88 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     const handleChangeFolder = () => {
         setDirectorySelectorOpen(true);
     };
+
     const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
         if (folder?.length > 0 && folder[0].id !== destinationFolder?.id) {
             const { id, name } = folder[0];
             setDestinationFolder({ id, name });
-            formMethods.setValue(FOLDER_NAME, name);
-            formMethods.setValue(FOLDER_ID, id);
         }
         setDirectorySelectorOpen(false);
     };
-    const handleSave = useCallback(() => {
-        formMethods.trigger().then((isValid) => {
-            if (isValid && destinationFolder) {
-                onSave(formMethods.getValues() as IElementCreationDialog);
-            }
-        });
 
-        onClose();
-    }, [formMethods, destinationFolder, onSave, onClose]);
+    const handleSave = useCallback(
+        (values: FormData) => {
+            console.log('DBG DBR save', values, destinationFolder);
+            if (destinationFolder) {
+                const creationData: IElementCreationDialog = {
+                    ...values,
+                    [FOLDER_NAME]: destinationFolder.name,
+                    [FOLDER_ID]: destinationFolder.id as UUID,
+                };
+                onSave(creationData);
+            }
+        },
+        [onSave, destinationFolder]
+    );
+
+    const folderChooser = (
+        <Grid container item>
+            <Grid item>
+                <Button onClick={handleChangeFolder} variant="contained" size={'small'}>
+                    <FormattedMessage id={'showSelectDirectoryDialog'} />
+                </Button>
+            </Grid>
+            <Typography m={1} component="span">
+                <Box fontWeight={'fontWeightBold'}>
+                    {destinationFolder == null ? <CircularProgress /> : destinationFolder.name}
+                </Box>
+            </Typography>
+        </Grid>
+    );
 
     return (
-        <Dialog fullWidth maxWidth="md" open={open} aria-labelledby="dialog-element-creation">
-            <DialogTitle>{intl.formatMessage({ id: titleId })}</DialogTitle>
-            <DialogContent>
-                <CustomFormProvider removeOptional={true} validationSchema={formSchema} {...formMethods}>
-                    <Grid container>
-                        <Grid container paddingTop={2}>
-                            <UniqueNameInput
-                                name={NAME}
-                                label={'Name'}
-                                elementType={type}
-                                activeDirectory={destinationFolder?.id as UUID}
-                                autoFocus
-                            />
-                        </Grid>
-                        <Grid container paddingTop={2}>
-                            <ExpandingTextField name={DESCRIPTION} label={'descriptionProperty'} minRows={3} rows={5} />
-                        </Grid>
-                        <Grid container paddingTop={2}>
-                            <Button onClick={handleChangeFolder} variant="contained">
-                                <FormattedMessage id={'showSelectDirectoryDialog'} />
-                            </Button>
+        <CustomFormProvider validationSchema={formSchema} {...formMethods}>
+            <ModificationDialog
+                fullWidth
+                open={open}
+                onClose={onClose}
+                onClear={clear}
+                onSave={handleSave}
+                titleId={titleId}
+                disabledSave={disableSave}
+                maxWidth={'md'}
+            >
+                <UniqueNameInput
+                    name={NAME}
+                    label={'Name'}
+                    elementType={type}
+                    activeDirectory={destinationFolder?.id as UUID}
+                    autoFocus
+                />
+                <ExpandingTextField
+                    name={DESCRIPTION}
+                    label={'descriptionProperty'}
+                    minRows={3}
+                    rows={3}
+                    sx={{ flexGrow: 1 }}
+                />
+                {folderChooser}
 
-                            <Typography m={1} component="span">
-                                <Box fontWeight={'fontWeightBold'}>{destinationFolder?.name}</Box>
-                            </Typography>
-                        </Grid>
-                        <Grid container paddingTop={2}>
-                            <DirectoryItemSelector
-                                open={directorySelectorOpen}
-                                onClose={setSelectedFolder}
-                                types={[ElementType.DIRECTORY]}
-                                onlyLeaves={false}
-                                multiSelect={false}
-                                validationButtonText={intl.formatMessage({
-                                    id: 'validate',
-                                })}
-                                title={intl.formatMessage({
-                                    id: 'showSelectDirectoryDialog',
-                                })}
-                            />
-                        </Grid>
-                    </Grid>
-                    <Grid container paddingTop={2} justifyContent="flex-end">
-                        <Button onClick={onClose} size={'large'}>
-                            {intl.formatMessage({
-                                id: 'cancel',
-                            })}
-                        </Button>
-                        <Box m={1} />
-                        <Button variant="contained" type={'submit'} onClick={handleSave} size={'large'}>
-                            {intl.formatMessage({
-                                id: 'validate',
-                            })}
-                        </Button>
-                    </Grid>
-                </CustomFormProvider>
-            </DialogContent>
-        </Dialog>
+                <DirectoryItemSelector
+                    open={directorySelectorOpen}
+                    onClose={setSelectedFolder}
+                    types={[ElementType.DIRECTORY]}
+                    onlyLeaves={false}
+                    multiSelect={false}
+                    validationButtonText={intl.formatMessage({
+                        id: 'validate',
+                    })}
+                    title={intl.formatMessage({
+                        id: 'showSelectDirectoryDialog',
+                    })}
+                />
+            </ModificationDialog>
+        </CustomFormProvider>
     );
 };
 
