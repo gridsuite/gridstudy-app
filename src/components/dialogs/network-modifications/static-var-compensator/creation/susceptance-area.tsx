@@ -13,8 +13,12 @@ import {
     CHARACTERISTICS_CHOICE_AUTOMATON,
     CHARACTERISTICS_CHOICES,
     MAX_Q_AT_NOMINAL_V,
+    MAX_Q_AUTOMATON,
+    MAX_S_AUTOMATON,
     MAX_SUSCEPTANCE,
     MIN_Q_AT_NOMINAL_V,
+    MIN_Q_AUTOMATON,
+    MIN_S_AUTOMATON,
     MIN_SUSCEPTANCE,
     Q0,
     SETPOINTS_LIMITS,
@@ -37,7 +41,11 @@ export const SusceptanceArea = () => {
     // CHARACTERISTICS_CHOICE_AUTOMATON used only to validate the schema (work around)
     useEffect(() => {
         setValue(`${id}.${CHARACTERISTICS_CHOICE_AUTOMATON}`, watchChoiceAutomaton);
-    }, [setValue, id, watchChoiceAutomaton]);
+        setValue(`${id}.${MIN_Q_AUTOMATON}`, minQ);
+        setValue(`${id}.${MAX_Q_AUTOMATON}`, maxQ);
+        setValue(`${id}.${MIN_S_AUTOMATON}`, minS);
+        setValue(`${id}.${MAX_S_AUTOMATON}`, maxS);
+    }, [setValue, id, watchChoiceAutomaton, minQ, maxQ, maxS, minS]);
 
     const minSusceptanceField = (
         <TextField
@@ -70,7 +78,7 @@ export const SusceptanceArea = () => {
             disabled={true}
             size={'small'}
             InputProps={{
-                endAdornment: <InputAdornment position="start">MVA</InputAdornment>,
+                endAdornment: <InputAdornment position="start">MVar</InputAdornment>,
             }}
         />
     );
@@ -82,7 +90,7 @@ export const SusceptanceArea = () => {
             disabled={true}
             size={'small'}
             InputProps={{
-                endAdornment: <InputAdornment position="start">MVA</InputAdornment>,
+                endAdornment: <InputAdornment position="start">MVar</InputAdornment>,
             }}
         />
     );
@@ -90,7 +98,7 @@ export const SusceptanceArea = () => {
     const susceptanceField = <FloatInput name={`${id}.${B0}`} label="b0" adornment={SusceptanceAdornment} />;
 
     const qAtNominalVField = (
-        <FloatInput name={`${id}.${Q0}`} label="ConstantQWithoutUnit" adornment={ReactivePowerAdornment} />
+        <FloatInput name={`${id}.${Q0}`} label="fixQAtNominalV" adornment={ReactivePowerAdornment} />
     );
 
     return (

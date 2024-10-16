@@ -124,13 +124,13 @@ export const StandbyAutomatonForm = () => {
             FloatInput,
             `${id}.${LOW_VOLTAGE_THRESHOLD}`,
             'LowVoltageThreshold',
-            SusceptanceAdornment
+            VoltageAdornment
         ),
         hVoltageThreshold: createField(
             FloatInput,
             `${id}.${HIGH_VOLTAGE_THRESHOLD}`,
             'HighVoltageThreshold',
-            SusceptanceAdornment
+            VoltageAdornment
         ),
     };
 
