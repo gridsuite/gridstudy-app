@@ -283,6 +283,7 @@ import { CopyType, StudyDisplayMode } from '../components/network-modification.t
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { BUILD_STATUS } from '../components/network/constants';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -351,8 +352,18 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-export type ModificationNode = Node<NetworkModificationNodeData, 'NETWORK_MODIFICATION'> & { id: UUID };
-export type RootNode = Node<RootNodeData, 'ROOT'> & { id: UUID };
+type additionalNodeAttr = {
+    label: string;
+    parentNodeUuid: UUID;
+    globalBuildStatus?: BUILD_STATUS;
+};
+export type ModificationNode = Node<
+    NetworkModificationNodeData & additionalNodeAttr & { localBuildStatus: BUILD_STATUS },
+    'NETWORK_MODIFICATION'
+> & {
+    id: UUID;
+};
+export type RootNode = Node<RootNodeData & additionalNodeAttr & { caseName: string }, 'ROOT'> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 

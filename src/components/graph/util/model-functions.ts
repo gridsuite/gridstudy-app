@@ -10,13 +10,23 @@ import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CurrentTreeNode } from 'redux/reducer';
 import { NetworkModificationNodeData, RootNodeData, NodeType } from '../tree-node.type';
 
+export function getModificationNodeDataOrUndefined(
+    node: NetworkModificationNodeData | RootNodeData
+): NetworkModificationNodeData | undefined {
+    if (node.type === NodeType.NETWORK_MODIFICATION) {
+        return node as NetworkModificationNodeData;
+    }
+    return undefined;
+}
+
 export function convertNodetoReactFlowModelNode(
     node: NetworkModificationNodeData | RootNodeData,
     parentNodeUuid?: UUID
 ): CurrentTreeNode {
     // Use the type guard to safely access nodeBuildStatus
-    const globalBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.globalBuildStatus : undefined;
-    const localBuildStatus = isNetworkModificationNode(node) ? node.nodeBuildStatus?.localBuildStatus : undefined;
+    const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
+    const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
+    const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
 
     const data = {
         parentNodeUuid: parentNodeUuid!,
@@ -45,7 +55,7 @@ export function convertNodetoReactFlowModelNode(
 // Return the first node of type nodeType and specific buildStatus
 // in the tree model
 export function getFirstNodeOfType(
-    elements: NetworkModificationNode | RootNode,
+    elements: NetworkModificationNodeData | RootNodeData,
     nodeType: NodeType,
     buildStatusList?: string[]
 ) {
@@ -56,31 +66,30 @@ export function getFirstNodeOfType(
         buildStatusList
     );
 }
-export function isNetworkModificationNode(n: NetworkModificationNode | RootNode): n is NetworkModificationNode {
+export function isNetworkModificationNode(n: NetworkModificationNodeData | RootNodeData): boolean {
     return 'nodeBuildStatus' in n;
 }
 
 // Recursive search of a node of type and buildStatus specified
 export function recursiveSearchFirstNodeOfType(
-    elements: NetworkModificationNode | RootNode,
+    element: NetworkModificationNodeData | RootNodeData,
     nodeType: string,
     parentNodeUuid?: UUID,
     buildStatusList?: string[]
 ): CurrentTreeNode | null {
-    const globalBuildStatus = isNetworkModificationNode(elements)
-        ? elements.nodeBuildStatus?.globalBuildStatus
-        : undefined;
+    const modificationNode = getModificationNodeDataOrUndefined(element);
+    const globalBuildStatus = modificationNode?.nodeBuildStatus?.globalBuildStatus;
 
     if (
-        elements.type === nodeType &&
+        element.type === nodeType &&
         (buildStatusList === undefined ||
             (globalBuildStatus !== undefined && buildStatusList.includes(globalBuildStatus)))
     ) {
-        return convertNodetoReactFlowModelNode(elements, parentNodeUuid);
+        return convertNodetoReactFlowModelNode(element, parentNodeUuid);
     }
 
-    for (const child of elements.children ?? []) {
-        const found = recursiveSearchFirstNodeOfType(child, nodeType, elements.id, buildStatusList);
+    for (const child of element.children ?? []) {
+        const found = recursiveSearchFirstNodeOfType(child, nodeType, element.id, buildStatusList);
         if (found) {
             return found;
         }

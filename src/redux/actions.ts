@@ -270,13 +270,13 @@ export function loadNetworkModificationTreeSuccess(
 
 export const NETWORK_MODIFICATION_TREE_NODE_ADDED = 'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 export type NetworkModificationTreeNodeAddedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_ADDED>> & {
-    networkModificationTreeNode: NetworkModificationNode; //(jamal) verify
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeAdded(
-    networkModificationTreeNode: NetworkModificationNode, //(jamal) verify
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string

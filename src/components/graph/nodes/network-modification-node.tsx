@@ -7,7 +7,7 @@
 
 import React from 'react';
 import Button from '@mui/material/Button';
-import { Handle, Position } from '@xyflow/react';
+import { Handle, NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
@@ -16,9 +16,8 @@ import { getLocalStorageTheme } from '../../../redux/session-storage/local-stora
 import { BUILD_STATUS } from '../../network/constants';
 import { Box } from '@mui/system';
 import { Theme } from '@mui/material';
-import { AppState, TreeNodeData } from 'redux/reducer';
+import { AppState, ModificationNode } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
-import { UUID } from 'crypto';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';
 const BUILT_WITH_WARNING_NODE_BANNER_COLOR = '#FFA500';
@@ -128,12 +127,7 @@ const styles = {
     },
 };
 
-interface NetworkModificationNodeProps {
-    id: UUID;
-    data: TreeNodeData;
-}
-
-const NetworkModificationNode = (props: NetworkModificationNodeProps) => {
+const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
 
@@ -178,7 +172,6 @@ const NetworkModificationNode = (props: NetworkModificationNodeProps) => {
                 return styles.bottomBuildBannerNotBuilt;
         }
     }
-
     return (
         <>
             <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />

@@ -6,7 +6,7 @@
  */
 
 import { getLayoutedNodes } from './layout';
-import { convertNodetoReactFlowModelNode } from './util/model-functions';
+import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
 import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
@@ -180,17 +180,14 @@ export default class NetworkModificationTreeModel {
         });
     }
 
-    updateNodes(updatedNodes: (NetworkModificationNode | RootNode)[]) {
+    updateNodes(updatedNodes: (NetworkModificationNodeData | RootNodeData)[]) {
         updatedNodes.forEach((node) => {
             const indexModifiedNode = this.treeNodes.findIndex((othernode) => othernode.id === node.id);
             if (indexModifiedNode !== -1) {
                 const nodeToUpdate = this.treeNodes[indexModifiedNode];
-                const globalBuildStatus = isNetworkModificationNode(node)
-                    ? node.nodeBuildStatus?.globalBuildStatus
-                    : undefined;
-                const localBuildStatus = isNetworkModificationNode(node)
-                    ? node.nodeBuildStatus?.localBuildStatus
-                    : undefined;
+                const modificationNodeData = getModificationNodeDataOrUndefined(node);
+                const globalBuildStatus = modificationNodeData?.nodeBuildStatus?.globalBuildStatus;
+                const localBuildStatus = modificationNodeData?.nodeBuildStatus?.localBuildStatus;
                 this.treeNodes[indexModifiedNode] = {
                     ...nodeToUpdate,
                     data: {
