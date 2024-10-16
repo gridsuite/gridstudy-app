@@ -53,12 +53,11 @@ import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, DiagramState, TreeNodeData } from 'redux/reducer';
-import { Node } from 'reactflow';
+import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
 import { SLDMetadata } from '@powsybl/diagram-viewer';
 
 // Returns a callback that returns a promise
-const useDisplayView = (studyUuid: UUID, currentNode: Node<TreeNodeData>) => {
+const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     const { snackError } = useSnackMessage();
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
@@ -294,7 +293,7 @@ const styles = {
 
 interface DiagramPaneProps {
     studyUuid: UUID;
-    currentNode: Node<TreeNodeData>;
+    currentNode: CurrentTreeNode;
     showInSpreadsheet: (equipment: { equipmentId: string | null; type: string | null }) => void;
     visible: boolean;
 }
