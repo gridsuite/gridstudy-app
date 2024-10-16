@@ -11,7 +11,7 @@ import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { CurrentTreeNode } from 'redux/reducer';
-import { Edge } from 'reactflow';
+import { Edge } from '@xyflow/react';
 import { isNetworkModificationNode } from './util/model-functions';
 import { NetworkModificationNode, RootNode } from './tree-node.type';
 
