@@ -190,7 +190,7 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                     busbarSectionName: undefined,
                     connectionDirection: staticCompensator.connectablePosition.connectionDirection ?? null,
                     connectionName: staticCompensator.connectablePosition.connectionName ?? null,
-                    connectionPosition: staticCompensator.connectablePosition.connectionPosition ?? null,
+                    connectionPosition: undefined,
                     terminalConnected: undefined,
                     isEquipmentModification: false,
                 }),
