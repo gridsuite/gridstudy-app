@@ -18,7 +18,7 @@ export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = 
 };
 export type EquipmentInfosTypes = EquipmentInfosTypesStruct<'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP'>;
 
-//TODO: Compare with commons-ui's EquipmentType enum (miss TIE_LINE and not same order)
+//TODO: Compare with commons-ui's EquipmentType enum (not same order)
 //TODO: rename to PascalCase
 export enum EQUIPMENT_TYPES {
     SUBSTATION = 'SUBSTATION',
