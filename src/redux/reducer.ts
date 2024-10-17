@@ -352,20 +352,20 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-type additionalNodeAttr = {
+type NodeCommonData = {
     label: string;
     parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
 };
-export type ReactFlowModificationNodeDataType = additionalNodeAttr & { localBuildStatus?: BUILD_STATUS };
+export type ReactFlowModificationNodeDataType = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
 
 export type ModificationNode = Node<ReactFlowModificationNodeDataType, 'NETWORK_MODIFICATION'> & {
     id: UUID;
 };
 
-export type ReactFlowRootNodeDataType = additionalNodeAttr & { caseName?: string };
+export type ReactFlowRootNodeDataType = NodeCommonData & { caseName?: string };
 export type RootNode = Node<ReactFlowRootNodeDataType, 'ROOT'> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
