@@ -34,7 +34,7 @@ interface CreateParameterProps<T extends FieldValues> {
     open: boolean;
     onClose: () => void;
     parameterValues: UseFormGetValues<T> | any;
-    parameterType: string;
+    parameterType: ElementType;
     parameterFormatter: (newParams: any) => any;
 }
 
