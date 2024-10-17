@@ -43,7 +43,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     };
 
     return (
-        <TableRow key={row.id} onMouseEnter={() => handleHover(true)} onMouseLeave={() => handleHover(false)}>
+        <TableRow onMouseEnter={() => handleHover(true)} onMouseLeave={() => handleHover(false)}>
             {columnsDefinition.map((column: IColumnsDef) =>
                 EditableTableCell(arrayFormName, index, column, handleRowChanged)
             )}
