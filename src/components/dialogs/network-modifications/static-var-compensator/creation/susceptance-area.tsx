@@ -74,7 +74,7 @@ export const SusceptanceArea = () => {
     const minQAtNominalVField = (
         <TextField
             value={minQ}
-            label={<FormattedMessage id={'minQ'} />}
+            label={<FormattedMessage id={'minQAtNominalV'} />}
             disabled={true}
             size={'small'}
             InputProps={{
@@ -86,7 +86,7 @@ export const SusceptanceArea = () => {
     const maxQAtNominalVField = (
         <TextField
             value={maxQ}
-            label={<FormattedMessage id={'maxQ'} />}
+            label={<FormattedMessage id={'maxQAtVnominal'} />}
             disabled={true}
             size={'small'}
             InputProps={{
@@ -105,16 +105,16 @@ export const SusceptanceArea = () => {
         <Grid container spacing={2} padding={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <>
-                    {gridItem(minSusceptanceField, 3)}
+                    {gridItem(minSusceptanceField, 4)}
                     {gridItem(susceptanceField, 3)}
-                    {gridItem(maxSusceptanceField, 3)}
+                    {gridItem(maxSusceptanceField, 4)}
                 </>
             )}
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <>
-                    {gridItem(minQAtNominalVField, 3)}
+                    {gridItem(minQAtNominalVField, 4)}
                     {gridItem(qAtNominalVField, 3)}
-                    {gridItem(maxQAtNominalVField, 3)}
+                    {gridItem(maxQAtNominalVField, 4)}
                 </>
             )}
         </Grid>
