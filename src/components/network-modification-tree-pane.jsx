@@ -23,7 +23,7 @@ import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import { useStore } from 'reactflow';
+import { useStore } from '@xyflow/react';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 import {

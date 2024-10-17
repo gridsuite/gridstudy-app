@@ -7,7 +7,7 @@
 
 import dagre from 'dagre';
 import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
-import { Edge, Position } from 'reactflow';
+import { Edge, Position } from '@xyflow/react';
 import { CurrentTreeNode } from 'redux/reducer';
 import { NodeType } from './tree-node.type';
 
@@ -44,6 +44,6 @@ export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {
             width: width,
             height: height,
         };
-        return el;
+        return { ...el };
     });
 }
