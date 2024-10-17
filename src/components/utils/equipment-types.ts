@@ -15,8 +15,11 @@ export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = 
     FORM: { type: 'FORM' },
     TAB: { type: 'TAB' },
     TOOLTIP: { type: 'TOOLTIP' },
+    OPERATING_STATUS: { type: 'OPERATING_STATUS' },
 };
-export type EquipmentInfosTypes = EquipmentInfosTypesStruct<'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP'>;
+export type EquipmentInfosTypes = EquipmentInfosTypesStruct<
+    'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP' | 'OPERATING_STATUS'
+>;
 
 //TODO: Compare with commons-ui's EquipmentType enum (miss TIE_LINE and not same order)
 //TODO: rename to PascalCase
