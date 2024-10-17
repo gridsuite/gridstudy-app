@@ -7,7 +7,7 @@
 
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { CurrentTreeNode, ReactFlowModificationNodeDataType, ReactFlowRootNodeDataType } from 'redux/reducer';
+import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
 
 export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {
@@ -29,7 +29,7 @@ function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is N
 function convertRootNodeToReactFlowModelNode(
     node: NetworkModificationNodeData | RootNodeData,
     parentNodeUuid?: UUID
-): ReactFlowRootNodeDataType {
+): ReactFlowRootNodeData {
     return {
         parentNodeUuid: parentNodeUuid,
         label: node.name,
@@ -40,7 +40,7 @@ function convertRootNodeToReactFlowModelNode(
 function convertModificationNodeToReactFlowModelNode(
     node: NetworkModificationNodeData,
     parentNodeUuid?: UUID
-): ReactFlowModificationNodeDataType {
+): ReactFlowModificationNodeData {
     const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
     const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
     const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
@@ -57,7 +57,6 @@ export function convertNodetoReactFlowModelNode(
     node: NetworkModificationNodeData | RootNodeData,
     parentNodeUuid?: UUID
 ): CurrentTreeNode {
-    // Use the type guard to safely access nodeBuildStatus
     return {
         id: node.id,
         type: node.type,

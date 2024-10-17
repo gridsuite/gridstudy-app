@@ -359,14 +359,14 @@ type NodeCommonData = {
     description?: string;
     readOnly?: boolean;
 };
-export type ReactFlowModificationNodeDataType = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
+export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
 
-export type ModificationNode = Node<ReactFlowModificationNodeDataType, 'NETWORK_MODIFICATION'> & {
+export type ModificationNode = Node<ReactFlowModificationNodeData, 'NETWORK_MODIFICATION'> & {
     id: UUID;
 };
 
-export type ReactFlowRootNodeDataType = NodeCommonData & { caseName?: string };
-export type RootNode = Node<ReactFlowRootNodeDataType, 'ROOT'> & { id: UUID };
+export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
+export type RootNode = Node<ReactFlowRootNodeData, 'ROOT'> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
 
