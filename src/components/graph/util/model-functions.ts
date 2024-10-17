@@ -22,42 +22,50 @@ function isModificationNode(node: NetworkModificationNodeData | RootNodeData): n
     return node.type === NodeType.NETWORK_MODIFICATION;
 }
 
+function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
+    return node.type === NodeType.ROOT;
+}
+
+function convertRootNodeToReactFlowModelNode(
+    node: NetworkModificationNodeData | RootNodeData,
+    parentNodeUuid?: UUID
+): ReactFlowRootNodeDataType {
+    return {
+        parentNodeUuid: parentNodeUuid,
+        label: node.name,
+        description: node.description ?? undefined,
+    };
+}
+
+function convertModificationNodeToReactFlowModelNode(
+    node: NetworkModificationNodeData,
+    parentNodeUuid?: UUID
+): ReactFlowModificationNodeDataType {
+    const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
+    const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
+    const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
+    return {
+        parentNodeUuid: parentNodeUuid,
+        label: node.name,
+        description: node.description ?? undefined,
+        globalBuildStatus: globalBuildStatus,
+        localBuildStatus: localBuildStatus,
+    };
+}
+
 export function convertNodetoReactFlowModelNode(
     node: NetworkModificationNodeData | RootNodeData,
     parentNodeUuid?: UUID
 ): CurrentTreeNode {
     // Use the type guard to safely access nodeBuildStatus
-
-    if (node.type === NodeType.ROOT) {
-        const data: ReactFlowRootNodeDataType = {
-            parentNodeUuid: parentNodeUuid,
-            label: node.name,
-            description: node.description ?? undefined,
-        };
-        return {
-            id: node.id,
-            type: node.type,
-            position: { x: 0, y: 0 },
-            data: data,
-        };
-    } else {
-        const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
-        const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
-        const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
-        const data: ReactFlowModificationNodeDataType = {
-            parentNodeUuid: parentNodeUuid,
-            label: node.name,
-            description: node.description ?? undefined,
-            globalBuildStatus: globalBuildStatus,
-            localBuildStatus: localBuildStatus,
-        };
-        return {
-            id: node.id,
-            type: node.type,
-            position: { x: 0, y: 0 },
-            data: data,
-        };
-    }
+    return {
+        id: node.id,
+        type: node.type,
+        position: { x: 0, y: 0 },
+        data: isRootNode(node)
+            ? convertRootNodeToReactFlowModelNode(node, parentNodeUuid)
+            : convertModificationNodeToReactFlowModelNode(node, parentNodeUuid),
+    };
 }
 
 // Return the first node of type nodeType and specific buildStatus
@@ -74,6 +82,7 @@ export function getFirstNodeOfType(
         buildStatusList
     );
 }
+
 export function isNetworkModificationNode(n: NetworkModificationNodeData | RootNodeData): boolean {
     return 'nodeBuildStatus' in n;
 }
