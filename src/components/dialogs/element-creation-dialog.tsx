@@ -130,7 +130,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
         if (open && studyUuid) {
             fetchDefaultDirectoryForStudy();
         }
-    }, [fetchDefaultDirectoryForStudy, studyUuid]);
+    }, [fetchDefaultDirectoryForStudy, studyUuid, open]);
 
     const handleChangeFolder = () => {
         setDirectorySelectorOpen(true);
