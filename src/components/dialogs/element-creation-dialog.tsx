@@ -167,7 +167,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
             </Grid>
             <Typography m={1} component="span">
                 <Box fontWeight={'fontWeightBold'}>
-                    {destinationFolder == null ? <CircularProgress /> : destinationFolder.name}
+                    {destinationFolder ? destinationFolder.name : <CircularProgress />}
                 </Box>
             </Typography>
         </Grid>
