@@ -35,7 +35,7 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     const dialogOpen = useStateBoolean(false);
 
     const currentType = useMemo(() => {
-        const equipment: any = TABLES_DEFINITION_INDEXES.get(indexTab);
+        const equipment = TABLES_DEFINITION_INDEXES.get(indexTab);
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
     }, [indexTab]);
 
@@ -44,7 +44,7 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {
-        const equipment: any = TABLES_DEFINITION_INDEXES.get(indexTab);
+        const equipment = TABLES_DEFINITION_INDEXES.get(indexTab);
         return equipment ? new Map<string, string>(equipment.columns.map((c: any) => [c.id, c.field])) : null;
     }, [indexTab]);
 

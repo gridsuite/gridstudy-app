@@ -7,7 +7,7 @@
 
 // only moved here to resolve cyclic dependency problem
 
-import { ElementType } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 
 export type ColumnWithFormula = {
     name: string;
@@ -24,6 +24,6 @@ export type CustomEntry = {
 };
 
 export type SpreadsheetConfig = {
-    sheetType: ElementType;
+    sheetType: EQUIPMENT_TYPES;
     customColumns: ColumnWithFormula[];
 };

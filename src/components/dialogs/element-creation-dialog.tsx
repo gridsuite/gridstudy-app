@@ -25,7 +25,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
 import { useSelector } from 'react-redux';
-import ModificationDialog from 'components/dialogs/commons/modificationDialog';
+import ModificationDialog from './commons/modificationDialog';
 import { AppState } from '../../redux/reducer';
 
 interface FormData {
