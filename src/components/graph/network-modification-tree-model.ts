@@ -187,28 +187,17 @@ export default class NetworkModificationTreeModel {
                 const modificationNodeData = getModificationNodeDataOrUndefined(node);
                 const globalBuildStatus = modificationNodeData?.nodeBuildStatus?.globalBuildStatus;
                 const localBuildStatus = modificationNodeData?.nodeBuildStatus?.localBuildStatus;
-                if (isReactFlowRootNodeData(nodeToUpdate)) {
-                    this.treeNodes[indexModifiedNode] = {
-                        ...nodeToUpdate,
-                        data: {
-                            ...this.treeNodes[indexModifiedNode].data,
-                            label: node.name,
-                            globalBuildStatus: globalBuildStatus,
-                            readOnly: node.readOnly,
-                        },
-                    };
-                } else {
-                    this.treeNodes[indexModifiedNode] = {
-                        ...nodeToUpdate,
-                        data: {
-                            ...this.treeNodes[indexModifiedNode].data,
-                            label: node.name,
-                            globalBuildStatus: globalBuildStatus,
-                            localBuildStatus: localBuildStatus,
-                            readOnly: node.readOnly,
-                        },
-                    };
-                }
+
+                this.treeNodes[indexModifiedNode] = {
+                    ...nodeToUpdate,
+                    data: {
+                        ...this.treeNodes[indexModifiedNode].data,
+                        label: node.name,
+                        globalBuildStatus: globalBuildStatus,
+                        ...(!isReactFlowRootNodeData(nodeToUpdate) && { localBuildStatus }), // Only include if false
+                        readOnly: node.readOnly,
+                    },
+                };
             }
         });
         this.treeNodes = [...this.treeNodes];
