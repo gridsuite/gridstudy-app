@@ -51,7 +51,6 @@ import yup from '../../../utils/yup-config';
 import {
     fetchSensitivityAnalysisParameters,
     getSensitivityAnalysisFactorsCount,
-    setSensitivityAnalysisParameters,
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
@@ -93,9 +92,8 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
     const { snackError } = useSnackMessage();
 
     const [launchLoader, setLaunchLoader] = useState(false);
-    const [isSubmitAction, setIsSubmitAction] = useState(false);
     const [analysisComputeComplexity, setAnalysisComputeComplexity] = useState(0);
-    const [providers, , , , params, updateParameters] = parametersBackend;
+    const [providers, , , , params, updateParameters, resetSensitivityAnalysisParameters] = parametersBackend;
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
 
@@ -126,16 +124,6 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state) => state.studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const [sensitivityAnalysisParams, setSensitivityAnalysisParams] = useState(params);
-
-    const resetSensitivityAnalysisParameters = useCallback(() => {
-        setSensitivityAnalysisParameters(studyUuid, null).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
-        });
-    }, [studyUuid, snackError]);
 
     const formatNewParams = useCallback((newParams) => {
         return {
@@ -382,24 +370,13 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
         handleEntries(values[PARAMETER_SENSI_HVDC], PARAMETER_SENSI_HVDC);
         handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
     }, [onChangeParams, getValues]);
+
     const onSubmit = useCallback(
         (newParams) => {
-            setIsSubmitAction(true);
-            setSensitivityAnalysisParameters(studyUuid, formatNewParams(newParams))
-                .then(() => {
-                    let formattedParams = formatNewParams(newParams);
-                    setSensitivityAnalysisParams(formattedParams);
-                    updateParameters(formattedParams);
-                    initRowsCount();
-                })
-                .catch((error) => {
-                    snackError({
-                        messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
-                    });
-                });
+            updateParameters(formatNewParams(newParams));
+            initRowsCount();
         },
-        [setSensitivityAnalysisParams, snackError, studyUuid, formatNewParams, initRowsCount, updateParameters]
+        [formatNewParams, initRowsCount, updateParameters]
     );
 
     const handleSensibilityParameter = useCallback(
@@ -428,22 +405,12 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
     );
 
     useEffect(() => {
-        if (sensitivityAnalysisParams) {
-            reset(fromSensitivityAnalysisParamsDataToFormValues(sensitivityAnalysisParams));
-            !isSubmitAction && initRowsCount();
-        }
-    }, [
-        fromSensitivityAnalysisParamsDataToFormValues,
-        sensitivityAnalysisParams,
-        initRowsCount,
-        isSubmitAction,
-        reset,
-    ]);
-    useEffect(() => {
         if (params) {
             reset(fromSensitivityAnalysisParamsDataToFormValues(params));
+            initRowsCount();
+            setAnalysisComputeComplexity(0);
         }
-    }, [params, reset, fromSensitivityAnalysisParamsDataToFormValues]);
+    }, [params, reset, fromSensitivityAnalysisParamsDataToFormValues, initRowsCount]);
 
     const clear = useCallback(() => {
         reset(emptyFormData);
