@@ -115,6 +115,7 @@ const VoltageInitResult = ({ result, status }) => {
             resizable: false,
             lockPinned: true,
             wrapHeaderText: true,
+            lockVisible: true,
         }),
         []
     );
