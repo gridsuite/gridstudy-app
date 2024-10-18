@@ -277,13 +277,13 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from 'reactflow';
-import { BUILD_STATUS } from '../components/network/constants';
+import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
-import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
+import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { BUILD_STATUS } from '../components/network/constants';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -352,16 +352,28 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-export type TreeNodeData = {
-    parentNodeUuid: UUID;
+type NodeCommonData = {
     label: string;
-    description: string | null;
+    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
-    localBuildStatus?: BUILD_STATUS;
+    description?: string;
     readOnly?: boolean;
-    caseName?: string;
 };
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
+
+export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
+    id: UUID;
+};
+
+export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
+export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
+
+export type CurrentTreeNode = ModificationNode | RootNode;
+
+// type guard to check if the node is a Root
+export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {
+    return node.type === NodeType.ROOT;
+}
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -873,7 +885,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
+                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 newModel.updateLayout();
@@ -1750,7 +1762,7 @@ function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
 function unravelSubTree(
     treeModel: NetworkModificationTreeModel,
     subtreeParentId: UUID,
-    node: NetworkModificationNode | RootNode | null
+    node: NetworkModificationNodeData | RootNodeData | null
 ) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {

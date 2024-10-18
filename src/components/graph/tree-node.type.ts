@@ -12,7 +12,7 @@ export enum NodeType {
     NETWORK_MODIFICATION = 'NETWORK_MODIFICATION',
 }
 
-export interface AbstractNode {
+export type AbstractNode = {
     id: UUID;
     name: string;
     children: AbstractNode[];
@@ -21,18 +21,18 @@ export interface AbstractNode {
     readOnly?: boolean;
     reportUuid?: UUID;
     type: NodeType;
-}
+};
 
 export interface NodeBuildStatus {
     globalBuildStatus: BUILD_STATUS;
     localBuildStatus: BUILD_STATUS;
 }
 
-export interface RootNode extends AbstractNode {
+export type RootNodeData = AbstractNode & {
     studyId: UUID;
-}
+};
 
-export interface NetworkModificationNode extends AbstractNode {
+export type NetworkModificationNodeData = AbstractNode & {
     modificationGroupUuid?: UUID;
     variantId?: string;
     modificationsToExclude?: UUID[];
@@ -46,4 +46,4 @@ export interface NetworkModificationNode extends AbstractNode {
     dynamicSimulationResultUuid?: UUID;
     stateEstimationResultUuid?: UUID;
     nodeBuildStatus?: NodeBuildStatus;
-}
+};
