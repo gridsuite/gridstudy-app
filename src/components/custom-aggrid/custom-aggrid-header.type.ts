@@ -24,8 +24,6 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
-    LESS_THAN = 'lessThan',
-    GREATER_THAN = 'greaterThan',
 }
 
 export type FilterParams = {
@@ -44,6 +42,7 @@ export interface CustomColDef extends ColDef {
     filterTab?: string[];
     getEnumLabel?: (value: string) => string;
     isCountry?: boolean;
+    shouldDisplayFilterBadge?: boolean;
 }
 
 export type FilterDataType = {
