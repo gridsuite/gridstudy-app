@@ -18,11 +18,13 @@ export function getModificationNodeDataOrUndefined(node: NetworkModificationNode
 }
 
 // type guard to check if the node is a modification node
-function isModificationNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
+export function isModificationNode(
+    node: NetworkModificationNodeData | RootNodeData
+): node is NetworkModificationNodeData {
     return node.type === NodeType.NETWORK_MODIFICATION;
 }
 
-function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
+export function isRootNode(node: NetworkModificationNodeData | RootNodeData): node is NetworkModificationNodeData {
     return node.type === NodeType.ROOT;
 }
 

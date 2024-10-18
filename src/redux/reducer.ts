@@ -281,7 +281,7 @@ import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
-import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 
@@ -361,14 +361,19 @@ type NodeCommonData = {
 };
 export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
 
-export type ModificationNode = Node<ReactFlowModificationNodeData, 'NETWORK_MODIFICATION'> & {
+export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
     id: UUID;
 };
 
 export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
-export type RootNode = Node<ReactFlowRootNodeData, 'ROOT'> & { id: UUID };
+export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
 
 export type CurrentTreeNode = ModificationNode | RootNode;
+
+// type guard to check if the node is a Root
+export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {
+    return node.type === NodeType.ROOT;
+}
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
