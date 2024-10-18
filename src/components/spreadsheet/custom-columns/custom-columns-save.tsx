@@ -101,14 +101,16 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
                 <SaveIcon />
             </IconButton>
 
-            <ElementCreationDialog
-                open={dialogOpen.value}
-                onSave={saveSpreadsheetColumnsConfiguration}
-                onClose={dialogOpen.setFalse}
-                type={ElementType.SPREADSHEET_CONFIG}
-                titleId={'spreadsheet/custom_column/save_dialog_title'}
-                withDescription={true}
-            />
+            {dialogOpen.value && (
+                <ElementCreationDialog
+                    open={dialogOpen.value}
+                    onSave={saveSpreadsheetColumnsConfiguration}
+                    onClose={dialogOpen.setFalse}
+                    type={ElementType.SPREADSHEET_CONFIG}
+                    titleId={'spreadsheet/custom_column/save_dialog_title'}
+                    withDescription={true}
+                />
+            )}
         </>
     );
 }

@@ -127,7 +127,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     }, [prefixIdForGeneratedName, intl, reset]);
 
     useEffect(() => {
-        if (studyUuid) {
+        if (open && studyUuid) {
             fetchDefaultDirectoryForStudy();
         }
     }, [fetchDefaultDirectoryForStudy, studyUuid]);
