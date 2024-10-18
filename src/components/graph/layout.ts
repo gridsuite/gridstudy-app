@@ -5,45 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import dagre from 'dagre';
 import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
-import { Edge, Position } from '@xyflow/react';
+import { Edge } from '@xyflow/react';
 import { CurrentTreeNode } from 'redux/reducer';
 import { NodeType } from './tree-node.type';
+import ELK from 'elkjs/lib/elk.bundled';
+const elk = new ELK();
+const layoutOptions = {
+    'algorithm': 'layered',
+    'elk.direction': 'DOWN',
+    'mergeEdges': true,
+    'spacing.nodeNode': 30.0,
+    'spacing.edgeNodeBetweenLayers': 30.0,
+    'nodePlacement.favorStraightEdges': true,
+    'fixedAlignment': 'LEFTDOWN',
+    'elk.padding': '[top=20.0,left=0.0,bottom=0.0,right=0.0]',
+    'considerModelOrder.strategy':'NODES_AND_EDGES',
+    'crossingMinimization.forceNodeModelOrder':true,
+};
 
-export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {
-    const dagreGraph = new dagre.graphlib.Graph();
-    dagreGraph.setDefaultEdgeLabel(() => ({}));
-    dagreGraph.setGraph({ align: 'UL' });
-
-    nodes.forEach((node) => {
-        dagreGraph.setNode(node.id, {
+export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[]) {
+    const graph = {
+        id: 'root',
+        layoutOptions: layoutOptions,
+        children: nodes.map((node) => ({
+            ...node,
             width: node?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth,
             height: node?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight,
-        });
-    });
-    edges.forEach((edge: Edge) => {
-        dagreGraph.setEdge(edge.source, edge.target);
-    });
-
-    dagre.layout(dagreGraph);
-
-    return nodes.map((el) => {
-        const nodeWithPosition = dagreGraph.node(el.id);
-        el.targetPosition = Position.Top;
-        el.sourcePosition = Position.Bottom;
-        const width = el?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth;
-        const height = el?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight;
-
-        el.position = {
-            x: nodeWithPosition.x - width / 2,
-            y: nodeWithPosition.y - height / 2,
-        };
-        // To init react flow node style
-        el.style = {
-            width: width,
-            height: height,
-        };
-        return { ...el };
-    });
+        })),
+        edges: edges,
+    };
+    const result = elk
+        .layout(graph)
+        .then((layoutedGraph) => ({
+            nodes: layoutedGraph.children.map((node) => ({
+                ...node,
+                // React Flow expects a position property on the node instead of `x`
+                // and `y` fields.
+                position: { x: node.x, y: node.y },
+            })),
+            edges: layoutedGraph.edges,
+        }))
+        .catch(console.error);
+    return result;
 }

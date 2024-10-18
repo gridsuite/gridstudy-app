@@ -174,8 +174,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     }
     return (
         <>
-            <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />
-            <Handle type="target" position={Position.Top} style={{ background: '#555' }} isConnectable={false} />
+            <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={true} />
+            <Handle type="target" position={Position.Top} style={{ background: '#555' }} isConnectable={true} />
             <Button
                 style={{
                     opacity: getNodeOpacity(),

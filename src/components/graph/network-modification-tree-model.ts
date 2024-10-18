@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getLayoutedNodes } from './layout';
+import {getLayoutedElements, getLayoutedNodes} from './layout';
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
 import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
@@ -31,9 +31,15 @@ export default class NetworkModificationTreeModel {
 
     isAnyNodeBuilding = false;
 
-    updateLayout() {
-        this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
-        this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
+    updateLayout(callback) {
+        // TODO Something should surely be done here
+        /*getLayoutedElements(this.treeNodes, this.treeEdges).then(
+            (layoutedNodes) => {
+                this.treeNodes = layoutedNodes;
+                this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
+                callback();
+            }
+        );*/
     }
     addChild(
         newNode: NetworkModificationNodeData | RootNodeData,

@@ -6,9 +6,9 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import { ReactFlow, Controls, useStore, useReactFlow, ControlButton } from '@xyflow/react';
+import {ReactFlow, Controls, useStore, useReactFlow, ControlButton, useEdgesState, useNodesState} from '@xyflow/react';
 import CenterGraphButton from './graph/util/center-graph-button';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
@@ -18,11 +18,13 @@ import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { StudyDisplayMode } from './network-modification.type';
+import {getLayoutedElements} from "./graph/layout";
 
 // snapGrid value set to [15, 15] which is the default value for ReactFlow
 // it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
 // in order to avoid unwanted tree nodes rendering (react-flow bug ?)
-const snapGrid = [15, 15];
+const snapGrid = [210, 120];
+//const snapGrid = [15,15];
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -37,7 +39,33 @@ const NetworkModificationTree = ({
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
-    const [isMoving, setIsMoving] = useState(false);
+    const [nodes, setNodes, onNodesChange] = useNodesState([]);
+    const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+    const onLayout = useCallback(
+        ({ direction, useInitialNodes = false }) => {
+            if (treeModel) {
+            const ns = treeModel.treeNodes;
+            const es = treeModel.treeEdges;
+
+            getLayoutedElements(ns, es).then(
+                ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+                    setNodes(layoutedNodes);
+                    setEdges(layoutedEdges);
+
+                    window.requestAnimationFrame(() => fitView());
+                },
+            );
+            } else {
+                console.error("CHARLY loading ?");
+            }
+        },
+        [nodes, edges, treeModel],
+    );
+
+    useLayoutEffect(() => {
+        onLayout({ direction: 'DOWN', useInitialNodes: true }); // TODO remove or use those useless params
+    }, [treeModel]);
 
     const onNodeClick = useCallback(
         (event, node) => {
@@ -49,16 +77,8 @@ const NetworkModificationTree = ({
         [dispatch, currentNode]
     );
 
-    const onMove = useCallback((flowTransform) => {
-        setIsMoving(true);
-    }, []);
-
-    const onMoveEnd = useCallback((flowTransform) => {
-        setIsMoving(false);
-    }, []);
-
     const [x, y, zoom] = useStore((state) => state.transform);
-    const { setViewport, fitView } = useReactFlow();
+    const { setViewport, fitView, screenToFlowPosition } = useReactFlow();
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -112,30 +132,57 @@ const NetworkModificationTree = ({
         }
     }, [isStudyDrawerOpen]);
 
+    const onConnectEnd = useCallback(
+        (event, connectionState) => {
+            console.error("onConnectEnd", connectionState);
+            // when a connection is dropped on the pane it's not valid
+            /*if (!connectionState.isValid) {
+                // we need to remove the wrapper bounds, in order to get the correct position
+                const id = getId();
+                const { clientX, clientY } =
+                    'changedTouches' in event ? event.changedTouches[0] : event;
+                const newNode = {
+                    id,
+                    position: screenToFlowPosition({
+                        x: clientX,
+                        y: clientY,
+                    }),
+                    data: { label: `Node ${id}` },
+                    origin: [0.5, 0.0],
+                };
+
+                setNodes((nds) => nds.concat(newNode));
+                setEdges((eds) =>
+                    eds.concat({ id, source: connectionState.fromNode.id, target: id }),
+                );
+            }*/
+        },
+        [screenToFlowPosition],
+    );
+
     return (
         <Box flexGrow={1}>
             <ReactFlow
-                style={{
-                    cursor: isMoving ? 'grabbing' : 'grab',
-                }}
-                nodes={treeModel ? treeModel.treeNodes : []}
-                edges={treeModel ? treeModel.treeEdges : []}
+                nodes={nodes}
+                edges={edges}
+                //onConnect={onConnect}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                fitView
+                snapToGrid
+                snapGrid={snapGrid}
                 onNodeContextMenu={onNodeContextMenu}
                 onNodeClick={onNodeClick}
-                //TODO why onMove instead of onMoveStart
-                onMove={onMove}
-                fitView={true}
-                onMoveEnd={onMoveEnd}
                 elementsSelectable
                 selectNodesOnDrag={false}
                 nodeTypes={nodeTypes}
-                connectionLineType="default"
-                nodesDraggable={false}
-                nodesConnectable={false}
-                snapToGrid={false}
-                // Although snapToGrid is set to false, we have to set snapGrid constant
-                // value in order to avoid useless re-rendering
-                snapGrid={snapGrid}
+                //connectionLineType="default"
+                minZoom={0.2} // Lower value allows for more zoom out
+                //maxZoom={2} // Higher value allows for more zoom in
+
+                nodesDraggable={true}
+                nodesConnectable={true}
+                onConnectEnd={onConnectEnd}
             >
                 <Controls
                     style={{ margin: '10px' }} // This component uses "style" instead of "sx"
