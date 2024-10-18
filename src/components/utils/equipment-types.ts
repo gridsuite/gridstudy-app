@@ -81,3 +81,7 @@ export function equipmentTypeToLabel(equipmentType: EQUIPMENT_TYPES) {
 export interface VoltageLevel extends Identifiable {
     nominalV: number;
 }
+
+export interface Substation extends Identifiable {
+    nominalV: number;
+}

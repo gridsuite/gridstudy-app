@@ -13,6 +13,7 @@ import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export const LOADING_WIDTH = 300;
 export const LOADING_HEIGHT = 300;
@@ -206,6 +207,33 @@ export function getFeederTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES) {
             return FEEDER_TYPES.TWO_WINDINGS_TRANSFORMER;
         case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
             return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER;
+        default: {
+            console.log('bad equipment type ', equipmentType);
+            return null;
+        }
+    }
+}
+
+export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentType | null {
+    switch (equipmentType) {
+        case EquipmentType.SUBSTATION:
+        case EquipmentType.VOLTAGE_LEVEL:
+        case EquipmentType.LINE:
+        case EquipmentType.LOAD:
+        case EquipmentType.BATTERY:
+        case EquipmentType.TIE_LINE:
+        case EquipmentType.DANGLING_LINE:
+        case EquipmentType.GENERATOR:
+        case EquipmentType.HVDC_LINE:
+        case EquipmentType.SHUNT_COMPENSATOR:
+        case EquipmentType.STATIC_VAR_COMPENSATOR:
+        case EquipmentType.TWO_WINDINGS_TRANSFORMER:
+        case EquipmentType.THREE_WINDINGS_TRANSFORMER:
+            return equipmentType;
+
+        case EquipmentType.VSC_CONVERTER_STATION:
+        case EquipmentType.LCC_CONVERTER_STATION:
+            return EquipmentType.HVDC_CONVERTER_STATION;
         default: {
             console.log('bad equipment type ', equipmentType);
             return null;
