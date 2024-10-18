@@ -339,7 +339,8 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
     }, [diagramStates, studyUuid]);
 
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
-    const currentNodeRef = useRef(currentNode);
+    const currentNodeRef = useRef<CurrentTreeNode>();
+    currentNodeRef.current = currentNode;
 
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;

@@ -27,7 +27,7 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
     return (
         <>
             <span>
-                <FormattedMessage id="spreadsheet/custom_column/main_button" />
+                <FormattedMessage id="spreadsheet/custom_column/add_columns" />
             </span>
             <IconButton aria-label="dialog" onClick={dialogOpen.setTrue}>
                 <Badge

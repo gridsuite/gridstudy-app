@@ -12,8 +12,8 @@ import 'typeface-roboto';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 
+import '@xyflow/react/dist/base.css';
 import './index.css';
-import 'reactflow/dist/style.css';
 
 import AppWrapper from './components/app-wrapper';
 

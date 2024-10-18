@@ -80,6 +80,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
+import CustomColumnsSave from './custom-columns/custom-columns-save';
 import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -1219,6 +1220,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     {developerMode && (
                         <Grid item sx={{ marginLeft: '15px' }}>
                             <CustomColumnsConfig indexTab={tabIndex} />
+                            <CustomColumnsSave indexTab={tabIndex} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
