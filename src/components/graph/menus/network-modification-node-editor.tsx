@@ -635,9 +635,7 @@ const NetworkModificationNodeEditor = () => {
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
-                        studyUpdatedForce.eventData.headers['nodes']
-                            ? [...studyUpdatedForce.eventData.headers['nodes']]
-                            : [],
+                        ...(studyUpdatedForce.eventData.headers.nodes ?? []),
                     ])
                 );
             }
