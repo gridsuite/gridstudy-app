@@ -200,17 +200,6 @@ const fluxConventionNumericFilterConfig = (
                     },
                 },
                 {
-                    displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
-                    displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
-                    predicate: ([filterValue]: [number], cellValue: number) => {
-                        const transformedValue =
-                            applyFluxConvention && getFluxConvention
-                                ? applyFluxConvention(getFluxConvention(), cellValue)
-                                : cellValue;
-                        return transformedValue ? transformedValue > filterValue : false;
-                    },
-                },
-                {
                     displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
                     displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
                     predicate: ([filterValue]: [number], cellValue: number) => {
@@ -219,17 +208,6 @@ const fluxConventionNumericFilterConfig = (
                                 ? applyFluxConvention(getFluxConvention(), cellValue)
                                 : cellValue;
                         return transformedValue ? transformedValue <= filterValue : false;
-                    },
-                },
-                {
-                    displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN,
-                    displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN,
-                    predicate: ([filterValue]: [number], cellValue: number) => {
-                        const transformedValue =
-                            applyFluxConvention && getFluxConvention
-                                ? applyFluxConvention(getFluxConvention(), cellValue)
-                                : cellValue;
-                        return transformedValue ? transformedValue < filterValue : false;
                     },
                 },
             ],

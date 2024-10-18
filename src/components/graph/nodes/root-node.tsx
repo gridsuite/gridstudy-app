@@ -9,11 +9,11 @@ import CircularProgress from '@mui/material/CircularProgress';
 import IconButton from '@mui/material/IconButton';
 import PhotoIcon from '@mui/icons-material/Photo';
 import React from 'react';
-import { Handle, Position } from 'reactflow';
+import { Handle, NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
 import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
-import { AppState } from 'redux/reducer';
+import { AppState, RootNode as RootNodeType } from 'redux/reducer';
 import { Theme } from '@mui/material/styles';
 
 const styles = {
@@ -40,15 +40,7 @@ const styles = {
     }),
 };
 
-interface RootNodeProps {
-    id: string;
-    data: {
-        caseName: string;
-        globalBuildStatus: string;
-    };
-}
-
-const RootNode = (props: RootNodeProps) => {
+const RootNode = (props: NodeProps<RootNodeType>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
