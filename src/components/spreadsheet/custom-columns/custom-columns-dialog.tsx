@@ -86,7 +86,7 @@ export default function CustomColumnDialog({
                 PaperProps={{ sx: styles.dialogContent }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({ id: 'spreadsheet/custom_column/main_button' })}
+                    {intl.formatMessage({ id: 'spreadsheet/custom_column/add_columns' })}
                 </DialogTitle>
                 <DialogContent dividers>
                     <CustomColumnTable />
