@@ -11,20 +11,11 @@ import { CurrentTreeNode } from 'redux/reducer';
 import { NodeType } from './tree-node.type';
 import ELK from 'elkjs/lib/elk.bundled';
 const elk = new ELK();
-const layoutOptions = {
-    'algorithm': 'layered',
-    'elk.direction': 'DOWN',
-    'mergeEdges': true,
-    'spacing.nodeNode': 30.0,
-    'spacing.edgeNodeBetweenLayers': 30.0,
-    'nodePlacement.favorStraightEdges': true,
-    'fixedAlignment': 'LEFTDOWN',
-    'elk.padding': '[top=20.0,left=0.0,bottom=0.0,right=0.0]',
-    'considerModelOrder.strategy':'NODES_AND_EDGES',
-    'crossingMinimization.forceNodeModelOrder':true,
-};
+// Those offset values are uses to fix the snap to grid behavior when moving nodes
+const X_OFFSET_FIX = -40.0;
+const Y_OFFSET_FIX = -20.0;
 
-export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[]) {
+export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[], layoutOptions) {
     const graph = {
         id: 'root',
         layoutOptions: layoutOptions,
@@ -42,7 +33,7 @@ export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[]) {
                 ...node,
                 // React Flow expects a position property on the node instead of `x`
                 // and `y` fields.
-                position: { x: node.x, y: node.y },
+                position: { x: node.x+X_OFFSET_FIX, y: node.y+Y_OFFSET_FIX },
             })),
             edges: layoutedGraph.edges,
         }))

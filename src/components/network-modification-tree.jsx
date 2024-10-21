@@ -20,11 +20,12 @@ import { nodeTypes } from './graph/util/model-constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {getLayoutedElements} from "./graph/layout";
 
-// snapGrid value set to [15, 15] which is the default value for ReactFlow
-// it has to be explicitly set as prop of the ReactFlow component, even if snapToGrid option is set to false
-// in order to avoid unwanted tree nodes rendering (react-flow bug ?)
-const snapGrid = [210, 120];
-//const snapGrid = [15,15];
+const snapGrid = [115, 110];
+const layoutOptions = {
+    'algorithm': 'mrtree',
+    'elk.direction': 'DOWN',
+    'spacing.nodeNode': 50.0,
+};
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -45,19 +46,17 @@ const NetworkModificationTree = ({
     const onLayout = useCallback(
         ({ direction, useInitialNodes = false }) => {
             if (treeModel) {
-            const ns = treeModel.treeNodes;
-            const es = treeModel.treeEdges;
+                const ns = treeModel.treeNodes;
+                const es = treeModel.treeEdges;
 
-            getLayoutedElements(ns, es).then(
-                ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
-                    setNodes(layoutedNodes);
-                    setEdges(layoutedEdges);
+                getLayoutedElements(ns, es, layoutOptions).then(
+                    ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+                        setNodes(layoutedNodes);
+                        setEdges(layoutedEdges);
 
-                    window.requestAnimationFrame(() => fitView());
-                },
-            );
-            } else {
-                console.error("CHARLY loading ?");
+                        window.requestAnimationFrame(() => fitView());
+                    },
+                );
             }
         },
         [nodes, edges, treeModel],
