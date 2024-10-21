@@ -34,7 +34,7 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipme
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
-import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
+import { EquipmentProps, useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
     formatPropertiesForBackend,
@@ -281,7 +281,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        equipmentDefinition,
+        equipmentDefinition as EquipmentProps,
         formatFetchedEquipmentsHandler
     );
 
@@ -1247,7 +1247,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         rowData={rowData}
                         columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
-                        fetched={equipments || errorMessage}
+                        fetched={!!equipments || !!errorMessage}
                         handleColumnDrag={handleColumnDrag}
                         handleCellEditingStarted={handleCellEditingStarted}
                         handleCellEditingStopped={handleCellEditingStopped}

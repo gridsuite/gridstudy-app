@@ -68,6 +68,7 @@ import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { SeverityFilter } from 'types/report.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -186,7 +187,7 @@ export function updateEquipments(equipments: Record<EquipmentUpdateType, Identif
     };
 }
 
-type EquipmentToDelete = {
+export type EquipmentToDelete = {
     equipmentType: SpreadsheetEquipmentType;
     equipmentId: string;
 };
@@ -1189,5 +1190,23 @@ export function setCustomColumDefinitions(
         table,
         definitions: customColumns,
         filter: filter,
+    };
+}
+export const REPORT_FILTER = 'REPORT_FILTER';
+export type ReportFilterAction = Readonly<Action<typeof REPORT_FILTER>> & {
+    reportId: string | null | undefined;
+    messageFilter: string | undefined;
+    severityFilter: SeverityFilter | undefined;
+};
+export function setReportFilters(
+    reportId: string | undefined,
+    messageFilter: string | undefined,
+    severityFilter: SeverityFilter | undefined
+): ReportFilterAction {
+    return {
+        type: REPORT_FILTER,
+        reportId,
+        messageFilter,
+        severityFilter,
     };
 }

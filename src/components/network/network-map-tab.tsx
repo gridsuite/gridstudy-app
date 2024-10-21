@@ -984,8 +984,8 @@ export const NetworkMapTab = ({
         return (
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
-                    nominalVoltages={mapEquipments?.getNominalVoltages()}
-                    filteredNominalVoltages={filteredNominalVoltages}
+                    nominalVoltages={mapEquipments?.getNominalVoltages() as number[]}
+                    filteredNominalVoltages={filteredNominalVoltages as number[]}
                     onChange={handleChange}
                 />
             </Box>
