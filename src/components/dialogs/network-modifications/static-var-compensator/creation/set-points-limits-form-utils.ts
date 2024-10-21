@@ -25,7 +25,6 @@ import {
 } from 'components/utils/field-constants';
 import yup from '../../../../utils/yup-config';
 import { REGULATION_TYPES } from '../../../../network/constants';
-import { computeQAtNominalV } from '../../../../utils/utils';
 import { Schema } from 'yup';
 
 export const getReactiveFormEmptyFormData = (id = SETPOINTS_LIMITS) => ({
@@ -140,20 +139,17 @@ export const getReactiveFormData = ({
     equipmentId: any;
 }) => ({
     [SETPOINTS_LIMITS]: {
-        [CHARACTERISTICS_CHOICE]: maxSusceptance
-            ? CHARACTERISTICS_CHOICES.SUSCEPTANCE.id
-            : CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id,
+        [CHARACTERISTICS_CHOICE]:
+            nominalV !== null || minSusceptance === null
+                ? CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id
+                : CHARACTERISTICS_CHOICES.SUSCEPTANCE.id,
         [VOLTAGE_REGULATION_MODE]: regulationMode,
         [MAX_SUSCEPTANCE]: maxSusceptance,
         [MIN_SUSCEPTANCE]: minSusceptance,
         [MAX_Q_AT_NOMINAL_V]:
-            nominalV !== null && maxSusceptance !== null
-                ? computeQAtNominalV(maxSusceptance, nominalV)
-                : maxQAtNominalV,
+            nominalV !== null && maxSusceptance !== null ? maxSusceptance * Math.pow(nominalV, 2) : maxQAtNominalV,
         [MIN_Q_AT_NOMINAL_V]:
-            nominalV !== null && minSusceptance !== null
-                ? computeQAtNominalV(minSusceptance, nominalV)
-                : minQAtNominalV,
+            nominalV !== null && minSusceptance !== null ? minSusceptance * Math.pow(nominalV, 2) : minQAtNominalV,
         [VOLTAGE_SET_POINT]: voltageSetpoint,
         [REACTIVE_POWER_SET_POINT]: reactivePowerSetpoint,
         [VOLTAGE_REGULATION_TYPE]: voltageRegulationType,
