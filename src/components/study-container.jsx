@@ -46,6 +46,7 @@ import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import { NodeType } from './graph/tree-node.type';
 
 function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, nodeUuid, invalidations) {
     const headers = studyUpdatedForce?.eventData?.headers;
@@ -458,13 +459,13 @@ export function StudyContainer({ view, onChangeTab }) {
                         });
 
                     // Select root node by default
-                    let firstSelectedNode = getFirstNodeOfType(tree, 'ROOT');
+                    let firstSelectedNode = getFirstNodeOfType(tree, NodeType.ROOT);
                     // if reindexation is ongoing then stay on root node, all variants will be removed
                     // if indexation is done then look for the next built node.
                     // This is to avoid future fetch on variants removed during reindexation process
                     if (initIndexationStatus === StudyIndexationStatus.INDEXED) {
                         firstSelectedNode =
-                            getFirstNodeOfType(tree, 'NETWORK_MODIFICATION', [
+                            getFirstNodeOfType(tree, NodeType.NETWORK_MODIFICATION, [
                                 BUILD_STATUS.BUILT,
                                 BUILD_STATUS.BUILT_WITH_WARNING,
                                 BUILD_STATUS.BUILT_WITH_ERROR,

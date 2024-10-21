@@ -67,10 +67,11 @@ import {
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
+import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 
 type MutableUnknownArray = unknown[];
 
-type ColumnName<TValue = unknown> = {
+export type ColumnName<TValue = unknown> = {
     index: number;
     value: TValue;
 };
@@ -269,13 +270,13 @@ export function loadNetworkModificationTreeSuccess(
 
 export const NETWORK_MODIFICATION_TREE_NODE_ADDED = 'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 export type NetworkModificationTreeNodeAddedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_ADDED>> & {
-    networkModificationTreeNode: CurrentTreeNode;
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeAdded(
-    networkModificationTreeNode: CurrentTreeNode,
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -291,13 +292,13 @@ export function networkModificationTreeNodeAdded(
 
 export const NETWORK_MODIFICATION_TREE_NODE_MOVED = 'NETWORK_MODIFICATION_TREE_NODE_MOVED';
 export type NetworkModificationTreeNodeMovedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_MOVED>> & {
-    networkModificationTreeNode: CurrentTreeNode;
+    networkModificationTreeNode: RootNodeData | NetworkModificationNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeMoved(
-    networkModificationTreeNode: CurrentTreeNode,
+    networkModificationTreeNode: RootNodeData | NetworkModificationNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -313,12 +314,12 @@ export function networkModificationTreeNodeMoved(
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {
-    networkModificationTreeNodes: CurrentTreeNode[];
-    parentNodeId: string;
+    networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData;
+    parentNodeId: UUID;
 };
 export function networkModificationHandleSubtree(
-    networkModificationTreeNodes: CurrentTreeNode[],
-    parentNodeId: string
+    networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData,
+    parentNodeId: UUID
 ): NetworkModificationHandleSubtreeAction {
     return {
         type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
@@ -331,10 +332,10 @@ export const NETWORK_MODIFICATION_TREE_NODES_REMOVED = 'NETWORK_MODIFICATION_TRE
 export type NetworkModificationTreeNodesRemovedAction = Readonly<
     Action<typeof NETWORK_MODIFICATION_TREE_NODES_REMOVED>
 > & {
-    networkModificationTreeNodes: CurrentTreeNode[];
+    networkModificationTreeNodes: UUID[];
 };
 export function networkModificationTreeNodesRemoved(
-    networkModificationTreeNodes: CurrentTreeNode[]
+    networkModificationTreeNodes: UUID[]
 ): NetworkModificationTreeNodesRemovedAction {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,
@@ -660,9 +661,11 @@ export function setFullScreenDiagram(
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: ColumnName[];
+    displayedColumnsNamesParams: ColumnName<string>[];
 };
-export function changeDisplayedColumns(displayedColumnsParams: ColumnName[]): ChangeDisplayedColumnsNamesAction {
+export function changeDisplayedColumns(
+    displayedColumnsParams: ColumnName<string>[]
+): ChangeDisplayedColumnsNamesAction {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
         displayedColumnsNamesParams: displayedColumnsParams,
@@ -671,9 +674,9 @@ export function changeDisplayedColumns(displayedColumnsParams: ColumnName[]): Ch
 
 export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
 export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: ColumnName[];
+    lockedColumnsNamesParams: ColumnName<string>[];
 };
-export function changeLockedColumns(lockedColumnsParams: ColumnName[]): ChangeLockedColumnsNamesAction {
+export function changeLockedColumns(lockedColumnsParams: ColumnName<string>[]): ChangeLockedColumnsNamesAction {
     return {
         type: CHANGE_LOCKED_COLUMNS_NAMES,
         lockedColumnsNamesParams: lockedColumnsParams,
@@ -682,9 +685,9 @@ export function changeLockedColumns(lockedColumnsParams: ColumnName[]): ChangeLo
 
 export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
 export type ChangeReorderedColumnsAction = Readonly<Action<typeof CHANGE_REORDERED_COLUMNS>> & {
-    reorderedColumnsParams: ColumnName[];
+    reorderedColumnsParams: ColumnName<string>[];
 };
-export function changeReorderedColumns(reorderedColumnsParams: ColumnName[]): ChangeReorderedColumnsAction {
+export function changeReorderedColumns(reorderedColumnsParams: ColumnName<string>[]): ChangeReorderedColumnsAction {
     return {
         type: CHANGE_REORDERED_COLUMNS,
         reorderedColumnsParams: reorderedColumnsParams,

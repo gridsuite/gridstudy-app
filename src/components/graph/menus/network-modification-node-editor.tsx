@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -70,9 +70,7 @@ import {
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import CreateCompositeModificationDialog, {
-    ICompositeCreateModificationDialog,
-} from '../../dialogs/create-composite-modification-dialog';
+import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import {
     MenuDefinition,
@@ -635,9 +633,7 @@ const NetworkModificationNodeEditor = () => {
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
-                        studyUpdatedForce.eventData.headers['nodes']
-                            ? [...studyUpdatedForce.eventData.headers['nodes']]
-                            : [],
+                        ...(studyUpdatedForce.eventData.headers.nodes ?? []),
                     ])
                 );
             }
@@ -703,7 +699,7 @@ const NetworkModificationNodeEditor = () => {
         description,
         folderName,
         folderId,
-    }: ICompositeCreateModificationDialog) => {
+    }: IElementCreationDialog) => {
         const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
 
         setSaveInProgress(true);
@@ -773,7 +769,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copiedModifications, currentNode?.id, copyInfos, snackError, studyUuid]);
 
-    const removeNullFields = useCallback((data: any) => {
+    const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
         if (dataTemp) {
             Object.keys(dataTemp).forEach((key) => {
@@ -797,7 +793,7 @@ const NetworkModificationNodeEditor = () => {
             const modification = fetchNetworkModification(modificationUuid);
             modification
                 .then((res) => {
-                    return res.json().then((data: any) => {
+                    return res.json().then((data: NetworkModificationData) => {
                         //remove all null values to avoid showing a "null" in the forms
                         setEditData(removeNullFields(data));
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
@@ -857,9 +853,9 @@ const NetworkModificationNodeEditor = () => {
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata) => {
+    const getModificationLabel = (modif: NetworkModificationMetadata): string => {
         if (!modif) {
-            return null;
+            return '';
         }
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
@@ -981,10 +977,14 @@ const NetworkModificationNodeEditor = () => {
     };
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
-            <CreateCompositeModificationDialog
+            <ElementCreationDialog
                 open={createCompositeModificationDialogOpen}
                 onSave={doCreateCompositeModificationsElements}
                 onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                type={ElementType.MODIFICATION}
+                titleId={'CreateCompositeModification'}
+                prefixIdForGeneratedName={'GeneratedModification'}
+                withDescription={true}
             />
         );
     };
