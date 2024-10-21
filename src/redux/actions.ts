@@ -58,6 +58,7 @@ import { Filter } from '../components/results/common/results-global-filter';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     LOADFLOW_RESULT_STORE_FIELD,
+    LOGS_STORE_FIELD,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
@@ -65,12 +66,12 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { SeverityFilter } from '../types/report.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
+import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 
 type MutableUnknownArray = unknown[];
 
-type ColumnName<TValue = unknown> = {
+export type ColumnName<TValue = unknown> = {
     index: number;
     value: TValue;
 };
@@ -154,6 +155,7 @@ export type AppActions =
     | ShortcircuitAnalysisResultFilterAction
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
+    | LogsFilterAction
     | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
@@ -268,13 +270,13 @@ export function loadNetworkModificationTreeSuccess(
 
 export const NETWORK_MODIFICATION_TREE_NODE_ADDED = 'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 export type NetworkModificationTreeNodeAddedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_ADDED>> & {
-    networkModificationTreeNode: CurrentTreeNode;
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeAdded(
-    networkModificationTreeNode: CurrentTreeNode,
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -290,13 +292,13 @@ export function networkModificationTreeNodeAdded(
 
 export const NETWORK_MODIFICATION_TREE_NODE_MOVED = 'NETWORK_MODIFICATION_TREE_NODE_MOVED';
 export type NetworkModificationTreeNodeMovedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_MOVED>> & {
-    networkModificationTreeNode: CurrentTreeNode;
+    networkModificationTreeNode: RootNodeData | NetworkModificationNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeMoved(
-    networkModificationTreeNode: CurrentTreeNode,
+    networkModificationTreeNode: RootNodeData | NetworkModificationNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -312,12 +314,12 @@ export function networkModificationTreeNodeMoved(
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {
-    networkModificationTreeNodes: CurrentTreeNode[];
-    parentNodeId: string;
+    networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData;
+    parentNodeId: UUID;
 };
 export function networkModificationHandleSubtree(
-    networkModificationTreeNodes: CurrentTreeNode[],
-    parentNodeId: string
+    networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData,
+    parentNodeId: UUID
 ): NetworkModificationHandleSubtreeAction {
     return {
         type: NETWORK_MODIFICATION_HANDLE_SUBTREE,
@@ -330,10 +332,10 @@ export const NETWORK_MODIFICATION_TREE_NODES_REMOVED = 'NETWORK_MODIFICATION_TRE
 export type NetworkModificationTreeNodesRemovedAction = Readonly<
     Action<typeof NETWORK_MODIFICATION_TREE_NODES_REMOVED>
 > & {
-    networkModificationTreeNodes: CurrentTreeNode[];
+    networkModificationTreeNodes: UUID[];
 };
 export function networkModificationTreeNodesRemoved(
-    networkModificationTreeNodes: CurrentTreeNode[]
+    networkModificationTreeNodes: UUID[]
 ): NetworkModificationTreeNodesRemovedAction {
     return {
         type: NETWORK_MODIFICATION_TREE_NODES_REMOVED,
@@ -659,9 +661,11 @@ export function setFullScreenDiagram(
 
 export const CHANGE_DISPLAYED_COLUMNS_NAMES = 'CHANGE_DISPLAYED_COLUMNS_NAMES';
 export type ChangeDisplayedColumnsNamesAction = Readonly<Action<typeof CHANGE_DISPLAYED_COLUMNS_NAMES>> & {
-    displayedColumnsNamesParams: ColumnName[];
+    displayedColumnsNamesParams: ColumnName<string>[];
 };
-export function changeDisplayedColumns(displayedColumnsParams: ColumnName[]): ChangeDisplayedColumnsNamesAction {
+export function changeDisplayedColumns(
+    displayedColumnsParams: ColumnName<string>[]
+): ChangeDisplayedColumnsNamesAction {
     return {
         type: CHANGE_DISPLAYED_COLUMNS_NAMES,
         displayedColumnsNamesParams: displayedColumnsParams,
@@ -670,9 +674,9 @@ export function changeDisplayedColumns(displayedColumnsParams: ColumnName[]): Ch
 
 export const CHANGE_LOCKED_COLUMNS_NAMES = 'CHANGE_LOCKED_COLUMNS_NAMES';
 export type ChangeLockedColumnsNamesAction = Readonly<Action<typeof CHANGE_LOCKED_COLUMNS_NAMES>> & {
-    lockedColumnsNamesParams: ColumnName[];
+    lockedColumnsNamesParams: ColumnName<string>[];
 };
-export function changeLockedColumns(lockedColumnsParams: ColumnName[]): ChangeLockedColumnsNamesAction {
+export function changeLockedColumns(lockedColumnsParams: ColumnName<string>[]): ChangeLockedColumnsNamesAction {
     return {
         type: CHANGE_LOCKED_COLUMNS_NAMES,
         lockedColumnsNamesParams: lockedColumnsParams,
@@ -681,9 +685,9 @@ export function changeLockedColumns(lockedColumnsParams: ColumnName[]): ChangeLo
 
 export const CHANGE_REORDERED_COLUMNS = 'CHANGE_REORDERED_COLUMNS';
 export type ChangeReorderedColumnsAction = Readonly<Action<typeof CHANGE_REORDERED_COLUMNS>> & {
-    reorderedColumnsParams: ColumnName[];
+    reorderedColumnsParams: ColumnName<string>[];
 };
-export function changeReorderedColumns(reorderedColumnsParams: ColumnName[]): ChangeReorderedColumnsAction {
+export function changeReorderedColumns(reorderedColumnsParams: ColumnName<string>[]): ChangeReorderedColumnsAction {
     return {
         type: CHANGE_REORDERED_COLUMNS,
         reorderedColumnsParams: reorderedColumnsParams,
@@ -1138,6 +1142,22 @@ export function setSpreadsheetFilter(
     };
 }
 
+export const LOGS_FILTER = 'LOGS_FILTER';
+export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
+    filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
+    [LOGS_STORE_FIELD]: MutableUnknownArray;
+};
+export function setLogsFilter(
+    filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
+    logsFilter: MutableUnknownArray
+): LogsFilterAction {
+    return {
+        type: LOGS_FILTER,
+        filterTab: filterTab,
+        [LOGS_STORE_FIELD]: logsFilter,
+    };
+}
+
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
     table: TableSortKeysType;
@@ -1169,23 +1189,5 @@ export function setCustomColumDefinitions(
         table,
         definitions: customColumns,
         filter: filter,
-    };
-}
-export const REPORT_FILTER = 'REPORT_FILTER';
-export type ReportFilterAction = Readonly<Action<typeof REPORT_FILTER>> & {
-    reportId: string | null | undefined;
-    messageFilter: string | undefined;
-    severityFilter: SeverityFilter | undefined;
-};
-export function setReportFilters(
-    reportId: string,
-    messageFilter: string,
-    severityFilter: SeverityFilter
-): ReportFilterAction {
-    return {
-        type: REPORT_FILTER,
-        reportId,
-        messageFilter,
-        severityFilter,
     };
 }

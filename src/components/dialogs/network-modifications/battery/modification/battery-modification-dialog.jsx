@@ -292,6 +292,7 @@ const BatteryModificationDialog = ({
             modifyBattery({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 batteryId: selectedId,
                 name: sanitizeString(battery[EQUIPMENT_NAME]),
                 minP: battery[MINIMUM_ACTIVE_POWER],
@@ -304,7 +305,6 @@ const BatteryModificationDialog = ({
                 connectionDirection: battery[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: battery[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: battery[CONNECTIVITY]?.[CONNECTED],
-                modificationId: editData?.uuid,
                 participate: battery[FREQUENCY_REGULATION],
                 droop: battery[DROOP],
                 isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,

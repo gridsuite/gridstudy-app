@@ -13,6 +13,8 @@ import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
+import { SLDMetadata } from '@powsybl/diagram-viewer';
+import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
 export const LOADING_WIDTH = 300;
@@ -110,6 +112,10 @@ export const styles = {
         '& .nad-edge-infos': {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
+        '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
+            {
+                animation: 'none',
+            },
     },
     paperBorders: (theme: Theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
@@ -139,7 +145,7 @@ export enum DiagramType {
 }
 
 // be careful when using this method because there are treatments made on purpose
-export function getEquipmentTypeFromFeederType(feederType: FeederTypes) {
+export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EQUIPMENT_TYPES | null {
     switch (feederType) {
         case FEEDER_TYPES.LINE:
             return EQUIPMENT_TYPES.LINE;
@@ -288,9 +294,25 @@ export const useDiagram = () => {
     };
 };
 
-export const NoSvg = {
+export interface Svg {
+    svg: string | null;
+    metadata: SLDMetadata | null;
+    additionalMetadata:
+        | (SLDMetadata & {
+              country: string;
+              substationId?: string;
+              voltageLevels: { name: string; substationId: UUID }[];
+              nbVoltageLevels?: number;
+          })
+        | null;
+    error?: string | null;
+    svgUrl?: string | null;
+}
+
+export const NoSvg: Svg = {
     svg: null,
     metadata: null,
     additionalMetadata: null,
-    error: null,
+    error: undefined,
+    svgUrl: undefined,
 };

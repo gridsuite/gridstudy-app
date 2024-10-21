@@ -185,7 +185,6 @@ import {
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
     TABLE_SORT,
-    REPORT_FILTER,
     TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
@@ -193,7 +192,8 @@ import {
     UpdateEquipmentsAction,
     USE_NAME,
     UseNameAction,
-    ReportFilterAction,
+    LOGS_FILTER,
+    LogsFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -238,7 +238,6 @@ import { FluxConventions } from '../components/dialogs/parameters/network-parame
 import { loadDiagramStateFromSessionStorage } from './session-storage/diagram-state';
 import { DiagramType, SubstationLayout, ViewState } from '../components/diagrams/diagram-common';
 import { getAllChildren } from 'components/graph/util/model-functions';
-import { CopyType } from 'components/network-modification-tree-pane';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
@@ -253,6 +252,7 @@ import {
     LOADFLOW_RESULT_SORT_STORE,
     LOADFLOW_RESULT_STORE_FIELD,
     LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
+    LOGS_STORE_FIELD,
     ONE_BUS,
     SECURITY_ANALYSIS_RESULT_N,
     SECURITY_ANALYSIS_RESULT_N_K,
@@ -277,13 +277,13 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from 'reactflow';
-import { BUILD_STATUS } from '../components/network/constants';
+import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
-import { StudyDisplayMode } from '../components/network-modification.type';
+import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
-import { SeverityFilter } from '../types/report.type';
-import { getDefaultSeverityFilter } from '../utils/report-severity.utils';
+import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { BUILD_STATUS } from '../components/network/constants';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -352,14 +352,28 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-export interface TreeNodeData {
-    parentNodeUuid: UUID;
+type NodeCommonData = {
     label: string;
-    description: string;
-    buildStatus: BUILD_STATUS;
-    readonly: boolean;
+    parentNodeUuid?: UUID;
+    globalBuildStatus?: BUILD_STATUS;
+    description?: string;
+    readOnly?: boolean;
+};
+export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
+
+export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
+    id: UUID;
+};
+
+export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
+export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
+
+export type CurrentTreeNode = ModificationNode | RootNode;
+
+// type guard to check if the node is a Root
+export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {
+    return node.type === NodeType.ROOT;
 }
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -388,7 +402,7 @@ export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION'
 export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
 
 export type DiagramState = {
-    id: string;
+    id: UUID;
     svgType: DiagramType;
     state: ViewState;
     needsToBlink?: boolean;
@@ -403,7 +417,7 @@ export type NadNodeMovement = {
 
 export type SelectionForCopy = {
     sourceStudyUuid: UUID | null;
-    nodeId: string | null;
+    nodeId: UUID | null;
     copyType: ValueOf<typeof CopyType> | null;
     allChildrenIds: string[] | null;
 };
@@ -436,9 +450,6 @@ export interface AppState extends CommonStoreState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
-    reportMessageFilter: string;
-    reportSeverityFilter: SeverityFilter;
-    reportSelectedReportId: string | null;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -451,9 +462,9 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allDisplayedColumnsNames: UnknownArray;
-    allLockedColumnsNames: UnknownArray;
-    allReorderedTableDefinitionIndexes: UnknownArray;
+    allDisplayedColumnsNames: string[];
+    allLockedColumnsNames: string[];
+    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -514,7 +525,23 @@ export interface AppState extends CommonStoreState {
     };
 
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
+
+    [LOGS_STORE_FIELD]: LogsFilterState;
 }
+
+export type LogsFilterState = Record<string, UnknownArray>;
+const initialLogsFilterState: LogsFilterState = {
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SENSITIVITY_ANALYSIS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
+    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
+};
 
 export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, Identifiable[] | null>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -593,9 +620,6 @@ const initialState: AppState = {
     oneBusShortCircuitAnalysisDiagram: null,
     studyIndexationStatus: StudyIndexationStatus.NOT_INDEXED,
     limitReductionModified: false,
-    reportMessageFilter: '',
-    reportSeverityFilter: getDefaultSeverityFilter([]),
-    reportSelectedReportId: null,
 
     // params
     [PARAM_THEME]: getLocalStorageTheme(),
@@ -667,6 +691,8 @@ const initialState: AppState = {
         [EQUIPMENT_TYPES.BUS]: [],
         [EQUIPMENT_TYPES.TIE_LINE]: [],
     },
+
+    [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
         [SPREADSHEET_SORT_STORE]: Object.values(TABLES_DEFINITIONS).reduce((acc, current) => {
@@ -806,11 +832,10 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
-                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+                state.currentTreeNode?.id &&
+                action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                // @ts-expect-error TODO: what to do if current node null?
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -830,11 +855,10 @@ export const reducer = createReducer(initialState, (builder) => {
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
-                // @ts-expect-error TODO: childrenIds not exist in ReactFlow node
-                action.networkModificationTreeNode?.childrenIds.includes(state.currentTreeNode?.id)
+                state.currentTreeNode?.id &&
+                action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
                 // Then must overwrite currentTreeNode to set new parentNodeUuid
-                // @ts-expect-error TODO: what to do if current node null?
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -843,12 +867,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(NETWORK_MODIFICATION_HANDLE_SUBTREE, (state, action: NetworkModificationHandleSubtreeAction) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
-            unravelSubTree(
-                newModel,
-                action.parentNodeId,
-                // @ts-expect-error TODO problem: we receive an array of node but func await 1 node
-                action.networkModificationTreeNodes
-            );
+            unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
 
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
@@ -866,7 +885,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
+                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 newModel.updateLayout();
@@ -888,7 +907,6 @@ export const reducer = createReducer(initialState, (builder) => {
                     )
                 ) {
                     // Then must overwrite currentTreeNode to get new parentNodeUuid
-                    // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }
@@ -905,7 +923,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.networkModificationTreeModel?.setBuildingStatus();
                 // check if current node is in the nodes updated list
                 if (action.networkModificationTreeNodes.find((node) => node.id === state.currentTreeNode?.id)) {
-                    // @ts-expect-error TODO: what to do if current node null?
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                     // current node has changed, then will need to reload Geo Data
                     state.reloadMap = true;
@@ -1180,7 +1197,7 @@ export const reducer = createReducer(initialState, (builder) => {
             if (firstNadIndex < 0) {
                 // If there is no NAD, then we add the new one.
                 diagramStates.push({
-                    id: action.id,
+                    id: action.id as UUID,
                     svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                     state: ViewState.OPENED,
                 });
@@ -1204,7 +1221,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 // If the NAD to open is not already in the diagramStates, we add it.
                 if (diagramToOpenIndex < 0) {
                     diagramStates.push({
-                        id: action.id,
+                        id: action.id as UUID,
                         svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                         state: diagramStates[firstNadIndex].state,
                     });
@@ -1261,7 +1278,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 });
                 // And we add the new one.
                 diagramStates.push({
-                    id: action.id,
+                    id: action.id as UUID,
                     svgType: action.svgType,
                     state: ViewState.OPENED,
                 });
@@ -1288,7 +1305,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
         state.diagramStates = diagramStatesWithoutNad.concat(
             uniqueIds.map((id) => ({
-                id: id,
+                id: id as UUID,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 state: ViewState.OPENED,
             }))
@@ -1600,23 +1617,16 @@ export const reducer = createReducer(initialState, (builder) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
 
+    builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
+        state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
+    });
+
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
         state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
-    });
-    builder.addCase(REPORT_FILTER, (state, action: ReportFilterAction) => {
-        if (action.messageFilter !== undefined) {
-            state.reportMessageFilter = action.messageFilter;
-        }
-        if (action.severityFilter !== undefined) {
-            state.reportSeverityFilter = action.severityFilter;
-        }
-        if (action.reportId !== undefined) {
-            state.reportSelectedReportId = action.reportId;
-        }
     });
 });
 
@@ -1738,24 +1748,29 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
     return currentEquipments;
 }
 
-function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid: string) {
+function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );
+
     //  we need to overwrite state.currentTreeNode to consider label change for example.
-    state.currentTreeNode = { ...nextCurrentNode };
+    if (nextCurrentNode) {
+        state.currentTreeNode = { ...nextCurrentNode };
+    }
 }
 
-function unravelSubTree(treeModel: NetworkModificationTreeModel, subtreeParentId: string, node: Node<TreeNodeData>) {
+function unravelSubTree(
+    treeModel: NetworkModificationTreeModel,
+    subtreeParentId: UUID,
+    node: NetworkModificationNodeData | RootNodeData | null
+) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
         treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
 
-        // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
         if (node.children.length > 0) {
-            // @ts-expect-error TODO problem: ReactFlow node don't have "children" variable
             node.children.forEach((child) => {
                 unravelSubTree(treeModel, node.id, child);
             });

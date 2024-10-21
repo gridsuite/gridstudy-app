@@ -183,6 +183,7 @@ const LoadModificationDialog = ({
             modifyLoad({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 id: selectedId,
                 name: sanitizeString(load?.equipmentName),
                 loadType: load?.loadType,
@@ -194,8 +195,6 @@ const LoadModificationDialog = ({
                 connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
                 properties: toModificationProperties(load),
             }).catch((error) => {
                 snackError({
