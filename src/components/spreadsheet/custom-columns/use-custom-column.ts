@@ -6,14 +6,13 @@
  */
 import { useMemo, useCallback } from 'react';
 import { AppState } from 'redux/reducer';
-import { create, all, bignumber } from 'mathjs';
+import { create, all } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { createDependencyGraph, topologicalSort } from './custom-columns-utils';
 
 export function useCustomColumn(tabIndex: number) {
     const customColumnsDefinitions = useSelector(
@@ -63,49 +62,6 @@ export function useCustomColumn(tabIndex: number) {
         return { limitedEvaluate };
     }, []);
 
-    // Main function to sort columns by dependencies and calculate values
-    const sortedColumnDefinitions = useMemo(() => {
-        const graph = createDependencyGraph(customColumnsDefinitions);
-        const sortedColumns = topologicalSort(graph);
-
-        return sortedColumns.map((name) =>
-            customColumnsDefinitions.find((col) => col.name === name)
-        ) as ColumnWithFormula[];
-    }, [customColumnsDefinitions]);
-
-    const calcAllColumnValues = useCallback(
-        (lineData: Record<string, unknown>): Map<string, unknown> => {
-            const customColumnsValues = new Map<string, unknown>();
-            const scope: Record<string, unknown> = {};
-
-            // Add line data to the scope
-            Object.entries(lineData).forEach(([key, value]) => {
-                scope[`${key}`] = typeof value === 'number' ? bignumber(value) : value;
-            });
-
-            sortedColumnDefinitions.forEach((column) => {
-                if (!column) {
-                    return;
-                }
-                try {
-                    // Evaluate the formula and update the Map and scope
-                    const result = math.limitedEvaluate(column.formula, {
-                        ...scope,
-                        ...Object.fromEntries(customColumnsValues),
-                    });
-
-                    customColumnsValues.set(column.name, result);
-                    scope[column.name] = result; // Add calculated result to scope for future columns
-                } catch (error: any) {
-                    console.error(`Error evaluating formula for column ${column.name}: ${error.message}`);
-                }
-            });
-
-            return customColumnsValues;
-        },
-        [math, sortedColumnDefinitions]
-    );
-
     const createCustomColumn = useCallback(() => {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
@@ -116,14 +72,19 @@ export function useCustomColumn(tabIndex: number) {
                     sortConfig,
                 },
                 valueGetter: (params) => {
-                    const allValues = calcAllColumnValues(params.data);
-                    return allValues.get(colWithFormula.name);
+                    try {
+                        return math.limitedEvaluate(colWithFormula.formula, {
+                            ...params.data,
+                        });
+                    } catch (e) {
+                        return '';
+                    }
                 },
                 editable: false,
                 suppressMovable: true,
             });
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, calcAllColumnValues]);
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, math]);
 
     return { createCustomColumn };
 }
