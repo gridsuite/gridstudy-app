@@ -416,13 +416,13 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         }
     }, [errorMessage, snackError]);
 
-    // Ensure initial sort is applied by including columnData in dependencies
+    // Ensure initial sort is applied by including mergedColumnData in dependencies
     useEffect(() => {
         gridRef.current?.api?.applyColumnState({
             state: sortConfig,
             defaultState: { sort: null },
         });
-    }, [sortConfig, columnData]);
+    }, [sortConfig, mergedColumnData]);
 
     const getRows = useCallback(() => {
         if (disabled || !equipments) {
