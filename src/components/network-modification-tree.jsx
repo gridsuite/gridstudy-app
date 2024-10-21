@@ -6,7 +6,7 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import ReactFlow, { Controls, useStore, useReactFlow, ControlButton } from 'reactflow';
+import { ReactFlow, Controls, useStore, useReactFlow, ControlButton } from '@xyflow/react';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';

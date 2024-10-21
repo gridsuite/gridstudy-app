@@ -21,7 +21,7 @@ export type EquipmentInfosTypes = EquipmentInfosTypesStruct<
     'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP' | 'OPERATING_STATUS'
 >;
 
-//TODO: Compare with commons-ui's EquipmentType enum (miss TIE_LINE and not same order)
+//TODO: Compare with commons-ui's EquipmentType enum (not same order)
 //TODO: rename to PascalCase
 export enum EQUIPMENT_TYPES {
     SUBSTATION = 'SUBSTATION',
