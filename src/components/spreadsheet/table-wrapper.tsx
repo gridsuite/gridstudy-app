@@ -92,7 +92,8 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
+import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
+import { FluxConventions } from '../dialogs/parameters/network-parameters';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -228,6 +229,13 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         rollbackEdit();
     }, [rollbackEdit]);
 
+    const applyFluxConvention = useCallback(
+        (val: number) => {
+            return fluxConvention === FluxConventions.TARGET && val !== undefined ? -val : val;
+        },
+        [fluxConvention]
+    );
+
     const currentColumns = useCallback(() => {
         const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
         return equipment ? equipment.columns : [];
@@ -316,16 +324,16 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             if (column.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
                 const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && column.canBeInvalidated;
-
                 column.cellRendererParams = {
                     isValueInvalid: isValueInvalid,
                 };
-
-                if (column.normed) {
-                    column.cellRendererParams.fluxConvention = fluxConvention;
+                if (column.withFluxConvention) {
+                    // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
+                    // to get the convention, which requires a component context.
+                    column.cellRendererParams.applyFluxConvention = applyFluxConvention;
                     column.comparator = (valueA: number, valueB: number) => {
-                        const normedValueA = valueA !== undefined ? column.normed(fluxConvention, valueA) : undefined;
-                        const normedValueB = valueB !== undefined ? column.normed(fluxConvention, valueB) : undefined;
+                        const normedValueA = valueA !== undefined ? applyFluxConvention(valueA) : undefined;
+                        const normedValueB = valueB !== undefined ? applyFluxConvention(valueB) : undefined;
                         if (normedValueA !== undefined && normedValueB !== undefined) {
                             return normedValueA - normedValueB;
                         } else if (normedValueA === undefined && normedValueB === undefined) {
@@ -335,6 +343,26 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         } else if (normedValueB === undefined) {
                             return 1;
                         }
+                    };
+                    column.agGridFilterParams = {
+                        filterOptions: [
+                            {
+                                displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                predicate: ([filterValue]: [number], cellValue: number) => {
+                                    const transformedValue = applyFluxConvention(cellValue);
+                                    return transformedValue ? transformedValue >= filterValue : false;
+                                },
+                            },
+                            {
+                                displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                predicate: ([filterValue]: [number], cellValue: number) => {
+                                    const transformedValue = applyFluxConvention(cellValue);
+                                    return transformedValue ? transformedValue <= filterValue : false;
+                                },
+                            },
+                        ],
                     };
                 }
             }
@@ -401,7 +429,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             updateFilter,
             filterSelector,
             loadFlowStatus,
-            fluxConvention,
+            applyFluxConvention,
             filterEnums,
             translate,
         ]
