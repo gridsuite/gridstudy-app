@@ -40,6 +40,9 @@ export enum EQUIPMENT_TYPES {
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
     LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     SWITCH = 'SWITCH',
+    SHUNT = 'SHUNT',
+    DISCONNECTOR = 'DISCONNECTOR',
+    BREAKER = 'BREAKER',
 }
 
 export interface VoltageLevel extends Identifiable {

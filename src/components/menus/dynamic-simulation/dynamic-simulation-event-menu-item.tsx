@@ -13,7 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import { CustomMenuItem } from '../../utils/custom-nested-menu';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 const styles = {
     menuItem: {
@@ -26,10 +26,10 @@ const styles = {
 
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
-        equipmentType: EQUIPMENT_TYPES,
+        equipmentType: EquipmentType,
         dialogTitle: string
     ) => void;
     disabled: boolean;
