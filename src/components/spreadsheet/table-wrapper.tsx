@@ -210,7 +210,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     }, [tabIndex, customColumnsDefinitions, createCustomColumn]);
 
     useEffect(() => {
-        setMergedColumnData([...columnData, ...customColumnData]);
+        const mergedColumns = [...columnData, ...customColumnData];
+        setMergedColumnData(mergedColumns);
+        gridRef.current?.api?.setGridOption('columnDefs', mergedColumns);
     }, [columnData, customColumnData]);
 
     const rollbackEdit = useCallback(() => {
@@ -222,6 +224,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const cleanTableState = useCallback(() => {
         globalFilterRef.current?.resetFilter();
         gridRef?.current?.api.setFilterModel(null);
+        // reset aggrid column definitions
+        gridRef.current?.api.setGridOption('columnDefs', []);
         gridRef?.current?.api.applyColumnState({
             defaultState: { sort: null },
         });
