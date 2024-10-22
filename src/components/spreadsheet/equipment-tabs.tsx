@@ -7,8 +7,10 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { TABLES_NAMES } from './utils/config-tables';
 import { FunctionComponent } from 'react';
+import AddNewSpreadsheetConfig from './add-new-spreadsheet/add-new-spreadsheet-config';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 interface EquipmentTabsProps {
     tabIndex: number;
@@ -18,26 +20,32 @@ interface EquipmentTabsProps {
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
     const intl = useIntl();
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
     return (
-        <Grid container justifyContent={'space-between'} item>
-            <Tabs
-                value={tabIndex}
-                variant="scrollable"
-                onChange={(_event, value) => {
-                    handleSwitchTab(value);
-                }}
-                aria-label="tables"
-            >
-                {TABLES_NAMES.map((table) => (
-                    <Tab
-                        key={table}
-                        label={intl.formatMessage({
-                            id: table,
-                        })}
-                        disabled={disabled}
-                    />
-                ))}
-            </Tabs>
+        <Grid container direction="row" wrap="nowrap" item>
+            <Grid item xs padding={1}>
+                <AddNewSpreadsheetConfig disabled={disabled} />
+            </Grid>
+            <Grid item sx={{ flexGrow: 1, overflow: 'hidden' }}>
+                <Tabs
+                    value={tabIndex}
+                    variant="scrollable"
+                    onChange={(_event, value) => {
+                        handleSwitchTab(value);
+                    }}
+                    aria-label="tables"
+                >
+                    {tablesNames.map((table) => (
+                        <Tab
+                            key={table}
+                            label={intl.formatMessage({
+                                id: table,
+                            })}
+                            disabled={disabled}
+                        />
+                    ))}
+                </Tabs>
+            </Grid>
         </Grid>
     );
 };

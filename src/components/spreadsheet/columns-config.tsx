@@ -17,8 +17,6 @@ import {
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     MAX_LOCKS_PER_TAB,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_COLUMNS_NAMES,
-    TABLES_NAMES,
 } from './utils/config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -70,11 +68,13 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
 }) => {
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
 
-    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
     const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
     );
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
+    const columnsNames = useSelector((state: AppState) => state.tables.columnsNames);
 
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -108,7 +108,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
 
     const handleSaveSelectedColumnNames = useCallback(() => {
         updateConfigParameter(
-            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + tablesNames[tabIndex],
             JSON.stringify([...selectedColumnsNames])
         ).catch((error) => {
             const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
@@ -120,7 +120,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
         });
         let lockedColumnsToSave = [...lockedColumnsNames].filter((name) => selectedColumnsNames.has(name));
         updateConfigParameter(
-            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + tablesNames[tabIndex],
             JSON.stringify(lockedColumnsToSave)
         ).catch((error) => {
             const allLockedTemp = allLockedColumnsNames[tabIndex];
@@ -133,7 +133,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
         setLockedColumnsNames(lockedColumnsNames);
 
         updateConfigParameter(
-            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + tablesNames[tabIndex],
             JSON.stringify(reorderedTableDefinitionIndexes)
         ).catch((error) => {
             snackError({
@@ -144,6 +144,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
 
         handleCloseColumnsSettingDialog();
     }, [
+        tablesNames,
         tabIndex,
         selectedColumnsNames,
         lockedColumnsNames,
@@ -172,9 +173,9 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     };
 
     const handleToggleAll = () => {
-        let isAllChecked = selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isAllChecked = selectedColumnsNames.size === columnsNames[tabIndex].size;
         // If all columns are selected/checked, then we hide all of them.
-        setSelectedColumnsNames(isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]);
+        setSelectedColumnsNames(isAllChecked ? new Set() : columnsNames[tabIndex]);
         if (isAllChecked) {
             setLockedColumnsNames(new Set());
         }
@@ -217,7 +218,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     };
 
     const checkListColumnsNames = () => {
-        let isAllChecked = selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isAllChecked = selectedColumnsNames.size === columnsNames[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
 
         return (

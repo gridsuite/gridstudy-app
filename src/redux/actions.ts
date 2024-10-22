@@ -46,6 +46,7 @@ import {
     SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
+    TablesDefinitionsType,
     TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
@@ -1191,3 +1192,16 @@ export function setCustomColumDefinitions(
         filter: filter,
     };
 }
+
+export const SET_TABLE_DEFINITIONS = 'SET_TABLE_DEFINITIONS';
+export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
+
+export type UpdateTableDefinitionAction = {
+    type: typeof UPDATE_TABLE_DEFINITION;
+    payload: { key: string; value: TablesDefinitionsType; customColumns: any };
+};
+
+export const updateTableDefinition = (key: string, value: any, customColumns: any): UpdateTableDefinitionAction => ({
+    type: UPDATE_TABLE_DEFINITION,
+    payload: { key, value, customColumns },
+});

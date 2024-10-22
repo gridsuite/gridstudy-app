@@ -14,7 +14,6 @@ import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
 
@@ -26,8 +25,10 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     const { snackInfo, snackError } = useSnackMessage();
     const intl = useIntl();
 
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
+    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[indexTab]].columns
     );
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
@@ -35,25 +36,25 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     const dialogOpen = useStateBoolean(false);
 
     const currentType = useMemo(() => {
-        const equipment = TABLES_DEFINITION_INDEXES.get(indexTab);
+        const equipment = tablesDefinitionIndexes.get(indexTab);
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
-    }, [indexTab]);
+    }, [indexTab, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ name, formula }) => ({ name, formula }));
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {
-        const equipment = TABLES_DEFINITION_INDEXES.get(indexTab);
+        const equipment = tablesDefinitionIndexes.get(indexTab);
         return equipment ? new Map<string, string>(equipment.columns.map((c: any) => [c.id, c.field])) : null;
-    }, [indexTab]);
+    }, [indexTab, tablesDefinitionIndexes]);
 
     const reorderedStaticColumnIds = useMemo(() => {
         const allReorderedColumns = allReorderedTableDefinitionIndexes[indexTab];
         return allReorderedColumns
             ? JSON.parse(allReorderedColumns)
-            : TABLES_DEFINITION_INDEXES.get(indexTab)?.columns.map((item) => item.id);
-    }, [indexTab, allReorderedTableDefinitionIndexes]);
+            : tablesDefinitionIndexes.get(indexTab)?.columns.map((item) => item.id);
+    }, [allReorderedTableDefinitionIndexes, indexTab, tablesDefinitionIndexes]);
 
     const staticColumnFormulas = useMemo(() => {
         return reorderedStaticColumnIds && staticColumnIdToField
