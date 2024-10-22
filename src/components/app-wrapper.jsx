@@ -38,14 +38,14 @@ import {
     commonButtonFr,
     equipmentsEn,
     equipmentsFr,
+    networkModificationsLocaleEn,
+    networkModificationsLocaleFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import network_modifications_locale_en from '../translations/dynamic/network-modifications-locale-en';
-import network_modifications_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import exportParameters_en from '../translations/external/export-parameters-en.json';
 import exportParameters_fr from '../translations/external/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
@@ -246,7 +246,7 @@ const messages = {
     en: {
         ...treeviewFinderEn,
         ...messages_en,
-        ...network_modifications_locale_en,
+        ...networkModificationsLocaleEn,
         ...exportParameters_en,
         ...reportViewerEn,
         ...loginEn,
@@ -275,7 +275,7 @@ const messages = {
     fr: {
         ...treeviewFinderFr,
         ...messages_fr,
-        ...network_modifications_locale_fr,
+        ...networkModificationsLocaleFr,
         ...exportParameters_fr,
         ...reportViewerFr,
         ...loginFr,
