@@ -63,6 +63,24 @@ export function useCustomColumn(tabIndex: number) {
         return { limitedEvaluate };
     }, []);
 
+    const createValueGetter = useCallback(
+        (colWithFormula: ColumnWithFormula) =>
+            (params: { data: Record<string, unknown> }): string => {
+                try {
+                    const { data } = params;
+                    const scope = Object.entries(data).reduce((acc, [key, value]) => {
+                        acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                        return acc;
+                    }, {} as Record<string, unknown>);
+
+                    return math.limitedEvaluate(colWithFormula.formula, scope);
+                } catch (e) {
+                    return '';
+                }
+            },
+        [math]
+    );
+
     const createCustomColumn = useCallback(() => {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
@@ -72,24 +90,12 @@ export function useCustomColumn(tabIndex: number) {
                     onSortChanged,
                     sortConfig,
                 },
-                valueGetter: (params) => {
-                    try {
-                        const { data } = params;
-                        const scope = Object.entries(data).reduce((acc, [key, value]) => {
-                            acc[key] = typeof value === 'number' ? bignumber(value) : value;
-                            return acc;
-                        }, {} as Record<string, unknown>);
-
-                        return math.limitedEvaluate(colWithFormula.formula, scope);
-                    } catch (e) {
-                        return '';
-                    }
-                },
+                valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
             });
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, math]);
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter]);
 
     return { createCustomColumn };
 }
