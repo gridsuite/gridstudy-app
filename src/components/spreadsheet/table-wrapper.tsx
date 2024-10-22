@@ -1219,7 +1219,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     <Grid item sx={styles.selectColumns}>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={!!(disabled || editingData)}
+                            disabled={!!(disabled || editingData || currentColumns().length === 0)}
                             reorderedTableDefinitionIndexes={reorderedTableDefinitionIndexes}
                             setReorderedTableDefinitionIndexes={setReorderedTableDefinitionIndexes}
                             selectedColumnsNames={selectedColumnsNames}

@@ -242,24 +242,24 @@ const App = () => {
                 reorderedColumnsParams,
                 deletedOnly = false
             ) {
-                for (let param of equipmentsColumnsParams) {
+                for (const param of equipmentsColumnsParams) {
                     if (!param) {
                         continue;
                     }
 
-                    let index = param.index;
+                    const index = param.index;
 
                     const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.id);
 
-                    let equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
-                    let equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
+                    const equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
+                    const equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
                         (item) => !equipmentReorderedColumnsIds.includes(item)
                     );
 
-                    let equipmentsParamColumnIds = JSON.parse(equipmentsColumnsParams[index].value);
+                    const equipmentsParamColumnIds = JSON.parse(equipmentsColumnsParams[index].value);
 
                     // Remove deleted ids
-                    let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter((item) =>
+                    const equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter((item) =>
                         equipmentAllColumnsIds.includes(item)
                     );
 

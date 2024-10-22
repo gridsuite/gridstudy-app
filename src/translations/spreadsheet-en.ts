@@ -26,6 +26,7 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model': 'You must select a spreadsheet model',
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'You must select only one spreadsheet model',
+    'spreadsheet/create_new_spreadsheet/error_loading_model': 'Error while retrieving spreadsheet model',
 };
 
 export default spreadsheetEn;

@@ -16,7 +16,7 @@ const spreadsheetFr = {
     'spreadsheet/custom_column/save_confirmation_message': "Création d'un modèle de tableur dans {folderName}",
     'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Créer une feuille de calcul vide',
     'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Appliquer un modèle de tableur',
-    'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter tableau',
+    'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Ajouter tableur',
     'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Vide',
     'spreadsheet/create_new_spreadsheet/apply_model_option': 'Appliquer modèle',
     'spreadsheet/create_new_spreadsheet/select_spreadsheet_model': 'Modèle de tableur',
@@ -26,6 +26,7 @@ const spreadsheetFr = {
     'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model': 'Vous devez sélectionner un modèle de tableur',
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'Vous devez sélectionner un seul modèle de tableur',
+    'spreadsheet/create_new_spreadsheet/error_loading_model': 'Erreur lors de la récupération du modèle de tableur',
 };
 
 export default spreadsheetFr;

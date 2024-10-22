@@ -15,6 +15,7 @@ import {
     SelectInput,
     SubmitButton,
     TextInput,
+    useSnackMessage,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
@@ -80,6 +81,7 @@ export default function CustomSpreadsheetConfigDialog({
     });
 
     const dispatch = useDispatch();
+    const { snackError } = useSnackMessage();
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
     const onSubmit = useCallback(
@@ -99,31 +101,38 @@ export default function CustomSpreadsheetConfigDialog({
                     )
                 );
             } else {
-                getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id).then(
-                    (selectedModel: {
-                        customColumns: ColumnWithFormula[];
-                        sheetType: keyof typeof TABLES_DEFINITIONS;
-                    }) => {
-                        const newTableDefinition = {
-                            ...TABLES_DEFINITIONS[selectedModel.sheetType],
-                            name: newParams[SPREADSHEET_NAME],
-                            index: tablesDefinitionIndexes.size,
-                            columns: [],
-                        };
-                        dispatch(
-                            updateTableDefinition(
-                                'new' + tablesDefinitionIndexes.size + newParams[SPREADSHEET_MODEL][0].name,
-                                newTableDefinition,
-                                selectedModel.customColumns
-                            )
-                        );
-                    }
-                );
+                getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
+                    .then(
+                        (selectedModel: {
+                            customColumns: ColumnWithFormula[];
+                            sheetType: keyof typeof TABLES_DEFINITIONS;
+                        }) => {
+                            const newTableDefinition = {
+                                ...TABLES_DEFINITIONS[selectedModel.sheetType],
+                                name: newParams[SPREADSHEET_NAME],
+                                index: tablesDefinitionIndexes.size,
+                                columns: [],
+                            };
+                            dispatch(
+                                updateTableDefinition(
+                                    'new' + tablesDefinitionIndexes.size + newParams[SPREADSHEET_MODEL][0].name,
+                                    newTableDefinition,
+                                    selectedModel.customColumns
+                                )
+                            );
+                        }
+                    )
+                    .catch((error) => {
+                        snackError({
+                            messageTxt: error,
+                            headerId: 'spreadsheet/create_new_spreadsheet/error_loading_model',
+                        });
+                    });
             }
             open.setFalse();
         },
 
-        [dispatch, open, selectedOption?.id, tablesDefinitionIndexes.size]
+        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size]
     );
 
     useEffect(() => {
