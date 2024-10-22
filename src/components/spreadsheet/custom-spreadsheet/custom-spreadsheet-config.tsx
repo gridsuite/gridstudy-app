@@ -9,11 +9,11 @@ import React, { useState, MouseEvent, useCallback } from 'react';
 import { Button, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useStateBoolean } from '@gridsuite/commons-ui';
-import AddSpreadsheetConfigDialog from './add-new-spreadsheet-dialog';
+import AddSpreadsheetConfigDialog from './custom-spreadsheet-dialog';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
 import { FormattedMessage } from 'react-intl';
 
-interface AddNewSpreadsheetConfigProps {
+interface CustomSpreadsheetConfigProps {
     disabled: boolean;
 }
 
@@ -23,7 +23,7 @@ const styles = {
     }),
 };
 
-const AddNewSpreadsheetConfig: React.FC<AddNewSpreadsheetConfigProps> = ({ disabled }) => {
+const CustomSpreadsheetConfig: React.FC<CustomSpreadsheetConfigProps> = ({ disabled }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const dialogOpen = useStateBoolean(false);
     const [selectedOption, setSelectedOption] = useState<{ id: string; label: string }>();
@@ -65,4 +65,4 @@ const AddNewSpreadsheetConfig: React.FC<AddNewSpreadsheetConfigProps> = ({ disab
     );
 };
 
-export default AddNewSpreadsheetConfig;
+export default CustomSpreadsheetConfig;

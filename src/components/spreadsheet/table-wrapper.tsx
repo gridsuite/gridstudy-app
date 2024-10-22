@@ -427,8 +427,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (disabled || !equipments) {
             return [];
         }
-
-        return equipments;
+        // return new instance of the array to trigger ag-grid update
+        return [...equipments];
     }, [equipments, disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection

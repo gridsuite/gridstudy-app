@@ -8,7 +8,7 @@
 import { ContingencyList } from './study/contingency-list';
 import { backendFetch } from './utils';
 import { UUID } from 'crypto';
-import { backendFetchJson, ElementType } from '@gridsuite/commons-ui';
+import { ElementType } from '@gridsuite/commons-ui';
 import { SpreadsheetConfig } from '../types/custom-columns.types';
 
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
@@ -73,12 +73,6 @@ export function createSpreadsheetModel(
             body: JSON.stringify(spreadsheetConfig),
         }
     );
-}
-
-export function getSpreadsheetModel(spreadsheetModelUuid: UUID) {
-    return backendFetchJson(PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/spreadsheet-configs/' + spreadsheetModelUuid, {
-        method: 'get',
-    });
 }
 
 /**

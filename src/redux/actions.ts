@@ -1198,10 +1198,14 @@ export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
     type: typeof UPDATE_TABLE_DEFINITION;
-    payload: { key: string; value: TablesDefinitionsType; customColumns: any };
+    payload: { key: string; value: TablesDefinitionsType; customColumns: ColumnWithFormula[] };
 };
 
-export const updateTableDefinition = (key: string, value: any, customColumns: any): UpdateTableDefinitionAction => ({
+export const updateTableDefinition = (
+    key: string,
+    value: any,
+    customColumns: ColumnWithFormula[]
+): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
     payload: { key, value, customColumns },
 });

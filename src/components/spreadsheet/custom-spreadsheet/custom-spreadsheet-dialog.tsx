@@ -17,7 +17,7 @@ import {
     TextInput,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -27,7 +27,7 @@ import {
     initialSpreadsheetFromModelForm,
     SPREADSHEET_MODEL,
     SPREADSHEET_NAME,
-} from './add-new-spreadsheet-form';
+} from './custom-spreadsheet-form';
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
@@ -35,9 +35,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateTableDefinition } from 'redux/actions';
 import { TABLES_DEFINITIONS } from '../utils/config-tables';
 import { AppState } from 'redux/reducer';
-import { getSpreadsheetModel } from 'services/explore';
 import { FormattedMessage } from 'react-intl';
-export type AddSpreadsheetConfigDialogProps = {
+import yup from 'components/utils/yup-config';
+import { ColumnWithFormula } from 'types/custom-columns.types';
+import { getSpreadsheetModel } from 'services/spreadsheet';
+export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
     selectedOption: { id: string; label: string } | undefined;
 };
@@ -52,10 +54,10 @@ const styles = {
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;
 
-export default function AddSpreadsheetConfigDialog({
+export default function CustomSpreadsheetConfigDialog({
     open,
     selectedOption,
-}: Readonly<AddSpreadsheetConfigDialogProps>) {
+}: Readonly<CustomSpreadsheetConfigDialogProps>) {
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesNames = useSelector((state: AppState) => state.tables.names);
 
@@ -74,11 +76,11 @@ export default function AddSpreadsheetConfigDialog({
 
     const formMethods = useForm<typeof defaultFormValues>({
         defaultValues: defaultFormValues,
-        resolver: yupResolver(shema as any),
+        resolver: yupResolver(shema as yup.ObjectSchema<typeof defaultFormValues>),
     });
 
     const dispatch = useDispatch();
-    const { handleSubmit, reset } = formMethods;
+    const { handleSubmit, reset, setValue, getValues } = formMethods;
 
     const onSubmit = useCallback(
         (newParams: any) => {
@@ -98,7 +100,10 @@ export default function AddSpreadsheetConfigDialog({
                 );
             } else {
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id).then(
-                    (selectedModel: { customColumns: any; sheetType: keyof typeof TABLES_DEFINITIONS }) => {
+                    (selectedModel: {
+                        customColumns: ColumnWithFormula[];
+                        sheetType: keyof typeof TABLES_DEFINITIONS;
+                    }) => {
                         const newTableDefinition = {
                             ...TABLES_DEFINITIONS[selectedModel.sheetType],
                             name: newParams[SPREADSHEET_NAME],
@@ -122,8 +127,20 @@ export default function AddSpreadsheetConfigDialog({
     );
 
     useEffect(() => {
-        reset(initialEmptySpreadsheetForm);
-    }, [open.value, reset]);
+        reset(defaultFormValues);
+    }, [defaultFormValues, open.value, reset]);
+
+    const watchSpreadSheetModel = useWatch({
+        control: formMethods.control,
+        name: SPREADSHEET_MODEL,
+    });
+
+    useEffect(() => {
+        const currentSpreadsheetName = getValues(SPREADSHEET_NAME);
+        if (watchSpreadSheetModel?.length > 0 && currentSpreadsheetName?.length === 0) {
+            setValue(SPREADSHEET_NAME, watchSpreadSheetModel[0].name);
+        }
+    }, [watchSpreadSheetModel, setValue, getValues]);
 
     const addEmptySpreadsheetConfigContent = (
         <Grid container spacing={2} direction="column">

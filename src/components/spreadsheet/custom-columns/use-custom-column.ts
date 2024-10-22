@@ -6,7 +6,7 @@
  */
 import { useMemo, useCallback } from 'react';
 import { AppState } from 'redux/reducer';
-import { create, all } from 'mathjs';
+import { create, all, bignumber } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
@@ -74,9 +74,13 @@ export function useCustomColumn(tabIndex: number) {
                 },
                 valueGetter: (params) => {
                     try {
-                        return math.limitedEvaluate(colWithFormula.formula, {
-                            ...params.data,
-                        });
+                        const { data } = params;
+                        const scope = Object.entries(data).reduce((acc, [key, value]) => {
+                            acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                            return acc;
+                        }, {} as Record<string, unknown>);
+
+                        return math.limitedEvaluate(colWithFormula.formula, scope);
                     } catch (e) {
                         return '';
                     }
