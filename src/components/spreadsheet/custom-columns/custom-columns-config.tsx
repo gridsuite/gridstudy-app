@@ -9,7 +9,6 @@ import { FormattedMessage } from 'react-intl';
 import { Badge, IconButton } from '@mui/material';
 import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { TABLES_NAMES } from '../utils/config-tables';
 import { AppState } from '../../../redux/reducer';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
@@ -20,8 +19,9 @@ export type CustomColumnsConfigProps = {
 
 export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
     const dialogOpen = useStateBoolean(false);
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[indexTab]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[indexTab]].columns
     );
 
     return (

@@ -359,7 +359,7 @@ const generateEditableNumericColumnDefinition = (
 };
 
 export const TABLES_DEFINITIONS = {
-    SUBSTATIONS: {
+    SUBSTATION: {
         index: 0,
         name: 'Substations',
         type: EQUIPMENT_TYPES.SUBSTATION,
@@ -411,7 +411,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    VOLTAGE_LEVELS: {
+    VOLTAGE_LEVEL: {
         index: 1,
         name: 'VoltageLevels',
         type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
@@ -572,7 +572,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    LINES: {
+    LINE: {
         index: 2,
         name: 'Lines',
         type: EQUIPMENT_TYPES.LINE,
@@ -747,7 +747,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    TWO_WINDINGS_TRANSFORMERS: {
+    TWO_WINDINGS_TRANSFORMER: {
         index: 3,
         name: 'TwoWindingsTransformers',
         type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
@@ -1445,7 +1445,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    THREE_WINDINGS_TRANSFORMERS: {
+    THREE_WINDINGS_TRANSFORMER: {
         index: 4,
         name: 'ThreeWindingsTransformers',
         type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
@@ -1887,7 +1887,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    GENERATORS: {
+    GENERATOR: {
         index: 5,
         name: 'Generators',
         type: EQUIPMENT_TYPES.GENERATOR,
@@ -2467,7 +2467,7 @@ export const TABLES_DEFINITIONS = {
             },
         ],
     },
-    LOADS: {
+    LOAD: {
         index: 6,
         name: 'Loads',
         type: EQUIPMENT_TYPES.LOAD,
@@ -2609,7 +2609,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    SHUNT_COMPENSATORS: {
+    SHUNT_COMPENSATOR: {
         index: 7,
         name: 'ShuntCompensators',
         type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
@@ -2812,7 +2812,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    STATIC_VAR_COMPENSATORS: {
+    STATIC_VAR_COMPENSATOR: {
         index: 8,
         name: 'StaticVarCompensators',
         type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
@@ -2906,7 +2906,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    BATTERIES: {
+    BATTERY: {
         index: 9,
         name: 'Batteries',
         type: EQUIPMENT_TYPES.BATTERY,
@@ -3145,7 +3145,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    HVDC_LINES: {
+    HVDC_LINE: {
         index: 10,
         name: 'HvdcLines',
         type: EQUIPMENT_TYPES.HVDC_LINE,
@@ -3287,7 +3287,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    LCC_CONVERTER_STATIONS: {
+    LCC_CONVERTER_STATION: {
         index: 11,
         name: 'LccConverterStations',
         type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
@@ -3385,7 +3385,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    VSC_CONVERTER_STATIONS: {
+    VSC_CONVERTER_STATION: {
         index: 12,
         name: 'VscConverterStations',
         type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
@@ -3500,7 +3500,7 @@ export const TABLES_DEFINITIONS = {
         ],
     },
 
-    DANGLING_LINES: {
+    DANGLING_LINE: {
         index: 13,
         name: 'DanglingLines',
         type: EQUIPMENT_TYPES.DANGLING_LINE,
@@ -3598,7 +3598,7 @@ export const TABLES_DEFINITIONS = {
             },
         ],
     },
-    BUSES: {
+    BUS: {
         index: 14,
         name: 'Buses',
         type: EQUIPMENT_TYPES.BUS,
@@ -3669,7 +3669,7 @@ export const TABLES_DEFINITIONS = {
             },
         ],
     },
-    TIE_LINES: {
+    TIE_LINE: {
         index: 15,
         name: 'TieLines',
         type: EQUIPMENT_TYPES.TIE_LINE,
