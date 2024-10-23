@@ -46,7 +46,7 @@ export function getVoltageLevelSingleLineDiagram(
 
 export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
     console.info(
-        `Fetching substationID for a voltage level of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
