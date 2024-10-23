@@ -36,8 +36,11 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     const dialogOpen = useStateBoolean(false);
 
     const currentType = useMemo(() => {
-        const equipment = tablesDefinitionIndexes.get(indexTab);
-        return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
+        const equipment: any = tablesDefinitionIndexes.get(indexTab);
+        // when a new spreadsheet is created tabIndex is added to type for now
+        // to avoid conflicts with existing tables for sorting and filtering
+        // we need to remove it to get the correct type
+        return equipment ? equipment.type.replace(/\d/g, '') : EQUIPMENT_TYPES.SUBSTATION;
     }, [indexTab, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {

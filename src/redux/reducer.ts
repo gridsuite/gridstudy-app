@@ -196,6 +196,10 @@ import {
     LogsFilterAction,
     UPDATE_TABLE_DEFINITION,
     UpdateTableDefinitionAction,
+    ADD_FILTER_FOR_NEW_SPREADSHEET,
+    AddFilterForNewSpreadsheetAction,
+    ADD_SORT_FOR_NEW_SPREADSHEET,
+    AddSortForNewSpreadsheetAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -405,7 +409,7 @@ export type TableSort = {
 export type TableSortKeysType = keyof TableSort;
 
 export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'>;
-export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
+export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType | string, UnknownArray>;
 
 export type DiagramState = {
     id: UUID;
@@ -1681,12 +1685,23 @@ export const reducer = createReducer(initialState, (builder) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
 
+    builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
+        const { newEquipmentType, value } = action.payload;
+        state[SPREADSHEET_STORE_FIELD][newEquipmentType] = value;
+    });
+
     builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
         state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
         state.tableSort[action.table][action.tab] = action.sort;
+    });
+
+    builder.addCase(ADD_SORT_FOR_NEW_SPREADSHEET, (state, action: AddSortForNewSpreadsheetAction) => {
+        const { newEquipmentType, value } = action.payload;
+        state.tableSort[SPREADSHEET_SORT_STORE][newEquipmentType] = value;
+        console.log('newEquipmentType', newEquipmentType);
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {

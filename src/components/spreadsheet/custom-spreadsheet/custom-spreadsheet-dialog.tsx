@@ -33,13 +33,14 @@ import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateTableDefinition } from 'redux/actions';
+import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { TABLES_DEFINITIONS } from '../utils/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
+import { SortWay } from 'hooks/use-aggrid-sort';
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
     selectedOption: { id: string; label: string } | undefined;
@@ -88,17 +89,22 @@ export default function CustomSpreadsheetConfigDialog({
         (newParams: any) => {
             if (selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id) {
                 const equipmentType = newParams.equipmentType as keyof typeof TABLES_DEFINITIONS;
+                const tabIndex = tablesDefinitionIndexes.size;
                 const newTableDefinition = {
                     ...TABLES_DEFINITIONS[equipmentType],
                     name: newParams[SPREADSHEET_NAME],
-                    index: tablesDefinitionIndexes.size,
+                    index: tabIndex,
+                    type: equipmentType + tabIndex, // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
                 };
+                dispatch(updateTableDefinition('new' + tabIndex + newParams.equipmentType, newTableDefinition, []));
+                dispatch(addFilterForNewSpreadsheet(equipmentType + tabIndex, []));
                 dispatch(
-                    updateTableDefinition(
-                        'new' + tablesDefinitionIndexes.size + newParams.equipmentType,
-                        newTableDefinition,
-                        []
-                    )
+                    addSortForNewSpreadsheet(equipmentType + tabIndex, [
+                        {
+                            colId: 'id',
+                            sort: SortWay.ASC,
+                        },
+                    ])
                 );
             } else {
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
@@ -107,11 +113,14 @@ export default function CustomSpreadsheetConfigDialog({
                             customColumns: ColumnWithFormula[];
                             sheetType: keyof typeof TABLES_DEFINITIONS;
                         }) => {
+                            const equipmentType = selectedModel.sheetType;
+                            const tabIndex = tablesDefinitionIndexes.size;
                             const newTableDefinition = {
                                 ...TABLES_DEFINITIONS[selectedModel.sheetType],
                                 name: newParams[SPREADSHEET_NAME],
                                 index: tablesDefinitionIndexes.size,
                                 columns: [],
+                                type: equipmentType + tabIndex, // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
                             };
                             dispatch(
                                 updateTableDefinition(
@@ -119,6 +128,15 @@ export default function CustomSpreadsheetConfigDialog({
                                     newTableDefinition,
                                     selectedModel.customColumns
                                 )
+                            );
+                            dispatch(addFilterForNewSpreadsheet(equipmentType + tabIndex, []));
+                            dispatch(
+                                addSortForNewSpreadsheet(equipmentType + tabIndex, [
+                                    {
+                                        colId: 'ID',
+                                        sort: SortWay.ASC,
+                                    },
+                                ])
                             );
                         }
                     )

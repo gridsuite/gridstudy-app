@@ -233,36 +233,44 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         return equipment ? equipment.columns : [];
     }, [tabIndex, tablesDefinitionIndexes]);
 
+    // used only for filtering and sorting
     const currentType = useCallback(() => {
         const equipment: any = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
     }, [tabIndex, tablesDefinitionIndexes]);
 
+    const currentCleanedType = useCallback(() => {
+        const equipment: any = tablesDefinitionIndexes.get(tabIndex);
+        // when a new spreadsheet is created tabIndex is added to type for now
+        // to avoid conflicts with existing tables for sorting and filtering
+        // we need to remove it to get the correct type
+        return equipment ? equipment.type.replace(/\d/g, '') : EQUIPMENT_TYPES.SUBSTATION;
+    }, [tabIndex, tablesDefinitionIndexes]);
+
     const isEditColumnVisible = useCallback(() => {
         return (
             !disabled &&
-            currentType() &&
+            currentCleanedType() &&
             currentColumns()
                 .filter((c: any) => c.editable)
                 .filter((c: any) => selectedColumnsNames.has(c.id)).length > 0
         );
-    }, [disabled, selectedColumnsNames, currentType, currentColumns]);
+    }, [disabled, selectedColumnsNames, currentCleanedType, currentColumns]);
 
     const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentType());
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
         filterType: SPREADSHEET_STORE_FIELD,
         filterTab: currentType().toString(),
-        // @ts-expect-error TODO: found how to have Action type in props type
         filterStoreAction: setSpreadsheetFilter,
     });
 
     const equipmentDefinition = useMemo(
         () => ({
-            type: currentType(),
+            type: currentCleanedType(),
             fetchers: tablesDefinitionIndexes.get(tabIndex)?.fetchers,
         }),
-        [currentType, tablesDefinitionIndexes, tabIndex]
+        [currentCleanedType, tablesDefinitionIndexes, tabIndex]
     );
 
     const formatFetchedEquipmentHandler = useCallback(
@@ -1178,7 +1186,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         selectedTableColumns.sort(sortByIndex);
 
         if (isEditColumnVisible()) {
-            addEditColumn(currentType(), selectedTableColumns);
+            addEditColumn(currentCleanedType(), selectedTableColumns);
         }
         return selectedTableColumns;
     }, [
@@ -1187,7 +1195,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         isEditColumnVisible,
         reorderedTableDefinitionIndexes,
         selectedColumnsNames,
-        currentType,
+        currentCleanedType,
         currentColumns,
     ]);
 
