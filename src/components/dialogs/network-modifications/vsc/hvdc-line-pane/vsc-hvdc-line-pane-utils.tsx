@@ -36,7 +36,7 @@ export function getVscHvdcLinePaneSchema(id: string) {
                     .nullable()
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, DROOP], {
                         is: (angleDroopActivePowerControl: boolean, droop: number) =>
-                            angleDroopActivePowerControl || droop !== null || droop !== undefined,
+                            angleDroopActivePowerControl || droop !== null,
                         then: (schema) => schema.required(),
                     }),
                 [DROOP]: yup
@@ -44,7 +44,7 @@ export function getVscHvdcLinePaneSchema(id: string) {
                     .nullable()
                     .when([ANGLE_DROOP_ACTIVE_POWER_CONTROL, P0], {
                         is: (angleDroopActivePowerControl: boolean, p0: number) =>
-                            angleDroopActivePowerControl || p0 !== null || p0 !== undefined,
+                            angleDroopActivePowerControl || p0 !== null,
                         then: (schema) => schema.required(),
                     }),
             },
