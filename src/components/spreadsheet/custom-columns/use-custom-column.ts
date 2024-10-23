@@ -6,7 +6,7 @@
  */
 import { useMemo, useCallback } from 'react';
 import { AppState } from 'redux/reducer';
-import { create, all } from 'mathjs';
+import { create, all, bignumber } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -62,6 +62,24 @@ export function useCustomColumn(tabIndex: number) {
         return { limitedEvaluate };
     }, []);
 
+    const createValueGetter = useCallback(
+        (colWithFormula: ColumnWithFormula) =>
+            (params: { data: Record<string, unknown> }): string => {
+                try {
+                    const { data } = params;
+                    const scope = Object.entries(data).reduce((acc, [key, value]) => {
+                        acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                        return acc;
+                    }, {} as Record<string, unknown>);
+
+                    return math.limitedEvaluate(colWithFormula.formula, scope);
+                } catch (e) {
+                    return '';
+                }
+            },
+        [math]
+    );
+
     const createCustomColumn = useCallback(() => {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
@@ -71,20 +89,12 @@ export function useCustomColumn(tabIndex: number) {
                     onSortChanged,
                     sortConfig,
                 },
-                valueGetter: (params) => {
-                    try {
-                        return math.limitedEvaluate(colWithFormula.formula, {
-                            ...params.data,
-                        });
-                    } catch (e) {
-                        return '';
-                    }
-                },
+                valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
             });
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, math]);
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter]);
 
     return { createCustomColumn };
 }
