@@ -617,7 +617,6 @@
     "Connectivity": "Connectivité",
     "FieldAcceptNumeric": "Ce champ n'accepte que des valeurs numériques",
     "FieldIsRequired": "Ce champ doit être renseigné",
-    "NumericFieldNotZeroWhenAngleDroopActivePowerControlIsEnabled": "Ce champ ne peut pas être égal à 0 quand l'émulation AC est activée",
     "errReorderModificationMsg": "Une erreur est survenue lors du changement d'ordre du nœud\u00a0:",
     "errDuplicateModificationMsg": "Une erreur est survenue lors de la copie des modifications",
     "errCutModificationMsg": "Une erreur est survenue lors du coupage des modifications",

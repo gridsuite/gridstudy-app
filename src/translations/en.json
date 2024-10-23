@@ -617,7 +617,6 @@
     "disconnected": "Disconnected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
-    "NumericFieldNotZeroWhenAngleDroopActivePowerControlIsEnabled": "This field can not be equals to zero when angleDroopActivePowerControl is enabled",
     "errReorderModificationMsg": "Reorder network modification error:",
     "errDuplicateModificationMsg": "Network modifications copy error",
     "errCutModificationMsg": "Network modifications cut error",
