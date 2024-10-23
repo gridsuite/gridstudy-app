@@ -13,7 +13,6 @@ import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-ag
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { createDependencyGraph, topologicalSort } from './custom-columns-utils';
 
 export function useCustomColumn(tabIndex: number) {
     const customColumnsDefinitions = useSelector(
@@ -63,47 +62,22 @@ export function useCustomColumn(tabIndex: number) {
         return { limitedEvaluate };
     }, []);
 
-    // Main function to sort columns by dependencies and calculate values
-    const sortedColumnDefinitions = useMemo(() => {
-        const graph = createDependencyGraph(customColumnsDefinitions);
-        const sortedColumns = topologicalSort(graph);
-
-        return sortedColumns.map((name) =>
-            customColumnsDefinitions.find((col) => col.name === name)
-        ) as ColumnWithFormula[];
-    }, [customColumnsDefinitions]);
-
-    const calcAllColumnValues = useCallback(
-        (lineData: Record<string, unknown>): Map<string, unknown> => {
-            const customColumnsValues = new Map<string, unknown>();
-            const scope: Record<string, unknown> = {};
-
-            // Add line data to the scope
-            Object.entries(lineData).forEach(([key, value]) => {
-                scope[`${key}`] = typeof value === 'number' ? bignumber(value) : value;
-            });
-
-            sortedColumnDefinitions.forEach((column) => {
-                if (!column) {
-                    return;
-                }
+    const createValueGetter = useCallback(
+        (colWithFormula: ColumnWithFormula) =>
+            (params: { data: Record<string, unknown> }): string => {
                 try {
-                    // Evaluate the formula and update the Map and scope
-                    const result = math.limitedEvaluate(column.formula, {
-                        ...scope,
-                        ...Object.fromEntries(customColumnsValues),
-                    });
+                    const { data } = params;
+                    const scope = Object.entries(data).reduce((acc, [key, value]) => {
+                        acc[key] = typeof value === 'number' ? bignumber(value) : value;
+                        return acc;
+                    }, {} as Record<string, unknown>);
 
-                    customColumnsValues.set(column.name, result);
-                    scope[column.name] = result; // Add calculated result to scope for future columns
-                } catch (error: any) {
-                    console.error(`Error evaluating formula for column ${column.name}: ${error.message}`);
+                    return math.limitedEvaluate(colWithFormula.formula, scope);
+                } catch (e) {
+                    return '';
                 }
-            });
-
-            return customColumnsValues;
-        },
-        [math, sortedColumnDefinitions]
+            },
+        [math]
     );
 
     const createCustomColumn = useCallback(() => {
@@ -115,15 +89,12 @@ export function useCustomColumn(tabIndex: number) {
                     onSortChanged,
                     sortConfig,
                 },
-                valueGetter: (params) => {
-                    const allValues = calcAllColumnValues(params.data);
-                    return allValues.get(colWithFormula.name);
-                },
+                valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
             });
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, calcAllColumnValues]);
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter]);
 
     return { createCustomColumn };
 }
