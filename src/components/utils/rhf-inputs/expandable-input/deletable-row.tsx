@@ -12,11 +12,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 export interface DeletableRowProps extends PropsWithChildren {
     alignItems: string;
-    onDeleteClick: () => void;
+    onClick: () => void;
     deletionMark?: boolean | null;
 }
 
-export function DeletableRow({ alignItems, onDeleteClick, deletionMark, children }: Readonly<DeletableRowProps>) {
+export function DeletableRow({ alignItems, onClick, deletionMark, children }: Readonly<DeletableRowProps>) {
     const intl = useIntl();
     const [isHover, setIsHover] = useState(false);
 
@@ -37,7 +37,7 @@ export function DeletableRow({ alignItems, onDeleteClick, deletionMark, children
                             id: deletionMark ? 'button.restore' : 'DeleteRows',
                         })}
                     >
-                        <IconButton onClick={onDeleteClick}>
+                        <IconButton onClick={onClick}>
                             {deletionMark ? <RestoreFromTrashIcon /> : <DeleteIcon />}
                         </IconButton>
                     </Tooltip>
