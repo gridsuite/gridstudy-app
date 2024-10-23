@@ -72,7 +72,7 @@ export const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
                                 remove(idx);
                             }
                         }}
-                        deletionMark={getDeletionMark && getDeletionMark(idx)}
+                        deletionMark={getDeletionMark?.(idx)}
                     >
                         <Field name={name} index={idx} {...fieldProps} />
                     </DeletableRow>

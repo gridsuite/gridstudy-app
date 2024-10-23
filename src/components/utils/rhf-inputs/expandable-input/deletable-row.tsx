@@ -13,10 +13,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 export interface DeletableRowProps extends PropsWithChildren {
     alignItems: string;
     onDeleteClick: () => void;
-    deletionMark: boolean | null;
+    deletionMark?: boolean | null;
 }
 
-export function DeletableRow({ alignItems, onDeleteClick, deletionMark, children }: DeletableRowProps) {
+export function DeletableRow({ alignItems, onDeleteClick, deletionMark, children }: Readonly<DeletableRowProps>) {
     const intl = useIntl();
     const [isHover, setIsHover] = useState(false);
 
