@@ -6,20 +6,16 @@
  */
 
 import { useFieldArray } from 'react-hook-form';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import DeleteIcon from '@mui/icons-material/Delete';
-import RestoreFromTrashIcon from '@mui/icons-material/RestoreFromTrash';
-import Button from '@mui/material/Button';
+import { Button, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React, { FunctionComponent } from 'react';
-import { styles } from '../../dialogs/dialogUtils';
-import { ErrorInput } from '@gridsuite/commons-ui';
-import { MidFormError } from '@gridsuite/commons-ui';
-import { mergeSx } from '../functions';
+import { styles } from '../../../dialogs/dialogUtils';
+import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
+import { mergeSx } from '../../functions';
+import { DeletableRow } from './deletable-row';
 
-interface ExpandableInputProps {
+export interface ExpandableInputProps {
     name: string;
     Field: React.ComponentType<any>;
     fieldProps?: any;
@@ -37,7 +33,7 @@ interface ExpandableInputProps {
 // - only 1 state and 1 delete icon that removes the current line
 // - a second state "mark for deletion" with a second icon: the line is not removed
 // and we can cancel this mark to go back to normal state.
-const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
+export const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
     name,
     Field, // Used to display each object of an array
     fieldProps, // Props to pass to Field
@@ -64,25 +60,19 @@ const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
             </Grid>
             {watchProps &&
                 values.map((value, idx) => (
-                    <Grid key={value.id} container spacing={2} item alignItems={alignItems}>
+                    <DeletableRow
+                        key={value.id}
+                        alignItems={alignItems}
+                        onClick={() => {
+                            const shouldRemove = deleteCallback ? deleteCallback(idx) : true;
+                            if (shouldRemove) {
+                                remove(idx);
+                            }
+                        }}
+                        deletionMark={getDeletionMark?.(idx)}
+                    >
                         <Field name={name} index={idx} {...fieldProps} />
-                        <Grid item xs={1}>
-                            <IconButton
-                                key={value.id}
-                                onClick={() => {
-                                    if (deleteCallback) {
-                                        if (deleteCallback(idx) === true) {
-                                            remove(idx);
-                                        }
-                                    } else {
-                                        remove(idx);
-                                    }
-                                }}
-                            >
-                                {getDeletionMark && getDeletionMark(idx) ? <RestoreFromTrashIcon /> : <DeleteIcon />}
-                            </IconButton>
-                        </Grid>
-                    </Grid>
+                    </DeletableRow>
                 ))}
             <span>
                 <Button
@@ -98,5 +88,3 @@ const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
         </Grid>
     );
 };
-
-export default ExpandableInput;
