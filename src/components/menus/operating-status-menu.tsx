@@ -54,7 +54,7 @@ const styles = {
 };
 export type MenuBranchProps = {
     equipment: Equipment;
-    equipmentType: EquipmentType;
+    equipmentType?: EquipmentType;
     position: [number, number] | null;
     handleClose: () => void;
     handleViewInSpreadsheet: (type: EquipmentType, id: string) => void;
@@ -117,13 +117,15 @@ const withOperatingStatusMenu =
 
         const isNodeEditable = useMemo(
             function () {
-                return (
-                    equipmentInfos &&
-                    isNodeBuilt(currentNode) &&
-                    !isNodeReadOnly(currentNode) &&
-                    !isAnyNodeBuilding &&
-                    !modificationInProgress
-                );
+                if (currentNode) {
+                    return (
+                        equipmentInfos &&
+                        isNodeBuilt(currentNode) &&
+                        !isNodeReadOnly(currentNode) &&
+                        !isAnyNodeBuilding &&
+                        !modificationInProgress
+                    );
+                }
             },
             [equipmentInfos, currentNode, isAnyNodeBuilding, modificationInProgress]
         );
@@ -184,202 +186,209 @@ const withOperatingStatusMenu =
         );
 
         return (
-            <Menu
-                anchorReference="anchorPosition"
-                anchorPosition={position ? { top: position[1], left: position[0] } : undefined}
-                id="operating-status-menu"
-                open={true}
-                onClose={handleClose}
-            >
-                <BaseMenu
-                    equipment={equipment}
-                    equipmentType={equipmentType}
-                    handleViewInSpreadsheet={handleViewInSpreadsheet}
-                    handleDeleteEquipment={handleDeleteEquipment}
-                    handleOpenModificationDialog={handleOpenModificationDialog}
-                />
-                {[
-                    EquipmentType.LINE,
-                    EquipmentType.TWO_WINDINGS_TRANSFORMER,
-                    EquipmentType.THREE_WINDINGS_TRANSFORMER,
-                    EquipmentType.HVDC_LINE,
-                ].includes(equipmentType) && (
-                    <CustomMenuItem
-                        sx={styles.menuItem}
-                        onClick={() => handleLockout()}
-                        disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.PLANNED_OUTAGE}
-                    >
-                        <ListItemIcon>
-                            <LockOutlinedIcon />
-                        </ListItemIcon>
-
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage({
-                                        id: getTranslationKey('Lockout'),
-                                    })}
-                                </Typography>
-                            }
-                        />
-                    </CustomMenuItem>
-                )}
-                <CustomMenuItem
-                    sx={styles.menuItem}
-                    onClick={() => handleTrip()}
-                    disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE}
+            equipmentType && (
+                <Menu
+                    anchorReference="anchorPosition"
+                    anchorPosition={position ? { top: position[1], left: position[0] } : undefined}
+                    id="operating-status-menu"
+                    open={true}
+                    onClose={handleClose}
                 >
-                    <ListItemIcon>
-                        <OfflineBoltOutlinedIcon />
-                    </ListItemIcon>
-
-                    <ListItemText
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: getTranslationKey('Trip'),
-                                })}
-                            </Typography>
-                        }
-                    />
-                </CustomMenuItem>
-                {enableDeveloperMode && getEventType(equipmentType) && (
-                    <DynamicSimulationEventMenuItem
-                        equipmentId={equipment.id}
+                    <BaseMenu
+                        equipment={equipment}
                         equipmentType={equipmentType}
-                        onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
-                        disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE}
+                        handleViewInSpreadsheet={handleViewInSpreadsheet}
+                        handleDeleteEquipment={handleDeleteEquipment}
+                        handleOpenModificationDialog={handleOpenModificationDialog}
                     />
-                )}
-                {equipmentType === EquipmentType.LINE && (
-                    <CustomMenuItem
-                        sx={styles.menuItem}
-                        onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
-                        disabled={
-                            !isNodeEditable ||
-                            (equipmentInfos?.terminal1Connected && !equipmentInfos?.terminal2Connected)
-                        }
-                    >
-                        <ListItemIcon>
-                            <EnergiseOneSideIcon />
-                        </ListItemIcon>
-
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage(
-                                        {
-                                            id: getTranslationKey('EnergiseOnOneEnd'),
-                                        },
-                                        {
-                                            substation: getNameOrId({
-                                                name: equipmentInfos?.voltageLevelName1,
-                                                id: equipmentInfos?.voltageLevelId1,
-                                            }),
-                                        }
-                                    )}
-                                </Typography>
+                    {[
+                        EquipmentType.LINE,
+                        EquipmentType.TWO_WINDINGS_TRANSFORMER,
+                        EquipmentType.THREE_WINDINGS_TRANSFORMER,
+                        EquipmentType.HVDC_LINE,
+                    ].includes(equipmentType) && (
+                        <CustomMenuItem
+                            sx={styles.menuItem}
+                            onClick={() => handleLockout()}
+                            disabled={
+                                !isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.PLANNED_OUTAGE
                             }
-                        />
-                    </CustomMenuItem>
-                )}
-                {equipmentType === EquipmentType.LINE && (
-                    <CustomMenuItem
-                        sx={styles.menuItem}
-                        onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
-                        disabled={
-                            !isNodeEditable ||
-                            (equipmentInfos?.terminal2Connected && !equipmentInfos?.terminal1Connected)
-                        }
-                    >
-                        <ListItemIcon>
-                            <EnergiseOtherSideIcon />
-                        </ListItemIcon>
+                        >
+                            <ListItemIcon>
+                                <LockOutlinedIcon />
+                            </ListItemIcon>
 
-                        <ListItemText
-                            primary={
-                                <Typography noWrap>
-                                    {intl.formatMessage(
-                                        {
-                                            id: getTranslationKey('EnergiseOnOneEnd'),
-                                        },
-                                        {
-                                            substation: getNameOrId({
-                                                name: equipmentInfos?.voltageLevelName2,
-                                                id: equipmentInfos?.voltageLevelId2,
-                                            }),
-                                        }
-                                    )}
-                                </Typography>
-                            }
-                        />
-                    </CustomMenuItem>
-                )}
-                {equipmentType === EquipmentType.LINE && (
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage({
+                                            id: getTranslationKey('Lockout'),
+                                        })}
+                                    </Typography>
+                                }
+                            />
+                        </CustomMenuItem>
+                    )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleSwitchOn()}
-                        disabled={
-                            !isNodeEditable ||
-                            (equipmentInfos?.terminal1Connected && equipmentInfos?.terminal2Connected)
-                        }
+                        onClick={() => handleTrip()}
+                        disabled={!isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE}
                     >
                         <ListItemIcon>
-                            <PlayIcon />
+                            <OfflineBoltOutlinedIcon />
                         </ListItemIcon>
 
                         <ListItemText
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
-                                        id: getTranslationKey('SwitchOn'),
+                                        id: getTranslationKey('Trip'),
                                     })}
                                 </Typography>
                             }
                         />
                     </CustomMenuItem>
-                )}
-                <CustomMenuItem
-                    sx={styles.menuItem}
-                    onClick={() => handleDeleteEquipment(getCommonEquipmentType(equipmentType), equipment.id)}
-                    disabled={!isNodeEditable}
-                >
-                    <ListItemIcon>
-                        <DeleteIcon />
-                    </ListItemIcon>
+                    {enableDeveloperMode && getEventType(equipmentType) && (
+                        <DynamicSimulationEventMenuItem
+                            equipmentId={equipment.id}
+                            equipmentType={equipmentType}
+                            onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
+                            disabled={
+                                !isNodeEditable || equipmentInfos?.operatingStatus === OperatingStatus.FORCED_OUTAGE
+                            }
+                        />
+                    )}
+                    {equipmentType === EquipmentType.LINE && (
+                        <CustomMenuItem
+                            sx={styles.menuItem}
+                            onClick={() => handleEnergise(BRANCH_SIDE.ONE)}
+                            disabled={
+                                !isNodeEditable ||
+                                (equipmentInfos?.terminal1Connected && !equipmentInfos?.terminal2Connected)
+                            }
+                        >
+                            <ListItemIcon>
+                                <EnergiseOneSideIcon />
+                            </ListItemIcon>
 
-                    <ListItemText
-                        primary={
-                            <Typography noWrap>
-                                {intl.formatMessage({
-                                    id: 'DeleteFromMenu',
-                                })}
-                            </Typography>
-                        }
-                    />
-                </CustomMenuItem>
-                {(equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER || equipmentType === EquipmentType.LINE) && (
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage(
+                                            {
+                                                id: getTranslationKey('EnergiseOnOneEnd'),
+                                            },
+                                            {
+                                                substation: getNameOrId({
+                                                    name: equipmentInfos?.voltageLevelName1,
+                                                    id: equipmentInfos?.voltageLevelId1,
+                                                }),
+                                            }
+                                        )}
+                                    </Typography>
+                                }
+                            />
+                        </CustomMenuItem>
+                    )}
+                    {equipmentType === EquipmentType.LINE && (
+                        <CustomMenuItem
+                            sx={styles.menuItem}
+                            onClick={() => handleEnergise(BRANCH_SIDE.TWO)}
+                            disabled={
+                                !isNodeEditable ||
+                                (equipmentInfos?.terminal2Connected && !equipmentInfos?.terminal1Connected)
+                            }
+                        >
+                            <ListItemIcon>
+                                <EnergiseOtherSideIcon />
+                            </ListItemIcon>
+
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage(
+                                            {
+                                                id: getTranslationKey('EnergiseOnOneEnd'),
+                                            },
+                                            {
+                                                substation: getNameOrId({
+                                                    name: equipmentInfos?.voltageLevelName2,
+                                                    id: equipmentInfos?.voltageLevelId2,
+                                                }),
+                                            }
+                                        )}
+                                    </Typography>
+                                }
+                            />
+                        </CustomMenuItem>
+                    )}
+                    {equipmentType === EquipmentType.LINE && (
+                        <CustomMenuItem
+                            sx={styles.menuItem}
+                            onClick={() => handleSwitchOn()}
+                            disabled={
+                                !isNodeEditable ||
+                                (equipmentInfos?.terminal1Connected && equipmentInfos?.terminal2Connected)
+                            }
+                        >
+                            <ListItemIcon>
+                                <PlayIcon />
+                            </ListItemIcon>
+
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage({
+                                            id: getTranslationKey('SwitchOn'),
+                                        })}
+                                    </Typography>
+                                }
+                            />
+                        </CustomMenuItem>
+                    )}
                     <CustomMenuItem
                         sx={styles.menuItem}
-                        onClick={() => handleOpenModificationDialog(equipment.id, equipmentType)}
+                        onClick={() => handleDeleteEquipment(getCommonEquipmentType(equipmentType), equipment.id)}
                         disabled={!isNodeEditable}
                     >
                         <ListItemIcon>
-                            <EditIcon />
+                            <DeleteIcon />
                         </ListItemIcon>
 
                         <ListItemText
                             primary={
                                 <Typography noWrap>
                                     {intl.formatMessage({
-                                        id: 'ModifyFromMenu',
+                                        id: 'DeleteFromMenu',
                                     })}
                                 </Typography>
                             }
                         />
                     </CustomMenuItem>
-                )}
-            </Menu>
+                    {(equipmentType === EquipmentType.TWO_WINDINGS_TRANSFORMER ||
+                        equipmentType === EquipmentType.LINE) && (
+                        <CustomMenuItem
+                            sx={styles.menuItem}
+                            onClick={() => handleOpenModificationDialog(equipment.id, equipmentType)}
+                            disabled={!isNodeEditable}
+                        >
+                            <ListItemIcon>
+                                <EditIcon />
+                            </ListItemIcon>
+
+                            <ListItemText
+                                primary={
+                                    <Typography noWrap>
+                                        {intl.formatMessage({
+                                            id: 'ModifyFromMenu',
+                                        })}
+                                    </Typography>
+                                }
+                            />
+                        </CustomMenuItem>
+                    )}
+                </Menu>
+            )
         );
     };
 

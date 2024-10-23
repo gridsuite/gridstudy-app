@@ -55,12 +55,6 @@ import {
     VoltageLevel as VoltageLevelMap,
 } from '@powsybl/diagram-viewer/dist/components/network-map-viewer/network/map-equipments';
 import { useTheme } from '@mui/material';
-import {
-    fetchHvdcLinesMapInfos,
-    fetchLinesMapInfos,
-    fetchSubstationsMapInfos,
-    fetchTieLinesMapInfos,
-} from 'services/study/network';
 const INITIAL_POSITION = [0, 0] as [number, number];
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
@@ -160,6 +154,7 @@ export const NetworkMapTab = ({
     const basicDataReady = mapEquipments && geoData;
 
     const lineFullPathRef = useRef<boolean>();
+    const gSMapEquipmentsRef = useRef<GSMapEquipments>();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -654,7 +649,7 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
+        gSMapEquipmentsRef.current = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
@@ -664,40 +659,44 @@ export const NetworkMapTab = ({
                 return Promise.reject();
             }
 
-            //const [updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines] =
-            // mapEquipments.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds);
-            const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-            const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-            const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-            const updatedHvdcLines = fetchHvdcLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-            const isFullReload = !substationsIds;
+            const result = gSMapEquipmentsRef.current?.reloadImpactedSubstationsEquipments(
+                studyUuid,
+                currentNode,
+                substationsIds?.map((id) => id.toString()) || []
+            );
+            if (result) {
+                const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = result;
+                const isFullReload = !substationsIds;
 
-            updatedSubstations.then((values: Substation[] | null) => {
-                if (currentNodeAtReloadCalling?.id === currentNodeRef.current?.id) {
-                    mapEquipments.updateSubstations(mapEquipments.checkAndGetValues(values), isFullReload);
-                }
-            });
-            updatedLines.then((values: Line[]) => {
-                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedLines(values);
-                }
-            });
-            updatedTieLines.then((values: Line[]) => {
-                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedTieLines(values);
-                }
-            });
-            updatedHvdcLines.then((values: Line[]) => {
-                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                    setUpdatedHvdcLines(values);
-                }
-            });
-            return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
-                dispatch(setMapDataLoading(false));
-            });
+                updatedSubstations.then((values) => {
+                    if (currentNodeAtReloadCalling?.id === currentNodeRef.current?.id) {
+                        mapEquipments.updateSubstations(mapEquipments.checkAndGetValues(values), isFullReload);
+                    }
+                });
+                updatedLines.then((values) => {
+                    if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                        mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                        setUpdatedLines(values);
+                    }
+                });
+                updatedTieLines.then((values) => {
+                    if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                        mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                        setUpdatedTieLines(values);
+                    }
+                });
+                updatedHvdcLines.then((values) => {
+                    if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                        mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                        setUpdatedHvdcLines(values);
+                    }
+                });
+                return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(
+                    () => {
+                        dispatch(setMapDataLoading(false));
+                    }
+                );
+            }
         },
         [currentNode, dispatch, mapEquipments, studyUuid]
     );
@@ -754,7 +753,7 @@ export const NetworkMapTab = ({
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
-        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
+        updateMapEquipments(currentNodeAtReloadCalling)?.then(() => {
             if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
             }

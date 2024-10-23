@@ -398,7 +398,10 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'>;
+export type SpreadsheetEquipmentType = Exclude<
+    EQUIPMENT_TYPES,
+    'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'
+>;
 export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
 
 export type DiagramState = {
@@ -561,6 +564,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
+    [EQUIPMENT_TYPES.DISCONNECTOR]: null,
 };
 
 const initialState: AppState = {
@@ -690,6 +694,7 @@ const initialState: AppState = {
         [EQUIPMENT_TYPES.DANGLING_LINE]: [],
         [EQUIPMENT_TYPES.BUS]: [],
         [EQUIPMENT_TYPES.TIE_LINE]: [],
+        [EQUIPMENT_TYPES.DISCONNECTOR]: [],
     },
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },

@@ -153,6 +153,6 @@ export default class GSMapEquipments extends MapEquipments {
                 });
             }
         });
-        return [updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines];
+        return { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines };
     }
 }

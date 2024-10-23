@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Identifiable } from '@gridsuite/commons-ui';
+import { EquipmentType, Identifiable } from '@gridsuite/commons-ui';
 
 type EquipmentInfosTypesStruct<T extends string = string> = { type: T };
 //TODO: rename to PascalCase
@@ -40,7 +40,6 @@ export enum EQUIPMENT_TYPES {
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
     LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     SWITCH = 'SWITCH',
-    SHUNT = 'SHUNT',
     DISCONNECTOR = 'DISCONNECTOR',
     BREAKER = 'BREAKER',
 }
@@ -52,3 +51,7 @@ export interface VoltageLevel extends Identifiable {
 export interface Substation extends Identifiable {
     nominalV: number;
 }
+
+export const parseEQUIPMENT_TYPESToEquipmentType = (type: EQUIPMENT_TYPES): EquipmentType => {
+    return EquipmentType[type as keyof typeof EquipmentType];
+};
