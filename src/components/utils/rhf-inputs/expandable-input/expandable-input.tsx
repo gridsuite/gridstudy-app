@@ -64,11 +64,8 @@ export const ExpandableInput: FunctionComponent<ExpandableInputProps> = ({
                         key={value.id}
                         alignItems={alignItems}
                         onClick={() => {
-                            if (deleteCallback) {
-                                if (deleteCallback(idx) === true) {
-                                    remove(idx);
-                                }
-                            } else {
+                            const shouldRemove = deleteCallback ? deleteCallback(idx) : true;
+                            if (shouldRemove) {
                                 remove(idx);
                             }
                         }}
