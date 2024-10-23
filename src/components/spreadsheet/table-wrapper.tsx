@@ -344,6 +344,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             return 1;
                         }
                     };
+                    // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
                     column.agGridFilterParams = {
                         filterOptions: [
                             {
