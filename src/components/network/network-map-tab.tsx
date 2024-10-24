@@ -154,7 +154,6 @@ export const NetworkMapTab = ({
     const basicDataReady = mapEquipments && geoData;
 
     const lineFullPathRef = useRef<boolean>();
-    const gSMapEquipmentsRef = useRef<GSMapEquipments>();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -649,7 +648,7 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        gSMapEquipmentsRef.current = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
+        new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
         dispatch(resetMapReloaded());
     }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
@@ -659,44 +658,41 @@ export const NetworkMapTab = ({
                 return Promise.reject();
             }
 
-            const result = gSMapEquipmentsRef.current?.reloadImpactedSubstationsEquipments(
-                studyUuid,
-                currentNode,
-                substationsIds?.map((id) => id.toString()) || []
-            );
-            if (result) {
-                const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = result;
-                const isFullReload = !substationsIds;
-
-                updatedSubstations.then((values) => {
-                    if (currentNodeAtReloadCalling?.id === currentNodeRef.current?.id) {
-                        mapEquipments.updateSubstations(mapEquipments.checkAndGetValues(values), isFullReload);
-                    }
-                });
-                updatedLines.then((values) => {
-                    if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                        mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                        setUpdatedLines(values);
-                    }
-                });
-                updatedTieLines.then((values) => {
-                    if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                        mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                        setUpdatedTieLines(values);
-                    }
-                });
-                updatedHvdcLines.then((values) => {
-                    if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                        mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
-                        setUpdatedHvdcLines(values);
-                    }
-                });
-                return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(
-                    () => {
-                        dispatch(setMapDataLoading(false));
-                    }
+            const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } =
+                mapEquipments?.reloadImpactedSubstationsEquipments(
+                    studyUuid,
+                    currentNode,
+                    substationsIds?.map((id) => id.toString()) || null
                 );
-            }
+
+            const isFullReload = !substationsIds;
+
+            updatedSubstations.then((values) => {
+                if (currentNodeAtReloadCalling?.id === currentNodeRef.current?.id) {
+                    mapEquipments.updateSubstations(mapEquipments.checkAndGetValues(values), isFullReload);
+                }
+            });
+            updatedLines.then((values) => {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                    mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                    setUpdatedLines(values);
+                }
+            });
+            updatedTieLines.then((values) => {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                    mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                    setUpdatedTieLines(values);
+                }
+            });
+            updatedHvdcLines.then((values) => {
+                if (checkNodeConsistency(currentNodeAtReloadCalling)) {
+                    mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                    setUpdatedHvdcLines(values);
+                }
+            });
+            return Promise.all([updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines]).finally(() => {
+                dispatch(setMapDataLoading(false));
+            });
         },
         [currentNode, dispatch, mapEquipments, studyUuid]
     );
