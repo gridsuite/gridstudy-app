@@ -9,8 +9,6 @@ import Grid from '@mui/material/Grid';
 import {
     ADD_STAND_BY_AUTOMATON,
     AUTOMATON,
-    CHARACTERISTICS_CHOICE,
-    CHARACTERISTICS_CHOICES,
     HIGH_VOLTAGE_SET_POINT,
     HIGH_VOLTAGE_THRESHOLD,
     LOW_VOLTAGE_SET_POINT,
@@ -21,7 +19,7 @@ import {
     VOLTAGE_REGULATION_MODES,
 } from 'components/utils/field-constants';
 import { CheckboxInput, FloatInput, SwitchInput } from '@gridsuite/commons-ui';
-import { SusceptanceAdornment, VoltageAdornment } from '../../../dialogUtils';
+import { VoltageAdornment } from '../../../dialogUtils';
 import { Box } from '@mui/system';
 import { useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -47,13 +45,6 @@ export const StandbyAutomatonForm = () => {
         return Object.values(VOLTAGE_REGULATION_MODES).find((voltageMode) => voltageMode.id === watchVoltageMode)
             ?.label;
     }, [watchVoltageMode]);
-
-    const watchChoiceAutomaton = useWatch({ name: `${SETPOINTS_LIMITS}.${CHARACTERISTICS_CHOICE}` });
-    const watchChoiceAutomatonLabel = useMemo(() => {
-        return Object.values(CHARACTERISTICS_CHOICES).find(
-            (choiceAutomaton) => choiceAutomaton.id === watchChoiceAutomaton
-        )?.label;
-    }, [watchChoiceAutomaton]);
 
     const standbyDisabled = useMemo(() => {
         return watchVoltageMode !== VOLTAGE_REGULATION_MODES.VOLTAGE.id;
@@ -124,13 +115,13 @@ export const StandbyAutomatonForm = () => {
             FloatInput,
             `${id}.${LOW_VOLTAGE_THRESHOLD}`,
             'LowVoltageThreshold',
-            SusceptanceAdornment
+            VoltageAdornment
         ),
         hVoltageThreshold: createField(
             FloatInput,
             `${id}.${HIGH_VOLTAGE_THRESHOLD}`,
             'HighVoltageThreshold',
-            SusceptanceAdornment
+            VoltageAdornment
         ),
     };
 
@@ -152,16 +143,6 @@ export const StandbyAutomatonForm = () => {
                                 </Grid>
                             );
                         })}
-                    </Grid>
-
-                    <Grid container spacing={2} padding={2}>
-                        <Grid item xs={6}>
-                            <TextField
-                                value={intl.formatMessage({ id: watchChoiceAutomatonLabel })}
-                                disabled={true}
-                                size={'small'}
-                            />
-                        </Grid>
                     </Grid>
                     <Grid container spacing={2} padding={2}>
                         <SusceptanceArea />

@@ -116,6 +116,11 @@ const ModificationByAssignmentDialog: FC<any> = ({
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{
+                    sx: {
+                        height: '95vh',
+                    },
+                }}
                 {...dialogProps}
             >
                 <ModificationByAssignmentForm />

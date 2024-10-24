@@ -70,7 +70,7 @@ export const getNodeChildren = (
     sourceNodeIds: UUID[],
     allChildren: CurrentTreeNode[]
 ) => {
-    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid));
+    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid!));
     if (children.length > 0) {
         children.forEach((item) => {
             allChildren?.push({ ...item });

@@ -46,6 +46,7 @@ import {
     SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
+    TablesDefinitionsType,
     TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
@@ -67,7 +68,7 @@ import {
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
-import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
+import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -270,13 +271,13 @@ export function loadNetworkModificationTreeSuccess(
 
 export const NETWORK_MODIFICATION_TREE_NODE_ADDED = 'NETWORK_MODIFICATION_TREE_NODE_ADDED';
 export type NetworkModificationTreeNodeAddedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_ADDED>> & {
-    networkModificationTreeNode: NetworkModificationNode;
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeAdded(
-    networkModificationTreeNode: NetworkModificationNode,
+    networkModificationTreeNode: NetworkModificationNodeData | RootNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -292,13 +293,13 @@ export function networkModificationTreeNodeAdded(
 
 export const NETWORK_MODIFICATION_TREE_NODE_MOVED = 'NETWORK_MODIFICATION_TREE_NODE_MOVED';
 export type NetworkModificationTreeNodeMovedAction = Readonly<Action<typeof NETWORK_MODIFICATION_TREE_NODE_MOVED>> & {
-    networkModificationTreeNode: RootNode | NetworkModificationNode;
+    networkModificationTreeNode: RootNodeData | NetworkModificationNodeData;
     parentNodeId: string;
     insertMode: NodeInsertModes;
     referenceNodeId: string;
 };
 export function networkModificationTreeNodeMoved(
-    networkModificationTreeNode: RootNode | NetworkModificationNode,
+    networkModificationTreeNode: RootNodeData | NetworkModificationNodeData,
     parentNodeId: string,
     insertMode: NodeInsertModes,
     referenceNodeId: string
@@ -314,11 +315,11 @@ export function networkModificationTreeNodeMoved(
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {
-    networkModificationTreeNodes: NetworkModificationNode | RootNode;
+    networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData;
     parentNodeId: UUID;
 };
 export function networkModificationHandleSubtree(
-    networkModificationTreeNodes: NetworkModificationNode | RootNode,
+    networkModificationTreeNodes: NetworkModificationNodeData | RootNodeData,
     parentNodeId: UUID
 ): NetworkModificationHandleSubtreeAction {
     return {
@@ -1191,3 +1192,55 @@ export function setCustomColumDefinitions(
         filter: filter,
     };
 }
+
+export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
+
+export type UpdateTableDefinitionAction = {
+    type: typeof UPDATE_TABLE_DEFINITION;
+    payload: { key: string; value: TablesDefinitionsType; customColumns: ColumnWithFormula[] };
+};
+
+export const updateTableDefinition = (
+    key: string,
+    value: any,
+    customColumns: ColumnWithFormula[]
+): UpdateTableDefinitionAction => ({
+    type: UPDATE_TABLE_DEFINITION,
+    payload: { key, value, customColumns },
+});
+
+export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
+
+export type AddFilterForNewSpreadsheetAction = {
+    type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
+    payload: { newEquipmentType: string; value: MutableUnknownArray };
+};
+
+export const addFilterForNewSpreadsheet = (
+    newEquipmentType: string,
+    value: MutableUnknownArray
+): AddFilterForNewSpreadsheetAction => ({
+    type: ADD_FILTER_FOR_NEW_SPREADSHEET,
+    payload: {
+        newEquipmentType,
+        value,
+    },
+});
+
+export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
+
+export type AddSortForNewSpreadsheetAction = {
+    type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
+    payload: { newEquipmentType: string; value: SortConfigType[] };
+};
+
+export const addSortForNewSpreadsheet = (
+    newEquipmentType: string,
+    value: SortConfigType[]
+): AddSortForNewSpreadsheetAction => ({
+    type: ADD_SORT_FOR_NEW_SPREADSHEET,
+    payload: {
+        newEquipmentType,
+        value,
+    },
+});

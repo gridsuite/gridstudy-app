@@ -194,6 +194,12 @@ import {
     UseNameAction,
     LOGS_FILTER,
     LogsFilterAction,
+    UPDATE_TABLE_DEFINITION,
+    UpdateTableDefinitionAction,
+    ADD_FILTER_FOR_NEW_SPREADSHEET,
+    AddFilterForNewSpreadsheetAction,
+    ADD_SORT_FOR_NEW_SPREADSHEET,
+    AddSortForNewSpreadsheetAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -203,9 +209,13 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import {
+    TABLES_COLUMNS_NAMES,
     TABLES_COLUMNS_NAMES_JSON,
+    TABLES_DEFINITION_INDEXES,
+    TABLES_DEFINITION_TYPES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
+    TABLES_NAMES_INDEXES,
 } from '../components/spreadsheet/utils/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -277,13 +287,13 @@ import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
-import { Node } from 'reactflow';
-import { BUILD_STATUS } from '../components/network/constants';
+import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
-import { NetworkModificationNode, RootNode } from '../components/graph/tree-node.type';
+import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { BUILD_STATUS } from '../components/network/constants';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -352,16 +362,28 @@ export type StudyUpdated = {
     force: number; //IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
-export type TreeNodeData = {
-    parentNodeUuid: UUID;
+type NodeCommonData = {
     label: string;
-    description: string | null;
+    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
-    localBuildStatus?: BUILD_STATUS;
+    description?: string;
     readOnly?: boolean;
-    caseName?: string;
 };
-export type CurrentTreeNode = Node<TreeNodeData> & { id: UUID };
+export type ReactFlowModificationNodeData = NodeCommonData & { localBuildStatus?: BUILD_STATUS };
+
+export type ModificationNode = Node<ReactFlowModificationNodeData, NodeType.NETWORK_MODIFICATION> & {
+    id: UUID;
+};
+
+export type ReactFlowRootNodeData = NodeCommonData & { caseName?: string };
+export type RootNode = Node<ReactFlowRootNodeData, NodeType.ROOT> & { id: UUID };
+
+export type CurrentTreeNode = ModificationNode | RootNode;
+
+// type guard to check if the node is a Root
+export function isReactFlowRootNodeData(node: CurrentTreeNode): node is RootNode {
+    return node.type === NodeType.ROOT;
+}
 
 export interface ComputingStatus {
     [ComputingType.LOAD_FLOW]: RunningStatus;
@@ -387,7 +409,7 @@ export type TableSort = {
 export type TableSortKeysType = keyof TableSort;
 
 export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'>;
-export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType, UnknownArray>;
+export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType | string, UnknownArray>;
 
 export type DiagramState = {
     id: UUID;
@@ -438,6 +460,7 @@ export interface AppState extends CommonStoreState {
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
     tableSort: TableSort;
+    tables: TablesState;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -450,7 +473,6 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allDisplayedColumnsNames: string[];
     allLockedColumnsNames: string[];
     allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
@@ -463,7 +485,6 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
-    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -551,6 +572,31 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUS]: null,
 };
 
+interface TablesState {
+    definitions: TablesDefinitionsType;
+    columnsNames: Set<string>[];
+    columnsNamesJson: string[];
+    names: string[];
+    namesIndexes: typeof TABLES_NAMES_INDEXES;
+    definitionTypes: typeof TABLES_DEFINITION_TYPES;
+    definitionIndexes: typeof TABLES_DEFINITION_INDEXES;
+    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
+}
+
+const initialTablesState: TablesState = {
+    definitions: TABLES_DEFINITIONS,
+    columnsNames: TABLES_COLUMNS_NAMES,
+    columnsNamesJson: TABLES_COLUMNS_NAMES_JSON,
+    names: TABLES_NAMES,
+    namesIndexes: TABLES_NAMES_INDEXES,
+    definitionTypes: TABLES_DEFINITION_TYPES,
+    definitionIndexes: TABLES_DEFINITION_INDEXES,
+    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
+        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
+        {} as Record<TablesDefinitionsNames, CustomEntry>
+    ),
+};
+
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
@@ -560,6 +606,7 @@ const initialState: AppState = {
         copyType: null,
         allChildrenIds: null,
     },
+    tables: initialTablesState,
     mapEquipments: null,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
@@ -572,7 +619,6 @@ const initialState: AppState = {
     studyUpdated: { force: 0, eventData: {} },
     mapDataLoading: false,
     fullScreenDiagram: null,
-    allDisplayedColumnsNames: TABLES_COLUMNS_NAMES_JSON,
     allLockedColumnsNames: [],
     allReorderedTableDefinitionIndexes: [],
     isExplorerDrawerOpen: true,
@@ -683,7 +729,7 @@ const initialState: AppState = {
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(TABLES_DEFINITIONS).reduce((acc, current) => {
+        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions).reduce((acc, current) => {
             acc[current.type] = [
                 {
                     colId: 'id',
@@ -743,11 +789,6 @@ const initialState: AppState = {
         },
     },
 
-    allCustomColumnsDefinitions: TABLES_NAMES.reduce(
-        (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
-        {} as AppState['allCustomColumnsDefinitions']
-    ),
-
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -797,6 +838,45 @@ export const reducer = createReducer(initialState, (builder) => {
             newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
+    });
+
+    builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
+        const { key, value, customColumns } = action.payload;
+        const updatedDefinitions = {
+            ...state.tables.definitions,
+            [key]: value,
+        };
+        const updatedColumnsNames = Object.values(updatedDefinitions)
+            .map((table) => table.columns)
+            .map((cols) => new Set(cols.map((c) => c.id)));
+        const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
+        const updatedNames = Object.values(updatedDefinitions).map((table) => table.name);
+        const updatedNamesIndexes = new Map(
+            Object.values(updatedDefinitions).map((table) => [table.name, table.index])
+        );
+        const updatedDefinitionTypes = new Map(Object.values(updatedDefinitions).map((table) => [table.type, table]));
+        const updatedDefinitionIndexes = new Map(
+            Object.values(updatedDefinitions).map((table) => [table.index, table])
+        );
+        const updatedAllCustomColumnsDefinitions = {
+            ...state.tables.allCustomColumnsDefinitions,
+            [(value as unknown as { name: string }).name]: {
+                columns: customColumns,
+                filter: {
+                    formula: '',
+                },
+            },
+        };
+        state.tables = {
+            definitions: updatedDefinitions,
+            columnsNames: updatedColumnsNames,
+            columnsNamesJson: updatedColumnsNamesJson,
+            names: updatedNames,
+            namesIndexes: updatedNamesIndexes,
+            definitionTypes: updatedDefinitionTypes,
+            definitionIndexes: updatedDefinitionIndexes,
+            allCustomColumnsDefinitions: updatedAllCustomColumnsDefinitions,
+        };
     });
 
     builder.addCase(
@@ -873,7 +953,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid));
+                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 newModel.updateLayout();
@@ -1060,13 +1140,13 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(CHANGE_DISPLAYED_COLUMNS_NAMES, (state, action: ChangeDisplayedColumnsNamesAction) => {
-        const newDisplayedColumnsNames = [...state.allDisplayedColumnsNames];
+        const newDisplayedColumnsNames = [...state.tables.columnsNamesJson];
         action.displayedColumnsNamesParams.forEach((param) => {
             if (param) {
                 newDisplayedColumnsNames[param.index] = param.value;
             }
         });
-        state.allDisplayedColumnsNames = newDisplayedColumnsNames;
+        state.tables.columnsNamesJson = newDisplayedColumnsNames;
     });
 
     builder.addCase(CHANGE_LOCKED_COLUMNS_NAMES, (state, action: ChangeLockedColumnsNamesAction) => {
@@ -1605,6 +1685,11 @@ export const reducer = createReducer(initialState, (builder) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
 
+    builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
+        const { newEquipmentType, value } = action.payload;
+        state[SPREADSHEET_STORE_FIELD][newEquipmentType] = value;
+    });
+
     builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
         state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
     });
@@ -1613,8 +1698,14 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[action.table][action.tab] = action.sort;
     });
 
+    builder.addCase(ADD_SORT_FOR_NEW_SPREADSHEET, (state, action: AddSortForNewSpreadsheetAction) => {
+        const { newEquipmentType, value } = action.payload;
+        state.tableSort[SPREADSHEET_SORT_STORE][newEquipmentType] = value;
+        console.log('newEquipmentType', newEquipmentType);
+    });
+
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
-        state.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+        state.tables.allCustomColumnsDefinitions[action.table].columns = action.definitions;
     });
 });
 
@@ -1750,7 +1841,7 @@ function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
 function unravelSubTree(
     treeModel: NetworkModificationTreeModel,
     subtreeParentId: UUID,
-    node: NetworkModificationNode | RootNode | null
+    node: NetworkModificationNodeData | RootNodeData | null
 ) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
