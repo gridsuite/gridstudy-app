@@ -26,6 +26,8 @@ import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
+import { useParameterState } from './parameters/parameters.jsx';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params.js';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -46,7 +48,7 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
     const [exportStudyErr, setExportStudyErr] = React.useState('');
     const { snackError } = useSnackMessage();
     const [fileName, setFileName] = useState();
-
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const [unfolded, setUnfolded] = React.useState(false);
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
@@ -75,10 +77,13 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
+                let availableFormats = enableDeveloperMode
+                    ? formats
+                    : Object.fromEntries(Object.entries(formats).filter(([key]) => key === 'XIIDM'));
                 // we check if the param is for extension, if it is, we select all possible values by default.
                 // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                Object.values(formats).forEach((f) => {
+                Object.values(availableFormats).forEach((f) => {
                     f.parameters = f.parameters.map((parameter) => {
                         if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
                             parameter.defaultValue = parameter.possibleValues;
@@ -86,10 +91,10 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
                         return parameter;
                     });
                 });
-                setFormatsWithParameters(formats);
+                setFormatsWithParameters(availableFormats);
             });
         }
-    }, [open]);
+    }, [open, enableDeveloperMode]);
 
     const handleFoldChange = () => {
         setUnfolded((prev) => !prev);
