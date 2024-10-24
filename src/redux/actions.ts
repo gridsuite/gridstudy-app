@@ -46,6 +46,7 @@ import {
     SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
+    TablesDefinitionsType,
     TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
@@ -1191,3 +1192,55 @@ export function setCustomColumDefinitions(
         filter: filter,
     };
 }
+
+export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
+
+export type UpdateTableDefinitionAction = {
+    type: typeof UPDATE_TABLE_DEFINITION;
+    payload: { key: string; value: TablesDefinitionsType; customColumns: ColumnWithFormula[] };
+};
+
+export const updateTableDefinition = (
+    key: string,
+    value: any,
+    customColumns: ColumnWithFormula[]
+): UpdateTableDefinitionAction => ({
+    type: UPDATE_TABLE_DEFINITION,
+    payload: { key, value, customColumns },
+});
+
+export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
+
+export type AddFilterForNewSpreadsheetAction = {
+    type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
+    payload: { newEquipmentType: string; value: MutableUnknownArray };
+};
+
+export const addFilterForNewSpreadsheet = (
+    newEquipmentType: string,
+    value: MutableUnknownArray
+): AddFilterForNewSpreadsheetAction => ({
+    type: ADD_FILTER_FOR_NEW_SPREADSHEET,
+    payload: {
+        newEquipmentType,
+        value,
+    },
+});
+
+export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
+
+export type AddSortForNewSpreadsheetAction = {
+    type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
+    payload: { newEquipmentType: string; value: SortConfigType[] };
+};
+
+export const addSortForNewSpreadsheet = (
+    newEquipmentType: string,
+    value: SortConfigType[]
+): AddSortForNewSpreadsheetAction => ({
+    type: ADD_SORT_FOR_NEW_SPREADSHEET,
+    payload: {
+        newEquipmentType,
+        value,
+    },
+});
