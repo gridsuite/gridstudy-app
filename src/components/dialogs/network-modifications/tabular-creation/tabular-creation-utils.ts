@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
+import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     ACTIVE_POWER_SET_POINT,
     BUS_OR_BUSBAR_SECTION_ID,

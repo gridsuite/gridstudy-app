@@ -6,7 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import { MODIFICATION_TYPES } from '../../utils/modification-type';
+import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { useCallback } from 'react';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 

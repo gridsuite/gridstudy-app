@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
@@ -44,7 +45,6 @@ import {
     completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
 } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { MODIFICATION_TYPES } from '../../../../utils/modification-type';
 import { toModificationOperation } from '../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
