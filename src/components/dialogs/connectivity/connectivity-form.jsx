@@ -125,13 +125,8 @@ export const ConnectivityForm = ({
             return;
         }
         const currentBusOrBusbarSection = getValues(`${id}.${BUS_OR_BUSBAR_SECTION}`);
-        if (
-            busOrBusbarSectionOptions?.length > 0 &&
-            !busOrBusbarSectionOptions.find(
-                (busOrBusbarSection) => busOrBusbarSection.id === currentBusOrBusbarSection?.id
-            )
-        ) {
-            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, busOrBusbarSectionOptions[0]);
+        if (busOrBusbarSectionOptions?.length > 0 && currentBusOrBusbarSection?.id !== null) {
+            setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, currentBusOrBusbarSection);
         }
     }, [busOrBusbarSectionOptions, setValue, id, getValues, isEquipmentModification]);
 

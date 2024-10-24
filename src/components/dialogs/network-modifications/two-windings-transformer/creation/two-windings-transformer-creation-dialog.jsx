@@ -232,7 +232,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             connectionName: twt.connectionName1,
                             connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
-                            connected: twt.connected1,
+                            terminalConnected: twt.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -243,7 +243,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             connectionName: twt.connectionName2,
                             connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
-                            connected: twt.connected2,
+                            terminalConnected: twt.connected2,
                         },
                         CONNECTIVITY_2
                     ),
