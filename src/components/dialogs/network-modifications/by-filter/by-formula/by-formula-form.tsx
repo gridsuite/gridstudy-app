@@ -5,16 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constants';
-import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
+import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import FormulaForm from './formula/formula-form';
-import Grid from '@mui/material/Grid';
 import { gridItem } from '../../../dialogUtils';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
+import { Box, Grid } from '@mui/material';
+import { mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
 
 interface ByFormulaFormProps {}
 
@@ -56,12 +57,14 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
     );
 
     return (
-        <>
-            <Grid container paddingTop={'20px'}>
+        <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
+            <Grid container sx={unscrollableDialogStyles.unscrollableHeader}>
                 {gridItem(equipmentTypeField, 2.15)}
             </Grid>
-            <Grid container>{gridItem(formulasField, 12)}</Grid>
-        </>
+            <Grid container sx={unscrollableDialogStyles.scrollableContent}>
+                {gridItem(formulasField, 12)}
+            </Grid>
+        </Box>
     );
 };
 
