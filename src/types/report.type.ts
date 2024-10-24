@@ -47,4 +47,5 @@ export type ReportLog = {
     message: string;
     severity: string[];
     parentId: string;
+    backgroundColor?: string;
 };
