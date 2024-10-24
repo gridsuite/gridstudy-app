@@ -341,7 +341,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
                     // to get the convention, which requires a component context.
                     columnExtended.cellRendererParams.applyFluxConvention = applyFluxConvention;
-                        columnExtended.comparator = (valueA: number, valueB: number) => {
+                    columnExtended.comparator = (valueA: number, valueB: number) => {
                         const normedValueA = valueA !== undefined ? applyFluxConvention(valueA) : undefined;
                         const normedValueB = valueB !== undefined ? applyFluxConvention(valueB) : undefined;
                         if (normedValueA !== undefined && normedValueB !== undefined) {
