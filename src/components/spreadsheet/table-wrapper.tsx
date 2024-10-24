@@ -362,7 +362,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                                 displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
                                 predicate: ([filterValue]: [number], cellValue: number) => {
                                     const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue ? transformedValue >= filterValue : false;
+                                    return transformedValue != null ? transformedValue >= filterValue : false;
                                 },
                             },
                             {
@@ -370,7 +370,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                                 displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
                                 predicate: ([filterValue]: [number], cellValue: number) => {
                                     const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue ? transformedValue <= filterValue : false;
+                                    return transformedValue != null ? transformedValue <= filterValue : false;
                                 },
                             },
                         ],
