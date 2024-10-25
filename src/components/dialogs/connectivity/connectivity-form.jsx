@@ -26,7 +26,9 @@ import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagr
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import { AutocompleteInput, IntegerInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { fetchBusbarSectionsForVoltageLevel, fetchBusesForVoltageLevel } from '../../../services/study/network';
+import { 
+    fetchBusesOrBusbarSectionsForVoltageLevel,
+} from '../../../services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
 import { areIdsEqual, getObjectId } from '../../utils/utils.js';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils.js';
@@ -79,28 +81,11 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            const voltageLevelTopologyKind = voltageLevelOptions.find(
-                (vl) => vl.id === watchVoltageLevelId
-            )?.topologyKind;
-            switch (voltageLevelTopologyKind) {
-                case 'NODE_BREAKER':
-                    fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
-                        (busbarSections) => {
-                            setBusOrBusbarSectionOptions(busbarSections);
-                        }
-                    );
-                    break;
-
-                case 'BUS_BREAKER':
-                    fetchBusesForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then((buses) =>
-                        setBusOrBusbarSectionOptions(buses)
-                    );
-                    break;
-
-                default:
-                    setBusOrBusbarSectionOptions([]);
-                    break;
-            }
+            fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
+                (busesOrbusbarSections) => {
+                    setBusOrBusbarSectionOptions(busesOrbusbarSections);
+                }
+            );
         } else {
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
