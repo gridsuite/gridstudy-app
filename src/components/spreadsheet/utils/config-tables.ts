@@ -1389,7 +1389,6 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
-                valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
@@ -1398,7 +1397,6 @@ export const TABLES_DEFINITIONS = {
                 numeric: true,
                 ...defaultNumericFilterConfig(),
                 fractionDigits: 1,
-                valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b),
                 getQuickFilterText: excludeFromGlobalFilter,
             },
             {
