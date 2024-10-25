@@ -21,7 +21,7 @@ export enum TYPES {
     STRING = 'STRING',
 }
 
-type DefParam = {
+export type DefParam = {
     type: TYPES;
     label: string;
     options?: { id: string; label: string }[];

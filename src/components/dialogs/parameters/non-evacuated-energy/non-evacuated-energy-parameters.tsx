@@ -7,10 +7,10 @@
 
 import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles } from '../parameters';
+import { UseParametersBackendReturnProps, styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -69,10 +69,12 @@ import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
+import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const studyUpdated = useSelector((state) => state.studyUpdated);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
     const { snackError } = useSnackMessage();
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
@@ -82,7 +84,7 @@ export const useGetNonEvacuatedEnergyParameters = () => {
     nonEvacuatedEnergyAvailabilityRef.current = nonEvacuatedEnergyAvailability;
 
     const fetchNonEvacuatedEnergyParameters = useCallback(
-        (studyUuid) => {
+        (studyUuid: UUID) => {
             getNonEvacuatedEnergyParameters(studyUuid)
                 .then((params) => setNonEvacuatedEnergyParams(params))
                 .catch((error) => {
@@ -127,7 +129,15 @@ const formSchema = yup
     })
     .required();
 
-export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuatedEnergyParameters }) => {
+interface NonEvacuatedEnergyParametersProps {
+    parametersBackend: UseParametersBackendReturnProps;
+    useNonEvacuatedEnergyParameters: any; //TODO: fix any
+}
+
+export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyParametersProps> = ({
+    parametersBackend,
+    useNonEvacuatedEnergyParameters,
+}) => {
     const { snackError } = useSnackMessage();
 
     const [providers, provider, updateProvider, resetProvider] = parametersBackend;

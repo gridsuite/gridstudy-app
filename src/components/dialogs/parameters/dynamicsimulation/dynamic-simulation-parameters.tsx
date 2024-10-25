@@ -6,10 +6,10 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid, SelectChangeEvent, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
     emptyFormData as timeDelayEmptyFormData,
     formSchema as timeDelayFormSchema,
@@ -56,15 +56,23 @@ import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 
-const TAB_VALUES = {
-    TIME_DELAY: 'timeDelay',
-    SOLVER: 'solver',
-    MAPPING: 'mapping',
-    NETWORK: 'network',
-    CURVE: 'curve',
-};
+enum TAB_VALUES {
+    TIME_DELAY = 'timeDelay',
+    SOLVER = 'solver',
+    MAPPING = 'mapping',
+    NETWORK = 'network',
+    CURVE = 'curve',
+}
 
-const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
+interface DynamicSimulationParametersProps {
+    user: string;
+    setHaveDirtyFields: (haveDirtyFields: boolean) => void;
+}
+
+const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
+    user,
+    setHaveDirtyFields,
+}) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
 
     const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
@@ -82,10 +90,10 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
 
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleUpdateProvider = useCallback(
-        (evt) => {
+        (evt: SelectChangeEvent<string>) => {
             updateProvider(evt.target.value);
         },
         [updateProvider]
@@ -122,7 +130,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     const { reset, handleSubmit, formState, clearErrors } = formMethods;
 
     const onError = useCallback(
-        (errors) => {
+        (errors: Record<TAB_VALUES, any>) => {
             const tabsInError = [];
             // do not show error when being in the current tab
             if (errors?.[TAB_VALUES.TIME_DELAY] && TAB_VALUES.TIME_DELAY !== tabValue) {
@@ -160,7 +168,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                 ...newParams[TAB_VALUES.TIME_DELAY],
                 [SOLVER_ID]: newParams[TAB_VALUES.SOLVER][SOLVER_ID],
                 // merge only the current selected solver, others are ignored
-                [SOLVERS]: parameters[SOLVERS].reduce(
+                [SOLVERS]: parameters?.[SOLVERS].reduce(
                     (arr, curr, index) => [
                         ...arr,
                         newParams[TAB_VALUES.SOLVER][SOLVERS][index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
@@ -202,7 +210,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
         }
     }, [reset, parameters]);
 
-    const handleTabChange = useCallback((event, newValue) => {
+    const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabValue(newValue);
     }, []);
 
@@ -232,10 +240,13 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                             <DropDown
                                 value={provider}
                                 label="Provider"
-                                values={Object.entries(providers).reduce((obj, [key, value]) => {
-                                    obj[key] = `DynamicSimulationProvider${value}`;
-                                    return obj;
-                                }, {})}
+                                values={Object.entries(providers).reduce<Record<string, string>>(
+                                    (obj, [key, value]) => {
+                                        obj[key] = `DynamicSimulationProvider${value}`;
+                                        return obj;
+                                    },
+                                    {}
+                                )}
                                 callback={handleUpdateProvider}
                             />
                         )}

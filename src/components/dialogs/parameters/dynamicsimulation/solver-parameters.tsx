@@ -7,7 +7,7 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { useEffect, useMemo } from 'react';
+import { FunctionComponent, useEffect, useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters, { getFormSchema as getIdaFormSchema } from './solver/ida-solver-parameters';
@@ -16,10 +16,10 @@ import SimplifiedSolverParameters, {
 } from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
 
-const SOLVER_TYPES = {
-    IDA: 'IDA',
-    SIM: 'SIM',
-};
+enum SOLVER_TYPES {
+    IDA = 'IDA',
+    SIM = 'SIM',
+}
 
 export const SOLVER_ID = 'solverId';
 
@@ -43,6 +43,7 @@ export const formSchema = yup.object().shape({
                 } else if (type === SOLVER_TYPES.SIM) {
                     return getSimplifiedFormSchema();
                 }
+                return yup.object().default(undefined); //TODO check change is ok
             })
         )
     ),
@@ -53,7 +54,13 @@ export const emptyFormData = {
     [SOLVERS]: [],
 };
 
-const SolverParameters = ({ solver, path, clearErrors }) => {
+interface SolverParametersProps {
+    solver: { solverId: string; solvers: SOLVER_TYPES[] };
+    path: string;
+    clearErrors: (path: string) => void;
+}
+
+const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, path, clearErrors }) => {
     const { solvers } = solver ?? {};
 
     const solverId = useWatch({ name: `${path}.${SOLVER_ID}` });

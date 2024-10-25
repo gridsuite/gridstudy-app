@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { makeComponents, TYPES } from '../../util/make-component-utils';
+import { DefParam, makeComponents, TYPES } from '../../util/make-component-utils';
 import yup from '../../../../utils/yup-config';
 import { commonDefParams, getFormSchema as getCommonSolverFormSchema } from './common-solver-parameters';
 
@@ -59,7 +59,7 @@ const defParams = {
     ...commonDefParams,
 };
 
-const IdaSolverParameters = ({ path }) => {
+const IdaSolverParameters = ({ path }: { path: string }) => {
     return <>{makeComponents(defParams, path)}</>;
 };
 

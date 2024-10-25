@@ -7,8 +7,8 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponents, TYPES } from '../util/make-component-utils';
-import { useMemo } from 'react';
+import { DefParam, makeComponents, TYPES } from '../util/make-component-utils';
+import { FunctionComponent, useMemo } from 'react';
 import { getIdOrSelf } from '../../dialogUtils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 
@@ -22,14 +22,21 @@ export const emptyFormData = {
     [MAPPING]: '',
 };
 
-const MappingParameters = ({ mapping, path }) => {
+interface MappingParametersProps {
+    mapping: {
+        mappings: any[];
+    }; //TODO fix any
+    path: string;
+}
+
+const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping, path }) => {
     const { mappings } = mapping ?? {};
 
     const mappingOptions = useMemo(() => {
         return mappings?.map((elem) => elem.name) ?? [];
     }, [mappings]);
 
-    const defParams = {
+    const defParams: Record<string, DefParam> = {
         [MAPPING]: {
             type: TYPES.ENUM,
             label: 'DynamicSimulationMapping',

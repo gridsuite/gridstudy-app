@@ -237,8 +237,8 @@ export const styles = {
 };
 
 interface TabPanelProps {
-    value: any;
-    index: number;
+    value: string;
+    index: string;
     keepState?: boolean;
 }
 
@@ -275,7 +275,7 @@ export type UseParametersBackendReturnProps = [
 export const useParametersBackend = (
     user: string,
     type: ComputingType,
-    optionalServiceStatus: OptionalServicesStatus,
+    optionalServiceStatus: OptionalServicesStatus | undefined,
     backendFetchProviders: () => Promise<string[]>,
     backendFetchProvider: (studyUuid: UUID) => Promise<string>,
     backendFetchDefaultProvider: () => Promise<string>,
@@ -285,7 +285,7 @@ export const useParametersBackend = (
         studyUuid: UUID,
         newParam: Record<string, string> | null /*TODO: fix Record*/
     ) => Promise<any>,
-    backendFetchSpecificParametersDescription: () => Promise<any> //TODO: fix any
+    backendFetchSpecificParametersDescription?: () => Promise<any> //TODO: fix any
 ): UseParametersBackendReturnProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
