@@ -35,7 +35,7 @@ export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[], lay
                 // and `y` fields.
                 position: { x: node.x+X_OFFSET_FIX, y: node.y+Y_OFFSET_FIX },
             })),
-            edges: layoutedGraph.edges,
+            edges: [...layoutedGraph.edges],
         }))
         .catch(console.error);
     return result;
