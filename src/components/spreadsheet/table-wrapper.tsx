@@ -134,7 +134,7 @@ const styles = {
         marginLeft: theme.spacing(1),
     }),
     selectColumns: (theme: Theme) => ({
-        marginLeft: theme.spacing(6),
+        marginLeft: theme.spacing(4),
     }),
 };
 
@@ -1220,7 +1220,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
-                <Grid container sx={styles.toolbar}>
+                <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.filter}>
                         <GlobalFilter disabled={!!(disabled || editingData)} gridRef={gridRef} ref={globalFilterRef} />
                     </Grid>
@@ -1237,10 +1237,14 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         />
                     </Grid>
                     {developerMode && (
-                        <Grid item sx={{ marginLeft: '15px' }}>
-                            <CustomColumnsConfig indexTab={tabIndex} />
-                            <CustomColumnsSave indexTab={tabIndex} />
-                        </Grid>
+                        <>
+                            <Grid item>
+                                <CustomColumnsConfig indexTab={tabIndex} />
+                            </Grid>
+                            <Grid item>
+                                <CustomColumnsSave indexTab={tabIndex} />
+                            </Grid>
+                        </>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
