@@ -9,7 +9,7 @@ import { RadioInput } from '@gridsuite/commons-ui';
 import { ACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
-import ExpandableInput from 'components/utils/rhf-inputs/expandable-input';
+import { ExpandableInput } from 'components/utils/rhf-inputs/expandable-input';
 import Grid from '@mui/material/Grid';
 import { gridItem, GridSection } from '../../dialogUtils';
 import { getVariationEmptyForm } from './variation/variation-utils';

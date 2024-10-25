@@ -96,6 +96,7 @@ export const getStandbyAutomatonFormData = ({
     standby,
     b0,
     q0,
+    nominalV,
     lVoltageSetpoint,
     hVoltageSetpoint,
     lVoltageThreshold,
@@ -104,8 +105,8 @@ export const getStandbyAutomatonFormData = ({
     addStandbyAutomaton: any;
     standby: any;
     b0: any;
-    nominalV?: any;
     q0?: any;
+    nominalV?: any;
     lVoltageSetpoint: any;
     hVoltageSetpoint: any;
     lVoltageThreshold: any;
@@ -119,6 +120,6 @@ export const getStandbyAutomatonFormData = ({
         [LOW_VOLTAGE_THRESHOLD]: lVoltageThreshold,
         [HIGH_VOLTAGE_THRESHOLD]: hVoltageThreshold,
         [B0]: b0,
-        [Q0]: q0,
+        [Q0]: q0 === null && nominalV !== null && b0 !== null ? b0 * Math.pow(nominalV, 2) : q0,
     },
 });
