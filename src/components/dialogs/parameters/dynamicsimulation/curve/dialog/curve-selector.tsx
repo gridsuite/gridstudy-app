@@ -7,11 +7,12 @@
 
 import { Grid, Theme, Typography } from '@mui/material';
 import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter';
-import ModelFilter from './model-filter';
+import ModelFilter, { GetSelectedVariablesHandle, ModelVariable } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
+import { IdentifiableAttributes } from 'services/study/filter';
 
 const styles = {
     h6: (theme: Theme) => ({
@@ -20,9 +21,16 @@ const styles = {
     }),
 };
 
-const CurveSelector = forwardRef((props, ref) => {
+interface GetSelectedItemsHandler {
+    api: {
+        getSelectedEquipments: () => IdentifiableAttributes[] | undefined;
+        getSelectedVariables: () => ModelVariable[] | undefined;
+    };
+}
+
+const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
     const equipmentFilterRef = useRef<GetSelectedEquipmentsHandle>(null);
-    const modelFilterRef = useRef();
+    const modelFilterRef = useRef<GetSelectedVariablesHandle>(null);
 
     const [equipmentType, setEquipmentType] = useState(EQUIPMENT_TYPES.GENERATOR);
 

@@ -205,7 +205,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     });
 
     const { reset, handleSubmit, setValue, getValues, watch } = formMethods;
-    const studyUuid = useSelector((state) => state.studyUuid);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useNonEvacuatedEnergyParameters;
 

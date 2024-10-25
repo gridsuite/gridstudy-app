@@ -9,17 +9,19 @@ import * as React from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { alpha, Checkbox } from '@mui/material';
+import { alpha, Checkbox, Theme, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
+import { ModelVariable } from '../dialog/model-filter';
 
-export const CheckState = {
-    UNCHECKED: 0,
-    CHECKED: 1,
-    INDETERMINATE: 2,
-};
+export enum CheckState {
+    UNCHECKED = 'UNCHECKED',
+    CHECKED = 'CHECKED',
+    INDETERMINATE = 'INDETERMINATE',
+}
 
-const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
+const BorderedTreeItem = styled(TreeItem)(({ root }: { root: boolean }) => {
+    const theme = useTheme();
     const border = `1px dashed ${alpha(theme.palette.text.primary, 0.4)}`;
     return {
         position: 'relative',
@@ -43,17 +45,22 @@ const BorderedTreeItem = styled(TreeItem)(({ theme, root }) => {
     };
 });
 
-interface GetSelectedItemsHandle {
+export interface GetSelectedItemsHandle {
     api: {
-        getSelectedItems: () => void;
+        getSelectedItems: () => ModelVariable[];
     };
 }
 
 interface CheckBoxTreeViewProps {
-    data: any[]; //TODO: fix any
+    data: ModelVariable[]; //TODO: fix any
     checkAll: boolean;
-    onSelectionChanged: () => void;
-    getLabel: () => string;
+    onSelectionChanged: (newSelection: ModelVariable[]) => void;
+    getLabel: (element: ModelVariable) => string;
+}
+
+interface ItemState {
+    id: string;
+    state: CheckState;
 }
 
 const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProps>(
@@ -74,15 +81,15 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             setItemStates(initialItemStates);
         }
 
-        const updateItemState = useCallback((itemStates, items, onClickedId) => {
-            const getState = (itemStates, id) => {
+        const updateItemState = useCallback((itemStates: ItemState[], items: ModelVariable[], onClickedId: string) => {
+            const getState = (itemStates: ItemState[], id: string) => {
                 return itemStates.find((elem) => elem.id === id);
             };
 
             // recursive algo
-            const updateStateParent = (itemStates, items, childId) => {
+            const updateStateParent = (itemStates: ItemState[], items: ModelVariable[], childId: string) => {
                 const child = items.find((elem) => elem.id === childId);
-                const parent = items.find((elem) => elem.id === child.parentId);
+                const parent = items.find((elem) => elem.id === child?.parentId);
 
                 if (!parent) {
                     // at root item
@@ -95,15 +102,17 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
 
                 // recompute state of parent
                 const parentState = itemStates.find((elem) => elem.id === parent.id);
-                // initial default state
-                parentState.state = CheckState.INDETERMINATE;
-                // all children checked => parent must be checked
-                if (childrenStates.every((elem) => elem.state === CheckState.CHECKED)) {
-                    parentState.state = CheckState.CHECKED;
-                }
-                // all children unchecked => parent must be unchecked
-                if (childrenStates.every((elem) => elem.state === CheckState.UNCHECKED)) {
-                    parentState.state = CheckState.UNCHECKED;
+                if (parentState) {
+                    // initial default state
+                    parentState.state = CheckState.INDETERMINATE;
+                    // all children checked => parent must be checked
+                    if (childrenStates.every((elem) => elem?.state === CheckState.CHECKED)) {
+                        parentState.state = CheckState.CHECKED;
+                    }
+                    // all children unchecked => parent must be unchecked
+                    if (childrenStates.every((elem) => elem?.state === CheckState.UNCHECKED)) {
+                        parentState.state = CheckState.UNCHECKED;
+                    }
                 }
 
                 // recursive visit
@@ -111,8 +120,12 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             };
 
             // recursive algo
-            const setState = (itemStates, items, id, newState) => {
-                itemStates.find((elem) => elem.id === id).state = newState;
+            const setState = (itemStates: ItemState[], items: ModelVariable[], id: string, newState: CheckState) => {
+                const itemToModify = itemStates.find((elem) => elem.id === id);
+                if (itemToModify) {
+                    //TODO: fix change ok
+                    itemToModify.state = newState;
+                }
                 // set all children the same state of current element
                 const children = items.filter((elem) => elem.parentId === id);
                 children.forEach((elem) => setState(itemStates, items, elem.id, newState));
@@ -129,14 +142,14 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
                 newItemStates,
                 items,
                 onClickedId,
-                currentState.state === CheckState.CHECKED ? CheckState.UNCHECKED : CheckState.CHECKED
+                currentState?.state === CheckState.CHECKED ? CheckState.UNCHECKED : CheckState.CHECKED
             );
 
             return newItemStates;
         }, []);
 
         const handleItemSelect = useCallback(
-            (event, id) => {
+            (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: string) => {
                 event.stopPropagation();
                 const newItemStates = updateItemState(itemStates, items, id);
                 setItemStates(newItemStates);
@@ -153,12 +166,12 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             [itemStates, items, updateItemState, onSelectionChanged]
         );
 
-        const handleExpand = (event) => {
+        const handleExpand = (event: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
             event.stopPropagation();
         };
 
         const getState = useCallback(
-            (id) => {
+            (id: string) => {
                 return itemStates.find((elem) => elem.id === id)?.state;
             },
             [itemStates]
@@ -181,12 +194,12 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
         );
 
         // render functions (recursive rendering)
-        const renderChildren = (allItems, parentId) => {
+        const renderChildren = (allItems: ModelVariable[], parentId: string) => {
             const children = allItems.filter((elem) => elem.parentId === parentId);
             return !children.length ? null : renderItems(allItems, children);
         };
 
-        const renderItems = (allItems, itemsToRender = []) => {
+        const renderItems = (allItems: ModelVariable[], itemsToRender: ModelVariable[] = []) => {
             if (!itemsToRender.length) {
                 // first level => auto lookup root items
                 itemsToRender = allItems.filter((item) => !item.parentId);

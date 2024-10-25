@@ -12,7 +12,7 @@ import { useSelector } from 'react-redux';
 import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
 import { Box } from '@mui/system';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
-import { ExpertFilter, evaluateJsonFilter } from '../../../../../../services/study/filter';
+import { ExpertFilter, IdentifiableAttributes, evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
@@ -23,7 +23,7 @@ import { EQUIPMENT_TYPES, VoltageLevel } from 'components/utils/equipment-types'
 
 export interface GetSelectedEquipmentsHandle {
     api: {
-        getSelectedEquipments: () => any;
+        getSelectedEquipments: () => IdentifiableAttributes[] | undefined;
     };
 }
 
@@ -59,7 +59,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
         const intl = useIntl();
-        const equipmentsRef = useRef<AgGridReact>(null);
+        const equipmentsRef = useRef<AgGridReact<IdentifiableAttributes>>(null);
 
         // --- Equipment types --- //
         const [equipmentType, setEquipmentType] = useState(initialEquipmentType);
@@ -174,7 +174,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         }, [filteringEquipmentsFetcher, gridReady, snackError]);
 
         // grid configuration
-        const [equipmentRowData, setEquipmentRowData] = useState([]);
+        const [equipmentRowData, setEquipmentRowData] = useState<IdentifiableAttributes[]>([]);
         const [selectedRowsLength, setSelectedRowsLength] = useState(0);
         const columnDefs = useMemo(() => {
             return [

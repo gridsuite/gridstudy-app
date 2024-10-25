@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Grid, Theme, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
-import CheckboxTreeview from '../common/checkbox-treeview';
+import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
@@ -19,7 +19,7 @@ import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { AppState } from 'redux/reducer';
 
 const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
-    return models.reduce(
+    return models.reduce<Record<string, Record<string, string | Record<string, string>>>>(
         (obj, model) => ({
             ...obj,
             [model.modelName]: {
@@ -49,8 +49,15 @@ const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
     );
 };
 
-const variablesTreeToVariablesArray = (variablesTree, parentId) => {
-    let result = [];
+export type ModelVariable = {
+    id: string;
+    name: string;
+    parentId?: string;
+    variableId?: string;
+};
+
+const variablesTreeToVariablesArray = (variablesTree: Record<string, any>, parentId?: string) => {
+    let result: ModelVariable[] = [];
     Object.entries(variablesTree).map(([key, value]) => {
         const id = parentId ? `${parentId}/${key}` : key;
         if (typeof value === 'object') {
@@ -83,12 +90,12 @@ const variablesTreeToVariablesArray = (variablesTree, parentId) => {
     return result;
 };
 
-const makeGetModelLabel = (intl) => (value) =>
+const makeGetModelLabel = (intl: IntlShape) => (value: string) =>
     intl.formatMessage({
         id: `models.${value}`,
     });
 
-const makeGetVariableLabel = (intl) => (elem) => {
+const makeGetVariableLabel = (intl: IntlShape) => (elem: ModelVariable) => {
     if (!elem.parentId) {
         // root element => that is model element in the variable tree
         return intl.formatMessage({ id: `models.${elem.name}` });
@@ -150,9 +157,9 @@ interface DynamicSimulationModel {
     equipmentType: EQUIPMENT_TYPES;
 }
 
-interface GetSelectedVariablesHandle {
+export interface GetSelectedVariablesHandle {
     api: {
-        getSelectedVariables: () => DynamicSimulationModelBack[];
+        getSelectedVariables: () => ModelVariable[] | undefined;
     };
 }
 
@@ -168,9 +175,11 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
         const [allModels, setAllModels] = useState<DynamicSimulationModel[]>([]);
-        const [allVariables, setAllVariables] = useState({}); // a variables tree
+        const [allVariables, setAllVariables] = useState<
+            Record<string, Record<string, string | Record<string, string>>>
+        >({}); // a variables tree
 
-        const variablesRef = useRef();
+        const variablesRef = useRef<GetSelectedItemsHandle>(null);
 
         // --- models CheckboxSelect --- //
         const associatedModels: Record<string, string> = useMemo(() => {
@@ -232,7 +241,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
             () => ({
                 api: {
                     getSelectedVariables: () => {
-                        return variablesRef.current.api
+                        return variablesRef.current?.api
                             .getSelectedItems()
                             .filter((item) => item.variableId) // filter to keep only variable item
                             .filter(
