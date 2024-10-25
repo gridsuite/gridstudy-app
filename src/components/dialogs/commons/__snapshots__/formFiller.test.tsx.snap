@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FormFiller should render the form filler component 1`] = `
+<div
+  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2 css-iejm2v-MuiGrid-root"
+  data-testid="FormFiller"
+>
+  <div
+    align="start"
+    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 css-1hzi63y-MuiGrid-root"
+  >
+    <div
+      class="MuiBox-root css-1k4vu89"
+    >
+      test
+    </div>
+  </div>
+</div>
+`;

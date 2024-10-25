@@ -102,8 +102,9 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
     }, [user]);
 
     return (
-        <>
+        <div data-testid="test">
             <TopBar
+                id="app-top-bar"
                 appName="Study"
                 appColor="#0CA789"
                 appLogo={theme === LIGHT_THEME ? <GridStudyLogoLight /> : <GridStudyLogoDark />}
@@ -189,7 +190,7 @@ const AppTopBar = ({ user, tabIndex, onChangeTab, userManager }) => {
                     setIsDialogSearchOpen={setIsDialogSearchOpen}
                 />
             )}
-        </>
+        </div>
     );
 };
 

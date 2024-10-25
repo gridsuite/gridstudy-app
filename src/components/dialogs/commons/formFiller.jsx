@@ -28,7 +28,12 @@ export const FormFiller = ({
     const theme = useTheme();
 
     return (
-        <Grid container spacing={2} sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}>
+        <Grid
+            data-testid="FormFiller"
+            container
+            spacing={2}
+            sx={{ height: lineHeight ? undefined : 'calc(100% - 32px)' }}
+        >
             <Grid
                 item
                 xs={size}
