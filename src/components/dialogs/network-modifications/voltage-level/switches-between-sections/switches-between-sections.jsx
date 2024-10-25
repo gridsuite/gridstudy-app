@@ -70,7 +70,6 @@ export const SwitchesBetweenSections = () => {
         ) {
             const initialKindDisconnector = { switchKind: 'DISCONNECTOR' };
             let list = [];
-            console.log("watchSectionCount", watchSectionCount)
             if (watchSectionCount >= 1) {
                 list = Array(watchSectionCount - 1).fill(initialKindDisconnector);
             }
