@@ -214,7 +214,7 @@ export function getFeederTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES) {
         case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
             return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER;
         default: {
-            console.log('bad equipment type ', equipmentType);
+            console.info('bad equipment type ', equipmentType);
             return null;
         }
     }
@@ -241,7 +241,7 @@ export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentT
         case EquipmentType.LCC_CONVERTER_STATION:
             return EquipmentType.HVDC_CONVERTER_STATION;
         default: {
-            console.log('bad equipment type ', equipmentType);
+            console.info('bad equipment type ', equipmentType);
             return null;
         }
     }

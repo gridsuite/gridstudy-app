@@ -52,6 +52,6 @@ export interface Substation extends Identifiable {
     nominalV: number;
 }
 
-export const parseEQUIPMENT_TYPESToEquipmentType = (type: EQUIPMENT_TYPES): EquipmentType => {
+export const convertToEquipmentType = (type: EQUIPMENT_TYPES): EquipmentType => {
     return EquipmentType[type as keyof typeof EquipmentType];
 };

@@ -43,11 +43,7 @@ import { BusMenu } from 'components/menus/bus-menu';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import {
-    EQUIPMENT_INFOS_TYPES,
-    EQUIPMENT_TYPES,
-    parseEQUIPMENT_TYPESToEquipmentType,
-} from '../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
@@ -379,7 +375,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             ].includes(equipmentMenu.equipmentType) && (
                 <MenuBranch
                     equipment={{ id: equipmentMenu.equipmentId } as Equipment}
-                    equipmentType={parseEQUIPMENT_TYPESToEquipmentType(equipmentMenu.equipmentType)}
+                    equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -408,7 +404,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 <Menu
                     equipment={{
                         id: equipmentMenu.equipmentId,
-                        type: parseEQUIPMENT_TYPESToEquipmentType(equipmentMenu.equipmentType),
+                        type: convertToEquipmentType(equipmentMenu.equipmentType),
                     }}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
