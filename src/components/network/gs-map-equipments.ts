@@ -10,7 +10,7 @@ import { RefObject } from 'react';
 import { IntlShape } from 'react-intl';
 import { Dispatch } from 'redux';
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
-import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
+import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../appRedux/actions';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,

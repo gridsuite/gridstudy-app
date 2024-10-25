@@ -8,7 +8,7 @@
 import React, { SyntheticEvent, FunctionComponent, useState, useCallback, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { Box } from '@mui/system';
 import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
@@ -37,7 +37,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { SecurityAnalysisExportButton } from './security-analysis-export-button';
 import { useSecurityAnalysisColumnsDefs } from './use-security-analysis-column-defs';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setSecurityAnalysisResultFilter } from 'redux/actions';
+import { setSecurityAnalysisResultFilter } from 'appRedux/actions';
 import {
     SECURITY_ANALYSIS_RESULT_SORT_STORE,
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,

@@ -12,7 +12,7 @@ import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { VSC_CREATION_TABS } from './vsc-creation-dialog';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { CurrentTreeNode } from '../../../../../appRedux/reducer';
 
 interface VscCreationFormProps {
     tabIndex: number;

@@ -17,7 +17,7 @@ import { deleteModifications, restoreModifications } from 'services/study/networ
 import { CustomDialog } from 'components/utils/custom-dialog';
 import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer.js';
+import { AppState } from 'appRedux/reducer.js';
 import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type.js';
 import { toggleElementFromList } from 'components/utils/utils.js';
 

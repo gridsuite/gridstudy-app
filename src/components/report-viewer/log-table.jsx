@@ -8,7 +8,7 @@ import { memo, useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { setLogsFilter } from '../../redux/actions';
+import { setLogsFilter } from '../../appRedux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { EllipsisCellRenderer } from 'components/spreadsheet/utils/cell-renderers';

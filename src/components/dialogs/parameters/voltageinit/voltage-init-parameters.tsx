@@ -40,7 +40,7 @@ import {
     VoltageInitParametersForm,
     voltageInitParametersFormSchema,
 } from './voltage-init-parameters-form';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../appRedux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
 

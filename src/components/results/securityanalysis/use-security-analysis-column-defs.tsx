@@ -22,7 +22,7 @@ import {
 import { SortPropsType } from 'hooks/use-aggrid-sort';
 import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 
 const styles = {
     button: {

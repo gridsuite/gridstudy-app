@@ -8,7 +8,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { setComputingStatus, setComputationStarting } from '../redux/actions';
+import { setComputingStatus, setComputationStarting } from '../appRedux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';

@@ -12,7 +12,7 @@ import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from '
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../appRedux/reducer';
 
 enum TabValue {
     MAP = 'Map',

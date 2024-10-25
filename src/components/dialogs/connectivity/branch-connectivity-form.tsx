@@ -11,7 +11,7 @@ import { ConnectivityForm } from './connectivity-form';
 import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import React, { FunctionComponent } from 'react';
 import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
-import { CurrentTreeNode } from '../../../redux/reducer';
+import { CurrentTreeNode } from '../../../appRedux/reducer';
 import { UUID } from 'crypto';
 
 interface BranchConnectivityFormProps {

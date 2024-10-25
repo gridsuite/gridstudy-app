@@ -9,7 +9,7 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 

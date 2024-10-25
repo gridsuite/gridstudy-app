@@ -50,7 +50,7 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../appRedux/actions';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
@@ -60,7 +60,7 @@ import RestoreModificationDialog from 'components/dialogs/restore-modification-d
 import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { UUID } from 'crypto';
 import { DropResult } from 'react-beautiful-dnd';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppState, StudyUpdated } from 'appRedux/reducer';
 import { createCompositeModifications } from '../../../services/explore';
 import { fetchNetworkModification } from '../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../services/study';

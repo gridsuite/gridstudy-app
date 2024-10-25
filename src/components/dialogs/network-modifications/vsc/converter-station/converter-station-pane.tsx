@@ -24,7 +24,7 @@ import {
     ReactivePowerAdornment,
     VoltageAdornment,
 } from '../../../dialogUtils';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { CurrentTreeNode } from '../../../../../appRedux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import Grid from '@mui/material/Grid';

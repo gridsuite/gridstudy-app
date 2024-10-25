@@ -12,7 +12,7 @@ import { GridReadyEvent } from 'ag-grid-community';
 import { IntlShape, useIntl } from 'react-intl';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 

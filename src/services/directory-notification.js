@@ -7,7 +7,7 @@
 
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { getUrlWithToken, getWsBase } from './utils';
-import { getUserToken } from '../redux/user-store';
+import { getUserToken } from '../appRedux/user-store';
 
 const PREFIX_DIRECTORY_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 

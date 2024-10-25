@@ -13,10 +13,10 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToRecentGlobalFilters } from '../../../redux/actions';
+import { addToRecentGlobalFilters } from '../../../appRedux/actions';
 import { Theme } from '@mui/material';
-import { AppState } from '../../../redux/reducer';
-import { AppDispatch } from '../../../redux/store';
+import { AppState } from '../../../appRedux/reducer';
+import { AppDispatch } from '../../../appRedux/store';
 
 const styles = {
     autocomplete: (theme: Theme) => ({

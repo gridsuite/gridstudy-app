@@ -9,7 +9,7 @@ import { Box, Tooltip } from '@mui/material';
 import { ReactFlow, Controls, useStore, useReactFlow, ControlButton } from '@xyflow/react';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
+import { setModificationsDrawerOpen, setCurrentTreeNode } from '../appRedux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import { DRAWER_NODE_EDITOR_WIDTH, TOOLTIP_DELAY } from '../utils/UIconstants';

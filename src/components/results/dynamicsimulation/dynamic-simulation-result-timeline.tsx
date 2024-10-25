@@ -17,7 +17,7 @@ import {
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { getNoRowsMessage, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import ComputingType from '../../computing-status/computing-type';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridLocalRowFilter } from '../../../hooks/use-aggrid-local-row-filter';
@@ -32,7 +32,7 @@ import {
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
-import { setDynamicSimulationResultFilter } from 'redux/actions';
+import { setDynamicSimulationResultFilter } from 'appRedux/actions';
 import {
     DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
     DYNAMIC_SIMULATION_RESULT_SORT_STORE,

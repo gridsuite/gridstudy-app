@@ -25,8 +25,8 @@ import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
-import { AppState } from '../../redux/reducer';
-import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
+import { AppState } from '../../appRedux/reducer';
+import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'appRedux/actions';
 
 const styles = {
     checkboxSelectAll: (theme: Theme) => ({

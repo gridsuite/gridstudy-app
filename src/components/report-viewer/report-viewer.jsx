@@ -13,7 +13,7 @@ import ReportItem from './report-item';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setLogsFilter } from 'redux/actions';
+import { setLogsFilter } from 'appRedux/actions';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 

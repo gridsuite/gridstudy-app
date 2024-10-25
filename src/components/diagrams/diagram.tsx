@@ -13,7 +13,7 @@ import {
     incrementNetworkAreaDiagramDepth,
     resetNetworkAreaDiagramDepth,
     setFullScreenDiagram,
-} from '../../redux/actions';
+} from '../../appRedux/actions';
 import { useIntl } from 'react-intl';
 import {
     DiagramType,
@@ -28,7 +28,7 @@ import DiagramHeader from './diagram-header';
 import DiagramFooter from './diagram-footer';
 import DiagramResizableBox from './diagram-resizable-box';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 
 interface DiagramProps {
     align?: 'left' | 'right' | 'center';

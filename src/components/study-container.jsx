@@ -21,7 +21,7 @@ import {
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
     limitReductionModified,
-} from '../redux/actions';
+} from '../appRedux/actions';
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -44,7 +44,7 @@ import { invalidateLoadFlowStatus } from 'services/study/loadflow';
 
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
-import { StudyIndexationStatus } from 'redux/reducer';
+import { StudyIndexationStatus } from 'appRedux/reducer';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { NodeType } from './graph/tree-node.type';
 

@@ -13,7 +13,7 @@ import { useValidNodeName } from './inputs/input-hooks';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
 import { CancelButton } from '@gridsuite/commons-ui';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../appRedux/reducer';
 
 interface AskTextDialogProps {
     title: string;

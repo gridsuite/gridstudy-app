@@ -7,8 +7,8 @@
 
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTableSort } from '../redux/actions';
-import { AppState, TableSortKeysType } from '../redux/reducer';
+import { setTableSort } from '../appRedux/actions';
+import { AppState, TableSortKeysType } from '../appRedux/reducer';
 
 export type SortConfigType = {
     colId: string;

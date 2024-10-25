@@ -19,11 +19,11 @@ import {
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import CustomColumnTable from './custom-columns-table';
-import { setCustomColumDefinitions } from 'redux/actions';
+import { setCustomColumDefinitions } from 'appRedux/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from 'redux/store';
+import { AppDispatch } from 'appRedux/store';
 import { ColumnWithFormula } from 'types/custom-columns.types';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;

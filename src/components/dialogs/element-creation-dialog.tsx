@@ -26,7 +26,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
 import { useSelector } from 'react-redux';
 import ModificationDialog from './commons/modificationDialog';
-import { AppState } from '../../redux/reducer';
+import { AppState } from '../../appRedux/reducer';
 
 interface FormData {
     [NAME]: string;

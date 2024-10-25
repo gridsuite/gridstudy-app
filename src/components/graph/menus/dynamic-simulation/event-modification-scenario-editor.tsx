@@ -14,7 +14,7 @@ import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../appRedux/actions';
 import { EVENT_CRUD_FINISHED, EventCrudType } from 'components/network/constants.type';
 import { UUID } from 'crypto';
 import { Event, EventType } from '../../../dialogs/dynamicsimulation/event/types/event.type';
@@ -24,8 +24,8 @@ import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulati
 import { isChecked, isPartial, styles } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
-import { AppState, StudyUpdated } from '../../../../redux/reducer';
-import { AppDispatch } from '../../../../redux/store';
+import { AppState, StudyUpdated } from '../../../../appRedux/reducer';
+import { AppDispatch } from '../../../../appRedux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 const EventModificationScenarioEditor = () => {

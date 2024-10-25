@@ -12,11 +12,11 @@ import { useSelector } from 'react-redux';
 import CircularProgress from '@mui/material/CircularProgress';
 import LockIcon from '@mui/icons-material/Lock';
 import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
-import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
+import { getLocalStorageTheme } from '../../../appRedux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
 import { Box } from '@mui/system';
 import { Theme } from '@mui/material';
-import { AppState, ModificationNode } from 'redux/reducer';
+import { AppState, ModificationNode } from 'appRedux/reducer';
 import { CopyType } from 'components/network-modification.type';
 
 const BUILT_NODE_BANNER_COLOR = '#74a358';

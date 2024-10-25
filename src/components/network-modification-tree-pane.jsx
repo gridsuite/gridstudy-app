@@ -14,7 +14,7 @@ import {
     removeNotificationByNode,
     networkModificationHandleSubtree,
     setSelectionForCopy,
-} from '../redux/actions';
+} from '../appRedux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';

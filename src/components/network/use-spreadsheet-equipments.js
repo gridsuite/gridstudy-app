@@ -15,7 +15,7 @@ import {
     resetEquipments,
     resetEquipmentsByTypes,
     updateEquipments,
-} from 'redux/actions';
+} from 'appRedux/actions';
 import { fetchAllEquipments } from 'services/study/network-map';
 
 export const useSpreadsheetEquipments = (equipment, formatFetchedEquipments) => {

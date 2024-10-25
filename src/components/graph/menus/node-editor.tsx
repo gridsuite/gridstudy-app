@@ -12,10 +12,10 @@ import NetworkModificationNodeEditor from './network-modification-node-editor';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
 import { useDispatch, useSelector } from 'react-redux';
-import { setModificationsDrawerOpen } from '../../../redux/actions';
+import { setModificationsDrawerOpen } from '../../../appRedux/actions';
 import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { Theme } from '@mui/material/styles';
 
 const styles = {

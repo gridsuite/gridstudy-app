@@ -7,7 +7,7 @@
 
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
-import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'redux/reducer';
+import { CurrentTreeNode, ReactFlowModificationNodeData, ReactFlowRootNodeData } from 'appRedux/reducer';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../tree-node.type';
 
 export function getModificationNodeDataOrUndefined(node: NetworkModificationNodeData | RootNodeData) {

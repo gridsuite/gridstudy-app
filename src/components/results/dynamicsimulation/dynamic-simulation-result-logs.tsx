@@ -8,7 +8,7 @@
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 import React, { memo, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import ComputingType from '../../computing-status/computing-type';
 import RunningStatus from '../../utils/running-status';
 import { useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';

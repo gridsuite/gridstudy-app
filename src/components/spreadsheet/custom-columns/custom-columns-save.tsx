@@ -13,7 +13,7 @@ import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/ele
 import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
 

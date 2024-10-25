@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { DiagramState } from '../../redux/reducer';
+import { DiagramState } from '../../appRedux/reducer';
 import { DiagramType } from './diagram-common';
 
 /**

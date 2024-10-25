@@ -23,7 +23,7 @@ import {
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 import { createParameter } from 'services/explore';
 import { UniqueNameInput } from 'components/dialogs/commons/unique-name-input';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { UUID } from 'crypto';
 
 interface FormData {

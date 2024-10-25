@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
-import { getUserToken } from '../redux/user-store';
+import { getUserToken } from '../appRedux/user-store';
 
 export const FetchStatus = {
     SUCCEED: 'SUCCEED',

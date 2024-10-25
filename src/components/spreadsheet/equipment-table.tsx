@@ -21,7 +21,7 @@ import {
     RowStyle,
     SuppressKeyboardEventParams,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
+import { CurrentTreeNode } from '../../appRedux/reducer';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;

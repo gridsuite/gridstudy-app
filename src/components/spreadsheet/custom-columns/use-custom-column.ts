@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useMemo, useCallback } from 'react';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { create, all, bignumber } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';

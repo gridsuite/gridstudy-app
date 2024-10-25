@@ -10,12 +10,12 @@ import { lighten, darken, Theme } from '@mui/material/styles';
 import { EditableTitle } from '../editable-title';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setEventScenarioDrawerOpen } from '../../../../redux/actions';
+import { setEventScenarioDrawerOpen } from '../../../../appRedux/actions';
 import { useIntl } from 'react-intl';
-import { AppState } from '../../../../redux/reducer';
+import { AppState } from '../../../../appRedux/reducer';
 import EventModificationScenarioEditor from './event-modification-scenario-editor';
 import { Box } from '@mui/material';
-import { AppDispatch } from '../../../../redux/store';
+import { AppDispatch } from '../../../../appRedux/store';
 
 const styles = {
     paper: {

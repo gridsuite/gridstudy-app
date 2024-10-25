@@ -14,7 +14,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import Divider from '@mui/material/Divider';
-import { setModificationsDrawerOpen, setStudyDisplayMode, setEventScenarioDrawerOpen } from '../redux/actions';
+import { setModificationsDrawerOpen, setStudyDisplayMode, setEventScenarioDrawerOpen } from '../appRedux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { useParameterState } from './dialogs/parameters/parameters';

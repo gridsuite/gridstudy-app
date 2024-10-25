@@ -11,10 +11,10 @@ import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
 import { DiagramType, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from '../diagrams/diagram-common';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
-import { centerOnSubstation, openDiagram } from '../../redux/actions';
+import { centerOnSubstation, openDiagram } from '../../appRedux/actions';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { AppState } from '../../redux/reducer';
-import { AppDispatch } from '../../redux/store';
+import { AppState } from '../../appRedux/reducer';
+import { AppDispatch } from '../../appRedux/store';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;

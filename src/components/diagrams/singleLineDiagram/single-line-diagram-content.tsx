@@ -50,8 +50,8 @@ import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
-import { AppState } from 'redux/reducer';
+import { setComputationStarting, setComputingStatus } from '../../../appRedux/actions';
+import { AppState } from 'appRedux/reducer';
 import { UUID } from 'crypto';
 
 type EquipmentMenuState = {

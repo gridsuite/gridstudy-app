@@ -69,7 +69,7 @@ import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
 import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
 import spreadsheet_locale_en from '../translations/spreadsheet-en';
-import { store } from '../redux/store';
+import { store } from '../appRedux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
     PARAM_THEME,

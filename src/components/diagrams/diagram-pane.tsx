@@ -41,11 +41,11 @@ import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
-import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
+import { syncDiagramStateWithSessionStorage } from '../../appRedux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
 import { OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
-import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
+import { setNetworkAreaDiagramNbVoltageLevels } from '../../appRedux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
@@ -53,7 +53,7 @@ import { mergeSx } from '../utils/functions';
 import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
-import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
+import { AppState, CurrentTreeNode, DiagramState } from 'appRedux/reducer';
 import { SLDMetadata } from '@powsybl/diagram-viewer';
 
 // Returns a callback that returns a promise

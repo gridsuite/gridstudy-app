@@ -6,7 +6,7 @@
  */
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 
 export const useSearchEvent = (enableSearchCallback: () => void) => {
     const user = useSelector((state: AppState) => state.user);

@@ -29,9 +29,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useSaveMap } from './use-save-map';
 import { SelectionCreationPanelSubmitButton } from './selection-creation-panel-submit-button';
 import { SELECTION_TYPES } from './selection-types';
-import { openNadList } from 'redux/actions';
+import { openNadList } from 'appRedux/actions';
 import { Nullable } from 'components/utils/ts-utils';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { SelectionCreationPanelForm } from './selection-creation-panel-form';
 import {
     SelectionCreationPaneFields,

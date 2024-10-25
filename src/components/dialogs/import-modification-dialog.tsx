@@ -10,7 +10,7 @@ import { ElementType, useSnackMessage, DirectoryItemSelector, TreeViewFinderNode
 import { copyOrMoveModifications } from '../../services/study';
 import { FunctionComponent } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { NetworkModificationCopyType } from 'components/graph/menus/network-modification-menu.type';
 
 /**

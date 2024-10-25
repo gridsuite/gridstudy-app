@@ -9,7 +9,7 @@ import { Dispatch, SetStateAction, useCallback, useState } from 'react';
 import { NetworkModificationMetadata } from './network-modification-menu.type';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { setModificationActivated } from 'services/study/network-modifications';
 import { Switch } from '@mui/material';
 import { UUID } from 'crypto';

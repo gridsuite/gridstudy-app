@@ -12,8 +12,8 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch } from '../redux/store';
-import { AppState } from '../redux/reducer';
+import { AppDispatch } from '../appRedux/store';
+import { AppState } from '../appRedux/reducer';
 
 export type FilterEnumsType = Record<string, string[] | null>;
 

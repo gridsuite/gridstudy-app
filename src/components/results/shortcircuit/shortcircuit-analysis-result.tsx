@@ -13,7 +13,7 @@ import {
     SCAPagedResults,
     ShortCircuitAnalysisType,
 } from './shortcircuit-analysis-result.type';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { RunningStatus } from 'components/utils/running-status';
 import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
@@ -34,7 +34,7 @@ import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { FilterEnumsType, useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
-import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
+import { setShortcircuitAnalysisResultFilter } from 'appRedux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import {
     SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,

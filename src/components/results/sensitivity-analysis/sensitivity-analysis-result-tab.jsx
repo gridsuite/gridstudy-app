@@ -31,7 +31,7 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
-import { setSensitivityAnalysisResultFilter } from 'redux/actions';
+import { setSensitivityAnalysisResultFilter } from 'appRedux/actions';
 import {
     SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,

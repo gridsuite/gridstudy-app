@@ -14,7 +14,7 @@ import {
     PARAM_LINE_FULL_PATH,
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
-import { setStudyDisplayMode } from '../redux/actions';
+import { setStudyDisplayMode } from '../appRedux/actions';
 import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
 import { DiagramType } from './diagrams/diagram-common';
 import { ReactFlowProvider } from '@xyflow/react';

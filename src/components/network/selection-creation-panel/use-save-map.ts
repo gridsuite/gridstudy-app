@@ -8,7 +8,7 @@ import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { SELECTION_TYPES } from './selection-types';
 import { createMapContingencyList, createMapFilter } from '../../../services/study/network-map';
 import { DestinationFolder, SelectionCreationPanelNotNadFields } from './selection-creation-schema';

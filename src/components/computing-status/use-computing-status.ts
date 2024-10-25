@@ -11,10 +11,10 @@ import { UUID } from 'crypto';
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ComputingType } from './computing-type';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppState, StudyUpdated } from 'appRedux/reducer';
 import { OptionalServicesStatus } from '../utils/optional-services';
-import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
-import { AppDispatch } from '../../redux/store';
+import { setComputingStatus, setLastCompletedComputation } from '../../appRedux/actions';
+import { AppDispatch } from '../../appRedux/store';
 
 interface UseComputingStatusProps {
     (

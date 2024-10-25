@@ -18,7 +18,7 @@ import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { Box } from '@mui/system';
 import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { IntlShape } from 'react-intl';
 
 const styles = {

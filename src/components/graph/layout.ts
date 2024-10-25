@@ -8,7 +8,7 @@
 import dagre from 'dagre';
 import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
 import { Edge, Position } from '@xyflow/react';
-import { CurrentTreeNode } from 'redux/reducer';
+import { CurrentTreeNode } from 'appRedux/reducer';
 import { NodeType } from './tree-node.type';
 
 export function getLayoutedNodes(nodes: CurrentTreeNode[], edges: Edge[]) {

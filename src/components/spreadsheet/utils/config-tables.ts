@@ -41,7 +41,7 @@ import EnumCellRenderer from '../renderers/enum-cell-renderer';
 import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useSelector } from 'react-redux';
 import { PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { EnumOption } from '../../utils/utils-type';
 import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 

@@ -14,7 +14,7 @@ import { useParametersBackend, useParameterState } from './dialogs/parameters/pa
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { getLoadFlowProviders, getLoadFlowSpecificParametersDescription } from 'services/loadflow';
 import {
     getDefaultLoadFlowProvider,

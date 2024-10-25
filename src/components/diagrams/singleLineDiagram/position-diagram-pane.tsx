@@ -20,7 +20,7 @@ import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { DiagramType } from '../diagram-common';
 import { getVoltageLevelSingleLineDiagram } from '../../../services/study/network';
 import { FC } from 'react';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import { UUID } from 'crypto';
 
 interface PositionDiagramPaneProps {

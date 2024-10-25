@@ -10,7 +10,7 @@ import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } f
 import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
-import { CurrentTreeNode, isReactFlowRootNodeData } from '../../redux/reducer';
+import { CurrentTreeNode, isReactFlowRootNodeData } from '../../appRedux/reducer';
 import { Edge } from '@xyflow/react';
 import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 

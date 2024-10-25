@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
+import { AppState } from 'appRedux/reducer';
 import {
     ElementSearchDialog,
     Equipment,
@@ -25,7 +25,7 @@ import { useTopBarSearchMatchingEquipment } from './use-top-bar-search-matching-
 import {
     addToLocalStorageSearchEquipmentHistory,
     excludeElementFromCurrentSearchHistory,
-} from 'redux/session-storage/search-equipment-history';
+} from 'appRedux/session-storage/search-equipment-history';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { EQUIPMENT_INFOS_TYPES } from 'components/utils/equipment-types';
 import { TopBarEquipmentSearchInput } from './top-bar-equipment-search-input';

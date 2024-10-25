@@ -68,13 +68,13 @@ import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { setSpreadsheetFilter } from 'redux/actions';
+import { setSpreadsheetFilter } from 'appRedux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import CustomColumnsSave from './custom-columns/custom-columns-save';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { AppState, CurrentTreeNode } from '../../appRedux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import {
     CellEditingStartedEvent,

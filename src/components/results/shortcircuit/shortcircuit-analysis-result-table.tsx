@@ -13,7 +13,7 @@ import { GridReadyEvent, RowClassParams, ValueGetterParams } from 'ag-grid-commu
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
 import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { FilterEnumsType, FilterPropsType } from '../../../hooks/use-aggrid-row-filter';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';

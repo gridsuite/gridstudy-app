@@ -19,7 +19,7 @@ import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
 import { StatusCellRender } from '../common/result-cell-renderers';
 import { UUID } from 'crypto';
 import RunningStatus from '../../utils/running-status';
-import { AppState } from '../../../redux/reducer';
+import { AppState } from '../../../appRedux/reducer';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {

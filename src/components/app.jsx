@@ -91,7 +91,7 @@ import {
     selectUseName,
     setOptionalServices,
     setParamsLoaded,
-} from '../redux/actions';
+} from '../appRedux/actions';
 
 const noUserManager = { instance: null, error: null };
 

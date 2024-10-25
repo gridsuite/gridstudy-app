@@ -11,7 +11,7 @@ import React, { useCallback } from 'react';
 import { ControlButton, useReactFlow } from '@xyflow/react';
 import { useIntl } from 'react-intl';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
-import { CurrentTreeNode } from 'redux/reducer';
+import { CurrentTreeNode } from 'appRedux/reducer';
 
 const CenterGraphButton = ({ currentNode }: { currentNode: CurrentTreeNode }) => {
     const { setCenter, getZoom } = useReactFlow();
