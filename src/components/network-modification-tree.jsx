@@ -6,7 +6,8 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import {ReactFlow, Controls, useStore, useReactFlow, ControlButton, useEdgesState, useNodesState} from '@xyflow/react';
+import {ReactFlow, Controls, useStore, useReactFlow, ControlButton, MiniMap, useEdgesState, useNodesState} from '@xyflow/react';
+import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
@@ -17,6 +18,7 @@ import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
+import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {getLayoutedElements} from "./graph/layout";
 
@@ -40,6 +42,32 @@ const NetworkModificationTree = ({
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
+    const [isMinimapOpen, setIsMinimapOpen] = useState(false);
+
+    const nodeColor = useCallback(
+        (node) => {
+            if (!node) {
+                return '#9196a1';
+            }
+            if (node.type === 'ROOT') {
+                return 'rgba(0, 0, 0, 0.0)';
+            }
+            if (node.id === currentNode?.id) {
+                return '#4287f5';
+            }
+            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT) {
+                return '#70d136';
+            }
+            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_WARNING) {
+                return '#FFA500';
+            }
+            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_ERROR) {
+                return '#DC143C';
+            }
+            return '#9196a1';
+        },
+        [currentNode]
+    );
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
@@ -75,6 +103,10 @@ const NetworkModificationTree = ({
         },
         [dispatch, currentNode]
     );
+
+    const toggleMinimap = useCallback(() => {
+        setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
+    }, []);
 
     const [x, y, zoom] = useStore((state) => state.transform);
     const { setViewport, fitView, screenToFlowPosition } = useReactFlow();
@@ -206,7 +238,34 @@ const NetworkModificationTree = ({
                         </span>
                     </Tooltip>
                     <CenterGraphButton currentNode={currentNode} />
+                    <Tooltip
+                        placement="left"
+                        title={
+                            isMinimapOpen
+                                ? intl.formatMessage({ id: 'HideMinimap' })
+                                : intl.formatMessage({
+                                      id: 'DisplayMinimap',
+                                  })
+                        }
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                    >
+                        <span>
+                            <ControlButton onClick={() => toggleMinimap()}>
+                                <MapIcon />
+                            </ControlButton>
+                        </span>
+                    </Tooltip>
                 </Controls>
+                {isMinimapOpen && <MiniMap
+                    nodeColor={nodeColor}
+                    pannable
+                    inversePan
+                    zoomable
+                    zoomStep={1}
+                    nodeStrokeWidth={0}
+                />}
             </ReactFlow>
         </Box>
     );
