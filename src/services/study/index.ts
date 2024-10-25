@@ -167,7 +167,7 @@ export function getAvailableComponentLibraries() {
     console.info('get available component libraries for diagrams');
     const getAvailableComponentLibrariesUrl = PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
     console.debug(getAvailableComponentLibrariesUrl);
-    return backendFetchJson(getAvailableComponentLibrariesUrl);
+    return backendFetchJson(getAvailableComponentLibrariesUrl) as Promise<string[]>;
 }
 
 export function unbuildNode(studyUuid, currentNodeUuid) {

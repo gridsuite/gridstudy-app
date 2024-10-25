@@ -17,7 +17,7 @@ import {
     SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../../utils/field-constants';
-import { ShortCircuitParameters } from './short-circuit-parameters.type';
+import { ShortCircuitParametersDto } from './short-circuit-parameters.type';
 
 export const intlPredefinedParametersOptions = () => [
     {
@@ -53,7 +53,7 @@ export const getStatus = (status: STATUS, styles: any) => {
 };
 
 export const formatShortCircuitParameters = (
-    parameters: ShortCircuitParameters,
+    parameters: ShortCircuitParametersDto,
     predefinedParameters: PREDEFINED_PARAMETERS
 ): Object => {
     return {

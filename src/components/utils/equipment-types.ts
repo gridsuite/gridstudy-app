@@ -44,4 +44,5 @@ export enum EQUIPMENT_TYPES {
 
 export interface VoltageLevel extends Identifiable {
     nominalV: number;
+    subtationId?: string;
 }

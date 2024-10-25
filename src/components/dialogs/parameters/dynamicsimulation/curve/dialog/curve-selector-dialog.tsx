@@ -6,7 +6,7 @@
  */
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, useTheme } from '@mui/material';
-import React, { useCallback, useRef } from 'react';
+import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';
 import CurveSelector from './curve-selector';
@@ -16,24 +16,37 @@ import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { mergeSx } from '../../../../../utils/functions';
+import { AgGridReact } from 'ag-grid-react';
 
-const CurveSelectorDialog = ({ open, onClose, onSave }) => {
+interface CurveSelectorDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onSave: () => void;
+}
+
+const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open, onClose, onSave }) => {
     const theme = useTheme();
 
-    const selectorRef = useRef();
-    const previewRef = useRef();
+    const selectorRef = useRef<AgGridReact>(null);
+    const previewRef = useRef<AgGridReact>(null);
 
     const handleClose = useCallback(() => {
         onClose();
     }, [onClose]);
 
     const handleAdd = useCallback(() => {
+        if (!previewRef.current) {
+            return;
+        }
         onSave(previewRef.current.api.getCurves());
     }, [onSave]);
 
     const intl = useIntl();
 
     const handleAddButton = useCallback(() => {
+        if (!selectorRef.current || !previewRef.current) {
+            return;
+        }
         const selectedEquipments = selectorRef.current.api.getSelectedEquipments();
 
         const selectedVariables = selectorRef.current.api.getSelectedVariables();
@@ -57,6 +70,9 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
         previewRef.current.api.addCurves(curves);
     }, []);
     const handleDeleteButton = useCallback(() => {
+        if (!previewRef.current) {
+            return;
+        }
         previewRef.current.api.removeCurves();
     }, []);
 

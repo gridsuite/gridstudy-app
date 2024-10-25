@@ -14,6 +14,7 @@ import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';
 import { GlobalFilter } from '../../../spreadsheet/global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { AgGridReact } from 'ag-grid-react';
 
 const styles = {
     grid: {
@@ -44,7 +45,7 @@ export const emptyFormData = {
     [CURVES]: [],
 };
 
-const CurveParameters = ({ path }) => {
+const CurveParameters = ({ path }: { path: string }) => {
     const intl = useIntl();
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
@@ -106,7 +107,7 @@ const CurveParameters = ({ path }) => {
 
     // curve grid configuration
     const theme = useTheme();
-    const gridRef = useRef();
+    const gridRef = useRef<AgGridReact>();
 
     const columnDefs = useMemo(() => {
         return [

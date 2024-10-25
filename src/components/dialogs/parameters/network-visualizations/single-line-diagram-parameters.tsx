@@ -17,12 +17,13 @@ import {
 } from '../../../../utils/config-params.js';
 import { LineSeparator } from '../../dialogUtils.jsx';
 import { styles } from '../parameters.jsx';
-import { SubstationLayout } from '../../../diagrams/diagram-common';
-import ParameterLineDropdown from '../widget/parameter-line-dropdown';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
+import { SubstationLayout } from '../../../diagrams/diagram-common.js';
+import ParameterLineDropdown from '../widget/parameter-line-dropdown.js';
+import ParameterLineSwitch from '../widget/parameter-line-switch.js';
+import { User } from 'oidc-client';
 
-export const useGetAvailableComponentLibraries = (user) => {
-    const [componentLibraries, setComponentLibraries] = useState([]);
+export const useGetAvailableComponentLibraries = (user: User | null) => {
+    const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
 
     useEffect(() => {
         if (user !== null) {
@@ -37,7 +38,7 @@ export const useGetAvailableComponentLibraries = (user) => {
     return componentLibraries;
 };
 
-export const SingleLineDiagramParameters = ({ componentLibraries }) => {
+export const SingleLineDiagramParameters = ({ componentLibraries }: { componentLibraries: string[] }) => {
     const componentLibsRenderCache = useMemo(
         () => Object.fromEntries(componentLibraries.filter(Boolean).map((libLabel) => [libLabel, libLabel])),
         [componentLibraries]

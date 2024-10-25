@@ -8,20 +8,27 @@
 import { Grid, InputAdornment } from '@mui/material';
 import { styles } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
-import React from 'react';
+import React, { ReactElement } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 
 // --- define data types --- //
-export const TYPES = {
-    ENUM: 'ENUM',
-    BOOL: 'BOOL',
-    INTEGER: 'INTEGER',
-    FLOAT: 'FLOAT',
-    STRING: 'STRING',
+export enum TYPES {
+    ENUM = 'ENUM',
+    BOOL = 'BOOL',
+    INTEGER = 'INTEGER',
+    FLOAT = 'FLOAT',
+    STRING = 'STRING',
+}
+
+type DefParam = {
+    type: TYPES;
+    label: string;
+    options?: { id: string; label: string }[];
+    render?: (defParam: DefParam, path: string, key: string) => ReactElement;
 };
 
-const defaultParamRender = (defParam, path, key) => {
+const defaultParamRender = (defParam: DefParam, path: string, key: string) => {
     switch (defParam.type) {
         case TYPES.ENUM:
             return (
@@ -46,7 +53,7 @@ const defaultParamRender = (defParam, path, key) => {
     }
 };
 
-export const makeComponents = (defParams, path) => {
+export const makeComponents = (defParams: Record<string, DefParam>, path: string) => {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key}>
             {makeComponent(defParams[key], path, key)}
@@ -55,7 +62,7 @@ export const makeComponents = (defParams, path) => {
     ));
 };
 
-export const makeComponent = (defParam, path, key) => {
+export const makeComponent = (defParam: DefParam, path: string, key: string) => {
     const render = defParam?.render ?? defaultParamRender;
     return (
         <>
@@ -69,6 +76,6 @@ export const makeComponent = (defParam, path, key) => {
     );
 };
 
-export const inputAdornment = (content) => ({
+export const inputAdornment = (content: ReactElement) => ({
     endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
 });

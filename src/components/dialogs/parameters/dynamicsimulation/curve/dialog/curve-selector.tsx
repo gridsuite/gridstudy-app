@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Typography } from '@mui/material';
-import EquipmentFilter from './equipment-filter';
+import { Grid, Theme, Typography } from '@mui/material';
+import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter';
 import ModelFilter from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import React, { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
@@ -14,19 +14,19 @@ import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 
 const styles = {
-    h6: (theme) => ({
+    h6: (theme: Theme) => ({
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(1),
     }),
 };
 
 const CurveSelector = forwardRef((props, ref) => {
-    const equipmentFilterRef = useRef();
+    const equipmentFilterRef = useRef<GetSelectedEquipmentsHandle>(null);
     const modelFilterRef = useRef();
 
     const [equipmentType, setEquipmentType] = useState(EQUIPMENT_TYPES.GENERATOR);
 
-    const handleChangeEquipmentType = useCallback((newEquipmentType) => {
+    const handleChangeEquipmentType = useCallback((newEquipmentType: EQUIPMENT_TYPES) => {
         setEquipmentType(newEquipmentType);
     }, []);
 
@@ -36,9 +36,15 @@ const CurveSelector = forwardRef((props, ref) => {
         () => ({
             api: {
                 getSelectedEquipments: () => {
+                    if (!equipmentFilterRef.current) {
+                        return;
+                    }
                     return equipmentFilterRef.current.api.getSelectedEquipments();
                 },
                 getSelectedVariables: () => {
+                    if (!modelFilterRef.current) {
+                        return;
+                    }
                     return modelFilterRef.current.api.getSelectedVariables();
                 },
             },

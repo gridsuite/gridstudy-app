@@ -10,7 +10,7 @@ import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 
-interface ExpertFilter {
+export interface ExpertFilter {
     id?: UUID;
     type: 'EXPERT';
     equipmentType: string; // TODO must be EquipmentType enum
