@@ -138,16 +138,18 @@ export const useAggridLocalRowFilter = (
                     switch (filter.type) {
                         case FILTER_NUMBER_COMPARATORS.NOT_EQUAL:
                             // Create two conditions to test we are not in [value-tolerance..value+tolerance]
+                            const adaptativeDecimalPrecision = countDecimalPlaces(valueAsNumber);
+                            const adaptativeTolerance = Math.pow(10, -adaptativeDecimalPrecision);
                             return [
                                 {
                                     ...filter,
-                                    type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                    value: (truncatedNumber + tolerance).toFixed(decimalPrecision),
+                                    type: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
+                                    value: valueAsNumber + adaptativeTolerance,
                                 },
                                 {
                                     ...filter,
                                     type: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                    value: (truncatedNumber - tolerance).toFixed(decimalPrecision),
+                                    value: valueAsNumber,
                                 },
                             ];
                         case FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL:

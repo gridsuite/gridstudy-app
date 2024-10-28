@@ -24,6 +24,7 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+    GREATER_THAN = 'greaterThan',
 }
 
 export type FilterParams = {
