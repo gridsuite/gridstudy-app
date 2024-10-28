@@ -6,7 +6,7 @@
  */
 
 import React, { ChangeEvent, FunctionComponent, useCallback, useEffect } from 'react';
-import { useDebounce } from '@gridsuite/commons-ui';
+import { ElementType, useDebounce } from '@gridsuite/commons-ui';
 import { elementExists } from 'services/explore';
 import { FormattedMessage } from 'react-intl';
 import { InputAdornment, TextFieldProps } from '@mui/material';
@@ -19,7 +19,7 @@ import { UUID } from 'crypto';
 interface UniqueNameInputProps {
     name: string;
     label?: string;
-    elementType: string;
+    elementType: ElementType;
     autoFocus?: boolean;
     onManualChangeCallback?: () => void;
     activeDirectory: UUID | null;

@@ -485,6 +485,7 @@ const TwoWindingsTransformerModificationDialog = ({
             modifyTwoWindingsTransformer({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 twoWindingsTransformerId: selectedId,
                 twoWindingsTransformerName: toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 r: toModificationOperation(characteristics[R]),
@@ -510,8 +511,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 connectionPosition2: connectivity2[CONNECTION_POSITION],
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
                 properties: toModificationProperties(twt),
             }).catch((error) => {
                 snackError({

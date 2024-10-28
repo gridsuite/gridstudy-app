@@ -83,7 +83,8 @@ const styles = {
     },
 };
 
-const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
+const VoltageInitResult = ({ result, status }) => {
+    const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
@@ -114,6 +115,7 @@ const VoltageInitResult = ({ result, status, tabIndex, setTabIndex }) => {
             resizable: false,
             lockPinned: true,
             wrapHeaderText: true,
+            lockVisible: true,
         }),
         []
     );
