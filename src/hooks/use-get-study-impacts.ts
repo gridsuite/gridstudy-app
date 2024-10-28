@@ -8,6 +8,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
 import { UUID } from 'crypto';
+import { useDispatch } from 'react-redux';
+import { setLogsFilter } from 'redux/actions';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
 
 interface StudyImpactsWithReset extends NetworkImpactsInfos {
     resetImpactedSubstationsIds: () => void;
@@ -20,6 +23,7 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const dispatch = useDispatch();
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
     const [deletedEquipments, setDeletedEquipments] = useState<DeletedEquipment[]>([]);
@@ -57,8 +61,10 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
             if (substationsIds?.length > 0) {
                 setImpactedSubstationsIds(substationsIds);
             }
+            // we reset the network modification logs filter when a modification is applied
+            dispatch(setLogsFilter(COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION, []));
         }
-    }, [studyUpdatedForce]);
+    }, [dispatch, studyUpdatedForce]);
 
     return {
         impactedSubstationsIds,
