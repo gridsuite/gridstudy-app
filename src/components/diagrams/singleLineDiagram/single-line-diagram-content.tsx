@@ -62,7 +62,7 @@ type EquipmentMenuState = {
     display: boolean;
 };
 interface SingleLineDiagramContentProps {
-    readonly showInSpreadsheet: (menu: { equipmentId: string | null; type: string | null }) => void;
+    readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: string;
     readonly svgType: DiagramType;
     readonly svg?: string;
@@ -253,7 +253,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     }, []);
 
     const handleViewInSpreadsheet = () => {
-        props.showInSpreadsheet({ equipmentId: equipmentMenu.equipmentId, type: equipmentMenu.equipmentType });
+        if (equipmentMenu.equipmentId && equipmentMenu.equipmentType) {
+            props.showInSpreadsheet({
+                equipmentId: equipmentMenu.equipmentId,
+                equipmentType: convertToEquipmentType(equipmentMenu.equipmentType),
+            });
+        }
         closeEquipmentMenu();
     };
 
@@ -346,7 +351,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: string, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,

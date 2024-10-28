@@ -31,6 +31,10 @@ const styles = {
     },
 };
 
+type HandleViewInSpreadsheet = (equipmentType: EquipmentType, equipmentId: string) => void;
+type HandleDeleteEquipment = (equipmentType: EquipmentType | null, equipmentId: string) => void;
+type HandleOpenModificationDialog = (equipmentId: string, equipmentType: EquipmentType | null) => void;
+
 const ViewInSpreadsheetItem = ({
     equipmentType,
     equipmentId,
@@ -40,7 +44,7 @@ const ViewInSpreadsheetItem = ({
     equipmentType: EquipmentType;
     equipmentId: string;
     itemText: string;
-    handleViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => void;
+    handleViewInSpreadsheet: HandleViewInSpreadsheet;
 }) => {
     return (
         <CustomMenuItem
@@ -66,7 +70,7 @@ const DeleteEquipmentItem = ({
     equipmentType: EquipmentType;
     equipmentId: string;
     itemText: string;
-    handleDeleteEquipment: (equipmentType: EquipmentType | null, equipmentId: string) => void;
+    handleDeleteEquipment: HandleDeleteEquipment;
 }) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
@@ -94,7 +98,7 @@ const ModifyEquipmentItem = ({
     equipmentType: EquipmentType;
     equipmentId: string;
     itemText: string;
-    handleOpenModificationDialog: (equipmentId: string, equipmentType: EquipmentType | null) => void;
+    handleOpenModificationDialog: HandleOpenModificationDialog;
 }) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
@@ -144,9 +148,9 @@ const ItemViewInForm = ({
 export type BaseEquipmentMenuProps = {
     equipment: Equipment;
     equipmentType: EquipmentType | null;
-    handleViewInSpreadsheet: (equipmentType: EquipmentType, equipmentId: string) => void;
-    handleDeleteEquipment: (equipmentType: EquipmentType | null, equipmentId: string) => void;
-    handleOpenModificationDialog: (equipmentId: string, equipmentType: EquipmentType | null) => void;
+    handleViewInSpreadsheet: HandleViewInSpreadsheet;
+    handleDeleteEquipment: HandleDeleteEquipment;
+    handleOpenModificationDialog: HandleOpenModificationDialog;
 };
 
 const BaseEquipmentMenu = ({
@@ -299,7 +303,7 @@ const BaseEquipmentMenu = ({
                             equipmentType={EquipmentType.SUBSTATION}
                             equipmentId={equipment.id}
                             itemText={getNameOrId({
-                                name: equipment.id,
+                                name: equipment.name,
                                 id: equipment.id,
                             })}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}

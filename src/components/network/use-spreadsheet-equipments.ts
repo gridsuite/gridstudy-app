@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { Identifiable } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { UUID } from 'crypto';
 import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,8 +22,12 @@ import {
 import { AppState, SpreadsheetEquipmentType } from 'redux/reducer';
 import { fetchAllEquipments } from 'services/study/network-map';
 
-export type EquipmentProps = { type: SpreadsheetEquipmentType; fetchers: any[] };
-type FormatFetchedEquipments = (equipments: any) => any;
+export type EquipmentProps = {
+    type: SpreadsheetEquipmentType;
+    fetchers: Array<(studyUuid: UUID, currentNodeId: UUID) => Promise<Identifiable>>;
+};
+
+type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
 
 export const useSpreadsheetEquipments = (
     equipment: EquipmentProps,
@@ -120,7 +126,7 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        if (shouldFetchEquipments) {
+        if (shouldFetchEquipments && studyUuid && currentNode?.id) {
             setErrorMessage(null);
             setIsFetching(true);
             Promise.all(equipment.fetchers.map((fetcher) => fetcher(studyUuid, currentNode?.id)))

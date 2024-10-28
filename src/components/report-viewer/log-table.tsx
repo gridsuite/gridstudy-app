@@ -128,14 +128,14 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const shouldDisplayFilterBadge = useMemo(() => {
         const defaultSeverityFilter = getDefaultSeverityFilter(severities);
 
-        const severitySet = new Set(severityFilter);
+        const severitySet: Set<string> = new Set(severityFilter);
         const defaultSeveritySet = new Set(defaultSeverityFilter);
 
         if (severitySet.size !== defaultSeveritySet.size) {
             return true;
         }
 
-        return ![...severitySet].every((severity: any) => defaultSeveritySet.has(severity));
+        return ![...severitySet].every((severity: string) => defaultSeveritySet.has(severity));
     }, [severityFilter, severities]);
 
     const COLUMNS_DEFINITIONS = useMemo(
@@ -187,7 +187,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     );
 
     const rowStyleFormat = useCallback(
-        (row: RowClassParams<any, any>): RowStyle => {
+        (row: RowClassParams): RowStyle => {
             if (row.rowIndex && row.rowIndex < 0) {
                 return {};
             }

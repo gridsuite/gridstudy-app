@@ -49,7 +49,7 @@ const withEquipmentMenu =
         );
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
-            (equipmentId: string, equipmentType: string, dialogTitle: string) => {
+            (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
                 if (onOpenDynamicSimulationEventDialog) {
                     handleClose();
                     onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);

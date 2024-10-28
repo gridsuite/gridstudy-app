@@ -54,13 +54,13 @@ const styles = {
 };
 export type MenuBranchProps = {
     equipment: Equipment;
-    equipmentType?: EquipmentType;
+    equipmentType: EquipmentType;
     position: [number, number] | null;
     handleClose: () => void;
     handleViewInSpreadsheet: (type: EquipmentType, id: string) => void;
     handleDeleteEquipment: (type: EquipmentType | null, id: string) => void;
     handleOpenModificationDialog: (id: string, type: EquipmentType | null) => void;
-    onOpenDynamicSimulationEventDialog?: (id: string, type: string, dialogTitle: string) => void;
+    onOpenDynamicSimulationEventDialog?: (id: string, type: EquipmentType | null, dialogTitle: string) => void;
     currentNode?: CurrentTreeNode;
     studyUuid?: UUID;
     modificationInProgress?: boolean;
@@ -176,7 +176,7 @@ const withOperatingStatusMenu =
         }
 
         const handleOpenDynamicSimulationEventDialog = useCallback(
-            (equipmentId: string, equipmentType: string, dialogTitle: string) => {
+            (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
                 if (onOpenDynamicSimulationEventDialog) {
                     handleClose();
                     onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);

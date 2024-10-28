@@ -47,6 +47,7 @@ import {
     Coordinate,
     Line,
     Substation,
+    Equipment as EquipmentGeoData,
 } from '@powsybl/diagram-viewer/dist/components/network-map-viewer/network/geo-data';
 import {
     Equipment as EquipmentMap,
@@ -387,7 +388,7 @@ export const NetworkMapTab = ({
     );
 
     const getEquipmentsNotFoundIds = useCallback(
-        (foundEquipmentPositions: Map<string, number>, allEquipments: Substation[] | Line[]) => {
+        (foundEquipmentPositions: Map<string, number>, allEquipments: EquipmentGeoData[]) => {
             return allEquipments
                 .filter((s) => !foundEquipmentPositions.has(s.id) || temporaryGeoDataIdsRef?.current?.has(s.id))
                 .map((s) => s.id);
@@ -422,11 +423,11 @@ export const NetworkMapTab = ({
             notFoundEquipmentsIds: string[],
             fetchEquipmentCB: (studyUuid: UUID, nodeId: UUID, equipmentIds: string[]) => Promise<any[]>
         ) => {
-            if (notFoundEquipmentsIds.length === 0) {
+            if (notFoundEquipmentsIds.length === 0 || !currentNodeRef.current) {
                 return Promise.resolve([]);
             }
 
-            return fetchEquipmentCB(studyUuid, currentNodeRef?.current!.id, notFoundEquipmentsIds);
+            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, notFoundEquipmentsIds);
         },
         [studyUuid]
     );
@@ -438,7 +439,7 @@ export const NetworkMapTab = ({
                 // If the geo data is the same in the geoData and in the server response, it's not updated
                 const substationPosition = geoDataRef?.current?.substationPositionsById.get(pos.id);
                 if (!(substationPosition && substationPositionsAreEqual(substationPosition, pos))) {
-                    temporaryGeoDataIdsRef?.current?.add(pos.id);
+                    temporaryGeoDataIdsRef.current?.add(pos.id);
                     someDataHasChanged = true;
                 }
             });
@@ -464,7 +465,7 @@ export const NetworkMapTab = ({
                 // If the geo data is the same in the geoData and in the server response, it's not updated
                 const linePosition = geoDataRef.current.linePositionsById.get(pos.id);
                 if (!(linePosition && linePositionsAreEqual(linePosition, pos))) {
-                    temporaryGeoDataIdsRef?.current?.add(pos.id);
+                    temporaryGeoDataIdsRef.current?.add(pos.id);
                     someDataHasChanged = true;
                 }
             });
@@ -659,11 +660,7 @@ export const NetworkMapTab = ({
             }
 
             const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } =
-                mapEquipments?.reloadImpactedSubstationsEquipments(
-                    studyUuid,
-                    currentNode,
-                    substationsIds?.map((id) => id.toString()) || null
-                );
+                mapEquipments?.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds ?? null);
 
             const isFullReload = !substationsIds;
 
