@@ -43,7 +43,7 @@ export function getVoltageLevelSingleLineDiagram(
         }).toString()
     );
 }
- 
+
 export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`

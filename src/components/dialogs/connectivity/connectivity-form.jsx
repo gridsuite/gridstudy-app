@@ -26,9 +26,7 @@ import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagr
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import { AutocompleteInput, IntegerInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { 
-    fetchBusesOrBusbarSectionsForVoltageLevel,
-} from '../../../services/study/network';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from '../../../services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input.jsx';
 import { areIdsEqual, getObjectId } from '../../utils/utils.js';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils.js';
