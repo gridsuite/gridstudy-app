@@ -15,6 +15,8 @@ import { GlobalFilter } from '../../../spreadsheet/global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
+import { Curve } from './curve/dialog/curve-preview';
+import { ValueFormatterParams } from 'ag-grid-community';
 
 const styles = {
     grid: {
@@ -50,14 +52,12 @@ const CurveParameters = ({ path }: { path: string }) => {
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
     const { control } = useFormContext();
-    const {
-        fields: rowData,
-        append,
-        remove,
-    } = useFieldArray({
+    const { fields, append, remove } = useFieldArray({
         control,
         name: `${path}.${CURVES}`,
     });
+
+    const rowData = fields as unknown as Curve[]; //TODO fix in a better way if possible
 
     // handle open/close/append curve selector dialog
     const [open, setOpen] = useState(false);
@@ -65,7 +65,7 @@ const CurveParameters = ({ path }: { path: string }) => {
         setOpen((prevState) => !prevState);
     }, []);
     const handleAppend = useCallback(
-        (newCurves) => {
+        (newCurves: Curve[]) => {
             // do save here
             const notYetAddedCurves = newCurves.filter(
                 // use functional keys to lookup
@@ -88,9 +88,9 @@ const CurveParameters = ({ path }: { path: string }) => {
     }, []);
 
     const handleDelete = useCallback(() => {
-        const selectedRows = gridRef.current.api.getSelectedRows();
+        const selectedRows = gridRef.current?.api.getSelectedRows();
 
-        const indexesToRemove = selectedRows.map((elem) =>
+        const indexesToRemove = selectedRows?.map((elem) =>
             // use functional keys to lookup
             rowData.findIndex(
                 (row) => elem[EQUIPMENT_ID] === row[EQUIPMENT_ID] && elem[VARIABLE_ID] === row[VARIABLE_ID]
@@ -107,7 +107,7 @@ const CurveParameters = ({ path }: { path: string }) => {
 
     // curve grid configuration
     const theme = useTheme();
-    const gridRef = useRef<AgGridReact>();
+    const gridRef = useRef<AgGridReact>(null);
 
     const columnDefs = useMemo(() => {
         return [
@@ -127,7 +127,7 @@ const CurveParameters = ({ path }: { path: string }) => {
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
-                valueFormatter: (params) =>
+                valueFormatter: (params: ValueFormatterParams) =>
                     intl.formatMessage({
                         id: `variables.${params.value}`,
                     }),
@@ -148,8 +148,8 @@ const CurveParameters = ({ path }: { path: string }) => {
     }, []);
 
     const onSelectionChanged = useCallback(() => {
-        const selectedRows = gridRef.current.api.getSelectedRows();
-        setSelectedRowsLength(selectedRows.length);
+        const selectedRows = gridRef.current?.api.getSelectedRows();
+        setSelectedRowsLength(selectedRows?.length ?? 0);
     }, []);
 
     return (
@@ -182,7 +182,6 @@ const CurveParameters = ({ path }: { path: string }) => {
                 <Grid item xs>
                     <Box sx={styles.grid}>
                         <CustomAGGrid
-                            name={`${path}.${CURVES}`}
                             ref={gridRef}
                             rowData={rowData}
                             columnDefs={columnDefs}

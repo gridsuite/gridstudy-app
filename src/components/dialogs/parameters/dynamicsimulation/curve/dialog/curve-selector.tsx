@@ -21,10 +21,10 @@ const styles = {
     }),
 };
 
-interface GetSelectedItemsHandler {
+export interface GetSelectedItemsHandler {
     api: {
-        getSelectedEquipments: () => IdentifiableAttributes[] | undefined;
-        getSelectedVariables: () => ModelVariable[] | undefined;
+        getSelectedEquipments: () => IdentifiableAttributes[];
+        getSelectedVariables: () => ModelVariable[];
     };
 }
 
@@ -45,13 +45,13 @@ const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
             api: {
                 getSelectedEquipments: () => {
                     if (!equipmentFilterRef.current) {
-                        return;
+                        return [];
                     }
                     return equipmentFilterRef.current.api.getSelectedEquipments();
                 },
                 getSelectedVariables: () => {
                     if (!modelFilterRef.current) {
-                        return;
+                        return [];
                     }
                     return modelFilterRef.current.api.getSelectedVariables();
                 },

@@ -8,13 +8,14 @@
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { FunctionComponent, useEffect, useMemo } from 'react';
-import { useWatch } from 'react-hook-form';
+import { UseFormClearErrors, useWatch } from 'react-hook-form';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters, { getFormSchema as getIdaFormSchema } from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters, {
     getFormSchema as getSimplifiedFormSchema,
 } from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
+import { DynamicSimulationForm } from './dynamic-simulation-parameters';
 
 enum SOLVER_TYPES {
     IDA = 'IDA',
@@ -55,9 +56,9 @@ export const emptyFormData = {
 };
 
 interface SolverParametersProps {
-    solver: { solverId: string; solvers: SOLVER_TYPES[] };
-    path: string;
-    clearErrors: (path: string) => void;
+    solver?: { solverId: string; solvers: Record<string, any>[] };
+    path: keyof DynamicSimulationForm;
+    clearErrors: UseFormClearErrors<DynamicSimulationForm>;
 }
 
 const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, path, clearErrors }) => {
@@ -70,7 +71,7 @@ const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, pa
     }, [solvers, solverId]);
 
     const solverOptions = useMemo(() => {
-        return solvers?.reduce((arr, curr) => {
+        return solvers?.reduce<{ id: string; label: string }[]>((arr, curr) => {
             return [
                 ...arr,
                 {

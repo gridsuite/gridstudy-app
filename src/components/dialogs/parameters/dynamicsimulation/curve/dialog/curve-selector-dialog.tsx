@@ -9,26 +9,25 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typogr
 import React, { FunctionComponent, useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';
-import CurveSelector from './curve-selector';
-import CurvePreview from './curve-preview';
+import CurveSelector, { GetSelectedItemsHandler } from './curve-selector';
+import CurvePreview, { Curve, CurveHandler } from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { mergeSx } from '../../../../../utils/functions';
-import { AgGridReact } from 'ag-grid-react';
 
 interface CurveSelectorDialogProps {
     open: boolean;
     onClose: () => void;
-    onSave: () => void;
+    onSave: (curves: Curve[]) => void;
 }
 
 const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open, onClose, onSave }) => {
     const theme = useTheme();
 
-    const selectorRef = useRef<AgGridReact>(null);
-    const previewRef = useRef<AgGridReact>(null);
+    const selectorRef = useRef<GetSelectedItemsHandler>(null);
+    const previewRef = useRef<CurveHandler>(null);
 
     const handleClose = useCallback(() => {
         onClose();
@@ -52,20 +51,12 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
         const selectedVariables = selectorRef.current.api.getSelectedVariables();
 
         // combine between equipments and variables
-        const curves = selectedEquipments.reduce(
-            (arr, equipment) =>
-                selectedVariables.reduce(
-                    (acc, variable) => [
-                        ...acc,
-                        {
-                            equipmentType: equipment.type,
-                            equipmentId: equipment.id,
-                            variableId: variable.variableId,
-                        },
-                    ],
-                    arr
-                ),
-            []
+        const curves = selectedEquipments.flatMap((equipment) =>
+            selectedVariables.map((variable) => ({
+                equipmentType: equipment.type,
+                equipmentId: equipment.id,
+                variableId: variable.variableId,
+            }))
         );
         previewRef.current.api.addCurves(curves);
     }, []);

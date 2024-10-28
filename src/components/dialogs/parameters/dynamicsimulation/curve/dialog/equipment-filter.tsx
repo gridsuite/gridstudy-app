@@ -23,7 +23,7 @@ import { EQUIPMENT_TYPES, VoltageLevel } from 'components/utils/equipment-types'
 
 export interface GetSelectedEquipmentsHandle {
     api: {
-        getSelectedEquipments: () => IdentifiableAttributes[] | undefined;
+        getSelectedEquipments: () => IdentifiableAttributes[];
     };
 }
 
@@ -218,7 +218,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             () => ({
                 api: {
                     getSelectedEquipments: () => {
-                        return equipmentsRef.current?.api.getSelectedRows();
+                        return equipmentsRef.current?.api.getSelectedRows() ?? [];
                     },
                 },
             }),

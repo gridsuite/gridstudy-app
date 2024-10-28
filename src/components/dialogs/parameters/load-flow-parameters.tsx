@@ -14,7 +14,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Autocomplete, Box, Chip, Grid, Tab, Tabs, TextField } from '@mui/material';
+import { Autocomplete, Box, Chip, Grid, SelectChangeEvent, Tab, Tabs, TextField } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
@@ -49,6 +49,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
 import { string } from 'yup';
+import yup from '@gridsuite/commons-ui/dist/utils/yupConfig';
 
 interface CountrySelectorProps {
     value: string[];
@@ -529,7 +530,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParameters> = ({
     }, [specificParamsDescriptions]);
 
     const updateLfProviderCallback = useCallback(
-        (evt) => {
+        (evt: SelectChangeEvent<string>) => {
             updateProvider(evt.target.value);
         },
         [updateProvider]
@@ -600,19 +601,23 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParameters> = ({
         );
     }, [params]);
 
-    const formMethods = useForm({
+    type LoadFlowParametersForm = yup.InferType<typeof formSchema>;
+
+    const formMethods = useForm<LoadFlowParametersForm>({
         defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
         resolver: yupResolver(formSchema),
     });
 
     const toLimitReductions = useCallback(
-        (formLimits) => {
-            return params?.limitReductions.map((vlLimits, indexVl) => {
+        (formLimits: any /*TODO: fix any*/) => {
+            return params?.limitReductions.map((vlLimits: any, indexVl: number) => {
+                //TODO: fix any
                 let vlLNewLimits = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],
                 };
-                vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
+                vlLimits.temporaryLimitReductions.forEach((temporaryLimit: any, index: number) => {
+                    //TODO: fix any
                     vlLNewLimits.temporaryLimitReductions[index] = {
                         ...temporaryLimit,
                         reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
@@ -627,7 +632,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParameters> = ({
     const { handleSubmit, formState } = formMethods;
 
     const updateLimitReductions = useCallback(
-        (formLimits) => {
+        (formLimits: LoadFlowParametersForm) => {
             updateParameters({
                 ...params,
                 limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
@@ -724,13 +729,15 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParameters> = ({
                                                         commitLFParameter={updateParameters}
                                                     />
                                                     <SpecificLoadFlowParameters
-                                                        disabled={!specificParamsDescriptions?.[provider]}
+                                                        disabled={!provider || !specificParamsDescriptions?.[provider]}
                                                         subText={provider ?? ''}
                                                         specificParamsDescription={
-                                                            specificParamsDescrWithoutNanVals[provider]
+                                                            provider ? specificParamsDescrWithoutNanVals[provider] : []
                                                         }
                                                         specificCurrentParams={
-                                                            params?.specificParametersPerProvider[provider] || {}
+                                                            provider && params
+                                                                ? params.specificParametersPerProvider[provider]
+                                                                : {}
                                                         }
                                                         onSpecificParamChange={onSpecificParamChange}
                                                     />

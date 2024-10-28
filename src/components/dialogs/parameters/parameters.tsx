@@ -54,7 +54,7 @@ export const LabelledButton: FunctionComponent<LabelledButtonProps> = ({ callbac
 interface SwitchWithLabelProps {
     value: boolean;
     label: string;
-    callback: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
+    callback?: (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => void;
 }
 
 export const SwitchWithLabel: FunctionComponent<SwitchWithLabelProps> = ({ value, label, callback }) => {
@@ -237,8 +237,8 @@ export const styles = {
 };
 
 interface TabPanelProps {
-    value: string;
-    index: string;
+    value: number;
+    index: number;
     keepState?: boolean;
 }
 

@@ -23,7 +23,7 @@ export const emptyFormData = {
 };
 
 interface MappingParametersProps {
-    mapping: {
+    mapping?: {
         mappings: any[];
     }; //TODO fix any
     path: string;
@@ -46,7 +46,7 @@ const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping,
                     <AutocompleteInput
                         name={`${path}.${key}`}
                         label={''}
-                        options={defParam.options}
+                        options={defParam.options ?? []}
                         fullWidth
                         size={'small'}
                         getOptionLabel={getIdOrSelf}

@@ -12,6 +12,7 @@ import { Box } from '@mui/system';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     grid: {
@@ -23,7 +24,21 @@ const styles = {
     }),
 };
 
-const CurvePreview = forwardRef((props, ref) => {
+export interface Curve {
+    equipmentType: EQUIPMENT_TYPES;
+    equipmentId: string;
+    variableId: string | undefined;
+}
+
+export interface CurveHandler {
+    api: {
+        addCurves: (curves: Curve[]) => void;
+        removeCurves: () => void;
+        getCurves: () => Curve[];
+    };
+}
+
+const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact<any>>(null);
 

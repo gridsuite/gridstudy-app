@@ -69,6 +69,16 @@ interface DynamicSimulationParametersProps {
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
 }
 
+const formSchema = yup.object().shape({
+    [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
+    [TAB_VALUES.SOLVER]: solverFormSchema,
+    [TAB_VALUES.MAPPING]: mappingFormSchema,
+    [TAB_VALUES.NETWORK]: networkFormSchema,
+    [TAB_VALUES.CURVE]: curveFormSchema,
+});
+
+export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
+
 const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
     user,
     setHaveDirtyFields,
@@ -114,15 +124,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         };
     }, []);
 
-    const formSchema = yup.object().shape({
-        [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
-        [TAB_VALUES.SOLVER]: solverFormSchema,
-        [TAB_VALUES.MAPPING]: mappingFormSchema,
-        [TAB_VALUES.NETWORK]: networkFormSchema,
-        [TAB_VALUES.CURVE]: curveFormSchema,
-    });
-
-    const formMethods = useForm({
+    const formMethods = useForm<DynamicSimulationForm>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -161,7 +163,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     }, [errorsJSON, onError]);
 
     const onSubmit = useCallback(
-        (newParams) => {
+        (newParams: DynamicSimulationForm) => {
             // use updater to set with new parameters
             updateParameters({
                 ...parameters,
@@ -169,9 +171,10 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                 [SOLVER_ID]: newParams[TAB_VALUES.SOLVER][SOLVER_ID],
                 // merge only the current selected solver, others are ignored
                 [SOLVERS]: parameters?.[SOLVERS].reduce(
-                    (arr, curr, index) => [
+                    (arr: any[], curr: any[], index: number) => [
+                        //TODO: fix any
                         ...arr,
-                        newParams[TAB_VALUES.SOLVER][SOLVERS][index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
+                        newParams[TAB_VALUES.SOLVER][SOLVERS]?.[index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
                             ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
                             : curr,
                     ],
@@ -289,8 +292,8 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                 solver={
                                     parameters
                                         ? {
-                                              solverId: parameters.solverId,
-                                              solvers: parameters.solvers,
+                                              solverId: parameters.solverId as string,
+                                              solvers: parameters.solvers as Record<string, any>[],
                                           }
                                         : undefined
                                 }

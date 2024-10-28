@@ -9,7 +9,7 @@ import * as React from 'react';
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { alpha, Checkbox, Theme, useTheme } from '@mui/material';
+import { alpha, Checkbox, SxProps, Theme, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
 import { ModelVariable } from '../dialog/model-filter';
@@ -54,8 +54,9 @@ export interface GetSelectedItemsHandle {
 interface CheckBoxTreeViewProps {
     data: ModelVariable[]; //TODO: fix any
     checkAll: boolean;
-    onSelectionChanged: (newSelection: ModelVariable[]) => void;
+    onSelectionChanged?: (newSelection: ModelVariable[]) => void;
     getLabel: (element: ModelVariable) => string;
+    sx: SxProps<Theme>;
 }
 
 interface ItemState {

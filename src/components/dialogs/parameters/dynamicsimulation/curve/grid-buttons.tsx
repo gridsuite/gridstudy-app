@@ -16,7 +16,7 @@ import { useIntl } from 'react-intl';
 interface GridButtons {
     onAddButton: () => void;
     onDeleteButton: () => void;
-    disabled: boolean;
+    disabled?: boolean;
 }
 
 const GridButtons: FunctionComponent<GridButtons> = ({ onAddButton, onDeleteButton, disabled }) => {

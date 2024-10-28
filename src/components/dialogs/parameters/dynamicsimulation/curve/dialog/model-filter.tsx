@@ -7,14 +7,13 @@
 
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Grid, Theme, Typography } from '@mui/material';
+import { Box, Grid, Theme, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
-import { Box } from '@mui/system';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { AppState } from 'redux/reducer';
 
@@ -159,7 +158,7 @@ interface DynamicSimulationModel {
 
 export interface GetSelectedVariablesHandle {
     api: {
-        getSelectedVariables: () => ModelVariable[] | undefined;
+        getSelectedVariables: () => ModelVariable[];
     };
 }
 
@@ -241,13 +240,15 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
             () => ({
                 api: {
                     getSelectedVariables: () => {
-                        return variablesRef.current?.api
-                            .getSelectedItems()
-                            .filter((item) => item.variableId) // filter to keep only variable item
-                            .filter(
-                                (item, index, arr) =>
-                                    arr.findIndex((elem) => elem.variableId === item.variableId) === index
-                            ); // remove duplicated by variableId
+                        return (
+                            variablesRef.current?.api
+                                .getSelectedItems()
+                                .filter((item) => item.variableId) // filter to keep only variable item
+                                .filter(
+                                    (item, index, arr) =>
+                                        arr.findIndex((elem) => elem.variableId === item.variableId) === index
+                                ) ?? []
+                        ); // remove duplicated by variableId
                     },
                 },
             }),
