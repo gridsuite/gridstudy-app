@@ -148,9 +148,10 @@ function NetworkAreaDiagramContent(props) {
         [dispatch, nadIdentifier]
     );
 
-    const handleTogglePopover = useCallback(
+    const OnToggleHoverCallback = useCallback(
         (shouldDisplay, mousePosition, equipmentId, equipmentType) => {
-            setShouldDisplayTooltip(shouldDisplay);
+            const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+            setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable);
 
             if (shouldDisplay) {
                 setAnchorPosition({
@@ -185,8 +186,7 @@ function NetworkAreaDiagramContent(props) {
                 true,
                 true,
                 dynamicCssRules,
-                handleTogglePopover,
-                equipmentsWithPopover
+                OnToggleHoverCallback
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -219,7 +219,7 @@ function NetworkAreaDiagramContent(props) {
         props.svg,
         currentNode,
         diagramSizeSetter,
-        handleTogglePopover,
+        OnToggleHoverCallback,
         onMoveNodeCallback,
         nadIdentifier,
         nadNodeMovements,
