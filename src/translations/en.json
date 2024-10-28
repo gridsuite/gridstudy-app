@@ -1404,5 +1404,6 @@
     "guidancePopUp.action":"Close editor",
     "generateNad": "Generate",
     "networkModificationActivationError": "An error occured while enabling / disabling modification",
-    "AddAutomaton": "Add an automaton"
+    "AddAutomaton": "Add an automaton",
+    "BusBarCountMustBeGreaterThanOrEqualToStartTime" : "Busbar count must be greater or equal to 1"
 }

@@ -1403,5 +1403,6 @@
     "guidancePopUp.action":"Fermer l'éditeur",
     "generateNad": "Générer",
     "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification",
-    "AddAutomaton": "Ajouter un automate"
+    "AddAutomaton": "Ajouter un automate",
+    "BusBarCountMustBeGreaterThanOrEqualToStartTime" : "Un nombre de barres doit être supérieur ou égal à 1"
 }
