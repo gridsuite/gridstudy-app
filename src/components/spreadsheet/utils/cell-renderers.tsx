@@ -106,8 +106,8 @@ export const formatCell = (props: any) => {
             ? props.colDef.valueGetter(props, props.context.network)
             : props.colDef.valueGetter(props);
     }
-    if (props.colDef.normed) {
-        value = props.colDef.normed(props.fluxConvention, value);
+    if (props.applyFluxConvention) {
+        value = props.applyFluxConvention(value);
     }
     if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
