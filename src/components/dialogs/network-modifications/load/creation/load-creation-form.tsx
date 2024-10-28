@@ -7,28 +7,29 @@
 
 import Grid from '@mui/material/Grid';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import React from 'react';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    gridItem,
-    GridSection,
-    ReactivePowerAdornment,
-} from '../../../dialogUtils';
+import React, { FunctionComponent } from 'react';
+import { ActivePowerAdornment, gridItem, GridSection, ReactivePowerAdornment } from '../../../dialogUtils';
 import { LOAD_TYPES } from 'components/network/constants';
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 
-const LoadCreationForm = ({ currentNode, studyUuid }) => {
+interface LoadCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+}
+
+const LoadCreationForm: FunctionComponent<LoadCreationFormProps> = ({ studyUuid, currentNode }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
-        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, variant: 'filled' }} />
     );
 
-    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
+    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ variant: 'filled' }} />;
 
     const loadTypeField = (
         <SelectInput
@@ -37,7 +38,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
             options={LOAD_TYPES}
             fullWidth
             size={'small'}
-            formProps={filledTextField}
+            formProps={{ variant: 'filled' }}
         />
     );
 
@@ -51,6 +52,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            previousValues={null}
         />
     );
 
