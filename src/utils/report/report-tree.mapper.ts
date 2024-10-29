@@ -1,13 +1,13 @@
-/**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Report, ReportTree, ReportType } from '../types/report.type';
+import { Report, ReportTree, ReportType } from './report.type';
 import { getHighestSeverity } from './report-severity';
-import { GLOBAL_REPORT_NODE_LABEL } from '../constants/report.constant';
+import { GLOBAL_REPORT_NODE_LABEL } from './report.constant';
 
 export function mapReportsTree(report: Report, reportType?: ReportType): ReportTree {
     const severityList = report.severities || report.subReports.flatMap((subReport) => subReport.severities);
