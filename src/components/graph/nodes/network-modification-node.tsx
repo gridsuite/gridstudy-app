@@ -188,7 +188,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     )}
                 </Box>
                 <Box sx={getStyleForBottomBanner(props.data.globalBuildStatus)}></Box>
-
                 <Box sx={styles.labelWrapper}>
                     <span
                         style={{

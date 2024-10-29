@@ -6,10 +6,22 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import {ReactFlow, Controls, useStore, useReactFlow, ControlButton, MiniMap, useEdgesState, useNodesState} from '@xyflow/react';
+import {
+    ReactFlow,
+    Controls,
+    useStore,
+    useReactFlow,
+    ControlButton,
+    MiniMap,
+    useEdgesState,
+    useNodesState,
+    Background,
+    BackgroundVariant,
+} from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
+import Grid4x4Icon from '@mui/icons-material/Grid4x4';
 import CenterGraphButton from './graph/util/center-graph-button';
-import React, {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
@@ -20,14 +32,9 @@ import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
-import {getLayoutedElements} from "./graph/layout";
+import { getLayoutedElements } from './graph/layout';
 
-const snapGrid = [115, 110];
-const layoutOptions = {
-    'algorithm': 'mrtree',
-    'elk.direction': 'DOWN',
-    'spacing.nodeNode': 50.0,
-};
+const snapGrid = [230, 110]; // [Width, Height]
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -43,6 +50,9 @@ const NetworkModificationTree = ({
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
+    const [isGridVisible, setIsGridVisible] = useState(false);
+
+    const [nodePlacements, setNodePlacements] = useState([]);
 
     const nodeColor = useCallback(
         (node) => {
@@ -71,28 +81,92 @@ const NetworkModificationTree = ({
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-    const onLayout = useCallback(
-        ({ direction, useInitialNodes = false }) => {
-            if (treeModel) {
-                const ns = treeModel.treeNodes;
-                const es = treeModel.treeEdges;
-
-                getLayoutedElements(ns, es, layoutOptions).then(
-                    ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
-                        setNodes(layoutedNodes);
-                        setEdges(layoutedEdges);
-
-                        window.requestAnimationFrame(() => fitView());
-                    },
-                );
+    function getPosition(placementArray, id) {
+        for (let row = 0; row < placementArray.length; row++) {
+            for (let column = 0; column < placementArray[row].length; column++) {
+                if (placementArray[row][column] === id) {
+                    return { row: row, column: column };
+                }
             }
-        },
-        [nodes, edges, treeModel],
-    );
+        }
+        return { row: -1, column: -1 };
+    }
+
+    function addValueAtPosition(placementArray, row, column, value) {
+        while (placementArray.length <= row) {
+            placementArray.push(['']);
+        }
+        while (placementArray[row].length <= column) {
+            placementArray[row].push('');
+        }
+        placementArray[row][column] = value;
+    }
+
+    function isSpaceEmpty(placementArray, row, column) {
+        if (placementArray.length <= row) {
+            return true;
+        }
+        if (placementArray[row].length <= column) {
+            return true;
+        }
+        if (placementArray[row][column]?.length > 0) {
+            return false;
+        }
+        return true;
+    }
+
+    // Node position initialization
+    useLayoutEffect(() => {
+        if (treeModel) {
+            const newPlacements = [];
+            let currentMaxColumn = 0;
+
+            treeModel.treeNodes.forEach((node) => {
+                if (!node.data?.parentNodeUuid) {
+                    // ORIGIN/PARENT NODE
+                    addValueAtPosition(newPlacements, 0, 0, node.id);
+                } else {
+                    // CHILDREN NODE
+                    const parentPosition = getPosition(newPlacements, node.data.parentNodeUuid);
+                    // Check if there is an empty space below the parent
+                    const tryRow = parentPosition.row + 1;
+                    const tryColumn = parentPosition.column;
+                    if (isSpaceEmpty(newPlacements, tryRow, tryColumn)) {
+                        addValueAtPosition(newPlacements, tryRow, tryColumn, node.id);
+                    } else {
+                        // We check if there is an empty space on the right of the used space
+                        do {
+                            currentMaxColumn++;
+                        } while (!isSpaceEmpty(newPlacements, tryRow, currentMaxColumn));
+                        addValueAtPosition(newPlacements, tryRow, currentMaxColumn, node.id);
+                    }
+                }
+            });
+            setNodePlacements([...newPlacements]);
+        }
+    }, [treeModel]);
+
+    const updateNodePositions = useCallback(() => {
+        if (treeModel) {
+            const newNodes = [...treeModel.treeNodes];
+            newNodes.forEach((node) => {
+                const storedPosition = getPosition(nodePlacements, node.id);
+                if (storedPosition !== null) {
+                    node.position = {
+                        x: storedPosition.column * snapGrid[0],
+                        y: storedPosition.row * snapGrid[1],
+                    };
+                }
+            });
+            setNodes([...newNodes]);
+            setEdges([...treeModel.treeEdges]);
+            window.requestAnimationFrame(() => fitView());
+        }
+    }, [treeModel, nodePlacements]);
 
     useLayoutEffect(() => {
-        onLayout({ direction: 'DOWN', useInitialNodes: true }); // TODO remove or use those useless params
-    }, [treeModel]);
+        updateNodePositions();
+    }, [treeModel, nodePlacements]);
 
     const onNodeClick = useCallback(
         (event, node) => {
@@ -106,6 +180,9 @@ const NetworkModificationTree = ({
 
     const toggleMinimap = useCallback(() => {
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
+    }, []);
+    const toggleShowGrid = useCallback(() => {
+        setIsGridVisible((isGridVisible) => !isGridVisible);
     }, []);
 
     const [x, y, zoom] = useStore((state) => state.transform);
@@ -161,42 +238,14 @@ const NetworkModificationTree = ({
                 zoom: zoom,
             });
         }
+        window.requestAnimationFrame(() => fitView());
     }, [isStudyDrawerOpen]);
-
-    const onConnectEnd = useCallback(
-        (event, connectionState) => {
-            console.error("onConnectEnd", connectionState);
-            // when a connection is dropped on the pane it's not valid
-            /*if (!connectionState.isValid) {
-                // we need to remove the wrapper bounds, in order to get the correct position
-                const id = getId();
-                const { clientX, clientY } =
-                    'changedTouches' in event ? event.changedTouches[0] : event;
-                const newNode = {
-                    id,
-                    position: screenToFlowPosition({
-                        x: clientX,
-                        y: clientY,
-                    }),
-                    data: { label: `Node ${id}` },
-                    origin: [0.5, 0.0],
-                };
-
-                setNodes((nds) => nds.concat(newNode));
-                setEdges((eds) =>
-                    eds.concat({ id, source: connectionState.fromNode.id, target: id }),
-                );
-            }*/
-        },
-        [screenToFlowPosition],
-    );
 
     return (
         <Box flexGrow={1}>
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
-                //onConnect={onConnect}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 fitView
@@ -207,14 +256,18 @@ const NetworkModificationTree = ({
                 elementsSelectable
                 selectNodesOnDrag={false}
                 nodeTypes={nodeTypes}
-                //connectionLineType="default"
                 minZoom={0.2} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
-
                 nodesDraggable={true}
-                nodesConnectable={true}
-                onConnectEnd={onConnectEnd}
             >
+                {isGridVisible && (
+                    <Background
+                        color={'#0ca78933'}
+                        gap={snapGrid}
+                        variant={BackgroundVariant.Lines}
+                        offset={[140, 80]}
+                    />
+                )}
                 <Controls
                     style={{ margin: '10px' }} // This component uses "style" instead of "sx"
                     position="top-right"
@@ -257,15 +310,15 @@ const NetworkModificationTree = ({
                             </ControlButton>
                         </span>
                     </Tooltip>
+                    <span>
+                        <ControlButton onClick={() => toggleShowGrid()}>
+                            <Grid4x4Icon />
+                        </ControlButton>
+                    </span>
                 </Controls>
-                {isMinimapOpen && <MiniMap
-                    nodeColor={nodeColor}
-                    pannable
-                    inversePan
-                    zoomable
-                    zoomStep={1}
-                    nodeStrokeWidth={0}
-                />}
+                {isMinimapOpen && (
+                    <MiniMap nodeColor={nodeColor} pannable inversePan zoomable zoomStep={1} nodeStrokeWidth={0} />
+                )}
             </ReactFlow>
         </Box>
     );

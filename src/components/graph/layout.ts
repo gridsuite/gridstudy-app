@@ -33,7 +33,7 @@ export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[], lay
                 ...node,
                 // React Flow expects a position property on the node instead of `x`
                 // and `y` fields.
-                position: { x: node.x+X_OFFSET_FIX, y: node.y+Y_OFFSET_FIX },
+                position: { x: node.x + X_OFFSET_FIX, y: node.y + Y_OFFSET_FIX },
             })),
             edges: [...layoutedGraph.edges],
         }))
