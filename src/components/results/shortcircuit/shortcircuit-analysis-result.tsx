@@ -32,7 +32,7 @@ import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { FilterEnumsType, useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -42,6 +42,8 @@ import {
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
+
+import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 
 interface IShortCircuitAnalysisGlobalResultProps {
     analysisType: ShortCircuitAnalysisType;
