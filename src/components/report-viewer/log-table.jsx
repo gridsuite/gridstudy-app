@@ -123,6 +123,23 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         return ![...severitySet].every((severity) => defaultSeveritySet.has(severity));
     }, [severityFilter, severities]);
 
+    const cellStyleFormat = useCallback(
+        (param) => {
+            if (param.node.rowIndex < 0) {
+                return {};
+            }
+            if (searchResults.includes(param.node.rowIndex)) {
+                return { color: theme.searchedText.color };
+            } else {
+                return { color: '' };
+            }
+            /* if (searchResults[currentResultIndex] === param.node.rowIndex) {
+                return { color: theme.searchedText.color };
+            } */
+        },
+        [searchResults, theme.searchedText.color]
+    );
+
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
             makeAgGridCustomHeaderColumn({
@@ -158,9 +175,10 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 },
                 flex: 1,
                 cellRenderer: EllipsisCellRenderer,
+                cellStyle: (param) => cellStyleFormat(param),
             }),
         ],
-        [intl, updateFilter, filterSelector, severities, shouldDisplayFilterBadge]
+        [intl, updateFilter, filterSelector, severities, shouldDisplayFilterBadge, cellStyleFormat]
     );
 
     const handleRowClick = useCallback(
@@ -178,7 +196,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }
             return selectedRowIndex === row.rowIndex ? { backgroundColor: theme.palette.action.selected } : {};
         },
-        [selectedRowIndex, theme]
+        [selectedRowIndex, theme.palette.action.selected]
     );
 
     const onGridReady = ({ api }) => {
@@ -201,12 +219,12 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         // First, scroll to the row
         api.ensureIndexVisible(matches[index], 'middle');
         // Use setTimeout to delay the flashing until after the scroll is complete
-        setTimeout(() => {
+        /*   setTimeout(() => {
             api.flashCells({
                 flashDuration: 1000,
                 rowNodes: [api.getDisplayedRowAtIndex(matches[index])],
             });
-        }, 100);
+        }, 100); */
     }, []);
 
     const handleSearch = useCallback(
@@ -264,7 +282,13 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }}
         >
             <Box sx={{ flexShrink: 0 }}>
-                <QuickSearch onSearch={handleSearch} onNavigate={handleNavigate} resultCount={searchResults.length} />
+                <QuickSearch
+                    currentResultIndex={currentResultIndex}
+                    onSearch={handleSearch}
+                    onNavigate={handleNavigate}
+                    resultCount={searchResults.length}
+                    setSearchResults={setSearchResults}
+                />
             </Box>
             <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                 <CustomAGGrid

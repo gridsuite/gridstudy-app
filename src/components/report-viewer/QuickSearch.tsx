@@ -5,18 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React, { useState, useCallback, useRef } from 'react';
-import { TextField, InputAdornment, IconButton } from '@mui/material';
-import { Search, ArrowUpward, ArrowDownward } from '@mui/icons-material';
+import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
+import { Search, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 
 interface QuickSearchProps {
+    currentResultIndex: number;
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
+    setSearchResults: (results: string[]) => void;
 }
 
-export const QuickSearch: React.FC<QuickSearchProps> = ({ onSearch, onNavigate, resultCount }) => {
-    const [searchTerm, setSearchTerm] = useState('');
+export const QuickSearch: React.FC<QuickSearchProps> = ({
+    currentResultIndex,
+    onSearch,
+    onNavigate,
+    resultCount,
+    setSearchResults,
+}) => {
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const intl = useIntl();
 
@@ -26,18 +35,30 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({ onSearch, onNavigate, 
 
     const handleKeyDown = useCallback(
         (event: React.KeyboardEvent) => {
-            if (event.key === 'Enter') {
+            if (event.key === 'Enter' && searchTerm) {
+                setResultsCountDisplay(true);
                 handleSearch();
             }
         },
-        [handleSearch]
+        [handleSearch, searchTerm]
+    );
+
+    const onChange = useCallback(
+        (value: string) => {
+            if (value.length < searchTerm.length || value === '') {
+                setSearchResults([]);
+            }
+            setSearchTerm(value);
+            setResultsCountDisplay(false);
+        },
+        [searchTerm.length, setSearchResults]
     );
 
     return (
         <TextField
             inputRef={inputRef}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={intl.formatMessage({ id: 'searchPlaceholder' })}
             InputProps={{
@@ -47,14 +68,25 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({ onSearch, onNavigate, 
                     </InputAdornment>
                 ),
                 endAdornment: (
-                    <InputAdornment position="end">
-                        <IconButton onClick={() => onNavigate('previous')} disabled={resultCount === 0}>
-                            <ArrowUpward />
-                        </IconButton>
-                        <IconButton onClick={() => onNavigate('next')} disabled={resultCount === 0}>
-                            <ArrowDownward />
-                        </IconButton>
-                        {resultCount > 0 && <span>{resultCount + ' ' + intl.formatMessage({ id: 'Results' })}</span>}
+                    <InputAdornment sx={{ marginLeft: '50px' }} position="end">
+                        {resultsCountDisplay && (
+                            <span>
+                                {currentResultIndex +
+                                    1 +
+                                    '/' +
+                                    resultCount +
+                                    ' ' +
+                                    intl.formatMessage({ id: 'Results' })}
+                            </span>
+                        )}
+                        <Box sx={{ marginLeft: '5px' }}>
+                            <IconButton onClick={() => onNavigate('previous')} disabled={resultCount === 0}>
+                                <KeyboardArrowUp />
+                            </IconButton>
+                            <IconButton onClick={() => onNavigate('next')} disabled={resultCount === 0}>
+                                <KeyboardArrowDown />
+                            </IconButton>
+                        </Box>
                     </InputAdornment>
                 ),
             }}
