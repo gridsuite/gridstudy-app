@@ -129,6 +129,8 @@ const formSchema = yup
     })
     .required();
 
+type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
+
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps;
     useNonEvacuatedEnergyParameters: any; //TODO: fix any
@@ -199,7 +201,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
             [CONTINGENCIES]: [],
         };
     }, [provider]);
-    const formMethods = useForm({
+    const formMethods = useForm<NonEvacuatedEnergyParametersForm>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });

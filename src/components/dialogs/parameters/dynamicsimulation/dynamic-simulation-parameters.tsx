@@ -298,7 +298,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                         : undefined
                                 }
                                 path={TAB_VALUES.SOLVER}
-                                errors={formState.errors[TAB_VALUES.SOLVER]}
                                 clearErrors={clearErrors}
                             />
                         </TabPanel>
@@ -307,7 +306,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                 mapping={
                                     parameters
                                         ? {
-                                              mapping: parameters.mapping,
                                               mappings: parameters.mappings,
                                           }
                                         : undefined

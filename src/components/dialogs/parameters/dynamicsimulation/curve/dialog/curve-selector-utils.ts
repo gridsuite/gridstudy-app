@@ -8,7 +8,7 @@
 import { ExpertFilter } from 'services/study/filter';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
-import { RuleGroupTypeExport } from '@gridsuite/commons-ui';
+import { RuleGroupTypeExport, RuleTypeExport } from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -37,7 +37,7 @@ export const buildExpertRules = (
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined
 ) => {
-    const rules: RuleGroupTypeExport[] = [];
+    const rules: (RuleTypeExport | RuleGroupTypeExport)[] = [];
 
     //TODO: check values changed to value is correct, check if combinator shoud be mandatory as well
 
@@ -46,7 +46,7 @@ export const buildExpertRules = (
         const voltageLevelIdsRule = {
             field: FieldType.VOLTAGE_LEVEL_ID,
             operator: OperatorType.IN,
-            value: voltageLevelIds,
+            values: voltageLevelIds,
             dataType: DataType.STRING,
         };
         rules.push(voltageLevelIdsRule);
@@ -57,7 +57,7 @@ export const buildExpertRules = (
         const countriesRule = {
             field: FieldType.COUNTRY,
             operator: OperatorType.IN,
-            value: countries,
+            values: countries,
             dataType: DataType.ENUM,
         };
         rules.push(countriesRule);
@@ -68,7 +68,7 @@ export const buildExpertRules = (
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
-            value: nominalVoltages,
+            values: nominalVoltages,
             dataType: DataType.NUMBER,
         };
         rules.push(nominalVoltagesRule);

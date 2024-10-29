@@ -42,7 +42,7 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
     const intl = useIntl();
     const gridRef = useRef<AgGridReact<any>>(null);
 
-    const [rowData, setRowData] = useState([]);
+    const [rowData, setRowData] = useState<Curve[]>([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
     const columnDefs = useMemo(() => {
         return [

@@ -236,13 +236,13 @@ export const styles = {
     }),
 };
 
-interface TabPanelProps {
-    value: number;
-    index: number;
+interface TabPanelProps<T> {
+    value: T;
+    index: T;
     keepState?: boolean;
 }
 
-export const TabPanel: FunctionComponent<PropsWithChildren<TabPanelProps>> = (props) => {
+export const TabPanel = <T,>(props: PropsWithChildren<TabPanelProps<T>>) => {
     const { children, value, index, keepState, ...other } = props;
     return (
         <Typography

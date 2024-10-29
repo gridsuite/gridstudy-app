@@ -176,30 +176,32 @@ export const getGenerationStagesSelectionParams = (params: IStagesSelection) => 
 };
 
 export const getGeneratorsCappingsFormSchema = () => ({
-    [SENSITIVITY_THRESHOLD]: yup
-        .number()
-        .min(0, 'CoefficientMustBeGreaterOrEqualToZero')
-        .max(1, 'CoefficientMustBeLowerOrEqualToOne')
-        .required(),
-    [GENERATORS_CAPPINGS]: yup.array().of(
-        yup.object().shape({
-            [GENERATORS_CAPPINGS_KIND]: yup.string().required(),
-            [GENERATORS_CAPPINGS_FILTER]: yup
-                .array()
-                .of(
-                    yup.object().shape({
-                        [ID]: yup.string().required(),
-                        [NAME]: yup.string().required(),
-                    })
-                )
-                .required()
-                .when([ACTIVATED], {
-                    is: (activated: boolean) => activated,
-                    then: (schema) => schema.min(1, 'FieldIsRequired'),
-                }),
-            [ACTIVATED]: yup.boolean().required(),
-        })
-    ),
+    [GENERATORS_CAPPINGS]: yup.object().shape({
+        [SENSITIVITY_THRESHOLD]: yup
+            .number()
+            .min(0, 'CoefficientMustBeGreaterOrEqualToZero')
+            .max(1, 'CoefficientMustBeLowerOrEqualToOne')
+            .required(),
+        [GENERATORS_CAPPINGS]: yup.array().of(
+            yup.object().shape({
+                [GENERATORS_CAPPINGS_KIND]: yup.string().required(),
+                [GENERATORS_CAPPINGS_FILTER]: yup
+                    .array()
+                    .of(
+                        yup.object().shape({
+                            [ID]: yup.string().required(),
+                            [NAME]: yup.string().required(),
+                        })
+                    )
+                    .required()
+                    .when([ACTIVATED], {
+                        is: (activated: boolean) => activated,
+                        then: (schema) => schema.min(1, 'FieldIsRequired'),
+                    }),
+                [ACTIVATED]: yup.boolean().required(),
+            })
+        ),
+    }),
 });
 
 export const getGeneratorsCappingsParams = (sensitivityThreshold: number, params: IGeneratorsCappings) => {
