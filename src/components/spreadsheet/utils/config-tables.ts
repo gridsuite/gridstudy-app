@@ -3785,6 +3785,25 @@ export const TABLES_DEFINITIONS = {
             },
         ],
     },
+    BUSBAR_SECTION: {
+        index: 16,
+        name: 'BusBarSections',
+        type: EQUIPMENT_TYPES.BUSBAR_SECTION,
+        fetchers: EQUIPMENT_FETCHERS.BUSBAR_SECTION,
+        columns: [
+            {
+                id: 'ID',
+                field: 'id',
+                isDefaultSort: true,
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'VoltageLevelId',
+                field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+        ],
+    },
 };
 
 export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
