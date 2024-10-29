@@ -10,7 +10,7 @@ import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
 import ReportTree from './report-tree';
 import ReportItem from './report-item';
-import { mapReportsTree } from '../../utils/report-tree.mapper';
+import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { setLogsFilter } from 'redux/actions';
