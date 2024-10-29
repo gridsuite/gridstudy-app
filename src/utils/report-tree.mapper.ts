@@ -6,13 +6,13 @@
  */
 
 import { Report, ReportTree, ReportType } from '../types/report.type';
-import { getHighestSeverity } from './report-severity.utils';
-import { GLOBAL_REPORT_NODE_LABEL, REPORT_TYPE } from '../constants/report.constant';
+import { getHighestSeverity } from './report-severity';
+import { GLOBAL_REPORT_NODE_LABEL } from '../constants/report.constant';
 
 export function mapReportsTree(report: Report, reportType?: ReportType): ReportTree {
     const severityList = report.severities || report.subReports.flatMap((subReport) => subReport.severities);
     return {
-        type: reportType ?? (report.message === GLOBAL_REPORT_NODE_LABEL ? REPORT_TYPE.GLOBAL : REPORT_TYPE.NODE),
+        type: reportType ?? (report.message === GLOBAL_REPORT_NODE_LABEL ? ReportType.GLOBAL : ReportType.NODE),
         id: report.id,
         message: report.message,
         parentId: report.parentId,
@@ -20,6 +20,6 @@ export function mapReportsTree(report: Report, reportType?: ReportType): ReportT
         highestSeverity: getHighestSeverity(severityList),
         subReports: report.subReports
             .filter((subReport) => subReport.subReports.length > 0 || subReport.id)
-            .map((subReport) => mapReportsTree(subReport, REPORT_TYPE.NODE)),
+            .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
     } satisfies ReportTree;
 }
