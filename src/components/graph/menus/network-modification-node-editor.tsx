@@ -991,7 +991,6 @@ const NetworkModificationNodeEditor = () => {
                 type={ElementType.MODIFICATION}
                 titleId={'CreateCompositeModification'}
                 prefixIdForGeneratedName={'GeneratedModification'}
-                withDescription={true}
             />
         );
     };
