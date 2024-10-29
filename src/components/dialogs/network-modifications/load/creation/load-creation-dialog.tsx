@@ -20,7 +20,7 @@ import {
     P0,
     Q0,
 } from 'components/utils/field-constants';
-import React, { FC, useCallback, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -33,7 +33,7 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
-import LoadCreationForm from './load-creation-form.js';
+import { LoadCreationForm } from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
@@ -96,7 +96,7 @@ export type LoadCreationSchemaForm = {
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
-const LoadCreationDialog: FC<any> = ({
+export const LoadCreationDialog: FC<any> = ({
     editData,
     currentNode,
     studyUuid,
@@ -239,5 +239,3 @@ const LoadCreationDialog: FC<any> = ({
         </CustomFormProvider>
     );
 };
-
-export default LoadCreationDialog;

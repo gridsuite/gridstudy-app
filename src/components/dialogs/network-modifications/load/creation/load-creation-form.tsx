@@ -7,7 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { ActivePowerAdornment, gridItem, GridSection, ReactivePowerAdornment } from '../../../dialogUtils';
 import { LOAD_TYPES } from 'components/network/constants';
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
@@ -22,7 +22,7 @@ interface LoadCreationFormProps {
     currentNode: CurrentTreeNode;
 }
 
-const LoadCreationForm: FunctionComponent<LoadCreationFormProps> = ({ studyUuid, currentNode }) => {
+export const LoadCreationForm: FunctionComponent<LoadCreationFormProps> = ({ studyUuid, currentNode }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
@@ -76,5 +76,3 @@ const LoadCreationForm: FunctionComponent<LoadCreationFormProps> = ({ studyUuid,
         </>
     );
 };
-
-export default LoadCreationForm;
