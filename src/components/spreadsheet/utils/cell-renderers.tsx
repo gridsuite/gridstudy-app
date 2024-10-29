@@ -163,12 +163,32 @@ export const DefaultCellRenderer = (props: any) => {
 export const EllipsisCellRenderer = ({ value }: { value: any }) => {
     const textRef = useRef<any>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+    const checkEllipsis = () => {
+        if (textRef.current) {
+            const zoomLevel = window.devicePixelRatio;
+            const adjustedScrollWidth = textRef.current.scrollWidth / zoomLevel;
+            const adjustedClientWidth = textRef.current.clientWidth / zoomLevel;
+            setIsEllipsisActive(adjustedScrollWidth > adjustedClientWidth);
+        }
+    };
 
     useEffect(() => {
-        if (textRef.current) {
-            setIsEllipsisActive(textRef.current.scrollWidth > textRef.current.clientWidth);
-        }
+        checkEllipsis();
     }, [value]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            checkEllipsis();
+        };
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('zoom', handleResize);
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('zoom', handleResize);
+        };
+    }, []);
 
     return (
         <Box sx={mergeSx(styles.tableCell)}>
