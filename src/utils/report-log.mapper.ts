@@ -6,7 +6,7 @@
  */
 
 import { Log, ReportLog, ReportSeverity } from '../types/report.type';
-import { REPORT_SEVERITY } from '../constants/report.constant';
+import { REPORT_SEVERITY } from './report-severity';
 
 export const mapReportLogs = (reportLogs: ReportLog[]) => {
     const formattedLogs: Log[] = [];

@@ -5,72 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReportSeverity, SeverityLevel } from '../types/report.type';
 import ComputingType from '../components/computing-status/computing-type';
-
-export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
-    UNKNOWN: {
-        name: 'UNKNOWN',
-        level: 0,
-        colorName: 'cornflowerblue',
-        colorHexCode: '#6495ED',
-        displayedByDefault: false,
-        displayedByDefaultForReportContainer: false,
-    },
-    TRACE: {
-        name: 'TRACE',
-        level: 1,
-        colorName: 'SlateGray',
-        colorHexCode: '#708090',
-        displayedByDefault: false,
-        displayedByDefaultForReportContainer: true,
-    },
-    DEBUG: {
-        name: 'DEBUG',
-        level: 2,
-        colorName: 'DarkCyan',
-        colorHexCode: '#008B8B',
-        displayedByDefault: false,
-        displayedByDefaultForReportContainer: true,
-    },
-    INFO: {
-        name: 'INFO',
-        level: 3,
-        colorName: 'mediumseagreen',
-        colorHexCode: '#3CB371',
-        displayedByDefault: true,
-        displayedByDefaultForReportContainer: true,
-    },
-    WARN: {
-        name: 'WARN',
-        level: 4,
-        colorName: 'orange',
-        colorHexCode: '#FFA500',
-        displayedByDefault: true,
-        displayedByDefaultForReportContainer: true,
-    },
-    ERROR: {
-        name: 'ERROR',
-        level: 5,
-        colorName: 'crimson',
-        colorHexCode: '#DC143C',
-        displayedByDefault: true,
-        displayedByDefaultForReportContainer: true,
-    },
-    FATAL: {
-        name: 'FATAL',
-        level: 6,
-        colorName: 'mediumorchid',
-        colorHexCode: '#BA55D3',
-        displayedByDefault: true,
-        displayedByDefaultForReportContainer: true,
-    },
-};
-
-export const REPORT_TYPE = {
-    GLOBAL: 'GlobalReport',
-    NODE: 'NodeReport',
-} as const;
 
 export const GLOBAL_REPORT_NODE_LABEL = 'Logs';
 
