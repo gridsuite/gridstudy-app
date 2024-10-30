@@ -448,6 +448,7 @@
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
     "studyDirectoryFetchingError": "An error occured while fetching study directory",
+    "AddDescription": "Add a description (optional)",
 
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
@@ -556,6 +557,8 @@
     "OnlyMin": "Min:\u202F{min}",
     "OnlyMax": "Max:\u202F{max}",
     "CenterSelectedNode": "Center on selected node",
+    "DisplayMinimap": "Display minimap",
+    "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
 
     "Logs": "Logs",
