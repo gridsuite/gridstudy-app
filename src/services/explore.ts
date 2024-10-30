@@ -14,10 +14,17 @@ import { SpreadsheetConfig } from '../types/custom-columns.types';
 const PREFIX_EXPLORE_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/explore';
 const PREFIX_DIRECTORY_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/directory';
 
-export function createParameter(newParameter: any, name: string, parameterType: string, parentDirectoryUuid: UUID) {
+export function createParameter(
+    newParameter: any,
+    name: string,
+    parameterType: ElementType,
+    description: string,
+    parentDirectoryUuid: UUID
+) {
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('name', name);
     urlSearchParams.append('type', parameterType);
+    urlSearchParams.append('description', description);
     urlSearchParams.append('parentDirectoryUuid', parentDirectoryUuid);
     return backendFetch(PREFIX_EXPLORE_SERVER_QUERIES + '/v1/explore/parameters?' + urlSearchParams.toString(), {
         method: 'post',
