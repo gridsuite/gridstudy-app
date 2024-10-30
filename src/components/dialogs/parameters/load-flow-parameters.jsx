@@ -24,24 +24,19 @@ import { replaceAllDefaultValues } from '../../utils/utils';
 import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 import { useParameterState } from './hooks';
-import { ParameterGroup } from './widget';
-import ParameterLineSlider from './widget/parameter-line-slider';
+import { DropDown, LabelledButton, ParameterGroup, ParameterLineSlider, SwitchWithLabel, TabPanel } from './widget';
 import {
+    getLimitReductionsFormSchema,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
     TAB_INFO,
     TAB_VALUES,
-    getLimitReductionsFormSchema,
 } from './common/limitreductions/columns-definitions';
 import LimitReductionsTableForm from './common/limitreductions/limit-reductions-table-form';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
-import LabelledButton from './widget/labelled-button';
-import SwitchWithLabel from './widget/switch-with-label';
-import DropDown from './widget/drop-down';
-import TabPanel from './widget/tab-panel';
 
 const styles = {
     minWidthMedium: (theme) => ({

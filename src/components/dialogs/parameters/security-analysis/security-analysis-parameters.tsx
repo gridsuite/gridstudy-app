@@ -5,17 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ChangeEvent,
-    Dispatch,
-    FunctionComponent,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
-import { Box, Grid } from '@mui/material';
+import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Grid, type SelectChangeEvent } from '@mui/material';
 import { LineSeparator } from '../../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
@@ -39,17 +30,15 @@ import {
     LIMIT_REDUCTIONS_FORM,
 } from '../common/limitreductions/columns-definitions';
 import {
-    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
-    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
+    PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
+    PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
-import LabelledButton from '../widget/labelled-button';
-import DropDown from '../widget/drop-down';
+import { DropDown, LabelledButton } from '../widget';
 import styles from '../styles';
-import type { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];

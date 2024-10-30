@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS, STATUS } from '../../../utils/constants';
 import { Lens } from '@mui/icons-material';
 
@@ -17,7 +17,6 @@ import {
     SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS,
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../../utils/field-constants';
-import { ShortCircuitParameters } from './short-circuit-parameters.type';
 
 export const intlPredefinedParametersOptions = () => [
     {
@@ -34,23 +33,29 @@ export const intlPredefinedParametersOptions = () => [
     },
 ];
 
-export const intlInitialVoltageProfileMode = () => {
-    return {
-        NOMINAL: {
-            id: 'NOMINAL',
-            label: 'nominalInitialVoltageProfileMode',
-        },
-        CEI909: {
-            id: 'CEI909',
-            label: 'cei909InitialVoltageProfileMode',
-        },
-    };
-};
+export const intlInitialVoltageProfileMode = () => ({
+    NOMINAL: {
+        id: 'NOMINAL',
+        label: 'nominalInitialVoltageProfileMode',
+    },
+    CEI909: {
+        id: 'CEI909',
+        label: 'cei909InitialVoltageProfileMode',
+    },
+});
 
-export const getStatus = (status: STATUS, styles: any) => {
-    const color = status === STATUS.SUCCESS ? styles.succeed : styles.fail;
-    return <Lens fontSize={'medium'} sx={color} />;
-};
+export const getStatus = (status: STATUS, styles: any) => (
+    <Lens fontSize={'medium'} sx={status === STATUS.SUCCESS ? styles.succeed : styles.fail} />
+);
+
+export interface ShortCircuitParameters {
+    withFeederResult: boolean;
+    withLoads: boolean;
+    withVSCConverterStations: boolean;
+    withShuntCompensators: boolean;
+    withNeutralPosition: boolean;
+    initialVoltageProfileMode: INITIAL_VOLTAGE;
+}
 
 export const formatShortCircuitParameters = (
     parameters: ShortCircuitParameters,

@@ -23,7 +23,7 @@ import {
 } from './columns-definitions';
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
-import TabPanel from '../widget/tab-panel';
+import { TabPanel } from '../widget';
 
 const NonEvacuatedEnergyParametersSelector = ({ onFormChanged, onChangeParams }) => {
     const intl = useIntl();

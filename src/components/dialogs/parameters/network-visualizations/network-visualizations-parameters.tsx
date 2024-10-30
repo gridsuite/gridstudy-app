@@ -12,7 +12,7 @@ import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters'
 import { MapParameters } from './map-parameters';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
-import TabPanel from '../widget/tab-panel';
+import { TabPanel } from '../widget';
 
 enum TabValue {
     MAP = 'Map',

@@ -24,7 +24,7 @@ import SensitivityTable from './sensitivity-table';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CircularProgress from '@mui/material/CircularProgress';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import TabPanel from '../widget/tab-panel';
+import { TabPanel } from '../widget';
 
 const styles = {
     circularProgress: (theme) => ({

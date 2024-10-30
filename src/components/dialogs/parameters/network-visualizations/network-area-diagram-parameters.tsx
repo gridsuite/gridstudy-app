@@ -6,7 +6,7 @@
  */
 import { Grid } from '@mui/material';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../../utils/config-params';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
+import { ParameterLineSwitch } from '../widget';
 import styles from '../styles';
 
 export const NetworkAreaDiagramParameters = () => {

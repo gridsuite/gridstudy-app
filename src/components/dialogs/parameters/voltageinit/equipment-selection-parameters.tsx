@@ -9,7 +9,8 @@ import { ElementType } from '@gridsuite/commons-ui';
 import { DialogContent } from '@mui/material';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FIXED_GENERATORS, VARIABLE_SHUNT_COMPENSATORS, VARIABLE_TRANSFORMERS } from 'components/utils/field-constants';
-import ParameterLineDirectoryItemsInput from '../widget/parameter-line-directory-items-input';
+import { ParameterLineDirectoryItemsInput } from '../widget';
+
 const EquipmentSelectionParameters = () => {
     return (
         <DialogContent>

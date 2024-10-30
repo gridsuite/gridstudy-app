@@ -4,13 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { VoltageTableProps } from './short-circuit-parameters.type';
 import { INITIAL_VOLTAGE } from '../../../utils/constants';
 
-const VoltageTable: FunctionComponent<VoltageTableProps> = ({ voltageProfileMode }) => {
+export interface VoltageTableProps {
+    voltageProfileMode: INITIAL_VOLTAGE;
+}
+
+export default function VoltageTable({ voltageProfileMode }: Readonly<VoltageTableProps>) {
     const intl = useIntl();
 
     const rows = useMemo(
@@ -43,6 +46,4 @@ const VoltageTable: FunctionComponent<VoltageTableProps> = ({ voltageProfileMode
             </TableBody>
         </Table>
     );
-};
-
-export default VoltageTable;
+}

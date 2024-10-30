@@ -55,9 +55,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
-import LabelledButton from '../widget/labelled-button';
-import DropDown from '../widget/drop-down';
-import TabPanel from '../widget/tab-panel';
+import { DropDown, LabelledButton, TabPanel } from '../widget';
 import styles from '../styles';
 
 const TAB_VALUES = {

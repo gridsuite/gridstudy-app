@@ -13,7 +13,7 @@ import { FormattedMessage } from 'react-intl';
 import { useParameterState } from '../hooks';
 import styles from '../styles';
 
-type SliderParameterLineProps = {
+export type SliderParameterLineProps = {
     readonly paramNameId: string;
     disabled?: boolean;
     label: string;
@@ -22,14 +22,14 @@ type SliderParameterLineProps = {
     maxValue?: number; //default = 100;
 };
 
-const ParameterLineSlider = ({
+export default function ParameterLineSlider({
     paramNameId,
     label,
     marks,
     disabled = false,
     minValue = 0,
     maxValue = 100,
-}: SliderParameterLineProps) => {
+}: Readonly<SliderParameterLineProps>) {
     const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
     const [sliderValue, setSliderValue] = useState(Number(parameterValue));
 
@@ -62,6 +62,4 @@ const ParameterLineSlider = ({
             </Grid>
         </>
     );
-};
-
-export default ParameterLineSlider;
+}

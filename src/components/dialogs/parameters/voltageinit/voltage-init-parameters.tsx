@@ -42,7 +42,7 @@ import {
 import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
-import TabPanel from '../widget/tab-panel';
+import { TabPanel } from '../widget';
 import styles from '../styles';
 
 export const VoltageInitParameters = ({

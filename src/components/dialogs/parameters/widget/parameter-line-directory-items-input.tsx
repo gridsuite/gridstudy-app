@@ -11,7 +11,7 @@ import { FormattedMessage } from 'react-intl';
 
 import styles from '../styles';
 
-type DirectoryItemsInputLineProps = {
+export type DirectoryItemsInputLineProps = {
     label: string;
     name: string;
     equipmentTypes: string[];
@@ -19,13 +19,13 @@ type DirectoryItemsInputLineProps = {
     hideErrorMessage: boolean;
 };
 
-const ParameterLineDirectoryItemsInput = ({
+export default function ParameterLineDirectoryItemsInput({
     label,
     name,
     equipmentTypes,
     elementType,
     hideErrorMessage,
-}: DirectoryItemsInputLineProps) => {
+}: Readonly<DirectoryItemsInputLineProps>) {
     return (
         <Grid item container spacing={1} padding={1}>
             <Grid item xs={8} sx={styles.parameterName}>
@@ -44,6 +44,4 @@ const ParameterLineDirectoryItemsInput = ({
             </Grid>
         </Grid>
     );
-};
-
-export default ParameterLineDirectoryItemsInput;
+}

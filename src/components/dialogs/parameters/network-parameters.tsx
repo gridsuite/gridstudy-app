@@ -12,9 +12,7 @@ import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../../utils/conf
 import { mergeSx } from '../../utils/functions';
 import { LineSeparator } from '../dialogUtils';
 import { useParameterState } from './hooks';
-import ParameterLineDropdown from './widget/parameter-line-dropdown';
-import ParameterLineSwitch from './widget/parameter-line-switch';
-import LabelledButton from './widget/labelled-button';
+import { LabelledButton, ParameterLineDropdown, ParameterLineSwitch } from './widget';
 import styles from './styles';
 import { FluxConventions } from './flux-conventions';
 

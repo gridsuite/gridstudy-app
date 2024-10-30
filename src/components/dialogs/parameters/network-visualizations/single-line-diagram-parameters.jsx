@@ -17,8 +17,7 @@ import {
 } from '../../../../utils/config-params';
 import { LineSeparator } from '../../dialogUtils';
 import { SubstationLayout } from '../../../diagrams/diagram-common';
-import ParameterLineDropdown from '../widget/parameter-line-dropdown';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
+import { ParameterLineDropdown, ParameterLineSwitch } from '../widget';
 import styles from '../styles';
 
 export const useGetAvailableComponentLibraries = (user) => {

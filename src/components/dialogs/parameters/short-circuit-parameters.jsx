@@ -38,7 +38,7 @@ import {
 } from '../../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
+import ShortCircuitFields from './shortcircuit/short-circuit-fields';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 

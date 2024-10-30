@@ -14,10 +14,10 @@ export type ParameterSwitchProps = {
     onChange: NonNullable<SwitchProps['onChange']>;
 };
 
-export const ParameterSwitch = ({ label, value, onChange, key }: ParameterSwitchProps) => {
+export default function ParameterSwitch({ label, value, onChange, key }: Readonly<ParameterSwitchProps>) {
     return (
         <Grid container spacing={1} paddingTop={1} key={key} justifyContent={'space-between'}>
             <SwitchWithLabel value={value} label={label} callback={onChange} />
         </Grid>
     );
-};
+}

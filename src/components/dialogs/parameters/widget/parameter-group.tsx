@@ -46,7 +46,7 @@ const styles = {
     }),
 } as const satisfies Record<string, SxProps<Theme>>;
 
-type ParameterGroupProps = {
+export type ParameterGroupProps = {
     label: string;
     state: boolean;
     onClick: (show: boolean) => void;
@@ -55,7 +55,7 @@ type ParameterGroupProps = {
     unmountOnExit?: boolean;
 };
 
-export const ParameterGroup: FunctionComponent<PropsWithChildren<ParameterGroupProps>> = (props, context) => {
+export default function ParameterGroup(props: Readonly<PropsWithChildren<ParameterGroupProps>>) {
     const [mouseHover, setMouseHover] = useState(false);
 
     return (
@@ -97,4 +97,4 @@ export const ParameterGroup: FunctionComponent<PropsWithChildren<ParameterGroupP
             </Accordion>
         </Grid>
     );
-};
+}

@@ -12,7 +12,7 @@ import { useParameterState } from '../hooks';
 import { useMemo } from 'react';
 import styles from '../styles';
 
-type DropDownParameterLineProps = {
+export type DropDownParameterLineProps = {
     readonly paramNameId: string;
     values: Record<string, string>;
     defaultValueIfNull?: boolean;
@@ -21,7 +21,8 @@ type DropDownParameterLineProps = {
     labelValue?: string;
     onPreChange?: SelectInputProps<any>['onChange'];
 };
-const ParameterLineDropdown = ({
+
+export default function ParameterLineDropdown({
     defaultValueIfNull,
     labelTitle,
     labelValue,
@@ -29,7 +30,7 @@ const ParameterLineDropdown = ({
     paramNameId,
     values,
     disabled = false,
-}: DropDownParameterLineProps) => {
+}: Readonly<DropDownParameterLineProps>) {
     const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
 
     const currentValue = useMemo(() => {
@@ -68,6 +69,4 @@ const ParameterLineDropdown = ({
             </Grid>
         </>
     );
-};
-
-export default ParameterLineDropdown;
+}

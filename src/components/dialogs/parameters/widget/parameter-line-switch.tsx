@@ -10,12 +10,17 @@ import { FormattedMessage } from 'react-intl';
 import { useParameterState } from '../hooks';
 import styles from '../styles';
 
-type SwitchParameterLineProps = {
+export type SwitchParameterLineProps = {
     readonly paramNameId: string;
     disabled?: boolean;
     label?: string;
 };
-const ParameterLineSwitch = ({ paramNameId, label, disabled = false }: SwitchParameterLineProps) => {
+
+export default function ParameterLineSwitch({
+    paramNameId,
+    label,
+    disabled = false,
+}: Readonly<SwitchParameterLineProps>) {
     const [parameterValue, handleChangeParameterValue] = useParameterState(paramNameId);
 
     return (
@@ -36,6 +41,4 @@ const ParameterLineSwitch = ({ paramNameId, label, disabled = false }: SwitchPar
             </Grid>
         </>
     );
-};
-
-export default ParameterLineSwitch;
+}

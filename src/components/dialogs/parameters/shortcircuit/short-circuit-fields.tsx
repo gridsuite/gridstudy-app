@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -17,7 +17,6 @@ import {
     SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS,
 } from '../../../utils/field-constants';
 import { CheckboxInput, FieldLabel, MuiSelectInput, RadioInput, SwitchInput } from '@gridsuite/commons-ui';
-
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS, STATUS } from '../../../utils/constants';
 import { gridItem, GridSection } from '../../dialogUtils';
 import { green, red } from '@mui/material/colors';
@@ -28,9 +27,12 @@ import {
     intlInitialVoltageProfileMode,
     intlPredefinedParametersOptions,
 } from './short-circuit-parameters-utils';
-import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
 
-const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetAll }) => {
+export interface ShortCircuitFieldsProps {
+    resetAll: (predefinedParams: INITIAL_VOLTAGE) => void;
+}
+
+export default function ShortCircuitFields({ resetAll }: Readonly<ShortCircuitFieldsProps>) {
     const [status, setStatus] = useState(STATUS.SUCCESS);
 
     const watchInitialVoltageProfileMode = useWatch({
@@ -178,5 +180,4 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
             <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
         </Grid>
     );
-};
-export default ShortCircuitFields;
+}

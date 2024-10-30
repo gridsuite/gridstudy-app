@@ -21,9 +21,7 @@ import {
 } from '../../../../utils/config-params';
 import { LineSeparator } from '../../dialogUtils';
 import { useParameterState } from '../hooks';
-import ParameterLineDropdown from '../widget/parameter-line-dropdown';
-import ParameterLineSlider from '../widget/parameter-line-slider';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
+import { ParameterLineDropdown, ParameterLineSlider, ParameterLineSwitch } from '../widget';
 import styles from '../styles';
 
 export const MapParameters = () => {
