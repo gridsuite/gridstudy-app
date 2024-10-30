@@ -448,6 +448,7 @@
     "showSelectParameterDialog": "Choose parameters",
     "nameAlreadyUsed": "This name is already used",
     "studyDirectoryFetchingError": "An error occured while fetching study directory",
+    "AddDescription": "Add a description (optional)",
 
     "descLfReadSlackBus": "Read slack bus in the network",
     "descLfWriteSlackBus": "Write slack bus in the network",
