@@ -7,11 +7,11 @@
 
 import { useIntl } from 'react-intl';
 import { FunctionComponent, RefObject, useCallback } from 'react';
-import { EDIT_COLUMN } from './utils/config-tables';
 import { ExportButton } from 'components/utils/export-button';
 import { formatNAValue } from './utils/cell-renderers';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ProcessCellForExportParams } from 'ag-grid-community';
+import { EDIT_COLUMN } from './utils/constants';
 
 interface CsvExportProps {
     gridRef: RefObject<AgGridReact>;

@@ -11,7 +11,6 @@ import {
     computeSwitchedOnValue,
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
-import { EDIT_COLUMN } from './config-tables';
 import { CellEditingStoppedEvent, ColDef, Column, RefreshCellsParams, GridApi } from 'ag-grid-community';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
@@ -25,6 +24,7 @@ import {
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
+import { EDIT_COLUMN } from './constants';
 
 type DynamicValidation = Record<string, number | undefined>;
 
