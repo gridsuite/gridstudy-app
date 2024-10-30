@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { TABLES_DEFINITIONS } from './utils/config-tables';
 
 interface EquipmentTabsProps {
     tabIndex: number;
@@ -40,18 +39,15 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                     }}
                     aria-label="tables"
                 >
-                    {tablesNames
-                        // By default, we don't show the busbar section table
-                        .filter((table) => table !== TABLES_DEFINITIONS.BUSBAR_SECTION.name)
-                        .map((table) => (
-                            <Tab
-                                key={table}
-                                label={intl.formatMessage({
-                                    id: table,
-                                })}
-                                disabled={disabled}
-                            />
-                        ))}
+                    {tablesNames.map((table) => (
+                        <Tab
+                            key={table}
+                            label={intl.formatMessage({
+                                id: table,
+                            })}
+                            disabled={disabled}
+                        />
+                    ))}
                 </Tabs>
             </Grid>
         </Grid>
