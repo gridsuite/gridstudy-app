@@ -37,9 +37,9 @@ import {
 import { NOMINAL_V } from '../../utils/field-constants';
 import CountryCellRenderer from '../renderers/country-cell-render';
 import EnumCellRenderer from '../renderers/enum-cell-renderer';
+import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { EnumOption } from '../../utils/utils-type';
 import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
-import { BooleanFilterValue } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './constants';
 
 type TapPositionsType = {
