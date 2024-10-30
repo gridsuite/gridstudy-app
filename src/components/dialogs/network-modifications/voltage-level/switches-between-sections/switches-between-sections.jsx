@@ -94,7 +94,7 @@ export const SwitchesBetweenSections = () => {
         </TextInput>
     );
 
-    if (watchSectionCount <= 1) {
+    if (isNaN(watchSectionCount) || watchSectionCount <= 1) {
         return <></>;
     } else {
         return (
