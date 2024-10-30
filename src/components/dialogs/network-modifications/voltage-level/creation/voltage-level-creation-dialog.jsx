@@ -105,7 +105,7 @@ const formSchema = yup
                 then: (schema) => schema.required(),
             }),
         [BUS_BAR_COUNT]: yup.number().min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').nullable().required(),
-        [SECTION_COUNT]: yup.number().min(1).nullable().required(),
+        [SECTION_COUNT]: yup.number().min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').nullable().required(),
         [SWITCHES_BETWEEN_SECTIONS]: yup
             .string()
             .nullable()
