@@ -8,9 +8,9 @@
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     CustomFormProvider,
+    DescriptionField,
     DirectoryItemSelector,
     ElementType,
-    ExpandingTextField,
     fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
     useSnackMessage,
@@ -44,7 +44,6 @@ interface ElementCreationDialogProps {
     type: ElementType;
     titleId: string;
     prefixIdForGeneratedName?: string;
-    withDescription?: boolean;
 }
 
 const formSchema = yup
@@ -67,7 +66,6 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     type,
     titleId,
     prefixIdForGeneratedName,
-    withDescription,
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -159,7 +157,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
     );
 
     const folderChooser = (
-        <Grid container item paddingTop={1}>
+        <Grid container item>
             <Grid item>
                 <Button onClick={handleChangeFolder} variant="contained" size={'small'}>
                     <FormattedMessage id={'showSelectDirectoryDialog'} />
@@ -186,25 +184,21 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                 maxWidth={'md'}
                 disabledSave={disableSave}
             >
-                <UniqueNameInput
-                    name={NAME}
-                    label={'Name'}
-                    elementType={type}
-                    activeDirectory={destinationFolder?.id as UUID}
-                    autoFocus
-                />
-                {withDescription === true && (
-                    <Grid container paddingTop={1}>
-                        <ExpandingTextField
-                            name={DESCRIPTION}
-                            label={'descriptionProperty'}
-                            minRows={3}
-                            rows={3}
-                            sx={{ flexGrow: 1 }}
+                <Grid container spacing={2} marginTop={'auto'} direction="column">
+                    <Grid item>
+                        <UniqueNameInput
+                            name={NAME}
+                            label={'Name'}
+                            elementType={type}
+                            activeDirectory={destinationFolder?.id as UUID}
+                            autoFocus
                         />
                     </Grid>
-                )}
-                {folderChooser}
+                    <Grid item>
+                        <DescriptionField />
+                    </Grid>
+                    {folderChooser}
+                </Grid>
                 <DirectoryItemSelector
                     open={directorySelectorOpen}
                     onClose={setSelectedFolder}
