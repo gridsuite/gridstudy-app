@@ -12,6 +12,12 @@ import { FunctionComponent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import {
+    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    MAX_LOCKS_PER_TAB,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+} from './utils/constants';
 import { TABLES_NAMES } from './utils/config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -21,12 +27,6 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
 import { AppState } from '../../redux/reducer';
 import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
-import {
-    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    MAX_LOCKS_PER_TAB,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './utils/constants';
 
 const styles = {
     checkboxSelectAll: (theme: Theme) => ({
