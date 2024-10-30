@@ -8,7 +8,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Grid } from '@mui/material';
-import { styles } from './parameters';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
@@ -46,6 +45,7 @@ import CreateParameterDialog from './common/parameters-creation-dialog';
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
 import ComputingType from '../../computing-status/computing-type';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
+import styles from './styles';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);

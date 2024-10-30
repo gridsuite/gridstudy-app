@@ -19,7 +19,7 @@ import PropTypes from 'prop-types';
 import AppPackage from '../../package.json';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt, isNodeReadOnly } from './graph/util/model-functions';
-import { useParameterState } from './dialogs/parameters/parameters';
+import { useParameterState } from './dialogs/parameters/hooks';
 import { getServersInfos } from '../services/study';
 import { EQUIPMENT_TYPES } from './utils/equipment-types';
 import { fetchVersion } from '../services/utils';

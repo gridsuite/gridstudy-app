@@ -29,7 +29,7 @@ import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import { useParameterState } from './dialogs/parameters/parameters';
+import { useParameterState } from './dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import ComputingType from './computing-status/computing-type';
 

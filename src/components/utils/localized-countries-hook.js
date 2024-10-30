@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useParameterState } from '../dialogs/parameters/parameters';
+import { useParameterState } from '../dialogs/parameters/hooks';
 import { PARAM_LANGUAGE } from '../../utils/config-params';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { getComputedLanguage } from '../../utils/language';

@@ -7,12 +7,12 @@
 import React, { FunctionComponent, SyntheticEvent, useCallback, useState } from 'react';
 import { Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { TabPanel } from '../parameters';
 import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
+import TabPanel from '../widget/tab-panel';
 
 enum TabValue {
     MAP = 'Map',

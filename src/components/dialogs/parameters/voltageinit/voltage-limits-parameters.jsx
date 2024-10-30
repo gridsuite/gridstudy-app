@@ -22,8 +22,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
 import { VoltageAdornment } from 'components/dialogs/dialogUtils';
-import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
+import styles from '../styles';
 
 const VoltageLimitsParameters = () => {
     const intl = useIntl();

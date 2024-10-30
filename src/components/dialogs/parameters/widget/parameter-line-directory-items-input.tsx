@@ -8,7 +8,8 @@
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { styles } from '../parameters';
+
+import styles from '../styles';
 
 type DirectoryItemsInputLineProps = {
     label: string;

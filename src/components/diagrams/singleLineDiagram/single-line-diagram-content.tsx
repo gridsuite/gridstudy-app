@@ -41,7 +41,7 @@ import ShuntCompensatorModificationDialog from 'components/dialogs/network-modif
 import { deleteEquipment, updateSwitchState } from '../../../services/study/network-modifications';
 import { BusMenu } from 'components/menus/bus-menu';
 import { ComputingType } from 'components/computing-status/computing-type';
-import { useParameterState } from 'components/dialogs/parameters/parameters';
+import { useParameterState } from 'components/dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';

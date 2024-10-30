@@ -16,7 +16,6 @@ import {
     useState,
 } from 'react';
 import { Box, Grid } from '@mui/material';
-import { DropDown, LabelledButton, styles } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
@@ -47,6 +46,11 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
+import LabelledButton from '../widget/labelled-button';
+import DropDown from '../widget/drop-down';
+import styles from '../styles';
+import type { SelectChangeEvent } from '@mui/material/Select/SelectInput';
+
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
@@ -54,8 +58,10 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
         parametersBackend;
 
-    const handleUpdateProvider = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-        updateProvider(evt.target.value);
+    const handleUpdateProvider = useCallback(
+        (evt: SelectChangeEvent<unknown>) => updateProvider(evt.target.value),
+        [updateProvider]
+    );
 
     const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
     const intl = useIntl();
@@ -187,7 +193,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             }}
                             justifyContent={'space-between'}
                         >
-                            <DropDown
+                            <DropDown<unknown>
                                 value={provider}
                                 label="Provider"
                                 values={securityAnalysisProvider}

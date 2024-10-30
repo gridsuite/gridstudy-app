@@ -9,13 +9,13 @@ import React, { ChangeEvent, useCallback } from 'react';
 import { ParameterSwitch, ParameterFloat } from '../widget';
 import { GENERAL, GENERAL_APPLY_MODIFICATIONS } from './voltage-init-parameters-form';
 import Alert from '@mui/material/Alert';
-import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
 import { ReactivePowerAdornment, LineSeparator } from '../../dialogUtils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
+import styles from '../styles';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();

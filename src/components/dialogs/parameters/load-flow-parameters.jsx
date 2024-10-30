@@ -23,7 +23,7 @@ import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParameterState } from './parameters';
+import { useParameterState } from './hooks';
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
 import {
@@ -38,6 +38,16 @@ import LimitReductionsTableForm from './common/limitreductions/limit-reductions-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
+import LabelledButton from './widget/labelled-button';
+import SwitchWithLabel from './widget/switch-with-label';
+import DropDown from './widget/drop-down';
+import TabPanel from './widget/tab-panel';
+
+const styles = {
+    minWidthMedium: (theme) => ({
+        minWidth: theme.spacing(20),
+    }),
+};
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();

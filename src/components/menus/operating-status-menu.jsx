@@ -34,7 +34,7 @@ import {
     tripEquipment,
 } from '../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../services/study/network';
-import { useParameterState } from '../dialogs/parameters/parameters';
+import { useParameterState } from '../dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';

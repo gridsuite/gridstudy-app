@@ -15,7 +15,7 @@ import { AppState } from 'redux/reducer';
 import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
-import { useParameterState } from '../dialogs/parameters/parameters';
+import { useParameterState } from '../dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';

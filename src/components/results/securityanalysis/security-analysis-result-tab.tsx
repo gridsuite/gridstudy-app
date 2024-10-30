@@ -43,7 +43,7 @@ import {
     SECURITY_ANALYSIS_RESULT_STORE_FIELD,
 } from 'utils/store-sort-filter-fields';
 import { useIntl } from 'react-intl/lib';
-import { useParameterState } from 'components/dialogs/parameters/parameters';
+import { useParameterState } from 'components/dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { usePrevious } from 'components/utils/utils';
 

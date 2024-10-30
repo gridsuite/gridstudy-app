@@ -6,9 +6,8 @@
  */
 
 import React, { FunctionComponent } from 'react';
-import { Grid, Tooltip } from '@mui/material';
+import { Grid, type SxProps, type Theme, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles } from '../parameters';
 import Typography from '@mui/material/Typography';
 import InfoIcon from '@mui/icons-material/Info';
 import {
@@ -19,6 +18,43 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from '../../../../utils/config-params';
 import { FloatInput } from '@gridsuite/commons-ui';
+import commonStyles from '../styles';
+
+const styles = {
+    singleItem: (theme) => ({
+        display: 'flex',
+        flex: 'auto',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    }),
+    firstTextField: (theme) => ({
+        marginLeft: theme.spacing(3),
+    }),
+    secondTextField: (theme) => ({
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(2),
+    }),
+    singleTextField: (theme) => ({
+        display: 'flex',
+        marginRight: theme.spacing(2),
+        marginLeft: theme.spacing(1),
+    }),
+    text: (theme) => ({
+        display: 'flex',
+        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(1),
+    }),
+    multipleItems: (theme) => ({
+        display: 'flex',
+        flex: 'auto',
+        alignItems: 'flex-start',
+        justifyContent: 'space-between',
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+    }),
+} as const satisfies Record<string, SxProps<Theme>>;
 
 interface FieldToShow {
     label: string;
@@ -38,7 +74,7 @@ const SecurityAnalysisFields: FunctionComponent<FieldToShow> = ({
     const intl = useIntl();
     return (
         <Grid sx={isSingleField ? styles.singleItem : styles.multipleItems}>
-            <Grid item xs={4} sx={styles.parameterName}>
+            <Grid item xs={4} sx={commonStyles.parameterName}>
                 <Typography>{intl.formatMessage({ id: label })}</Typography>
             </Grid>
             <Grid
@@ -123,7 +159,7 @@ const ViolationsHidingParameters: FunctionComponent = () => {
                         })}
                     </Typography>
                     <Tooltip
-                        sx={styles.tooltip}
+                        sx={commonStyles.tooltip}
                         title={<FormattedMessage id={'securityAnalysis.toolTip.violationsHiding'} />}
                         placement="left-start"
                     >

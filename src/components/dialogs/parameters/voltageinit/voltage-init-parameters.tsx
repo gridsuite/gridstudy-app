@@ -17,7 +17,6 @@ import { Button, DialogActions, Grid, Tab, Tabs } from '@mui/material';
 import { Dispatch, SetStateAction, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { styles, TabPanel } from '../parameters';
 import VoltageLimitsParameters from './voltage-limits-parameters';
 import EquipmentSelectionParameters from './equipment-selection-parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -43,6 +42,8 @@ import {
 import { AppState } from '../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { useGetVoltageInitParameters } from './use-get-voltage-init-parameters';
+import TabPanel from '../widget/tab-panel';
+import styles from '../styles';
 
 export const VoltageInitParameters = ({
     setHaveDirtyFields,

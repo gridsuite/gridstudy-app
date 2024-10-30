@@ -6,12 +6,10 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-
 import { FormattedMessage, useIntl } from 'react-intl';
-
 import Grid from '@mui/material/Grid';
 import { Box, Tab, Tabs } from '@mui/material';
-import { TabPanel, useParameterState } from '../parameters';
+import { useParameterState } from '../hooks';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
 import {
@@ -26,6 +24,7 @@ import SensitivityTable from './sensitivity-table';
 import { PARAM_DEVELOPER_MODE } from '../../../../utils/config-params';
 import CircularProgress from '@mui/material/CircularProgress';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import TabPanel from '../widget/tab-panel';
 
 const styles = {
     circularProgress: (theme) => ({

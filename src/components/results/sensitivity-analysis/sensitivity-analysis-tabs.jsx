@@ -9,7 +9,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl/lib';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import { useParameterState } from '../../dialogs/parameters/parameters';
+import { useParameterState } from '../../dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import {
     COMPUTATION_RESULTS_LOGS,

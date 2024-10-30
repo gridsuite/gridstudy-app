@@ -28,7 +28,7 @@ import MappingParameters, {
     MAPPING,
 } from './mapping-parameters';
 import { LineSeparator } from '../../dialogUtils';
-import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
+import { useParametersBackend } from '../hooks';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
     formSchema as networkFormSchema,
@@ -55,6 +55,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
+import LabelledButton from '../widget/labelled-button';
+import DropDown from '../widget/drop-down';
+import TabPanel from '../widget/tab-panel';
+import styles from '../styles';
 
 const TAB_VALUES = {
     TIME_DELAY: 'timeDelay',

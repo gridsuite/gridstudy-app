@@ -8,14 +8,25 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, useTheme } from '@mui/material';
 import React, { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { styles } from '../../../parameters';
 import CurveSelector from './curve-selector';
 import CurvePreview from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import { mergeSx } from '../../../../../utils/functions';
+import commonStyles from '../../../styles';
+
+const styles = {
+    title: (theme) => ({
+        padding: theme.spacing(2),
+    }),
+    scrollableGrid: {
+        ...commonStyles.scrollableGrid,
+        maxWidth: 'xl',
+        height: '100%',
+        maxHeight: '100%',
+    },
+};
 
 const CurveSelectorDialog = ({ open, onClose, onSave }) => {
     const theme = useTheme();
@@ -70,14 +81,7 @@ const CurveSelectorDialog = ({ open, onClose, onSave }) => {
                 </Typography>
             </DialogTitle>
             <DialogContent style={{ overflowY: 'hidden', height: '60vh' }}>
-                <Grid
-                    container
-                    sx={mergeSx(styles.scrollableGrid, {
-                        maxWidth: 'xl',
-                        height: '100%',
-                        maxHeight: '100%',
-                    })}
-                >
+                <Grid container sx={styles.scrollableGrid}>
                     <Grid item container xs={8} spacing={theme.spacing(1)}>
                         <CurveSelector ref={selectorRef} />
                     </Grid>

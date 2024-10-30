@@ -85,8 +85,8 @@ import {
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
 import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
-import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
+import { FluxConventions } from '../dialogs/parameters/flux-conventions';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited

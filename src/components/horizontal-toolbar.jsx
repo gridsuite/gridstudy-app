@@ -17,7 +17,7 @@ import Divider from '@mui/material/Divider';
 import { setModificationsDrawerOpen, setStudyDisplayMode, setEventScenarioDrawerOpen } from '../redux/actions';
 import { TOOLTIP_DELAY } from '../utils/UIconstants';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
-import { useParameterState } from './dialogs/parameters/parameters';
+import { useParameterState } from './dialogs/parameters/hooks';
 import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import { StudyDisplayMode } from './network-modification.type';
 

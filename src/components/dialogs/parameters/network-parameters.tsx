@@ -5,21 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
-import Alert from '@mui/material/Alert';
+import { Alert, Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { fetchDefaultParametersValues } from '../../../services/utils';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import { mergeSx } from '../../utils/functions';
 import { LineSeparator } from '../dialogUtils';
-import { LabelledButton, styles, useParameterState } from './parameters';
+import { useParameterState } from './hooks';
 import ParameterLineDropdown from './widget/parameter-line-dropdown';
 import ParameterLineSwitch from './widget/parameter-line-switch';
-
-export enum FluxConventions {
-    IIDM = 'iidm',
-    TARGET = 'target',
-}
+import LabelledButton from './widget/labelled-button';
+import styles from './styles';
+import { FluxConventions } from './flux-conventions';
 
 export const NetworkParameters = () => {
     const [, handleChangeFluxConvention] = useParameterState(PARAM_FLUX_CONVENTION);

@@ -6,11 +6,11 @@
  */
 
 import { Grid, InputAdornment } from '@mui/material';
-import { styles } from '../parameters';
 import { LineSeparator } from '../../dialogUtils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import styles from '../styles';
 
 // --- define data types --- //
 export const TYPES = {

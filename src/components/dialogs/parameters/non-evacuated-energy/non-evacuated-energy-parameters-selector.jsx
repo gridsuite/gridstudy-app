@@ -11,7 +11,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
 import { Tab, Tabs } from '@mui/material';
-import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as nonEvacuatedEnergyParam from './columns-definitions';
 import {
@@ -24,6 +23,7 @@ import {
 } from './columns-definitions';
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
+import TabPanel from '../widget/tab-panel';
 
 const NonEvacuatedEnergyParametersSelector = ({ onFormChanged, onChangeParams }) => {
     const intl = useIntl();

@@ -15,7 +15,7 @@ import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
 
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
+import { useParameterState } from './dialogs/parameters/hooks';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';

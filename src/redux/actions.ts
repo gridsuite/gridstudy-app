@@ -53,7 +53,6 @@ import {
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
-import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { DiagramType, SubstationLayout } from '../components/diagrams/diagram-common';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
@@ -69,6 +68,7 @@ import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { FluxConventions } from '../components/dialogs/parameters/flux-conventions';
 
 type MutableUnknownArray = unknown[];
 
