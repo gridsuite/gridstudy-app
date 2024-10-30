@@ -13,7 +13,7 @@ import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 
 const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompensatorInfos, equipmentId }) => {
     const shuntCompensatorIdField = (

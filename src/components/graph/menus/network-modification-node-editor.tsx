@@ -71,7 +71,7 @@ import {
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
