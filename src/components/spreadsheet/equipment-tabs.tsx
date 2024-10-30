@@ -45,6 +45,8 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                             sx={{
                                 // by default, hide the busbar sections table
                                 visibility: table === TABLES_DEFINITIONS.BUSBAR_SECTION.name ? 'hidden' : 'visible',
+                                minWidth: table === TABLES_DEFINITIONS.BUSBAR_SECTION.name ? '0px' : 'auto',
+                                maxWidth: table === TABLES_DEFINITIONS.BUSBAR_SECTION.name ? '0px' : 'auto',
                             }}
                             key={table}
                             label={intl.formatMessage({
