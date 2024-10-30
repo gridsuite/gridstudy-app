@@ -7,20 +7,8 @@
 
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ADDITIONAL_PROPERTIES,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
-    CONNECTIVITY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
-import { FC, useCallback, useEffect } from 'react';
+import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
+import { FunctionComponent, useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -43,10 +31,15 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
-    Property,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import {
+    LoadCreationDialogFormSearchCopy,
+    LoadCreationDialogFromEditData,
+    LoadCreationDialogProps,
+    LoadCreationSchemaForm,
+} from './load-creation-dialog.type';
 
 /**
  * Dialog to create a load in the network
@@ -80,23 +73,7 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export type LoadCreationSchemaForm = {
-    [EQUIPMENT_ID]: string;
-    [EQUIPMENT_NAME]?: string;
-    [LOAD_TYPE]?: string;
-    [P0]: number;
-    [Q0]: number;
-    [CONNECTIVITY]: {
-        [CONNECTION_DIRECTION]?: string;
-        [CONNECTION_NAME]?: string;
-        [CONNECTION_POSITION]?: number;
-        [CONNECTED]?: boolean;
-    };
-    // Properties
-    [ADDITIONAL_PROPERTIES]?: Property[];
-};
-
-export const LoadCreationDialog: FC<any> = ({
+export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
     editData,
     currentNode,
     studyUuid,
@@ -114,7 +91,7 @@ export const LoadCreationDialog: FC<any> = ({
 
     const { reset } = formMethods;
 
-    const fromSearchCopyToFormValues = (load: any) => {
+    const fromSearchCopyToFormValues = (load: LoadCreationDialogFormSearchCopy) => {
         reset({
             [EQUIPMENT_ID]: load.id + '(1)',
             [EQUIPMENT_NAME]: load.name ?? '',
@@ -137,7 +114,7 @@ export const LoadCreationDialog: FC<any> = ({
     };
 
     const fromEditDataToFormValues = useCallback(
-        (load: any) => {
+        (load: LoadCreationDialogFromEditData) => {
             reset({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
@@ -175,25 +152,25 @@ export const LoadCreationDialog: FC<any> = ({
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (load: any) => {
-            createLoad(
-                studyUuid,
-                currentNodeUuid,
-                load[EQUIPMENT_ID],
-                sanitizeString(load[EQUIPMENT_NAME]),
-                !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[P0],
-                load[Q0],
-                load.connectivity.voltageLevel.id,
-                load.connectivity.busOrBusbarSection.id,
-                !!editData,
-                editData ? editData.uuid : undefined,
-                load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(load.connectivity?.connectionName),
-                load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.terminalConnected,
-                toModificationProperties(load)
-            ).catch((error) => {
+        (load: LoadCreationSchemaForm) => {
+            createLoad({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                id: load[EQUIPMENT_ID],
+                name: sanitizeString(load[EQUIPMENT_NAME]),
+                loadType: !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
+                p0: load[P0],
+                q0: load[Q0],
+                voltageLevelId: load.connectivity.voltageLevel.id,
+                busOrBusbarSectionId: load.connectivity.busOrBusbarSection.id,
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                connectionDirection: load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionName: sanitizeString(load.connectivity?.connectionName),
+                connectionPosition: load.connectivity?.connectionPosition ?? null,
+                terminalConnected: load.connectivity?.terminalConnected,
+                properties: toModificationProperties(load?.AdditionalProperties),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LoadCreationError',
@@ -216,12 +193,12 @@ export const LoadCreationDialog: FC<any> = ({
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
+                onClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-load"
                 maxWidth={'md'}
                 titleId="CreateLoad"
-                searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}

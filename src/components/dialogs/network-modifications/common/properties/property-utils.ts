@@ -137,10 +137,8 @@ export const mergeModificationAndEquipmentProperties = (
     return Array.from(newModificationProperties.values());
 };
 
-export const toModificationProperties = (properties: Properties) => {
-    const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
-        (p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
-    );
+export const toModificationProperties = (properties: Property[] | undefined) => {
+    const filteredProperties = properties?.filter((p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]);
     return filteredProperties?.length === 0 ? undefined : filteredProperties;
 };
 
