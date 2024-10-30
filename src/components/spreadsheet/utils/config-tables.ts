@@ -40,6 +40,7 @@ import EnumCellRenderer from '../renderers/enum-cell-renderer';
 import { BooleanFilterValue } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { EnumOption } from '../../utils/utils-type';
 import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from './constants';
 
 type TapPositionsType = {
     lowTapPosition: number;
@@ -69,13 +70,6 @@ const editableCellStyle = (params: CellClassParams) => {
 // The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
 const excludeFromGlobalFilter = () => '';
-
-export const MIN_COLUMN_WIDTH = 160;
-export const MEDIUM_COLUMN_WIDTH = 220;
-export const LARGE_COLUMN_WIDTH = 340;
-export const MAX_LOCKS_PER_TAB = 5;
-
-export const EDIT_COLUMN = 'edit';
 
 const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
@@ -3787,10 +3781,6 @@ export const TABLES_DEFINITIONS = {
     },
 };
 
-export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
-export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
-export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'reorderedColumns.';
-
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
     .map((table) => table.columns)
     .map((cols) => new Set(cols.map((c) => c.id)));
@@ -3826,5 +3816,3 @@ function generateTapRequest(tapType: string, legNumber: number) {
         ' }\n'
     );
 }
-
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];

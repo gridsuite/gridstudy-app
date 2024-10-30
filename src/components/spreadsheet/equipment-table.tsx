@@ -5,9 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo, useCallback, Ref } from 'react';
+import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
 import { useTheme } from '@mui/material';
-import { ALLOWED_KEYS } from './utils/config-tables';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import {
@@ -16,6 +15,7 @@ import {
     ColDef,
     ColumnMovedEvent,
     GetRowIdParams,
+    KeyCode,
     RowClassParams,
     RowHeightParams,
     RowStyle,
@@ -25,6 +25,8 @@ import { CurrentTreeNode } from '../../redux/reducer';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
+
+const ALLOWED_KEYS: KeyCode[] = [KeyCode.ESCAPE, KeyCode.DOWN, KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT];
 
 interface EquipmentTableProps {
     rowData: unknown[];
