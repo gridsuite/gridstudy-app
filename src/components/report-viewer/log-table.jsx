@@ -21,8 +21,6 @@ import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
 import { Box } from '@mui/material';
 
-// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
-
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }) => {
@@ -123,23 +121,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         return ![...severitySet].every((severity) => defaultSeveritySet.has(severity));
     }, [severityFilter, severities]);
 
-    const cellStyleFormat = useCallback(
-        (param) => {
-            if (param.node.rowIndex < 0) {
-                return {};
-            }
-            if (searchResults.includes(param.node.rowIndex)) {
-                return { color: theme.searchedText.color };
-            } else {
-                return { color: '' };
-            }
-            /* if (searchResults[currentResultIndex] === param.node.rowIndex) {
-                return { color: theme.searchedText.color };
-            } */
-        },
-        [searchResults, theme.searchedText.color]
-    );
-
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
             makeAgGridCustomHeaderColumn({
@@ -174,11 +155,24 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
                 flex: 1,
-                cellRenderer: EllipsisCellRenderer,
-                cellStyle: (param) => cellStyleFormat(param),
+                cellRenderer: (param) =>
+                    EllipsisCellRenderer({
+                        param: param,
+                        indexTextToHighlight: searchResults[currentResultIndex],
+                        highlightColor: theme.searchedText.highlightColor,
+                    }),
             }),
         ],
-        [intl, updateFilter, filterSelector, severities, shouldDisplayFilterBadge, cellStyleFormat]
+        [
+            intl,
+            updateFilter,
+            filterSelector,
+            severities,
+            shouldDisplayFilterBadge,
+            searchResults,
+            currentResultIndex,
+            theme.searchedText.highlightColor,
+        ]
     );
 
     const handleRowClick = useCallback(
@@ -209,7 +203,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         suppressMovable: true,
     };
 
-    // Function to highlight the current match and scroll to it
+    // Function to scroll to the current match
     const highlightAndScrollToMatch = useCallback((index, matches) => {
         if (!gridRef.current || matches.length === 0) {
             return;
@@ -218,13 +212,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         const api = gridRef.current.api;
         // First, scroll to the row
         api.ensureIndexVisible(matches[index], 'middle');
-        // Use setTimeout to delay the flashing until after the scroll is complete
-        /*   setTimeout(() => {
-            api.flashCells({
-                flashDuration: 1000,
-                rowNodes: [api.getDisplayedRowAtIndex(matches[index])],
-            });
-        }, 100); */
     }, []);
 
     const handleSearch = useCallback(

@@ -61,29 +61,32 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={intl.formatMessage({ id: 'searchPlaceholder' })}
+            sx={{ width: '30%' }}
             InputProps={{
                 startAdornment: (
                     <InputAdornment position="start">
                         <Search />
                     </InputAdornment>
                 ),
-                endAdornment: (
+                endAdornment: resultsCountDisplay && (
                     <InputAdornment sx={{ marginLeft: '50px' }} position="end">
-                        {resultsCountDisplay && (
-                            <span>
-                                {currentResultIndex +
-                                    1 +
-                                    '/' +
-                                    resultCount +
-                                    ' ' +
-                                    intl.formatMessage({ id: 'Results' })}
-                            </span>
-                        )}
-                        <Box sx={{ marginLeft: '5px' }}>
-                            <IconButton onClick={() => onNavigate('previous')} disabled={resultCount === 0}>
+                        <span>
+                            {currentResultIndex + 1 + '/' + resultCount + ' ' + intl.formatMessage({ id: 'Results' })}
+                        </span>
+
+                        <Box sx={{ marginLeft: '20px' }}>
+                            <IconButton
+                                sx={{ padding: '2px' }}
+                                onClick={() => onNavigate('previous')}
+                                disabled={resultCount === 0}
+                            >
                                 <KeyboardArrowUp />
                             </IconButton>
-                            <IconButton onClick={() => onNavigate('next')} disabled={resultCount === 0}>
+                            <IconButton
+                                sx={{ padding: '2px' }}
+                                onClick={() => onNavigate('next')}
+                                disabled={resultCount === 0}
+                            >
                                 <KeyboardArrowDown />
                             </IconButton>
                         </Box>
