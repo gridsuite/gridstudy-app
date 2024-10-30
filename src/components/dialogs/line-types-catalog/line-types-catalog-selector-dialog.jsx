@@ -12,8 +12,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+import { ALLOWED_KEYS } from '../../utils/utils.js';
 
 export const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,

@@ -46,7 +46,6 @@ import {
     SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
-    TablesDefinitionsType,
     TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
@@ -69,6 +68,7 @@ import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
 
 type MutableUnknownArray = unknown[];
 
@@ -1197,7 +1197,7 @@ export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
     type: typeof UPDATE_TABLE_DEFINITION;
-    payload: { key: string; value: TablesDefinitionsType; customColumns: ColumnWithFormula[] };
+    payload: { key: string; value: EQUIPMENT_TYPES; customColumns: ColumnWithFormula[] };
 };
 
 export const updateTableDefinition = (

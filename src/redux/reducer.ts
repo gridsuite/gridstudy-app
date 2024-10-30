@@ -216,7 +216,7 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     TABLES_NAMES_INDEXES,
-} from '../components/spreadsheet/utils/config-tables';
+} from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -294,6 +294,7 @@ import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
+import { SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -434,10 +435,6 @@ export type SelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
-export type TablesDefinitionsKeys = keyof TablesDefinitionsType;
-export type TablesDefinitionsNames = TablesDefinitionsType[TablesDefinitionsKeys]['name'];
-
 export interface AppState extends CommonStoreState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -572,8 +569,11 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUS]: null,
 };
 
+const tableNames = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
+export type TablesDefinitionsNames = (typeof tableNames)[number];
+
 interface TablesState {
-    definitions: TablesDefinitionsType;
+    definitions: SpreadsheetTabDefinition[];
     columnsNames: Set<string>[];
     columnsNamesJson: string[];
     names: string[];
@@ -846,18 +846,14 @@ export const reducer = createReducer(initialState, (builder) => {
             ...state.tables.definitions,
             [key]: value,
         };
-        const updatedColumnsNames = Object.values(updatedDefinitions)
-            .map((table) => table.columns)
+        const updatedColumnsNames = updatedDefinitions
+            .map((tabDef) => tabDef.columns)
             .map((cols) => new Set(cols.map((c) => c.id)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
-        const updatedNames = Object.values(updatedDefinitions).map((table) => table.name);
-        const updatedNamesIndexes = new Map(
-            Object.values(updatedDefinitions).map((table) => [table.name, table.index])
-        );
-        const updatedDefinitionTypes = new Map(Object.values(updatedDefinitions).map((table) => [table.type, table]));
-        const updatedDefinitionIndexes = new Map(
-            Object.values(updatedDefinitions).map((table) => [table.index, table])
-        );
+        const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
+        const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
+        const updatedDefinitionTypes = new Map(updatedDefinitions.map((tabDef) => [tabDef.type, tabDef]));
+        const updatedDefinitionIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.index, tabDef]));
         const updatedAllCustomColumnsDefinitions = {
             ...state.tables.allCustomColumnsDefinitions,
             [(value as unknown as { name: string }).name]: {

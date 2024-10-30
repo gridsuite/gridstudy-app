@@ -7,7 +7,6 @@
 
 import { FunctionComponent, useMemo, useCallback, Ref } from 'react';
 import { useTheme } from '@mui/material';
-import { ALLOWED_KEYS } from './utils/config-tables';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import {
@@ -22,6 +21,7 @@ import {
     SuppressKeyboardEventParams,
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
+import { ALLOWED_KEYS } from '../utils/utils';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;

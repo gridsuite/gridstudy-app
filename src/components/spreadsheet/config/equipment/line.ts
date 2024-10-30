@@ -1,0 +1,198 @@
+/**
+ * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import CountryCellRenderer from '../../utils/country-cell-render';
+import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
+import {
+    countryEnumFilterConfig,
+    defaultBooleanFilterConfig,
+    defaultNumericFilterConfig,
+    defaultTextFilterConfig,
+    excludeFromGlobalFilter,
+    MEDIUM_COLUMN_WIDTH,
+    propertiesGetter,
+} from './common-config';
+import { unitToMicroUnit } from '../../../../utils/unit-converter';
+import { fetchLines } from '../../../../services/study/network';
+
+export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
+    index: 2,
+    name: 'Lines',
+    type: EQUIPMENT_TYPES.LINE,
+    fetchers: [fetchLines],
+    columns: [
+        {
+            id: 'ID',
+            field: 'id',
+            columnWidth: MEDIUM_COLUMN_WIDTH,
+            isDefaultSort: true,
+            ...defaultTextFilterConfig,
+        },
+        {
+            id: 'Name',
+            field: 'name',
+            columnWidth: MEDIUM_COLUMN_WIDTH,
+            ...defaultTextFilterConfig,
+        },
+        {
+            id: 'VoltageLevelIdSide1',
+            field: 'voltageLevelId1',
+            ...defaultTextFilterConfig,
+        },
+        {
+            id: 'VoltageLevelIdSide2',
+            field: 'voltageLevelId2',
+            ...defaultTextFilterConfig,
+        },
+        {
+            id: 'Country1',
+            field: 'country1',
+            ...countryEnumFilterConfig,
+            cellRenderer: CountryCellRenderer,
+        },
+        {
+            id: 'Country2',
+            field: 'country2',
+            ...countryEnumFilterConfig,
+            cellRenderer: CountryCellRenderer,
+        },
+        {
+            id: 'nominalVoltage1KV',
+            field: 'nominalVoltage1',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 0,
+        },
+        {
+            id: 'nominalVoltage2KV',
+            field: 'nominalVoltage2',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 0,
+        },
+        {
+            id: 'ActivePowerSide1',
+            field: 'p1',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            canBeInvalidated: true,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'ActivePowerSide2',
+            field: 'p2',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            canBeInvalidated: true,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'ReactivePowerSide1',
+            field: 'q1',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            canBeInvalidated: true,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'ReactivePowerSide2',
+            field: 'q2',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            canBeInvalidated: true,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'r',
+            field: 'r',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'x',
+            field: 'x',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'g1',
+            field: 'g1',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g1),
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'g2',
+            field: 'g2',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g2),
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'b1',
+            field: 'b1',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b1),
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'b2',
+            field: 'b2',
+            numeric: true,
+            ...defaultNumericFilterConfig,
+            fractionDigits: 1,
+            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b2),
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'connected1',
+            field: 'terminal1Connected',
+            boolean: true,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'connected2',
+            field: 'terminal2Connected',
+            boolean: true,
+            cellRenderer: BooleanCellRenderer,
+            ...defaultBooleanFilterConfig,
+            getQuickFilterText: excludeFromGlobalFilter,
+        },
+        {
+            id: 'Properties',
+            field: 'properties',
+            valueGetter: propertiesGetter,
+            cellRenderer: PropertiesCellRenderer,
+            minWidth: 300,
+            getQuickFilterText: excludeFromGlobalFilter,
+            valueSetter: (params: ValueSetterParams) => {
+                params.data.properties = params.newValue;
+                return true;
+            },
+            ...defaultTextFilterConfig,
+        },
+    ],
+};

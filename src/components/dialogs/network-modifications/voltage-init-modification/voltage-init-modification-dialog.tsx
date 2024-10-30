@@ -27,8 +27,7 @@ import {
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+import { ALLOWED_KEYS } from '../../../utils/utils';
 
 export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,

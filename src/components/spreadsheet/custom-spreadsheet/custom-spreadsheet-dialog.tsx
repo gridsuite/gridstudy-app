@@ -34,7 +34,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
-import { TABLES_DEFINITIONS } from '../utils/config-tables';
+import { TABLES_DEFINITIONS } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';

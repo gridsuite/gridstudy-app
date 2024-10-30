@@ -85,6 +85,7 @@ export function useCustomColumn(tabIndex: number) {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
                 headerName: colWithFormula.name,
+                id: colWithFormula.name,
                 field: colWithFormula.name,
                 sortProps: {
                     onSortChanged,

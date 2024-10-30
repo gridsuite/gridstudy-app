@@ -32,18 +32,8 @@ export type FilterParams = {
     filterComparators?: string[];
     debounceMs?: number;
     filterEnums?: FilterEnumsType;
+    filterOptions?: any; // TODO
 };
-
-export interface CustomColDef extends ColDef {
-    filterProps?: FilterPropsType;
-    filterParams?: FilterParams;
-    sortProps?: SortPropsType;
-    agGridFilterParams?: any;
-    filterTab?: string[];
-    getEnumLabel?: (value: string) => string;
-    isCountry?: boolean;
-    shouldDisplayFilterBadge?: boolean;
-}
 
 export type FilterDataType = {
     dataType: string;
@@ -60,3 +50,36 @@ export type FilterStorePropsType = {
     filterTab: string;
     filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
+
+/* TODO
+    crossValidation?: CrossValidationOptions;
+ */
+export type CrossValidationOptions = any; // TODO
+
+export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {
+    agGridFilterParams?: {
+        filterOptions: { displayKey: string; displayName: string; predicate: (a: TData, b: TData) => boolean }[];
+    };
+    boolean?: boolean;
+    canBeInvalidated?: boolean;
+    changeCmd?: string;
+    columnWidth?: number;
+    crossValidation?: CrossValidationOptions;
+    customFilterParams?: {
+        filterDataType: string;
+        filterComparators?: string[];
+    };
+    filterParams?: FilterParams;
+    filterProps?: FilterPropsType;
+    filterTab?: string[];
+    fractionDigits?: number;
+    getEnumLabel?: (value: string) => string | undefined;
+    id: string; // FIXME mandatory ? use colId ?
+    isCountry?: boolean;
+    isDefaultSort?: boolean;
+    isEnum?: boolean;
+    numeric?: boolean;
+    shouldDisplayFilterBadge?: boolean;
+    sortProps?: SortPropsType;
+    withFluxConvention?: boolean;
+}

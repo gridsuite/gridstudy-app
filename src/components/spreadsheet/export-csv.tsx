@@ -7,7 +7,7 @@
 
 import { useIntl } from 'react-intl';
 import { FunctionComponent, RefObject, useCallback } from 'react';
-import { EDIT_COLUMN } from './utils/config-tables';
+import { EDIT_COLUMN } from './config/equipment/common-config';
 import { ExportButton } from 'components/utils/export-button';
 import { formatNAValue } from './utils/cell-renderers';
 import { AgGridReact } from 'ag-grid-react';

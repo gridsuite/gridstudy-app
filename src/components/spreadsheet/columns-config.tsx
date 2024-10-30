@@ -15,10 +15,9 @@ import { SelectOptionsDialog } from 'utils/dialogs';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    MAX_LOCKS_PER_TAB,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     TABLES_NAMES,
-} from './utils/config-tables';
+} from './config/config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
@@ -27,6 +26,8 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
 import { AppState } from '../../redux/reducer';
 import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
+
+const MAX_LOCKS_PER_TAB = 5;
 
 const styles = {
     checkboxSelectAll: (theme: Theme) => ({
