@@ -7,6 +7,8 @@
 
     "button.delete": "Supprimer",
     "filter": "Filtre",
+    "enable": "Activer",
+    "disable": "Désactiver",
 
     "deleteStudy": "Supprimer l'étude",
     "studyNameDidNotMatchMsg": "Le nom d'étude donné ne correspond pas à ",
@@ -1404,5 +1406,7 @@
     "guidancePopUp.action":"Fermer l'éditeur",
     "generateNad": "Générer",
     "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification",
-    "AddAutomaton": "Ajouter un automate"
+    "AddAutomaton": "Ajouter un automate",
+    "BusBarCountMustBeGreaterThanOrEqualToOne" : "Un nombre de barres doit être supérieur ou égal à 1",
+    "SectionCountMustBeGreaterThanOrEqualToOne" : "Un nombre de sections doit être supérieur ou égal à 1"
 }
