@@ -15,9 +15,11 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
 import ModificationByAssignmentForm from './modification-by-assignment-form';
-import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-constants';
+import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD, VALUE_FIELD } from '../../../../utils/field-constants';
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';
 import {
+    convertInputValue,
+    convertOutputValue,
     getAssignmentFromEditData,
     getAssignmentInitialValue,
     getAssignmentsSchema,
@@ -67,7 +69,15 @@ const ModificationByAssignmentDialog: FC<any> = ({
 
     useEffect(() => {
         if (editData) {
-            const assignments: Assignment[] = editData.assignmentInfosList?.map(getAssignmentFromEditData);
+            const assignments: Assignment[] =
+                editData.assignmentInfosList?.map((info: Assignment) => {
+                    const assignment = getAssignmentFromEditData(info);
+                    const valueConverted = convertInputValue(assignment[EDITED_FIELD], assignment[VALUE_FIELD]);
+                    return {
+                        ...assignment,
+                        [VALUE_FIELD]: valueConverted,
+                    };
+                }) || [];
             reset({
                 [EQUIPMENT_TYPE_FIELD]: editData.equipmentType,
                 [ASSIGNMENTS]: assignments,
@@ -83,6 +93,8 @@ const ModificationByAssignmentDialog: FC<any> = ({
         (formData: ModificationByAssignment) => {
             const assignmentsList = formData[ASSIGNMENTS].map((assignment) => {
                 const dataType = getDataType(assignment[EDITED_FIELD]);
+                const valueConverted = convertOutputValue(assignment[EDITED_FIELD], assignment[VALUE_FIELD]);
+                assignment[VALUE_FIELD] = Number(valueConverted);
                 return {
                     ...assignment,
                     dataType,

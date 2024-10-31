@@ -29,8 +29,11 @@ export enum DataType {
 export type FieldOptionType = {
     id: string;
     label: string;
+    unit?: string;
     dataType: DataType;
     values?: Option[];
+    OutputConverter?: (value: number) => void;
+    inputConverter?: (value: number) => void;
 };
 
 export enum FieldType {

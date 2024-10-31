@@ -22,6 +22,14 @@ export const getDataType = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName)?.dataType;
 };
 
+export const convertOutputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
+    const fieldOption = Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
+    return fieldOption?.OutputConverter ? fieldOption.OutputConverter(Number(fieldValue)) : fieldValue;
+};
+export const convertInputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
+    const fieldOption = Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
+    return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
+};
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
 export const getAssignmentInitialValue = () => ({
     [FILTERS]: [],

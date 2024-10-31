@@ -20,7 +20,7 @@ import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { gridItem } from '../../../../dialogUtils';
-import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
+import { getIdOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
@@ -76,6 +76,18 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
+    const translateLabelWithUnit = useMemo(
+        () => (value: any) => {
+            if (typeof value === 'string') {
+                return value;
+            }
+            const { label = '', unit = '' } = value;
+            const translatedLabel = intl.formatMessage({ id: label });
+            return `${translatedLabel} ${unit}`.trim();
+        },
+        [intl]
+    );
+
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
@@ -95,7 +107,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
+            getOptionLabel={(option: any) => translateLabelWithUnit(option)}
             isOptionEqualToValue={areIdsEqual}
         />
     );
