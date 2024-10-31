@@ -13,7 +13,6 @@ import ReportItem from './report-item';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
-import { setLogsFilter } from 'redux/actions';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -71,12 +70,6 @@ export default function ReportViewer({ report, reportType }) {
 
     const handleSelectNode = (_, reportId) => {
         if (selectedReportId !== reportId) {
-            // Temporary solution to reset the filter each time reports are fetched.
-            // This approach removes the persistence behavior of the filter.
-            // It will be removed once we have a better solution to handle the difference
-            // between default severities and excluded severities.
-            dispatch(setLogsFilter(reportType, []));
-
             setSelectedReportId(reportId);
             setSeverities(reportTreeData.current[reportId].severities);
             setSelectedReportType(reportTreeData.current[reportId].type);
