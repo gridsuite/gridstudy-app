@@ -123,12 +123,7 @@ export default function CustomSpreadsheetConfigDialog({
                             columns: [],
                             type: postfixedEquipmentType,
                         };
-                        dispatch(
-                            updateTableDefinition(
-                                newTableDefinition,
-                                selectedModel.customColumns
-                            )
-                        );
+                        dispatch(updateTableDefinition(newTableDefinition, selectedModel.customColumns));
                         dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
                         dispatch(
                             addSortForNewSpreadsheet(postfixedEquipmentType, [

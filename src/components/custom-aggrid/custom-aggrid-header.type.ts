@@ -8,6 +8,7 @@ import { FilterEnumsType, FilterPropsType } from '../../hooks/use-aggrid-row-fil
 import { ColDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
+import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -50,11 +51,6 @@ export type FilterStorePropsType = {
     filterTab: string;
     filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
-
-/* TODO
-    crossValidation?: CrossValidationOptions;
- */
-export type CrossValidationOptions = any; // TODO
 
 export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {
     agGridFilterParams?: {

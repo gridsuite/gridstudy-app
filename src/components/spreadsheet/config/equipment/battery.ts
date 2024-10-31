@@ -138,7 +138,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'activePowerControl.participate',
-                    columnValue: 1,
+                    columnValue: true,
                 },
             },
             getQuickFilterText: excludeFromGlobalFilter,

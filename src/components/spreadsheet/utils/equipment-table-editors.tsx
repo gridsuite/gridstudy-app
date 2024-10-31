@@ -14,12 +14,13 @@ import { checkValidationsAndRefreshCells, deepUpdateValue } from './equipment-ta
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
-import { ColDef, GridApi } from 'ag-grid-community';
+import { GridApi } from 'ag-grid-community';
 import { EnumOption } from '../../utils/utils-type';
+import { CustomColDef } from "../../custom-aggrid/custom-aggrid-header.type";
 
 interface EquipmentTableEditorProps {
     gridContext: any;
-    colDef: ColDef;
+    colDef: CustomColDef;
     gridApi: GridApi;
 }
 interface EquipmentTableDataEditorProps extends EquipmentTableEditorProps {

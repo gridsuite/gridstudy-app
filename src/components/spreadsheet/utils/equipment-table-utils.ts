@@ -25,6 +25,7 @@ import {
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
+import { CustomColDef } from "../../custom-aggrid/custom-aggrid-header.type";
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -32,7 +33,7 @@ export interface CrossValidationOptions {
     optional?: boolean;
     requiredOn?: {
         dependencyColumn?: string;
-        columnValue?: string;
+        columnValue?: string | boolean;
     };
     allowZero?: boolean;
     minExpression?: number | string;
@@ -434,7 +435,7 @@ export const checkValidationsAndRefreshCells = (gridApi: GridApi, gridContext: a
     }
 };
 
-const checkCrossValidationRequiredOn = (dynamicValidation: DynamicValidation, colDef: ColDef) => {
+const checkCrossValidationRequiredOn = (dynamicValidation: DynamicValidation, colDef: CustomColDef) => {
     const requiredOn = colDef?.crossValidation?.requiredOn ?? {};
     let dependencyValue = deepFindValue(dynamicValidation, requiredOn?.dependencyColumn);
     if (typeof dependencyValue === 'boolean') {

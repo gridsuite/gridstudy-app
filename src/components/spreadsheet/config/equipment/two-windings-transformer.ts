@@ -276,7 +276,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-                    columnValue: 1,
+                    columnValue: true,
                 },
             },
             ...getDefaultEnumConfig(Object.values(RATIO_REGULATION_MODES)),

@@ -187,7 +187,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'activePowerControl.participate',
-                    columnValue: 1,
+                    columnValue: true,
                 },
             },
             getQuickFilterText: excludeFromGlobalFilter,
@@ -294,8 +294,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'voltageRegulatorOn',
-                    //the following value is matched against the input of a boolean input, so 1 convey the following value : false
-                    columnValue: 0,
+                    columnValue: false,
                 },
             },
             getQuickFilterText: excludeFromGlobalFilter,
@@ -341,8 +340,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'voltageRegulatorOn',
-                    //the following value is matched against the input of a boolean input, so 1 convey the following value : true
-                    columnValue: 1,
+                    columnValue: true,
                 },
             },
             getQuickFilterText: excludeFromGlobalFilter,
