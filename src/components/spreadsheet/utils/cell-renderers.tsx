@@ -174,21 +174,15 @@ export const EllipsisCellRenderer = ({ value }: { value: any }) => {
 
     useEffect(() => {
         checkEllipsis();
-    }, [value]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            checkEllipsis();
-        };
-
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('zoom', handleResize);
+        const resizeObserver = new ResizeObserver(() => checkEllipsis());
+        if (textRef.current) {
+            resizeObserver.observe(textRef.current);
+        }
 
         return () => {
-            window.removeEventListener('resize', handleResize);
-            window.removeEventListener('zoom', handleResize);
+            resizeObserver.disconnect();
         };
-    }, []);
+    }, [value]);
 
     return (
         <Box sx={mergeSx(styles.tableCell)}>
