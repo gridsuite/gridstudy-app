@@ -4,13 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
 import { Search, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 
 interface QuickSearchProps {
     currentResultIndex: number;
+    selectedReportId: string;
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
@@ -19,6 +20,7 @@ interface QuickSearchProps {
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
     currentResultIndex,
+    selectedReportId,
     onSearch,
     onNavigate,
     resultCount,
@@ -53,6 +55,11 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
         },
         [searchTerm.length, setSearchResults]
     );
+
+    useEffect(() => {
+        setSearchTerm('');
+        setResultsCountDisplay(false);
+    }, [selectedReportId]);
 
     return (
         <TextField

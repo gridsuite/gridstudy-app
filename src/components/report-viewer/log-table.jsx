@@ -271,6 +271,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             <Box sx={{ flexShrink: 0 }}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
+                    selectedReportId={selectedReportId}
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
