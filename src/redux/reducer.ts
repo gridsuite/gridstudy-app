@@ -841,11 +841,9 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
-        const { key, value, customColumns } = action.payload;
-        const updatedDefinitions = {
-            ...state.tables.definitions,
-            [key]: value,
-        };
+        const { newTableDefinition, customColumns } = action.payload;
+        const updatedDefinitions = [...state.tables.definitions];
+        updatedDefinitions.push(newTableDefinition);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
             .map((cols) => new Set(cols.map((c) => c.id)));
@@ -856,7 +854,7 @@ export const reducer = createReducer(initialState, (builder) => {
         const updatedDefinitionIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.index, tabDef]));
         const updatedAllCustomColumnsDefinitions = {
             ...state.tables.allCustomColumnsDefinitions,
-            [(value as unknown as { name: string }).name]: {
+            [newTableDefinition.name]: {
                 columns: customColumns,
                 filter: {
                     formula: '',

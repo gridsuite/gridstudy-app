@@ -68,7 +68,7 @@ import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
-import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import { SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -1197,16 +1197,15 @@ export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
     type: typeof UPDATE_TABLE_DEFINITION;
-    payload: { key: string; value: EQUIPMENT_TYPES; customColumns: ColumnWithFormula[] };
+    payload: { newTableDefinition: SpreadsheetTabDefinition; customColumns: ColumnWithFormula[] };
 };
 
 export const updateTableDefinition = (
-    key: string,
-    value: any,
+    newTableDefinition: SpreadsheetTabDefinition,
     customColumns: ColumnWithFormula[]
 ): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
-    payload: { key, value, customColumns },
+    payload: { newTableDefinition, customColumns },
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';

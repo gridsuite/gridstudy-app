@@ -85,21 +85,26 @@ export default function CustomSpreadsheetConfigDialog({
     const { snackError } = useSnackMessage();
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
+    const getTabDefinition = useCallback((type: EQUIPMENT_TYPES) => {
+        return TABLES_DEFINITIONS.find((tabDef) => tabDef.type === type);
+    }, []);
+
     const onSubmit = useCallback(
         (newParams: any) => {
             if (selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id) {
-                const equipmentType = newParams.equipmentType as keyof typeof TABLES_DEFINITIONS;
+                const equipmentType = newParams.equipmentType as EQUIPMENT_TYPES;
                 const tabIndex = tablesDefinitionIndexes.size;
+                const postfixedEquipmentType = equipmentType + tabIndex; // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
                 const newTableDefinition = {
-                    ...TABLES_DEFINITIONS[equipmentType],
+                    ...getTabDefinition(equipmentType),
                     name: newParams[SPREADSHEET_NAME],
                     index: tabIndex,
-                    type: equipmentType + tabIndex, // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
+                    type: postfixedEquipmentType,
                 };
-                dispatch(updateTableDefinition('new' + tabIndex + newParams.equipmentType, newTableDefinition, []));
-                dispatch(addFilterForNewSpreadsheet(equipmentType + tabIndex, []));
+                dispatch(updateTableDefinition(newTableDefinition, []));
+                dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
                 dispatch(
-                    addSortForNewSpreadsheet(equipmentType + tabIndex, [
+                    addSortForNewSpreadsheet(postfixedEquipmentType, [
                         {
                             colId: 'id',
                             sort: SortWay.ASC,
@@ -108,38 +113,32 @@ export default function CustomSpreadsheetConfigDialog({
                 );
             } else {
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
-                    .then(
-                        (selectedModel: {
-                            customColumns: ColumnWithFormula[];
-                            sheetType: keyof typeof TABLES_DEFINITIONS;
-                        }) => {
-                            const equipmentType = selectedModel.sheetType;
-                            const tabIndex = tablesDefinitionIndexes.size;
-                            const newTableDefinition = {
-                                ...TABLES_DEFINITIONS[selectedModel.sheetType],
-                                name: newParams[SPREADSHEET_NAME],
-                                index: tablesDefinitionIndexes.size,
-                                columns: [],
-                                type: equipmentType + tabIndex, // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
-                            };
-                            dispatch(
-                                updateTableDefinition(
-                                    'new' + tablesDefinitionIndexes.size + newParams[SPREADSHEET_MODEL][0].name,
-                                    newTableDefinition,
-                                    selectedModel.customColumns
-                                )
-                            );
-                            dispatch(addFilterForNewSpreadsheet(equipmentType + tabIndex, []));
-                            dispatch(
-                                addSortForNewSpreadsheet(equipmentType + tabIndex, [
-                                    {
-                                        colId: 'ID',
-                                        sort: SortWay.ASC,
-                                    },
-                                ])
-                            );
-                        }
-                    )
+                    .then((selectedModel: { customColumns: ColumnWithFormula[]; sheetType: EQUIPMENT_TYPES }) => {
+                        const tabIndex = tablesDefinitionIndexes.size;
+                        const postfixedEquipmentType = selectedModel.sheetType + tabIndex; // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
+                        const newTableDefinition = {
+                            ...getTabDefinition(selectedModel.sheetType),
+                            name: newParams[SPREADSHEET_NAME],
+                            index: tabIndex,
+                            columns: [],
+                            type: postfixedEquipmentType,
+                        };
+                        dispatch(
+                            updateTableDefinition(
+                                newTableDefinition,
+                                selectedModel.customColumns
+                            )
+                        );
+                        dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
+                        dispatch(
+                            addSortForNewSpreadsheet(postfixedEquipmentType, [
+                                {
+                                    colId: 'ID',
+                                    sort: SortWay.ASC,
+                                },
+                            ])
+                        );
+                    })
                     .catch((error) => {
                         snackError({
                             messageTxt: error,
@@ -150,7 +149,7 @@ export default function CustomSpreadsheetConfigDialog({
             open.setFalse();
         },
 
-        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size]
+        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size, getTabDefinition]
     );
 
     useEffect(() => {
