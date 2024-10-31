@@ -7,7 +7,7 @@
 
 import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType, kiloUnitToUnit, microUnitToUnit, unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
+import { EquipmentType, microUnitToUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
 
 export const FIELD_OPTIONS: {
     [key: string]: FieldOptionType;
@@ -121,34 +121,22 @@ export const FIELD_OPTIONS: {
     NOMINAL_VOLTAGE: {
         id: FieldType.NOMINAL_VOLTAGE,
         label: 'NominalVoltage',
-        unit: '(KV)',
         dataType: DataType.DOUBLE,
-        OutputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     LOW_VOLTAGE_LIMIT: {
         id: FieldType.LOW_VOLTAGE_LIMIT,
         label: 'LowVoltageLimit',
-        unit: '(KV)',
         dataType: DataType.DOUBLE,
-        OutputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     HIGH_VOLTAGE_LIMIT: {
         id: FieldType.HIGH_VOLTAGE_LIMIT,
         label: 'HighVoltageLimit',
-        unit: '(KV)',
         dataType: DataType.DOUBLE,
-        OutputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
-        unit: '(KV)',
         dataType: DataType.DOUBLE,
-        OutputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
