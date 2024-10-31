@@ -72,16 +72,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         });
     }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId, resetSearch]);
 
-    // Temporary solution to reset the filter each time reports are fetched.
-    // This approach removes the persistence behavior of the filter.
-    // It will be replaced once we have a better solution to handle the difference
-    // between default severities and excluded severities.
-    useEffect(() => {
-        if (!reportNature) {
-            dispatch(setLogsFilter(reportType, []));
-        }
-    }, [dispatch, reportNature, reportType]);
-
     useEffect(() => {
         // initialize the filter with the severities
         if (filterSelector.length === 0 && severities?.length > 0) {
