@@ -50,7 +50,12 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
+import {
+    addNotification,
+    removeNotificationByNode,
+    resetLogsFilter,
+    setModificationsInProgress,
+} from '../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
@@ -587,8 +592,10 @@ const NetworkModificationNodeEditor = () => {
             setModifications([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
+            // reset the network modification and computing logs filter when the current node changes
+            dispatch(resetLogsFilter());
         }
-    }, [currentNode, dofetchNetworkModifications]);
+    }, [currentNode, dispatch, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
