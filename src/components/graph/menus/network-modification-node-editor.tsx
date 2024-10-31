@@ -488,10 +488,7 @@ const NetworkModificationNodeEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            const notifToDispatch = study.eventData.headers.nodes
-                ? [study.eventData.headers.parentNode, ...study.eventData.headers.nodes]
-                : [study.eventData.headers.parentNode];
-            dispatch(addNotification(notifToDispatch));
+            dispatch(addNotification([study.eventData.headers.parentNode ?? []]));
         },
         [dispatch]
     );
