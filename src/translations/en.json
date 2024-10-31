@@ -7,6 +7,8 @@
 
     "button.delete": "Delete",
     "filter": "Filter",
+    "enable": "Enable",
+    "disable": "Disable",
 
     "deleteStudy": "Delete Study",
     "studyNameDidNotMatchMsg": "The given study name did not match with ",
