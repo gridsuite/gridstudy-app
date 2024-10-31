@@ -11,8 +11,9 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { setModificationActivated } from 'services/study/network-modifications';
-import { Switch } from '@mui/material';
+import { Switch, Tooltip } from '@mui/material';
 import { UUID } from 'crypto';
+import { FormattedMessage } from 'react-intl';
 
 interface SwitchNetworkModificationActiveProps {
     modificationUuid: UUID;
@@ -56,11 +57,15 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
     }, [modificationUuid, updateModification, setModifications]);
 
     return (
-        <Switch
-            size="small"
-            disabled={isLoading || disabled}
-            checked={modificationActivated}
-            onClick={toggleModificationActive}
-        />
+        <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>
+            <span>
+                <Switch
+                    size="small"
+                    disabled={isLoading || disabled}
+                    checked={modificationActivated}
+                    onClick={toggleModificationActive}
+                />
+            </span>
+        </Tooltip>
     );
 };
