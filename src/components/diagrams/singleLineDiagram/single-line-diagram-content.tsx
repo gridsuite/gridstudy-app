@@ -407,10 +407,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             equipmentMenu.equipmentId &&
             equipmentMenu.equipmentType === equipmentType && (
                 <Menu
-                    equipment={{
-                        id: equipmentMenu.equipmentId,
-                        type: convertToEquipmentType(equipmentMenu.equipmentType),
-                    }}
+                    equipment={
+                        {
+                            id: equipmentMenu.equipmentId,
+                        } as Equipment
+                    }
+                    equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
