@@ -56,7 +56,7 @@ export const SwitchNetworkModificationActive = (props: SwitchNetworkModification
     }, [modificationUuid, updateModification, setModifications]);
 
     return (
-        <Tooltip title={modificationActivated ? 'disable' : 'enable'} arrow>
+        <Tooltip title={<FormattedMessage id={modificationActivated ? 'disable' : 'enable'} />} arrow>
             <span>
                 <Switch
                     size="small"
