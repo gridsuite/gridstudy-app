@@ -13,6 +13,7 @@ import { AppState } from 'redux/reducer';
 import { setModificationActivated } from 'services/study/network-modifications';
 import { Switch, Tooltip } from '@mui/material';
 import { UUID } from 'crypto';
+import { FormattedMessage } from 'react-intl';
 
 interface SwitchNetworkModificationActiveProps {
     modificationUuid: UUID;
