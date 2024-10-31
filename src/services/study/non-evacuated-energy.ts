@@ -7,8 +7,9 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { UUID } from 'crypto';
 
-export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
+export function startNonEvacuatedEnergy(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Running non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/non-evacuated-energy/run';
 
@@ -16,21 +17,21 @@ export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
+export function stopNonEvacuatedEnergy(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Stopping non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/non-evacuated-energy/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
 
-export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid) {
+export function fetchNonEvacuatedEnergyStatus(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Fetching non evacuated energy analysis status on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/non-evacuated-energy/status`;
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
+export function fetchNonEvacuatedEnergyResult(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/non-evacuated-energy/result`;
@@ -38,14 +39,14 @@ export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
     return backendFetchJson(url);
 }
 
-export function getNonEvacuatedEnergyParameters(studyUuid) {
+export function getNonEvacuatedEnergyParameters(studyUuid: UUID) {
     console.info('get non evacuated energy analysis parameters');
     const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function setNonEvacuatedEnergyParameters(studyUuid, newParams) {
+export function setNonEvacuatedEnergyParameters(studyUuid: UUID, newParams: any) {
     console.info('set non evacuated energy analysis parameters');
     const url = getStudyUrl(studyUuid) + '/non-evacuated-energy/parameters';
     console.debug(url);
@@ -59,7 +60,7 @@ export function setNonEvacuatedEnergyParameters(studyUuid, newParams) {
     });
 }
 
-export function fetchNonEvacuatedEnergyProvider(studyUuid) {
+export function fetchNonEvacuatedEnergyProvider(studyUuid: UUID) {
     console.info('fetch non evacuated energy provider');
     const url = `${getStudyUrl(studyUuid)}/non-evacuated-energy/provider`;
     console.debug(url);
@@ -73,7 +74,7 @@ export function fetchDefaultNonEvacuatedEnergyProvider() {
     return backendFetchText(url);
 }
 
-export function updateNonEvacuatedEnergyProvider(studyUuid, newProvider) {
+export function updateNonEvacuatedEnergyProvider(studyUuid: UUID, newProvider: string) {
     console.info('update non evacuated energy provider');
     const url = `${getStudyUrl(studyUuid)}/non-evacuated-energy/provider`;
     console.debug(url);
