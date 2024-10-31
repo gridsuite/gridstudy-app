@@ -77,9 +77,10 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
-                let availableFormats = enableDeveloperMode
+                const XIIDM_FORMAT = 'XIIDM';
+                const availableFormats = enableDeveloperMode
                     ? formats
-                    : Object.fromEntries(Object.entries(formats).filter(([key]) => key === 'XIIDM'));
+                    : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
                 // we check if the param is for extension, if it is, we select all possible values by default.
                 // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
