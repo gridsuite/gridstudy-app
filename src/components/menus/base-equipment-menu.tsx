@@ -303,8 +303,9 @@ const BaseEquipmentMenu = ({
                             equipmentType={EquipmentType.SUBSTATION}
                             equipmentId={equipment.id}
                             itemText={getNameOrId({
-                                name: equipment.name,
-                                id: equipment.id,
+                                // TODO Replace unknown with appropriate typing for equipments in diagram-viewer
+                                name: (equipment as any)?.substationName,
+                                id: (equipment as any)?.substationId,
                             })}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
