@@ -11,7 +11,6 @@ import ReportTreeViewContext from './report-tree-view-context';
 import ReportItem from './report-item';
 import { mapReportsTree } from '../../utils/report-tree.mapper';
 import { useDispatch } from 'react-redux';
-import { setLogsFilter } from 'redux/actions';
 import ReportTree from './report-tree';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'types/report.type';
 
@@ -73,12 +72,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
 
     const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
         if (selectedReportId !== reportId) {
-            // Temporary solution to reset the filter each time reports are fetched.
-            // This approach removes the persistence behavior of the filter.
-            // It will be removed once we have a better solution to handle the difference
-            // between default severities and excluded severities.
-            dispatch(setLogsFilter(reportType, []));
-
             setSelectedReportId(reportId);
             setSeverities(reportTreeData.current[reportId].severities);
             setSelectedReportType(reportTreeData.current[reportId].type);

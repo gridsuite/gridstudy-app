@@ -50,7 +50,7 @@ import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
+import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 
@@ -289,7 +289,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
-                .finally(() => dispatch(setComputationStarting(false)));
+                .finally(() => {
+                    dispatch(setComputationStarting(false));
+                    // we clear the computation logs filter when a new computation is started
+                    dispatch(setLogsFilter(ComputingType.SHORT_CIRCUIT_ONE_BUS, []));
+                });
         },
         [
             dispatch,
