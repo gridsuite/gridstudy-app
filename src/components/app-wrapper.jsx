@@ -40,6 +40,10 @@ import {
     equipmentsFr,
     networkModificationsEn,
     networkModificationsFr,
+    importParamsEn,
+    importParamsFr,
+    exportParamsEn,
+    exportParamsFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -48,6 +52,8 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import exportParameters_en from '../translations/external/export-parameters-en.json';
 import exportParameters_fr from '../translations/external/export-parameters-fr.json';
+import network_modifications_locale_en from '../translations/dynamic/network-modifications-locale-en';
+import network_modifications_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_en from '../translations/external/aggrid-locale-en';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
@@ -248,6 +254,9 @@ const messages = {
         ...messages_en,
         ...networkModificationsEn,
         ...exportParameters_en,
+        ...network_modifications_locale_en,
+        ...exportParamsEn,
+        ...importParamsEn,
         ...reportViewerEn,
         ...loginEn,
         ...topBarEn,
@@ -277,6 +286,9 @@ const messages = {
         ...messages_fr,
         ...networkModificationsFr,
         ...exportParameters_fr,
+        ...network_modifications_locale_fr,
+        ...exportParamsFr,
+        ...importParamsFr,
         ...reportViewerFr,
         ...loginFr,
         ...topBarFr,
