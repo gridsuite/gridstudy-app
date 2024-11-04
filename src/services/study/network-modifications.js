@@ -343,24 +343,25 @@ export function modifyBattery({
     });
 }
 
-export function createLoad(
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate = false,
-    modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties
-) {
+export function createLoad(LoadCreationParameters) {
+    const {
+        studyUuid,
+        nodeUuid,
+        id,
+        name,
+        loadType,
+        p0,
+        q0,
+        voltageLevelId,
+        busOrBusbarSectionId,
+        isUpdate = false,
+        modificationUuid,
+        connectionDirection,
+        connectionName,
+        connectionPosition,
+        terminalConnected,
+        properties,
+    } = LoadCreationParameters;
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {

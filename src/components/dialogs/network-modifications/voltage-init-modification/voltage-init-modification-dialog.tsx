@@ -7,26 +7,27 @@
 
 import React, { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
-import { DefaultCellRenderer, BooleanCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
+import { BooleanCellRenderer, DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
-    REACTIVE_POWER_SET_POINT,
-    VOLTAGE_SET_POINT,
-    RATIO_TAP_CHANGER_POSITION,
-    LEG_SIDE,
-    SECTION_COUNT,
+    ANGLE,
     CONNECT,
+    LEG_SIDE,
+    RATIO_TAP_CHANGER_POSITION,
     RATIO_TAP_CHANGER_TARGET_V,
+    REACTIVE_POWER_SET_POINT,
+    SECTION_COUNT,
     TARGET_V,
     V,
-    ANGLE,
+    VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
+import { FetchStatus } from '../../../../services/utils.type';
 
 export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
@@ -38,13 +39,6 @@ export const EquipmentTypeTabs = {
     SHUNT_COMPENSATOR_TAB: 4,
     BUS_TAB: 5,
 };
-
-enum FetchStatus {
-    SUCCEED = 'SUCCEED',
-    FAILED = 'FAILED',
-    IDLE = 'IDLE',
-    RUNNING = 'RUNNING',
-}
 
 interface CloseFunction {
     (): void;

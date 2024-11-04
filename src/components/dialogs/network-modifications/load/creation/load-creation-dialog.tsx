@@ -7,8 +7,16 @@
 
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import { FunctionComponent, useCallback, useEffect } from 'react';
+import {
+    ADDITIONAL_PROPERTIES,
+    CONNECTIVITY,
+    EQUIPMENT_ID,
+    EQUIPMENT_NAME,
+    LOAD_TYPE,
+    P0,
+    Q0,
+} from 'components/utils/field-constants';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialogUtils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
@@ -25,7 +33,6 @@ import { LoadCreationForm } from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
@@ -34,12 +41,10 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import {
-    LoadCreationDialogFormSearchCopy,
-    LoadCreationDialogFromEditData,
-    LoadCreationDialogProps,
-    LoadCreationSchemaForm,
-} from './load-creation-dialog.type';
+import { LoadCreationInfo, LoadCreationSchemaForm, LoadFormInfo } from './load-creation-dialog.type';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { UUID } from 'crypto';
+import { FetchStatus } from '../../../../../services/utils.type';
 
 /**
  * Dialog to create a load in the network
@@ -73,14 +78,24 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
+export interface LoadCreationDialogProps {
+    editData: LoadCreationInfo;
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+    disabledSave: boolean;
+    dialogProps: any;
+}
+
+export function LoadCreationDialog({
     editData,
     currentNode,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
-}) => {
+}: Readonly<LoadCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
@@ -91,7 +106,7 @@ export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
 
     const { reset } = formMethods;
 
-    const fromSearchCopyToFormValues = (load: LoadCreationDialogFormSearchCopy) => {
+    const fromSearchCopyToFormValues = (load: LoadFormInfo) => {
         reset({
             [EQUIPMENT_ID]: load.id + '(1)',
             [EQUIPMENT_NAME]: load.name ?? '',
@@ -109,12 +124,12 @@ export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
                 isEquipmentModification: false,
                 // terminalConnected is not copied on purpose: we use the default value (true) in all cases
             }),
-            ...copyEquipmentPropertiesForCreation(load),
+            ...copyEquipmentPropertiesForCreation({ properties: load.properties }),
         });
     };
 
     const fromEditDataToFormValues = useCallback(
-        (load: LoadCreationDialogFromEditData) => {
+        (load: LoadCreationInfo) => {
             reset({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
@@ -139,8 +154,8 @@ export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        toFormValues: (data: LoadCreationSchemaForm) => data,
-        setFormValues: fromSearchCopyToFormValues,
+        toFormValues: fromSearchCopyToFormValues,
+        setFormValues: (data: LoadCreationSchemaForm) => reset(data),
         elementType: EQUIPMENT_TYPES.LOAD,
         operation: undefined,
     });
@@ -169,7 +184,7 @@ export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
                 connectionName: sanitizeString(load.connectivity?.connectionName),
                 connectionPosition: load.connectivity?.connectionPosition ?? null,
                 terminalConnected: load.connectivity?.terminalConnected,
-                properties: toModificationProperties(load?.AdditionalProperties),
+                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES]),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -215,4 +230,4 @@ export const LoadCreationDialog: FunctionComponent<LoadCreationDialogProps> = ({
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
+}

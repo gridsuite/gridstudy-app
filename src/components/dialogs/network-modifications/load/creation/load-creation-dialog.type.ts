@@ -6,8 +6,6 @@
  */
 
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
-import { UUID } from 'crypto';
 import {
     ADDITIONAL_PROPERTIES,
     BUS_OR_BUSBAR_SECTION,
@@ -45,29 +43,7 @@ export type LoadCreationSchemaForm = {
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
-export type Load = {
-    [ID]: string;
-    [NAME]: string;
-};
-
-enum FetchStatus {
-    SUCCEED = 'SUCCEED',
-    FAILED = 'FAILED',
-    IDLE = 'IDLE',
-    RUNNING = 'RUNNING',
-}
-
-export interface LoadCreationDialogProps {
-    editData: LoadCreationDialogFromEditData;
-    currentNode: CurrentTreeNode;
-    studyUuid: UUID;
-    isUpdate: boolean;
-    editDataFetchStatus: FetchStatus;
-    disabledSave: boolean;
-    dialogProps: any;
-}
-
-export interface LoadCreationDialogFromEditData {
+export interface LoadCreationInfo {
     uuid: string;
     equipmentType: keyof typeof EQUIPMENT_TYPES;
     equipmentId: string;
@@ -85,20 +61,20 @@ export interface LoadCreationDialogFromEditData {
     properties?: Property[];
 }
 
-interface ConnectablePosition {
+interface ConnectablePositionInfos {
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
 }
 
-export interface LoadCreationDialogFormSearchCopy {
+export interface LoadFormInfo {
     id: string;
     name: string;
     type: string;
     p0: number;
     q0: number;
     voltageLevelId: string;
-    connectablePosition: ConnectablePosition;
+    connectablePosition: ConnectablePositionInfos;
     busOrBusbarSectionId: string;
     busbarSectionName: string;
     terminalConnected?: boolean | null;
