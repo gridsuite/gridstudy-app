@@ -7,6 +7,7 @@
 
 import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
 import { Box, Grid, type SelectChangeEvent } from '@mui/material';
+import { DropDown, LabelledButton } from '../widget';
 import { LineSeparator } from '../../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
@@ -37,7 +38,6 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
-import { DropDown, LabelledButton } from '../widget';
 import styles from '../styles';
 
 export const SecurityAnalysisParameters: FunctionComponent<{
@@ -52,7 +52,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         [updateProvider]
     );
 
-    const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
+    const updateProviderCallback = useCallback(handleUpdateProvider, [handleUpdateProvider]);
     const intl = useIntl();
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);

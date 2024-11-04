@@ -15,7 +15,7 @@ import {
     type Theme,
     Typography,
 } from '@mui/material';
-import { FunctionComponent, PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 const styles = {

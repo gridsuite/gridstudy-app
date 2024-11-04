@@ -8,7 +8,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 
-import { setComputingStatus, setComputationStarting } from '../redux/actions';
+import { setComputingStatus, setComputationStarting, setLogsFilter } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 import RunningStatus from './utils/running-status';
@@ -100,7 +100,11 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         });
                     }
                 })
-                .finally(() => dispatch(setComputationStarting(false)));
+                .finally(() => {
+                    dispatch(setComputationStarting(false));
+                    // we clear the computation logs filter when a new computation is started
+                    dispatch(setLogsFilter(computingType, []));
+                });
         },
         [dispatch, snackError]
     );

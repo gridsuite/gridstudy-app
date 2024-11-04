@@ -1159,6 +1159,14 @@ export function setLogsFilter(
     };
 }
 
+export const RESET_LOGS_FILTER = 'RESET_LOGS_FILTER';
+export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
+export function resetLogsFilter(): ResetLogsFilterAction {
+    return {
+        type: RESET_LOGS_FILTER,
+    };
+}
+
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
     table: TableSortKeysType;
