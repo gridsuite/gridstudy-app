@@ -172,11 +172,25 @@ export const EllipsisCellRenderer = ({
 }) => {
     const textRef = useRef<any>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+    const checkEllipsis = () => {
+        if (textRef.current) {
+            const zoomLevel = window.devicePixelRatio;
+            const adjustedScrollWidth = textRef.current.scrollWidth / zoomLevel;
+            const adjustedClientWidth = textRef.current.clientWidth / zoomLevel;
+            setIsEllipsisActive(adjustedScrollWidth > adjustedClientWidth);
+        }
+    };
 
     useEffect(() => {
+        checkEllipsis();
+        const resizeObserver = new ResizeObserver(() => checkEllipsis());
         if (textRef.current) {
-            setIsEllipsisActive(textRef.current.scrollWidth > textRef.current.clientWidth);
+            resizeObserver.observe(textRef.current);
         }
+
+        return () => {
+            resizeObserver.disconnect();
+        };
     }, [param.value]);
 
     return (

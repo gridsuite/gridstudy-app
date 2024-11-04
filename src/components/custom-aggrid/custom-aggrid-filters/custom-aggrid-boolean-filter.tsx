@@ -10,8 +10,13 @@ import { IconButton, MenuItem, Select } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
-import { BooleanFilterValue } from '../custom-aggrid-header-utils';
 import { mergeSx } from 'components/utils/functions';
+
+export enum BooleanFilterValue {
+    TRUE = 'true',
+    FALSE = 'false',
+    UNDEFINED = 'undefinedValue',
+}
 
 const styles = {
     input: {
