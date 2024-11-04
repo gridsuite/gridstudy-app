@@ -27,7 +27,7 @@ import {
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis.js';
+import { fetchSecurityAnalysisParameters } from '../../../../services/security-analysis';
 import SecurityAnalysisParametersSelector from './security-analysis-parameters-selector';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import { useForm } from 'react-hook-form';
