@@ -26,12 +26,14 @@ export const getFieldOptionType = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
-export const convertOutputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
+type FieldValue = string | number | boolean;
+
+export const convertOutputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
     const fieldOption = getFieldOptionType(fieldName);
     return fieldOption?.outputConverter ? fieldOption.outputConverter(Number(fieldValue)) : fieldValue;
 };
 
-export const convertInputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
+export const convertInputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
     const fieldOption = getFieldOptionType(fieldName);
     return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
 };
@@ -68,7 +70,7 @@ export function getAssignmentsSchema() {
                     return schema.nullable();
                 }),
                 [VALUE_FIELD]: yup
-                    .mixed<string | number | boolean>()
+                    .mixed<FieldValue>()
                     .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
                         return getValueSchema(dataType);
