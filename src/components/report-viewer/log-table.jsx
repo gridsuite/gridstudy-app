@@ -16,7 +16,7 @@ import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-f
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import { getDefaultSeverityFilter } from 'utils/report-severity.utils';
+import { getDefaultSeverityFilter } from '../../utils/report/report-severity';
 import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
 import { Box } from '@mui/material';
@@ -71,16 +71,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             resetSearch();
         });
     }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId, resetSearch]);
-
-    // Temporary solution to reset the filter each time reports are fetched.
-    // This approach removes the persistence behavior of the filter.
-    // It will be replaced once we have a better solution to handle the difference
-    // between default severities and excluded severities.
-    useEffect(() => {
-        if (!reportNature) {
-            dispatch(setLogsFilter(reportType, []));
-        }
-    }, [dispatch, reportNature, reportType]);
 
     useEffect(() => {
         // initialize the filter with the severities
