@@ -145,14 +145,27 @@ const ItemViewInForm = ({
     );
 };
 
-export type BaseEquipmentMenuProps = {
-    equipment: Equipment;
-    equipmentType: EquipmentType | null;
-    handleViewInSpreadsheet: HandleViewInSpreadsheet;
-    handleDeleteEquipment: HandleDeleteEquipment;
-    handleOpenModificationDialog: HandleOpenModificationDialog;
+// Temporary type definition for VoltageLevel Equipment, pending a more comprehensive Equipment typing in diagramViewer
+type VoltageLevelEquipment = Equipment & {
+    substationId: string;
+    substationName: string;
 };
 
+export type BaseEquipmentMenuProps =
+    | {
+          equipment: Equipment;
+          equipmentType: Exclude<EquipmentType, EquipmentType.VOLTAGE_LEVEL> | null;
+          handleViewInSpreadsheet: HandleViewInSpreadsheet;
+          handleDeleteEquipment: HandleDeleteEquipment;
+          handleOpenModificationDialog: HandleOpenModificationDialog;
+      }
+    | {
+          equipment: VoltageLevelEquipment;
+          equipmentType: EquipmentType.VOLTAGE_LEVEL;
+          handleViewInSpreadsheet: HandleViewInSpreadsheet;
+          handleDeleteEquipment: HandleDeleteEquipment;
+          handleOpenModificationDialog: HandleOpenModificationDialog;
+      };
 const BaseEquipmentMenu = ({
     equipment,
     equipmentType,
@@ -299,13 +312,12 @@ const BaseEquipmentMenu = ({
                     >
                         {/* menus for the substation */}
                         <ViewInSpreadsheetItem
-                            key={equipment.id}
+                            key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
-                            equipmentId={equipment.id}
+                            equipmentId={equipment.substationId}
                             itemText={getNameOrId({
-                                // TODO Replace unknown with appropriate typing for equipments in diagram-viewer
-                                name: (equipment as any)?.substationName,
-                                id: (equipment as any)?.substationId,
+                                name: equipment.substationName,
+                                id: equipment.substationId,
                             })}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
@@ -321,12 +333,12 @@ const BaseEquipmentMenu = ({
                     <CustomNestedMenuItem label={intl.formatMessage({ id: 'DeleteFromMenu' })}>
                         {/* menus for the substation */}
                         <DeleteEquipmentItem
-                            key={equipment.id}
+                            key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
-                            equipmentId={equipment.id}
+                            equipmentId={equipment.substationId}
                             itemText={getNameOrId({
-                                name: equipment.name,
-                                id: equipment.id,
+                                name: equipment.substationName,
+                                id: equipment.substationId,
                             })}
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
@@ -342,12 +354,12 @@ const BaseEquipmentMenu = ({
                     <CustomNestedMenuItem label={intl.formatMessage({ id: 'ModifyFromMenu' })}>
                         {/* menus for the substation */}
                         <ModifyEquipmentItem
-                            key={equipment.id}
+                            key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
-                            equipmentId={equipment.id}
+                            equipmentId={equipment.substationId}
                             itemText={getNameOrId({
-                                name: equipment.name,
-                                id: equipment.id,
+                                name: equipment.substationName,
+                                id: equipment.substationId,
                             })}
                             handleOpenModificationDialog={handleOpenModificationDialog}
                         />
