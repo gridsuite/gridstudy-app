@@ -131,6 +131,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 ): ColDef[] => [
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
+        id: 'subjectId',
         field: 'subjectId',
         sortProps,
         filterProps,
@@ -142,6 +143,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'ViolationType' }),
+        id: 'limitType',
         field: 'limitType',
         sortProps,
         filterProps,
@@ -153,6 +155,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitName' }),
+        id: 'limitName',
         field: 'limitName',
         valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         sortProps,
@@ -165,6 +168,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Limit' }),
+        id: 'limit',
         field: 'limit',
         numeric: true,
         fractionDigits: 2,
@@ -178,6 +182,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+        id: 'value',
         field: 'value',
         numeric: true,
         fractionDigits: 2,
@@ -191,6 +196,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Loading' }),
+        id: 'loading',
         field: 'loading',
         numeric: true,
         fractionDigits: 2,
@@ -206,6 +212,7 @@ export const securityAnalysisTableNColumnsDefinition = (
         headerName: intl.formatMessage({
             id: 'Overload',
         }),
+        id: 'acceptableDuration',
         field: 'acceptableDuration',
         valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
         sortProps,
@@ -219,6 +226,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'LimitSide' }),
+        id: 'side',
         field: 'side',
         sortProps,
         filterProps,
@@ -239,6 +247,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
+            id: 'contingencyId',
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
@@ -251,6 +260,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+            id: 'status',
             field: 'status',
             sortProps,
             filterProps,
@@ -261,6 +271,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
+            id: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             sortProps: { ...sortProps, children: true },
@@ -272,6 +283,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
+            id: 'limitType',
             field: 'limitType',
             sortProps: { ...sortProps, children: true },
             filterProps,
@@ -282,6 +294,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
+            id: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
             sortProps: { ...sortProps, children: true },
@@ -293,6 +306,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
+            id: 'limit',
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
@@ -305,6 +319,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            id: 'value',
             field: 'value',
             numeric: true,
             fractionDigits: 2,
@@ -317,6 +332,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
+            id: 'loading',
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
@@ -331,6 +347,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
+            id: 'acceptableDuration',
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
             sortProps: { ...sortProps, children: true },
@@ -343,6 +360,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
+            id: 'side',
             field: 'side',
             sortProps: { ...sortProps, children: true },
             filterProps,
@@ -354,6 +372,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
+            id: 'linkedElementId',
             field: 'linkedElementId',
             hide: true,
         }),
@@ -370,6 +389,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Constraint' }),
+            id: 'subjectId',
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             sortProps,
@@ -381,6 +401,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ContingencyId' }),
+            id: 'contingencyId',
             field: 'contingencyId',
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
@@ -393,6 +414,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ComputationStatus' }),
+            id: 'status',
             field: 'status',
             sortProps: { ...sortProps, children: true },
             filterProps,
@@ -403,6 +425,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
+            id: 'limitType',
             field: 'limitType',
             sortProps: { ...sortProps, children: true },
             filterProps,
@@ -413,6 +436,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitName' }),
+            id: 'limitName',
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
             sortProps: { ...sortProps, children: true },
@@ -424,6 +448,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Limit' }),
+            id: 'limit',
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
@@ -436,6 +461,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CalculatedValue' }),
+            id: 'value',
             field: 'value',
             numeric: true,
             fractionDigits: 2,
@@ -448,6 +474,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
+            id: 'loading',
             field: 'loading',
             numeric: true,
             fractionDigits: 2,
@@ -462,6 +489,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'Overload',
             }),
+            id: 'acceptableDuration',
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
             sortProps: { ...sortProps, children: true },
@@ -474,6 +502,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
+            id: 'side',
             field: 'side',
             sortProps: { ...sortProps, children: true },
             filterProps,
@@ -485,6 +514,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
         //it is used for sorting actions
         makeAgGridCustomHeaderColumn({
+            id: 'linkedElementId',
             field: 'linkedElementId',
             hide: true,
         }),

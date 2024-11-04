@@ -16,7 +16,7 @@ import RegulatingTerminalModificationDialog from 'components/dialogs/network-mod
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 import { GridApi } from 'ag-grid-community';
 import { EnumOption } from '../../utils/utils-type';
-import { CustomColDef } from "../../custom-aggrid/custom-aggrid-header.type";
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
 interface EquipmentTableEditorProps {
     gridContext: any;
@@ -167,13 +167,12 @@ export const TWTRegulatingTerminalEditor = forwardRef(
         };
 
         const getTapChangerValue = () => {
-            const tapChanger = {
+            return {
                 ...rowData?.[tapChangerType],
                 regulatingTerminalConnectableId: rowData?.[tapChangerType]?.regulatingTerminalConnectableId || '',
                 regulatingTerminalConnectableType: rowData?.[tapChangerType]?.regulatingTerminalConnectableType || '',
                 regulatingTerminalVlId: rowData?.[tapChangerType]?.regulatingTerminalVlId || '',
             };
-            return tapChanger;
         };
 
         return (

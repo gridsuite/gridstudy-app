@@ -70,7 +70,7 @@ export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, T
     filterTab?: string[];
     fractionDigits?: number;
     getEnumLabel?: (value: string) => string | undefined;
-    id: string; // FIXME mandatory ? use colId ?
+    id: string;
     isCountry?: boolean;
     isDefaultSort?: boolean;
     isEnum?: boolean;
