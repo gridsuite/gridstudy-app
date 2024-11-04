@@ -81,7 +81,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             if (typeof value === 'string') {
                 return value;
             }
-            return `${intl.formatMessage({ id: value.label })} ${value.unit || ''}`;
+            return `${intl.formatMessage({ id: value.label })} ${value.unit ?? ''}`;
         };
     }, [intl]);
 

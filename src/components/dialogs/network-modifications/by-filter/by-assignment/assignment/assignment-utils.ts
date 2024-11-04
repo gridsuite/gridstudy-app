@@ -27,10 +27,11 @@ export const getFieldOptionType = (fieldName?: string | null) => {
 };
 
 type ConverterFunction = ((value: number) => number | undefined) | undefined;
+type FieldValue = string | number | boolean;
 
 const convertValue = (
     fieldName?: string | null,
-    fieldValue?: string | number | boolean,
+    fieldValue?: FieldValue,
     converterKey: 'outputConverter' | 'inputConverter' = 'outputConverter'
 ) => {
     const fieldOption = getFieldOptionType(fieldName);
