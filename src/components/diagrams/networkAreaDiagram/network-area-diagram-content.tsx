@@ -16,7 +16,7 @@ import {
     styles,
     DiagramType,
 } from '../diagram-common';
-import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
+import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS, CSS_RULE_TEST } from '@powsybl/diagram-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
@@ -26,6 +26,15 @@ import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
 import { getNadIdentifier } from '../diagram-utils.js';
 import { UUID } from 'crypto';
+
+export function getValueFromThreshold(
+    value: number,
+    threshold: number,
+    aboveThreshold: string,
+    belowThreshold: string
+) {
+    return value > threshold ? aboveThreshold : belowThreshold;
+}
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -101,8 +110,8 @@ const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
         belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
+        aboveThresholdCssDeclaration: { 'stroke-width': '40' },
+        threshold: 9000,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
     {
@@ -118,6 +127,96 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
         threshold: 1000,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
+    },
+];
+
+function between(x, min, max) {
+    return x >= min && x <= max;
+}
+
+function getBranchStrokeWidth(value: number) {
+    if (between(value, 0, 1000)) {
+        return '3';
+    }
+    if (between(value, 1000, 3000)) {
+        return '10';
+    }
+    if (between(value, 3000, 6000)) {
+        return '20';
+    }
+    if (between(value, 6000, 9000)) {
+        return '30';
+    }
+    return '40';
+}
+
+const dynamicCssRuleTest: CSS_RULE_TEST[] = [
+    {
+        cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 2500, 'none', 'block') },
+        currentValue: { display: 'none' },
+    },
+    {
+        cssSelector: '.nad-label-box', // tooltips linked to nodes
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 3500, 'none', 'block') },
+        currentValue: { display: 'none' },
+    },
+    {
+        cssSelector: '.nad-text-edges', // visual link between nodes and their tooltip
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 3500, 'none', 'block') },
+        currentValue: { display: 'none' },
+    },
+    {
+        cssSelector: '[class^="nad-vl0to30"], [class*=" nad-vl0to30"]',
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 3500, 'none', 'block') },
+        currentValue: { display: 'block' },
+    },
+    {
+        cssSelector: '[class^="nad-vl30to50"], [class*=" nad-vl30to50"]',
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 12000, 'none', 'block') },
+        currentValue: { display: 'block' },
+    },
+    {
+        cssSelector: '[class^="nad-vl50to70"], [class*=" nad-vl50to70"]',
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 27000, 'none', 'block') },
+        currentValue: { display: 'block' },
+    },
+    {
+        cssSelector: '[class^="nad-vl70to120"], [class*=" nad-vl70to120"]',
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 27000, 'none', 'block') },
+        currentValue: { display: 'block' },
+    },
+    {
+        cssSelector: '[class^="nad-vl120to180"], [class*=" nad-vl120to180"]',
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 36000, 'none', 'block') },
+        currentValue: { display: 'block' },
+    },
+    {
+        cssSelector: '[class^="nad-vl180to300"], [class*=" nad-vl180to300"]',
+        cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 80000, 'none', 'block') },
+        currentValue: { display: 'block' },
+    },
+    {
+        cssSelector: '.nad-disconnected .nad-edge-path',
+        cssDeclaration: {
+            'stroke-dasharray': (value: number) => getValueFromThreshold(value, 2500, '10, 10', '0.5%, 0.5%'),
+        },
+        currentValue: { 'stroke-dasharray': '0.5%, 0.5%' },
+    },
+    {
+        cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
+        cssDeclaration: { 'stroke-width': (value: number) => getBranchStrokeWidth(value) },
+        currentValue: { 'stroke-width': '40' },
+    },
+    {
+        cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
+        cssDeclaration: { 'stroke-width': (value: number) => getValueFromThreshold(value, 1000, '0.25%', '3') },
+        currentValue: { display: '0.25%' },
+    },
+    {
+        cssSelector: '.nad-vl-nodes circle.nad-unknown-busnode',
+        cssDeclaration: { 'stroke-width': (value: number) => getValueFromThreshold(value, 1000, '0.25%', '3') },
+        currentValue: { 'stroke-width': '0.25%' },
     },
 ];
 
@@ -169,7 +268,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 true,
                 true,
-                dynamicCssRules
+                dynamicCssRuleTest
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
