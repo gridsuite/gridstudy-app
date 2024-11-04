@@ -13,6 +13,7 @@ import {
     FilterStorePropsType,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
+    UNDISPLAYED_FILTER_NUMBER_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { countDecimalPlaces, truncateNumber } from 'utils/rounding';
 
@@ -123,8 +124,16 @@ export const useAggridLocalRowFilter = (
         [formatCustomFiltersForAgGrid, gridRef]
     );
 
-    const addToleranceToFilter = (filters: FilterSelectorType[], tolerance: number = 0.00001): FilterSelectorType[] => {
-        const decimalPrecision: number = countDecimalPlaces(tolerance);
+    const addToleranceToFilter = (
+        filters: FilterSelectorType[],
+        tolerance: number | undefined = undefined
+    ): FilterSelectorType[] => {
+        let finalTolerance: number;
+        let decimalPrecision: number;
+        if (tolerance !== undefined) {
+            finalTolerance = tolerance;
+            decimalPrecision = countDecimalPlaces(tolerance);
+        }
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
@@ -132,37 +141,44 @@ export const useAggridLocalRowFilter = (
                     typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
+                    if (tolerance === undefined) {
+                        decimalPrecision = countDecimalPlaces(valueAsNumber);
+                        finalTolerance = Math.pow(10, -decimalPrecision);
+                    }
+
                     // Call the truncateNumber function to accurately truncate 'valueAsNumber' to 'decimalPrecision' decimal places.
                     let truncatedNumber = truncateNumber(valueAsNumber, decimalPrecision);
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
                         case FILTER_NUMBER_COMPARATORS.NOT_EQUAL:
-                            // Create two conditions to test we are not in [value-tolerance..value+tolerance]
-                            const adaptativeDecimalPrecision = countDecimalPlaces(valueAsNumber);
-                            const adaptativeTolerance = Math.pow(10, -adaptativeDecimalPrecision);
                             return [
                                 {
                                     ...filter,
-                                    type: FILTER_NUMBER_COMPARATORS.GREATER_THAN,
-                                    value: valueAsNumber + adaptativeTolerance,
+                                    type: 'notEqual',
+                                    value: truncatedNumber,
+                                },
+                                // Create two conditions to test we are not in [value-tolerance..value] (handles decimal precision)
+                                {
+                                    ...filter,
+                                    type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                    value: truncatedNumber + finalTolerance,
                                 },
                                 {
                                     ...filter,
-                                    type: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                    value: valueAsNumber,
+                                    type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.LESS_THAN,
+                                    value: truncatedNumber,
                                 },
                             ];
                         case FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL:
                             // Adjust the value upwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber + tolerance).toFixed(decimalPrecision),
+                                value: (truncatedNumber + finalTolerance).toFixed(decimalPrecision),
                             };
                         case FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL:
-                            // Adjust the value downwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber - tolerance).toFixed(decimalPrecision),
+                                value: truncatedNumber.toFixed(decimalPrecision),
                             };
                         default:
                             return filter;

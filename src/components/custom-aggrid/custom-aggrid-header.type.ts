@@ -24,7 +24,11 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+}
+// not used in the base interface but still useful as reference constants :
+export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
     GREATER_THAN = 'greaterThan',
+    LESS_THAN = 'lessThan',
 }
 
 export type FilterParams = {
