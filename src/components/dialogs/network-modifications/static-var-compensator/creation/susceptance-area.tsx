@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import {
     AUTOMATON,
     B0,
@@ -24,11 +23,12 @@ import {
     SETPOINTS_LIMITS,
 } from 'components/utils/field-constants';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { GridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
+import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { InputAdornment, TextField } from '@mui/material';
+import { InputAdornment, Grid, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { GridItem } from '../../../commons/grid-item';
 
 export const SusceptanceArea = () => {
     const id = AUTOMATON;
@@ -105,16 +105,16 @@ export const SusceptanceArea = () => {
         <Grid container spacing={2} padding={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <>
-                    <GridItem field={minSusceptanceField} size={4} />
-                    <GridItem field={susceptanceField} size={3} />
-                    <GridItem field={maxSusceptanceField} size={4} />
+                    <GridItem size={4}>{minSusceptanceField}</GridItem>
+                    <GridItem size={3}>{susceptanceField}</GridItem>
+                    <GridItem size={4}>{maxSusceptanceField}</GridItem>
                 </>
             )}
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <>
-                    <GridItem field={minQAtNominalVField} size={4} />
-                    <GridItem field={qAtNominalVField} size={3} />
-                    <GridItem field={maxQAtNominalVField} size={4} />
+                    <GridItem size={4}>{minQAtNominalVField}</GridItem>
+                    <GridItem size={3}>{qAtNominalVField}</GridItem>
+                    <GridItem size={4}>{maxQAtNominalVField}</GridItem>
                 </>
             )}
         </Grid>

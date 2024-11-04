@@ -52,7 +52,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialog-utils';

@@ -5,16 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GridItem, gridItemWithTooltip, percentageTextField } from '../dialog-utils';
+import { percentageTextField } from '../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
+import { GridItem } from '../commons/grid-item';
+import { GridItemWithTooltip } from '../commons/grid-item-with-tooltip';
 
 const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     const intl = useIntl();
@@ -62,14 +64,17 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
 
     return (
         <>
-            {isEquipmentModification
-                ? gridItemWithTooltip(
-                      frequencyRegulationField,
-                      watchFrequencyRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />,
-                      4
-                  )
-                : GridItem(frequencyRegulationField, 4)}
-            {GridItem(droopField, 4)}
+            {isEquipmentModification ? (
+                <GridItemWithTooltip
+                    tooltip={watchFrequencyRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
+                    size={4}
+                >
+                    {frequencyRegulationField}
+                </GridItemWithTooltip>
+            ) : (
+                <GridItem size={4}>{frequencyRegulationField}</GridItem>
+            )}
+            <GridItem size={4}>{droopField}</GridItem>
         </>
     );
 };

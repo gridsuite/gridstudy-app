@@ -14,20 +14,15 @@ import {
     MINIMUM_ACTIVE_POWER,
     REACTIVE_POWER_SET_POINT,
 } from 'components/utils/field-constants';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    GridItem,
-    GridSection,
-    ReactivePowerAdornment,
-} from '../../../dialog-utils';
-import Grid from '@mui/material/Grid';
-import React from 'react';
+import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
+import { Grid } from '@mui/material';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { GridItem } from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
 
 const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
@@ -75,21 +70,21 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(batteryIdField, 4)}
-                {GridItem(batteryNameField, 4)}
+                <GridItem size={4}>{batteryIdField}</GridItem>
+                <GridItem size={4}>{batteryNameField}</GridItem>
             </Grid>
 
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {GridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
 
             {/* ActiveLimits part */}
             <GridSection title="ActiveLimits" />
             <Grid container spacing={2}>
-                {GridItem(minimumActivePowerField, 4)}
-                {GridItem(maximumActivePowerField, 4)}
+                <GridItem size={4}>{minimumActivePowerField}</GridItem>
+                <GridItem size={4}>{maximumActivePowerField}</GridItem>
             </Grid>
 
             {/* Reactive limits part */}
@@ -99,8 +94,8 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             {/* Set points part */}
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {GridItem(activePowerSetPointField, 4)}
-                {GridItem(reactivePowerSetPointField, 4)}
+                <GridItem size={4}>{activePowerSetPointField}</GridItem>
+                <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation />

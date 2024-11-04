@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
 import {
@@ -17,12 +16,12 @@ import {
     NOMINAL_V,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import { TextInput } from '@gridsuite/commons-ui';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { filledTextField, GridItem, GridSection, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
-import Grid from '@mui/material/Grid';
-import { TextField } from '@mui/material';
+import { FloatInput, TextInput } from '@gridsuite/commons-ui';
+import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
+import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
+import { GridItem } from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
 
 const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     const voltageLevelIdField = (
@@ -123,20 +122,20 @@ const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(voltageLevelIdField, 4)}
-                {GridItem(voltageLevelNameField, 4)}
-                {GridItem(substationField, 4)}
+                <GridItem size={4}>{voltageLevelIdField}</GridItem>
+                <GridItem size={4}>{voltageLevelNameField}</GridItem>
+                <GridItem size={4}>{substationField}</GridItem>
             </Grid>
             <GridSection title={'VoltageText'} />
             <Grid container spacing={2}>
-                {GridItem(nominalVoltageField, 4)}
-                {GridItem(lowVoltageLimitField, 4)}
-                {GridItem(highVoltageLimitField, 4)}
+                <GridItem size={4}>{nominalVoltageField}</GridItem>
+                <GridItem size={4}>{lowVoltageLimitField}</GridItem>
+                <GridItem size={4}>{highVoltageLimitField}</GridItem>
             </Grid>
             <GridSection title={'ShortCircuit'} />
             <Grid container spacing={2}>
-                {GridItem(lowShortCircuitCurrentLimitField, 4)}
-                {GridItem(highShortCircuitCurrentLimitField, 4)}
+                <GridItem size={4}>{lowShortCircuitCurrentLimitField}</GridItem>
+                <GridItem size={4}>{highShortCircuitCurrentLimitField}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'voltageLevel'} isModification={true} />
         </>

@@ -8,7 +8,6 @@
 import Grid from '@mui/material/Grid';
 import { FunctionComponent } from 'react';
 
-import { GridItem } from '../../../dialog-utils';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
@@ -17,6 +16,7 @@ import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import { UUID } from 'crypto';
+import { GridItem } from '../../../commons/grid-item';
 
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;
@@ -44,7 +44,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
         <>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB} p={1}>
                 <Grid container spacing={2}>
-                    <GridItem field={connectivityForm} size={12} />
+                    <GridItem size={12}>{connectivityForm}</GridItem>
                 </Grid>
             </Box>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB}>

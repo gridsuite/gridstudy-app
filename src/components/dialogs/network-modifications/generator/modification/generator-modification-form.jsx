@@ -19,24 +19,17 @@ import {
     TRANSFORMER_REACTANCE,
     TRANSIENT_REACTANCE,
 } from 'components/utils/field-constants';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    GridItem,
-    GridSection,
-    MVAPowerAdornment,
-    OhmAdornment,
-} from '../../../dialog-utils';
+import { ActivePowerAdornment, filledTextField, MVAPowerAdornment, OhmAdornment } from '../../../dialog-utils';
 import { ENERGY_SOURCES, getEnergySourceLabel } from 'components/network/constants';
-import Grid from '@mui/material/Grid';
-import React from 'react';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { TextField } from '@mui/material';
+import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { GridItem } from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
 
 const GeneratorModificationForm = ({
     studyUuid,
@@ -196,14 +189,14 @@ const GeneratorModificationForm = ({
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(generatorIdField, 4)}
-                {GridItem(generatorNameField, 4)}
-                {GridItem(energySourceField, 4)}
+                <GridItem size={4}>{generatorIdField}</GridItem>
+                <GridItem size={4}>{generatorNameField}</GridItem>
+                <GridItem size={4}>{energySourceField}</GridItem>
             </Grid>
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {GridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             {/* Limits part */}
             <Grid container spacing={2}>
@@ -217,9 +210,9 @@ const GeneratorModificationForm = ({
                 </Grid>
             </Grid>
             <Grid container spacing={2}>
-                {GridItem(minimumActivePowerField, 4)}
-                {GridItem(maximumActivePowerField, 4)}
-                {GridItem(ratedNominalPowerField, 4)}
+                <GridItem size={4}>{minimumActivePowerField}</GridItem>
+                <GridItem size={4}>{maximumActivePowerField}</GridItem>
+                <GridItem size={4}>{ratedNominalPowerField}</GridItem>
             </Grid>
 
             {/* Reactive limits part */}
@@ -247,18 +240,18 @@ const GeneratorModificationForm = ({
             {/* Short Circuit of start part */}
             <GridSection title="ShortCircuit" />
             <Grid container spacing={2}>
-                {GridItem(transientReactanceField, 4)}
-                {GridItem(transformerReactanceField, 4)}
+                <GridItem size={4}>{transientReactanceField}</GridItem>
+                <GridItem size={4}>{transformerReactanceField}</GridItem>
             </Grid>
 
             {/* Cost of start part */}
             <GridSection title="GenerationDispatch" />
             <Grid container spacing={2}>
-                {GridItem(plannedActivePowerSetPointField, 4)}
-                {GridItem(marginalCostField, 4)}
+                <GridItem size={4}>{plannedActivePowerSetPointField}</GridItem>
+                <GridItem size={4}>{marginalCostField}</GridItem>
                 <Grid container item spacing={2}>
-                    {GridItem(plannedOutageRateField, 4)}
-                    {GridItem(forcedOutageRateField, 4)}
+                    <GridItem size={4}>{plannedOutageRateField}</GridItem>
+                    <GridItem size={4}>{forcedOutageRateField}</GridItem>
                 </Grid>
             </Grid>
             <PropertiesForm networkElementType={'generator'} isModification={true} />

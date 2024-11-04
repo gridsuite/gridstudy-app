@@ -6,7 +6,7 @@
  */
 
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../utils/field-constants';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { Box } from '@mui/system';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';

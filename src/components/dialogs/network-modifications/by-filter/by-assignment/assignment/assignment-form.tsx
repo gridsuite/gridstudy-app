@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
@@ -19,12 +19,12 @@ import {
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { GridItem } from '../../../../dialog-utils';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
+import { GridItem } from '../../../../commons/grid-item';
 
 interface AssignmentFormProps {
     name: string;
@@ -143,13 +143,13 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
     return (
         <>
-            <GridItem field={filtersField} size={3.25} />
-            <GridItem field={editedField} size={3} />
+            <GridItem size={3.25}>{filtersField}</GridItem>
+            <GridItem size={3}>{editedField}</GridItem>
             <>
-                {dataType === DataType.PROPERTY && <GridItem field={propertyNameField} size={2.0} />}
-                <GridItem field={<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />} size={0.25} />
+                {dataType === DataType.PROPERTY && <GridItem size={2.0}>{propertyNameField}</GridItem>}
+                <GridItem size={0.25}>{<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />}</GridItem>
             </>
-            <GridItem field={valueField} size={dataType === DataType.PROPERTY ? 2.25 : 4.25} />
+            <GridItem size={dataType === DataType.PROPERTY ? 2.25 : 4.25}>{valueField}</GridItem>
         </>
     );
 };

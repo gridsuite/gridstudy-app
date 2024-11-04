@@ -16,7 +16,7 @@ import {
     REPLACING_LINE_1_NAME,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../dialog-utils';
 import yup from 'components/utils/yup-config';

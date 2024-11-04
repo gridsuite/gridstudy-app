@@ -18,12 +18,11 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { TextInput } from '@gridsuite/commons-ui';
-import { Box, TextField } from '@mui/material';
-import { GridItem } from 'components/dialogs/dialog-utils';
-import Grid from '@mui/material/Grid';
+import { Box, Grid, TextField } from '@mui/material';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
+import { GridItem } from '../../../commons/grid-item';
 
 interface VscModificationFormProps {
     tabIndex: number;
@@ -79,8 +78,8 @@ export const VscModificationForm: FunctionComponent<VscModificationFormProps> = 
             }}
         >
             <Grid container spacing={2}>
-                <GridItem field={vscIdField} size={4} />
-                <GridItem field={vscNameField} size={4} />
+                <GridItem size={4}>{vscIdField}</GridItem>
+                <GridItem size={4}>{vscNameField}</GridItem>
             </Grid>
             <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>

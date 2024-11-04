@@ -14,7 +14,7 @@ import {
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
 } from 'components/utils/field-constants';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
 import { parseIntData } from '../../../../dialog-utils';

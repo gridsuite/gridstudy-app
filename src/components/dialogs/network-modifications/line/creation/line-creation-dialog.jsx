@@ -60,7 +60,7 @@ import {
     getLimitsValidationSchema,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
-import { filledTextField, GridItem, sanitizeString } from 'components/dialogs/dialog-utils.tsx';
+import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
@@ -75,6 +75,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { GridItem } from '../../../commons/grid-item';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -364,8 +365,8 @@ const LineCreationDialog = ({
             }}
         >
             <Grid container spacing={2}>
-                {GridItem(lineIdField, 4)}
-                {GridItem(lineNameField, 4)}
+                <GridItem size={4}>{lineIdField}</GridItem>
+                <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
             <LineDialogTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>

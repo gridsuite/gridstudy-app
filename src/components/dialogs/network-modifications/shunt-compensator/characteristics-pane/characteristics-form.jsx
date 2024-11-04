@@ -20,10 +20,11 @@ import {
 import { Box } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FloatInput, IntegerInput, RadioInput, SelectInput } from '@gridsuite/commons-ui';
-import { GridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
+import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
+import { GridItem } from '../../../commons/grid-item';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({ previousValues, isModification = false }) => {
@@ -179,21 +180,21 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
 
     return (
         <Grid container spacing={2}>
-            {GridItem(maximumSectionCountField, 4)}
-            {GridItem(sectionCountField, 4)}
-            {GridItem(characteristicsChoiceField, 12)}
+            <GridItem size={4}>{maximumSectionCountField}</GridItem>
+            <GridItem size={4}>{sectionCountField}</GridItem>
+            <GridItem size={12}>{characteristicsChoiceField}</GridItem>
             {characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <Grid item container spacing={2}>
-                    {GridItem(maxSusceptanceField, 4)}
-                    {GridItem(switchedOnSusceptanceField, 4)}
+                    <GridItem size={4}>{maxSusceptanceField}</GridItem>
+                    <GridItem size={4}>{switchedOnSusceptanceField}</GridItem>
                 </Grid>
             )}
             {characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <Grid item container spacing={2}>
-                    {GridItem(shuntCompensatorTypeField, 4)}
+                    <GridItem size={4}>{shuntCompensatorTypeField}</GridItem>
                     <Box sx={{ width: '100%' }} />
-                    {GridItem(maxQAtNominalVField, 4)}
-                    {GridItem(switchedOnMaxQAtNominalVField, 4)}
+                    <GridItem size={4}>{maxQAtNominalVField}</GridItem>
+                    <GridItem size={4}>{switchedOnMaxQAtNominalVField}</GridItem>
                 </Grid>
             )}
         </Grid>

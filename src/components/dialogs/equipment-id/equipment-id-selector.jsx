@@ -6,15 +6,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { filledTextField, GridItem } from '../dialog-utils';
-import { Autocomplete, TextField } from '@mui/material';
+import { filledTextField } from '../dialog-utils';
+import { Autocomplete, TextField, Grid, CircularProgress } from '@mui/material';
 import { FieldLabel } from '@gridsuite/commons-ui';
-import Grid from '@mui/material/Grid';
 import { FormFiller } from '../commons/formFiller';
-import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
+import { GridItem } from '../commons/grid-item';
 
 const styles = {
     message: (theme) => ({
@@ -95,7 +94,7 @@ export const EquipmentIdSelector = ({
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(equipmentIdField, 4)}
+                <GridItem size={4}>{equipmentIdField}</GridItem>
             </Grid>
             <FormFiller lineHeight={fillerHeight}>
                 {fillerMessageId && (!loading || !selectedValue) && (

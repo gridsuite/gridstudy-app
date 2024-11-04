@@ -13,10 +13,10 @@ import {
     PHASE_TAP_CHANGER,
     RATIO_TAP_CHANGER,
 } from 'components/utils/field-constants';
-import React from 'react';
-import { filledTextField, GridItem } from '../../../dialog-utils';
+import { filledTextField } from '../../../dialog-utils';
 import { TextInput } from '@gridsuite/commons-ui';
 import { SwitchInput } from '@gridsuite/commons-ui';
+import { GridItem } from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = <TextInput name={`${EQUIPMENT_ID}`} label="ID" formProps={filledTextField} />;
@@ -35,10 +35,10 @@ const TwoWindingsTransformerCreationDialogHeader = () => {
 
     return (
         <Grid container item spacing={2}>
-            {GridItem(twoWindingsTransformerIdField, 4)}
-            {GridItem(twoWindingsTransformerNameField, 4)}
-            {GridItem(ratioTapChangerEnabledField, 2)}
-            {GridItem(phaseTapChangerEnabledField, 2)}
+            <GridItem size={4}>{twoWindingsTransformerIdField}</GridItem>
+            <GridItem size={4}>{twoWindingsTransformerNameField}</GridItem>
+            <GridItem size={2}>{ratioTapChangerEnabledField}</GridItem>
+            <GridItem size={2}>{phaseTapChangerEnabledField}</GridItem>
         </Grid>
     );
 };

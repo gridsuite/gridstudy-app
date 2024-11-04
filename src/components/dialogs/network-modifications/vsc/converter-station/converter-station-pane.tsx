@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect } from 'react';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import {
     CONNECTIVITY,
@@ -17,17 +17,11 @@ import {
     VOLTAGE,
     VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
-import {
-    GridItem,
-    GridSection,
-    percentageTextField,
-    ReactivePowerAdornment,
-    VoltageAdornment,
-} from '../../../dialog-utils';
+import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
@@ -38,6 +32,8 @@ import {
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 
 interface VscConverterStationPaneProps {
     id: string;
@@ -157,22 +153,22 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         <Grid container spacing={2}>
             <GridSection title={stationLabel} />
             <Grid container spacing={2}>
-                <GridItem field={generatorIdField} size={4} />
-                <GridItem field={generatorNameField} size={4} />
+                <GridItem size={4}>{generatorIdField}</GridItem>
+                <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
 
             {!isModification && (
                 <>
                     <GridSection title={'Connectivity'} />
                     <Grid container spacing={2}>
-                        <GridItem field={connectivityForm} size={12} />
+                        <GridItem size={12}>{connectivityForm}</GridItem>
                     </Grid>
                 </>
             )}
 
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                <GridItem field={lossFactorField} size={4} />
+                <GridItem size={4}>{lossFactorField}</GridItem>
             </Grid>
 
             <GridSection title="ReactiveLimits" />
@@ -186,11 +182,11 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
             <GridSection title={'Setpoints'} />
             <Grid container spacing={2}>
-                <GridItem field={reactivePowerField} size={4} />
+                <GridItem size={4}>{reactivePowerField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                <GridItem field={voltageRegulation} size={4} />
-                <GridItem field={voltageField} size={4} />
+                <GridItem size={4}>{voltageRegulation}</GridItem>
+                <GridItem size={4}>{voltageField}</GridItem>
             </Grid>
         </Grid>
     );

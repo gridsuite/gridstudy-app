@@ -18,15 +18,17 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import { ActivePowerAdornment, GridItem, GridSection, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
+import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
-import React, { FunctionComponent, useEffect } from 'react';
-import Grid from '@mui/material/Grid';
+import { FunctionComponent, useEffect } from 'react';
+import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
     id: string;
@@ -182,24 +184,24 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         <Grid container spacing={2}>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                <GridItem field={dcNominalVoltageField} size={6} />
-                <GridItem field={dcResistanceField} size={6} />
-                <GridItem field={maximumActivePowerField} size={6} />
+                <GridItem size={6}>{dcNominalVoltageField}</GridItem>
+                <GridItem size={6}>{dcResistanceField}</GridItem>
+                <GridItem size={6}>{maximumActivePowerField}</GridItem>
             </Grid>
 
             <GridSection title={'Limits'} />
             <Grid container spacing={2}>
-                <GridItem field={operatorActivePowerLimitSide1Field} size={6} />
-                <GridItem field={operatorActivePowerLimitSide2Field} size={6} />
+                <GridItem size={6}>{operatorActivePowerLimitSide1Field}</GridItem>
+                <GridItem size={6}>{operatorActivePowerLimitSide2Field}</GridItem>
             </Grid>
 
             <GridSection title={'Setpoints'} />
             <Grid container spacing={2}>
-                <GridItem field={converterModeField} size={6} />
-                <GridItem field={activePowerField} size={6} />
-                <GridItem field={AngleDroopActivePowerControl} size={12} />
-                <GridItem field={droopField} size={6} />
-                <GridItem field={p0Field} size={6} />
+                <GridItem size={6}>{converterModeField}</GridItem>
+                <GridItem size={6}>{activePowerField}</GridItem>
+                <GridItem size={12}>{AngleDroopActivePowerControl}</GridItem>
+                <GridItem size={6}>{droopField}</GridItem>
+                <GridItem size={6}>{p0Field}</GridItem>
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />

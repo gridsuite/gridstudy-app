@@ -6,13 +6,14 @@
  */
 
 import { Grid } from '@mui/material';
-import { GridItem, GridSection } from '../dialog-utils';
 import { ConnectivityForm } from './connectivity-form';
 import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import React, { FunctionComponent } from 'react';
 import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
 import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
+import { GridSection } from '../commons/grid-section';
+import { GridItem } from '../commons/grid-item';
 
 interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;
@@ -65,11 +66,11 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
         <>
             <GridSection title="Side1" heading="4" />
             <Grid container spacing={2}>
-                <GridItem field={connectivity1Field} size={12} />
+                <GridItem size={12}>{connectivity1Field}</GridItem>
             </Grid>
             <GridSection title="Side2" heading="4" />
             <Grid container spacing={2}>
-                <GridItem field={connectivity2Field} size={12} />
+                <GridItem size={12}>{connectivity2Field}</GridItem>
             </Grid>
         </>
     );

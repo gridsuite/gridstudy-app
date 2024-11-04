@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { GridItem } from 'components/dialogs/dialog-utils.tsx';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2, COUPLING_OMNIBUS } from 'components/utils/field-constants';
+import { GridItem } from '../../../commons/grid-item';
 
 // TODO should use "name" props instead of `${COUPLING_OMNIBUS}.(...)`
 export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
@@ -34,8 +34,8 @@ export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {
 
     return (
         <>
-            {GridItem(busBarSectionId1Field, 4)}
-            {GridItem(busBarSectionId2Field, 4)}
+            <GridItem size={4}>{busBarSectionId1Field}</GridItem>
+            <GridItem size={4}>{busBarSectionId2Field}</GridItem>
         </>
     );
 };

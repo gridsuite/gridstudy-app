@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
-import React, { useCallback, useMemo } from 'react';
+import { Grid } from '@mui/material';
+import { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
-import { GridItem } from 'components/dialogs/dialog-utils';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
+import { GridItem } from '../../../commons/grid-item';
 
 const ByFilterDeletionForm = () => {
     const equipmentTypeWatch = useWatch({
@@ -73,8 +73,8 @@ const ByFilterDeletionForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                <GridItem field={equipmentTypeField} size={6} />
-                <GridItem field={filtersField} size={6} />
+                <GridItem size={6}>{equipmentTypeField}</GridItem>
+                <GridItem size={6}>{filtersField}</GridItem>
             </Grid>
         </>
     );

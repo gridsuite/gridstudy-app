@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
-import { filledTextField, GridItem } from '../../../dialog-utils';
-import React from 'react';
+import { Grid } from '@mui/material';
+import { filledTextField } from '../../../dialog-utils';
 import { TextInput } from '@gridsuite/commons-ui';
 import { COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection-input';
 import PropertiesForm from '../../common/properties/properties-form';
+import { GridItem } from '../../../commons/grid-item';
 
 const SubstationCreationForm = () => {
     const substationIdField = <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={filledTextField} />;
@@ -25,9 +25,9 @@ const SubstationCreationForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(substationIdField, 4)}
-                {GridItem(substationNameField, 4)}
-                {GridItem(substationCountryField, 4)}
+                <GridItem size={4}>{substationIdField}</GridItem>
+                <GridItem size={4}>{substationNameField}</GridItem>
+                <GridItem size={4}>{substationCountryField}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'substation'} />
         </>

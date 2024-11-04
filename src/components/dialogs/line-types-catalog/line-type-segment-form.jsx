@@ -7,8 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import Grid from '@mui/material/Grid';
-import { GridItem } from '../dialog-utils';
+import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
@@ -32,6 +31,7 @@ import { calculateReactance, calculateResistance, calculateSusceptance } from '.
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import { Box } from '@mui/system';
+import { GridItem } from '../commons/grid-item';
 
 const styles = {
     header: {
@@ -183,12 +183,12 @@ export const LineTypeSegmentForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(<div />, 2)}
-                {GridItem(segmentTypeHeader, 3)}
-                {GridItem(segmentResistanceHeader, 2)}
-                {GridItem(segmentReactanceHeader, 2)}
-                {GridItem(segmentSusceptanceHeader, 2)}
-                {GridItem(<div />, 1)}
+                <GridItem size={2}>{<div />}</GridItem>
+                <GridItem size={3}>{segmentTypeHeader}</GridItem>
+                <GridItem size={2}>{segmentResistanceHeader}</GridItem>
+                <GridItem size={2}>{segmentReactanceHeader}</GridItem>
+                <GridItem size={2}>{segmentSusceptanceHeader}</GridItem>
+                <GridItem size={1}>{<div />}</GridItem>
             </Grid>
             <ExpandableInput
                 name={SEGMENTS}
@@ -204,11 +204,11 @@ export const LineTypeSegmentForm = () => {
             />
             <hr />
             <Grid container spacing={2}>
-                {GridItem(<div />, 5)}
-                {GridItem(totalResistanceField, 2)}
-                {GridItem(totalReactanceField, 2)}
-                {GridItem(totalSusceptanceField, 2)}
-                {GridItem(<div />, 1)}
+                <GridItem size={5}>{<div />}</GridItem>
+                <GridItem size={2}>{totalResistanceField}</GridItem>
+                <GridItem size={2}>{totalReactanceField}</GridItem>
+                <GridItem size={2}>{totalSusceptanceField}</GridItem>
+                <GridItem size={1}>{<div />}</GridItem>
             </Grid>
 
             {openCatalogDialogIndex !== null && (

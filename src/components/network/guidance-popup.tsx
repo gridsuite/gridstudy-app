@@ -8,8 +8,8 @@
 import React, { ReactNode } from 'react';
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
-import { LineSeparator } from '../dialogs/dialog-utils';
 import { CardActions, CardHeader } from '@mui/material';
+import { LineSeparator } from '../dialogs/commons/line-separator';
 
 type GuidancePopupStyle = {
     card: React.CSSProperties;

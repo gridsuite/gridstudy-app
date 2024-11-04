@@ -5,16 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ActivePowerAdornment,
-    GridItem,
-    gridItemWithTooltip,
-    GridSection,
-    ReactivePowerAdornment,
-} from '../dialog-utils';
+import { ActivePowerAdornment, ReactivePowerAdornment } from '../dialog-utils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
-import React from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ACTIVE_POWER_SET_POINT, REACTIVE_POWER_SET_POINT, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
@@ -23,6 +16,9 @@ import VoltageRegulation from './voltage-regulation';
 import { SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
+import { GridItem } from '../commons/grid-item';
+import { GridSection } from '../commons/grid-section';
+import { GridItemWithTooltip } from '../commons/grid-item-with-tooltip';
 
 const SetPointsForm = ({
     studyUuid,
@@ -94,19 +90,18 @@ const SetPointsForm = ({
         <>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {GridItem(activePowerSetPointField, 4)}
-                {GridItem(reactivePowerSetPointField, 4)}
+                <GridItem size={4}>{activePowerSetPointField}</GridItem>
+                <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />
-                {gridItemWithTooltip(
-                    voltageRegulationField,
-                    watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />,
-                    4
-                )}
-
+                <GridItemWithTooltip
+                    tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
+                    size={4}
+                >
+                    {voltageRegulationField}
+                </GridItemWithTooltip>
                 {voltageRegulationFields}
-
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation
                     isEquipmentModification={isEquipmentModification}

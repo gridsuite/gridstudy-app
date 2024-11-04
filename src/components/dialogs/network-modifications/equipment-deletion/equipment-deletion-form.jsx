@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Grid } from '@mui/material';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
-import { filledTextField, GridItem } from 'components/dialogs/dialog-utils.tsx';
+import { filledTextField } from 'components/dialogs/dialog-utils';
 import {
     DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,
@@ -23,6 +23,7 @@ import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
+import { GridItem } from '../../commons/grid-item';
 
 const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { snackError } = useSnackMessage();
@@ -150,8 +151,8 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(equipmentTypeField, 6)}
-                {GridItem(equipmentField, 6)}
+                <GridItem size={6}>{equipmentTypeField}</GridItem>
+                <GridItem size={6}>{equipmentField}</GridItem>
             </Grid>
             {watchSpecificData?.specificType === HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
                 <HvdcLccDeletionSpecificForm />

@@ -5,17 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { filledTextField, GridItem, GridSection } from '../../../dialog-utils';
+import { filledTextField } from '../../../dialog-utils';
 
 import { TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
+import { GridItem } from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
@@ -48,16 +50,16 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(shuntCompensatorIdField, 4)}
-                {GridItem(shuntCompensatorNameField, 4)}
+                <GridItem size={4}>{shuntCompensatorIdField}</GridItem>
+                <GridItem size={4}>{shuntCompensatorNameField}</GridItem>
             </Grid>
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {GridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {GridItem(characteristicsForm, 12)}
+                <GridItem size={12}>{characteristicsForm}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'shuntCompensator'} />
         </>

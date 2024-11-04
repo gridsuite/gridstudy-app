@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
-import { filledTextField, GridItem, GridSection } from '../../../dialog-utils';
-import Grid from '@mui/material/Grid';
-import { TextField } from '@mui/material';
+import { filledTextField } from '../../../dialog-utils';
+import { TextField, Grid } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { GridItem } from '../../../commons/grid-item';
+import { GridSection } from '../../../commons/grid-section';
 
 const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompensatorInfos, equipmentId }) => {
     const shuntCompensatorIdField = (
@@ -54,17 +54,17 @@ const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompens
     return (
         <>
             <Grid container spacing={2}>
-                {GridItem(shuntCompensatorIdField, 4)}
-                {GridItem(shuntCompensatorNameField, 4)}
+                <GridItem size={4}>{shuntCompensatorIdField}</GridItem>
+                <GridItem size={4}>{shuntCompensatorNameField}</GridItem>
             </Grid>
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {GridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {GridItem(characteristicsForm, 12)}
+                <GridItem size={12}>{characteristicsForm}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>

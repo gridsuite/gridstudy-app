@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -27,7 +27,7 @@ import {
     R,
 } from '../../../../utils/field-constants';
 import Grid from '@mui/material/Grid';
-import { filledTextField, GridItem, sanitizeString } from '../../../dialog-utils';
+import { filledTextField, sanitizeString } from '../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import { Box } from '@mui/system';
 import yup from 'components/utils/yup-config';
@@ -59,6 +59,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { GridItem } from '../../../commons/grid-item';
 
 const formSchema = yup
     .object()
@@ -148,8 +149,8 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
             }}
         >
             <Grid container spacing={2}>
-                {GridItem(generatorIdField, 4)}
-                {GridItem(generatorNameField, 4)}
+                <GridItem size={4}>{generatorIdField}</GridItem>
+                <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
             <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>

@@ -52,7 +52,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';

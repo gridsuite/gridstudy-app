@@ -6,7 +6,7 @@
  */
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { Grid, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview from '../common/checkbox-treeview';

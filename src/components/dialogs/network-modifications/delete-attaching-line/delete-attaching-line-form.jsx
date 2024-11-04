@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
-import React, { useEffect, useState } from 'react';
-import { GridItem, GridSection } from 'components/dialogs/dialog-utils.tsx';
-import { TextInput } from '@gridsuite/commons-ui';
-import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { Grid } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
 import {
     ATTACHED_LINE_ID,
     LINE_TO_ATTACH_TO_1_ID,
@@ -19,6 +17,8 @@ import {
 } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 
 const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
     const [linesOptions, setLinesOptions] = useState([]);
@@ -84,20 +84,20 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
         <>
             <GridSection title="Line1" />
             <Grid container spacing={2} alignItems="center">
-                {GridItem(lineToAttachTo1Field, 5)}
+                <GridItem size={5}>{lineToAttachTo1Field}</GridItem>
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2} alignItems="center">
-                {GridItem(lineToAttachTo2Field, 5)}
+                <GridItem size={5}>{lineToAttachTo2Field}</GridItem>
             </Grid>
             <GridSection title="LineAttached" />
             <Grid container spacing={2} alignItems="center">
-                {GridItem(attachedLineField, 5)}
+                <GridItem size={5}>{attachedLineField}</GridItem>
             </Grid>
             <GridSection title="ReplacingLine" />
             <Grid container spacing={2}>
-                {GridItem(replacingLineIdField, 6)}
-                {GridItem(replacingLineNameField, 6)}
+                <GridItem size={6}>{replacingLineIdField}</GridItem>
+                <GridItem size={6}>{replacingLineNameField}</GridItem>
             </Grid>
         </>
     );

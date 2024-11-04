@@ -14,14 +14,15 @@ import {
     VARIATION_VALUE,
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useWatch } from 'react-hook-form';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { ACTIVE_VARIATION_MODES, REACTIVE_VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { ActivePowerAdornment, GridItem } from '../../../dialog-utils';
+import { ActivePowerAdornment } from '../../../dialog-utils';
 import { ElementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
+import { GridItem } from '../../../commons/grid-item';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 
@@ -89,10 +90,10 @@ const VariationForm = ({ name, index }) => {
 
     return (
         <>
-            {GridItem(filtersField, 3.25)}
-            {GridItem(variationValueField, 1.75)}
-            {GridItem(variationModeField, 3)}
-            {GridItem(reactiveVariationModeField, 3)}
+            <GridItem size={3.25}>{filtersField}</GridItem>
+            <GridItem size={1.75}>{variationValueField}</GridItem>
+            <GridItem size={3}>{variationModeField}</GridItem>
+            <GridItem size={3}>{reactiveVariationModeField}</GridItem>
         </>
     );
 };

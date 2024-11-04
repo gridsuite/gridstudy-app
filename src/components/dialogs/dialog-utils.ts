@@ -5,12 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
-import { FormattedMessage } from 'react-intl';
-import React from 'react';
-import { Divider, Theme, Tooltip } from '@mui/material';
-import { styled } from '@mui/system';
-import { JSX } from 'react/jsx-runtime';
+import { Theme } from '@mui/material';
 
 export const styles = {
     helperText: {
@@ -129,68 +124,4 @@ export function sanitizeString(val: string | undefined) {
     return trimedValue === '' ? null : trimedValue;
 }
 
-interface GridSectionProps {
-    title: string;
-    heading?: string;
-    size?: number;
-    customStyle?: React.CSSProperties;
-}
-
-const createCustomTag = (heading: string, customStyle: React.CSSProperties) => {
-    const StyledComponent = styled('div')(() => ({
-        ...customStyle,
-    }));
-
-    return (props: React.ComponentProps<'div'>) =>
-        React.createElement(`h${heading}`, { ...props, className: StyledComponent });
-};
-
-export const GridSection: React.FC<GridSectionProps> = ({ title, heading = '3', size = 12, customStyle = {} }) => {
-    const CustomTag = createCustomTag(heading, customStyle);
-
-    return (
-        <Grid container spacing={2}>
-            <Grid item xs={size}>
-                <CustomTag>
-                    <FormattedMessage id={title} />
-                </CustomTag>
-            </Grid>
-        </Grid>
-    );
-};
-
-interface GridItemProps {
-    field: JSX.Element | undefined;
-    size?: number;
-}
-
-export const GridItem: React.FC<GridItemProps> = ({ field, size = 6 }) => {
-    return (
-        <Grid item xs={size} alignItems="flex-start">
-            {field}
-        </Grid>
-    );
-};
-
-interface GridItemWithTooltipProps {
-    field: JSX.Element;
-    tooltip: string;
-    size?: number;
-}
-export const gridItemWithTooltip: React.FC<GridItemWithTooltipProps> = ({ field, tooltip = '', size = 6 }) => {
-    return (
-        <Grid item xs={size} alignItems="flex-start">
-            <Tooltip title={tooltip}>{field}</Tooltip>
-        </Grid>
-    );
-};
-
 export const getIdOrSelf = (e: any) => e?.id ?? e;
-
-export function LineSeparator() {
-    return (
-        <Grid item xs={12}>
-            <Divider />
-        </Grid>
-    );
-}

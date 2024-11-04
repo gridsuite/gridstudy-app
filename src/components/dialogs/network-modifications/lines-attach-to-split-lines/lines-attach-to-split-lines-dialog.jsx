@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialog-utils.tsx';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import PropTypes from 'prop-types';
 import {
     ATTACHED_LINE_ID,
@@ -25,7 +25,7 @@ import {
     VOLTAGE_LEVEL_ID,
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 

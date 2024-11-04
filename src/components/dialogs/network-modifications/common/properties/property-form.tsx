@@ -4,13 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { NAME, VALUE, PREVIOUS_VALUE, DELETION_MARK, ADDED } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { TextInput } from '@gridsuite/commons-ui';
 import { PredefinedProperties } from './property-utils';
-import { GridItem, italicFontTextField } from '../../../dialog-utils';
+import { italicFontTextField } from '../../../dialog-utils';
+import { GridItem } from '../../../commons/grid-item';
 
 type PropertyFormProps = {
     name: string;
@@ -80,14 +81,14 @@ const PropertyForm = ({ name, index, predefinedProperties }: PropertyFormProps) 
         return (
             <>
                 {watchPropertyDeletionMark || (watchPropertyAdded === false && watchPropertyPreviousValue) ? (
-                    <GridItem field={nameReadOnlyField} size={5} />
+                    <GridItem size={5}>{nameReadOnlyField}</GridItem>
                 ) : (
-                    <GridItem field={nameField} size={5} />
+                    <GridItem size={5}>{nameField}</GridItem>
                 )}
                 {watchPropertyDeletionMark ? (
-                    <GridItem field={valueReadOnlyField} size={5} />
+                    <GridItem size={5}>{valueReadOnlyField}</GridItem>
                 ) : (
-                    <GridItem field={valueField} size={5} />
+                    <GridItem size={5}>{valueField}</GridItem>
                 )}
             </>
         );

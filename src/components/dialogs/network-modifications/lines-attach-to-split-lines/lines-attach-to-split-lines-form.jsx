@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import { AutocompleteInput, TextInput } from '@gridsuite/commons-ui';
 import {
@@ -17,11 +17,12 @@ import {
     REPLACING_LINE_2_ID,
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
-import { GridItem, GridSection } from 'components/dialogs/dialog-utils.tsx';
+import { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
+import { GridSection } from '../../commons/grid-section';
+import { GridItem } from '../../commons/grid-item';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -90,27 +91,27 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
         <>
             <GridSection title="Line1" />
             <Grid container spacing={2} alignItems="center">
-                {GridItem(lineToAttachTo1Field, 5)}
+                <GridItem size={5}>{lineToAttachTo1Field}</GridItem>
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2} alignItems="center">
-                {GridItem(lineToAttachTo2Field, 5)}
+                <GridItem size={5}>{lineToAttachTo2Field}</GridItem>
             </Grid>
             <GridSection title="LineAttached" />
             <Grid container spacing={2} alignItems="center">
-                {GridItem(attachedLineField, 5)}
+                <GridItem size={5}>{attachedLineField}</GridItem>
             </Grid>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
-                {GridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             <GridSection title="ReplacingLines" />
             <Grid container spacing={2}>
-                {GridItem(newLine1IdField, 6)}
-                {GridItem(newLine1NameField, 6)}
+                <GridItem size={6}>{newLine1IdField}</GridItem>
+                <GridItem size={6}>{newLine1NameField}</GridItem>
                 <Box sx={{ width: '100%' }} />
-                {GridItem(newLine2IdField, 6)}
-                {GridItem(newLine2NameField, 6)}
+                <GridItem size={6}>{newLine2IdField}</GridItem>
+                <GridItem size={6}>{newLine2NameField}</GridItem>
             </Grid>
         </>
     );

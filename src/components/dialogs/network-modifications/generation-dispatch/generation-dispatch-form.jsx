@@ -6,22 +6,22 @@
  */
 
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { DirectoryItemsInput, FloatInput, FieldLabel } from '@gridsuite/commons-ui';
 import {
     LOSS_COEFFICIENT,
     DEFAULT_OUTAGE_RATE,
     GENERATORS_WITHOUT_OUTAGE,
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
 } from 'components/utils/field-constants';
-import { GridItem, percentageTextField, GridSection } from '../../dialog-utils';
+import { percentageTextField } from '../../dialog-utils';
 import { Box, Grid, Typography } from '@mui/material';
 import { formatPercentageValue, isValidPercentage } from '../../percentage-area/percentage-area-utils';
 import { ElementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
-import { FieldLabel } from '@gridsuite/commons-ui';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
+import { GridItem } from '../../commons/grid-item';
+import { GridSection } from '../../commons/grid-section';
 
 const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {
@@ -92,13 +92,13 @@ const GenerationDispatchForm = () => {
     return (
         <Box pt={2}>
             <Grid container spacing={2} mb={2}>
-                {GridItem(lossCoefficientField, 4)}
-                {GridItem(generatorsWithFixedActivePowerField, 12)}
+                <GridItem size={4}>{lossCoefficientField}</GridItem>
+                <GridItem size={12}>{generatorsWithFixedActivePowerField}</GridItem>
             </Grid>
             <GridSection title="ReduceMaxP" />
             <Grid container spacing={2} mb={3}>
-                {GridItem(defaultOutageRateField, 4)}
-                {GridItem(generatorsWithoutOutageField, 12)}
+                <GridItem size={4}>{defaultOutageRateField}</GridItem>
+                <GridItem size={12}>{generatorsWithoutOutageField}</GridItem>
             </Grid>
             <Grid container spacing={2}>
                 <Grid item>

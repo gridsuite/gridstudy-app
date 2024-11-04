@@ -6,16 +6,16 @@
  */
 
 import { Box, Grid } from '@mui/material';
-import { GridItem, GridSection } from '../../../../dialog-utils';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-creation-dialog';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import React from 'react';
 import LimitsPane from '../../../../limits/limits-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
+import { GridSection } from '../../../../commons/grid-section';
+import { GridItem } from '../../../../commons/grid-item';
 
 const styles = {
     h3: {
@@ -60,7 +60,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <Grid container spacing={2}>
                     <Grid item container direction="column">
                         <Grid container direction="column" spacing={2}>
-                            {GridItem(connectivity1Field, 6)}
+                            <GridItem size={6}>{connectivity1Field}</GridItem>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -68,7 +68,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <Grid container spacing={2}>
                     <Grid item container>
                         <Grid container direction="column" spacing={2}>
-                            {GridItem(connectivity2Field, 12)}
+                            <GridItem size={12}>{connectivity2Field}</GridItem>
                         </Grid>
                     </Grid>
                 </Grid>

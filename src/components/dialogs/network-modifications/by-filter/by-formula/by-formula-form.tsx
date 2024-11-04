@@ -10,12 +10,12 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constants';
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import FormulaForm from './formula/formula-form';
-import { GridItem } from '../../../dialog-utils';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { Box, Grid } from '@mui/material';
 import { mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
+import { GridItem } from '../../../commons/grid-item';
 
 interface ByFormulaFormProps {}
 
@@ -59,10 +59,10 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
     return (
         <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
             <Grid container sx={unscrollableDialogStyles.unscrollableHeader}>
-                <GridItem field={equipmentTypeField} size={2.15} />
+                <GridItem size={2.15}>{equipmentTypeField}</GridItem>
             </Grid>
             <Grid container sx={unscrollableDialogStyles.scrollableContent}>
-                <GridItem field={formulasField} size={12} />
+                <GridItem size={12}>{formulasField}</GridItem>
             </Grid>
         </Box>
     );

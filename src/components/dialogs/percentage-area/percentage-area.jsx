@@ -5,15 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Typography } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Grid, Typography } from '@mui/material';
 import { percentageTextField, standardTextField } from '../dialog-utils';
-import { SliderInput } from '@gridsuite/commons-ui';
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';
 import { formatPercentageValue, isValidPercentage, sanitizePercentageValue } from './percentage-area-utils';
 import { FormattedMessage } from 'react-intl';
-import { TextInput } from '@gridsuite/commons-ui';
+import { SliderInput, TextInput } from '@gridsuite/commons-ui';
 
 /**
  * Component to handle a 'percentage area' (slider , left and right percentage fields)

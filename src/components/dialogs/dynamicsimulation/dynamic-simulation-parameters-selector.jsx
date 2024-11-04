@@ -20,7 +20,8 @@ import {
 } from '../../../services/study/dynamic-simulation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getIdOrSelf, GridItem } from '../dialog-utils';
+import { getIdOrSelf } from '../dialog-utils';
+import { GridItem } from '../commons/grid-item';
 
 export const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -147,7 +148,9 @@ const DynamicSimulationParametersSelector = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column" item xs={12} justifyContent={'center'} padding={1}>
-                        <Grid item>{GridItem(mappingNameField, 6)}</Grid>
+                        <Grid item>
+                            <GridItem size={6}>{mappingNameField}</GridItem>
+                        </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>{renderButtons()}</DialogActions>

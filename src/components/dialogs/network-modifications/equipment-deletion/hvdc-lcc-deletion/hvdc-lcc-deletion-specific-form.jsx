@@ -15,10 +15,10 @@ import {
     SHUNT_COMPENSATOR_SIDE_1,
     SHUNT_COMPENSATOR_SIDE_2,
 } from 'components/utils/field-constants';
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { GridItem, GridSection } from '../../../dialog-utils';
 import { useFieldArray } from 'react-hook-form';
+import { GridSection } from '../../../commons/grid-section';
+import { GridItem } from '../../../commons/grid-item';
 
 const HvdcLccDeletionSpecificForm = () => {
     const { fields: mcsRows1 } = useFieldArray({
@@ -70,8 +70,8 @@ const HvdcLccDeletionSpecificForm = () => {
         <Grid container spacing={1} direction="column" paddingTop={2} paddingLeft={1}>
             <GridSection title="LCCConverterStationShuntCompensators" />
             <Grid container spacing={1}>
-                {GridItem(mcsOnsideOne)}
-                {GridItem(mcsOnsideTwo)}
+                <GridItem>{mcsOnsideOne}</GridItem>
+                <GridItem>{mcsOnsideTwo}</GridItem>
             </Grid>
         </Grid>
     );
