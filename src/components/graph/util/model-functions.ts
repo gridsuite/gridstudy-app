@@ -28,18 +28,14 @@ export function isRootNode(node: NetworkModificationNodeData | RootNodeData): no
     return node.type === NodeType.ROOT;
 }
 
-function convertRootNodeToReactFlowModelNode(
-    node: NetworkModificationNodeData | RootNodeData
-): ReactFlowRootNodeData {
+function convertRootNodeToReactFlowModelNode(node: NetworkModificationNodeData | RootNodeData): ReactFlowRootNodeData {
     return {
         label: node.name,
         description: node.description ?? undefined,
     };
 }
 
-function convertModificationNodeToReactFlowModelNode(
-    node: NetworkModificationNodeData
-): ReactFlowModificationNodeData {
+function convertModificationNodeToReactFlowModelNode(node: NetworkModificationNodeData): ReactFlowModificationNodeData {
     const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
     const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
     const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
