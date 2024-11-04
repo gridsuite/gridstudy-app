@@ -7,7 +7,9 @@
 
 import { CurrentTreeNode } from 'redux/reducer';
 
-export const snapGrid = [230, 110]; // [Width, Height]
+export const snapGrid = [230, 110]; // [Width, Height] // Same as node size
+//export const snapGrid = [28.75, 110]; // [Width, Height] // TODO clean this
+export const nodeSize = [230, 110]; // [Width, Height]
 
 function getPosition(placementArray, id) {
     for (let row = 0; row < placementArray.length; row++) {
@@ -77,8 +79,8 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[], nodeP
         const storedPosition = getPosition(nodePlacements, node.id);
         if (storedPosition !== null) {
             node.position = {
-                x: storedPosition.column * snapGrid[0],
-                y: storedPosition.row * snapGrid[1],
+                x: storedPosition.column * nodeSize[0],
+                y: storedPosition.row * nodeSize[1],
             };
         }
     });
