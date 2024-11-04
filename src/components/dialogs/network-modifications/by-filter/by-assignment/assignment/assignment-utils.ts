@@ -26,26 +26,15 @@ export const getFieldOptionType = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
-type ConverterFunction = ((value: number) => number | undefined) | undefined;
-type FieldValue = string | number | boolean;
-
-const convertValue = (
-    fieldName?: string | null,
-    fieldValue?: FieldValue,
-    converterKey: 'outputConverter' | 'inputConverter' = 'outputConverter'
-) => {
+export const convertOutputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
     const fieldOption = getFieldOptionType(fieldName);
-    const converter: ConverterFunction = fieldOption?.[converterKey];
-    const isNumericType = fieldOption?.dataType === DataType.DOUBLE || fieldOption?.dataType === DataType.INTEGER;
-
-    return converter && isNumericType ? converter(Number(fieldValue)) : fieldValue;
+    return fieldOption?.outputConverter ? fieldOption.outputConverter(Number(fieldValue)) : fieldValue;
 };
 
-export const convertOutputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) =>
-    convertValue(fieldName, fieldValue, 'outputConverter');
-
-export const convertInputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) =>
-    convertValue(fieldName, fieldValue, 'inputConverter');
+export const convertInputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
+    const fieldOption = getFieldOptionType(fieldName);
+    return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
+};
 
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
 export const getAssignmentInitialValue = () => ({
