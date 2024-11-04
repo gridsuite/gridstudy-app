@@ -25,7 +25,7 @@ import { fetchContingencyAndFiltersLists } from '../../services/directory';
 import { fetchContingencyCount } from '../../services/study';
 import { DirectoryItemSelector } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import DeleteIcon from '@mui/icons-material/Delete.js';
+import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { toggleElementFromList } from 'components/utils/utils';
 import { DialogActions } from '@mui/material';
