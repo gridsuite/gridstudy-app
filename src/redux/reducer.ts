@@ -364,7 +364,6 @@ export type StudyUpdated = {
 
 type NodeCommonData = {
     label: string;
-    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
@@ -903,7 +902,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -926,7 +925,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -952,8 +951,8 @@ export const reducer = createReducer(initialState, (builder) => {
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
-                    .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
+                    .map((node) => node.parentId)
+                    .find((parentId) => !action.networkModificationTreeNodes.includes(parentId!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 newModel.updateLayout();
@@ -971,10 +970,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 else if (
                     action.networkModificationTreeNodes.includes(
                         // @ts-expect-error TODO: what to do if current node null?
-                        state.currentTreeNode?.data?.parentNodeUuid
+                        state.currentTreeNode?.parentId
                     )
                 ) {
-                    // Then must overwrite currentTreeNode to get new parentNodeUuid
+                    // Then must overwrite currentTreeNode to get new parentId
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }

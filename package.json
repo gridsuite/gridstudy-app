@@ -22,7 +22,6 @@
         "cheap-ruler": "^3.0.2",
         "clsx": "^2.1.0",
         "core-js": "^3.36.1",
-        "elkjs": "^0.9.1",
         "eventemitter3": "^5.0.1",
         "localized-countries": "^2.0.0",
         "lucene-escape-query": "^1.0.1",

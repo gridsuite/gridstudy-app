@@ -17,7 +17,7 @@ import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
 const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     return nodes.reduce((acc, n) => {
-        if (n.data.parentNodeUuid === parentId) {
+        if (n.parentId === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
         }
         return acc;
@@ -115,10 +115,7 @@ export default class NetworkModificationTreeModel {
                 if (newNode.childrenIds.includes(node.id)) {
                     return {
                         ...node,
-                        data: {
-                            ...node.data,
-                            parentNodeUuid: newNode.id,
-                        },
+                        parentId: newNode.id,
                     };
                 }
                 return node;
@@ -163,19 +160,16 @@ export default class NetworkModificationTreeModel {
             });
             this.treeEdges = filteredEdges;
 
-            // fix parentNodeUuid of children
+            // fixes the parentId of children
             const nodeToDelete = this.treeNodes.find((el) => el.id === nodeId);
             if (!nodeToDelete) {
                 return;
             }
             const nextTreeNodes = filteredNodes.map((node) => {
-                if (node.data?.parentNodeUuid === nodeId) {
+                if (node.parentId === nodeId) {
                     return {
                         ...node,
-                        data: {
-                            ...node.data,
-                            parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
-                        },
+                        parentId: nodeToDelete.parentId,
                     };
                 }
                 return node;

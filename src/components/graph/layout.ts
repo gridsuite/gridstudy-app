@@ -50,12 +50,12 @@ export function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
     let currentMaxColumn = 0;
 
     nodes.forEach((node) => {
-        if (!node.data?.parentNodeUuid) {
+        if (!node.parentId) {
             // ORIGIN/PARENT NODE
             addValueAtPosition(newPlacements, 0, 0, node.id);
         } else {
             // CHILDREN NODE
-            const parentPosition = getPosition(newPlacements, node.data.parentNodeUuid);
+            const parentPosition = getPosition(newPlacements, node.parentId);
             // Check if there is an empty space below the parent
             const tryRow = parentPosition.row + 1;
             const tryColumn = parentPosition.column;

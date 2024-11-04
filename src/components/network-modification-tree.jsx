@@ -51,6 +51,7 @@ const NetworkModificationTree = ({
     const [isGridVisible, setIsGridVisible] = useState(false);
 
     const [nodePlacements, setNodePlacements] = useState([]);
+    const { setViewport, fitView } = useReactFlow();
 
     const nodeColor = useCallback(
         (node) => {
@@ -92,11 +93,11 @@ const NetworkModificationTree = ({
             setEdges([...treeModel.treeEdges]);
             window.requestAnimationFrame(() => fitView());
         }
-    }, [treeModel, nodePlacements]);
+    }, [treeModel, nodePlacements, fitView, setNodes, setEdges]);
 
     useLayoutEffect(() => {
         updateNodePositions();
-    }, [treeModel, nodePlacements]);
+    }, [updateNodePositions]);
 
     const onNodeClick = useCallback(
         (event, node) => {
@@ -116,7 +117,6 @@ const NetworkModificationTree = ({
     }, []);
 
     const [x, y, zoom] = useStore((state) => state.transform);
-    const { setViewport, fitView, screenToFlowPosition } = useReactFlow();
 
     //We want to trigger the following useEffect that manage the modification tree focus only when we change the study map/tree display.
     //So we use this useRef to avoid to trigger on those depedencies.
@@ -169,7 +169,7 @@ const NetworkModificationTree = ({
             });
         }
         window.requestAnimationFrame(() => fitView());
-    }, [isStudyDrawerOpen]);
+    }, [isStudyDrawerOpen, fitView]);
 
     const NodePlacementsDisplay = ({ nodePlacements }) => {
         const squareSize = 30;

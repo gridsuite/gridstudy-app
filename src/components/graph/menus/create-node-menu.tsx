@@ -70,7 +70,7 @@ export const getNodeChildren = (
     sourceNodeIds: UUID[],
     allChildren: CurrentTreeNode[]
 ) => {
-    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.data.parentNodeUuid!));
+    const children = treeModel.treeNodes.filter((node) => sourceNodeIds.includes(node.parentId!));
     if (children.length > 0) {
         children.forEach((item) => {
             allChildren?.push({ ...item });
@@ -84,7 +84,7 @@ export const getNodeChildren = (
 export const getNodesFromSubTree = (treeModel: NetworkModificationTreeModel | null, id: UUID) => {
     if (treeModel?.treeNodes) {
         // get the top level children of the active node.
-        const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.data.parentNodeUuid === id);
+        const activeNodeDirectChildren = treeModel.treeNodes.filter((item) => item.parentId === id);
         const allChildren: CurrentTreeNode[] = [];
         activeNodeDirectChildren.forEach((child) => {
             allChildren.push(child);
@@ -234,7 +234,7 @@ const CreateNodeMenu: React.FC<CreateNodeMenuProps> = ({
         return selectionForCopy?.nodeId === activeNode.id && selectionForCopy?.copyType === CopyType.SUBTREE_CUT;
     }
     function isNodeHasChildren(node: CurrentTreeNode, treeModel: NetworkModificationTreeModel | null): boolean {
-        return treeModel?.treeNodes.some((item) => item.data.parentNodeUuid === node.id) ?? false;
+        return treeModel?.treeNodes.some((item) => item.parentId === node.id) ?? false;
     }
     function isSubtreeRemovingAllowed() {
         // check if the subtree has children
