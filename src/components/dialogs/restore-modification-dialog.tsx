@@ -15,11 +15,11 @@ import { Box, DialogContentText, Theme } from '@mui/material';
 import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';
-import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer.jsx';
+import { useModificationLabelComputer } from '../graph/util/use-modification-label-computer';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer.js';
-import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type.js';
-import { toggleElementFromList } from 'components/utils/utils.js';
+import { AppState } from 'redux/reducer';
+import { NetworkModificationMetadata } from 'components/graph/menus/network-modification-menu.type';
+import { toggleElementFromList } from 'components/utils/utils';
 
 const styles = {
     text: (theme: Theme) => ({
