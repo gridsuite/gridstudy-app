@@ -380,3 +380,4 @@ export const MAX_Q_AUTOMATON = 'maxQAutomaton';
 export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
+export const MICRO_SIEMENS = '(µS)';

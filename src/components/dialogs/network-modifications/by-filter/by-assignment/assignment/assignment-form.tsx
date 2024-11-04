@@ -76,17 +76,14 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
-    const translateLabelWithUnit = useMemo(
-        () => (value: any) => {
+    const formatLabelWithUnit = useMemo(() => {
+        return (value: string | { label: string; unit?: string }) => {
             if (typeof value === 'string') {
                 return value;
             }
-            const { label = '', unit = '' } = value;
-            const translatedLabel = intl.formatMessage({ id: label });
-            return `${translatedLabel} ${unit}`.trim();
-        },
-        [intl]
-    );
+            return `${intl.formatMessage({ id: value.label })} ${value.unit || ''}`;
+        };
+    }, [intl]);
 
     const filtersField = (
         <DirectoryItemsInput
@@ -107,7 +104,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => translateLabelWithUnit(option)}
+            getOptionLabel={(option: any) => formatLabelWithUnit(option)}
             isOptionEqualToValue={areIdsEqual}
         />
     );

@@ -8,6 +8,7 @@
 import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
 import { EquipmentType, microUnitToUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
+import {MICRO_SIEMENS} from "../../../../../utils/field-constants";
 
 export const FIELD_OPTIONS: {
     [key: string]: FieldOptionType;
@@ -105,17 +106,17 @@ export const FIELD_OPTIONS: {
     MAXIMUM_SUSCEPTANCE: {
         id: FieldType.MAXIMUM_SUSCEPTANCE,
         label: 'maxSusceptance',
-        unit: '(μS)',
+        unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        OutputConverter: (value) => microUnitToUnit(value),
+        outputConverter: (value) => microUnitToUnit(value),
         inputConverter: (value) => unitToMicroUnit(value),
     },
     MAXIMUM_Q_AT_NOMINAL_VOLTAGE: {
         id: FieldType.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
         label: 'maxQAtNominalV',
-        unit: '(μS)',
+        unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        OutputConverter: (value) => microUnitToUnit(value),
+        outputConverter: (value) => microUnitToUnit(value),
         inputConverter: (value) => unitToMicroUnit(value),
     },
     NOMINAL_VOLTAGE: {

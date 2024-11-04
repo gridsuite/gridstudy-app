@@ -19,17 +19,33 @@ import { Assignment, DataType } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
-    return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName)?.dataType;
+    return getFieldOptionType(fieldName)?.dataType;
 };
 
-export const convertOutputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
-    const fieldOption = Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
-    return fieldOption?.OutputConverter ? fieldOption.OutputConverter(Number(fieldValue)) : fieldValue;
+export const getFieldOptionType = (fieldName?: string | null) => {
+    return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
-export const convertInputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) => {
-    const fieldOption = Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
-    return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
+
+type ConverterFunction = ((value: number) => number | undefined) | undefined;
+
+const convertValue = (
+    fieldName?: string | null,
+    fieldValue?: string | number | boolean,
+    converterKey: 'outputConverter' | 'inputConverter' = 'outputConverter'
+) => {
+    const fieldOption = getFieldOptionType(fieldName);
+    const converter: ConverterFunction = fieldOption?.[converterKey];
+    const isNumericType = fieldOption?.dataType === DataType.DOUBLE || fieldOption?.dataType === DataType.INTEGER;
+
+    return converter && isNumericType ? converter(Number(fieldValue)) : fieldValue;
 };
+
+export const convertOutputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) =>
+    convertValue(fieldName, fieldValue, 'outputConverter');
+
+export const convertInputValue = (fieldName?: string | null, fieldValue?: string | number | boolean) =>
+    convertValue(fieldName, fieldValue, 'inputConverter');
+
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
 export const getAssignmentInitialValue = () => ({
     [FILTERS]: [],
@@ -63,7 +79,7 @@ export function getAssignmentsSchema() {
                 }),
                 [VALUE_FIELD]: yup
                     .mixed<string | number | boolean>()
-                    .when([EDITED_FIELD], ([editedField], schema) => {
+                    .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
                         return getValueSchema(dataType);
                     })

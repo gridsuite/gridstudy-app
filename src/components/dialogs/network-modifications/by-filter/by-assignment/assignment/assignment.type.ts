@@ -32,8 +32,8 @@ export type FieldOptionType = {
     unit?: string;
     dataType: DataType;
     values?: Option[];
-    OutputConverter?: (value: number) => void;
-    inputConverter?: (value: number) => void;
+    outputConverter?: (value: number) => number | undefined;
+    inputConverter?: (value: number) => number | undefined;
 };
 
 export enum FieldType {
