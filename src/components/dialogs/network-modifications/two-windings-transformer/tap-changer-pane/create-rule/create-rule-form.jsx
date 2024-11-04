@@ -6,7 +6,7 @@
  */
 
 import { DialogContent, DialogTitle, Grid } from '@mui/material';
-import { gridItem } from 'components/dialogs/dialogUtils';
+import { GridItem } from 'components/dialogs/dialog-utils.tsx';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
@@ -51,8 +51,8 @@ const CreateRuleForm = (props) => {
                         paddingTop: '5px',
                     }}
                 >
-                    {gridItem(lowTapValueField)}
-                    {gridItem(highTapValueField)}
+                    {GridItem(lowTapValueField)}
+                    {GridItem(highTapValueField)}
                 </Grid>
             </DialogContent>
         </>

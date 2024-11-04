@@ -38,7 +38,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils.tsx';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';

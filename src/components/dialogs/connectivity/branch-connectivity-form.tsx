@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { gridItem, GridSection } from '../dialogUtils';
+import { GridItem, GridSection } from '../dialog-utils';
 import { ConnectivityForm } from './connectivity-form';
 import { CONNECTIVITY, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import React, { FunctionComponent } from 'react';
@@ -65,11 +65,11 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
         <>
             <GridSection title="Side1" heading="4" />
             <Grid container spacing={2}>
-                {gridItem(connectivity1Field, 12)}
+                <GridItem field={connectivity1Field} size={12} />
             </Grid>
             <GridSection title="Side2" heading="4" />
             <Grid container spacing={2}>
-                {gridItem(connectivity2Field, 12)}
+                <GridItem field={connectivity2Field} size={12} />
             </Grid>
         </>
     );

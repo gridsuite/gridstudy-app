@@ -7,7 +7,7 @@
 
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { percentageTextField, standardTextField } from '../dialogUtils';
+import { percentageTextField, standardTextField } from '../dialog-utils';
 import { SliderInput } from '@gridsuite/commons-ui';
 import { LEFT_SIDE_PERCENTAGE, RIGHT_SIDE_PERCENTAGE, SLIDER_PERCENTAGE } from 'components/utils/field-constants';
 import { useFormContext } from 'react-hook-form';

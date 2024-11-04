@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { gridItem, GridSection, MicroSusceptanceAdornment, OhmAdornment } from '../../../dialogUtils';
+import { GridItem, GridSection, MicroSusceptanceAdornment, OhmAdornment } from '../../../dialog-utils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
@@ -131,28 +131,28 @@ const LineCharacteristicsPane = ({
                     <GridSection title="Connectivity" customStyle={styles.h3} />
                     <GridSection title="Side1" heading="4" />
                     <Grid container spacing={2}>
-                        {gridItem(connectivity1Field, 12)}
+                        {GridItem(connectivity1Field, 12)}
                     </Grid>
                     <GridSection title="Side2" heading="4" />
                     <Grid container spacing={2}>
-                        {gridItem(connectivity2Field, 12)}
+                        {GridItem(connectivity2Field, 12)}
                     </Grid>
                 </>
             )}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(seriesResistanceField, 4)}
-                {gridItem(seriesReactanceField, 4)}
+                {GridItem(seriesResistanceField, 4)}
+                {GridItem(seriesReactanceField, 4)}
             </Grid>
             <GridSection title="Side1" heading="4" />
             <Grid container spacing={2}>
-                {gridItem(shuntConductance1Field, 4)}
-                {gridItem(shuntSusceptance1Field, 4)}
+                {GridItem(shuntConductance1Field, 4)}
+                {GridItem(shuntSusceptance1Field, 4)}
             </Grid>
             <GridSection title="Side2" heading="4" />
             <Grid container spacing={2}>
-                {gridItem(shuntConductance2Field, 4)}
-                {gridItem(shuntSusceptance2Field, 4)}
+                {GridItem(shuntConductance2Field, 4)}
+                {GridItem(shuntSusceptance2Field, 4)}
             </Grid>
             <PropertiesForm networkElementType={'line'} isModification={isModification} />
         </>

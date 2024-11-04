@@ -18,12 +18,12 @@ import {
     VOLTAGE_REGULATION_ON,
 } from '../../../../utils/field-constants';
 import {
-    gridItem,
+    GridItem,
     GridSection,
     percentageTextField,
     ReactivePowerAdornment,
     VoltageAdornment,
-} from '../../../dialogUtils';
+} from '../../../dialog-utils';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
@@ -157,22 +157,22 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         <Grid container spacing={2}>
             <GridSection title={stationLabel} />
             <Grid container spacing={2}>
-                {gridItem(generatorIdField, 4)}
-                {gridItem(generatorNameField, 4)}
+                <GridItem field={generatorIdField} size={4} />
+                <GridItem field={generatorNameField} size={4} />
             </Grid>
 
             {!isModification && (
                 <>
                     <GridSection title={'Connectivity'} />
                     <Grid container spacing={2}>
-                        {gridItem(connectivityForm, 12)}
+                        <GridItem field={connectivityForm} size={12} />
                     </Grid>
                 </>
             )}
 
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(lossFactorField, 4)}
+                <GridItem field={lossFactorField} size={4} />
             </Grid>
 
             <GridSection title="ReactiveLimits" />
@@ -186,11 +186,11 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
 
             <GridSection title={'Setpoints'} />
             <Grid container spacing={2}>
-                {gridItem(reactivePowerField, 4)}
+                <GridItem field={reactivePowerField} size={4} />
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
-                {gridItem(voltageRegulation, 4)}
-                {gridItem(voltageField, 4)}
+                <GridItem field={voltageRegulation} size={4} />
+                <GridItem field={voltageField} size={4} />
             </Grid>
         </Grid>
     );

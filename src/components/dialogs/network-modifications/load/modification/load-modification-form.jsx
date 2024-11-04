@@ -10,10 +10,10 @@ import { EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-consta
 import {
     ActivePowerAdornment,
     filledTextField,
-    gridItem,
+    GridItem,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogUtils';
+} from '../../../dialog-utils';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
 import Grid from '@mui/material/Grid';
 import React from 'react';
@@ -100,19 +100,19 @@ const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentI
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(loadIdField, 4)}
-                {gridItem(loadNameField, 4)}
-                {gridItem(loadTypeField, 4)}
+                {GridItem(loadIdField, 4)}
+                {GridItem(loadNameField, 4)}
+                {GridItem(loadTypeField, 4)}
             </Grid>
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                {GridItem(connectivityForm, 12)}
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
+                {GridItem(activePowerField, 4)}
+                {GridItem(reactivePowerField, 4)}
             </Grid>
             <PropertiesForm networkElementType={'load'} isModification={true} />
         </>

@@ -19,7 +19,7 @@ import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../../utils/config-params';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator } from '../../dialog-utils';
 import { styles, useParameterState } from '../parameters';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';
 import ParameterLineSlider from '../widget/parameter-line-slider';

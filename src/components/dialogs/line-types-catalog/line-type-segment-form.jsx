@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
-import { gridItem } from '../dialogUtils';
+import { GridItem } from '../dialog-utils';
 import { FormattedMessage } from 'react-intl';
 import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
@@ -183,12 +183,12 @@ export const LineTypeSegmentForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(<div />, 2)}
-                {gridItem(segmentTypeHeader, 3)}
-                {gridItem(segmentResistanceHeader, 2)}
-                {gridItem(segmentReactanceHeader, 2)}
-                {gridItem(segmentSusceptanceHeader, 2)}
-                {gridItem(<div />, 1)}
+                {GridItem(<div />, 2)}
+                {GridItem(segmentTypeHeader, 3)}
+                {GridItem(segmentResistanceHeader, 2)}
+                {GridItem(segmentReactanceHeader, 2)}
+                {GridItem(segmentSusceptanceHeader, 2)}
+                {GridItem(<div />, 1)}
             </Grid>
             <ExpandableInput
                 name={SEGMENTS}
@@ -204,11 +204,11 @@ export const LineTypeSegmentForm = () => {
             />
             <hr />
             <Grid container spacing={2}>
-                {gridItem(<div />, 5)}
-                {gridItem(totalResistanceField, 2)}
-                {gridItem(totalReactanceField, 2)}
-                {gridItem(totalSusceptanceField, 2)}
-                {gridItem(<div />, 1)}
+                {GridItem(<div />, 5)}
+                {GridItem(totalResistanceField, 2)}
+                {GridItem(totalReactanceField, 2)}
+                {GridItem(totalSusceptanceField, 2)}
+                {GridItem(<div />, 1)}
             </Grid>
 
             {openCatalogDialogIndex !== null && (

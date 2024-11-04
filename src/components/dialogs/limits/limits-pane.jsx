@@ -21,7 +21,7 @@ import { useIntl } from 'react-intl';
 import React, { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { AmpereAdornment, gridItem, GridSection } from 'components/dialogs/dialogUtils';
+import { AmpereAdornment, GridItem, GridSection } from 'components/dialogs/dialog-utils.tsx';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
@@ -186,7 +186,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
         <>
             <GridSection title="Side1" customStyle={styles.h3} />
             <Grid container spacing={2}>
-                {gridItem(permanentCurrentLimit1Field, 4)}
+                {GridItem(permanentCurrentLimit1Field, 4)}
             </Grid>
             <GridSection title="TemporaryCurrentLimitsText" heading="4" />
             <DndTable
@@ -204,7 +204,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             />
             <GridSection title="Side2" />
             <Grid container spacing={2}>
-                {gridItem(permanentCurrentLimit2Field, 4)}
+                {GridItem(permanentCurrentLimit2Field, 4)}
             </Grid>
             <GridSection title="TemporaryCurrentLimitsText" heading="4" />
             <Grid container spacing={2}>

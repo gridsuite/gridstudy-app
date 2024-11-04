@@ -14,7 +14,7 @@ import FolderIcon from '@mui/icons-material/Folder';
 import FormControl from '@mui/material/FormControl';
 import IconButton from '@mui/material/IconButton';
 
-import { styles } from '../../dialogs/dialogUtils';
+import { styles } from '../../dialogs/dialog-utils.tsx';
 import { useSnackMessage, OverflowableText, useDebounce, FieldLabel } from '@gridsuite/commons-ui';
 import { TOOLTIP_DELAY } from '../../../utils/UIconstants';
 import Chip from '@mui/material/Chip';

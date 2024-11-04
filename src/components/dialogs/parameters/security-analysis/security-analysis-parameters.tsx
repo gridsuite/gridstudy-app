@@ -17,7 +17,7 @@ import {
 } from 'react';
 import { Box, Grid } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator } from '../../dialog-utils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
 import {

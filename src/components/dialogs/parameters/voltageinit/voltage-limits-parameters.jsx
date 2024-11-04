@@ -21,7 +21,7 @@ import { Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { ElementType } from '@gridsuite/commons-ui';
-import { VoltageAdornment } from 'components/dialogs/dialogUtils';
+import { VoltageAdornment } from 'components/dialogs/dialog-utils.tsx';
 import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
 

@@ -18,7 +18,7 @@ import {
     REPLACING_LINE_2_NAME,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
+import { GridItem, GridSection } from 'components/dialogs/dialog-utils.tsx';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
@@ -90,27 +90,27 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
         <>
             <GridSection title="Line1" />
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachTo1Field, 5)}
+                {GridItem(lineToAttachTo1Field, 5)}
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachTo2Field, 5)}
+                {GridItem(lineToAttachTo2Field, 5)}
             </Grid>
             <GridSection title="LineAttached" />
             <Grid container spacing={2} alignItems="center">
-                {gridItem(attachedLineField, 5)}
+                {GridItem(attachedLineField, 5)}
             </Grid>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                {GridItem(connectivityForm, 12)}
             </Grid>
             <GridSection title="ReplacingLines" />
             <Grid container spacing={2}>
-                {gridItem(newLine1IdField, 6)}
-                {gridItem(newLine1NameField, 6)}
+                {GridItem(newLine1IdField, 6)}
+                {GridItem(newLine1NameField, 6)}
                 <Box sx={{ width: '100%' }} />
-                {gridItem(newLine2IdField, 6)}
-                {gridItem(newLine2NameField, 6)}
+                {GridItem(newLine2IdField, 6)}
+                {GridItem(newLine2NameField, 6)}
             </Grid>
         </>
     );

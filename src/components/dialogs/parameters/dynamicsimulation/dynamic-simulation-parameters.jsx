@@ -27,7 +27,7 @@ import MappingParameters, {
     formSchema as mappingFormSchema,
     MAPPING,
 } from './mapping-parameters';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator } from '../../dialog-utils';
 import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,

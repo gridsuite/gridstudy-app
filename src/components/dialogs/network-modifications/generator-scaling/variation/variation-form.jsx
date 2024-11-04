@@ -21,7 +21,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { VARIATION_MODES, VARIATION_TYPES } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { ActivePowerAdornment, gridItem } from '../../../dialogUtils';
+import { ActivePowerAdornment, GridItem } from '../../../dialog-utils';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 import { fetchElementsInfos } from '@gridsuite/commons-ui';
@@ -143,9 +143,9 @@ const VariationForm = ({ name, index }) => {
 
     return (
         <>
-            {gridItem(filtersField, 4)}
-            {gridItem(variationValueField, 2)}
-            {gridItem(variationModeField, 4)}
+            {GridItem(filtersField, 4)}
+            {GridItem(variationValueField, 2)}
+            {GridItem(variationModeField, 4)}
         </>
     );
 };

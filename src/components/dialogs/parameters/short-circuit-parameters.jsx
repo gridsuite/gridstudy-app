@@ -17,7 +17,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { LineSeparator } from '../dialogUtils';
+import { LineSeparator } from '../dialog-utils';
 import {
     fetchShortCircuitParameters,
     getShortCircuitParameters,

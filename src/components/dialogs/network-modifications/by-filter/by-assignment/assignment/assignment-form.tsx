@@ -19,7 +19,7 @@ import {
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { gridItem } from '../../../../dialogUtils';
+import { GridItem } from '../../../../dialog-utils';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
@@ -143,13 +143,13 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
     return (
         <>
-            {gridItem(filtersField, 3.25)}
-            {gridItem(editedField, 3)}
+            <GridItem field={filtersField} size={3.25} />
+            <GridItem field={editedField} size={3} />
             <>
-                {dataType === DataType.PROPERTY && gridItem(propertyNameField, 2.0)}
-                {gridItem(<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />, 0.25)}
+                {dataType === DataType.PROPERTY && <GridItem field={propertyNameField} size={2.0} />}
+                <GridItem field={<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />} size={0.25} />
             </>
-            {gridItem(valueField, dataType === DataType.PROPERTY ? 2.25 : 4.25)}
+            <GridItem field={valueField} size={dataType === DataType.PROPERTY ? 2.25 : 4.25} />
         </>
     );
 };

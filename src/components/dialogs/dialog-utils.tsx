@@ -7,9 +7,10 @@
 
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import React, { useState } from 'react';
-import { Divider, Slider, Tooltip, Typography } from '@mui/material';
-import { Box, styled } from '@mui/system';
+import React from 'react';
+import { Divider, Theme, Tooltip } from '@mui/material';
+import { styled } from '@mui/system';
+import { JSX } from 'react/jsx-runtime';
 
 export const styles = {
     helperText: {
@@ -20,12 +21,12 @@ export const styles = {
         fontSize: 18,
         maxWidth: 'none',
     },
-    button: (theme) => ({
+    button: (theme: Theme) => ({
         justifyContent: 'flex-start',
         fontSize: 'small',
         marginTop: theme.spacing(1),
     }),
-    paddingButton: (theme) => ({
+    paddingButton: (theme: Theme) => ({
         paddingLeft: theme.spacing(2),
     }),
     formDirectoryElements1: {
@@ -38,7 +39,7 @@ export const styles = {
         borderRadius: '4px',
         overflow: 'hidden',
     },
-    formDirectoryElementsError: (theme) => ({
+    formDirectoryElementsError: (theme: Theme) => ({
         borderColor: theme.palette.error.main,
     }),
     formDirectoryElements2: {
@@ -102,7 +103,7 @@ export const KilometerAdornment = {
     text: 'km',
 };
 export const filledTextField = {
-    variant: 'filled',
+    variant: 'filled' as 'filled',
 };
 
 export const standardTextField = {
@@ -117,20 +118,36 @@ export const percentageTextField = {
     position: 'end',
     text: '%',
 };
-export const func_identity = (e) => e;
 
-export function parseIntData(val, defaultValue) {
+export function parseIntData(val: string, defaultValue: string) {
     const intValue = parseInt(val);
     return isNaN(intValue) ? defaultValue : intValue;
 }
 
-export function sanitizeString(val) {
+export function sanitizeString(val: string | undefined) {
     const trimedValue = val?.trim();
     return trimedValue === '' ? null : trimedValue;
 }
 
-export const GridSection = ({ title, heading = '3', size = 12, customStyle = {} }) => {
-    const CustomTag = styled(`h${heading}`)(customStyle);
+interface GridSectionProps {
+    title: string;
+    heading?: string;
+    size?: number;
+    customStyle?: React.CSSProperties;
+}
+
+const createCustomTag = (heading: string, customStyle: React.CSSProperties) => {
+    const StyledComponent = styled('div')(() => ({
+        ...customStyle,
+    }));
+
+    return (props: React.ComponentProps<'div'>) =>
+        React.createElement(`h${heading}`, { ...props, className: StyledComponent });
+};
+
+export const GridSection: React.FC<GridSectionProps> = ({ title, heading = '3', size = 12, customStyle = {} }) => {
+    const CustomTag = createCustomTag(heading, customStyle);
+
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>
@@ -142,39 +159,33 @@ export const GridSection = ({ title, heading = '3', size = 12, customStyle = {} 
     );
 };
 
-export const gridItem = (field, size = 6) => {
+interface GridItemProps {
+    field: JSX.Element | undefined;
+    size?: number;
+}
+
+export const GridItem: React.FC<GridItemProps> = ({ field, size = 6 }) => {
     return (
-        <Grid item xs={size} align={'start'}>
+        <Grid item xs={size} alignItems="flex-start">
             {field}
         </Grid>
     );
 };
 
-export const gridItemWithTooltip = (field, tooltip = '', size = 6) => {
+interface GridItemWithTooltipProps {
+    field: JSX.Element;
+    tooltip: string;
+    size?: number;
+}
+export const gridItemWithTooltip: React.FC<GridItemWithTooltipProps> = ({ field, tooltip = '', size = 6 }) => {
     return (
-        <Grid item xs={size} align={'start'}>
+        <Grid item xs={size} alignItems="flex-start">
             <Tooltip title={tooltip}>{field}</Tooltip>
         </Grid>
     );
 };
 
-export const gridItemWithErrorMsg = (field, size = 6, error, errorClassName) => {
-    return (
-        <Grid item xs={size} align={'start'}>
-            {field}
-            {error && (
-                <div className={errorClassName}>
-                    <FormattedMessage id={error} />
-                </div>
-            )}
-        </Grid>
-    );
-};
-
-export const getId = (e) => e?.id;
-export const getIdOrSelf = (e) => e?.id ?? e;
-
-export const compareById = (a, b) => a?.id?.localeCompare(b?.id);
+export const getIdOrSelf = (e: any) => e?.id ?? e;
 
 export function LineSeparator() {
     return (
@@ -183,35 +194,3 @@ export function LineSeparator() {
         </Grid>
     );
 }
-
-export const LabelledSlider = ({ value, label, disabled, onCommitCallback, marks, minValue = 0, maxValue = 100 }) => {
-    const [sliderValue, setSliderValue] = useState(value);
-
-    const handleValueChanged = (event, newValue) => {
-        setSliderValue(newValue);
-    };
-
-    return (
-        <>
-            <Grid item xs={7}>
-                <Typography component="span" variant="body1">
-                    <Box fontWeight="fontWeightBold" m={1}>
-                        <FormattedMessage id={label} />
-                    </Box>
-                </Typography>
-            </Grid>
-            <Grid item container xs={5}>
-                <Slider
-                    min={minValue}
-                    max={maxValue}
-                    valueLabelDisplay="auto"
-                    onChange={handleValueChanged}
-                    onChangeCommitted={onCommitCallback}
-                    value={sliderValue}
-                    disabled={disabled}
-                    marks={marks}
-                />
-            </Grid>
-        </>
-    );
-};

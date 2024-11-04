@@ -55,7 +55,7 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
-import { LineSeparator, parseIntData } from '../../dialogUtils';
+import { LineSeparator, parseIntData } from '../../dialog-utils';
 import {
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,

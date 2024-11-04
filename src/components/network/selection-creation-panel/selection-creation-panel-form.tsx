@@ -6,7 +6,7 @@
  */
 import { SelectInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { GridSection } from 'components/dialogs/dialogUtils';
+import { GridSection } from 'components/dialogs/dialog-utils';
 import { SELECTION_TYPE } from 'components/utils/field-constants';
 
 import { FC } from 'react';

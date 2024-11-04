@@ -17,7 +17,7 @@ import {
 } from 'components/utils/field-constants';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { gridItem, GridSection } from '../../../dialogUtils';
+import { GridItem, GridSection } from '../../../dialog-utils';
 import { useFieldArray } from 'react-hook-form';
 
 const HvdcLccDeletionSpecificForm = () => {
@@ -70,8 +70,8 @@ const HvdcLccDeletionSpecificForm = () => {
         <Grid container spacing={1} direction="column" paddingTop={2} paddingLeft={1}>
             <GridSection title="LCCConverterStationShuntCompensators" />
             <Grid container spacing={1}>
-                {gridItem(mcsOnsideOne)}
-                {gridItem(mcsOnsideTwo)}
+                {GridItem(mcsOnsideOne)}
+                {GridItem(mcsOnsideTwo)}
             </Grid>
         </Grid>
     );

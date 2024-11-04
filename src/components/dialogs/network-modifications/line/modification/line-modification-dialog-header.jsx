@@ -8,7 +8,7 @@
 import React from 'react';
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { Box, Grid, TextField } from '@mui/material';
-import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import { filledTextField, GridItem } from 'components/dialogs/dialog-utils.tsx';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
 
@@ -47,8 +47,8 @@ const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIn
                 }}
             >
                 <Grid container spacing={2}>
-                    {gridItem(lineIdField, 4)}
-                    {gridItem(lineNameField, 4)}
+                    {GridItem(lineIdField, 4)}
+                    {GridItem(lineNameField, 4)}
                 </Grid>
                 <LineDialogTabs
                     tabIndex={tabIndex}

@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
-import { gridItem, KilometerAdornment } from '../dialogUtils';
+import { GridItem, KilometerAdornment } from '../dialog-utils';
 import EditIcon from '@mui/icons-material/Edit';
 import { FloatInput } from '@gridsuite/commons-ui';
 import IconButton from '@mui/material/IconButton';
@@ -62,11 +62,11 @@ const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDist
 
     return (
         <>
-            {gridItem(segmentDistanceField, 2)}
-            {gridItem(segmentTypeField, 3)}
-            {gridItem(segmentResistanceField, 2)}
-            {gridItem(segmentReactanceField, 2)}
-            {gridItem(segmentSusceptanceField, 2)}
+            {GridItem(segmentDistanceField, 2)}
+            {GridItem(segmentTypeField, 3)}
+            {GridItem(segmentResistanceField, 2)}
+            {GridItem(segmentReactanceField, 2)}
+            {GridItem(segmentSusceptanceField, 2)}
         </>
     );
 };

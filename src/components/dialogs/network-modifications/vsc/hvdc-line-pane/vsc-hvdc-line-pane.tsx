@@ -18,7 +18,7 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import { ActivePowerAdornment, gridItem, GridSection, OhmAdornment, VoltageAdornment } from '../../../dialogUtils';
+import { ActivePowerAdornment, GridItem, GridSection, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import React, { FunctionComponent, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
@@ -182,24 +182,24 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         <Grid container spacing={2}>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(dcNominalVoltageField, 6)}
-                {gridItem(dcResistanceField, 6)}
-                {gridItem(maximumActivePowerField, 6)}
+                <GridItem field={dcNominalVoltageField} size={6} />
+                <GridItem field={dcResistanceField} size={6} />
+                <GridItem field={maximumActivePowerField} size={6} />
             </Grid>
 
             <GridSection title={'Limits'} />
             <Grid container spacing={2}>
-                {gridItem(operatorActivePowerLimitSide1Field, 6)}
-                {gridItem(operatorActivePowerLimitSide2Field, 6)}
+                <GridItem field={operatorActivePowerLimitSide1Field} size={6} />
+                <GridItem field={operatorActivePowerLimitSide2Field} size={6} />
             </Grid>
 
             <GridSection title={'Setpoints'} />
             <Grid container spacing={2}>
-                {gridItem(converterModeField, 6)}
-                {gridItem(activePowerField, 6)}
-                {gridItem(AngleDroopActivePowerControl, 12)}
-                {gridItem(droopField, 6)}
-                {gridItem(p0Field, 6)}
+                <GridItem field={converterModeField} size={6} />
+                <GridItem field={activePowerField} size={6} />
+                <GridItem field={AngleDroopActivePowerControl} size={12} />
+                <GridItem field={droopField} size={6} />
+                <GridItem field={p0Field} size={6} />
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />

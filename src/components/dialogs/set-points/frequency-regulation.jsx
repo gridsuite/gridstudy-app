@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { gridItem, gridItemWithTooltip, percentageTextField } from '../dialogUtils';
+import { GridItem, gridItemWithTooltip, percentageTextField } from '../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { DROOP, FREQUENCY_REGULATION } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
@@ -68,8 +68,8 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
                       watchFrequencyRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />,
                       4
                   )
-                : gridItem(frequencyRegulationField, 4)}
-            {gridItem(droopField, 4)}
+                : GridItem(frequencyRegulationField, 4)}
+            {GridItem(droopField, 4)}
         </>
     );
 };

@@ -10,7 +10,7 @@ import { NAME, VALUE, PREVIOUS_VALUE, DELETION_MARK, ADDED } from 'components/ut
 import { useWatch } from 'react-hook-form';
 import { TextInput } from '@gridsuite/commons-ui';
 import { PredefinedProperties } from './property-utils';
-import { gridItem, italicFontTextField } from '../../../dialogUtils';
+import { GridItem, italicFontTextField } from '../../../dialog-utils';
 
 type PropertyFormProps = {
     name: string;
@@ -79,10 +79,16 @@ const PropertyForm = ({ name, index, predefinedProperties }: PropertyFormProps) 
     function renderPropertyLine() {
         return (
             <>
-                {watchPropertyDeletionMark || (watchPropertyAdded === false && watchPropertyPreviousValue)
-                    ? gridItem(nameReadOnlyField, 5)
-                    : gridItem(nameField, 5)}
-                {watchPropertyDeletionMark ? gridItem(valueReadOnlyField, 5) : gridItem(valueField, 5)}
+                {watchPropertyDeletionMark || (watchPropertyAdded === false && watchPropertyPreviousValue) ? (
+                    <GridItem field={nameReadOnlyField} size={5} />
+                ) : (
+                    <GridItem field={nameField} size={5} />
+                )}
+                {watchPropertyDeletionMark ? (
+                    <GridItem field={valueReadOnlyField} size={5} />
+                ) : (
+                    <GridItem field={valueField} size={5} />
+                )}
             </>
         );
     }

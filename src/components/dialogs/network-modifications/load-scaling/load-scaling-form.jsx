@@ -11,7 +11,7 @@ import { VARIATION_TYPE, VARIATIONS } from 'components/utils/field-constants';
 import VariationForm from './variation/variation-form';
 import { ExpandableInput } from 'components/utils/rhf-inputs/expandable-input';
 import Grid from '@mui/material/Grid';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { GridItem, GridSection } from '../../dialog-utils';
 import { getVariationEmptyForm } from './variation/variation-utils';
 
 const styles = {
@@ -34,11 +34,11 @@ const LoadScalingForm = () => {
 
     return (
         <>
-            <Grid sx={styles.padding}>{gridItem(variationTypeField, 8)}</Grid>
+            <Grid sx={styles.padding}>{GridItem(variationTypeField, 8)}</Grid>
 
             <GridSection title="Variations" />
             <Grid container sx={styles.padding}>
-                {gridItem(variationsField, 12)}
+                {GridItem(variationsField, 12)}
             </Grid>
         </>
     );

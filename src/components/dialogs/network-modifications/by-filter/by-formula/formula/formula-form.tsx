@@ -16,7 +16,7 @@ import {
     REFERENCE_FIELD_OR_VALUE_2,
 } from '../../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { gridItem } from '../../../../dialogUtils';
+import { GridItem } from '../../../../dialog-utils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
@@ -98,14 +98,14 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
 
     return (
         <>
-            {gridItem(filtersField, 2.25)}
-            {gridItem(editedField, 2.25)}
+            <GridItem field={filtersField} size={2.25} />
+            <GridItem field={editedField} size={2.25} />
             <Grid item xs={0.25} sx={{ marginTop: 0.75 }}>
                 <DragHandleIcon />
             </Grid>
-            {gridItem(referenceField1, 2.5)}
-            {gridItem(operatorField, 1.25)}
-            {gridItem(referenceField2, 2.5)}
+            <GridItem field={referenceField1} size={2.5} />
+            <GridItem field={operatorField} size={1.25} />
+            <GridItem field={referenceField2} size={2.5} />
         </>
     );
 };

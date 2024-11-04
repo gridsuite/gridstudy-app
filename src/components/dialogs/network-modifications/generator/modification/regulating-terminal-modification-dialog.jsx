@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { yupResolver } from '@hookform/resolvers/yup';
-import { gridItem } from 'components/dialogs/dialogUtils';
+import { GridItem } from 'components/dialogs/dialog-utils.tsx';
 import {
     EQUIPMENT,
     ID,
@@ -148,7 +148,7 @@ const RegulatingTerminalModificationDialog = ({
                             <Grid item xs={12}>
                                 <FormattedMessage id="RegulatingTerminalGenerator" />
                             </Grid>
-                            {gridItem(regulatingTerminalField, 12)}
+                            {GridItem(regulatingTerminalField, 12)}
                         </>
                     }
                 </Grid>

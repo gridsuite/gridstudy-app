@@ -20,7 +20,7 @@ import {
 import { Box } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FloatInput, IntegerInput, RadioInput, SelectInput } from '@gridsuite/commons-ui';
-import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
+import { GridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
@@ -179,21 +179,21 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
 
     return (
         <Grid container spacing={2}>
-            {gridItem(maximumSectionCountField, 4)}
-            {gridItem(sectionCountField, 4)}
-            {gridItem(characteristicsChoiceField, 12)}
+            {GridItem(maximumSectionCountField, 4)}
+            {GridItem(sectionCountField, 4)}
+            {GridItem(characteristicsChoiceField, 12)}
             {characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <Grid item container spacing={2}>
-                    {gridItem(maxSusceptanceField, 4)}
-                    {gridItem(switchedOnSusceptanceField, 4)}
+                    {GridItem(maxSusceptanceField, 4)}
+                    {GridItem(switchedOnSusceptanceField, 4)}
                 </Grid>
             )}
             {characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <Grid item container spacing={2}>
-                    {gridItem(shuntCompensatorTypeField, 4)}
+                    {GridItem(shuntCompensatorTypeField, 4)}
                     <Box sx={{ width: '100%' }} />
-                    {gridItem(maxQAtNominalVField, 4)}
-                    {gridItem(switchedOnMaxQAtNominalVField, 4)}
+                    {GridItem(maxQAtNominalVField, 4)}
+                    {GridItem(switchedOnMaxQAtNominalVField, 4)}
                 </Grid>
             )}
         </Grid>

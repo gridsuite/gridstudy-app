@@ -11,10 +11,10 @@ import React from 'react';
 import {
     ActivePowerAdornment,
     filledTextField,
-    gridItem,
+    GridItem,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogUtils';
+} from '../../../dialog-utils';
 import { LOAD_TYPES } from 'components/network/constants';
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
@@ -57,18 +57,20 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(loadIdField, 4)}
-                {gridItem(loadNameField, 4)}
-                {gridItem(loadTypeField, 4)}
+                <GridItem field={loadIdField} size={4} />
+                <GridItem field={loadNameField} size={4} />
+                <GridItem field={loadTypeField} size={4} />
             </Grid>
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                <GridItem field={connectivityForm} size={12} />
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
+                <GridItem field={activePowerField} size={4} />
+                <GridItem field={loadNameField} size={4} />
+                <GridItem field={reactivePowerField} size={4} />
+                <GridItem field={loadNameField} size={4} />
             </Grid>
             <PropertiesForm networkElementType={'load'} />
         </>

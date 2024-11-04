@@ -14,7 +14,7 @@ import { FormattedMessage } from 'react-intl';
 import { Grid } from '@mui/material';
 import { Box } from '@mui/system';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
-import { ReactivePowerAdornment, LineSeparator } from '../../dialogUtils';
+import { ReactivePowerAdornment, LineSeparator } from '../../dialog-utils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
 
 export const GeneralParameters = () => {

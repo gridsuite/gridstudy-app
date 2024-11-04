@@ -7,7 +7,7 @@
 
 import { Typography } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { gridItem } from '../../dialogUtils';
+import { GridItem } from '../../dialog-utils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
@@ -66,10 +66,10 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     return (
         <>
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachOrSplitField, 5)}
-                {gridItem(<Typography>{line1Substation}</Typography>, 1)}
-                {gridItem(percentageArea, 5)}
-                {gridItem(<Typography>{line2Substation}</Typography>, 1)}
+                {GridItem(lineToAttachOrSplitField, 5)}
+                {GridItem(<Typography>{line1Substation}</Typography>, 1)}
+                {GridItem(percentageArea, 5)}
+                {GridItem(<Typography>{line2Substation}</Typography>, 1)}
             </Grid>
         </>
     );

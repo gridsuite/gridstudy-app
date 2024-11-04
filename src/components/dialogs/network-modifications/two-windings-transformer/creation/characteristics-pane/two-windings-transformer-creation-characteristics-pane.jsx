@@ -6,7 +6,7 @@
  */
 
 import { Box, Grid } from '@mui/material';
-import { gridItem, GridSection } from '../../../../dialogUtils';
+import { GridItem, GridSection } from '../../../../dialog-utils';
 import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { CHARACTERISTICS, CONNECTIVITY_1, CONNECTIVITY_2 } from 'components/utils/field-constants';
 import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pane/two-windings-transformer-characteristics-pane';
@@ -60,7 +60,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <Grid container spacing={2}>
                     <Grid item container direction="column">
                         <Grid container direction="column" spacing={2}>
-                            {gridItem(connectivity1Field, 6)}
+                            {GridItem(connectivity1Field, 6)}
                         </Grid>
                     </Grid>
                 </Grid>
@@ -68,7 +68,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <Grid container spacing={2}>
                     <Grid item container>
                         <Grid container direction="column" spacing={2}>
-                            {gridItem(connectivity2Field, 12)}
+                            {GridItem(connectivity2Field, 12)}
                         </Grid>
                     </Grid>
                 </Grid>

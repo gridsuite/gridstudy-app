@@ -10,7 +10,7 @@ import { Button, Grid } from '@mui/material';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { FormattedMessage } from 'react-intl';
 import React, { FunctionComponent } from 'react';
-import { styles } from '../../../dialogs/dialogUtils';
+import { styles } from '../../../dialogs/dialog-utils';
 import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
 import { mergeSx } from '../../functions';
 import { DeletableRow } from './deletable-row';

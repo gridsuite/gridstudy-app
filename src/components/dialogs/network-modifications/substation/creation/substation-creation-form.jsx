@@ -6,7 +6,7 @@
  */
 
 import Grid from '@mui/material/Grid';
-import { filledTextField, gridItem } from '../../../dialogUtils';
+import { filledTextField, GridItem } from '../../../dialog-utils';
 import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import { COUNTRY, EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
@@ -25,9 +25,9 @@ const SubstationCreationForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(substationIdField, 4)}
-                {gridItem(substationNameField, 4)}
-                {gridItem(substationCountryField, 4)}
+                {GridItem(substationIdField, 4)}
+                {GridItem(substationNameField, 4)}
+                {GridItem(substationCountryField, 4)}
             </Grid>
             <PropertiesForm networkElementType={'substation'} />
         </>

@@ -8,7 +8,7 @@
 import React, { ReactNode } from 'react';
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
-import { LineSeparator } from '../dialogs/dialogUtils';
+import { LineSeparator } from '../dialogs/dialog-utils';
 import { CardActions, CardHeader } from '@mui/material';
 
 type GuidancePopupStyle = {

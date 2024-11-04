@@ -10,7 +10,7 @@ import { ASSIGNMENTS, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-const
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import AssignmentForm from './assignment/assignment-form';
 import { Box, Grid } from '@mui/material';
-import { gridItem } from '../../../dialogUtils';
+import { GridItem } from '../../../dialog-utils';
 import { getAssignmentInitialValue } from './assignment/assignment-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
@@ -73,10 +73,10 @@ const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () =
     return (
         <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
             <Grid container sx={unscrollableDialogStyles.unscrollableHeader}>
-                {gridItem(equipmentTypeField, 3.15)}
+                <GridItem field={equipmentTypeField} size={3.15} />
             </Grid>
             <Grid container sx={unscrollableDialogStyles.scrollableContent}>
-                {gridItem(assignmentsField, 12)}
+                <GridItem field={assignmentsField} size={12} />
             </Grid>
         </Box>
     );

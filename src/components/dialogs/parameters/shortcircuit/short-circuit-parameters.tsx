@@ -19,7 +19,7 @@ import {
 import { CheckboxInput, FieldLabel, MuiSelectInput, RadioInput, SwitchInput } from '@gridsuite/commons-ui';
 
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS, STATUS } from '../../../utils/constants';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { GridItem, GridSection } from '../../dialog-utils';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import VoltageTable from './short-circuit-voltage-table';
@@ -156,25 +156,27 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
     return (
         <Grid container spacing={2} paddingLeft={2}>
             <Grid container paddingTop={2} xl={6}>
-                {gridItem(feederResult, 9)}
+                <GridItem field={feederResult} size={9} />
             </Grid>
             <GridSection title="ShortCircuitPredefinedParameters" heading={'4'} />
             <Grid xl={6} container spacing={1} alignItems={'center'}>
-                {gridItem(predefinedParameters, 8)}
-                {gridItem(statusToShow, 4)}
+                <GridItem field={predefinedParameters} size={8} />
+                <GridItem field={statusToShow} size={4} />
             </Grid>
             <GridSection title="ShortCircuitCharacteristics" heading={'4'} />
             <Grid>
-                {gridItem(loads, 6)}
-                {gridItem(shuntCompensators, 6)}
+                <GridItem field={loads} size={6} />
+                <GridItem field={shuntCompensators} size={6} />
             </Grid>
             <Grid marginLeft={4}>
-                {gridItem(vsc, 4)}
-                {gridItem(neutralPosition, 8)}
+                <GridItem field={vsc} size={4} />
+                <GridItem field={neutralPosition} size={8} />
             </Grid>
 
             <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
-            <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
+            <Grid>
+                <GridItem field={initialVoltageProfileModeField} size={12} />
+            </Grid>
             <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
         </Grid>
     );

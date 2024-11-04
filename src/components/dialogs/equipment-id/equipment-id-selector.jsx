@@ -6,7 +6,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { filledTextField, gridItem } from '../dialogUtils';
+import { filledTextField, GridItem } from '../dialog-utils';
 import { Autocomplete, TextField } from '@mui/material';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import Grid from '@mui/material/Grid';
@@ -95,7 +95,7 @@ export const EquipmentIdSelector = ({
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(equipmentIdField, 4)}
+                {GridItem(equipmentIdField, 4)}
             </Grid>
             <FormFiller lineHeight={fillerHeight}>
                 {fillerMessageId && (!loading || !selectedValue) && (

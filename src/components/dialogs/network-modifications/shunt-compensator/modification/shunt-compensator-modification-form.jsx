@@ -8,7 +8,7 @@
 import React from 'react';
 import { TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME } from '../../../../utils/field-constants';
-import { filledTextField, gridItem, GridSection } from '../../../dialogUtils';
+import { filledTextField, GridItem, GridSection } from '../../../dialog-utils';
 import Grid from '@mui/material/Grid';
 import { TextField } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
@@ -54,17 +54,17 @@ const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompens
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(shuntCompensatorIdField, 4)}
-                {gridItem(shuntCompensatorNameField, 4)}
+                {GridItem(shuntCompensatorIdField, 4)}
+                {GridItem(shuntCompensatorNameField, 4)}
             </Grid>
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                {GridItem(connectivityForm, 12)}
             </Grid>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(characteristicsForm, 12)}
+                {GridItem(characteristicsForm, 12)}
             </Grid>
             <PropertiesForm networkElementType={'shuntCompensator'} isModification={true} />
         </>

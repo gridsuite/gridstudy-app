@@ -8,7 +8,7 @@
 import Grid from '@mui/material/Grid';
 import { FunctionComponent } from 'react';
 
-import { gridItem } from '../../../dialogUtils';
+import { GridItem } from '../../../dialog-utils';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { Box } from '@mui/material';
@@ -44,7 +44,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
         <>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.CONNECTIVITY_TAB} p={1}>
                 <Grid container spacing={2}>
-                    {gridItem(connectivityForm, 12)}
+                    <GridItem field={connectivityForm} size={12} />
                 </Grid>
             </Box>
             <Box hidden={tabIndex !== StaticVarCompensatorCreationDialogTab.SET_POINTS_LIMITS_TAB}>

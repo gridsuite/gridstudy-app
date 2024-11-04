@@ -10,7 +10,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { EQUIPMENT_TYPE_FIELD, FORMULAS } from '../../../../utils/field-constants';
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import FormulaForm from './formula/formula-form';
-import { gridItem } from '../../../dialogUtils';
+import { GridItem } from '../../../dialog-utils';
 import { getFormulaInitialValue } from './formula/formula-utils';
 import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
@@ -59,10 +59,10 @@ const ByFormulaForm: FunctionComponent<ByFormulaFormProps> = () => {
     return (
         <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
             <Grid container sx={unscrollableDialogStyles.unscrollableHeader}>
-                {gridItem(equipmentTypeField, 2.15)}
+                <GridItem field={equipmentTypeField} size={2.15} />
             </Grid>
             <Grid container sx={unscrollableDialogStyles.scrollableContent}>
-                {gridItem(formulasField, 12)}
+                <GridItem field={formulasField} size={12} />
             </Grid>
         </Box>
     );

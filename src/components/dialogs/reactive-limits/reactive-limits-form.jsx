@@ -16,7 +16,7 @@ import {
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
 import React from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { gridItem, ReactivePowerAdornment } from '../dialogUtils';
+import { GridItem, ReactivePowerAdornment } from '../dialog-utils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
@@ -75,11 +75,11 @@ const ReactiveLimitsForm = ({
 
     return (
         <Grid container spacing={2}>
-            {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
+            {GridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
 
-            {!isReactiveCapabilityCurveOn && gridItem(minimumReactivePowerField, 4)}
-            {!isReactiveCapabilityCurveOn && gridItem(maximumReactivePowerField, 4)}
-            {isReactiveCapabilityCurveOn && gridItem(reactiveCapabilityCurveTableField, 12)}
+            {!isReactiveCapabilityCurveOn && GridItem(minimumReactivePowerField, 4)}
+            {!isReactiveCapabilityCurveOn && GridItem(maximumReactivePowerField, 4)}
+            {isReactiveCapabilityCurveOn && GridItem(reactiveCapabilityCurveTableField, 12)}
         </Grid>
     );
 };

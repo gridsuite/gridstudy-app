@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useSnackMessage, AutocompleteInput } from '@gridsuite/commons-ui';
-import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import { filledTextField, GridItem } from 'components/dialogs/dialog-utils.tsx';
 import {
     DELETION_SPECIFIC_DATA,
     EQUIPMENT_ID,
@@ -150,8 +150,8 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(equipmentTypeField, 6)}
-                {gridItem(equipmentField, 6)}
+                {GridItem(equipmentTypeField, 6)}
+                {GridItem(equipmentField, 6)}
             </Grid>
             {watchSpecificData?.specificType === HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
                 <HvdcLccDeletionSpecificForm />

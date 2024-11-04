@@ -37,7 +37,7 @@ import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import BatteryModificationForm from './battery-modification-form';
 import {
     getReactiveLimitsEmptyFormData,

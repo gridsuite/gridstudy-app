@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import React, { useCallback, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
-import { gridItem } from 'components/dialogs/dialogUtils';
+import { GridItem } from 'components/dialogs/dialog-utils';
 import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -73,8 +73,8 @@ const ByFilterDeletionForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(equipmentTypeField, 6)}
-                {gridItem(filtersField, 6)}
+                <GridItem field={equipmentTypeField} size={6} />
+                <GridItem field={filtersField} size={6} />
             </Grid>
         </>
     );

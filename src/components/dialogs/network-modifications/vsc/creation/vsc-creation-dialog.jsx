@@ -27,7 +27,7 @@ import {
     R,
 } from '../../../../utils/field-constants';
 import Grid from '@mui/material/Grid';
-import { filledTextField, gridItem, sanitizeString } from '../../../dialogUtils';
+import { filledTextField, GridItem, sanitizeString } from '../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import { Box } from '@mui/system';
 import yup from 'components/utils/yup-config';
@@ -148,8 +148,8 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
             }}
         >
             <Grid container spacing={2}>
-                {gridItem(generatorIdField, 4)}
-                {gridItem(generatorNameField, 4)}
+                {GridItem(generatorIdField, 4)}
+                {GridItem(generatorNameField, 4)}
             </Grid>
             <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>

@@ -7,11 +7,11 @@
 
 import {
     ActivePowerAdornment,
-    gridItem,
+    GridItem,
     gridItemWithTooltip,
     GridSection,
     ReactivePowerAdornment,
-} from '../dialogUtils';
+} from '../dialog-utils';
 import Grid from '@mui/material/Grid';
 import { Box } from '@mui/system';
 import React from 'react';
@@ -94,8 +94,8 @@ const SetPointsForm = ({
         <>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerSetPointField, 4)}
-                {gridItem(reactivePowerSetPointField, 4)}
+                {GridItem(activePowerSetPointField, 4)}
+                {GridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />

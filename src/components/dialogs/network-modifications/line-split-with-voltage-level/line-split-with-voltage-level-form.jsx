@@ -8,7 +8,7 @@
 import Grid from '@mui/material/Grid';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
 import React, { useMemo, useState } from 'react';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { GridItem, GridSection } from '../../dialog-utils';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import { TextInput } from '@gridsuite/commons-ui';
@@ -76,11 +76,11 @@ const LineSplitWithVoltageLevelForm = ({
     return (
         <>
             <GridSection title="LineToSplit" />
-            {gridItem(lineToSplitForm, 12)}
+            {GridItem(lineToSplitForm, 12)}
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
-                {gridItem(
+                {GridItem(connectivityForm, 12)}
+                {GridItem(
                     <Button
                         onClick={openVoltageLevelDialog}
                         startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
@@ -93,13 +93,13 @@ const LineSplitWithVoltageLevelForm = ({
             </Grid>
             <GridSection title="Line1" />
             <Grid container spacing={2}>
-                {gridItem(newLine1IdField, 6)}
-                {gridItem(newLine1NameField, 6)}
+                {GridItem(newLine1IdField, 6)}
+                {GridItem(newLine1NameField, 6)}
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2}>
-                {gridItem(newLine2IdField, 6)}
-                {gridItem(newLine2NameField, 6)}
+                {GridItem(newLine2IdField, 6)}
+                {GridItem(newLine2NameField, 6)}
             </Grid>
             {voltageLevelDialogOpen && (
                 <VoltageLevelCreationDialog

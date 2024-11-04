@@ -21,7 +21,7 @@ import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../../../utils/conf
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
-import { LineSeparator } from '../dialogUtils';
+import { LineSeparator } from '../dialog-utils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParameterState } from './parameters';
 import { ParameterGroup } from './widget';

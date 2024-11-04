@@ -19,7 +19,7 @@ import {
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
 import React, { useEffect, useState } from 'react';
-import { gridItem, GridSection, VoltageAdornment, KiloAmpereAdornment } from 'components/dialogs/dialogUtils';
+import { GridItem, GridSection, VoltageAdornment, KiloAmpereAdornment } from 'components/dialogs/dialog-utils.tsx';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { TextInput } from '@gridsuite/commons-ui';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
@@ -108,32 +108,32 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(voltageLevelIdField, 4)}
-                {gridItem(voltageLevelNameField, 4)}
-                {gridItem(substationField, 4)}
+                {GridItem(voltageLevelIdField, 4)}
+                {GridItem(voltageLevelNameField, 4)}
+                {GridItem(substationField, 4)}
             </Grid>
             <GridSection title={'VoltageText'} />
             <Grid container spacing={2}>
-                {gridItem(nominalVoltageField, 4)}
-                {gridItem(lowVoltageLimitField, 4)}
-                {gridItem(highVoltageLimitField, 4)}
+                {GridItem(nominalVoltageField, 4)}
+                {GridItem(lowVoltageLimitField, 4)}
+                {GridItem(highVoltageLimitField, 4)}
             </Grid>
             <GridSection title={'ShortCircuit'} />
             <Grid container spacing={2}>
-                {gridItem(lowShortCircuitCurrentLimitField, 4)}
-                {gridItem(highShortCircuitCurrentLimitField, 4)}
+                {GridItem(lowShortCircuitCurrentLimitField, 4)}
+                {GridItem(highShortCircuitCurrentLimitField, 4)}
                 <Box sx={{ width: '100%' }} />
             </Grid>
             <GridSection title={'BusBarSections'} />
             <Grid container spacing={2}>
-                {gridItem(busBarCountField, 4)}
-                {gridItem(sectionCountField, 4)}
+                {GridItem(busBarCountField, 4)}
+                {GridItem(sectionCountField, 4)}
                 <SwitchesBetweenSections />
             </Grid>
             {displayOmnibus && (
                 <>
                     <GridSection title={'Coupling_Omnibus'} />
-                    <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
+                    <Grid container>{GridItem(couplingOmnibusForm, 12)}</Grid>
                 </>
             )}
             <PropertiesForm networkElementType={'voltageLevel'} />

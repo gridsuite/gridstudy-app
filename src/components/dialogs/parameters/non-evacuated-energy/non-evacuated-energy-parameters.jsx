@@ -51,7 +51,7 @@ import {
     setNonEvacuatedEnergyParameters,
 } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator } from '../../dialog-utils';
 import {
     getContingenciesFormSchema,
     getContingenciesParams,

@@ -15,7 +15,7 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
-import { LineSeparator } from '../../dialogUtils';
+import { LineSeparator } from '../../dialog-utils';
 import { styles } from '../parameters';
 import { SubstationLayout } from '../../../diagrams/diagram-common';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';

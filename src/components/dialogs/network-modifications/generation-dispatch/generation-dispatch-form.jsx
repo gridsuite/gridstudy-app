@@ -14,7 +14,7 @@ import {
     GENERATORS_WITHOUT_OUTAGE,
     GENERATORS_WITH_FIXED_ACTIVE_POWER,
 } from 'components/utils/field-constants';
-import { gridItem, percentageTextField, GridSection } from '../../dialogUtils';
+import { GridItem, percentageTextField, GridSection } from '../../dialog-utils';
 import { Box, Grid, Typography } from '@mui/material';
 import { formatPercentageValue, isValidPercentage } from '../../percentage-area/percentage-area-utils';
 import { ElementType } from '@gridsuite/commons-ui';
@@ -92,13 +92,13 @@ const GenerationDispatchForm = () => {
     return (
         <Box pt={2}>
             <Grid container spacing={2} mb={2}>
-                {gridItem(lossCoefficientField, 4)}
-                {gridItem(generatorsWithFixedActivePowerField, 12)}
+                {GridItem(lossCoefficientField, 4)}
+                {GridItem(generatorsWithFixedActivePowerField, 12)}
             </Grid>
             <GridSection title="ReduceMaxP" />
             <Grid container spacing={2} mb={3}>
-                {gridItem(defaultOutageRateField, 4)}
-                {gridItem(generatorsWithoutOutageField, 12)}
+                {GridItem(defaultOutageRateField, 4)}
+                {GridItem(generatorsWithoutOutageField, 12)}
             </Grid>
             <Grid container spacing={2}>
                 <Grid item>

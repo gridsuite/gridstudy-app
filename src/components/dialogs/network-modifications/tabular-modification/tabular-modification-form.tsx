@@ -10,7 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, useSnackMessage } from '@gridsuite/commons-ui';
-import { gridItem } from 'components/dialogs/dialogUtils';
+import { GridItem } from 'components/dialogs/dialog-utils';
 import {
     CONNECTED,
     CONNECTED1,
@@ -197,7 +197,7 @@ const TabularModificationForm = () => {
     return (
         <Grid container spacing={2} direction={'row'}>
             <Grid container item spacing={2} alignItems={'center'}>
-                {gridItem(equipmentTypeField, 4)}
+                <GridItem field={equipmentTypeField} size={4} />
                 <Grid item>{FileField}</Grid>
             </Grid>
             <Grid container item spacing={2} alignItems={'center'}>

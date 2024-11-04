@@ -24,7 +24,7 @@ import {
     SETPOINTS_LIMITS,
 } from 'components/utils/field-constants';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
+import { GridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
 import { useEffect } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { InputAdornment, TextField } from '@mui/material';
@@ -105,16 +105,16 @@ export const SusceptanceArea = () => {
         <Grid container spacing={2} padding={2}>
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <>
-                    {gridItem(minSusceptanceField, 4)}
-                    {gridItem(susceptanceField, 3)}
-                    {gridItem(maxSusceptanceField, 4)}
+                    <GridItem field={minSusceptanceField} size={4} />
+                    <GridItem field={susceptanceField} size={3} />
+                    <GridItem field={maxSusceptanceField} size={4} />
                 </>
             )}
             {watchChoiceAutomaton === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <>
-                    {gridItem(minQAtNominalVField, 4)}
-                    {gridItem(qAtNominalVField, 3)}
-                    {gridItem(maxQAtNominalVField, 4)}
+                    <GridItem field={minQAtNominalVField} size={4} />
+                    <GridItem field={qAtNominalVField} size={3} />
+                    <GridItem field={maxQAtNominalVField} size={4} />
                 </>
             )}
         </Grid>

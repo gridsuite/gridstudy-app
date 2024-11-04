@@ -9,7 +9,7 @@ import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import { REGULATION_TYPES } from 'components/network/constants';
 import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'components/utils/field-constants';
 import React, { useMemo } from 'react';
-import { gridItem, percentageTextField, VoltageAdornment } from '../dialogUtils';
+import { GridItem, percentageTextField, VoltageAdornment } from '../dialog-utils';
 import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
 import { Box } from '@mui/system';
 import Grid from '@mui/material/Grid';
@@ -102,8 +102,8 @@ const VoltageRegulation = ({
 
     return (
         <>
-            {gridItem(voltageSetPointField, 4)}
-            {gridItem(voltageRegulationTypeField, 4)}
+            {GridItem(voltageSetPointField, 4)}
+            {GridItem(voltageRegulationTypeField, 4)}
             <Box sx={{ width: '100%' }} />
             <Grid item xs={4} justifySelf={'end'} />
 
@@ -113,9 +113,9 @@ const VoltageRegulation = ({
                     <Grid item xs={4} justifySelf={'end'}>
                         <FormattedMessage id="RegulatingTerminalGenerator" />
                     </Grid>
-                    {gridItem(regulatingTerminalField, 8)}
+                    {GridItem(regulatingTerminalField, 8)}
                     <Grid item xs={4} justifySelf={'end'} />
-                    {gridItem(qPercentField, 4)}
+                    {GridItem(qPercentField, 4)}
                 </>
             )}
         </>

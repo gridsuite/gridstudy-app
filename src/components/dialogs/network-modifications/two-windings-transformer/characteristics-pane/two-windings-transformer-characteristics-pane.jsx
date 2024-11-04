@@ -9,13 +9,13 @@ import React from 'react';
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import {
-    gridItem,
+    GridItem,
     GridSection,
     MicroSusceptanceAdornment,
     MVAPowerAdornment,
     OhmAdornment,
     VoltageAdornment,
-} from '../../../dialogUtils';
+} from '../../../dialog-utils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import { unitToMicroUnit } from '../../../../../utils/unit-converter';
@@ -98,11 +98,11 @@ const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtTo
         <>
             <GridSection title={'Characteristics'} />
             <Grid container item spacing={2} xs={width}>
-                {gridItem(seriesResistanceField)}
-                {gridItem(seriesReactanceField)}
-                {gridItem(magnetizingConductanceField)}
-                {gridItem(magnetizingSusceptanceField)}
-                {gridItem(ratedSField)}
+                {GridItem(seriesResistanceField)}
+                {GridItem(seriesReactanceField)}
+                {GridItem(magnetizingConductanceField)}
+                {GridItem(magnetizingSusceptanceField)}
+                {GridItem(ratedSField)}
             </Grid>
             <Grid container item spacing={2} xs={width}>
                 <Grid item xs={6}>
@@ -117,8 +117,8 @@ const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtTo
                 </Grid>
             </Grid>
             <Grid container item spacing={2} xs={width}>
-                {gridItem(ratedVoltage1Field)}
-                {gridItem(ratedVoltage2Field)}
+                {GridItem(ratedVoltage1Field)}
+                {GridItem(ratedVoltage2Field)}
             </Grid>
             <PropertiesForm networkElementType={'twt'} isModification={isModification} />
         </>

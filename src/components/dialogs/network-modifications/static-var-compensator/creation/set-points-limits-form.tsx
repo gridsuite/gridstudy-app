@@ -22,12 +22,12 @@ import {
 } from 'components/utils/field-constants';
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import {
-    gridItem,
+    GridItem,
     GridSection,
     ReactivePowerAdornment,
     SusceptanceAdornment,
     VoltageAdornment,
-} from '../../../dialogUtils';
+} from '../../../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { FunctionComponent } from 'react';
 import { UUID } from 'crypto';
@@ -116,14 +116,14 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                 </Grid>
                 {watchCharacteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                     <>
-                        {gridItem(minQAtNominalVField, 4)}
-                        {gridItem(maxQAtNominalVField, 4)}
+                        <GridItem field={minQAtNominalVField} size={4} />
+                        <GridItem field={maxQAtNominalVField} size={4} />
                     </>
                 )}
                 {watchCharacteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                     <>
-                        {gridItem(minSusceptanceField, 4)}
-                        {gridItem(maxSusceptanceField, 4)}
+                        <GridItem field={minSusceptanceField} size={4} />
+                        <GridItem field={maxSusceptanceField} size={4} />
                     </>
                 )}
             </Grid>
@@ -139,16 +139,16 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                         size="small"
                     />
                 </Grid>
-                {gridItem(voltageSetPointField, 4)}
-                {gridItem(reactivePowerSetPointField, 4)}
-                {gridItem(voltageRegulationTypeField, 4)}
+                <GridItem field={voltageSetPointField} size={4} />
+                <GridItem field={reactivePowerSetPointField} size={4} />
+                <GridItem field={voltageRegulationTypeField} size={4} />
             </Grid>
             {watchRegulationType === REGULATION_TYPES.DISTANT.id && (
                 <Grid container spacing={2} padding={1}>
                     <Grid item xs={4} alignItems={'center'}>
                         <FormattedMessage id="RegulatingTerminalGenerator" />
                     </Grid>
-                    {gridItem(regulatingTerminalField, 8)}
+                    <GridItem field={regulatingTerminalField} size={8} />
                 </Grid>
             )}
         </>

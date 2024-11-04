@@ -17,10 +17,10 @@ import {
 import {
     ActivePowerAdornment,
     filledTextField,
-    gridItem,
+    GridItem,
     GridSection,
     ReactivePowerAdornment,
-} from '../../../dialogUtils';
+} from '../../../dialog-utils';
 import Grid from '@mui/material/Grid';
 import React from 'react';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
@@ -75,21 +75,21 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(batteryIdField, 4)}
-                {gridItem(batteryNameField, 4)}
+                {GridItem(batteryIdField, 4)}
+                {GridItem(batteryNameField, 4)}
             </Grid>
 
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                {GridItem(connectivityForm, 12)}
             </Grid>
 
             {/* ActiveLimits part */}
             <GridSection title="ActiveLimits" />
             <Grid container spacing={2}>
-                {gridItem(minimumActivePowerField, 4)}
-                {gridItem(maximumActivePowerField, 4)}
+                {GridItem(minimumActivePowerField, 4)}
+                {GridItem(maximumActivePowerField, 4)}
             </Grid>
 
             {/* Reactive limits part */}
@@ -99,8 +99,8 @@ const BatteryCreationForm = ({ studyUuid, currentNode }) => {
             {/* Set points part */}
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerSetPointField, 4)}
-                {gridItem(reactivePowerSetPointField, 4)}
+                {GridItem(activePowerSetPointField, 4)}
+                {GridItem(reactivePowerSetPointField, 4)}
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <FrequencyRegulation />

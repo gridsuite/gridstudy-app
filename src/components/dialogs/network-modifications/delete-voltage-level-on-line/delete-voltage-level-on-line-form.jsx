@@ -7,7 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import React, { useEffect, useState } from 'react';
-import { gridItem, GridSection } from 'components/dialogs/dialogUtils';
+import { GridItem, GridSection } from 'components/dialogs/dialog-utils.tsx';
 import { TextInput } from '@gridsuite/commons-ui';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import {
@@ -69,16 +69,16 @@ const DeleteVoltageLevelOnLineForm = ({ studyUuid, currentNode }) => {
         <>
             <GridSection title="Line1" />
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachTo1Field, 5)}
+                {GridItem(lineToAttachTo1Field, 5)}
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachTo2Field, 5)}
+                {GridItem(lineToAttachTo2Field, 5)}
             </Grid>
             <GridSection title="ReplacingLine" />
             <Grid container spacing={2}>
-                {gridItem(replacingLineIdField, 6)}
-                {gridItem(replacingLineNameField, 6)}
+                {GridItem(replacingLineIdField, 6)}
+                {GridItem(replacingLineNameField, 6)}
             </Grid>
         </>
     );
