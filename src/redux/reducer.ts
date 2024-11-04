@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, Draft } from '@reduxjs/toolkit';
 import {
     AuthenticationActions,
     AuthenticationRouterErrorAction,
@@ -843,7 +843,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
         const { newTableDefinition, customColumns } = action.payload;
         const updatedDefinitions = [...state.tables.definitions];
-        updatedDefinitions.push(newTableDefinition);
+        updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
         const updatedColumnsNames = updatedDefinitions
             .map((tabDef) => tabDef.columns)
             .map((cols) => new Set(cols.map((c) => c.id)));
@@ -1821,7 +1821,7 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
     return currentEquipments;
 }
 
-function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
+function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );

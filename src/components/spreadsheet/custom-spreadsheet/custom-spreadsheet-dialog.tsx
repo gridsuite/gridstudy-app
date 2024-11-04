@@ -42,6 +42,7 @@ import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
 import { SortWay } from 'hooks/use-aggrid-sort';
 import { getFetchers } from '../config/equipment/common-config';
+import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
     selectedOption: { id: string; label: string } | undefined;
@@ -86,22 +87,24 @@ export default function CustomSpreadsheetConfigDialog({
     const { snackError } = useSnackMessage();
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
-    const getTabDefinition = useCallback((type: EQUIPMENT_TYPES) => {
-        return TABLES_DEFINITIONS.find((tabDef) => tabDef.type === type);
+    const getTableColumns = useCallback((type: EQUIPMENT_TYPES) => {
+        const tableDef = TABLES_DEFINITIONS.find((tabDef) => tabDef.type === type);
+        return tableDef ? tableDef.columns : [];
     }, []);
 
     const onSubmit = useCallback(
         (newParams: any) => {
             if (selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id) {
+                // New tab with default columns
                 const equipmentType = newParams.equipmentType as EQUIPMENT_TYPES;
                 const tabIndex = tablesDefinitionIndexes.size;
                 const postfixedEquipmentType = equipmentType + tabIndex; // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
-                const newTableDefinition = {
-                    ...getTabDefinition(equipmentType),
-                    name: newParams[SPREADSHEET_NAME],
+                const newTableDefinition: SpreadsheetTabDefinition = {
                     index: tabIndex,
+                    name: newParams[SPREADSHEET_NAME],
                     type: postfixedEquipmentType,
                     fetchers: getFetchers(equipmentType),
+                    columns: getTableColumns(equipmentType),
                 };
                 dispatch(updateTableDefinition(newTableDefinition, []));
                 dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
@@ -114,17 +117,17 @@ export default function CustomSpreadsheetConfigDialog({
                     ])
                 );
             } else {
+                // Load existing model into new tab
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then((selectedModel: { customColumns: ColumnWithFormula[]; sheetType: EQUIPMENT_TYPES }) => {
                         const tabIndex = tablesDefinitionIndexes.size;
                         const postfixedEquipmentType = selectedModel.sheetType + tabIndex; // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
-                        const newTableDefinition = {
-                            ...getTabDefinition(selectedModel.sheetType),
-                            name: newParams[SPREADSHEET_NAME],
+                        const newTableDefinition: SpreadsheetTabDefinition = {
                             index: tabIndex,
-                            columns: [],
+                            name: newParams[SPREADSHEET_NAME],
                             type: postfixedEquipmentType,
                             fetchers: getFetchers(selectedModel.sheetType),
+                            columns: [],
                         };
                         dispatch(updateTableDefinition(newTableDefinition, selectedModel.customColumns));
                         dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
@@ -147,7 +150,7 @@ export default function CustomSpreadsheetConfigDialog({
             open.setFalse();
         },
 
-        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size, getTabDefinition]
+        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size, getTableColumns]
     );
 
     useEffect(() => {

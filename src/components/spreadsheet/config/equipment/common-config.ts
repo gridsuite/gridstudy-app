@@ -133,9 +133,10 @@ export const defaultEnumFilterConfig = {
             {
                 displayKey: 'customInRange',
                 displayName: 'customInRange',
-                predicate: ([filterValue]: [any], cellValue: any) => {
+                predicate: (filterValues: string[], cellValue: string) => {
                     // We receive here the filter enum values as a string (filterValue)
-                    return filterValue.includes(cellValue);
+                    const filterValue = filterValues.at(0);
+                    return filterValue ? filterValue.includes(cellValue) : false;
                 },
             },
         ],
@@ -156,10 +157,14 @@ export const defaultBooleanFilterConfig = {
             {
                 displayKey: 'booleanMatches',
                 displayName: 'booleanMatches',
-                predicate: ([filterValue]: any, cellValue: any) => {
-                    // We receive here the filter boolean values as a string (filterValue)
+                predicate: (filterValues: string[], cellValue: boolean) => {
+                    const filterValue = filterValues.at(0);
+                    if (filterValue === undefined) {
+                        return false;
+                    }
+                    // We receive here the filter boolean value as a string (filterValue)
                     // we check if the cellValue is not null neither undefined
-                    if (cellValue !== undefined && cellValue !== null) {
+                    if (cellValue != null) {
                         return filterValue === cellValue.toString();
                     }
 

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { FilterEnumsType, FilterPropsType } from '../../hooks/use-aggrid-row-filter';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
@@ -54,7 +54,7 @@ export type FilterStorePropsType = {
 
 export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {
     agGridFilterParams?: {
-        filterOptions: { displayKey: string; displayName: string; predicate: (a: TData, b: TData) => boolean }[];
+        filterOptions: IFilterOptionDef[];
     };
     boolean?: boolean;
     canBeInvalidated?: boolean;
