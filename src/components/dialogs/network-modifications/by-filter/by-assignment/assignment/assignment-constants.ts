@@ -8,7 +8,7 @@
 import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
 import { EquipmentType, microUnitToUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
-import {MICRO_SIEMENS} from "../../../../../utils/field-constants";
+import { MICRO_SIEMENS } from '../../../../../utils/field-constants';
 
 export const FIELD_OPTIONS: {
     [key: string]: FieldOptionType;
