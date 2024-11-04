@@ -1,12 +1,11 @@
-/**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ReportSeverity, SeverityLevel } from '../types/report.type';
-import ComputingType from '../components/computing-status/computing-type';
+import { ReportSeverity, SeverityLevel } from './report.type';
 
 export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     UNKNOWN: {
@@ -67,15 +66,33 @@ export const REPORT_SEVERITY: Record<SeverityLevel, ReportSeverity> = {
     },
 };
 
-export const REPORT_TYPE = {
-    GLOBAL: 'GlobalReport',
-    NODE: 'NodeReport',
-} as const;
-
-export const GLOBAL_REPORT_NODE_LABEL = 'Logs';
-
-// must be in-sync with ReportType in study-server
-export const COMPUTING_AND_NETWORK_MODIFICATION_TYPE = {
-    ...ComputingType,
-    NETWORK_MODIFICATION: 'NETWORK_MODIFICATION',
+export const getDefaultSeverityFilter = (severityList: string[]): string[] => {
+    const severityFilter: string[] = [];
+    if (severityList?.length) {
+        Object.values(REPORT_SEVERITY)
+            .filter((s) => severityList.includes(s.name))
+            .forEach((s) => {
+                if (s.displayedByDefault) {
+                    severityFilter.push(s.name);
+                }
+            });
+    }
+    return severityFilter;
 };
+
+export function getContainerDefaultSeverityList(): string[] {
+    // return name list like ['WARN', 'INFO']
+    return Object.values(REPORT_SEVERITY)
+        .filter((s) => s.displayedByDefaultForReportContainer)
+        .map((s) => s.name);
+}
+
+export function getHighestSeverity(severityList: string[]) {
+    // We have a un-ordered list of existing severities, like ['INFO', 'ERROR', 'DEBUG'].
+    // Lets find out the highest level corresponding SEVERITY object, like SEVERITY.ERROR:
+    let reduceFct = (p: ReportSeverity, c: ReportSeverity) => (c.level > p.level ? c : p);
+    let highestSeverity = REPORT_SEVERITY.UNKNOWN;
+    return Object.values(REPORT_SEVERITY)
+        .filter((s) => severityList.includes(s.name))
+        .reduce(reduceFct, highestSeverity);
+}
