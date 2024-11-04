@@ -38,6 +38,10 @@ import {
     commonButtonFr,
     equipmentsEn,
     equipmentsFr,
+    importParamsEn,
+    importParamsFr,
+    exportParamsEn,
+    exportParamsFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -46,8 +50,6 @@ import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
 import network_modifications_locale_en from '../translations/dynamic/network-modifications-locale-en';
 import network_modifications_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
-import exportParameters_en from '../translations/external/export-parameters-en.json';
-import exportParameters_fr from '../translations/external/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_en from '../translations/external/aggrid-locale-en';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
@@ -129,6 +131,9 @@ let lightTheme = createTheme({
     formFiller: {
         background: '#e6e6e6',
     },
+    searchedText: {
+        highlightColor: '#53AAFF',
+    },
     [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/light-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/positron-nolabels-gl-style/style.json',
@@ -206,6 +211,9 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
+    searchedText: {
+        highlightColor: '#123FBB',
+    },
     [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/dark-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
@@ -247,7 +255,8 @@ const messages = {
         ...treeviewFinderEn,
         ...messages_en,
         ...network_modifications_locale_en,
-        ...exportParameters_en,
+        ...exportParamsEn,
+        ...importParamsEn,
         ...reportViewerEn,
         ...loginEn,
         ...topBarEn,
@@ -276,7 +285,8 @@ const messages = {
         ...treeviewFinderFr,
         ...messages_fr,
         ...network_modifications_locale_fr,
-        ...exportParameters_fr,
+        ...exportParamsFr,
+        ...importParamsFr,
         ...reportViewerFr,
         ...loginFr,
         ...topBarFr,

@@ -11,7 +11,7 @@ import {
     computeSwitchedOnValue,
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
-import { EDIT_COLUMN } from './config-tables';
+import { EDIT_COLUMN } from './constants';
 import { CellEditingStoppedEvent, ColDef, Column, RefreshCellsParams, GridApi } from 'ag-grid-community';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
@@ -21,6 +21,7 @@ import {
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import {
     getComputedPhaseRegulationTypeId,
+    getComputedPhaseTapChangerRegulationMode,
     getPhaseTapRegulationSideId,
 } from 'components/dialogs/network-modifications/two-windings-transformer/tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -138,6 +139,7 @@ const formatPhaseTapChanger = (twt: any) => {
         ...twt,
         phaseTapChanger: {
             ...twt.phaseTapChanger,
+            regulationMode: getComputedPhaseTapChangerRegulationMode(twt.phaseTapChanger)?.id ?? undefined,
             regulationType,
             regulationSide,
             phaseRegulatingTerminal,
