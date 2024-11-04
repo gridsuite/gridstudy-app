@@ -18,15 +18,14 @@ import {
     excludeFromGlobalFilter,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
-import { fetchLines } from '../../../../services/study/network';
 
 export const LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 2,
     name: 'Lines',
-    type: EQUIPMENT_TYPES.LINE,
-    fetchers: [fetchLines],
+    ...typeAndFetchers(EQUIPMENT_TYPES.LINE),
     columns: [
         {
             id: 'ID',

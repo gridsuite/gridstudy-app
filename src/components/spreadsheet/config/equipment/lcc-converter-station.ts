@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchLccConverterStations } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -18,13 +17,13 @@ import {
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 
 export const LCC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 11,
     name: 'LccConverterStations',
-    type: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-    fetchers: [fetchLccConverterStations],
+    ...typeAndFetchers(EQUIPMENT_TYPES.LCC_CONVERTER_STATION),
     columns: [
         {
             id: 'ID',

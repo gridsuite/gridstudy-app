@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchLoads } from '../../../../services/study/network';
 import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
@@ -25,14 +24,14 @@ import {
     isEditable,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { LOAD_TYPES } from '../../../network/constants';
 
 export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
     index: 6,
     name: 'Loads',
-    type: EQUIPMENT_TYPES.LOAD,
-    fetchers: [fetchLoads],
+    ...typeAndFetchers(EQUIPMENT_TYPES.LOAD),
     columns: [
         {
             id: 'ID',

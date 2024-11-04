@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchThreeWindingsTransformers } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -23,6 +22,7 @@ import {
     isEditable,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 
 function generateTapRequest(tapType: string, legNumber: number) {
@@ -46,8 +46,7 @@ function generateTapRequest(tapType: string, legNumber: number) {
 export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 4,
     name: 'ThreeWindingsTransformers',
-    type: EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER,
-    fetchers: [fetchThreeWindingsTransformers],
+    ...typeAndFetchers(EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER),
     groovyEquipmentGetter: 'getThreeWindingsTransformer',
     columns: [
         {

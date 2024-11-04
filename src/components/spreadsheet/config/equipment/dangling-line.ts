@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchDanglingLines } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -18,14 +17,14 @@ import {
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 
 export const DANGLING_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 13,
     name: 'DanglingLines',
-    type: EQUIPMENT_TYPES.DANGLING_LINE,
-    fetchers: [fetchDanglingLines],
+    ...typeAndFetchers(EQUIPMENT_TYPES.DANGLING_LINE),
     columns: [
         {
             id: 'ID',

@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchSubstations } from '../../../../services/study/network';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
@@ -20,13 +19,13 @@ import {
     excludeFromGlobalFilter,
     isEditable,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 
 export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 0,
     name: 'Substations',
-    type: EQUIPMENT_TYPES.SUBSTATION,
-    fetchers: [fetchSubstations],
+    ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
     columns: [
         {
             id: 'ID',

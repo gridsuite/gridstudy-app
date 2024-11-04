@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchShuntCompensators } from '../../../../services/study/network';
 import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
@@ -26,14 +25,14 @@ import {
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 
 export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
     name: 'ShuntCompensators',
-    type: EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
-    fetchers: [fetchShuntCompensators],
+    ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
     columns: [
         {
             id: 'ID',

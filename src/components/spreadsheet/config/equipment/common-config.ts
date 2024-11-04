@@ -15,11 +15,75 @@ import { EnumOption } from '../../../utils/utils-type';
 import { CellClassParams, EditableCallbackParams, ValueGetterParams } from 'ag-grid-community';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-header-utils';
 import EnumCellRenderer from '../../utils/enum-cell-renderer';
+import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import {
+    fetchBatteries,
+    fetchBuses,
+    fetchDanglingLines,
+    fetchGenerators,
+    fetchHvdcLines,
+    fetchLccConverterStations,
+    fetchLines,
+    fetchLoads,
+    fetchShuntCompensators,
+    fetchStaticVarCompensators,
+    fetchSubstations,
+    fetchThreeWindingsTransformers,
+    fetchTieLines,
+    fetchTwoWindingsTransformers,
+    fetchVoltageLevels,
+    fetchVscConverterStations,
+} from '../../../../services/study/network';
+import { EquipmentFetcher } from '../spreadsheet.type';
 
 type TapPositionsType = {
     lowTapPosition: number;
     highTapPosition: number;
 };
+
+export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] => {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return [fetchSubstations];
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            return [fetchVoltageLevels];
+        case EQUIPMENT_TYPES.LINE:
+            return [fetchLines];
+        case EQUIPMENT_TYPES.TIE_LINE:
+            return [fetchTieLines];
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return [fetchTwoWindingsTransformers];
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+            return [fetchThreeWindingsTransformers];
+        case EQUIPMENT_TYPES.HVDC_LINE:
+            return [fetchHvdcLines];
+        case EQUIPMENT_TYPES.GENERATOR:
+            return [fetchGenerators];
+        case EQUIPMENT_TYPES.BATTERY:
+            return [fetchBatteries];
+        case EQUIPMENT_TYPES.LOAD:
+            return [fetchLoads];
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return [fetchShuntCompensators];
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+            return [fetchDanglingLines];
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+            return [fetchStaticVarCompensators];
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+            return [fetchVscConverterStations];
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+            return [fetchLccConverterStations];
+        case EQUIPMENT_TYPES.BUS:
+            return [fetchBuses];
+        default:
+            return [];
+    }
+};
+
+export const typeAndFetchers = (equipmentType: EQUIPMENT_TYPES) => ({
+    type: equipmentType,
+    fetchers: getFetchers(equipmentType),
+});
 
 export const generateTapPositions = (params: TapPositionsType) => {
     return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];

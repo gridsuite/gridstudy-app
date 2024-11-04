@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchHvdcLines } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -21,13 +20,13 @@ import {
     LARGE_COLUMN_WIDTH,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 
 export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 10,
     name: 'HvdcLines',
-    type: EQUIPMENT_TYPES.HVDC_LINE,
-    fetchers: [fetchHvdcLines],
+    ...typeAndFetchers(EQUIPMENT_TYPES.HVDC_LINE),
     columns: [
         {
             id: 'ID',

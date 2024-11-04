@@ -20,9 +20,9 @@ import {
     excludeFromGlobalFilter,
     isEditable,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
-import { fetchVoltageLevels } from '../../../../services/study/network';
 
 const generateEditableNumericColumnDefinition = (
     id: string,
@@ -67,8 +67,7 @@ const generateEditableNumericColumnDefinition = (
 export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
     index: 1,
     name: 'VoltageLevels',
-    type: EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-    fetchers: [fetchVoltageLevels],
+    ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
     columns: [
         {
             id: 'ID',

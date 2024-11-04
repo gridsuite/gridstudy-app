@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchTieLines } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueGetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -19,14 +18,14 @@ import {
     excludeFromGlobalFilter,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 
 export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 15,
     name: 'TieLines',
-    type: EQUIPMENT_TYPES.TIE_LINE,
-    fetchers: [fetchTieLines],
+    ...typeAndFetchers(EQUIPMENT_TYPES.TIE_LINE),
     columns: [
         {
             id: 'ID',

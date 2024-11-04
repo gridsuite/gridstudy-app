@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchBuses } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -17,13 +16,13 @@ import {
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 
 export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
     index: 14,
     name: 'Buses',
-    type: EQUIPMENT_TYPES.BUS,
-    fetchers: [fetchBuses],
+    ...typeAndFetchers(EQUIPMENT_TYPES.BUS),
     columns: [
         {
             id: 'ID',

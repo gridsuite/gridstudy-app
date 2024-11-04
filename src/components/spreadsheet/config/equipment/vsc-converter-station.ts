@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchVscConverterStations } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -19,13 +18,13 @@ import {
     excludeFromGlobalFilter,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 
 export const VSC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 12,
     name: 'VscConverterStations',
-    type: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
-    fetchers: [fetchVscConverterStations],
+    ...typeAndFetchers(EQUIPMENT_TYPES.VSC_CONVERTER_STATION),
     columns: [
         {
             id: 'ID',

@@ -6,7 +6,6 @@
  */
 
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchBatteries } from '../../../../services/study/network';
 import { BooleanListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
@@ -21,14 +20,14 @@ import {
     excludeFromGlobalFilter,
     isEditable,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 
 export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     index: 9,
     name: 'Batteries',
-    type: EQUIPMENT_TYPES.BATTERY,
-    fetchers: [fetchBatteries],
+    ...typeAndFetchers(EQUIPMENT_TYPES.BATTERY),
     columns: [
         {
             id: 'ID',

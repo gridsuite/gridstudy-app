@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchStaticVarCompensators } from '../../../../services/study/network';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
@@ -19,14 +18,14 @@ import {
     excludeFromGlobalFilter,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 8,
     name: 'StaticVarCompensators',
-    type: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-    fetchers: [fetchStaticVarCompensators],
+    ...typeAndFetchers(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
     columns: [
         {
             id: 'ID',

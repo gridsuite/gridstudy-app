@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchGenerators } from '../../../../services/study/network';
 import {
     BooleanListField,
     EnumListField,
@@ -30,6 +29,7 @@ import {
     isEditable,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 
@@ -62,8 +62,7 @@ const isEditableRegulatingTerminalCell = (params: EditableCallbackParams) => {
 export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 5,
     name: 'Generators',
-    type: EQUIPMENT_TYPES.GENERATOR,
-    fetchers: [fetchGenerators],
+    ...typeAndFetchers(EQUIPMENT_TYPES.GENERATOR),
     columns: [
         {
             id: 'ID',

@@ -41,6 +41,7 @@ import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
 import { SortWay } from 'hooks/use-aggrid-sort';
+import { getFetchers } from '../config/equipment/common-config';
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
     selectedOption: { id: string; label: string } | undefined;
@@ -100,6 +101,7 @@ export default function CustomSpreadsheetConfigDialog({
                     name: newParams[SPREADSHEET_NAME],
                     index: tabIndex,
                     type: postfixedEquipmentType,
+                    fetchers: getFetchers(equipmentType),
                 };
                 dispatch(updateTableDefinition(newTableDefinition, []));
                 dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
@@ -122,6 +124,7 @@ export default function CustomSpreadsheetConfigDialog({
                             index: tabIndex,
                             columns: [],
                             type: postfixedEquipmentType,
+                            fetchers: getFetchers(selectedModel.sheetType),
                         };
                         dispatch(updateTableDefinition(newTableDefinition, selectedModel.customColumns));
                         dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));

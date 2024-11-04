@@ -7,7 +7,6 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { fetchTwoWindingsTransformers } from '../../../../services/study/network';
 import {
     BooleanListField,
     EnumListField,
@@ -31,6 +30,7 @@ import {
     isEditable,
     MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
+    typeAndFetchers,
 } from './common-config';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
@@ -99,8 +99,7 @@ const isEditableTwtPhaseRegulatingTerminalCell = (params: EditableCallbackParams
 export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 3,
     name: 'TwoWindingsTransformers',
-    type: EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
-    fetchers: [fetchTwoWindingsTransformers],
+    ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
     columns: [
         {
             id: 'ID',
