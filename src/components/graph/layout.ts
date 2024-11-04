@@ -5,38 +5,82 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { nodeWidth, nodeHeight, rootNodeWidth, rootNodeHeight } from './util/model-constants';
-import { Edge } from '@xyflow/react';
 import { CurrentTreeNode } from 'redux/reducer';
-import { NodeType } from './tree-node.type';
-import ELK from 'elkjs/lib/elk.bundled';
-const elk = new ELK();
-// Those offset values are uses to fix the snap to grid behavior when moving nodes
-const X_OFFSET_FIX = -40.0;
-const Y_OFFSET_FIX = -20.0;
 
-export function getLayoutedElements(nodes: CurrentTreeNode[], edges: Edge[], layoutOptions) {
-    const graph = {
-        id: 'root',
-        layoutOptions: layoutOptions,
-        children: nodes.map((node) => ({
-            ...node,
-            width: node?.type === NodeType.ROOT ? rootNodeWidth : nodeWidth,
-            height: node?.type === NodeType.ROOT ? rootNodeHeight : nodeHeight,
-        })),
-        edges: edges,
-    };
-    const result = elk
-        .layout(graph)
-        .then((layoutedGraph) => ({
-            nodes: layoutedGraph.children.map((node) => ({
-                ...node,
-                // React Flow expects a position property on the node instead of `x`
-                // and `y` fields.
-                position: { x: node.x + X_OFFSET_FIX, y: node.y + Y_OFFSET_FIX },
-            })),
-            edges: [...layoutedGraph.edges],
-        }))
-        .catch(console.error);
-    return result;
+export const snapGrid = [230, 110]; // [Width, Height]
+
+function getPosition(placementArray, id) {
+    for (let row = 0; row < placementArray.length; row++) {
+        for (let column = 0; column < placementArray[row].length; column++) {
+            if (placementArray[row][column] === id) {
+                return { row: row, column: column };
+            }
+        }
+    }
+    return { row: -1, column: -1 };
+}
+
+function addValueAtPosition(placementArray, row, column, value) {
+    while (placementArray.length <= row) {
+        placementArray.push(['']);
+    }
+    while (placementArray[row].length <= column) {
+        placementArray[row].push('');
+    }
+    placementArray[row][column] = value;
+}
+
+function isSpaceEmpty(placementArray, row, column) {
+    if (placementArray.length <= row) {
+        return true;
+    }
+    if (placementArray[row].length <= column) {
+        return true;
+    }
+    if (placementArray[row][column]?.length > 0) {
+        return false;
+    }
+    return true;
+}
+
+export function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
+    const newPlacements = [];
+    let currentMaxColumn = 0;
+
+    nodes.forEach((node) => {
+        if (!node.data?.parentNodeUuid) {
+            // ORIGIN/PARENT NODE
+            addValueAtPosition(newPlacements, 0, 0, node.id);
+        } else {
+            // CHILDREN NODE
+            const parentPosition = getPosition(newPlacements, node.data.parentNodeUuid);
+            // Check if there is an empty space below the parent
+            const tryRow = parentPosition.row + 1;
+            const tryColumn = parentPosition.column;
+            if (isSpaceEmpty(newPlacements, tryRow, tryColumn)) {
+                addValueAtPosition(newPlacements, tryRow, tryColumn, node.id);
+            } else {
+                // We check if there is an empty space on the right of the used space
+                do {
+                    currentMaxColumn++;
+                } while (!isSpaceEmpty(newPlacements, tryRow, currentMaxColumn));
+                addValueAtPosition(newPlacements, tryRow, currentMaxColumn, node.id);
+            }
+        }
+    });
+    return [...newPlacements];
+}
+
+export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[], nodePlacements: []) {
+    const newNodes = [...nodes];
+    newNodes.forEach((node) => {
+        const storedPosition = getPosition(nodePlacements, node.id);
+        if (storedPosition !== null) {
+            node.position = {
+                x: storedPosition.column * snapGrid[0],
+                y: storedPosition.row * snapGrid[1],
+            };
+        }
+    });
+    return [...newNodes];
 }

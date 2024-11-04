@@ -32,9 +32,7 @@ import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
-import { getLayoutedElements } from './graph/layout';
-
-const snapGrid = [230, 110]; // [Width, Height]
+import { getNodePositionsFromTreeNodes, getTreeNodesWithUpdatedPositions, snapGrid } from './graph/layout';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -81,84 +79,16 @@ const NetworkModificationTree = ({
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-    function getPosition(placementArray, id) {
-        for (let row = 0; row < placementArray.length; row++) {
-            for (let column = 0; column < placementArray[row].length; column++) {
-                if (placementArray[row][column] === id) {
-                    return { row: row, column: column };
-                }
-            }
-        }
-        return { row: -1, column: -1 };
-    }
-
-    function addValueAtPosition(placementArray, row, column, value) {
-        while (placementArray.length <= row) {
-            placementArray.push(['']);
-        }
-        while (placementArray[row].length <= column) {
-            placementArray[row].push('');
-        }
-        placementArray[row][column] = value;
-    }
-
-    function isSpaceEmpty(placementArray, row, column) {
-        if (placementArray.length <= row) {
-            return true;
-        }
-        if (placementArray[row].length <= column) {
-            return true;
-        }
-        if (placementArray[row][column]?.length > 0) {
-            return false;
-        }
-        return true;
-    }
-
     // Node position initialization
     useLayoutEffect(() => {
         if (treeModel) {
-            const newPlacements = [];
-            let currentMaxColumn = 0;
-
-            treeModel.treeNodes.forEach((node) => {
-                if (!node.data?.parentNodeUuid) {
-                    // ORIGIN/PARENT NODE
-                    addValueAtPosition(newPlacements, 0, 0, node.id);
-                } else {
-                    // CHILDREN NODE
-                    const parentPosition = getPosition(newPlacements, node.data.parentNodeUuid);
-                    // Check if there is an empty space below the parent
-                    const tryRow = parentPosition.row + 1;
-                    const tryColumn = parentPosition.column;
-                    if (isSpaceEmpty(newPlacements, tryRow, tryColumn)) {
-                        addValueAtPosition(newPlacements, tryRow, tryColumn, node.id);
-                    } else {
-                        // We check if there is an empty space on the right of the used space
-                        do {
-                            currentMaxColumn++;
-                        } while (!isSpaceEmpty(newPlacements, tryRow, currentMaxColumn));
-                        addValueAtPosition(newPlacements, tryRow, currentMaxColumn, node.id);
-                    }
-                }
-            });
-            setNodePlacements([...newPlacements]);
+            setNodePlacements(getNodePositionsFromTreeNodes(treeModel.treeNodes));
         }
     }, [treeModel]);
 
     const updateNodePositions = useCallback(() => {
         if (treeModel) {
-            const newNodes = [...treeModel.treeNodes];
-            newNodes.forEach((node) => {
-                const storedPosition = getPosition(nodePlacements, node.id);
-                if (storedPosition !== null) {
-                    node.position = {
-                        x: storedPosition.column * snapGrid[0],
-                        y: storedPosition.row * snapGrid[1],
-                    };
-                }
-            });
-            setNodes([...newNodes]);
+            setNodes(getTreeNodesWithUpdatedPositions(treeModel.treeNodes, nodePlacements));
             setEdges([...treeModel.treeEdges]);
             window.requestAnimationFrame(() => fitView());
         }
@@ -241,8 +171,43 @@ const NetworkModificationTree = ({
         window.requestAnimationFrame(() => fitView());
     }, [isStudyDrawerOpen]);
 
+    const NodePlacementsDisplay = ({ nodePlacements }) => {
+        const squareSize = 30;
+        return (
+            <Box>
+                {nodePlacements.map((array, row) => (
+                    <Box key={row}>
+                        {array.map((value, columns) => (
+                            <Box
+                                key={`${row}-${columns}`}
+                                sx={{
+                                    position: 'absolute',
+                                    display: 'block',
+                                    top: (row * squareSize) / 2 + 'px',
+                                    left: columns * squareSize + 'px',
+                                    border: 'solid 1px red',
+                                    backgroundColor: 'gold',
+                                    width: squareSize + 'px',
+                                    height: squareSize / 2 + 'px',
+                                    zIndex: 199,
+                                    fontSize: '10px',
+                                    color: 'red',
+                                }}
+                            >
+                                {value.substring(0, 3)}
+                            </Box>
+                        ))}
+                    </Box>
+                ))}
+            </Box>
+        );
+    };
+    const debug = true;
     return (
         <Box flexGrow={1}>
+            {debug && ( // TODO Remove this before merge
+                <NodePlacementsDisplay nodePlacements={nodePlacements} />
+            )}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
