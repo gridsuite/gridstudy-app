@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { REPORT_TYPE } from '../constants/report.constant';
 
 export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
 
@@ -19,9 +18,10 @@ export type ReportSeverity = {
     displayedByDefaultForReportContainer: boolean;
 };
 
-type ReportTypeKeys = keyof typeof REPORT_TYPE;
-
-export type ReportType = (typeof REPORT_TYPE)[ReportTypeKeys];
+export enum ReportType {
+    GLOBAL = 'GlobalReport',
+    NODE = 'NodeReport',
+}
 
 export type ReportTree = Report & {
     type: ReportType;

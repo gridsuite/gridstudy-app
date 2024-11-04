@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
 import ReportItem from './report-item';
-import { mapReportsTree } from '../../utils/report-tree.mapper';
+import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import ReportTree from './report-tree';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'types/report.type';

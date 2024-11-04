@@ -294,7 +294,7 @@ import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 

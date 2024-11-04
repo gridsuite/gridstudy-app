@@ -15,13 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/reducer';
 
-export type FilterEnumsType = Record<string, string[] | null>;
-
-export type FilterPropsType = {
-    updateFilter: (field: string, value: FilterDataType) => void;
-    filterSelector: FilterSelectorType[] | null;
-};
-
 export type UseAggridRowFilterOutputType = {
     updateFilter: (field: string, data: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
