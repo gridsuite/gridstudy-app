@@ -32,7 +32,13 @@ import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
-import { getNodePositionsFromTreeNodes, getTreeNodesWithUpdatedPositions, snapGrid } from './graph/layout';
+import {
+    getNodePositionsFromTreeNodes,
+    getTreeNodesWithUpdatedPositions,
+    nodeGrid,
+    nodeWidth,
+    snapGrid,
+} from './graph/layout';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -52,6 +58,7 @@ const NetworkModificationTree = ({
 
     const [nodePlacements, setNodePlacements] = useState([]);
     const { setViewport, fitView } = useReactFlow();
+    const [isDragging, setIsDragging] = useState(false);
 
     const nodeColor = useCallback(
         (node) => {
@@ -171,6 +178,35 @@ const NetworkModificationTree = ({
         window.requestAnimationFrame(() => fitView());
     }, [isStudyDrawerOpen, fitView]);
 
+    const handleNodeDragStop = (event, node) => {
+        setIsDragging(false);
+        console.error('CHARLY DRAGGED node ' + node.id + ' to X position ' + node.position?.x);
+
+        // TODO : avec node.position.x, on a la nouvelle position de la node.
+        // il faut trouver les nodes dans le placement qui sont à gauche et à droite de cette position.
+    };
+
+    const handleNodeDrag = (event, node) => {
+        setIsDragging(true);
+    };
+
+    const handleNodesChange = (changes) => {
+        // Restrict the node movement (with drag) to only the X axis.
+        // We force the Y position to stay the same while moving the node.
+        changes
+            .filter((change) => change.type === 'position')
+            .map((change) => {
+                const initialYPosition = nodes.find((node) => node.id === change.id)?.position?.y || 0;
+                const newPosition = {
+                    ...change.position,
+                    y: initialYPosition,
+                };
+                change.position = newPosition;
+                return change;
+            });
+        return onNodesChange(changes);
+    };
+
     const NodePlacementsDisplay = ({ nodePlacements }) => {
         const squareSize = 30;
         return (
@@ -208,10 +244,24 @@ const NetworkModificationTree = ({
             {debug && ( // TODO Remove this before merge
                 <NodePlacementsDisplay nodePlacements={nodePlacements} />
             )}
+            {debug && isDragging && ( // TODO Remove this before merge
+                <Box
+                    sx={{
+                        display: 'block',
+                        position: 'absolute',
+                        bottom: 0,
+                        left: 0,
+                        backgroundColor: 'red',
+                        color: 'white',
+                    }}
+                >
+                    DRAGGING
+                </Box>
+            )}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
-                onNodesChange={onNodesChange}
+                onNodesChange={handleNodesChange}
                 onEdgesChange={onEdgesChange}
                 fitView
                 snapToGrid
@@ -224,11 +274,23 @@ const NetworkModificationTree = ({
                 minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
                 nodesDraggable={true}
+                onNodeDrag={handleNodeDrag}
+                onNodeDragStop={handleNodeDragStop}
             >
                 {isGridVisible && (
                     <Background
+                        id="gridBackground"
                         color={'#0ca78933'}
-                        gap={snapGrid}
+                        gap={nodeGrid}
+                        variant={BackgroundVariant.Lines}
+                        offset={[140, 80]}
+                    />
+                )}
+                {isDragging && (
+                    <Background
+                        id="gridDragBackground"
+                        color={'#8ec7f633'}
+                        gap={[nodeWidth, 10000000]} // Only display the vertical grid lines
                         variant={BackgroundVariant.Lines}
                         offset={[140, 80]}
                     />

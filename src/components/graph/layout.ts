@@ -7,9 +7,10 @@
 
 import { CurrentTreeNode } from 'redux/reducer';
 
-export const snapGrid = [230, 110]; // [Width, Height] // Same as node size
-//export const snapGrid = [28.75, 110]; // [Width, Height] // TODO clean this
-export const nodeSize = [230, 110]; // [Width, Height]
+export const nodeWidth = 230;
+export const nodeHeight = 110;
+export const snapGrid = [nodeWidth / 4, nodeHeight];
+export const nodeGrid = [nodeWidth, nodeHeight];
 
 function getPosition(placementArray, id) {
     for (let row = 0; row < placementArray.length; row++) {
@@ -84,8 +85,12 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[], nodeP
         const ajustedColumn = (storedPosition?.column || 0) - (parentStoredPosition?.column || 0);
         const ajustedRow = (storedPosition?.row || 0) - (parentStoredPosition?.row || 0);
         node.position = {
-            x: ajustedColumn * nodeSize[0],
-            y: ajustedRow * nodeSize[1],
+            x: ajustedColumn * nodeWidth,
+            y: ajustedRow * nodeHeight,
+        };
+        node.data = {
+            ...node.data,
+            fixedY: ajustedRow * nodeHeight,
         };
     });
     return [...newNodes];
