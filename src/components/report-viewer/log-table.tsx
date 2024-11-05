@@ -25,8 +25,6 @@ import { ReportLog, ReportType } from 'types/report.type';
 import { CellClickedEvent, GridApi, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 
-// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
-
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
@@ -162,10 +160,24 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
                 flex: 1,
-                cellRenderer: EllipsisCellRenderer,
+                cellRenderer: (param) =>
+                    EllipsisCellRenderer({
+                        param: param,
+                        indexTextToHighlight: searchResults[currentResultIndex],
+                        highlightColor: theme.searchedText.highlightColor,
+                    }),
             }),
         ],
-        [intl, updateFilter, filterSelector, severities, shouldDisplayFilterBadge]
+        [
+            intl,
+            updateFilter,
+            filterSelector,
+            severities,
+            shouldDisplayFilterBadge,
+            searchResults,
+            currentResultIndex,
+            theme.searchedText.highlightColor,
+        ]
     );
 
     const handleRowClick = useCallback(
@@ -183,7 +195,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }
             return selectedRowIndex === row.rowIndex ? { backgroundColor: theme.palette.action.selected } : {};
         },
-        [selectedRowIndex, theme]
+        [selectedRowIndex, theme.palette.action.selected]
     );
 
     const onGridReady = ({ api }: { api: GridApi }) => {
@@ -204,15 +216,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
         const api = gridRef.current.api;
         // First, scroll to the row
-        api?.ensureIndexVisible(matches[index], 'middle');
-        // Use setTimeout to delay the flashing until after the scroll is complete
-        const rowNodes = api.getDisplayedRowAtIndex(matches[index]);
-        setTimeout(() => {
-            api.flashCells({
-                flashDuration: 1000,
-                rowNodes: rowNodes ? [rowNodes] : [],
-            });
-        }, 100);
+        api.ensureIndexVisible(matches[index], 'middle');
     }, []);
 
     const handleSearch = useCallback(
@@ -270,7 +274,14 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }}
         >
             <Box sx={{ flexShrink: 0 }}>
-                <QuickSearch onSearch={handleSearch} onNavigate={handleNavigate} resultCount={searchResults.length} />
+                <QuickSearch
+                    currentResultIndex={currentResultIndex}
+                    selectedReportId={selectedReportId}
+                    onSearch={handleSearch}
+                    onNavigate={handleNavigate}
+                    resultCount={searchResults.length}
+                    setSearchResults={setSearchResults}
+                />
             </Box>
             <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                 <CustomAGGrid
