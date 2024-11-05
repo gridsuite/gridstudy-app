@@ -16,6 +16,7 @@ const config: Config = {
     transformIgnorePatterns: ['node_modules/(?!@gridsuite/commons-ui|react-dnd|dnd-core|@react-dnd)'], // transform from ESM
     moduleDirectories: ['node_modules', 'src'], // to allow absolute path from ./src
     setupFiles: ['<rootDir>/jest.setup.ts'],
+    setupFilesAfterEnv: ['jest-extended/all'],
 };
 
 export default config;
