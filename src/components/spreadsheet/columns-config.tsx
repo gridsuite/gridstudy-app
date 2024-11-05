@@ -12,12 +12,12 @@ import { FunctionComponent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector, useDispatch } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { TABLES_NAMES } from './config/config-tables';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_NAMES,
-} from './config/config-tables';
+} from './utils/constants';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';

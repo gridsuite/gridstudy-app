@@ -28,10 +28,10 @@ import {
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     isEditable,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';

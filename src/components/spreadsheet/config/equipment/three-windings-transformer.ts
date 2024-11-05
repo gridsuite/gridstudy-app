@@ -20,10 +20,10 @@ import {
     excludeFromGlobalFilter,
     generateTapPositions,
     isEditable,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 
 function generateTapRequest(tapType: string, legNumber: number) {
     const getLeg = '.getLeg' + legNumber + '()';

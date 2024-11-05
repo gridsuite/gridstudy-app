@@ -16,10 +16,10 @@ import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 
 export const VSC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 12,

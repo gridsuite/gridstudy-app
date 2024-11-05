@@ -109,11 +109,6 @@ export const editableCellStyle = (params: CellClassParams) => {
 // All the others should be excluded.
 export const excludeFromGlobalFilter = () => '';
 
-export const MIN_COLUMN_WIDTH = 160;
-export const MEDIUM_COLUMN_WIDTH = 220;
-export const LARGE_COLUMN_WIDTH = 340;
-export const EDIT_COLUMN = 'edit';
-
 export const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
     customFilterParams: {

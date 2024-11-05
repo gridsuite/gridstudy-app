@@ -27,10 +27,10 @@ import {
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     isEditable,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 
 const RegulatingTerminalCellGetter = (params: ValueGetterParams) => {

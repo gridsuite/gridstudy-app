@@ -22,10 +22,10 @@ import {
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     isEditable,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 
 export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {

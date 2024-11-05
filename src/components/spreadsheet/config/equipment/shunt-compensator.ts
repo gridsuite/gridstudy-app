@@ -22,11 +22,10 @@ import {
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     isEditable,
-    MEDIUM_COLUMN_WIDTH,
-    MIN_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 
 export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {

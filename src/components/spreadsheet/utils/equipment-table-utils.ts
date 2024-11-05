@@ -11,7 +11,7 @@ import {
     computeSwitchedOnValue,
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
-import { EDIT_COLUMN } from '../config/equipment/common-config';
+import { EDIT_COLUMN } from '../utils/constants';
 import { CellEditingStoppedEvent, ColDef, Column, RefreshCellsParams, GridApi } from 'ag-grid-community';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {

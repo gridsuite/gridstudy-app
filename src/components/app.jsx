@@ -50,7 +50,7 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './spreadsheet/config/config-tables';
+} from './spreadsheet/utils/constants';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';

@@ -16,10 +16,10 @@ import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 
 export const LINE_TAB_DEF: SpreadsheetTabDefinition = {

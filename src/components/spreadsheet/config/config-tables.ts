@@ -23,10 +23,6 @@ import { DANGLING_LINE_TAB_DEF } from './equipment/dangling-line';
 import { BUS_TAB_DEF } from './equipment/bus';
 import { TIE_LINE_TAB_DEF } from './equipment/tie-line';
 
-export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
-export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
-export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'reorderedColumns.';
-
 export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     SUBSTATION_TAB_DEF,
     VOLTAGE_LEVEL_TAB_DEF,

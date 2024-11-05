@@ -16,10 +16,10 @@ import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {

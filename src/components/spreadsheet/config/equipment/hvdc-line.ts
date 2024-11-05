@@ -17,11 +17,10 @@ import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    LARGE_COLUMN_WIDTH,
-    MEDIUM_COLUMN_WIDTH,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { MEDIUM_COLUMN_WIDTH, LARGE_COLUMN_WIDTH } from '../../utils/constants';
 
 export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 10,
