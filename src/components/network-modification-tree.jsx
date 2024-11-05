@@ -202,7 +202,7 @@ const NetworkModificationTree = ({
             </Box>
         );
     };
-    const debug = true;
+    const debug = true; // TODO remove this before merge
     return (
         <Box flexGrow={1}>
             {debug && ( // TODO Remove this before merge
@@ -221,7 +221,7 @@ const NetworkModificationTree = ({
                 elementsSelectable
                 selectNodesOnDrag={false}
                 nodeTypes={nodeTypes}
-                minZoom={0.2} // Lower value allows for more zoom out
+                minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
                 nodesDraggable={true}
             >
