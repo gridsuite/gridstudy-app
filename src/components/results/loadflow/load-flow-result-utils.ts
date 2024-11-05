@@ -12,12 +12,13 @@ import { BranchSide } from '../../utils/constants';
 import { convertDuration, formatNAValue } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
+    FilterEnumsType,
+    FilterPropsType,
     FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useEffect, useState } from 'react';

@@ -22,9 +22,10 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
     FilterSelectorType,
+    FilterPropsType,
+    FilterEnumsType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterPropsType } from '../../../hooks/use-aggrid-row-filter';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { translateLimitNameFrontToBack, translateLimitNameBackToFront } from '../common/utils';
 import { SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K } from 'utils/store-sort-filter-fields';

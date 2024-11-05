@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useMemo, useCallback, Ref } from 'react';
+import { FunctionComponent, Ref, useCallback, useMemo } from 'react';
 import { useTheme } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -15,6 +15,7 @@ import {
     ColDef,
     ColumnMovedEvent,
     GetRowIdParams,
+    KeyCode,
     RowClassParams,
     RowHeightParams,
     RowStyle,
@@ -25,6 +26,23 @@ import { ALLOWED_KEYS } from '../utils/utils';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
+
+const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
+
+const ALLOWED_KEYS: KeyCode[] = [KeyCode.ESCAPE, KeyCode.DOWN, KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT];
+
+//we filter enter key event to prevent closing or opening edit mode
+const suppressKeyEvent = (params: SuppressKeyboardEventParams) => !ALLOWED_KEYS.includes(params.event.key);
+
+const defaultColDef = {
+    filter: true,
+    sortable: true,
+    resizable: true,
+    lockPinned: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
+    suppressKeyboardEvent: suppressKeyEvent,
+};
 
 interface EquipmentTableProps {
     rowData: unknown[];
@@ -41,6 +59,8 @@ interface EquipmentTableProps {
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
 }
+
+const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
 
 export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     rowData,
@@ -72,28 +92,8 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         [theme.palette.primary.main]
     );
 
-    const getRowId = useCallback((params: GetRowIdParams<{ id: string }>) => params.data.id, []);
-
-    //we filter enter key event to prevent closing or opening edit mode
-    const suppressKeyEvent = (params: SuppressKeyboardEventParams) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
-
-    const defaultColDef = useMemo(
+    const gridContext = useMemo(
         () => ({
-            filter: true,
-            sortable: true,
-            resizable: true,
-            lockPinned: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            suppressKeyboardEvent: (params: SuppressKeyboardEventParams) => suppressKeyEvent(params),
-        }),
-        []
-    );
-
-    const gridContext = useMemo(() => {
-        return {
             editErrors: {},
             dynamicValidation: {},
             isEditing: !!topPinnedData,
@@ -102,17 +102,16 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
-        };
-    }, [currentNode, studyUuid, theme, topPinnedData]);
+        }),
+        [currentNode, studyUuid, theme, topPinnedData]
+    );
 
     const getRowHeight = useCallback(
         (params: RowHeightParams): number => (params.node.rowPinned ? PINNED_ROW_HEIGHT : DEFAULT_ROW_HEIGHT),
         []
     );
 
-    const rowsToShow = useMemo(() => {
-        return fetched && rowData.length > 0 ? rowData : [];
-    }, [rowData, fetched]);
+    const rowsToShow = useMemo(() => (fetched && rowData.length > 0 ? rowData : []), [rowData, fetched]);
 
     const message = useMemo(() => {
         if (!fetched) {
@@ -124,14 +123,12 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
         return undefined;
     }, [rowData, fetched, intl]);
 
-    const loadingOverlayComponent = (props: { loadingMessage: string }) => {
-        return <>{props.loadingMessage}</>;
-    };
-    const loadingOverlayComponentParams = useMemo(() => {
-        return {
+    const loadingOverlayComponentParams = useMemo(
+        () => ({
             loadingMessage: intl.formatMessage({ id: 'LoadingRemoteData' }),
-        };
-    }, [intl]);
+        }),
+        [intl]
+    );
 
     return (
         <CustomAGGrid

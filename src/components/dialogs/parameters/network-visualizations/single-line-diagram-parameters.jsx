@@ -8,15 +8,15 @@
 import { Grid } from '@mui/material';
 import PropTypes from 'prop-types';
 import { useEffect, useMemo, useState } from 'react';
-import { getAvailableComponentLibraries } from '../../../../services/study/index.js';
+import { getAvailableComponentLibraries } from '../../../../services/study/index';
 import {
     PARAM_CENTER_LABEL,
     PARAM_COMPONENT_LIBRARY,
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
-} from '../../../../utils/config-params.js';
-import { LineSeparator } from '../../dialogUtils.jsx';
-import { styles } from '../parameters.jsx';
+} from '../../../../utils/config-params';
+import { LineSeparator } from '../../dialogUtils';
+import { styles } from '../parameters';
 import { SubstationLayout } from '../../../diagrams/diagram-common';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';
 import ParameterLineSwitch from '../widget/parameter-line-switch';

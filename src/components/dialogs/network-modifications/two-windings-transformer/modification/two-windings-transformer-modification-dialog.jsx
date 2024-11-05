@@ -118,7 +118,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
+import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,

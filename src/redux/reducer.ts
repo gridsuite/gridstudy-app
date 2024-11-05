@@ -200,6 +200,8 @@ import {
     AddFilterForNewSpreadsheetAction,
     ADD_SORT_FOR_NEW_SPREADSHEET,
     AddSortForNewSpreadsheetAction,
+    RESET_LOGS_FILTER,
+    ResetLogsFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -292,7 +294,7 @@ import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import { SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
@@ -535,7 +537,7 @@ export interface AppState extends CommonStoreState {
     [LOGS_STORE_FIELD]: LogsFilterState;
 }
 
-export type LogsFilterState = Record<string, UnknownArray>;
+export type LogsFilterState = Record<string, unknown[]>;
 const initialLogsFilterState: LogsFilterState = {
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
     [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
@@ -1686,6 +1688,12 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
         state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
+    });
+
+    builder.addCase(RESET_LOGS_FILTER, (state, action: ResetLogsFilterAction) => {
+        state[LOGS_STORE_FIELD] = {
+            ...initialLogsFilterState,
+        };
     });
 
     builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
