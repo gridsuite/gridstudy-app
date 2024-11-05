@@ -146,26 +146,19 @@ const ItemViewInForm = ({
 };
 
 // Temporary type definition for VoltageLevel Equipment, pending a more comprehensive Equipment typing in diagramViewer
-type VoltageLevelEquipment = Equipment & {
+export type MapEquipment = Equipment & {
     substationId: string;
     substationName: string;
 };
 
-export type BaseEquipmentMenuProps =
-    | {
-          equipment: Equipment;
-          equipmentType: Exclude<EquipmentType, EquipmentType.VOLTAGE_LEVEL> | null;
-          handleViewInSpreadsheet: HandleViewInSpreadsheet;
-          handleDeleteEquipment: HandleDeleteEquipment;
-          handleOpenModificationDialog: HandleOpenModificationDialog;
-      }
-    | {
-          equipment: VoltageLevelEquipment;
-          equipmentType: EquipmentType.VOLTAGE_LEVEL;
-          handleViewInSpreadsheet: HandleViewInSpreadsheet;
-          handleDeleteEquipment: HandleDeleteEquipment;
-          handleOpenModificationDialog: HandleOpenModificationDialog;
-      };
+export type BaseEquipmentMenuProps = {
+    equipment: MapEquipment;
+    equipmentType: EquipmentType;
+    handleViewInSpreadsheet: HandleViewInSpreadsheet;
+    handleDeleteEquipment: HandleDeleteEquipment;
+    handleOpenModificationDialog: HandleOpenModificationDialog;
+};
+
 const BaseEquipmentMenu = ({
     equipment,
     equipmentType,

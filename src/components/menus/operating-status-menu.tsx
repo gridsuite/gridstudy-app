@@ -21,7 +21,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
 import { useNameOrId } from '../utils/equipmentInfosHandler';
 import PropTypes from 'prop-types';
-import { Equipment, EquipmentInfos, EquipmentType, OperatingStatus, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentInfos, EquipmentType, OperatingStatus, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
@@ -39,7 +39,7 @@ import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.mod
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../graph/util/model-constants';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
-import { BaseEquipmentMenuProps } from './base-equipment-menu';
+import { BaseEquipmentMenuProps, MapEquipment } from './base-equipment-menu';
 import { CurrentTreeNode } from 'redux/reducer';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { UUID } from 'crypto';
@@ -53,7 +53,7 @@ const styles = {
     },
 };
 export type MenuBranchProps = {
-    equipment: Equipment;
+    equipment: MapEquipment;
     equipmentType: EquipmentType;
     position: [number, number] | null;
     handleClose: () => void;

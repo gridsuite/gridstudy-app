@@ -21,14 +21,14 @@ import {
     useDiagram,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
-import BaseEquipmentMenu from '../../menus/base-equipment-menu';
+import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu';
 import withOperatingStatusMenu from '../../menus/operating-status-menu';
 import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -383,7 +383,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 EQUIPMENT_TYPES.HVDC_LINE,
             ].includes(equipmentMenu.equipmentType) && (
                 <MenuBranch
-                    equipment={{ id: equipmentMenu.equipmentId } as Equipment}
+                    equipment={{ id: equipmentMenu.equipmentId } as MapEquipment}
                     equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
@@ -414,7 +414,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     equipment={
                         {
                             id: equipmentMenu.equipmentId,
-                        } as Equipment
+                        } as MapEquipment
                     }
                     equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}

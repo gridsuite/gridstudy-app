@@ -15,7 +15,7 @@ import {
 } from '@powsybl/diagram-viewer';
 import { useCallback, useEffect, useState, useRef, useMemo, RefObject } from 'react';
 import withOperatingStatusMenu, { MenuBranchProps } from '../menus/operating-status-menu';
-import BaseEquipmentMenu from '../menus/base-equipment-menu';
+import BaseEquipmentMenu, { MapEquipment } from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter from './nominal-voltage-filter';
@@ -180,7 +180,7 @@ export const NetworkMapTab = ({
 
     type EquipmentMenuProps = {
         position?: [number, number] | null;
-        equipment?: Equipment;
+        equipment?: MapEquipment;
         equipmentType?: EquipmentType;
         display: boolean;
     };
@@ -314,7 +314,7 @@ export const NetworkMapTab = ({
 
     const MenuVoltageLevel = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus');
 
-    function showEquipmentMenu(equipment: Equipment, x: number, y: number, type: EquipmentType) {
+    function showEquipmentMenu(equipment: MapEquipment, x: number, y: number, type: EquipmentType) {
         setEquipmentMenu({
             position: [x, y],
             equipment: equipment,
@@ -373,7 +373,7 @@ export const NetworkMapTab = ({
     const voltageLevelMenuClick = (equipment: VoltageLevelMap, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
-            showEquipmentMenu(equipment as Equipment, x, y, EquipmentType.VOLTAGE_LEVEL);
+            showEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
         }
     };
 
@@ -649,8 +649,10 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
-        dispatch(resetMapReloaded());
+        const gSMapEquipments = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
+        if (gSMapEquipments) {
+            dispatch(resetMapReloaded());
+        }
     }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
 
     const reloadMapEquipments = useCallback(
@@ -659,8 +661,14 @@ export const NetworkMapTab = ({
                 return Promise.reject();
             }
 
-            const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } =
-                mapEquipments?.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds ?? null);
+            const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = mapEquipments
+                ? mapEquipments.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds ?? null)
+                : {
+                      updatedSubstations: Promise.resolve([]),
+                      updatedLines: Promise.resolve([]),
+                      updatedTieLines: Promise.resolve([]),
+                      updatedHvdcLines: Promise.resolve([]),
+                  };
 
             const isFullReload = !substationsIds;
 
@@ -857,7 +865,7 @@ export const NetworkMapTab = ({
     }
 
     const displayEquipmentMenu = (
-        equipment: Equipment,
+        equipment: MapEquipment,
         x: number,
         y: number,
         equipmentType: EquipmentType,
@@ -931,13 +939,13 @@ export const NetworkMapTab = ({
             onSubstationClick={openVoltageLevel}
             onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
             onSubstationMenuClick={(equipment: SubstationMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as Equipment, x, y, EquipmentType.SUBSTATION, isInDrawingMode)
+                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.SUBSTATION, isInDrawingMode)
             }
             onLineMenuClick={(equipment: LineMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as Equipment, x, y, EquipmentType.LINE, isInDrawingMode)
+                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
             }
             onHvdcLineMenuClick={(equipment: EquipmentMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as Equipment, x, y, EquipmentType.HVDC_LINE, isInDrawingMode)
+                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.HVDC_LINE, isInDrawingMode)
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
