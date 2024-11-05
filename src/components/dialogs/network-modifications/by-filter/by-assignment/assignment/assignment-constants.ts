@@ -7,8 +7,8 @@
 
 import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType, microUnitToUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
-import { MICRO_SIEMENS } from '../../../../../utils/field-constants';
+import { EquipmentType, kiloUnitToUnit, microUnitToUnit, unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
+import { KILO_AMPERE, MICRO_SIEMENS } from '../../../../../utils/field-constants';
 
 export const FIELD_OPTIONS: {
     [key: string]: FieldOptionType;
@@ -137,12 +137,18 @@ export const FIELD_OPTIONS: {
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
+        unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => unitToKiloUnit(value),
+        inputConverter: (value) => kiloUnitToUnit(value),
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
+        unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => unitToKiloUnit(value),
+        inputConverter: (value) => kiloUnitToUnit(value),
     },
     ACTIVE_POWER: {
         id: FieldType.ACTIVE_POWER,
@@ -157,15 +163,32 @@ export const FIELD_OPTIONS: {
     R: {
         id: FieldType.R,
         label: 'SeriesResistanceText',
+        unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
     },
     X: {
         id: FieldType.X,
         label: 'SeriesReactanceText',
         dataType: DataType.DOUBLE,
     },
-    G: { id: FieldType.G, label: 'G', dataType: DataType.DOUBLE },
-    B: { id: FieldType.B, label: 'B', dataType: DataType.DOUBLE },
+    G: {
+        id: FieldType.G,
+        label: 'G',
+        unit: MICRO_SIEMENS,
+        dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
+    },
+    B: {
+        id: FieldType.B,
+        label: 'B',
+        unit: MICRO_SIEMENS,
+        dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
+    },
     RATED_U1: {
         id: FieldType.RATED_U1,
         label: 'RatedU1',

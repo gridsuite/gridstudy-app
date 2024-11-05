@@ -381,3 +381,4 @@ export const MIN_S_AUTOMATON = 'minSAutomaton';
 export const MAX_S_AUTOMATON = 'maxSAutomaton';
 export const STAND_BY_AUTOMATON = 'StandbyAutomaton';
 export const MICRO_SIEMENS = '(µS)';
+export const KILO_AMPERE = '(kA)';
