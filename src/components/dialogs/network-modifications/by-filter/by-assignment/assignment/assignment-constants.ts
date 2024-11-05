@@ -163,10 +163,7 @@ export const FIELD_OPTIONS: {
     R: {
         id: FieldType.R,
         label: 'SeriesResistanceText',
-        unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     X: {
         id: FieldType.X,
