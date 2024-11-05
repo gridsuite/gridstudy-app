@@ -16,10 +16,10 @@ import {
     useState,
 } from 'react';
 import { Box, Grid } from '@mui/material';
-import { DropDown, LabelledButton, styles } from '../parameters.jsx';
-import { LineSeparator } from '../../dialogUtils.jsx';
+import { DropDown, LabelledButton, styles } from '../parameters';
+import { LineSeparator } from '../../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { mergeSx } from '../../../utils/functions.js';
+import { mergeSx } from '../../../utils/functions';
 import {
     CustomFormProvider,
     DirectoryItemSelector,
@@ -38,14 +38,14 @@ import {
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
-} from '../common/limitreductions/columns-definitions.js';
+} from '../common/limitreductions/columns-definitions';
 import {
     PARAM_SA_LOW_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
     PARAM_SA_FLOW_PROPORTIONAL_THRESHOLD,
     PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD,
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
-} from 'utils/config-params.js';
+} from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
