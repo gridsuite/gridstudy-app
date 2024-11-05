@@ -19,11 +19,11 @@ import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter } from '../../utils/report/report-severity';
 import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
-import { Box } from '@mui/material';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
-import { ReportLog, ReportType } from 'types/report.type';
-import { CellClickedEvent, GridApi, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
+import { Box, Theme } from '@mui/material';
+import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
+import { ReportLog, ReportType } from 'utils/report/report.type';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
@@ -38,7 +38,7 @@ type LogTableProps = {
 const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
-    const theme = useTheme();
+    const theme = useTheme<Theme>();
 
     const dispatch = useDispatch();
 
@@ -160,7 +160,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
                 flex: 1,
-                cellRenderer: (param) =>
+                cellRenderer: (param: ICellRendererParams) =>
                     EllipsisCellRenderer({
                         param: param,
                         indexTextToHighlight: searchResults[currentResultIndex],
