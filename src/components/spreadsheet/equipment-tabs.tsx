@@ -12,7 +12,6 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { TABLES_DEFINITIONS } from './utils/config-tables';
 
 interface EquipmentTabsProps {
     tabIndex: number;
@@ -42,12 +41,6 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                 >
                     {tablesNames.map((table) => (
                         <Tab
-                            sx={{
-                                // by default, hide the busbar sections table
-                                visibility: table === TABLES_DEFINITIONS.BUSBAR_SECTION.name ? 'hidden' : 'visible',
-                                minWidth: table === TABLES_DEFINITIONS.BUSBAR_SECTION.name ? '0px' : 'auto',
-                                maxWidth: table === TABLES_DEFINITIONS.BUSBAR_SECTION.name ? '0px' : 'auto',
-                            }}
                             key={table}
                             label={intl.formatMessage({
                                 id: table,
