@@ -36,7 +36,7 @@ import { UUID } from 'crypto';
 import { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
 import {
     AppState,
     CurrentTreeNode,
@@ -69,6 +69,7 @@ import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import GSMapEquipments from 'components/network/gs-map-equipments';
 
 type MutableUnknownArray = unknown[];
 
@@ -187,7 +188,7 @@ export function updateEquipments(equipments: Record<EquipmentUpdateType, Identif
     };
 }
 
-type EquipmentToDelete = {
+export type EquipmentToDelete = {
     equipmentType: SpreadsheetEquipmentType;
     equipmentId: string;
 };
@@ -231,14 +232,14 @@ export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export type MapEquipmentsCreatedAction = Readonly<Action<typeof MAP_EQUIPMENTS_CREATED>> & {
-    mapEquipments: MapEquipments;
+    mapEquipments: GSMapEquipments;
     newLines?: MutableUnknownArray;
     newTieLines?: MutableUnknownArray;
     newSubstations?: MutableUnknownArray;
     newHvdcLines?: MutableUnknownArray;
 };
 export function mapEquipmentsCreated(
-    mapEquipments: MapEquipments,
+    mapEquipments: GSMapEquipments,
     newLines?: MutableUnknownArray,
     newTieLines?: MutableUnknownArray,
     newSubstations?: MutableUnknownArray,

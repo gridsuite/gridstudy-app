@@ -15,7 +15,7 @@ interface QuickSearchProps {
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
-    setSearchResults: (results: string[]) => void;
+    setSearchResults: (results: number[]) => void;
 }
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
