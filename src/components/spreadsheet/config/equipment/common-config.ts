@@ -13,7 +13,6 @@ import {
 } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
 import { CellClassParams, EditableCallbackParams, ValueGetterParams } from 'ag-grid-community';
-import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-header-utils';
 import EnumCellRenderer from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
@@ -35,6 +34,7 @@ import {
     fetchVscConverterStations,
 } from '../../../../services/study/network';
 import { EquipmentFetcher } from '../spreadsheet.type';
+import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 
 type TapPositionsType = {
     lowTapPosition: number;

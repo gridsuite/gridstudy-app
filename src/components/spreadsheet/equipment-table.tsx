@@ -15,7 +15,6 @@ import {
     ColDef,
     ColumnMovedEvent,
     GetRowIdParams,
-    KeyCode,
     RowClassParams,
     RowHeightParams,
     RowStyle,
@@ -28,8 +27,6 @@ const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
 
 const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
-
-const ALLOWED_KEYS: KeyCode[] = [KeyCode.ESCAPE, KeyCode.DOWN, KeyCode.UP, KeyCode.LEFT, KeyCode.RIGHT];
 
 //we filter enter key event to prevent closing or opening edit mode
 const suppressKeyEvent = (params: SuppressKeyboardEventParams) => !ALLOWED_KEYS.includes(params.event.key);
