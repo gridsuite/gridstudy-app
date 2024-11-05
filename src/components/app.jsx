@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
     getOptionalServiceByServerName,
@@ -14,9 +13,7 @@ import {
     OptionalServicesStatus,
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-
 import { StudyView } from './study-pane';
-
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -24,10 +21,8 @@ import {
     initializeAuthenticationProd,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -55,9 +50,7 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_DEFINITION_INDEXES,
-    TABLES_NAMES_INDEXES,
-} from './spreadsheet/utils/config-tables';
+} from './spreadsheet/utils/constants';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
@@ -103,6 +96,8 @@ const App = () => {
     const { snackError } = useSnackMessage();
 
     const user = useSelector((state) => state.user);
+    const tablesNamesIndexes = useSelector((state) => state.tables.namesIndexes);
+    const tablesDefinitionIndexes = useSelector((state) => state.tables.definitionIndexes);
 
     const signInCallbackError = useSelector((state) => state.signInCallbackError);
     const authenticationRouterError = useSelector((state) => state.authenticationRouterError);
@@ -121,11 +116,11 @@ const App = () => {
     const updateParams = useCallback(
         (params) => {
             console.debug('received UI parameters : ', params);
-            let displayedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let displayedColumnsParams = new Array(tablesNamesIndexes.size);
             let dispatchDisplayedColumns = false;
-            let lockedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let lockedColumnsParams = new Array(tablesNamesIndexes.size);
             let dispatchLockedColumns = false;
-            let reorderedColumnsParams = new Array(TABLES_NAMES_INDEXES.size);
+            let reorderedColumnsParams = new Array(tablesNamesIndexes.size);
             let dispatchReorderedColumns = false;
 
             params.forEach((param) => {
@@ -190,7 +185,7 @@ const App = () => {
                         break;
                     default:
                         if (param.name.startsWith(DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
-                            let index = TABLES_NAMES_INDEXES.get(
+                            let index = tablesNamesIndexes.get(
                                 param.name.slice(DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
                             );
                             displayedColumnsParams[index] = {
@@ -200,7 +195,7 @@ const App = () => {
                             dispatchDisplayedColumns = true;
                         }
                         if (param.name.startsWith(LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
-                            let index = TABLES_NAMES_INDEXES.get(
+                            let index = tablesNamesIndexes.get(
                                 param.name.slice(LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
                             );
                             lockedColumnsParams[index] = {
@@ -210,7 +205,7 @@ const App = () => {
                             dispatchLockedColumns = true;
                         }
                         if (param.name.startsWith(REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE)) {
-                            let index = TABLES_NAMES_INDEXES.get(
+                            let index = tablesNamesIndexes.get(
                                 param.name.slice(REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE.length)
                             );
                             reorderedColumnsParams[index] = {
@@ -237,44 +232,43 @@ const App = () => {
                 cleanEquipmentsColumnsParamsWithNewAndDeleted(reorderedColumnsParams, reorderedColumnsParams);
                 dispatch(changeReorderedColumns(reorderedColumnsParams));
             }
+            function cleanEquipmentsColumnsParamsWithNewAndDeleted(
+                equipmentsColumnsParams,
+                reorderedColumnsParams,
+                deletedOnly = false
+            ) {
+                for (const param of equipmentsColumnsParams) {
+                    if (!param) {
+                        continue;
+                    }
+
+                    const index = param.index;
+
+                    const equipmentAllColumnsIds = tablesDefinitionIndexes.get(index).columns.map((item) => item.id);
+
+                    const equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
+                    const equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
+                        (item) => !equipmentReorderedColumnsIds.includes(item)
+                    );
+
+                    const equipmentsParamColumnIds = JSON.parse(equipmentsColumnsParams[index].value);
+
+                    // Remove deleted ids
+                    const equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter((item) =>
+                        equipmentAllColumnsIds.includes(item)
+                    );
+
+                    // Update columns
+                    if (deletedOnly) {
+                        param.value = JSON.stringify([...equipmentsNewParamColumnIds]);
+                    } else {
+                        param.value = JSON.stringify([...equipmentsNewParamColumnIds, ...equipmentNewColumnsIds]);
+                    }
+                }
+            }
         },
-        [dispatch]
+        [dispatch, tablesNamesIndexes, tablesDefinitionIndexes]
     );
-
-    function cleanEquipmentsColumnsParamsWithNewAndDeleted(
-        equipmentsColumnsParams,
-        reorderedColumnsParams,
-        deletedOnly = false
-    ) {
-        for (let param of equipmentsColumnsParams) {
-            if (!param) {
-                continue;
-            }
-
-            let index = param.index;
-
-            const equipmentAllColumnsIds = TABLES_DEFINITION_INDEXES.get(index).columns.map((item) => item.id);
-
-            let equipmentReorderedColumnsIds = JSON.parse(reorderedColumnsParams[index].value);
-            let equipmentNewColumnsIds = equipmentAllColumnsIds.filter(
-                (item) => !equipmentReorderedColumnsIds.includes(item)
-            );
-
-            let equipmentsParamColumnIds = JSON.parse(equipmentsColumnsParams[index].value);
-
-            // Remove deleted ids
-            let equipmentsNewParamColumnIds = equipmentsParamColumnIds.filter((item) =>
-                equipmentAllColumnsIds.includes(item)
-            );
-
-            // Update columns
-            if (deletedOnly) {
-                param.value = JSON.stringify([...equipmentsNewParamColumnIds]);
-            } else {
-                param.value = JSON.stringify([...equipmentsNewParamColumnIds, ...equipmentNewColumnsIds]);
-            }
-        }
-    }
 
     const connectNotificationsUpdateConfig = useCallback(() => {
         const ws = connectNotificationsWsUpdateConfig();
