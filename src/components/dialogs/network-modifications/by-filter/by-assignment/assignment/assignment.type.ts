@@ -95,3 +95,5 @@ export type ModificationByAssignment = {
     [EQUIPMENT_TYPE_FIELD]: string;
     [ASSIGNMENTS]: Assignment[];
 };
+
+export type FieldValue = string | number | boolean;

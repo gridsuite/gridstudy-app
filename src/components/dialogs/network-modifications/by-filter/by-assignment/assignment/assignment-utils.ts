@@ -15,26 +15,24 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { Assignment, DataType } from './assignment.type';
+import { Assignment, DataType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
-    return getFieldOptionType(fieldName)?.dataType;
+    return getFieldOption(fieldName)?.dataType;
 };
 
-export const getFieldOptionType = (fieldName?: string | null) => {
+export const getFieldOption = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
-type FieldValue = string | number | boolean;
-
 export const convertOutputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
-    const fieldOption = getFieldOptionType(fieldName);
+    const fieldOption = getFieldOption(fieldName);
     return fieldOption?.outputConverter ? fieldOption.outputConverter(Number(fieldValue)) : fieldValue;
 };
 
 export const convertInputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
-    const fieldOption = getFieldOptionType(fieldName);
+    const fieldOption = getFieldOption(fieldName);
     return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
 };
 
