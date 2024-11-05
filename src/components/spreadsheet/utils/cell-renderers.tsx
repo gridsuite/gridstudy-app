@@ -20,6 +20,7 @@ import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { AppState } from '../../../redux/reducer';
 import { IntlShape } from 'react-intl';
+import { ICellRendererParams } from 'ag-grid-community';
 
 const styles = {
     editCell: {
@@ -160,21 +161,49 @@ export const DefaultCellRenderer = (props: any) => {
     );
 };
 
-export const EllipsisCellRenderer = ({ value }: { value: any }) => {
+export const EllipsisCellRenderer = ({
+    param,
+    indexTextToHighlight,
+    highlightColor,
+}: {
+    param: ICellRendererParams;
+    indexTextToHighlight?: number;
+    highlightColor?: string;
+}) => {
     const textRef = useRef<any>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+    const checkEllipsis = () => {
+        if (textRef.current) {
+            const zoomLevel = window.devicePixelRatio;
+            const adjustedScrollWidth = textRef.current.scrollWidth / zoomLevel;
+            const adjustedClientWidth = textRef.current.clientWidth / zoomLevel;
+            setIsEllipsisActive(adjustedScrollWidth > adjustedClientWidth);
+        }
+    };
 
     useEffect(() => {
+        checkEllipsis();
+        const resizeObserver = new ResizeObserver(() => checkEllipsis());
         if (textRef.current) {
-            setIsEllipsisActive(textRef.current.scrollWidth > textRef.current.clientWidth);
+            resizeObserver.observe(textRef.current);
         }
-    }, [value]);
+
+        return () => {
+            resizeObserver.disconnect();
+        };
+    }, [param.value]);
 
     return (
         <Box sx={mergeSx(styles.tableCell)}>
-            <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? value : ''}>
-                <Box ref={textRef} sx={styles.overflow}>
-                    {value}
+            <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? param.value : ''}>
+                <Box
+                    ref={textRef}
+                    sx={{
+                        ...styles.overflow,
+                        ...(indexTextToHighlight === param.node.rowIndex ? { backgroundColor: highlightColor } : {}),
+                    }}
+                >
+                    {param.value}
                 </Box>
             </Tooltip>
         </Box>

@@ -80,7 +80,7 @@ import {
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 export const LineModificationDialogTab = {
     CONNECTIVITY_TAB: 0,

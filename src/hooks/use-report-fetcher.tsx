@@ -10,15 +10,11 @@ import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Log, Report, ReportLog, ReportType } from '../types/report.type';
-import { getContainerDefaultSeverityList } from '../utils/report-severity.utils';
-import {
-    COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
-    GLOBAL_REPORT_NODE_LABEL,
-    REPORT_TYPE,
-} from '../constants/report.constant';
+import { Log, Report, ReportLog, ReportType } from '../utils/report/report.type';
+import { getContainerDefaultSeverityList } from '../utils/report/report-severity';
+import { mapReportLogs } from '../utils/report/report-log.mapper';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE, GLOBAL_REPORT_NODE_LABEL } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
-import { mapReportLogs } from '../utils/report-log.mapper';
 
 function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
     if (!Array.isArray(report)) {
@@ -118,7 +114,7 @@ export const useReportFetcher = (
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
-            if (reportType === REPORT_TYPE.GLOBAL) {
+            if (reportType === ReportType.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
                     fetchNodeReportLogs(studyUuid, currentNode!.id, null, severityList, messageFilter, true);
             } else {

@@ -6,7 +6,6 @@
  */
 
 import React, { useCallback, useEffect, useState } from 'react';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
     getOptionalServiceByServerName,
@@ -14,9 +13,7 @@ import {
     OptionalServicesStatus,
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-
 import { StudyView } from './study-pane';
-
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -24,10 +21,8 @@ import {
     initializeAuthenticationProd,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
-
 import {
     APP_NAME,
     COMMON_APP_NAME,
@@ -55,7 +50,7 @@ import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './spreadsheet/utils/config-tables';
+} from './spreadsheet/utils/constants';
 import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
