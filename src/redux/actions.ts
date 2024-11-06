@@ -33,7 +33,7 @@ import {
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { UnknownArray } from 'type-fest';
+import type { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
