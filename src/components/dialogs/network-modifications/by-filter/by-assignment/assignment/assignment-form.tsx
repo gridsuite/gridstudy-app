@@ -19,7 +19,7 @@ import {
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
+import { getIdOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
