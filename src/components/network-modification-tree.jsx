@@ -19,7 +19,10 @@ import {
     BackgroundVariant,
 } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
-import Grid4x4Icon from '@mui/icons-material/Grid4x4';
+import GridOnIcon from '@mui/icons-material/GridOn';
+import GridOffIcon from '@mui/icons-material/GridOff';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import MobiledataOffIcon from '@mui/icons-material/MobiledataOff';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
@@ -59,6 +62,7 @@ const NetworkModificationTree = ({
     const [nodePlacements, setNodePlacements] = useState([]);
     const { setViewport, fitView } = useReactFlow();
     const [isDragging, setIsDragging] = useState(false);
+    const [enableFreeVerticalMovement, setEnableFreeVerticalMovement] = useState(false);
 
     const nodeColor = useCallback(
         (node) => {
@@ -121,6 +125,9 @@ const NetworkModificationTree = ({
     }, []);
     const toggleShowGrid = useCallback(() => {
         setIsGridVisible((isGridVisible) => !isGridVisible);
+    }, []);
+    const toggleEnableFreeVerticalMovement = useCallback(() => {
+        setEnableFreeVerticalMovement((enableFreeVerticalMovement) => !enableFreeVerticalMovement);
     }, []);
 
     const [x, y, zoom] = useStore((state) => state.transform);
@@ -191,19 +198,21 @@ const NetworkModificationTree = ({
     };
 
     const handleNodesChange = (changes) => {
-        // Restrict the node movement (with drag) to only the X axis.
-        // We force the Y position to stay the same while moving the node.
-        changes
-            .filter((change) => change.type === 'position')
-            .map((change) => {
-                const initialYPosition = nodes.find((node) => node.id === change.id)?.position?.y || 0;
-                const newPosition = {
-                    ...change.position,
-                    y: initialYPosition,
-                };
-                change.position = newPosition;
-                return change;
-            });
+        if (!enableFreeVerticalMovement) {
+            // Restrict the node movement (with drag) to only the X axis.
+            // We force the Y position to stay the same while moving the node.
+            changes
+                .filter((change) => change.type === 'position')
+                .map((change) => {
+                    const initialYPosition = nodes.find((node) => node.id === change.id)?.position?.y || 0;
+                    const newPosition = {
+                        ...change.position,
+                        y: initialYPosition,
+                    };
+                    change.position = newPosition;
+                    return change;
+                });
+        }
         return onNodesChange(changes);
     };
 
@@ -238,25 +247,11 @@ const NetworkModificationTree = ({
             </Box>
         );
     };
-    const debug = true; // TODO remove this before merge
+    const debug = false; // TODO remove this before merge
     return (
         <Box flexGrow={1}>
             {debug && ( // TODO Remove this before merge
                 <NodePlacementsDisplay nodePlacements={nodePlacements} />
-            )}
-            {debug && isDragging && ( // TODO Remove this before merge
-                <Box
-                    sx={{
-                        display: 'block',
-                        position: 'absolute',
-                        bottom: 0,
-                        left: 0,
-                        backgroundColor: 'red',
-                        color: 'white',
-                    }}
-                >
-                    DRAGGING
-                </Box>
             )}
             <ReactFlow
                 nodes={nodes}
@@ -276,21 +271,24 @@ const NetworkModificationTree = ({
                 nodesDraggable={true}
                 onNodeDrag={handleNodeDrag}
                 onNodeDragStop={handleNodeDragStop}
+                defaultEdgeOptions={{
+                    type: 'smoothstep',
+                    pathOptions: {
+                        // TODO This negative offset and borderRadius values are needed to have round corners on the edge,
+                        // but because the nodes are not totally opaque, we can see the edges behind the nodes.
+                        // When the nodes are redesigned and hopefully the colors are set without transparency, we can use
+                        // the round edges by un-commenting the two lines below.
+                        //offset: -24,
+                        //borderRadius: 48,
+                    },
+                }}
+
             >
                 {isGridVisible && (
                     <Background
                         id="gridBackground"
                         color={'#0ca78933'}
-                        gap={nodeGrid}
-                        variant={BackgroundVariant.Lines}
-                        offset={[140, 80]}
-                    />
-                )}
-                {isDragging && (
-                    <Background
-                        id="gridDragBackground"
-                        color={'#8ec7f633'}
-                        gap={[nodeWidth, 10000000]} // Only display the vertical grid lines
+                        gap={isDragging && !enableFreeVerticalMovement ? [nodeWidth, 10000000] : nodeGrid}
                         variant={BackgroundVariant.Lines}
                         offset={[140, 80]}
                     />
@@ -339,7 +337,12 @@ const NetworkModificationTree = ({
                     </Tooltip>
                     <span>
                         <ControlButton onClick={() => toggleShowGrid()}>
-                            <Grid4x4Icon />
+                            {isGridVisible ? (<GridOnIcon />) : (<GridOffIcon />)}
+                        </ControlButton>
+                    </span>
+                    <span>
+                        <ControlButton onClick={() => toggleEnableFreeVerticalMovement()}>
+                            {enableFreeVerticalMovement ? (<ImportExportIcon />) : (<MobiledataOffIcon />)}
                         </ControlButton>
                     </span>
                 </Controls>

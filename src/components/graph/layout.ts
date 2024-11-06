@@ -92,6 +92,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[], nodeP
             ...node.data,
             fixedY: ajustedRow * nodeHeight,
         };
+
     });
     return [...newNodes];
 }

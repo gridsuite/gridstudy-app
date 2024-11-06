@@ -89,7 +89,6 @@ export default class NetworkModificationTreeModel {
                 id: 'e' + parentId + '-' + newNode.id,
                 source: parentId,
                 target: newNode.id,
-                type: 'smoothstep',
             });
         }
         if (insertMode === NodeInsertModes.Before || insertMode === NodeInsertModes.After) {
@@ -106,7 +105,6 @@ export default class NetworkModificationTreeModel {
                     id: 'e' + newNode.id + '-' + childId,
                     source: newNode.id,
                     target: childId,
-                    type: 'smoothstep',
                 });
             });
 
@@ -154,7 +152,6 @@ export default class NetworkModificationTreeModel {
                         id: 'e' + edgeOfTarget.source + '-' + edgeOfSource.target,
                         source: edgeOfTarget.source,
                         target: edgeOfSource.target,
-                        type: 'smoothstep',
                     });
                 });
             });
