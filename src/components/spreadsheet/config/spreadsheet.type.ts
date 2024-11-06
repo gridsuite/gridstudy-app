@@ -5,11 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
-
-export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) => Promise<any>;
+import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import type { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import type { EquipmentFetcher } from './equipment/common-config';
 
 export interface SpreadsheetTabDefinition {
     index: number;

@@ -6,6 +6,7 @@
  */
 
 import { getEnumLabelById } from 'components/utils/utils';
+import { type UUID } from 'crypto';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
@@ -33,13 +34,14 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../../services/study/network';
-import { EquipmentFetcher } from '../spreadsheet.type';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 
 type TapPositionsType = {
     lowTapPosition: number;
     highTapPosition: number;
 };
+
+export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) => Promise<any>;
 
 export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] => {
     switch (equipmentType) {
