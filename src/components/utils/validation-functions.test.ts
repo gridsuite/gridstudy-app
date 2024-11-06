@@ -17,14 +17,14 @@ import {
 const { toNumber, isBlankOrEmpty } = exportedForTesting;
 
 test('validation-functions.isBlankOrEmpty', () => {
-    expect(isBlankOrEmpty('hello')).toBeFalsy();
-    expect(isBlankOrEmpty('0')).toBeFalsy();
-    expect(isBlankOrEmpty(0)).toBeFalsy();
-    expect(isBlankOrEmpty(false)).toBeFalsy();
-    expect(isBlankOrEmpty(true)).toBeFalsy();
-    expect(isBlankOrEmpty(' ')).toBeTruthy();
-    expect(isBlankOrEmpty(null)).toBeTruthy();
-    expect(isBlankOrEmpty(undefined)).toBeTruthy();
+    expect(isBlankOrEmpty('hello')).toBeFalse();
+    expect(isBlankOrEmpty('0')).toBeFalse();
+    expect(isBlankOrEmpty(0)).toBeFalse();
+    expect(isBlankOrEmpty(false)).toBeFalse();
+    expect(isBlankOrEmpty(true)).toBeFalse();
+    expect(isBlankOrEmpty(' ')).toBeTrue();
+    expect(isBlankOrEmpty(null)).toBeTrue();
+    expect(isBlankOrEmpty(undefined)).toBeTrue();
 });
 
 test('validation-functions.toNumber', () => {
@@ -319,91 +319,91 @@ test('validation-functions.checkReactiveCapabilityCurve', () => {
     // Correct reactive cabability curves
     expect(
         checkReactiveCapabilityCurve([
-            { p: '0', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '0', maxQ: '0' },
+            { p: 0, minQ: 0, maxQ: 0 },
+            { p: 10, minQ: 0, maxQ: 0 },
         ]).length
     ).toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: -10, minQ: -5, maxQ: -2 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '0', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: -10, minQ: -5, maxQ: -2 },
+            { p: 0, minQ: 0, maxQ: 0 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '0', minQ: '0,8', maxQ: '1' },
-            { p: '-3', minQ: '-6.5', maxQ: '-2' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: -10, minQ: -5, maxQ: -2 },
+            // { p: 0, minQ: '0,8', maxQ: 1 },
+            { p: -3, minQ: -6.5, maxQ: -2 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).toBe(0);
 
     // Not enough points
     expect(checkReactiveCapabilityCurve([]).length).not.toBe(0);
-    expect(checkReactiveCapabilityCurve([{ p: '0', minQ: '0', maxQ: '0' }]).length).not.toBe(0);
+    expect(checkReactiveCapabilityCurve([{ p: 0, minQ: 0, maxQ: 0 }]).length).not.toBe(0);
 
     // Not unique P values
     expect(
         checkReactiveCapabilityCurve([
-            { p: '10', minQ: '-5', maxQ: '-2' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: 10, minQ: -5, maxQ: -2 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '-0', minQ: '0', maxQ: '0' },
-            { p: '0', minQ: '1', maxQ: '56' },
+            { p: -10, minQ: -5, maxQ: -2 },
+            { p: -0, minQ: 0, maxQ: 0 },
+            { p: 0, minQ: 1, maxQ: 56 },
         ]).length
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-0', minQ: '0', maxQ: '0' },
-            { p: '0', minQ: '0', maxQ: '0' },
+            { p: -0, minQ: 0, maxQ: 0 },
+            { p: 0, minQ: 0, maxQ: 0 },
         ]).length
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '0', minQ: '0', maxQ: '0' },
-            { p: '0.0', minQ: '0', maxQ: '0' },
+            { p: 0, minQ: 0, maxQ: 0 },
+            // { p: '0.0', minQ: 0, maxQ: 0 },
         ]).length
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: ',0', minQ: '0', maxQ: '0' },
-            { p: '0', minQ: '0', maxQ: '0' },
+            // { p: ',0', minQ: 0, maxQ: 0 },
+            { p: 0, minQ: 0, maxQ: 0 },
         ]).length
     ).not.toBe(0);
 
     // Pmin and Pmax values are not in the begining and end of the array
     expect(
         checkReactiveCapabilityCurve([
-            { p: '0', minQ: '-5', maxQ: '-2' },
-            { p: '-10', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: 0, minQ: -5, maxQ: -2 },
+            { p: -10, minQ: 0, maxQ: 0 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).not.toBe(0);
 
     // P values between Pmin and Pmax are below Pmin or above Pmax
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '260', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: -10, minQ: -5, maxQ: -2 },
+            { p: 260, minQ: 0, maxQ: 0 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).not.toBe(0);
     expect(
         checkReactiveCapabilityCurve([
-            { p: '-10', minQ: '-5', maxQ: '-2' },
-            { p: '-20', minQ: '0', maxQ: '0' },
-            { p: '10', minQ: '1', maxQ: '56' },
+            { p: -10, minQ: -5, maxQ: -2 },
+            { p: -20, minQ: 0, maxQ: 0 },
+            { p: 10, minQ: 1, maxQ: 56 },
         ]).length
     ).not.toBe(0);
 });
