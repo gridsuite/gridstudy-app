@@ -297,7 +297,7 @@ import { NetworkModificationNodeData, NodeType, RootNodeData } from '../componen
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -412,10 +412,6 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<
-    EQUIPMENT_TYPES,
-    'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'
->;
 export type SpreadsheetFilterState = Record<string, UnknownArray>;
 
 export type DiagramState = {
@@ -573,7 +569,6 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
-    [EQUIPMENT_TYPES.DISCONNECTOR]: null,
 };
 
 const tableNames = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);

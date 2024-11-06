@@ -11,10 +11,19 @@ import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
 export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) => Promise<any>;
 
+export type SpreadsheetEquipmentType = Exclude<
+    EQUIPMENT_TYPES,
+    | EQUIPMENT_TYPES.BUSBAR_SECTION
+    | EQUIPMENT_TYPES.HVDC_CONVERTER_STATION
+    | EQUIPMENT_TYPES.SWITCH
+    | EQUIPMENT_TYPES.BREAKER
+    | EQUIPMENT_TYPES.DISCONNECTOR
+>;
+
 export interface SpreadsheetTabDefinition {
     index: number;
     name: string;
-    type: EQUIPMENT_TYPES;
+    type: SpreadsheetEquipmentType;
     fetchers: EquipmentFetcher[];
     columns: CustomColDef[];
     groovyEquipmentGetter?: string;

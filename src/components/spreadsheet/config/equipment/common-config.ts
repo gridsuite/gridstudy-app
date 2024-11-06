@@ -33,7 +33,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../../services/study/network';
-import { EquipmentFetcher } from '../spreadsheet.type';
+import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 
 type TapPositionsType = {
@@ -41,7 +41,7 @@ type TapPositionsType = {
     highTapPosition: number;
 };
 
-export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] => {
+export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
             return [fetchSubstations];
@@ -80,7 +80,7 @@ export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] 
     }
 };
 
-export const typeAndFetchers = (equipmentType: EQUIPMENT_TYPES) => ({
+export const typeAndFetchers = (equipmentType: SpreadsheetEquipmentType) => ({
     type: equipmentType,
     fetchers: getFetchers(equipmentType),
 });
