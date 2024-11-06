@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactElement, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
-import ReportTree from './report-tree';
 import ReportItem from './report-item';
-import { mapReportsTree } from '../../utils/report-tree.mapper';
+import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
-import PropTypes from 'prop-types';
+import ReportTree from './report-tree';
+import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -22,25 +22,27 @@ const styles = {
     },
 };
 
-export default function ReportViewer({ report, reportType }) {
+type ReportViewerProps = { report: Report; reportType: string };
+
+export default function ReportViewer({ report, reportType }: ReportViewerProps) {
     const dispatch = useDispatch();
 
-    const [expandedTreeReports, setExpandedTreeReports] = useState([]);
-    const [highlightedReportId, setHighlightedReportId] = useState();
-    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState(undefined);
+    const [expandedTreeReports, setExpandedTreeReports] = useState<string[]>([]);
+    const [highlightedReportId, setHighlightedReportId] = useState<string>();
+    const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
 
     const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [severities, setSeverities] = useState([]);
-    const [selectedReportType, setSelectedReportType] = useState();
+    const [severities, setSeverities] = useState<string[]>([]);
+    const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
-    const reportTreeData = useRef({});
-    const treeView = useRef(null);
+    const reportTreeData = useRef<Record<string, ReportTreeType>>({});
+    const treeView = useRef<ReactElement>();
 
     /**
      * Build the tree view (left pane) creating all ReportItem from json data
      * @type {Function}
      */
-    const initializeTreeDataAndComponent = useCallback((report) => {
+    const initializeTreeDataAndComponent = useCallback((report: ReportTreeType) => {
         reportTreeData.current[report.id] = report;
         return (
             <ReportItem
@@ -50,7 +52,7 @@ export default function ReportViewer({ report, reportType }) {
                 sx={styles.treeItem}
                 nodeId={report.id}
             >
-                {report.subReports.map((value) => initializeTreeDataAndComponent(value))}
+                {report.subReports.map((value: ReportTreeType) => initializeTreeDataAndComponent(value))}
             </ReportItem>
         );
     }, []);
@@ -64,11 +66,11 @@ export default function ReportViewer({ report, reportType }) {
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
-    const handleReportVerticalPositionFromTop = useCallback((node) => {
+    const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
     }, []);
 
-    const handleSelectNode = (_, reportId) => {
+    const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
         if (selectedReportId !== reportId) {
             setSelectedReportId(reportId);
             setSeverities(reportTreeData.current[reportId].severities);
@@ -79,17 +81,17 @@ export default function ReportViewer({ report, reportType }) {
     // The MUI TreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
     const isHighlighted = useMemo(
         () => ({
-            isHighlighted: (reportId) => highlightedReportId === reportId,
+            isHighlighted: (reportId: string) => highlightedReportId === reportId,
         }),
         [highlightedReportId]
     );
 
-    const onLogRowClick = (data) => {
+    const onLogRowClick = (data: ReportLog) => {
         setExpandedTreeReports((previouslyExpandedTreeReports) => {
             let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
             let parentId = data.parentId;
             while (reportTreeData.current[parentId]?.parentId) {
-                parentId = reportTreeData.current[parentId].parentId;
+                parentId = reportTreeData.current[parentId].parentId as string;
                 treeReportsToExpand.add(parentId);
             }
             return Array.from(treeReportsToExpand);
@@ -129,28 +131,17 @@ export default function ReportViewer({ report, reportType }) {
                     </ReportTree>
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
-                    <LogTable
-                        selectedReportId={selectedReportId}
-                        reportType={reportType}
-                        reportNature={selectedReportType} // GlobalReport or NodeReport
-                        severities={severities}
-                        onRowClick={onLogRowClick}
-                    />
+                    {selectedReportId && selectedReportType && (
+                        <LogTable
+                            selectedReportId={selectedReportId}
+                            reportType={reportType}
+                            reportNature={selectedReportType} // GlobalReport or NodeReport
+                            severities={severities}
+                            onRowClick={onLogRowClick}
+                        />
+                    )}
                 </Grid>
             </Grid>
         )
     );
 }
-
-ReportViewer.propTypes = {
-    report: PropTypes.shape({
-        id: PropTypes.string,
-        message: PropTypes.string,
-        highestSeverity: PropTypes.shape({
-            colorName: PropTypes.string,
-        }),
-        subReports: PropTypes.arrayOf(PropTypes.object),
-        severities: PropTypes.arrayOf(PropTypes.string),
-    }),
-    reportType: PropTypes.string.isRequired,
-};

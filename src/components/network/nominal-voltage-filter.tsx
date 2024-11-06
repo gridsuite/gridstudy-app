@@ -43,15 +43,21 @@ const styles = {
     },
 };
 
-const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChange }) => {
+type NominalVoltageFilterProps = {
+    nominalVoltages: number[];
+    filteredNominalVoltages: number[];
+    onChange: (filteredNominalVoltages: number[]) => void;
+};
+
+const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChange }: NominalVoltageFilterProps) => {
     // Set up filteredNominalVoltages
     useEffect(() => {
         if (nominalVoltages && !filteredNominalVoltages) {
-            onChange(nominalVoltages);
+            onChange(nominalVoltages as number[]);
         }
     }, [nominalVoltages, filteredNominalVoltages, onChange]);
 
-    const handleToggle = (vnoms, isToggle) => () => {
+    const handleToggle = (vnoms: number[], isToggle: boolean) => () => {
         // filter on nominal voltage
         let newFiltered = [...filteredNominalVoltages];
         if (isToggle) {
@@ -69,7 +75,7 @@ const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChan
         onChange(newFiltered);
     };
 
-    if (!nominalVoltages?.length > 0) {
+    if (!(nominalVoltages?.length > 0)) {
         return false;
     }
     return (

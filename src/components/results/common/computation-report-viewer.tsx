@@ -12,7 +12,7 @@ import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
-import { Report } from '../../../types/report.type';
+import { Report } from '../../../utils/report/report.type';
 import { BUILD_STATUS } from 'components/network/constants';
 
 interface ComputationReportViewerProps {

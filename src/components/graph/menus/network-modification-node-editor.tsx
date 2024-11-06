@@ -81,6 +81,7 @@ import {
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
+import { useModificationLabelComputer } from '@gridsuite/commons-ui';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
