@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { ChangeEvent, FunctionComponent, useCallback, useEffect } from 'react';
+import { ChangeEvent, FunctionComponent, useCallback, useEffect } from 'react';
 import { ElementType, useDebounce } from '@gridsuite/commons-ui';
 import { elementExists } from 'services/explore';
 import { FormattedMessage } from 'react-intl';

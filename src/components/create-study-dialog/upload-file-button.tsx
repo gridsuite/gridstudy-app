@@ -7,7 +7,7 @@
 
 import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
-import React, { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 
 interface UploadFileButtonProps {

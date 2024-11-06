@@ -15,7 +15,7 @@ import {
     PAGE_OPTIONS,
     SENSITIVITY_AT_NODE,
 } from './sensitivity-analysis-result-utils';
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import CustomTablePagination from '../../utils/custom-table-pagination';

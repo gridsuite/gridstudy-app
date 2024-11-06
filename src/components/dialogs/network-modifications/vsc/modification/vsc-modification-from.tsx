@@ -11,7 +11,7 @@ import {
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
 } from '../../../../utils/field-constants';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { UUID } from 'crypto';

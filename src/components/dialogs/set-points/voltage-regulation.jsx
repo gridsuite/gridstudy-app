@@ -11,8 +11,7 @@ import { Q_PERCENT, VOLTAGE_REGULATION_TYPE, VOLTAGE_SET_POINT } from 'component
 import { useMemo } from 'react';
 import { percentageTextField, VoltageAdornment } from '../dialog-utils';
 import RegulatingTerminalForm from '../regulating-terminal/regulating-terminal-form';
-import { Box } from '@mui/system';
-import { Grid } from '@mui/material';
+import { Grid, Box } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useWatch } from 'react-hook-form';
 import GridItem from '../commons/grid-item';

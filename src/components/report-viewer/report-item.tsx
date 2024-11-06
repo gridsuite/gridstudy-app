@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { styled, Box, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Label from '@mui/icons-material/Label';

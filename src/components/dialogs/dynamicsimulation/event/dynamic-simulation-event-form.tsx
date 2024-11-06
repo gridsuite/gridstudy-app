@@ -7,7 +7,6 @@
 import { Grid, TextField } from '@mui/material';
 import { filledTextField } from '../../dialog-utils';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
-import React from 'react';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';

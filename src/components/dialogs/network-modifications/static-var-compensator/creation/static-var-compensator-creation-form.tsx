@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import { FunctionComponent } from 'react';
 
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { StaticVarCompensatorCreationDialogTab } from './static-var-compensator-creation-dialog-tabs';
 import { StandbyAutomatonForm } from './standby-automaton-form';
 import { SetPointsLimitsForm } from './set-points-limits-form';

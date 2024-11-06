@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { ResizableBox } from 'react-resizable';
 import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
 import { MIN_HEIGHT, MIN_WIDTH, LOADING_HEIGHT, LOADING_WIDTH } from './diagram-common';

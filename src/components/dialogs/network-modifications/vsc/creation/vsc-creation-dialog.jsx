@@ -26,10 +26,9 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import Grid from '@mui/material/Grid';
+import { Box, Grid } from '@mui/material';
 import { filledTextField, sanitizeString } from '../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
-import { Box } from '@mui/system';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';

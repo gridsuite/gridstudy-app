@@ -6,7 +6,7 @@
  */
 
 import InputAdornment from '@mui/material/InputAdornment';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { CircularProgress, InputLabel, TextField, Tooltip, Button, Grid } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';

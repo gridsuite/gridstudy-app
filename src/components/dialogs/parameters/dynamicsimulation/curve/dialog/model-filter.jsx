@@ -7,14 +7,13 @@
 
 import { FormattedMessage, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Box, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
-import { Box } from '@mui/system';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 
 const modelsToVariablesTree = (models) => {

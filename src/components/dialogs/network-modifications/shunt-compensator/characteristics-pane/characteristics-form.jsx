@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
@@ -17,7 +16,7 @@ import {
     SWITCHED_ON_Q_AT_NOMINAL_V,
     SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FloatInput, IntegerInput, RadioInput, SelectInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';

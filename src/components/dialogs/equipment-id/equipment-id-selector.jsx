@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { filledTextField } from '../dialog-utils';
-import { Autocomplete, TextField, Grid, CircularProgress } from '@mui/material';
+import { Autocomplete, TextField, Grid, CircularProgress, Box } from '@mui/material';
 import { FieldLabel } from '@gridsuite/commons-ui';
 import { FormFiller } from '../commons/formFiller';
-import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
 import GridItem from '../commons/grid-item';

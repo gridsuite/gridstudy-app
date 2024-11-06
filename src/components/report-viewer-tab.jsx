@@ -6,7 +6,6 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import Paper from '@mui/material/Paper';
 import ReportViewer from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
@@ -15,10 +14,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Box } from '@mui/system';
+
 import { useReportFetcher } from '../hooks/use-report-fetcher';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
+import { Box, Paper } from '@mui/material';
 
 const styles = {
     div: {

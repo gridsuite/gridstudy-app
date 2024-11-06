@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
@@ -30,7 +30,6 @@ import { emptyLineSegment } from './line-type-segment-dialog';
 import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
-import { Box } from '@mui/system';
 import GridItem from '../commons/grid-item';
 
 const styles = {

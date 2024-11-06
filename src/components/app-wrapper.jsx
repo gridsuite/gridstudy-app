@@ -6,7 +6,6 @@
  */
 
 import App from './app';
-import React from 'react';
 import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import {
     LIGHT_THEME,

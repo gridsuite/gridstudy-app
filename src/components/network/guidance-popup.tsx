@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import CardContent from '@mui/material/CardContent';
 import Card from '@mui/material/Card';
 import { CardActions, CardHeader } from '@mui/material';

@@ -6,8 +6,7 @@
  */
 
 import { ActivePowerAdornment, ReactivePowerAdornment } from '../dialog-utils';
-import Grid from '@mui/material/Grid';
-import { Box } from '@mui/system';
+import { Box, Grid } from '@mui/material';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ACTIVE_POWER_SET_POINT, REACTIVE_POWER_SET_POINT, VOLTAGE_REGULATION } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -26,6 +25,7 @@ import PlayIcon from '@mui/icons-material/PlayArrow';
 import RunningStatus from './running-status';
 import { mergeSx } from './functions';
 import { useSelector } from 'react-redux';
+import { useRef, useState } from 'react';
 
 const styles = {
     expand: (theme) => ({
@@ -140,10 +140,10 @@ const SplitButton = ({
     actionOnRunnable,
     onSelectionChange,
 }) => {
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
     const computationStarting = useSelector((state) => state.computationStarting);
 
-    const anchorRef = React.useRef(null);
+    const anchorRef = useRef(null);
 
     const handleClick = () => {
         if (onClick) {

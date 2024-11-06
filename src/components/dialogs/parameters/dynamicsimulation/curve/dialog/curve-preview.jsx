@@ -7,8 +7,7 @@
 
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Typography } from '@mui/material';
-import { Box } from '@mui/system';
+import { Grid, Box, Typography } from '@mui/material';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 
 const styles = {
