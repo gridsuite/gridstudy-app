@@ -76,6 +76,15 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
+    const formatLabelWithUnit = useMemo(() => {
+        return (value: string | { label: string; unit?: string }) => {
+            if (typeof value === 'string') {
+                return value;
+            }
+            return `${intl.formatMessage({ id: value.label })} ${value.unit ?? ''}`;
+        };
+    }, [intl]);
+
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
@@ -95,7 +104,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
+            getOptionLabel={(option: any) => formatLabelWithUnit(option)}
             isOptionEqualToValue={areIdsEqual}
         />
     );
