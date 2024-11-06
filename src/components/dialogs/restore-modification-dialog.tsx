@@ -130,11 +130,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                     getItemLabel={getLabel}
                     onItemClick={(stashedModification) =>
                         setSelectedItems((oldCheckedElements) =>
-                            toggleElementFromList(
-                                stashedModification,
-                                oldCheckedElements,
-                                (v: NetworkModificationMetadata) => v.uuid
-                            )
+                            toggleElementFromList(stashedModification, oldCheckedElements, (v) => v.uuid)
                         )
                     }
                     addSelectAllCheckbox

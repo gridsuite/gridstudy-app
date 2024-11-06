@@ -93,9 +93,9 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             options={equipmentFields}
             label={'EditedField'}
             size={'small'}
-            inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
-            outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
+            inputTransform={(value) => equipmentFields.find((option) => option?.id === value) || value}
+            outputTransform={(option) => getIdOrValue(option) ?? null}
+            getOptionLabel={(option) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
             isOptionEqualToValue={areIdsEqual}
         />
     );
