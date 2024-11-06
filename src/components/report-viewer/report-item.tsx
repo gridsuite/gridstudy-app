@@ -7,7 +7,6 @@
 
 import React, { useContext } from 'react';
 import { styled, Box, Theme } from '@mui/material';
-import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Label from '@mui/icons-material/Label';
 import ReportTreeViewContext from './report-tree-view-context';
