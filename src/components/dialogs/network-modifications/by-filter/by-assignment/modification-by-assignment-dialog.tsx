@@ -94,10 +94,10 @@ const ModificationByAssignmentDialog: FC<any> = ({
             const assignmentsList = formData[ASSIGNMENTS].map((assignment) => {
                 const dataType = getDataType(assignment[EDITED_FIELD]);
                 const valueConverted = convertOutputValue(assignment[EDITED_FIELD], assignment[VALUE_FIELD]);
-                assignment[VALUE_FIELD] = Number(valueConverted);
                 return {
                     ...assignment,
                     dataType,
+                    [VALUE_FIELD]: valueConverted,
                 };
             });
             modifyByAssignment(
