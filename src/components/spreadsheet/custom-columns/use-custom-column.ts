@@ -22,7 +22,7 @@ export function useCustomColumn(tabIndex: number) {
 
     const { onSortChanged, sortConfig } = useAgGridSort(
         SPREADSHEET_SORT_STORE,
-        tablesDefinitionIndexes.get(tabIndex)!.type as string
+        tablesDefinitionIndexes.get(tabIndex)!.name
     );
 
     const math = useMemo(() => {

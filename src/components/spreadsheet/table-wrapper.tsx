@@ -241,10 +241,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         return equipment ? equipment.columns : [];
     }, [tabIndex, tablesDefinitionIndexes]);
 
-    // used only for filtering and sorting
-    const currentType = useCallback(() => {
+    const currentTabName = useCallback(() => {
         const equipment: any = tablesDefinitionIndexes.get(tabIndex);
-        return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
+        return equipment ? equipment.name : '';
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const currentCleanedType = useCallback(() => {
@@ -265,11 +264,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         );
     }, [disabled, selectedColumnsNames, currentCleanedType, currentColumns]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentType());
+    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
         filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: currentType().toString(),
+        filterTab: currentTabName(),
         filterStoreAction: setSpreadsheetFilter,
     });
 

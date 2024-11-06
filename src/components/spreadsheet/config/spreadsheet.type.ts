@@ -14,7 +14,7 @@ export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substati
 export interface SpreadsheetTabDefinition {
     index: number;
     name: string;
-    type: EQUIPMENT_TYPES | string; // FIXME type issue ex: BATTERY17 on custom col
+    type: EQUIPMENT_TYPES;
     fetchers: EquipmentFetcher[];
     columns: CustomColDef[];
     groovyEquipmentGetter?: string;

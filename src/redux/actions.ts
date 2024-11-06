@@ -1221,16 +1221,16 @@ export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newEquipmentType: string; value: MutableUnknownArray };
+    payload: { newTabName: string; value: MutableUnknownArray };
 };
 
 export const addFilterForNewSpreadsheet = (
-    newEquipmentType: string,
+    newTabName: string,
     value: MutableUnknownArray
 ): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
-        newEquipmentType,
+        newTabName,
         value,
     },
 });
@@ -1239,16 +1239,16 @@ export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
 
 export type AddSortForNewSpreadsheetAction = {
     type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newEquipmentType: string; value: SortConfigType[] };
+    payload: { newTabName: string; value: SortConfigType[] };
 };
 
 export const addSortForNewSpreadsheet = (
-    newEquipmentType: string,
+    newTabName: string,
     value: SortConfigType[]
 ): AddSortForNewSpreadsheetAction => ({
     type: ADD_SORT_FOR_NEW_SPREADSHEET,
     payload: {
-        newEquipmentType,
+        newTabName,
         value,
     },
 });

@@ -41,7 +41,7 @@ import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
 import { SortWay } from 'hooks/use-aggrid-sort';
-import { getFetchers } from '../config/equipment/common-config';
+import { typeAndFetchers } from '../config/equipment/common-config';
 import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
@@ -98,18 +98,17 @@ export default function CustomSpreadsheetConfigDialog({
                 // New tab with default columns
                 const equipmentType = newParams.equipmentType as EQUIPMENT_TYPES;
                 const tabIndex = tablesDefinitionIndexes.size;
-                const postfixedEquipmentType = equipmentType + tabIndex; // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
+                const tabName = newParams[SPREADSHEET_NAME];
                 const newTableDefinition: SpreadsheetTabDefinition = {
                     index: tabIndex,
-                    name: newParams[SPREADSHEET_NAME],
-                    type: postfixedEquipmentType,
-                    fetchers: getFetchers(equipmentType),
+                    name: tabName,
+                    ...typeAndFetchers(equipmentType),
                     columns: getTableColumns(equipmentType),
                 };
                 dispatch(updateTableDefinition(newTableDefinition, []));
-                dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
+                dispatch(addFilterForNewSpreadsheet(tabName, []));
                 dispatch(
-                    addSortForNewSpreadsheet(postfixedEquipmentType, [
+                    addSortForNewSpreadsheet(tabName, [
                         {
                             colId: 'id',
                             sort: SortWay.ASC,
@@ -121,18 +120,17 @@ export default function CustomSpreadsheetConfigDialog({
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then((selectedModel: { customColumns: ColumnWithFormula[]; sheetType: EQUIPMENT_TYPES }) => {
                         const tabIndex = tablesDefinitionIndexes.size;
-                        const postfixedEquipmentType = selectedModel.sheetType + tabIndex; // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
+                        const tabName = newParams[SPREADSHEET_NAME];
                         const newTableDefinition: SpreadsheetTabDefinition = {
                             index: tabIndex,
-                            name: newParams[SPREADSHEET_NAME],
-                            type: postfixedEquipmentType,
-                            fetchers: getFetchers(selectedModel.sheetType),
+                            name: tabName,
+                            ...typeAndFetchers(selectedModel.sheetType),
                             columns: [],
                         };
                         dispatch(updateTableDefinition(newTableDefinition, selectedModel.customColumns));
-                        dispatch(addFilterForNewSpreadsheet(postfixedEquipmentType, []));
+                        dispatch(addFilterForNewSpreadsheet(tabName, []));
                         dispatch(
-                            addSortForNewSpreadsheet(postfixedEquipmentType, [
+                            addSortForNewSpreadsheet(tabName, [
                                 {
                                     colId: 'ID',
                                     sort: SortWay.ASC,

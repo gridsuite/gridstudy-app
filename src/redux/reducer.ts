@@ -416,7 +416,7 @@ export type SpreadsheetEquipmentType = Exclude<
     EQUIPMENT_TYPES,
     'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'
 >;
-export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType | string, UnknownArray>;
+export type SpreadsheetFilterState = Record<string, UnknownArray>;
 
 export type DiagramState = {
     id: UUID;
@@ -714,38 +714,24 @@ const initialState: AppState = {
     },
 
     // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: {
-        [EQUIPMENT_TYPES.SUBSTATION]: [],
-        [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [],
-        [EQUIPMENT_TYPES.LINE]: [],
-        [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [],
-        [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [],
-        [EQUIPMENT_TYPES.GENERATOR]: [],
-        [EQUIPMENT_TYPES.LOAD]: [],
-        [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [],
-        [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [],
-        [EQUIPMENT_TYPES.BATTERY]: [],
-        [EQUIPMENT_TYPES.HVDC_LINE]: [],
-        [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [],
-        [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
-        [EQUIPMENT_TYPES.DANGLING_LINE]: [],
-        [EQUIPMENT_TYPES.BUS]: [],
-        [EQUIPMENT_TYPES.TIE_LINE]: [],
-        [EQUIPMENT_TYPES.DISCONNECTOR]: [],
-    },
+    [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
+        .map((tabDef) => tabDef.name)
+        .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {}),
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions).reduce((acc, current) => {
-            acc[current.type] = [
-                {
-                    colId: 'id',
-                    sort: SortWay.ASC,
-                },
-            ];
-            return acc;
-        }, {} as TableSortConfig),
+        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions)
+            .map((tabDef) => tabDef.name)
+            .reduce((acc, tabName) => {
+                acc[tabName] = [
+                    {
+                        colId: 'id',
+                        sort: SortWay.ASC,
+                    },
+                ];
+                return acc;
+            }, {} as TableSortConfig),
         [LOADFLOW_RESULT_SORT_STORE]: {
             [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
                 {
@@ -1688,8 +1674,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
-        const { newEquipmentType, value } = action.payload;
-        state[SPREADSHEET_STORE_FIELD][newEquipmentType] = value;
+        const { newTabName, value } = action.payload;
+        state[SPREADSHEET_STORE_FIELD][newTabName] = value;
     });
 
     builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
@@ -1707,9 +1693,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_SORT_FOR_NEW_SPREADSHEET, (state, action: AddSortForNewSpreadsheetAction) => {
-        const { newEquipmentType, value } = action.payload;
-        state.tableSort[SPREADSHEET_SORT_STORE][newEquipmentType] = value;
-        console.log('newEquipmentType', newEquipmentType);
+        const { newTabName, value } = action.payload;
+        state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
