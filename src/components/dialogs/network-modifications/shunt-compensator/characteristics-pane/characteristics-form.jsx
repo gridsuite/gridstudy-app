@@ -24,7 +24,7 @@ import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-ut
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({ previousValues, isModification = false }) => {

@@ -75,7 +75,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),

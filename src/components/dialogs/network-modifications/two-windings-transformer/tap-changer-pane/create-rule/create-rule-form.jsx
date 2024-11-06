@@ -10,7 +10,7 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { HIGH_TAP_POSITION, LOW_TAP_POSITION } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
 import { PHASE_TAP, RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
-import { GridItem } from '../../../../commons/grid-item';
+import GridItem from '../../../../commons/grid-item';
 
 const CreateRuleForm = (props) => {
     const computeLowTapLabel = (ruleType) => {

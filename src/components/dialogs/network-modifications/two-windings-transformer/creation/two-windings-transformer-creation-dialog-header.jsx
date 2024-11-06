@@ -16,7 +16,7 @@ import {
 import { filledTextField } from '../../../dialog-utils';
 import { TextInput } from '@gridsuite/commons-ui';
 import { SwitchInput } from '@gridsuite/commons-ui';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCreationDialogHeader = () => {
     const twoWindingsTransformerIdField = <TextInput name={`${EQUIPMENT_ID}`} label="ID" formProps={filledTextField} />;

@@ -98,7 +98,7 @@ export const KilometerAdornment = {
     text: 'km',
 };
 export const filledTextField = {
-    variant: 'filled' as 'filled',
+    variant: 'filled',
 };
 
 export const standardTextField = {

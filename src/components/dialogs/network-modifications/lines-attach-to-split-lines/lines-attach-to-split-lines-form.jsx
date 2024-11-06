@@ -21,8 +21,8 @@ import { useEffect, useState } from 'react';
 import { ConnectivityForm } from '../../connectivity/connectivity-form';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../commons/grid-section';
-import { GridItem } from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
 
 const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

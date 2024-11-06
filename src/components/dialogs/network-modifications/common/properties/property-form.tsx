@@ -11,7 +11,7 @@ import { useWatch } from 'react-hook-form';
 import { TextInput } from '@gridsuite/commons-ui';
 import { PredefinedProperties } from './property-utils';
 import { italicFontTextField } from '../../../dialog-utils';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 type PropertyFormProps = {
     name: string;

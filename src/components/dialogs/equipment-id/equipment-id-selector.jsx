@@ -13,7 +13,7 @@ import { FormFiller } from '../commons/formFiller';
 import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import { fetchEquipmentsIds } from '../../../services/study/network-map';
-import { GridItem } from '../commons/grid-item';
+import GridItem from '../commons/grid-item';
 
 const styles = {
     message: (theme) => ({

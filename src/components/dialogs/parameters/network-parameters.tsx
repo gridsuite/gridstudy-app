@@ -14,7 +14,7 @@ import { mergeSx } from '../../utils/functions';
 import { LabelledButton, styles, useParameterState } from './parameters';
 import ParameterLineDropdown from './widget/parameter-line-dropdown';
 import ParameterLineSwitch from './widget/parameter-line-switch';
-import { LineSeparator } from '../commons/line-separator';
+import LineSeparator from '../commons/line-separator';
 
 export enum FluxConventions {
     IIDM = 'iidm',

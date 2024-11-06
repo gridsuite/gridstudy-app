@@ -19,7 +19,7 @@ import { ReactivePowerAdornment } from '../dialog-utils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
-import { GridItem } from '../commons/grid-item';
+import GridItem from '../commons/grid-item';
 
 const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
 

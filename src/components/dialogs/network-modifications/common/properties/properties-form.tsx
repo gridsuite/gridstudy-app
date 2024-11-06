@@ -11,7 +11,7 @@ import { ADDED, ADDITIONAL_PROPERTIES, DELETION_MARK, PREVIOUS_VALUE } from '../
 import PropertyForm from './property-form';
 import { fetchPredefinedProperties, initializedProperty, PredefinedProperties } from './property-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { GridSection } from '../../../commons/grid-section';
+import GridSection from '../../../commons/grid-section';
 
 type PropertiesFormProps = {
     networkElementType?: string;

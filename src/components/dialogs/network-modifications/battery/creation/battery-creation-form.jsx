@@ -21,8 +21,8 @@ import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import FrequencyRegulation from '../../../set-points/frequency-regulation';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const BatteryCreationForm = ({ studyUuid, currentNode }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);

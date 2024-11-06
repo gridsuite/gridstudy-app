@@ -15,7 +15,7 @@ import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
-import { GridItem } from '../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     const [line1Substation, setLine1Substation] = useState('');

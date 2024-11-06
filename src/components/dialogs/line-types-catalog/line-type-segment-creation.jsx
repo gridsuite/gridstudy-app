@@ -21,7 +21,7 @@ import {
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
 import PropTypes from 'prop-types';
-import { GridItem } from '../commons/grid-item';
+import GridItem from '../commons/grid-item';
 
 const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDistanceChange }) => {
     const watchDistance = useWatch({

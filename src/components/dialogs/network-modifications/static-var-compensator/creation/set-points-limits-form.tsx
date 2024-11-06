@@ -29,8 +29,8 @@ import { REGULATION_TYPES } from '../../../../network/constants';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import { GridSection } from '../../../commons/grid-section';
-import { GridItem } from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;

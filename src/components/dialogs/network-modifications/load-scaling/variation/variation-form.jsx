@@ -22,7 +22,7 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { ActivePowerAdornment } from '../../../dialog-utils';
 import { ElementType } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const LOADS = [EQUIPMENT_TYPES.LOAD];
 

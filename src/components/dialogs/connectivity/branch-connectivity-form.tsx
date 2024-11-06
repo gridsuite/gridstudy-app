@@ -12,8 +12,8 @@ import React, { FunctionComponent } from 'react';
 import useVoltageLevelsListInfos from '../../../hooks/use-voltage-levels-list-infos';
 import { CurrentTreeNode } from '../../../redux/reducer';
 import { UUID } from 'crypto';
-import { GridSection } from '../commons/grid-section';
-import { GridItem } from '../commons/grid-item';
+import GridSection from '../commons/grid-section';
+import GridItem from '../commons/grid-item';
 
 interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;

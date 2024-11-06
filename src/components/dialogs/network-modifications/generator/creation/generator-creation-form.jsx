@@ -34,8 +34,8 @@ import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
 import SetPointsForm from '../../../set-points/set-points-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
     const currentNodeUuid = currentNode?.id;

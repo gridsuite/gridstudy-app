@@ -16,7 +16,7 @@ import { Box } from '@mui/system';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
 import { ReactivePowerAdornment } from '../../dialog-utils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();

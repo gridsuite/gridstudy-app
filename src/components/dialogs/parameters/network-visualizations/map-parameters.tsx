@@ -23,7 +23,7 @@ import { styles, useParameterState } from '../parameters';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';
 import ParameterLineSlider from '../widget/parameter-line-slider';
 import ParameterLineSwitch from '../widget/parameter-line-switch';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 export const MapParameters = () => {
     const alertThresholdMarks = [

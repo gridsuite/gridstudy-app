@@ -15,7 +15,7 @@ import { useFormContext } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
 import { Box, Grid } from '@mui/material';
 import { mergeSx, unscrollableDialogStyles } from '@gridsuite/commons-ui';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 interface ByFormulaFormProps {}
 

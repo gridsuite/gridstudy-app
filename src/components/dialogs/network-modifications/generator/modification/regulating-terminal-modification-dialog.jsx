@@ -27,7 +27,7 @@ import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { fetchVoltageLevelsListInfos } from 'services/study/network';
 import { getRegulatingTerminalFormData } from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const emptyFormData = {
     [VOLTAGE_LEVEL]: null,

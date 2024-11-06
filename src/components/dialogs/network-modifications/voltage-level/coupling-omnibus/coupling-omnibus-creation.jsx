@@ -7,7 +7,7 @@
 
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { BUS_BAR_SECTION_ID1, BUS_BAR_SECTION_ID2, COUPLING_OMNIBUS } from 'components/utils/field-constants';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 // TODO should use "name" props instead of `${COUPLING_OMNIBUS}.(...)`
 export const CouplingOmnibusCreation = ({ index, sectionOptions }) => {

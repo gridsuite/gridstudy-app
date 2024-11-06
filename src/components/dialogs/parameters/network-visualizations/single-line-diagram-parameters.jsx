@@ -19,7 +19,7 @@ import { styles } from '../parameters';
 import { SubstationLayout } from '../../../diagrams/diagram-common';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';
 import ParameterLineSwitch from '../widget/parameter-line-switch';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);

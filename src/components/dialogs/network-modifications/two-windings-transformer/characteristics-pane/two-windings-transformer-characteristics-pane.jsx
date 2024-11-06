@@ -12,8 +12,8 @@ import { FloatInput } from '@gridsuite/commons-ui';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
 import { unitToMicroUnit } from '../../../../../utils/unit-converter';
 import PropertiesForm from '../../common/properties/properties-form';
-import { GridSection } from '../../../commons/grid-section';
-import { GridItem } from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtToModify, isModification = false }) => {
     const width = isModification ? 12 : 8;

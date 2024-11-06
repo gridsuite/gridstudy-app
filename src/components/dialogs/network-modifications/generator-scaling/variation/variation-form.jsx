@@ -25,7 +25,7 @@ import { ActivePowerAdornment } from '../../../dialog-utils';
 import { ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import { IDENTIFIER_LIST } from './variation-utils';
 import { fetchElementsInfos } from '@gridsuite/commons-ui';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const GENERATORS = [EQUIPMENT_TYPES.GENERATOR];
 

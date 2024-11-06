@@ -30,8 +30,8 @@ import LineCreationDialog from '../line/creation/line-creation-dialog';
 import VoltageLevelCreationDialog from '../voltage-level/creation/voltage-level-creation-dialog';
 import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to-attach-or-split-form';
 import { useWatch } from 'react-hook-form';
-import { GridSection } from '../../commons/grid-section';
-import { GridItem } from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
 
 const LineAttachToVoltageLevelForm = ({
     studyUuid,

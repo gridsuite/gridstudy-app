@@ -68,7 +68,7 @@ import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);

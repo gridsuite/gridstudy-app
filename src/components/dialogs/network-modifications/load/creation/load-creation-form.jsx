@@ -13,8 +13,8 @@ import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);

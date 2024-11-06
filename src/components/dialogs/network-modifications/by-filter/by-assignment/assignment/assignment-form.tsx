@@ -24,7 +24,7 @@ import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
-import { GridItem } from '../../../../commons/grid-item';
+import GridItem from '../../../../commons/grid-item';
 
 interface AssignmentFormProps {
     name: string;

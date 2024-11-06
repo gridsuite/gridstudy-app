@@ -29,7 +29,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
-import { GridItem } from '../../../../commons/grid-item';
+import GridItem from '../../../../commons/grid-item';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,

@@ -23,7 +23,7 @@ import useHvdcLccDeletion from './hvdc-lcc-deletion/hvdc-lcc-deletion-utils';
 
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import useGetLabelEquipmentTypes from '../../../../hooks/use-get-label-equipment-types';
-import { GridItem } from '../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 
 const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     const { snackError } = useSnackMessage();

@@ -16,8 +16,8 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import { fetchVoltageLevelsListInfos } from '../../../../../services/study/network';
 import PropertiesForm from '../../common/properties/properties-form';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);

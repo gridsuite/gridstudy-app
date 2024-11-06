@@ -31,7 +31,7 @@ import { calculateReactance, calculateResistance, calculateSusceptance } from '.
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import { Box } from '@mui/system';
-import { GridItem } from '../commons/grid-item';
+import GridItem from '../commons/grid-item';
 
 const styles = {
     header: {

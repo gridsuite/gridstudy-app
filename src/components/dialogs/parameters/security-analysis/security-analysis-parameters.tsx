@@ -46,7 +46,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;

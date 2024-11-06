@@ -16,7 +16,7 @@ import SelectWithConfirmationInput from '../../../commons/select-with-confirmati
 import { mergeSx, unscrollableDialogStyles, usePredefinedProperties } from '@gridsuite/commons-ui';
 import { EQUIPMENTS_FIELDS } from './assignment/assignment-constants';
 import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 interface ModificationByAssignmentFormProps {}
 

@@ -15,7 +15,7 @@ import { Box } from '@mui/system';
 import { Grid } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useWatch } from 'react-hook-form';
-import { GridItem } from '../commons/grid-item';
+import GridItem from '../commons/grid-item';
 
 const VoltageRegulation = ({
     studyUuid,

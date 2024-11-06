@@ -14,8 +14,8 @@ import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/r
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
 import LimitsPane from '../../../../limits/limits-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../../../commons/grid-section';
-import { GridItem } from '../../../../commons/grid-item';
+import GridSection from '../../../../commons/grid-section';
+import GridItem from '../../../../commons/grid-item';
 
 const styles = {
     h3: {

@@ -17,8 +17,8 @@ import {
 } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
 import { useFieldArray } from 'react-hook-form';
-import { GridSection } from '../../../commons/grid-section';
-import { GridItem } from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 const HvdcLccDeletionSpecificForm = () => {
     const { fields: mcsRows1 } = useFieldArray({

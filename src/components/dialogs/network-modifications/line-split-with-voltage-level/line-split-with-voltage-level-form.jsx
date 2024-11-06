@@ -18,8 +18,8 @@ import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { GridSection } from '../../commons/grid-section';
-import { GridItem } from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,

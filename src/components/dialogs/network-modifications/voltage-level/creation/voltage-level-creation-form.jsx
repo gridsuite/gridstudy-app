@@ -31,8 +31,8 @@ import { SwitchesBetweenSections } from '../switches-between-sections/switches-b
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
 import PropertiesForm from '../../common/properties/properties-form';
 import { useWatch } from 'react-hook-form';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;

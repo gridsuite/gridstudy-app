@@ -20,8 +20,8 @@ import { FloatInput, TextInput } from '@gridsuite/commons-ui';
 import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const VoltageLevelModificationForm = ({ voltageLevelInfos, equipmentId }) => {
     const voltageLevelIdField = (

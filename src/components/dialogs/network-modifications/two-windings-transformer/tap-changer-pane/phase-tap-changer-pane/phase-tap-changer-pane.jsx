@@ -31,7 +31,7 @@ import {
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
-import { GridItem } from '../../../../commons/grid-item';
+import GridItem from '../../../../commons/grid-item';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,

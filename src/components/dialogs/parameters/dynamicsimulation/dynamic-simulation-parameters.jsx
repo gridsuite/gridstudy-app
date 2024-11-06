@@ -54,7 +54,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 const TAB_VALUES = {
     TIME_DELAY: 'timeDelay',

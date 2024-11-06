@@ -21,7 +21,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { getIdOrSelf } from '../dialog-utils';
-import { GridItem } from '../commons/grid-item';
+import GridItem from '../commons/grid-item';
 
 export const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {

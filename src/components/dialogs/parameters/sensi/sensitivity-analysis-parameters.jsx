@@ -71,7 +71,7 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 const formSchema = yup
     .object()

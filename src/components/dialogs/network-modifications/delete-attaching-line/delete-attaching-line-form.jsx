@@ -17,8 +17,8 @@ import {
 } from 'components/utils/field-constants';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
-import { GridSection } from '../../commons/grid-section';
-import { GridItem } from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
 
 const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
     const [linesOptions, setLinesOptions] = useState([]);

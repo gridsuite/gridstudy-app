@@ -4,28 +4,27 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
 import { Grid, styled } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { ComponentProps, createElement, CSSProperties } from 'react';
 
-interface GridSectionProps {
+export interface GridSectionProps {
     title: string;
     heading?: string;
     size?: number;
-    customStyle?: React.CSSProperties;
+    customStyle?: CSSProperties;
 }
 
-const createCustomTag = (heading: string, customStyle: React.CSSProperties) => {
+const createCustomTag = (heading: string, customStyle: CSSProperties) => {
     const StyledComponent = styled('div')(() => ({
         ...customStyle,
     }));
 
-    return (props: React.ComponentProps<'div'>) =>
-        React.createElement(`h${heading}`, { ...props, className: StyledComponent });
+    return (props: ComponentProps<'div'>) => createElement(`h${heading}`, { ...props, className: StyledComponent });
 };
 
-export function GridSection({ title, heading = '3', size = 12, customStyle = {} }: Readonly<GridSectionProps>) {
-    const CustomTag = createCustomTag(heading, customStyle);
+export default function GridSection({ title, heading = '3', size = 12, customStyle }: Readonly<GridSectionProps>) {
+    const CustomTag = createCustomTag(heading, customStyle ?? {});
     return (
         <Grid container spacing={2}>
             <Grid item xs={size}>

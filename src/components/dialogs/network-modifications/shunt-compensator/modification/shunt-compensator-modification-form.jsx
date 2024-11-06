@@ -12,8 +12,8 @@ import { TextField, Grid } from '@mui/material';
 import { CharacteristicsForm } from '../characteristics-pane/characteristics-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, shuntCompensatorInfos, equipmentId }) => {
     const shuntCompensatorIdField = (

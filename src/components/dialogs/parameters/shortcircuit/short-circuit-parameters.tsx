@@ -28,8 +28,8 @@ import {
     intlPredefinedParametersOptions,
 } from './short-circuit-parameters-utils';
 import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
-import { GridItem } from '../../commons/grid-item';
-import { GridSection } from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
 
 const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetAll }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);

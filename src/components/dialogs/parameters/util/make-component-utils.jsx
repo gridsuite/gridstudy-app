@@ -9,7 +9,7 @@ import { Grid, InputAdornment } from '@mui/material';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { LineSeparator } from '../../commons/line-separator';
+import LineSeparator from '../../commons/line-separator';
 
 // --- define data types --- //
 export const TYPES = {

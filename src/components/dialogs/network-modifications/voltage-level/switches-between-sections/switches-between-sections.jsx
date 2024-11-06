@@ -13,7 +13,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CreateSwitchesDialog } from './create-switches-between-sections/create-switches-dialog';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 export const SwitchesBetweenSections = () => {
     const { getValues, setValue } = useFormContext();

@@ -12,7 +12,7 @@ import CountrySelectionInput from 'components/utils/rhf-inputs/country-selection
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const SubstationModificationForm = ({ substationToModify, equipmentId }) => {
     const { translate } = useLocalizedCountries();

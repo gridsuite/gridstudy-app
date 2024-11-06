@@ -14,7 +14,7 @@ import { ContingencyFilterCreationFields } from './contingency-filter-creation/c
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
 import { Nullable } from 'components/utils/ts-utils';
-import { GridSection } from '../../dialogs/commons/grid-section';
+import GridSection from '../../dialogs/commons/grid-section';
 
 interface SelectionCreationPanelFormProps {
     pendingState: boolean;

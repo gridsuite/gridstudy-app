@@ -37,7 +37,7 @@ import LimitReductionsTableForm from './common/limitreductions/limit-reductions-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
-import { LineSeparator } from '../commons/line-separator';
+import LineSeparator from '../commons/line-separator';
 
 const CountrySelector = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();

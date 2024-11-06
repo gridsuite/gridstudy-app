@@ -6,7 +6,7 @@
  */
 import { Divider, Grid } from '@mui/material';
 
-export function LineSeparator() {
+export default function LineSeparator() {
     return (
         <Grid item xs={12}>
             <Divider />

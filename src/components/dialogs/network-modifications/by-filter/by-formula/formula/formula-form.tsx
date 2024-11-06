@@ -22,7 +22,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { Grid } from '@mui/material';
-import { GridItem } from '../../../../commons/grid-item';
+import GridItem from '../../../../commons/grid-item';
 
 interface FormulaProps {
     name: string;

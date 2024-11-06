@@ -8,7 +8,7 @@
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import { TextInput } from '@gridsuite/commons-ui';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const StaticVarCompensatorCreationDialogHeader = () => {
     const staticCompensatorIdField = (

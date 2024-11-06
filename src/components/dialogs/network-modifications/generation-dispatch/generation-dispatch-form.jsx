@@ -20,8 +20,8 @@ import { ElementType } from '@gridsuite/commons-ui';
 import FrequencyReservePane from './frequency-reserve-pane';
 import { FormattedMessage } from 'react-intl';
 import SubstationsGeneratorsOrderingPane from './substations-generators-ordering-pane';
-import { GridItem } from '../../commons/grid-item';
-import { GridSection } from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
 
 const GenerationDispatchForm = () => {
     const handleCoefficientValueChange = (id, value) => {

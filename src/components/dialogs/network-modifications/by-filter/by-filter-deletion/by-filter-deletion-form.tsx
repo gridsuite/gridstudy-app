@@ -13,7 +13,7 @@ import { FILTERS, TYPE } from 'components/utils/field-constants';
 import { richTypeEquals } from 'components/utils/utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 const ByFilterDeletionForm = () => {
     const equipmentTypeWatch = useWatch({

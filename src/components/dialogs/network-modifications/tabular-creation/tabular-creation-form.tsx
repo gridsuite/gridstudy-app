@@ -25,7 +25,7 @@ import { TABULAR_CREATION_FIELDS, styles, TabularCreationField } from './tabular
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
-import { GridItem } from '../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 
 const TabularCreationForm = () => {
     const intl = useIntl();

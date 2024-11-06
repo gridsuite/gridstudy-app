@@ -16,9 +16,8 @@ import VoltageRegulation from './voltage-regulation';
 import { SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
-import { GridItem } from '../commons/grid-item';
-import { GridSection } from '../commons/grid-section';
-import { GridItemWithTooltip } from '../commons/grid-item-with-tooltip';
+import GridItem from '../commons/grid-item';
+import GridSection from '../commons/grid-section';
 
 const SetPointsForm = ({
     studyUuid,
@@ -95,12 +94,12 @@ const SetPointsForm = ({
             </Grid>
             <Grid container spacing={2} paddingTop={2}>
                 <Box sx={{ width: '100%' }} />
-                <GridItemWithTooltip
+                <GridItem
                     tooltip={watchVoltageRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
                     size={4}
                 >
                     {voltageRegulationField}
-                </GridItemWithTooltip>
+                </GridItem>
                 {voltageRegulationFields}
                 <Box sx={{ width: '100%' }} />
                 <FrequencyRegulation

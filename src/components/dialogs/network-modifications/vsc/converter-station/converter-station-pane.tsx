@@ -32,8 +32,8 @@ import {
 import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../../commons/grid-section';
-import { GridItem } from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 interface VscConverterStationPaneProps {
     id: string;

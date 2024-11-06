@@ -8,7 +8,7 @@
 import { FloatInput } from '@gridsuite/commons-ui';
 import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
 import { ActivePowerAdornment, ReactivePowerAdornment } from '../../dialog-utils';
-import { GridItem } from '../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 
 const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix, previousValues }) => {
     const pField = (

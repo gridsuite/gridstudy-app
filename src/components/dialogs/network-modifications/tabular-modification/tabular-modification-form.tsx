@@ -26,7 +26,7 @@ import { TABULAR_MODIFICATION_FIELDS, styles } from './tabular-modification-util
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
-import { GridItem } from '../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 
 const TabularModificationForm = () => {
     const intl = useIntl();

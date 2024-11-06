@@ -25,8 +25,8 @@ import { AmpereAdornment } from 'components/dialogs/dialog-utils';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
-import { GridSection } from '../commons/grid-section';
-import { GridItem } from '../commons/grid-item';
+import GridSection from '../commons/grid-section';
+import GridItem from '../commons/grid-item';
 
 const styles = {
     h3: {

@@ -22,7 +22,7 @@ import { Box, Grid, TextField } from '@mui/material';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
-import { GridItem } from '../../../commons/grid-item';
+import GridItem from '../../../commons/grid-item';
 
 interface VscModificationFormProps {
     tabIndex: number;

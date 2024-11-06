@@ -13,8 +13,8 @@ import { useIntl } from 'react-intl';
 import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
-import { GridItem } from '../../../commons/grid-item';
-import { GridSection } from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentId }) => {
     const intl = useIntl();

@@ -11,7 +11,7 @@ import React from 'react';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { GridItem } from '../../commons/grid-item';
+import GridItem from '../../commons/grid-item';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;

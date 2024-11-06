@@ -15,8 +15,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { Box } from '@mui/material';
-import { GridItem } from '../commons/grid-item';
-import { GridItemWithTooltip } from '../commons/grid-item-with-tooltip';
+import GridItem from '../commons/grid-item';
 
 const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     const intl = useIntl();
@@ -65,12 +64,12 @@ const FrequencyRegulation = ({ isEquipmentModification, previousValues }) => {
     return (
         <>
             {isEquipmentModification ? (
-                <GridItemWithTooltip
+                <GridItem
                     tooltip={watchFrequencyRegulation !== null ? '' : <FormattedMessage id={'NoModification'} />}
                     size={4}
                 >
                     {frequencyRegulationField}
-                </GridItemWithTooltip>
+                </GridItem>
             ) : (
                 <GridItem size={4}>{frequencyRegulationField}</GridItem>
             )}

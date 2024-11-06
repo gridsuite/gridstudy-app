@@ -23,8 +23,8 @@ import {
 import { unitToMicroUnit } from 'utils/unit-converter';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import { GridSection } from '../../../commons/grid-section';
-import { GridItem } from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 const styles = {
     h3: {
