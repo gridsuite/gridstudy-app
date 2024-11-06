@@ -78,7 +78,7 @@ const ReactiveLimitsForm = ({
             <GridItem size={12}>{reactiveCapabilityCurveChoiceRadioField}</GridItem>
             {!isReactiveCapabilityCurveOn && <GridItem size={4}>{minimumReactivePowerField}</GridItem>}
             {!isReactiveCapabilityCurveOn && <GridItem size={4}>{maximumReactivePowerField}</GridItem>}
-            {isReactiveCapabilityCurveOn && <GridItem size={4}>{reactiveCapabilityCurveTableField}</GridItem>}
+            {isReactiveCapabilityCurveOn && <GridItem size={12}>{reactiveCapabilityCurveTableField}</GridItem>}
         </Grid>
     );
 };
