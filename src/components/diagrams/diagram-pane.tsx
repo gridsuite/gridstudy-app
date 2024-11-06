@@ -44,7 +44,7 @@ import useNameOrId from '../utils/use-name-or-id';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
@@ -292,7 +292,7 @@ const styles = {
 interface DiagramPaneProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    showInSpreadsheet: (equipment: { equipmentId: string | null; type: string | null }) => void;
+    showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
 

@@ -184,7 +184,6 @@ const EventModificationScenarioEditor = () => {
         setEditDialogOpen({
             eventType: event.eventType,
             equipmentId: event.equipmentId,
-            // @ts-expect-error TODO: sub range of equipments types
             equipmentType: event.equipmentType,
         });
     };

@@ -17,7 +17,7 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
@@ -25,7 +25,7 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 
 interface BusMenuProps {
@@ -33,7 +33,7 @@ interface BusMenuProps {
     handleRunShortcircuitAnalysis: (busId: string) => void;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
-        equipmentType: EQUIPMENT_TYPES,
+        equipmentType: EquipmentType,
         dialogTitle: string
     ) => void;
     position: [number, number];
@@ -111,7 +111,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     }, [busId, onClose, handleRunShortcircuitAnalysis]);
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: EQUIPMENT_TYPES, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
             onClose();
             onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
         },
@@ -173,7 +173,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
-                    equipmentType={EQUIPMENT_TYPES.BUS}
+                    equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     disabled={!isNodeEditable}
                 />
