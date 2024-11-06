@@ -18,27 +18,23 @@ import {
     RowClassParams,
     RowHeightParams,
     RowStyle,
-    SuppressKeyboardEventParams,
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
-import { ALLOWED_KEYS } from '../utils/utils';
+import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
 
 const getRowId = (params: GetRowIdParams<{ id: string }>) => params.data.id;
 
-//we filter enter key event to prevent closing or opening edit mode
-const suppressKeyEvent = (params: SuppressKeyboardEventParams) => !ALLOWED_KEYS.includes(params.event.key);
-
-const defaultColDef = {
+const defaultColDef: ColDef = {
     filter: true,
     sortable: true,
     resizable: true,
     lockPinned: true,
     wrapHeaderText: true,
     autoHeaderHeight: true,
-    suppressKeyboardEvent: suppressKeyEvent,
+    suppressKeyboardEvent: suppressEventsToPreventEditMode,
 };
 
 interface EquipmentTableProps {

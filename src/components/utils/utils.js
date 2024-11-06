@@ -255,8 +255,6 @@ export function toggleElementFromList(elementToToggle, list, getFieldId) {
     return resultList;
 }
 
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
-
 export const comparatorStrIgnoreCase = (str1, str2) => {
     return str1.toLowerCase().localeCompare(str2.toLowerCase());
 };
