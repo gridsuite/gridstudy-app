@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getEnumLabelById } from 'components/utils/utils';
+import { getEnumLabelById } from '../../../utils/utils';
 import { type UUID } from 'crypto';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from 'components/custom-aggrid/custom-aggrid-header.type';
+} from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
-import { CellClassParams, EditableCallbackParams, ValueGetterParams } from 'ag-grid-community';
+import type { CellClassFunc, EditableCallback, ValueGetterFunc } from 'ag-grid-community';
 import EnumCellRenderer from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
@@ -91,11 +91,9 @@ export const generateTapPositions = (params: TapPositionsType) => {
     return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];
 };
 
-export const isEditable = (params: EditableCallbackParams) => {
-    return params.context.isEditing && params.node.rowPinned === 'top';
-};
+export const isEditable: EditableCallback = (params) => params.context.isEditing && params.node.rowPinned === 'top';
 
-export const editableCellStyle = (params: CellClassParams) => {
+export const editableCellStyle: CellClassFunc = (params) => {
     if (isEditable(params)) {
         if (Object.keys(params.context.editErrors).includes(params.column.getColId())) {
             return params.context.theme.editableCellError;
@@ -208,7 +206,7 @@ export const defaultNumericFilterConfig = {
     },
 };
 
-export const propertiesGetter = (params: ValueGetterParams) => {
+export const propertiesGetter: ValueGetterFunc = (params) => {
     const properties = params?.data?.properties;
     if (properties && Object.keys(properties).length) {
         return Object.keys(properties)

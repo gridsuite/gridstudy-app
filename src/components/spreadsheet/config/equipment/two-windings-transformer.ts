@@ -14,7 +14,13 @@ import {
     TWTRegulatingTerminalEditor,
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import {
+    CellClassParams,
+    type EditableCallback,
+    EditableCallbackParams,
+    ValueGetterParams,
+    ValueSetterParams,
+} from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -37,7 +43,7 @@ import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '..
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { getComputedRegulationMode } from '../../../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 
-const getTwtRatioRegulationModeId = (twt: any) => {
+function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
     if (twt?.ratioTapChanger?.regulationMode !== undefined) {
         return twt.ratioTapChanger.regulationMode;
@@ -49,52 +55,39 @@ const getTwtRatioRegulationModeId = (twt: any) => {
     //otherwise, we compute it
     const computedRegulationMode = getComputedRegulationMode(twt);
     return computedRegulationMode?.id || null;
-};
+}
 
-const hasTwtRatioTapChanger = (params: EditableCallbackParams) => {
+const hasTwtRatioTapChanger: EditableCallback = (params) => {
     const ratioTapChanger = params.data?.ratioTapChanger;
     return ratioTapChanger !== null && ratioTapChanger !== undefined && Object.keys(ratioTapChanger).length > 0;
 };
 
-const isTwtRatioOnload = (params: EditableCallbackParams) => {
+const isTwtRatioOnload: EditableCallback = (params) => {
     const hasLoadTapChangingCapabilities = params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
     return hasLoadTapChangingCapabilities === true || hasLoadTapChangingCapabilities === 1;
 };
 
-const isTwtRatioOnloadAndEditable = (params: EditableCallbackParams) => {
-    return isEditable(params) && isTwtRatioOnload(params);
-};
+const isTwtRatioOnloadAndEditable: EditableCallback = (params) => isEditable(params) && isTwtRatioOnload(params);
 
-const hasTwtPhaseTapChanger = (params: EditableCallbackParams) => {
+const hasTwtPhaseTapChanger: EditableCallback = (params) => {
     const phaseTapChanger = params.data?.phaseTapChanger;
     return phaseTapChanger !== null && phaseTapChanger !== undefined && Object.keys(phaseTapChanger).length > 0;
 };
 
-const hasTwtPhaseTapChangerAndEditable = (params: EditableCallbackParams) => {
-    return isEditable(params) && hasTwtPhaseTapChanger(params);
-};
+const hasTwtPhaseTapChangerAndEditable: EditableCallback = (params) =>
+    isEditable(params) && hasTwtPhaseTapChanger(params);
 
-const isEditableTwtPhaseRegulationSideCell = (params: EditableCallbackParams) => {
-    return isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
-};
+const isEditableTwtPhaseRegulationSideCell: EditableCallback = (params) =>
+    isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
 
-const isEditableTwtRatioRegulationSideCell = (params: EditableCallbackParams) => {
-    return (
-        isTwtRatioOnloadAndEditable(params) &&
-        params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id
-    );
-};
+const isEditableTwtRatioRegulationSideCell: EditableCallback = (params) =>
+    isTwtRatioOnloadAndEditable(params) && params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
 
-const isEditableTwtRatioRegulatingTerminalCell = (params: EditableCallbackParams) => {
-    return (
-        isTwtRatioOnloadAndEditable(params) &&
-        params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id
-    );
-};
+const isEditableTwtRatioRegulatingTerminalCell: EditableCallback = (params) =>
+    isTwtRatioOnloadAndEditable(params) && params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
 
-const isEditableTwtPhaseRegulatingTerminalCell = (params: EditableCallbackParams) => {
-    return isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
-};
+const isEditableTwtPhaseRegulatingTerminalCell: EditableCallback = (params) =>
+    isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
 
 export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
     index: 3,

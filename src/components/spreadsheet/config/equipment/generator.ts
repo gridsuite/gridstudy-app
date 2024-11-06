@@ -14,7 +14,14 @@ import {
     NumericalField,
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type {
+    CellClassParams,
+    EditableCallback,
+    EditableCallbackParams,
+    ValueGetterFunc,
+    ValueGetterParams,
+    ValueSetterParams,
+} from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -33,7 +40,7 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 
-const RegulatingTerminalCellGetter = (params: ValueGetterParams) => {
+const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
         params?.data || {};
 
@@ -49,7 +56,7 @@ const RegulatingTerminalCellGetter = (params: ValueGetterParams) => {
     return null;
 };
 
-const isEditableRegulatingTerminalCell = (params: EditableCallbackParams) => {
+const isEditableRegulatingTerminalCell: EditableCallback = (params) => {
     return (
         params.node.rowIndex === 0 &&
         params.node.rowPinned === 'top' &&

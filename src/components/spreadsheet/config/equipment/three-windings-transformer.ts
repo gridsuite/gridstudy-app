@@ -26,19 +26,14 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 
 function generateTapRequest(tapType: string, legNumber: number) {
-    const getLeg = '.getLeg' + legNumber + '()';
     return (
-        'tap = equipment' +
-        getLeg +
-        '.get' +
-        tapType +
-        'TapChanger()\n' +
-        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition() ) { \n' +
+        `tap = equipment.getLeg${legNumber}().get${tapType}TapChanger()\n` +
+        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition()) { \n' +
         '    tap.setTapPosition({})\n' +
         // to force update of transformer as sub elements changes like tapChanger are not detected
         '    equipment.setFictitious(equipment.isFictitious())\n' +
         '} else {\n' +
-        "throw new Exception('incorrect value')\n" +
+        "    throw new Exception('incorrect value')\n" +
         ' }\n'
     );
 }
