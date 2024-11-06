@@ -9,10 +9,11 @@ import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import ReportTreeViewContext from './report-tree-view-context';
 import ReportItem from './report-item';
-import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import ReportTree from './report-tree';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
+import { GLOBAL_REPORT_NODE_LABEL } from '../../utils/report/report.constant';
+import { getHighestSeverity } from '../../utils/report/report-severity';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -42,7 +43,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
      * Build the tree view (left pane) creating all ReportItem from json data
      * @type {Function}
      */
-    const initializeTreeDataAndComponent = useCallback((report: ReportTreeType) => {
+    /*    const initializeTreeDataAndComponent = useCallback((report: ReportTreeType) => {
         reportTreeData.current[report.id] = report;
         return (
             <ReportItem
@@ -54,24 +55,46 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
             >
                 {report.subReports.map((value: ReportTreeType) => initializeTreeDataAndComponent(value))}
             </ReportItem>
-        );
+        );*/
+
+    const mapReportsTree = useCallback((report: Report | undefined, reportType?: ReportType): any => {
+        if (report) {
+            const severityList = report.severities || report.subReports?.flatMap((subReport) => subReport.severities);
+            const formatedReport = {
+                type: reportType ?? (report.message === GLOBAL_REPORT_NODE_LABEL ? ReportType.GLOBAL : ReportType.NODE),
+                id: report.id,
+                label: report.message,
+                message: report.message,
+                parentId: report.parentId,
+                severities: severityList,
+                highestSeverity: getHighestSeverity(severityList),
+                subReports: report.subReports
+                    ?.filter((subReport) => (subReport.subReports && subReport.subReports.length > 0) || subReport.id)
+                    .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
+                children: report.subReports
+                    ?.filter((subReport) => (subReport.subReports && subReport.subReports.length > 0) || subReport.id)
+                    .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
+            };
+            // @ts-ignore
+            reportTreeData.current[report.id] = formatedReport;
+            return formatedReport;
+        }
     }, []);
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
-        treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
         setSeverities(reportTree.severities);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
-    }, [report, initializeTreeDataAndComponent, dispatch]);
+    }, [report, dispatch, mapReportsTree]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
     }, []);
 
-    const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
-        if (selectedReportId !== reportId) {
+    const handleSelectNode = (_: SyntheticEvent, reportId: string | null) => {
+        if (reportId && selectedReportId !== reportId) {
             setSelectedReportId(reportId);
             setSeverities(reportTreeData.current[reportId].severities);
             setSelectedReportType(reportTreeData.current[reportId].type);
@@ -126,9 +149,8 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                         expandedTreeReports={expandedTreeReports}
                         setExpandedTreeReports={setExpandedTreeReports}
                         handleSelectNode={handleSelectNode}
-                    >
-                        {treeView.current}
-                    </ReportTree>
+                        items={mapReportsTree(report)}
+                    />
                 </ReportTreeViewContext.Provider>
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     {selectedReportId && selectedReportType && (

@@ -91,7 +91,7 @@ type ReportItemProps = {
     labelInfo?: string;
     labelText: string;
     labelIconColor: string;
-    nodeId: string;
+    itemId: string;
     children?: React.ReactNode;
     className?: string;
 };
@@ -99,8 +99,7 @@ type ReportItemProps = {
 const ReportItem = (reportItemProps: ReportItemProps) => {
     // using a context because TreeItem uses useMemo on this. See report-viewer.js for the provider
     const { isHighlighted } = useContext<any>(ReportTreeViewContext);
-
-    const highlighted = isHighlighted ? isHighlighted(reportItemProps.nodeId) : false;
+    const highlighted = isHighlighted ? isHighlighted(reportItemProps.itemId) : false;
 
     const { labelText, labelIconColor, className, ...other } = reportItemProps;
 

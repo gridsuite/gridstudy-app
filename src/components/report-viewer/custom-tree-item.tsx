@@ -7,16 +7,16 @@
 import * as React from 'react';
 import clsx from 'clsx';
 import Typography from '@mui/material/Typography';
-import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItem } from '@mui/x-tree-view/TreeItem';
+import { TreeItem, TreeItemContentProps, TreeItemProps, useTreeItemState } from '@mui/x-tree-view/TreeItem';
 
 /**
  To have a custom MUI TreeItem where we can toggle a node without changing the current node / triggering handleSelection.
  */
 const CustomContent = React.forwardRef(function CustomContent(props: TreeItemContentProps, ref) {
-    const { classes, className, label, nodeId, icon: iconProp, expansionIcon, displayIcon } = props;
+    const { classes, className, label, itemId, icon: iconProp, expansionIcon, displayIcon } = props;
 
     const { disabled, expanded, selected, focused, handleExpansion, handleSelection, preventSelection } =
-        useTreeItem(nodeId);
+        useTreeItemState(itemId);
 
     const icon = iconProp || expansionIcon || displayIcon;
 
