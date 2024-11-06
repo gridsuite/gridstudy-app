@@ -57,7 +57,7 @@ import {
     setModificationsInProgress,
 } from '../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
+import useIsAnyNodeBuilding from '../../utils/is-any-node-building-hook';
 
 import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';

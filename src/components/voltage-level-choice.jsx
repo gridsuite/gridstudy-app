@@ -13,7 +13,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getNominalVoltageColor } from '../utils/colors';
-import { useNameOrId } from './utils/equipmentInfosHandler';
+import useNameOrId from './utils/use-name-or-id';
 import { Box } from '@mui/system';
 
 const styles = {

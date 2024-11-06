@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo } from 'react';
 import { Equipment, EquipmentType, getEquipmentsInfosForSearchBar, useElementSearch } from '@gridsuite/commons-ui';
-import { useNameOrId } from '../utils/equipmentInfosHandler';
+import useNameOrId from '../utils/use-name-or-id';
 import { searchEquipmentsInfos } from '../../services/study';
 import { UUID } from 'crypto';
 
@@ -41,6 +41,7 @@ export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsPr
     });
 
     const equipmentsFound = useMemo(
+        // @ts-expect-error TS2345: manage null string with getNameOrId
         () => getEquipmentsInfosForSearchBar(elementsFound, getNameOrId),
         [elementsFound, getNameOrId]
     );

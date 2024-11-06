@@ -13,6 +13,7 @@ import localizedCountries from 'localized-countries';
 import countriesFr from 'localized-countries/data/fr';
 import countriesEn from 'localized-countries/data/en';
 
+/** @deprecated use import('@gridsuite/commons-ui').useLocalizedCountries instead */
 export const useLocalizedCountries = () => {
     const [languageLocal] = useParameterState(PARAM_LANGUAGE);
     const [localizedCountriesModule, setLocalizedCountriesModule] = useState();

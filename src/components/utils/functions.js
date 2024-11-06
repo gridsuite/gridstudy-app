@@ -5,4 +5,5 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+/** @deprecated use {@link import('@gridsuite/commons-ui').mergeSx} */
 export const mergeSx = (...allSx) => allSx.flat();

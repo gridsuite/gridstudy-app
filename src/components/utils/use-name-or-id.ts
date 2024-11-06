@@ -8,23 +8,30 @@
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { PARAM_USE_NAME } from '../../utils/config-params';
+import type { AppState } from '../../redux/reducer';
 
-export const useNameOrId = () => {
-    const useName = useSelector((state) => state[PARAM_USE_NAME]);
+type AnyObjectWithOptionalNameAndId = {
+    [key: string]: any; // Allows any other fields
+} & Partial<{
+    name: string | null;
+    id: string;
+}>;
+
+export default function useNameOrId() {
+    const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
+
     const getNameOrId = useCallback(
-        (infos) => {
+        (infos: AnyObjectWithOptionalNameAndId | null) => {
             if (infos != null) {
                 const name = infos.name;
-                return useName && name != null && name.trim() !== '' ? name : infos?.id;
+                return useName && name != null && name.trim() !== '' ? name : infos?.id ?? null;
             }
             return null;
         },
         [useName]
     );
 
-    const getUseNameParameterKey = useCallback(() => {
-        return useName ? 'name' : 'id';
-    }, [useName]);
+    const getUseNameParameterKey = useCallback(() => (useName ? 'name' : 'id'), [useName]);
 
     return { getNameOrId, getUseNameParameterKey };
-};
+}

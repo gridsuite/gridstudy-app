@@ -7,7 +7,7 @@
 import { getEnumLabelById } from 'components/utils/utils';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { EnumOption } from '../../utils/utils-type';
+import EnumOption from '../../utils/EnumOption';
 
 interface EnumCellRendererProps {
     value: string;

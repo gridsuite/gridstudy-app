@@ -15,7 +15,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
 import { ColDef, GridApi } from 'ag-grid-community';
-import { EnumOption } from '../../utils/utils-type';
+import EnumOption from '../../utils/EnumOption';
 
 interface EquipmentTableEditorProps {
     gridContext: any;
