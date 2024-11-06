@@ -58,7 +58,7 @@ import { fetchValidateUser } from '../services/user-admin';
 import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
 import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
-import { getOptionalServices } from '../services/study';
+import { getOptionalServices } from '../services/study/index';
 import {
     changeDisplayedColumns,
     changeLockedColumns,
