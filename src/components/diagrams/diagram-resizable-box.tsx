@@ -10,8 +10,7 @@ import { ResizableBox } from 'react-resizable';
 import ResizeHandleIcon from '@mui/icons-material/ChevronRight';
 import { MIN_HEIGHT, MIN_WIDTH, LOADING_HEIGHT, LOADING_WIDTH } from './diagram-common';
 import { mergeSx } from '../utils/functions';
-import { styled } from '@mui/system';
-import { Theme } from '@mui/material';
+import { styled, Theme } from '@mui/material';
 
 // TODO can we avoid to define a component just to add sx support ?
 const ResizableBoxSx = styled(ResizableBox)({});

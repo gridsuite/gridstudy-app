@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import React from 'react';
-import { Grid } from '@mui/material';
-import { styled } from '@mui/system';
+import { Grid, styled } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 interface GridSectionProps {

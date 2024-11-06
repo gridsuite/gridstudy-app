@@ -6,8 +6,7 @@
  */
 
 import React, { useContext } from 'react';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/system';
+import { styled, Box } from '@mui/material';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Label from '@mui/icons-material/Label';
