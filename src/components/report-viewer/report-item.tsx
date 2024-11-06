@@ -6,7 +6,7 @@
  */
 
 import React, { useContext } from 'react';
-import { styled, Box } from '@mui/material';
+import { styled, Box, Theme } from '@mui/material';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Label from '@mui/icons-material/Label';
@@ -17,13 +17,13 @@ import { alpha } from '@mui/system';
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
 const styles = {
-    root: (theme) => ({
+    root: (theme: Theme) => ({
         color: theme.palette.text.secondary,
         '&:hover > .MuiTreeItem-content': {
             backgroundColor: theme.palette.action.hover,
         },
     }),
-    content: (theme) => ({
+    content: (theme: Theme) => ({
         color: theme.palette.text.secondary,
         borderRadius: theme.spacing(2),
         width: 'fit-content',
@@ -52,7 +52,7 @@ const styles = {
             backgroundColor: 'transparent',
         },
     }),
-    group: (theme) => ({
+    group: (theme: Theme) => ({
         marginLeft: '10px',
         '& .MuiTreeItem-content': {
             paddingLeft: theme.spacing(2),
@@ -64,33 +64,44 @@ const styles = {
         fontWeight: 'inherit',
         color: 'inherit',
     },
-    labelRoot: (theme) => ({
+    labelRoot: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
     }),
-    labelRootHighlighted: (theme) => ({
+    labelRootHighlighted: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
         backgroundColor: theme.palette.action.selected,
     }),
-    labelIcon: (theme) => ({
+    labelIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
     }),
-    labelText: (theme) => ({
+    labelText: (theme: Theme) => ({
         fontWeight: 'inherit',
         marginRight: theme.spacing(2),
     }),
 };
 
-const ReportItem = (props) => {
+type ReportItemProps = {
+    bgColor?: string;
+    color?: string;
+    labelInfo?: string;
+    labelText: string;
+    labelIconColor: string;
+    nodeId: string;
+    children?: React.ReactNode;
+    className?: string;
+};
+
+const ReportItem = (reportItemProps: ReportItemProps) => {
     // using a context because TreeItem uses useMemo on this. See report-viewer.js for the provider
-    const { isHighlighted } = useContext(ReportTreeViewContext);
+    const { isHighlighted } = useContext<any>(ReportTreeViewContext);
 
-    const highlighted = isHighlighted ? isHighlighted(props.nodeId) : false;
+    const highlighted = isHighlighted ? isHighlighted(reportItemProps.nodeId) : false;
 
-    const { labelText, labelIconColor, className, ...other } = props;
+    const { labelText, labelIconColor, className, ...other } = reportItemProps;
 
     return (
         <CustomTreeItem
@@ -114,16 +125,6 @@ const ReportItem = (props) => {
             {...other}
         />
     );
-};
-
-ReportItem.propTypes = {
-    bgColor: PropTypes.string,
-    color: PropTypes.string,
-    labelInfo: PropTypes.string,
-    labelText: PropTypes.string.isRequired,
-    labelIconColor: PropTypes.string.isRequired,
-    nodeId: PropTypes.string.isRequired,
-    children: PropTypes.node,
 };
 
 export default styled(ReportItem)({});
