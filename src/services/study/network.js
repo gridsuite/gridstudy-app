@@ -412,6 +412,16 @@ export function fetchBuses(studyUuid, currentNodeUuid, substationsIds) {
     );
 }
 
+export function fetchBusbarSections(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.BUSBAR_SECTION,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}
+
 export const fetchNetworkExistence = (studyUuid) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
 
