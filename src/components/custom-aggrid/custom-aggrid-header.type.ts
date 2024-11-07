@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterEnumsType, FilterPropsType } from '../../hooks/use-aggrid-row-filter';
 import { ColDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
@@ -30,6 +29,13 @@ export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
     GREATER_THAN = 'greaterThan',
     LESS_THAN = 'lessThan',
 }
+
+export type FilterEnumsType = Record<string, string[] | null>;
+
+export type FilterPropsType = {
+    updateFilter: (field: string, value: FilterDataType) => void;
+    filterSelector: FilterSelectorType[] | null;
+};
 
 export type FilterParams = {
     filterDataType?: string;

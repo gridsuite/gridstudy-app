@@ -11,7 +11,6 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Box } from '@mui/system';
 import { Alert, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/config-tables';
 import { EquipmentTable } from './equipment-table';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
@@ -27,7 +26,7 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipme
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
-import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
+import { EquipmentProps, useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
     formatPropertiesForBackend,
@@ -87,6 +86,7 @@ import {
 import { mergeSx } from '../utils/functions';
 import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -297,7 +297,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        equipmentDefinition,
+        equipmentDefinition as EquipmentProps,
         formatFetchedEquipmentsHandler
     );
 
@@ -1298,7 +1298,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         rowData={rowData}
                         columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
-                        fetched={equipments || errorMessage}
+                        fetched={!!equipments || !!errorMessage}
                         handleColumnDrag={handleColumnDrag}
                         handleCellEditingStarted={handleCellEditingStarted}
                         handleCellEditingStopped={handleCellEditingStopped}
