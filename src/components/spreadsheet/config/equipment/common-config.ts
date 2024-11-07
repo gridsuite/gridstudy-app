@@ -13,7 +13,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
-import type { CellClassFunc, EditableCallback, ValueGetterFunc } from 'ag-grid-community';
+import type { CellStyleFunc, EditableCallback, ValueGetterFunc } from 'ag-grid-community';
 import EnumCellRenderer from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
@@ -93,7 +93,7 @@ export const generateTapPositions = (params: TapPositionsType) => {
 
 export const isEditable: EditableCallback = (params) => params.context.isEditing && params.node.rowPinned === 'top';
 
-export const editableCellStyle: CellClassFunc = (params) => {
+export const editableCellStyle: CellStyleFunc = (params) => {
     if (isEditable(params)) {
         if (Object.keys(params.context.editErrors).includes(params.column.getColId())) {
             return params.context.theme.editableCellError;
@@ -102,6 +102,11 @@ export const editableCellStyle: CellClassFunc = (params) => {
         }
     }
     return null;
+};
+
+export const editableColumnConfig = {
+    editable: isEditable,
+    cellStyle: editableCellStyle,
 };
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter

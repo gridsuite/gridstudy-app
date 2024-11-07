@@ -8,7 +8,7 @@
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { BooleanListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -16,13 +16,12 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 
 export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     index: 9,
@@ -39,8 +38,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
         },
         {
             id: 'VoltageLevelId',
@@ -85,8 +83,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueSetter: (params: ValueSetterParams) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
@@ -114,8 +111,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -148,8 +144,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -171,8 +166,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -194,8 +188,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -219,8 +212,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -244,8 +236,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Properties',
             field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueGetter: propertiesGetter,
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,

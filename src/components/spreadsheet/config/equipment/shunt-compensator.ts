@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -17,11 +17,10 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
@@ -44,8 +43,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             columnWidth: MIN_COLUMN_WIDTH,
         },
         {
@@ -79,8 +77,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
@@ -101,8 +98,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'sectionCount',
             field: 'sectionCount',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
@@ -125,8 +121,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Type',
             field: 'type',
             ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: EnumListField,
             cellEditorParams: (params: any) =>
                 getDefaultEnumCellEditorParams(params, params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
@@ -134,8 +129,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
@@ -166,8 +160,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             id: 'maxSusceptance',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             field: 'maxSusceptance',
             numeric: true,
             cellEditor: NumericalField,
@@ -213,8 +206,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Properties',
             field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueGetter: propertiesGetter,
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,

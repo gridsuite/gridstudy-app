@@ -5,20 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
     countryEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
@@ -41,8 +40,7 @@ const generateEditableNumericColumnDefinition = (
         ...defaultNumericFilterConfig,
         fractionDigits: fractionDigits,
         changeCmd: changeCmd,
-        editable: isEditable,
-        cellStyle: editableCellStyle,
+        ...editableColumnConfig,
         cellEditor: NumericalField,
         cellEditorParams: (params: any) => {
             return {
@@ -78,8 +76,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Name',
             field: 'name',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
@@ -99,8 +96,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 0,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -137,8 +133,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'identifiableShortCircuit.ipMin',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
@@ -170,8 +165,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'identifiableShortCircuit.ipMax',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
@@ -205,8 +199,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Properties',
             field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueGetter: propertiesGetter,
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,

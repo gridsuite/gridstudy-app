@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueSetterParams } from 'ag-grid-community';
+import type { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -17,11 +17,10 @@ import {
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
@@ -46,16 +45,14 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             changeCmd: "equipment.setName('{}')\n",
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
         },
         {
             id: 'loadType',
             field: 'type',
             ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
             changeCmd: 'equipment.setLoadType(LoadType.{})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: EnumListField,
             cellEditorParams: (params: any) =>
                 getDefaultEnumCellEditorParams(params, params.data?.type, [
@@ -106,8 +103,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             changeCmd: 'equipment.setP0({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -127,8 +123,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             changeCmd: 'equipment.setQ0({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -152,8 +147,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Properties',
             field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueGetter: propertiesGetter,
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,

@@ -14,14 +14,7 @@ import {
     NumericalField,
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type {
-    CellClassParams,
-    EditableCallback,
-    EditableCallbackParams,
-    ValueGetterFunc,
-    ValueGetterParams,
-    ValueSetterParams,
-} from 'ag-grid-community';
+import type { EditableCallback, ValueGetterFunc, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -30,10 +23,10 @@ import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
@@ -83,8 +76,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'name',
             ...defaultTextFilterConfig,
             changeCmd: "equipment.setName('{}')\n",
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
         },
         {
             id: 'VoltageLevelId',
@@ -109,8 +101,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'energySource',
             ...getDefaultEnumConfig(ENERGY_SOURCES),
             changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: EnumListField,
             cellEditorParams: (params: any) =>
                 getDefaultEnumCellEditorParams(params, params.data?.energySource, ENERGY_SOURCES),
@@ -140,8 +131,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueSetter: (params: ValueSetterParams) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
@@ -170,8 +160,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -205,8 +194,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             changeCmd: 'equipment.setMinP({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -229,8 +217,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             changeCmd: 'equipment.setMaxP({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -258,8 +245,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                 "    throw new Exception('incorrect value')\n" +
                 ' }\n',
 
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -285,8 +271,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             changeCmd: 'equipment.setTargetQ({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -311,8 +296,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: BooleanListField,
             cellEditorParams: (params: any) => {
                 return {
@@ -331,8 +315,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             changeCmd: 'equipment.setTargetV({})\n',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -356,8 +339,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'coordinatedReactiveControl.qPercent',
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             fractionDigits: 1,
             cellEditor: NumericalField,
@@ -393,8 +375,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -424,8 +405,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -455,8 +435,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -482,8 +461,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'marginalCost',
             field: 'generatorStartup.marginalCost',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             numeric: true,
             ...defaultNumericFilterConfig,
@@ -517,8 +495,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -550,8 +527,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: NumericalField,
             cellEditorParams: (params: any) => {
                 return {
@@ -588,8 +564,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RegulationTypeText',
             field: 'RegulationTypeText',
             ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: EnumListField,
             cellEditorParams: (params: any) =>
                 getDefaultEnumCellEditorParams(
@@ -603,9 +578,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'RegulatingTerminalGenerator',
             ...defaultTextFilterConfig,
             valueGetter: RegulatingTerminalCellGetter,
-            cellStyle: (params: CellClassParams) =>
-                isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {},
-            editable: (params: EditableCallbackParams) => isEditableRegulatingTerminalCell(params),
+            cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
+            editable: isEditableRegulatingTerminalCell,
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'RegulationTypeText',
@@ -627,8 +601,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Properties',
             field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueGetter: propertiesGetter,
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,

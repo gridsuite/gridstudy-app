@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
@@ -16,10 +16,9 @@ import {
     defaultEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
     generateTapPositions,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
@@ -189,8 +188,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: (params: any) => {
                 return {
@@ -237,8 +235,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: (params: any) => {
                 return {
@@ -285,8 +282,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: (params: any) => {
                 return {
@@ -324,8 +320,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: (params: any) => {
                 return {
@@ -372,8 +367,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: (params: any) => {
                 return {
@@ -420,8 +414,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: 'agSelectCellEditor',
             cellEditorParams: (params: any) => {
                 return {

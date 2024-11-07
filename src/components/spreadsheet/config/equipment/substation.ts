@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueSetterParams } from 'ag-grid-community';
+import type { ValueSetterParams } from 'ag-grid-community';
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
     countryEnumFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    isEditable,
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
@@ -36,15 +35,13 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Name',
             field: 'name',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
             id: 'Country',
             field: 'country',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             cellEditor: SelectCountryField,
             cellRenderer: CountryCellRenderer,
             valueSetter: (params: ValueSetterParams) => {
@@ -56,8 +53,7 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Properties',
             field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             valueGetter: propertiesGetter, // FIXME try valueFormatter ?
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
