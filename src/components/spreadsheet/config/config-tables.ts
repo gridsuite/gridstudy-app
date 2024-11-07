@@ -22,6 +22,7 @@ import { VSC_CONVERTER_STATION_TAB_DEF } from './equipment/vsc-converter-station
 import { DANGLING_LINE_TAB_DEF } from './equipment/dangling-line';
 import { BUS_TAB_DEF } from './equipment/bus';
 import { TIE_LINE_TAB_DEF } from './equipment/tie-line';
+import { BUSBAR_SECTION_TAB_DEF } from './equipment/busbar-section';
 
 export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     SUBSTATION_TAB_DEF,
@@ -40,6 +41,7 @@ export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     DANGLING_LINE_TAB_DEF,
     BUS_TAB_DEF,
     TIE_LINE_TAB_DEF,
+    BUSBAR_SECTION_TAB_DEF,
 ];
 
 export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.columns).map(

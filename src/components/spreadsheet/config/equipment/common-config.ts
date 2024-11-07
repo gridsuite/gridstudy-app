@@ -17,6 +17,7 @@ import EnumCellRenderer from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
+    fetchBusbarSections,
     fetchBuses,
     fetchDanglingLines,
     fetchGenerators,
@@ -75,8 +76,8 @@ export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentF
             return [fetchLccConverterStations];
         case EQUIPMENT_TYPES.BUS:
             return [fetchBuses];
-        default:
-            return [];
+        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+            return [fetchBusbarSections];
     }
 };
 

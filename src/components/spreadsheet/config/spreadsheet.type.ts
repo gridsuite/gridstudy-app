@@ -13,7 +13,6 @@ export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substati
 
 export type SpreadsheetEquipmentType = Exclude<
     EQUIPMENT_TYPES,
-    | EQUIPMENT_TYPES.BUSBAR_SECTION
     | EQUIPMENT_TYPES.HVDC_CONVERTER_STATION
     | EQUIPMENT_TYPES.SWITCH
     | EQUIPMENT_TYPES.BREAKER
