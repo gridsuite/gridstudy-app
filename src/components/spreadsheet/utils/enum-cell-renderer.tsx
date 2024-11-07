@@ -5,16 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { getEnumLabelById } from 'components/utils/utils';
-import React from 'react';
+import { type FunctionComponent } from 'react';
 import { useIntl } from 'react-intl';
 import { EnumOption } from '../../utils/utils-type';
 
-interface EnumCellRendererProps {
+export interface EnumCellRendererProps {
     value: string;
     enumOptions: EnumOption[];
 }
 
-const EnumCellRenderer: React.FC<EnumCellRendererProps> = ({ value, enumOptions }) => {
+const EnumCellRenderer: FunctionComponent<EnumCellRendererProps> = ({ value, enumOptions }) => {
     const intl = useIntl();
 
     if (!value) {

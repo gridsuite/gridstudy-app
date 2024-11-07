@@ -14,7 +14,7 @@ import {
 } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
 import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';
-import EnumCellRenderer from '../../utils/enum-cell-renderer';
+import EnumCellRenderer, { type EnumCellRendererProps } from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
@@ -186,7 +186,8 @@ export const getDefaultEnumConfig = (enumOptions: EnumOption[]) => ({
     cellRenderer: EnumCellRenderer,
     cellRendererParams: {
         enumOptions: enumOptions,
-    },
+        // @ts-expect-error TODO TS1360: Property value is missing in type
+    } satisfies EnumCellRendererProps,
     getEnumLabel: (value: string) => getEnumLabelById(enumOptions, value),
 });
 
