@@ -16,6 +16,7 @@ const filter_locale_en = {
     'filter.greaterThanOrEqual': 'Greater than or equal to',
     'filter.greaterThan': 'Greater than',
     'filter.filterOoo': 'Filter...',
+    'filter.precision': 'Filtering precision',
 };
 
 export default filter_locale_en;

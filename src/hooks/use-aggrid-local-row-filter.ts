@@ -15,7 +15,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     UNDISPLAYED_FILTER_NUMBER_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { countDecimalPlaces, truncateNumber } from 'utils/rounding';
+import { countDecimalPlaces, countDecimalPlacesFromString, truncateNumber } from 'utils/rounding';
 
 interface FilterModel {
     [colId: string]: any;
@@ -142,8 +142,9 @@ export const useAggridLocalRowFilter = (
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
                     if (tolerance === undefined) {
-                        decimalPrecision = countDecimalPlaces(valueAsNumber);
-                        finalTolerance = Math.pow(10, -decimalPrecision);
+                        // better to use the string value (filter.value) in order not to lose the decimal precision for values like 420.0000000
+                        decimalPrecision = countDecimalPlacesFromString(filter.value);
+                        finalTolerance = 1 / Math.pow(10, decimalPrecision);
                     }
 
                     // Call the truncateNumber function to accurately truncate 'valueAsNumber' to 'decimalPrecision' decimal places.
@@ -152,11 +153,6 @@ export const useAggridLocalRowFilter = (
                     switch (filter.type) {
                         case FILTER_NUMBER_COMPARATORS.NOT_EQUAL:
                             return [
-                                {
-                                    ...filter,
-                                    type: 'notEqual',
-                                    value: truncatedNumber,
-                                },
                                 // Create two conditions to test we are not in [value-tolerance..value] (handles decimal precision)
                                 {
                                     ...filter,

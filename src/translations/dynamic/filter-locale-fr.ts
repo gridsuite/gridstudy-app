@@ -16,6 +16,7 @@ const filter_locale_fr = {
     'filter.greaterThanOrEqual': 'Supérieur ou égal',
     'filter.greaterThan': 'Supérieur',
     'filter.filterOoo': 'Filtrer...',
+    'filter.precision': 'Précision du filtrage',
 };
 
 export default filter_locale_fr;

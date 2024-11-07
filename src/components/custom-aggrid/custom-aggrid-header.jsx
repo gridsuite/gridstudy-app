@@ -28,6 +28,7 @@ import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
+import { countDecimalPlaces } from '../../utils/rounding.js';
 
 const styles = {
     iconSize: {
@@ -99,6 +100,11 @@ const CustomHeaderComponent = ({
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState();
+    const [decimalPrecision, setDecimalPrecision] = useState(
+        intl.formatMessage({
+            id: 'filter.precision',
+        })
+    );
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -138,6 +144,15 @@ const CustomHeaderComponent = ({
             type: selectedFilterComparator,
             dataType: filterDataType,
         });
+        if (isNumberInput) {
+            const precisionLabel =
+                intl.formatMessage({
+                    id: 'filter.precision',
+                }) +
+                ' : ' +
+                1 / Math.pow(10, countDecimalPlaces(value));
+            setDecimalPrecision(precisionLabel);
+        }
     };
 
     const handleFilterDurationChange = (value) => {
@@ -390,33 +405,48 @@ const CustomHeaderComponent = ({
                                     onChange={handleFilterDurationChange}
                                 />
                             ) : (
-                                <TextField
-                                    size={'small'}
-                                    fullWidth
-                                    value={selectedFilterData || ''}
-                                    onChange={handleFilterTextChange}
-                                    placeholder={intl.formatMessage({
-                                        id: 'filter.filterOoo',
-                                    })}
-                                    inputProps={{
-                                        type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
-                                    }}
-                                    sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
-                                    InputProps={{
-                                        endAdornment: selectedFilterData ? (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="clear filter"
-                                                    onClick={handleClearFilter}
-                                                    edge="end"
-                                                    size="small"
-                                                >
-                                                    <ClearIcon />
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
-                                    }}
-                                />
+                                <Grid container item direction={'column'} gap={0.2}>
+                                    <Grid item>
+                                        <TextField
+                                            size={'small'}
+                                            fullWidth
+                                            value={selectedFilterData || ''}
+                                            onChange={handleFilterTextChange}
+                                            placeholder={intl.formatMessage({
+                                                id: 'filter.filterOoo',
+                                            })}
+                                            inputProps={{
+                                                type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
+                                            }}
+                                            sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                                            InputProps={{
+                                                endAdornment: selectedFilterData ? (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="clear filter"
+                                                            onClick={handleClearFilter}
+                                                            edge="end"
+                                                            size="small"
+                                                        >
+                                                            <ClearIcon />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ) : null,
+                                            }}
+                                        />
+                                    </Grid>
+                                    {isNumberInput ? (
+                                        <Grid item>
+                                            <TextField
+                                                size={'small'}
+                                                fullWidth
+                                                disabled
+                                                sx={styles.input}
+                                                value={decimalPrecision}
+                                            />
+                                        </Grid>
+                                    ) : null}
+                                </Grid>
                             )}
                         </Grid>
                     )}
