@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, forwardRef, useImperativeHandle, useMemo, useEffect } from 'react';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Autocomplete, SelectChangeEvent, TextField, Tooltip } from '@mui/material';
@@ -18,21 +18,29 @@ import { GridApi } from 'ag-grid-community';
 import { EnumOption } from '../../utils/utils-type';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
-interface EquipmentTableEditorProps {
-    gridContext: any;
-    colDef: CustomColDef;
-    gridApi: GridApi;
+interface EquipmentTableEditorProps<TData = any, TValue = any, TContext = any> {
+    gridContext: TContext;
+    colDef: CustomColDef<TData, TValue>;
+    gridApi: GridApi<TData>;
 }
-interface EquipmentTableDataEditorProps extends EquipmentTableEditorProps {
-    rowData?: any;
+
+export interface EquipmentTableDataEditorProps<TData = any, TValue = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, TValue, TContext> {
+    rowData?: TData;
 }
-interface EquipmentTableNumberEditorProps extends EquipmentTableDataEditorProps {
-    defaultValue: number;
+
+export interface EquipmentTableNumberEditorProps<TData = any, TContext = any>
+    extends EquipmentTableDataEditorProps<TData, number, TContext> {
+    defaultValue?: number;
 }
-interface EquipmentTableBooleanListEditorProps extends EquipmentTableEditorProps {
+
+export interface EquipmentTableBooleanListEditorProps<TData = any, TValue = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, TValue, TContext> {
     defaultValue: any; // TODO should be boolean
 }
-interface EquipmentTableEnumEditorProps extends EquipmentTableEditorProps {
+
+export interface EquipmentTableEnumEditorProps<TData = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, string, TContext> {
     defaultValue: string;
     enumOptions: EnumOption[];
 }

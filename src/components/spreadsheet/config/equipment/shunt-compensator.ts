@@ -7,7 +7,6 @@
 
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
@@ -17,13 +16,13 @@ import {
     defaultTextFilterConfig,
     editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
 export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
@@ -77,16 +76,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'maximumSectionCount',
             ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maximumSectionCount,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -98,16 +88,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'sectionCount',
             ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.sectionCount,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.sectionCount),
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -120,25 +101,14 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'type',
             ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
             ...editableColumnConfig,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(params, params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },
         {
             id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
             ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maxQAtNominalV,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -161,16 +131,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...editableColumnConfig,
             field: 'maxSusceptance',
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maxSusceptance,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,

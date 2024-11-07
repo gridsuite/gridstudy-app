@@ -6,7 +6,6 @@
  */
 
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { BooleanListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
@@ -20,6 +19,7 @@ import {
 } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
 export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     index: 9,
@@ -89,18 +89,11 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            cellEditor: BooleanListField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue:
-                        params.data?.activePowerControl?.participate != null
-                            ? +params.data?.activePowerControl?.participate
-                            : '',
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                };
-            },
+            ...booleanCellEditorConfig((params) =>
+                params.data?.activePowerControl?.participate != null
+                    ? +params.data?.activePowerControl?.participate
+                    : ''
+            ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -110,16 +103,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.activePowerControl?.droop,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
             valueGetter: (params) => params.data?.activePowerControl?.droop,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
@@ -143,16 +127,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.minP,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.minP),
             crossValidation: {
                 maxExpression: 'maxP',
             },
@@ -165,16 +140,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maxP,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maxP),
             crossValidation: {
                 minExpression: 'minP',
             },
@@ -187,16 +153,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.targetP,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.targetP),
             crossValidation: {
                 minExpression: 'minP',
                 maxExpression: 'maxP',
@@ -211,16 +168,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.targetQ,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.targetQ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

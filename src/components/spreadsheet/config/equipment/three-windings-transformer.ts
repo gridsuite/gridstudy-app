@@ -22,6 +22,7 @@ import {
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { standardSelectCellEditorConfig } from '../common/cell-editors';
 
 function generateTapRequest(tapType: string, legNumber: number) {
     return (
@@ -188,12 +189,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             ...editableColumnConfig,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.ratioTapChanger1),
-                };
-            },
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -235,12 +231,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             ...editableColumnConfig,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.ratioTapChanger2),
-                };
-            },
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger2)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -282,12 +273,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             ...editableColumnConfig,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.ratioTapChanger3),
-                };
-            },
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger3)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -320,12 +306,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             ...editableColumnConfig,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.phaseTapChanger1),
-                };
-            },
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -367,12 +348,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             ...editableColumnConfig,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.phaseTapChanger1),
-                };
-            },
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -414,12 +390,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             ...editableColumnConfig,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.phaseTapChanger3),
-                };
-            },
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger3)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

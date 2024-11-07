@@ -7,7 +7,6 @@
 
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
@@ -17,13 +16,13 @@ import {
     defaultTextFilterConfig,
     editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
 export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
     index: 6,
@@ -51,12 +50,10 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
             changeCmd: 'equipment.setLoadType(LoadType.{})\n',
             ...editableColumnConfig,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(params, params.data?.type, [
-                    ...LOAD_TYPES,
-                    { id: 'UNDEFINED', label: 'Undefined' },
-                ]),
+            ...enumCellEditorConfig(
+                (params) => params.data?.type,
+                [...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]
+            ),
         },
         {
             id: 'VoltageLevelId',
@@ -102,16 +99,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             fractionDigits: 1,
             changeCmd: 'equipment.setP0({})\n',
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.p0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.p0),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -122,16 +110,7 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             fractionDigits: 1,
             changeCmd: 'equipment.setQ0({})\n',
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.q0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.q0),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

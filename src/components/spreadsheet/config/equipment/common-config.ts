@@ -190,14 +190,6 @@ export const getDefaultEnumConfig = (enumOptions: EnumOption[]) => ({
     getEnumLabel: (value: string) => getEnumLabelById(enumOptions, value),
 });
 
-export const getDefaultEnumCellEditorParams = (params: any, defaultValue: any, enumOptions: EnumOption[]) => ({
-    defaultValue: defaultValue,
-    enumOptions: enumOptions,
-    gridContext: params.context,
-    gridApi: params.api,
-    colDef: params.colDef,
-});
-
 export const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
     isCountry: true,

@@ -7,7 +7,6 @@
 
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import {
     countryEnumFilterConfig,
@@ -19,6 +18,7 @@ import {
 } from './common-config';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { numericalCellEditorConfig } from '../common/cell-editors';
 
 const generateEditableNumericColumnDefinition = (
     id: string,
@@ -38,16 +38,7 @@ const generateEditableNumericColumnDefinition = (
         fractionDigits: fractionDigits,
         changeCmd: changeCmd,
         ...editableColumnConfig,
-        cellEditor: NumericalField,
-        cellEditorParams: (params: any) => {
-            return {
-                defaultValue: params.data[field],
-                gridContext: params.context,
-                gridApi: params.api,
-                colDef: params.colDef,
-                rowData: params.data,
-            };
-        },
+        ...numericalCellEditorConfig((params) => params.data[field]),
         crossValidation: {
             optional: optional,
             minExpression: minExpression,
@@ -94,16 +85,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 0,
             ...editableColumnConfig,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.nominalV,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
         generateEditableNumericColumnDefinition(
             'LowVoltageLimitkV',
@@ -132,16 +114,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin)),
             valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
@@ -164,16 +137,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax)),
             valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
