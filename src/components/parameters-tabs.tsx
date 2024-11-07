@@ -32,6 +32,7 @@ import {
 import {
     fetchDefaultSensitivityAnalysisProvider,
     getSensitivityAnalysisParameters,
+    setSensitivityAnalysisParameters,
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
@@ -45,12 +46,10 @@ import {
     fetchDefaultNonEvacuatedEnergyProvider,
     fetchNonEvacuatedEnergyProvider,
     getNonEvacuatedEnergyParameters,
+    setNonEvacuatedEnergyParameters,
     updateNonEvacuatedEnergyProvider,
 } from 'services/study/non-evacuated-energy';
-import {
-    NonEvacuatedEnergyParameters,
-    useGetNonEvacuatedEnergyParameters,
-} from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
+import { NonEvacuatedEnergyParameters } from './dialogs/parameters/non-evacuated-energy/non-evacuated-energy-parameters';
 import ComputingType from './computing-status/computing-type';
 import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
@@ -198,7 +197,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         null,
         fetchDefaultSensitivityAnalysisProvider,
         null,
-        getSensitivityAnalysisParameters
+        getSensitivityAnalysisParameters,
+        setSensitivityAnalysisParameters
     );
 
     const nonEvacuatedEnergyBackend = useParametersBackend(
@@ -209,10 +209,9 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         fetchNonEvacuatedEnergyProvider,
         fetchDefaultNonEvacuatedEnergyProvider,
         updateNonEvacuatedEnergyProvider,
-        getNonEvacuatedEnergyParameters
+        getNonEvacuatedEnergyParameters,
+        setNonEvacuatedEnergyParameters
     );
-
-    const useNonEvacuatedEnergyParameters = useGetNonEvacuatedEnergyParameters();
 
     const useShortCircuitParameters = useGetShortCircuitParameters();
 
@@ -273,12 +272,7 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                     />
                 );
             case TAB_VALUES.nonEvacuatedEnergyParamsTabValue:
-                return (
-                    <NonEvacuatedEnergyParameters
-                        parametersBackend={nonEvacuatedEnergyBackend}
-                        useNonEvacuatedEnergyParameters={useNonEvacuatedEnergyParameters}
-                    />
-                );
+                return <NonEvacuatedEnergyParameters parametersBackend={nonEvacuatedEnergyBackend} />;
             case TAB_VALUES.shortCircuitParamsTabValue:
                 return (
                     <ShortCircuitParameters
@@ -301,7 +295,6 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
         sensitivityAnalysisBackend,
         nonEvacuatedEnergyBackend,
         tabValue,
-        useNonEvacuatedEnergyParameters,
         useShortCircuitParameters,
         user,
     ]);
