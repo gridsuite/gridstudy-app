@@ -17,7 +17,7 @@ import {
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
 } from '../../services/study/network';
-import { MapEquipments } from '@powsybl/diagram-viewer';
+import { MapEquipments } from '@powsybl/network-viewer';
 
 export default class GSMapEquipments extends MapEquipments {
     dispatch: Dispatch;

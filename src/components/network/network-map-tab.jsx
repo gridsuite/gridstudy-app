@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NetworkMap, GeoData } from '@powsybl/diagram-viewer';
+import { NetworkMap, GeoData } from '@powsybl/network-viewer';
 import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import withOperatingStatusMenu from '../menus/operating-status-menu';

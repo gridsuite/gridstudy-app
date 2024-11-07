@@ -16,7 +16,7 @@ import {
     styles,
     DiagramType,
 } from '../diagram-common';
-import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/diagram-viewer';
+import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
@@ -26,6 +26,8 @@ import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import { UUID } from 'crypto';
+// TO DO: this should be imported fron newtork-viewer after merge of https://github.com/powsybl/powsybl-network-viewer/pull/122
+import { DiagramMetadata } from './diagram-metadata';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -124,6 +126,7 @@ const dynamicCssRules: CSS_RULE[] = [
 type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
     readonly svg?: string;
+    readonly svgMetadata?: DiagramMetadata;
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
@@ -160,6 +163,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
+                props.svgMetadata ?? null,
                 MIN_WIDTH,
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
@@ -169,7 +173,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 true,
                 true,
-                dynamicCssRules
+                dynamicCssRules,
+                null
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -203,6 +208,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         props.diagramId,
         props.svgType,
         props.svg,
+        props.svgMetadata,
         currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,

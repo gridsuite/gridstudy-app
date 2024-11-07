@@ -287,7 +287,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
-import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/network-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
@@ -821,22 +821,22 @@ export const reducer = createReducer(initialState, (builder) => {
         }
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
             newMapEquipments.completeLinesInfos();
         }
         if (action.newTieLines) {
             newMapEquipments.tieLines = action.newTieLines;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
             newMapEquipments.completeTieLinesInfos();
         }
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
             newMapEquipments.completeSubstationsInfos();
         }
         if (action.newHvdcLines) {
             newMapEquipments.hvdcLines = action.newHvdcLines;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
+            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
             newMapEquipments.completeHvdcLinesInfos();
         }
         state.mapEquipments = newMapEquipments;
