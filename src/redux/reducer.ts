@@ -569,6 +569,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
+    [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
 const tableNames = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
@@ -1727,6 +1728,7 @@ export enum EquipmentUpdateType {
     VOLTAGE_LEVELS = 'voltageLevels',
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
@@ -1763,6 +1765,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPM
             return EQUIPMENT_TYPES.SUBSTATION;
         case 'buses':
             return EQUIPMENT_TYPES.BUS;
+        case 'busbarSections':
+            return EQUIPMENT_TYPES.BUSBAR_SECTION;
         default:
             return;
     }
