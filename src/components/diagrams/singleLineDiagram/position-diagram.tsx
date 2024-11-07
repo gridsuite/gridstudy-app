@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 import LinearProgress from '@mui/material/LinearProgress';
-import { SingleLineDiagramViewer } from '@powsybl/diagram-viewer';
+import { SingleLineDiagramViewer } from '@powsybl/network-viewer';
 import { styles, MAX_HEIGHT_VOLTAGE_LEVEL, MAX_WIDTH_VOLTAGE_LEVEL, NoSvg, MIN_WIDTH, Svg } from '../diagram-common';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import { Paper } from '@mui/material';

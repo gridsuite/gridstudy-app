@@ -12,7 +12,7 @@ import {
     LineFlowMode,
     LineFlowColorMode,
     DRAW_MODES,
-} from '@powsybl/diagram-viewer';
+} from '@powsybl/network-viewer';
 import { useCallback, useEffect, useState, useRef, useMemo, RefObject } from 'react';
 import withOperatingStatusMenu, { MenuBranchProps } from '../menus/operating-status-menu';
 import BaseEquipmentMenu, { MapEquipment } from '../menus/base-equipment-menu';
@@ -48,13 +48,13 @@ import {
     Line,
     Substation,
     Equipment as EquipmentGeoData,
-} from '@powsybl/diagram-viewer/dist/components/network-map-viewer/network/geo-data';
+} from '@powsybl/network-viewer/dist/components/network-map-viewer/network/geo-data';
 import {
     Equipment as EquipmentMap,
     Substation as SubstationMap,
     Line as LineMap,
     VoltageLevel as VoltageLevelMap,
-} from '@powsybl/diagram-viewer/dist/components/network-map-viewer/network/map-equipments';
+} from '@powsybl/network-viewer/dist/components/network-map-viewer/network/map-equipments';
 import { useTheme } from '@mui/material';
 const INITIAL_POSITION = [0, 0] as [number, number];
 const INITIAL_ZOOM = 9;

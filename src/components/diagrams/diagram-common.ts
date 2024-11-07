@@ -13,7 +13,7 @@ import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
-import { SLDMetadata } from '@powsybl/diagram-viewer';
+import { SLDMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 

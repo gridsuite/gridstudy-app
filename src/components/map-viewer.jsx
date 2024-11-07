@@ -15,7 +15,7 @@ import {
     PARAM_LINE_PARALLEL_PATH,
 } from '../utils/config-params';
 import { setStudyDisplayMode } from '../redux/actions';
-import { DRAW_EVENT, DRAW_MODES } from '@powsybl/diagram-viewer';
+import { DRAW_EVENT, DRAW_MODES } from '@powsybl/network-viewer';
 import { DiagramType } from './diagrams/diagram-common';
 import { ReactFlowProvider } from '@xyflow/react';
 import { Box } from '@mui/system';
@@ -146,7 +146,7 @@ const MapViewer = ({
     onChangeTab,
     setErrorMessage,
 }) => {
-    const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-diagram-viewer)
+    const networkMapref = useRef(null); // hold the reference to the network map (from powsybl-network-viewer)
     const dispatch = useDispatch();
     const [drawingMode, setDrawingMode] = useState(DRAW_MODES.SIMPLE_SELECT);
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
