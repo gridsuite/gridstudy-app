@@ -7,11 +7,12 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { TABLES_NAMES } from './config/config-tables';
 
 interface EquipmentTabsProps {
     tabIndex: number;
@@ -21,8 +22,19 @@ interface EquipmentTabsProps {
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
     const intl = useIntl();
-    const tablesNames = useSelector((state: AppState) => state.tables.names);
+    const allTablesNames = useSelector((state: AppState) => state.tables.names);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
+
+    const tablesNames = useMemo(() => {
+        return allTablesNames.map((tabName) => {
+            return TABLES_NAMES.includes(tabName)
+                ? intl.formatMessage({
+                      id: tabName,
+                  })
+                : tabName;
+        });
+    }, [allTablesNames, intl]);
+
     return (
         <Grid container direction="row" wrap="nowrap" item>
             {developerMode && (
@@ -39,14 +51,8 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
                     }}
                     aria-label="tables"
                 >
-                    {tablesNames.map((table) => (
-                        <Tab
-                            key={table}
-                            label={intl.formatMessage({
-                                id: table,
-                            })}
-                            disabled={disabled}
-                        />
+                    {tablesNames.map((tabName) => (
+                        <Tab key={tabName} label={tabName} disabled={disabled} />
                     ))}
                 </Tabs>
             </Grid>
