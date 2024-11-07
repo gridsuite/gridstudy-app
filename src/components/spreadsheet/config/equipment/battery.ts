@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
@@ -21,7 +22,7 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
-export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
+export const BATTERY_TAB_DEF = {
     index: 9,
     name: 'Batteries',
     ...typeAndFetchers(EQUIPMENT_TYPES.BATTERY),
@@ -181,4 +182,4 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { type EquipmentTableDataEditorProps, TWTRegulatingTerminalEditor } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -96,9 +98,9 @@ const TWTRegulatingTerminalCellEditorConfig = {
         rowData: params.data,
     }),
     cellEditorPopup: true,
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
-export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
+export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
     index: 3,
     name: 'TwoWindingsTransformers',
     ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
@@ -638,4 +640,4 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

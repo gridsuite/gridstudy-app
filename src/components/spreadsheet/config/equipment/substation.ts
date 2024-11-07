@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
@@ -17,7 +18,7 @@ import {
 } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 
-export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
+export const SUBSTATION_TAB_DEF = {
     index: 0,
     name: 'Substations',
     ...typeAndFetchers(EQUIPMENT_TYPES.SUBSTATION),
@@ -48,4 +49,4 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

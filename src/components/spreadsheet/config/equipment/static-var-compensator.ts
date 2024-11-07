@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
@@ -21,7 +22,7 @@ import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 
-export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
+export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
     index: 8,
     name: 'StaticVarCompensators',
     ...typeAndFetchers(EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR),
@@ -100,4 +101,4 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfProperties,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

@@ -9,11 +9,11 @@ import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 import type { EquipmentFetcher } from './equipment/common-config';
 
-export interface SpreadsheetTabDefinition {
+export interface SpreadsheetTabDefinition<TData = any, TValue = any> {
     index: number;
     name: string;
     type: EQUIPMENT_TYPES;
     fetchers: EquipmentFetcher[];
-    columns: CustomColDef[];
+    columns: CustomColDef<TData, TValue>[];
     groovyEquipmentGetter?: string;
 }

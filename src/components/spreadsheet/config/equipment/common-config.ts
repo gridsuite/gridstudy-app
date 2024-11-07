@@ -5,9 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getEnumLabelById } from '../../../utils/utils';
 import { type UUID } from 'crypto';
+import type { ReadonlyDeep, Writable } from 'type-fest';
+import { getEnumLabelById } from '../../../utils/utils';
 import {
+    type CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
@@ -82,10 +84,11 @@ export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] 
     }
 };
 
-export const typeAndFetchers = (equipmentType: EQUIPMENT_TYPES) => ({
-    type: equipmentType,
-    fetchers: getFetchers(equipmentType),
-});
+export const typeAndFetchers = <TEquipType extends EQUIPMENT_TYPES>(equipmentType: TEquipType) =>
+    ({
+        type: equipmentType,
+        fetchers: getFetchers(equipmentType),
+    } as const);
 
 export const generateTapPositions = (params: TapPositionsType) => {
     return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];
@@ -107,12 +110,12 @@ export const editableCellStyle: CellStyleFunc = (params) => {
 export const editableColumnConfig = {
     editable: isEditable,
     cellStyle: editableCellStyle,
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
 // The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
-export const excludeFromGlobalFilter = () => '';
+export const excludeFromGlobalFilter = () => '' as const;
 
 export const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
@@ -120,7 +123,7 @@ export const defaultTextFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.TEXT,
         filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
     },
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 /**
  * Default configuration for an enum filter
@@ -145,7 +148,7 @@ export const defaultEnumFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.TEXT,
     },
     isEnum: true,
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 /**
  * Default configuration for a boolean filter
@@ -177,24 +180,25 @@ export const defaultBooleanFilterConfig = {
     customFilterParams: {
         filterDataType: FILTER_DATA_TYPES.BOOLEAN,
     },
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 // This function is used to generate the default configuration for an enum filter
 // It generates configuration for filtering, sorting and rendering
-export const getDefaultEnumConfig = (enumOptions: EnumOption[]) => ({
-    ...defaultEnumFilterConfig,
-    cellRenderer: EnumCellRenderer,
-    cellRendererParams: {
-        enumOptions: enumOptions,
-        // @ts-expect-error TODO TS1360: Property value is missing in type
-    } satisfies EnumCellRendererProps,
-    getEnumLabel: (value: string) => getEnumLabelById(enumOptions, value),
-});
+export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
+    ({
+        ...defaultEnumFilterConfig,
+        cellRenderer: EnumCellRenderer,
+        cellRendererParams: {
+            enumOptions: enumOptions as Writable<typeof enumOptions>,
+            // @ts-expect-error TODO TS1360: Property value is missing in type
+        } satisfies EnumCellRendererProps,
+        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
+    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>);
 
 export const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
     isCountry: true,
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 export const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
@@ -202,4 +206,4 @@ export const defaultNumericFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.NUMBER,
         filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
     },
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;

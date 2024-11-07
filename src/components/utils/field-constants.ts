@@ -125,13 +125,13 @@ export const SHUNT_COMPENSATOR_TYPE = 'shuntCompensatorType';
 export const CHARACTERISTICS_CHOICES = {
     Q_AT_NOMINAL_V: { id: 'Q_AT_NOMINAL_V', label: 'QatNominalVLabel' },
     SUSCEPTANCE: { id: 'SUSCEPTANCE', label: 'SusceptanceLabel' },
-};
+} as const;
 export const VOLTAGE_REGULATION_MODE = 'voltageRegulationMode';
 export const VOLTAGE_REGULATION_MODES = {
     VOLTAGE: { id: 'VOLTAGE', label: 'VoltageRegulationText' },
     REACTIVE_POWER: { id: 'REACTIVE_POWER', label: 'ReactivePowerRegulationText' },
     OFF: { id: 'OFF', label: 'Off' },
-};
+} as const;
 export const MAXIMUM_SECTION_COUNT = 'maximumSectionCount';
 export const SWITCHED_ON_Q_AT_NOMINAL_V = 'switchedOnQAtNominalV';
 export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
@@ -155,7 +155,7 @@ export const TEMPORARY_LIMIT_MODIFICATION_TYPE = {
     MODIFIED: 'MODIFIED',
     ADDED: 'ADDED',
     DELETED: 'DELETED',
-};
+} as const;
 export const SEGMENT_DISTANCE_VALUE = 'segmentDistanceValue';
 export const SEGMENT_TYPE_VALUE = 'segmentTypeValue';
 export const SEGMENT_TYPE_ID = 'segmentTypeId';

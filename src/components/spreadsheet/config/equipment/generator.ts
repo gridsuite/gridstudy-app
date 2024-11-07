@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     type EquipmentTableDataEditorProps,
@@ -61,7 +62,7 @@ const isEditableRegulatingTerminalCell: EditableCallback = (params) => {
     );
 };
 
-export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
+export const GENERATOR_TAB_DEF = {
     index: 5,
     name: 'Generators',
     ...typeAndFetchers(EQUIPMENT_TYPES.GENERATOR),
@@ -463,4 +464,4 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -24,7 +25,7 @@ import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
-export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
+export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
     name: 'ShuntCompensators',
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
@@ -164,4 +165,4 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

@@ -29,9 +29,13 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
+    ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_NOTIFICATION,
+    ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
+    AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
     CENTER_LABEL,
@@ -94,6 +98,8 @@ import {
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
     LoadNetworkModificationTreeSuccessAction,
+    LOGS_FILTER,
+    LogsFilterAction,
     MAP_BASEMAP,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
@@ -129,11 +135,13 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_LOGS_FILTER,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
+    ResetLogsFilterAction,
     ResetMapReloadedAction,
     ResetNetworkAreaDiagramDepthAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -189,19 +197,11 @@ import {
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_EQUIPMENTS,
+    UPDATE_TABLE_DEFINITION,
     UpdateEquipmentsAction,
+    UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    LOGS_FILTER,
-    LogsFilterAction,
-    UPDATE_TABLE_DEFINITION,
-    UpdateTableDefinitionAction,
-    ADD_FILTER_FOR_NEW_SPREADSHEET,
-    AddFilterForNewSpreadsheetAction,
-    ADD_SORT_FOR_NEW_SPREADSHEET,
-    AddSortForNewSpreadsheetAction,
-    RESET_LOGS_FILTER,
-    ResetLogsFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -211,6 +211,13 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import {
+    type GenericTablesColumnsNames,
+    type GenericTablesColumnsNamesJson,
+    type GenericTablesDefinitionIndexes,
+    type GenericTablesDefinitions,
+    type GenericTablesDefinitionTypes,
+    type GenericTablesNames,
+    type GenericTablesNamesIndexes,
     TABLES_COLUMNS_NAMES,
     TABLES_COLUMNS_NAMES_JSON,
     TABLES_DEFINITION_INDEXES,
@@ -218,6 +225,8 @@ import {
     TABLES_DEFINITIONS,
     TABLES_NAMES,
     TABLES_NAMES_INDEXES,
+    type TablesDefinitionsNames,
+    type TablesDefinitionsType,
 } from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
@@ -288,7 +297,7 @@ import {
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
-import { UnknownArray, ValueOf } from 'type-fest';
+import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
@@ -576,28 +585,27 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.DISCONNECTOR]: null,
 };
 
-const tableNames = TABLES_DEFINITIONS.map((tabDef) => tabDef.name);
-export type TablesDefinitionsNames = (typeof tableNames)[number];
+export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
-    definitions: SpreadsheetTabDefinition[];
-    columnsNames: Set<string>[];
-    columnsNamesJson: string[];
-    names: string[];
-    namesIndexes: typeof TABLES_NAMES_INDEXES;
-    definitionTypes: typeof TABLES_DEFINITION_TYPES;
-    definitionIndexes: typeof TABLES_DEFINITION_INDEXES;
-    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
+    definitions: GenericTablesDefinitions;
+    columnsNames: GenericTablesColumnsNames;
+    columnsNamesJson: GenericTablesColumnsNamesJson;
+    names: GenericTablesNames;
+    namesIndexes: GenericTablesNamesIndexes;
+    definitionTypes: GenericTablesDefinitionTypes;
+    definitionIndexes: GenericTablesDefinitionIndexes;
+    allCustomColumnsDefinitions: Record<TypeOfArrayElement<GenericTablesNames>, CustomEntry>;
 }
 
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS,
+    definitions: TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>,
     columnsNames: TABLES_COLUMNS_NAMES,
     columnsNamesJson: TABLES_COLUMNS_NAMES_JSON,
     names: TABLES_NAMES,
     namesIndexes: TABLES_NAMES_INDEXES,
-    definitionTypes: TABLES_DEFINITION_TYPES,
-    definitionIndexes: TABLES_DEFINITION_INDEXES,
+    definitionTypes: TABLES_DEFINITION_TYPES as WritableDeep<typeof TABLES_DEFINITION_TYPES>,
+    definitionIndexes: TABLES_DEFINITION_INDEXES as WritableDeep<typeof TABLES_DEFINITION_INDEXES>,
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
         (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as Record<TablesDefinitionsNames, CustomEntry>

@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
@@ -37,7 +38,7 @@ function generateTapRequest(tapType: string, legNumber: number) {
     );
 }
 
-export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
+export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
     index: 4,
     name: 'ThreeWindingsTransformers',
     ...typeAndFetchers(EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER),
@@ -428,4 +429,4 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfProperties,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

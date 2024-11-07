@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
-export const FIELD_OPTIONS: {
-    [key: string]: FieldOptionType;
-} = {
+export const FIELD_OPTIONS = {
     PROPERTY: {
         id: FieldType.PROPERTY,
         label: 'Property',
@@ -220,7 +219,7 @@ export const FIELD_OPTIONS: {
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },
-};
+} as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 
 export const EQUIPMENTS_FIELDS = {
     [EquipmentType.SUBSTATION]: [FIELD_OPTIONS.PROPERTY],
@@ -293,4 +292,4 @@ export const EQUIPMENTS_FIELDS = {
     ],
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],
-};
+} as const;

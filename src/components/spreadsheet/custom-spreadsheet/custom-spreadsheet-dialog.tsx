@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { WritableDeep } from 'type-fest';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
 import {
@@ -19,7 +20,6 @@ import {
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     getEmptySpreadsheetFormSchema,
@@ -34,7 +34,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
-import { TABLES_DEFINITIONS } from '../config/config-tables';
+import { TABLES_DEFINITIONS, type TablesDefinitionsType } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
@@ -43,6 +43,7 @@ import { getSpreadsheetModel } from 'services/spreadsheet';
 import { SortWay } from 'hooks/use-aggrid-sort';
 import { typeAndFetchers } from '../config/equipment/common-config';
 import { SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
     selectedOption: { id: string; label: string } | undefined;
@@ -88,7 +89,9 @@ export default function CustomSpreadsheetConfigDialog({
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
     const getTableColumns = useCallback((type: EQUIPMENT_TYPES) => {
-        const tableDef = TABLES_DEFINITIONS.find((tabDef) => tabDef.type === type);
+        const tableDef = (TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>).find(
+            (tabDef) => tabDef.type === type
+        );
         return tableDef ? tableDef.columns : [];
     }, []);
 

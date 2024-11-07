@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import {
@@ -47,10 +49,10 @@ const generateEditableNumericColumnDefinition = (
         ...(excludeFromGlobalFilter && {
             getQuickFilterText: excludeFromGlobalFilter,
         }),
-    };
+    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 };
 
-export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
+export const VOLTAGE_LEVEL_TAB_DEF = {
     index: 1,
     name: 'VoltageLevels',
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
@@ -159,4 +161,4 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

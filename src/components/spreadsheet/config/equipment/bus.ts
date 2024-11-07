@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import {
@@ -16,7 +17,7 @@ import {
 } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
 
-export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
+export const BUS_TAB_DEF = {
     index: 14,
     name: 'Buses',
     ...typeAndFetchers(EQUIPMENT_TYPES.BUS),
@@ -73,4 +74,4 @@ export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
         },
         genericColumnOfProperties,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

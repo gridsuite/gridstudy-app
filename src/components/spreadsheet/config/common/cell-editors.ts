@@ -21,6 +21,7 @@ import {
 } from '../../utils/equipment-table-editors';
 import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
+import type { Writable } from 'type-fest';
 
 export type ICustomCellEditorParams<TData = any, TValue = any, TContext = any> = Omit<
     ICellEditorParams<TData, TValue, TContext>,
@@ -43,7 +44,7 @@ export function numericalCellEditorConfig<TData = any, TContext = any>(
             gridApi: params.api,
             colDef: params.colDef,
         }),
-    };
+    } as const;
 }
 
 export function booleanCellEditorConfig<TData = any, TValue = any, TContext = any>(
@@ -59,12 +60,12 @@ export function booleanCellEditorConfig<TData = any, TValue = any, TContext = an
             gridApi: params.api,
             colDef: params.colDef,
         }),
-    };
+    } as const;
 }
 
 export function enumCellEditorConfig<TData = any, TContext = any>(
     getDefaultValue: (params: ICellEditorParams<TData, string, TContext>) => string,
-    enumOptions: EnumOption[]
+    enumOptions: EnumOption[] | Readonly<EnumOption[]>
 ) {
     return {
         cellEditor: EnumListField,
@@ -72,12 +73,12 @@ export function enumCellEditorConfig<TData = any, TContext = any>(
             params: ICustomCellEditorParams<TData, string, TContext>
         ): EquipmentTableEnumEditorProps<TData, TContext> => ({
             defaultValue: getDefaultValue(params),
-            enumOptions: enumOptions,
+            enumOptions: enumOptions as Writable<typeof enumOptions>,
             gridContext: params.context,
             gridApi: params.api,
             colDef: params.colDef,
         }),
-    };
+    } as const;
 }
 
 export function standardSelectCellEditorConfig<TData = any, TValue = any, TContext = any>(
@@ -90,5 +91,5 @@ export function standardSelectCellEditorConfig<TData = any, TValue = any, TConte
         ): ISelectCellEditorParams<TValue> => ({
             values: getValues(params),
         }),
-    };
+    } as const;
 }
