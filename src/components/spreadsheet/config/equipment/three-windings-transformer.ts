@@ -8,7 +8,6 @@
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
@@ -180,8 +179,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Ratio', 1),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger1?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger1 = {
                     ...params.data.ratioTapChanger1,
                     tapPosition: params.newValue,
@@ -227,8 +226,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Ratio', 2),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger2?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger2 = {
                     ...params.data.ratioTapChanger2,
                     tapPosition: params.newValue,
@@ -274,8 +273,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Ratio', 3),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger3?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger3 = {
                     ...params.data.ratioTapChanger3,
                     tapPosition: params.newValue,
@@ -312,8 +311,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 1),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger1?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger1 = {
                     ...params.data.phaseTapChanger1,
                     tapPosition: params.newValue,
@@ -359,8 +358,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 2),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger2?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger2 = {
                     ...params.data.phaseTapChanger2,
                     tapPosition: params.newValue,
@@ -406,8 +405,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 3),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger3?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger3 = {
                     ...params.data.phaseTapChanger3,
                     tapPosition: params.newValue,
@@ -463,7 +462,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

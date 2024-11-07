@@ -14,7 +14,7 @@ import {
     NumericalField,
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type { EditableCallback, ValueGetterFunc, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -132,7 +132,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             ...editableColumnConfig,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
                     participate: params.newValue,
@@ -171,8 +171,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.activePowerControl?.droop,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.activePowerControl?.droop,
+            valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
                     droop: params.newValue,
@@ -353,11 +353,11 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => {
+            valueGetter: (params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.coordinatedReactiveControl = {
                     ...params.data.coordinatedReactiveControl,
                     qPercent: params.newValue,
@@ -386,8 +386,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorShortCircuit?.directTransX,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
+            valueSetter: (params) => {
                 params.data.generatorShortCircuit = {
                     ...params.data.generatorShortCircuit,
                     directTransX: params.newValue,
@@ -416,8 +416,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorShortCircuit?.stepUpTransformerX,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
+            valueSetter: (params) => {
                 params.data.generatorShortCircuit = {
                     ...params.data.generatorShortCircuit,
                     stepUpTransformerX: params.newValue,
@@ -446,8 +446,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     plannedActivePowerSetPoint: params.newValue,
@@ -476,8 +476,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.marginalCost,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     marginalCost: params.newValue,
@@ -511,8 +511,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                 maxExpression: 1,
                 minExpression: 0,
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.plannedOutageRate,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     plannedOutageRate: params.newValue,
@@ -543,8 +543,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                 maxExpression: 1,
                 minExpression: 0,
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.forcedOutageRate,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     forcedOutageRate: params.newValue,
@@ -606,7 +606,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

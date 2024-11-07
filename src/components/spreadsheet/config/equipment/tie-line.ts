@@ -8,7 +8,6 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
@@ -134,7 +133,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g1),
+            valueGetter: (params) => unitToMicroUnit(params.data.g1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -143,7 +142,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g2),
+            valueGetter: (params) => unitToMicroUnit(params.data.g2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -152,7 +151,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b1),
+            valueGetter: (params) => unitToMicroUnit(params.data.b1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -161,7 +160,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b2),
+            valueGetter: (params) => unitToMicroUnit(params.data.b2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

@@ -8,7 +8,6 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
@@ -106,7 +105,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

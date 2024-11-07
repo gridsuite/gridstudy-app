@@ -9,7 +9,6 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -152,7 +151,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'SwitchedOnMaxQAtNominalV',
             field: 'switchedOnQAtNominalV',
             numeric: true,
-            valueGetter: (params: ValueGetterParams) =>
+            valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
@@ -181,7 +180,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'SwitchedOnMaxSusceptance',
             field: 'switchedOnSusceptance',
             numeric: true,
-            valueGetter: (params: ValueGetterParams) =>
+            valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
@@ -211,7 +210,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

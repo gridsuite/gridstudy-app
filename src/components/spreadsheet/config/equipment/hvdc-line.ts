@@ -8,7 +8,6 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
@@ -20,7 +19,7 @@ import {
     propertiesGetter,
     typeAndFetchers,
 } from './common-config';
-import { MEDIUM_COLUMN_WIDTH, LARGE_COLUMN_WIDTH } from '../../utils/constants';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 
 export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
     index: 10,
@@ -154,7 +153,7 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

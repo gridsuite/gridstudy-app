@@ -14,7 +14,7 @@ import {
     TWTRegulatingTerminalEditor,
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type { EditableCallback, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
+import type { EditableCallback } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -207,12 +207,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
+            valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
             cellStyle: editableCellStyle,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data.ratioTapChanger || {}),
                     hasLoadTapChangingCapabilities: params.newValue,
@@ -239,8 +239,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.regulationMode,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.ratioTapChanger?.regulationMode,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     regulationMode: params.newValue,
@@ -283,7 +283,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     targetV: params.newValue,
@@ -309,7 +309,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     targetDeadband: params.newValue,
@@ -321,8 +321,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.regulationType,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.ratioTapChanger?.regulationType,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     regulationType: params.newValue,
@@ -346,8 +346,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
             ...getDefaultEnumConfig(Object.values(SIDE)),
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.regulationSide,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     regulationSide: params.newValue,
@@ -375,7 +375,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
             ...defaultTextFilterConfig,
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
+            valueGetter: (params) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
             cellStyle: (params) => (isEditableTwtRatioRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
@@ -413,7 +413,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     values: generateTapPositions(params.data?.ratioTapChanger),
                 };
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     lowTapPosition: params.newValue,
@@ -430,7 +430,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RatioHighTapPosition',
             field: 'ratioTapChanger.highTapPosition',
             ...defaultNumericFilterConfig,
-            valueGetter: (params: ValueGetterParams) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
+            valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -439,8 +439,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             numeric: true,
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...params.data.ratioTapChanger,
                     tapPosition: params.newValue,
@@ -467,8 +467,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
             ...getDefaultEnumConfig(Object.values(PHASE_REGULATION_MODES)),
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger?.regulationMode,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationMode: params.newValue,
@@ -493,7 +493,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger?.regulationValue,
+            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationValue,
             getQuickFilterText: excludeFromGlobalFilter,
             editable: (params) =>
                 hasTwtPhaseTapChangerAndEditable(params) &&
@@ -509,7 +509,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationValue: params.newValue,
@@ -537,7 +537,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     targetDeadband: params.newValue,
@@ -549,8 +549,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
             ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-            valueGetter: (params: ValueGetterParams) => params.data?.phaseTapChanger?.regulationType,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationType: params.newValue,
@@ -573,8 +573,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
             ...getDefaultEnumConfig(Object.values(SIDE)),
-            valueGetter: (params: ValueGetterParams) => params.data?.phaseTapChanger?.regulationSide,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationSide: params.newValue,
@@ -602,7 +602,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
             ...defaultTextFilterConfig,
-            valueGetter: (params: ValueGetterParams) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
+            valueGetter: (params) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
             cellStyle: (params) => (isEditableTwtPhaseRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
@@ -642,7 +642,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     values: generateTapPositions(params.data?.phaseTapChanger),
                 };
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     lowTapPosition: params.newValue,
@@ -659,7 +659,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseHighTapPosition',
             field: 'phaseTapChanger.highTapPosition',
             ...defaultNumericFilterConfig,
-            valueGetter: (params: ValueGetterParams) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
+            valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -668,8 +668,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             numeric: true,
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...params.data.phaseTapChanger,
                     tapPosition: params.newValue,
@@ -713,7 +713,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g),
+            valueGetter: (params) => unitToMicroUnit(params.data.g),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -722,7 +722,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b),
+            valueGetter: (params) => unitToMicroUnit(params.data.b),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -757,7 +757,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

@@ -9,7 +9,6 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type { ValueSetterParams } from 'ag-grid-community';
 import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -44,7 +43,7 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
             ...editableColumnConfig,
             cellEditor: SelectCountryField,
             cellRenderer: CountryCellRenderer,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.country = params?.newValue;
                 return true;
             },
@@ -58,7 +57,7 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },

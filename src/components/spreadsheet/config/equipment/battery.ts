@@ -8,7 +8,6 @@
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { BooleanListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import type { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
 import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
@@ -84,7 +83,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             ...editableColumnConfig,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
                     participate: params.newValue,
@@ -122,8 +121,8 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
                     rowData: params.data,
                 };
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.activePowerControl?.droop,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.activePowerControl?.droop,
+            valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
                     droop: params.newValue,
@@ -241,7 +240,7 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             cellRenderer: PropertiesCellRenderer,
             minWidth: 300,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.properties = params.newValue;
                 return true;
             },
