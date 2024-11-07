@@ -3779,6 +3779,25 @@ export const TABLES_DEFINITIONS = {
             },
         ],
     },
+    BUSBAR_SECTION: {
+        index: 16,
+        name: 'BusBarSections',
+        type: EQUIPMENT_TYPES.BUSBAR_SECTION,
+        fetchers: EQUIPMENT_FETCHERS.BUSBAR_SECTION,
+        columns: [
+            {
+                id: 'ID',
+                field: 'id',
+                isDefaultSort: true,
+                ...defaultTextFilterConfig,
+            },
+            {
+                id: 'VoltageLevelId',
+                field: 'voltageLevelId',
+                ...defaultTextFilterConfig,
+            },
+        ],
+    },
 };
 
 export const TABLES_COLUMNS_NAMES = Object.values(TABLES_DEFINITIONS)
