@@ -8,7 +8,7 @@
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
@@ -18,10 +18,10 @@ import {
     editableColumnConfig,
     excludeFromGlobalFilter,
     generateTapPositions,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { genericColumnOfProperties } from '../common/column-properties';
 
 function generateTapRequest(tapType: string, legNumber: number) {
     return (
@@ -455,18 +455,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfProperties,
     ],
 };

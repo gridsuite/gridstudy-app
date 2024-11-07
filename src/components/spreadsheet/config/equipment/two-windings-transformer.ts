@@ -15,8 +15,7 @@ import {
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
@@ -29,7 +28,6 @@ import {
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -37,6 +35,7 @@ import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE 
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { getComputedRegulationMode } from '../../../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
@@ -749,21 +748,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            ...editableColumnConfig,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
 };

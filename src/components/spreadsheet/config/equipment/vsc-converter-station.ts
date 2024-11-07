@@ -8,17 +8,17 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { genericColumnOfProperties } from '../common/column-properties';
 
 export const VSC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 12,
@@ -118,18 +118,6 @@ export const VSC_CONVERTER_STATION_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfProperties,
     ],
 };

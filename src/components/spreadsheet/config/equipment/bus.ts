@@ -8,15 +8,13 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { genericColumnOfProperties } from '../common/column-properties';
 
 export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
     index: 14,
@@ -73,18 +71,6 @@ export const BUS_TAB_DEF: SpreadsheetTabDefinition = {
             fractionDigits: 0,
             ...defaultNumericFilterConfig,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfProperties,
     ],
 };

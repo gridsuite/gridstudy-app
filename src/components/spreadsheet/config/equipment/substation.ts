@@ -9,16 +9,13 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
     countryEnumFilterConfig,
     defaultTextFilterConfig,
     editableColumnConfig,
-    excludeFromGlobalFilter,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 
 export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
     index: 0,
@@ -49,21 +46,6 @@ export const SUBSTATION_TAB_DEF: SpreadsheetTabDefinition = {
             },
             ...countryEnumFilterConfig,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            ...editableColumnConfig,
-            valueGetter: propertiesGetter, // FIXME try valueFormatter ?
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
     ],
 };

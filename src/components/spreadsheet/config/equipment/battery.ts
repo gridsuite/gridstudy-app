@@ -8,8 +8,7 @@
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { BooleanListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
@@ -17,10 +16,10 @@ import {
     defaultTextFilterConfig,
     editableColumnConfig,
     excludeFromGlobalFilter,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 
 export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
     index: 9,
@@ -232,21 +231,6 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            ...editableColumnConfig,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
 };

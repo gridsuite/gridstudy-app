@@ -9,8 +9,7 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
@@ -20,11 +19,11 @@ import {
     excludeFromGlobalFilter,
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 
 export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
     index: 7,
@@ -202,21 +201,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            ...editableColumnConfig,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
 };

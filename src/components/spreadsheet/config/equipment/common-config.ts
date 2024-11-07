@@ -13,7 +13,7 @@ import {
     FILTER_TEXT_COMPARATORS,
 } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
-import type { CellStyleFunc, EditableCallback, ValueGetterFunc } from 'ag-grid-community';
+import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';
 import EnumCellRenderer from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
@@ -209,15 +209,4 @@ export const defaultNumericFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.NUMBER,
         filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
     },
-};
-
-export const propertiesGetter: ValueGetterFunc = (params) => {
-    const properties = params?.data?.properties;
-    if (properties && Object.keys(properties).length) {
-        return Object.keys(properties)
-            .map((property) => property + ' : ' + properties[property])
-            .join(' | ');
-    } else {
-        return null;
-    }
 };

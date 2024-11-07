@@ -15,8 +15,7 @@ import {
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
@@ -27,11 +26,11 @@ import {
     excludeFromGlobalFilter,
     getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -598,21 +597,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             },
             cellEditorPopup: true,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            ...editableColumnConfig,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
 };
