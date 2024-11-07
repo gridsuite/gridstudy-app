@@ -15,11 +15,25 @@ import {
 } from '../../../../../utils/field-constants';
 import yup from 'components/utils/yup-config';
 import { Schema } from 'yup';
-import { Assignment, DataType } from './assignment.type';
+import { Assignment, DataType, FieldValue } from './assignment.type';
 import { FIELD_OPTIONS } from './assignment-constants';
 
 export const getDataType = (fieldName?: string | null) => {
-    return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName)?.dataType;
+    return getFieldOption(fieldName)?.dataType;
+};
+
+export const getFieldOption = (fieldName?: string | null) => {
+    return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
+};
+
+export const convertOutputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
+    const fieldOption = getFieldOption(fieldName);
+    return fieldOption?.outputConverter ? fieldOption.outputConverter(Number(fieldValue)) : fieldValue;
+};
+
+export const convertInputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
+    const fieldOption = getFieldOption(fieldName);
+    return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
 };
 
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
@@ -54,8 +68,8 @@ export function getAssignmentsSchema() {
                     return schema.nullable();
                 }),
                 [VALUE_FIELD]: yup
-                    .mixed<string | number | boolean>()
-                    .when([EDITED_FIELD], ([editedField], schema) => {
+                    .mixed<FieldValue>()
+                    .when([EDITED_FIELD], ([editedField]) => {
                         const dataType = getDataType(editedField);
                         return getValueSchema(dataType);
                     })
