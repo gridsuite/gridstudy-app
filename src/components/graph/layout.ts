@@ -92,7 +92,30 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[], nodeP
             ...node.data,
             fixedY: ajustedRow * nodeHeight,
         };
-
     });
     return [...newNodes];
+}
+
+export function hasNodeMultipleChildren(nodes: CurrentTreeNode[], nodeId: string) {
+    return nodes.filter((node) => node.parentId === nodeId).length > 1;
+}
+
+export function isNodeASibling(nodes: CurrentTreeNode[], nodeId: string) {
+    const parentNode = nodes.find((node) => node.id === nodeId)?.parentId;
+    if (parentNode) {
+        return hasNodeMultipleChildren(nodes, parentNode);
+    }
+    // Root node has no parents
+    return false;
+}
+
+export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: string) {
+    const node = nodes.find((node) => node.id === nodeId);
+    if (node) {
+        if (isNodeASibling(nodes, node.id)) {
+            return nodeId;
+        }
+        return getFirstAncestorIdWithSibling(nodes, node.parentId);
+    }
+    return null;
 }

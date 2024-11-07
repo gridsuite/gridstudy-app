@@ -189,6 +189,30 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     )}
                 </Box>
                 <Box sx={getStyleForBottomBanner(props.data.globalBuildStatus)}></Box>
+                {debug && (
+                    <Box
+                        sx={{
+                            display: 'block',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            backgroundColor: 'yellow',
+                            color: 'red',
+                            fontSize: '20px',
+                            width: '60px',
+                            textAlign: 'left',
+                            paddingLeft: '3px',
+                        }}
+                        onClick={() => {
+                            navigator.clipboard.writeText(props.id).catch((err) => {
+                                console.error('Failed to copy text: ', err);
+                            });
+                            console.error('NODE ID COPIED IN CLIPBOARD: ' + props.id); // TODO Remove all this before merge
+                        }}
+                    >
+                        {props.id.substring(0, 3)}
+                    </Box>
+                )}
                 <Box sx={styles.labelWrapper}>
                     <span
                         style={{
