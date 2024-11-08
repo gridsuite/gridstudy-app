@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { type UUID } from 'crypto';
 import type { ReadonlyDeep, Writable } from 'type-fest';
 import { getEnumLabelById } from '../../../utils/utils';
 import {
@@ -20,6 +19,7 @@ import EnumCellRenderer, { type EnumCellRendererProps } from '../../utils/enum-c
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
+    fetchBusbarSections,
     fetchBuses,
     fetchDanglingLines,
     fetchGenerators,
@@ -36,6 +36,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../../services/study/network';
+import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 
 type TapPositionsType = {
@@ -43,9 +44,7 @@ type TapPositionsType = {
     highTapPosition: number;
 };
 
-export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) => Promise<any>;
-
-export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] => {
+export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentFetcher[] => {
     switch (equipmentType) {
         case EQUIPMENT_TYPES.SUBSTATION:
             return [fetchSubstations];
@@ -79,12 +78,12 @@ export const getFetchers = (equipmentType: EQUIPMENT_TYPES): EquipmentFetcher[] 
             return [fetchLccConverterStations];
         case EQUIPMENT_TYPES.BUS:
             return [fetchBuses];
-        default:
-            return [];
+        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+            return [fetchBusbarSections];
     }
 };
 
-export const typeAndFetchers = <TEquipType extends EQUIPMENT_TYPES>(equipmentType: TEquipType) =>
+export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equipmentType: TEquipType) =>
     ({
         type: equipmentType,
         fetchers: getFetchers(equipmentType),

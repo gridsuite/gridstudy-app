@@ -592,7 +592,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
-            // reset the network modification and computing logs filter when the current node changes
+            // reset the network modification and computing logs filter when the user changes the current node
             dispatch(resetLogsFilter());
         }
     }, [currentNode, dispatch, dofetchNetworkModifications]);

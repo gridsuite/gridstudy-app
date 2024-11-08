@@ -306,7 +306,7 @@ import { NetworkModificationNodeData, NodeType, RootNodeData } from '../componen
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -421,10 +421,6 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<
-    EQUIPMENT_TYPES,
-    'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'
->;
 export type SpreadsheetFilterState = Record<string, UnknownArray>;
 
 export type DiagramState = {
@@ -582,7 +578,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
-    [EQUIPMENT_TYPES.DISCONNECTOR]: null,
+    [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
@@ -1740,6 +1736,7 @@ export enum EquipmentUpdateType {
     VOLTAGE_LEVELS = 'voltageLevels',
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
@@ -1776,6 +1773,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPM
             return EQUIPMENT_TYPES.SUBSTATION;
         case 'buses':
             return EQUIPMENT_TYPES.BUS;
+        case 'busbarSections':
+            return EQUIPMENT_TYPES.BUSBAR_SECTION;
         default:
             return;
     }

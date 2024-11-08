@@ -5,14 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { UUID } from 'crypto';
 import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import type { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
-import type { EquipmentFetcher } from './equipment/common-config';
+
+export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) => Promise<any>;
+
+export type SpreadsheetEquipmentType = Exclude<
+    EQUIPMENT_TYPES,
+    | EQUIPMENT_TYPES.HVDC_CONVERTER_STATION
+    | EQUIPMENT_TYPES.SWITCH
+    | EQUIPMENT_TYPES.BREAKER
+    | EQUIPMENT_TYPES.DISCONNECTOR
+>;
 
 export interface SpreadsheetTabDefinition<TData = any, TValue = any> {
     index: number;
     name: string;
-    type: EQUIPMENT_TYPES;
+    type: SpreadsheetEquipmentType;
     fetchers: EquipmentFetcher[];
     columns: CustomColDef<TData, TValue>[];
     groovyEquipmentGetter?: string;

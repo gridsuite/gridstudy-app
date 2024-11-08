@@ -43,7 +43,6 @@ import {
     EquipmentUpdateType,
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
-    SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -69,7 +68,7 @@ import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
-import { SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 type MutableUnknownArray = unknown[];
 

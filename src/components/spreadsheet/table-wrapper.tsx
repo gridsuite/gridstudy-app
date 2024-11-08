@@ -87,6 +87,7 @@ import {
 import { mergeSx } from '../utils/functions';
 import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -143,7 +144,7 @@ interface TableWrapperProps {
     studyUuid: string;
     currentNode: CurrentTreeNode;
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: SpreadsheetEquipmentType;
     equipmentChanged: boolean;
     disabled: boolean;
 }
