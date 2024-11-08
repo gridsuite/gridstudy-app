@@ -136,11 +136,9 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 return true;
             },
             getQuickFilterText: excludeFromGlobalFilter,
-            ...{
-                crossValidation: {
-                    requiredOn: {
-                        dependencyColumn: 'identifiableShortCircuit.ipMin',
-                    },
+            crossValidation: {
+                requiredOn: {
+                    dependencyColumn: 'identifiableShortCircuit.ipMin',
                 },
             },
         },
