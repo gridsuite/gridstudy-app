@@ -102,7 +102,7 @@ const CustomHeaderComponent = ({
     const [selectedFilterData, setSelectedFilterData] = useState();
     const [decimalPrecision, setDecimalPrecision] = useState(
         intl.formatMessage({
-            id: 'filter.precision',
+            id: 'filter.rounded',
         })
     );
 
@@ -147,7 +147,7 @@ const CustomHeaderComponent = ({
         if (isNumberInput) {
             const precisionLabel =
                 intl.formatMessage({
-                    id: 'filter.precision',
+                    id: 'filter.rounded',
                 }) +
                 ' : ' +
                 1 / Math.pow(10, countDecimalPlaces(value));
