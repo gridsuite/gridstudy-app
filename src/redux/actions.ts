@@ -36,7 +36,7 @@ import { UUID } from 'crypto';
 import { UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
 import {
     AppState,
     CurrentTreeNode,
@@ -46,6 +46,7 @@ import {
     SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
+    TablesDefinitionsType,
     TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
@@ -68,6 +69,7 @@ import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
+import GSMapEquipments from 'components/network/gs-map-equipments';
 
 type MutableUnknownArray = unknown[];
 
@@ -186,7 +188,7 @@ export function updateEquipments(equipments: Record<EquipmentUpdateType, Identif
     };
 }
 
-type EquipmentToDelete = {
+export type EquipmentToDelete = {
     equipmentType: SpreadsheetEquipmentType;
     equipmentId: string;
 };
@@ -230,14 +232,14 @@ export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction
 
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export type MapEquipmentsCreatedAction = Readonly<Action<typeof MAP_EQUIPMENTS_CREATED>> & {
-    mapEquipments: MapEquipments;
+    mapEquipments: GSMapEquipments;
     newLines?: MutableUnknownArray;
     newTieLines?: MutableUnknownArray;
     newSubstations?: MutableUnknownArray;
     newHvdcLines?: MutableUnknownArray;
 };
 export function mapEquipmentsCreated(
-    mapEquipments: MapEquipments,
+    mapEquipments: GSMapEquipments,
     newLines?: MutableUnknownArray,
     newTieLines?: MutableUnknownArray,
     newSubstations?: MutableUnknownArray,
@@ -1158,6 +1160,14 @@ export function setLogsFilter(
     };
 }
 
+export const RESET_LOGS_FILTER = 'RESET_LOGS_FILTER';
+export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
+export function resetLogsFilter(): ResetLogsFilterAction {
+    return {
+        type: RESET_LOGS_FILTER,
+    };
+}
+
 export const TABLE_SORT = 'TABLE_SORT';
 export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
     table: TableSortKeysType;
@@ -1191,3 +1201,55 @@ export function setCustomColumDefinitions(
         filter: filter,
     };
 }
+
+export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
+
+export type UpdateTableDefinitionAction = {
+    type: typeof UPDATE_TABLE_DEFINITION;
+    payload: { key: string; value: TablesDefinitionsType; customColumns: ColumnWithFormula[] };
+};
+
+export const updateTableDefinition = (
+    key: string,
+    value: any,
+    customColumns: ColumnWithFormula[]
+): UpdateTableDefinitionAction => ({
+    type: UPDATE_TABLE_DEFINITION,
+    payload: { key, value, customColumns },
+});
+
+export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
+
+export type AddFilterForNewSpreadsheetAction = {
+    type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
+    payload: { newEquipmentType: string; value: MutableUnknownArray };
+};
+
+export const addFilterForNewSpreadsheet = (
+    newEquipmentType: string,
+    value: MutableUnknownArray
+): AddFilterForNewSpreadsheetAction => ({
+    type: ADD_FILTER_FOR_NEW_SPREADSHEET,
+    payload: {
+        newEquipmentType,
+        value,
+    },
+});
+
+export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
+
+export type AddSortForNewSpreadsheetAction = {
+    type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
+    payload: { newEquipmentType: string; value: SortConfigType[] };
+};
+
+export const addSortForNewSpreadsheet = (
+    newEquipmentType: string,
+    value: SortConfigType[]
+): AddSortForNewSpreadsheetAction => ({
+    type: ADD_SORT_FOR_NEW_SPREADSHEET,
+    payload: {
+        newEquipmentType,
+        value,
+    },
+});

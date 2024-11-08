@@ -8,20 +8,21 @@ import { useMemo, useCallback } from 'react';
 import { AppState } from 'redux/reducer';
 import { create, all, bignumber } from 'mathjs';
 import { useSelector } from 'react-redux';
-import { TABLES_DEFINITION_INDEXES, TABLES_NAMES } from '../utils/config-tables';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 
 export function useCustomColumn(tabIndex: number) {
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
+    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
 
     const { onSortChanged, sortConfig } = useAgGridSort(
         SPREADSHEET_SORT_STORE,
-        TABLES_DEFINITION_INDEXES.get(tabIndex)!.type as string
+        tablesDefinitionIndexes.get(tabIndex)!.type as string
     );
 
     const math = useMemo(() => {

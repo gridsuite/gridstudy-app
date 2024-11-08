@@ -5,19 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
 import { gridItem } from '../dialogUtils';
 import { FormattedMessage } from 'react-intl';
-import ExpandableInput from '../../utils/rhf-inputs/expandable-input';
+import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     SEGMENT_DISTANCE_VALUE,
-    SEGMENT_TYPE_ID,
     SEGMENT_REACTANCE,
     SEGMENT_RESISTANCE,
     SEGMENT_SUSCEPTANCE,
+    SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
     SEGMENTS,
     TOTAL_REACTANCE,
@@ -28,7 +28,7 @@ import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { emptyLineSegment } from './line-type-segment-dialog';
-import { calculateResistance, calculateReactance, calculateSusceptance } from '../../utils/utils';
+import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
 import { Box } from '@mui/system';
