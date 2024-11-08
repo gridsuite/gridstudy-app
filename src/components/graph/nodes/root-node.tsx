@@ -15,6 +15,7 @@ import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState, RootNode as RootNodeType } from 'redux/reducer';
 import { Theme } from '@mui/material/styles';
+import { Box } from '@mui/system';
 
 const styles = {
     rootSelected: (theme: Theme) => ({
@@ -39,7 +40,7 @@ const styles = {
         },
     }),
 };
-
+const debug = false; // TODO remove this before merge
 const RootNode = (props: NodeProps<RootNodeType>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const isSelectedNode = () => {
@@ -57,6 +58,30 @@ const RootNode = (props: NodeProps<RootNodeType>) => {
                 }}
                 isConnectable={false}
             />
+            {debug && (
+                <Box
+                    sx={{
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'yellow',
+                        color: 'red',
+                        fontSize: '36px',
+                        width: '70px',
+                        textAlign: 'left',
+                        paddingLeft: '3px',
+                    }}
+                    onClick={() => {
+                        navigator.clipboard.writeText(props.id).catch((err) => {
+                            console.error('Failed to copy text: ', err);
+                        });
+                        console.error('NODE ID COPIED IN CLIPBOARD: ' + props.id); // TODO Remove all this before merge
+                    }}
+                >
+                    {props.id.substring(0, 3)}
+                </Box>
+            )}
             <Tooltip title={props.data.caseName} placement="top" disableHoverListener={!props.data.caseName}>
                 <IconButton sx={isSelectedNode() ? styles.rootSelected : styles.root}>
                     {(props.data.globalBuildStatus === BUILD_STATUS.BUILDING && <CircularProgress size={24} />) || (

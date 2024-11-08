@@ -6,6 +6,7 @@
  */
 
 import { CurrentTreeNode } from 'redux/reducer';
+import { NodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -46,7 +47,12 @@ function isSpaceEmpty(placementArray, row, column) {
     return true;
 }
 
-export function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
+/**
+ * Builds an array representing the placements of nodes for the tree.
+ * This array is then used to compute each node's position before being used by ReactFlow.
+ * @param nodes
+ */
+function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
     const newPlacements = [];
     let currentMaxColumn = 0;
 
@@ -71,26 +77,29 @@ export function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
             }
         }
     });
-    return [...newPlacements];
+    return newPlacements;
 }
 
-export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[], nodePlacements: []) {
+/**
+ * Updates the tree nodes' x and y positions for ReactFlow display in the tree
+ * @param nodes
+ * @param nodePlacements
+ */
+export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
+    const nodePlacements = getNodePositionsFromTreeNodes(newNodes);
     // Reactflow draws it's node with a position relative to the node's parent (the parent is in the node's parentId field).
     // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
     // the parent's position from the current node's position, this gives us the relative position to the parent.
     newNodes.forEach((node) => {
         const storedPosition = getPosition(nodePlacements, node.id);
-        const parentStoredPosition = getPosition(nodePlacements, node.parentId);
+        const parentStoredPosition =
+            node.type !== NodeType.ROOT ? getPosition(nodePlacements, node.parentId) : { x: 0, y: 0 };
         const ajustedColumn = (storedPosition?.column || 0) - (parentStoredPosition?.column || 0);
         const ajustedRow = (storedPosition?.row || 0) - (parentStoredPosition?.row || 0);
         node.position = {
             x: ajustedColumn * nodeWidth,
             y: ajustedRow * nodeHeight,
-        };
-        node.data = {
-            ...node.data,
-            fixedY: ajustedRow * nodeHeight,
         };
     });
     return [...newNodes];

@@ -902,7 +902,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
@@ -925,7 +924,6 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
@@ -942,8 +940,6 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
-
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
         }
     });
@@ -962,7 +958,6 @@ export const reducer = createReducer(initialState, (builder) => {
                     .find((parentId) => !action.networkModificationTreeNodes.includes(parentId!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
-                newModel.updateLayout();
                 state.networkModificationTreeModel = newModel;
 
                 // check if current node is in the nodes deleted list

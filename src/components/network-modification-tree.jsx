@@ -19,12 +19,6 @@ import {
     BackgroundVariant,
 } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
-import GridOnIcon from '@mui/icons-material/GridOn';
-import GridOffIcon from '@mui/icons-material/GridOff';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
-import MobiledataOffIcon from '@mui/icons-material/MobiledataOff';
-import WaterfallChartIcon from '@mui/icons-material/WaterfallChart';
-import SignalCellularAltIcon from '@mui/icons-material/SignalCellularAlt';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
@@ -37,15 +31,7 @@ import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
-import {
-    getFirstAncestorIdWithSibling,
-    getNodePositionsFromTreeNodes,
-    getTreeNodesWithUpdatedPositions,
-    isNodeASibling,
-    nodeGrid,
-    nodeWidth,
-    snapGrid,
-} from './graph/layout';
+import { getFirstAncestorIdWithSibling, getTreeNodesWithUpdatedPositions, nodeGrid, snapGrid } from './graph/layout';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -61,13 +47,9 @@ const NetworkModificationTree = ({
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
 
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
-    const [isGridVisible, setIsGridVisible] = useState(false);
 
-    const [nodePlacements, setNodePlacements] = useState([]);
     const { setViewport, fitView } = useReactFlow();
     const [isDragging, setIsDragging] = useState(false);
-    const [enableFreeVerticalMovement, setEnableFreeVerticalMovement] = useState(false);
-    const [dragWholeColumn, setDragWholeColumn] = useState(true);
 
     const nodeColor = useCallback(
         (node) => {
@@ -96,24 +78,20 @@ const NetworkModificationTree = ({
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-    // Node position initialization
-    useLayoutEffect(() => {
-        if (treeModel) {
-            setNodePlacements(getNodePositionsFromTreeNodes(treeModel.treeNodes));
-        }
-    }, [treeModel]);
-
-    const updateNodePositions = useCallback(() => {
-        if (treeModel) {
-            setNodes(getTreeNodesWithUpdatedPositions(treeModel.treeNodes, nodePlacements));
-            setEdges([...treeModel.treeEdges]);
-            window.requestAnimationFrame(() => fitView());
-        }
-    }, [treeModel, nodePlacements, fitView, setNodes, setEdges]);
+    const updateNodePositions = useCallback(
+        (model) => {
+            if (model && model.treeNodes?.length > 0 && model.treeEdges?.length > 0) {
+                setNodes(getTreeNodesWithUpdatedPositions(model.treeNodes));
+                setEdges([...model.treeEdges]);
+                window.requestAnimationFrame(() => fitView());
+            }
+        },
+        [fitView, setNodes, setEdges]
+    );
 
     useLayoutEffect(() => {
-        updateNodePositions();
-    }, [updateNodePositions]);
+        updateNodePositions(treeModel);
+    }, [updateNodePositions, treeModel]);
 
     const onNodeClick = useCallback(
         (event, node) => {
@@ -127,15 +105,6 @@ const NetworkModificationTree = ({
 
     const toggleMinimap = useCallback(() => {
         setIsMinimapOpen((isMinimapOpen) => !isMinimapOpen);
-    }, []);
-    const toggleShowGrid = useCallback(() => {
-        setIsGridVisible((isGridVisible) => !isGridVisible);
-    }, []);
-    const toggleEnableFreeVerticalMovement = useCallback(() => {
-        setEnableFreeVerticalMovement((enableFreeVerticalMovement) => !enableFreeVerticalMovement);
-    }, []);
-    const toggleDragWholeColumn = useCallback(() => {
-        setDragWholeColumn((dragWholeColumn) => !dragWholeColumn);
     }, []);
 
     const [x, y, zoom] = useStore((state) => state.transform);
@@ -207,106 +176,52 @@ const NetworkModificationTree = ({
     };
 
     const handleNodesChange = (changes) => {
-        if (!enableFreeVerticalMovement) {
-            // Restrict the node movement (with drag) to only the X axis.
-            // We force the Y position to stay the same while moving the node.
-            changes
-                .filter((change) => change.type === 'position')
-                .map((change) => {
-                    const initialYPosition = nodes.find((node) => node.id === change.id)?.position?.y || 0;
-                    const newPosition = {
-                        ...change.position,
-                        y: initialYPosition,
-                    };
-                    change.position = newPosition;
-                    return change;
-                });
-        }
+        // When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
+        // an ancestor which has siblings.
+        // To do so, we force the dragged node's positition to stay the same and create a new change for the
+        // ancestor, with the ancestor's positions updated by the dragged node's movement.
+        // Because a node's position is relative to its parent, by "not moving" the dragged node and "moving"
+        // the dragged node's ancestor, we effectively move the ancestor and all its children, including the
+        // dragged node.
+        if (changes.length === 1 && changes[0].type === 'position') {
+            const currentChange = changes[0]; // corresponds to the dragged node
 
-        if (dragWholeColumn) {
-            // When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
-            // an ancestor which has siblings.
-            // To do so, we force the dragged node's positition to stay the same and create a new change for the
-            // ancestor, with the ancestor's positions updated by the dragged node's movement.
-            // Because a node's position is relative to its parent, by "not moving" the dragged node and "moving"
-            // the dragged node's ancestor, we effectively move the ancestor and all its children, including the
-            // dragged node.
-            if (changes.length === 1 && changes[0].type === 'position') {
-                const currentChange = changes[0]; // corresponds to the dragged node
-                const firstAncestorIdWithSibling = getFirstAncestorIdWithSibling(nodes, changes[0].id);
+            const draggedNode = nodes.find((node) => node.id === currentChange.id);
+            const initialDraggedNodeXPosition = draggedNode.position.x;
+            const initialDraggedNodeYPosition = draggedNode.position.y;
+            const firstAncestorIdWithSibling = getFirstAncestorIdWithSibling(nodes, draggedNode.id);
 
-                // We test if we should move the ancestor instead of the currently moving node
-                if (firstAncestorIdWithSibling && firstAncestorIdWithSibling !== currentChange.id) {
-                    // We find the movement of the dragged node and apply it to its ancestor instead.
-                    const ancestorNode = nodes.find((node) => node.id === firstAncestorIdWithSibling);
-                    const initialAncestorXPosition = ancestorNode.position.x;
-                    const initialAncestorYPosition = ancestorNode.position.y;
-                    const draggedNode = nodes.find((node) => node.id === currentChange.id);
-                    const initialDraggedNodeXPosition = draggedNode.position.x;
-                    const initialDraggedNodeYPosition = draggedNode.position.y;
-                    const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
-                    const draggedNodeDeltaY = currentChange.position.y - initialDraggedNodeYPosition;
+            // We do not allow vertical movement, so we force the Y value of the dragged node to stays the same
+            currentChange.position.y = initialDraggedNodeYPosition;
 
-                    currentChange.position = {
-                        // this updates the entry in "changes"
-                        x: initialDraggedNodeXPosition,
-                        y: initialDraggedNodeYPosition,
-                    };
+            // We test if we should move the ancestor instead of the currently moving node
+            if (firstAncestorIdWithSibling && firstAncestorIdWithSibling !== currentChange.id) {
+                // We find the movement of the dragged node and apply it to its ancestor instead.
+                const ancestorNode = nodes.find((node) => node.id === firstAncestorIdWithSibling);
+                const initialAncestorXPosition = ancestorNode.position.x;
+                const initialAncestorYPosition = ancestorNode.position.y;
+                const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
 
-                    const newChangeForAncestor = {
-                        id: firstAncestorIdWithSibling,
-                        type: currentChange.type,
-                        dragging: currentChange.dragging,
-                        position: {
-                            x: initialAncestorXPosition + draggedNodeDeltaX,
-                            y: initialAncestorYPosition + draggedNodeDeltaY,
-                        },
-                    };
+                // We move the ancestor instead of the dragged node, so we force it's X value to its initial value.
+                currentChange.position.x = initialDraggedNodeXPosition;
 
-                    changes.push(newChangeForAncestor);
-                }
+                const newChangeForAncestor = {
+                    id: firstAncestorIdWithSibling,
+                    type: currentChange.type,
+                    dragging: currentChange.dragging,
+                    position: {
+                        x: initialAncestorXPosition + draggedNodeDeltaX,
+                        y: initialAncestorYPosition, // We do not allow vertical movement, so the Y value stays the same
+                    },
+                };
+                changes.push(newChangeForAncestor);
             }
         }
         return onNodesChange(changes);
     };
 
-    const NodePlacementsDisplay = ({ nodePlacements }) => {
-        const squareSize = 30;
-        return (
-            <Box>
-                {nodePlacements.map((array, row) => (
-                    <Box key={row}>
-                        {array.map((value, columns) => (
-                            <Box
-                                key={`${row}-${columns}`}
-                                sx={{
-                                    position: 'absolute',
-                                    display: 'block',
-                                    top: (row * squareSize) / 2 + 'px',
-                                    left: columns * squareSize + 'px',
-                                    border: 'solid 1px red',
-                                    backgroundColor: 'gold',
-                                    width: squareSize + 'px',
-                                    height: squareSize / 2 + 'px',
-                                    zIndex: 199,
-                                    fontSize: '10px',
-                                    color: isNodeASibling(nodes, value) ? 'green' : 'red',
-                                }}
-                            >
-                                {value.substring(0, 3)}
-                            </Box>
-                        ))}
-                    </Box>
-                ))}
-            </Box>
-        );
-    };
-    const debug = false; // TODO remove this before merge
     return (
         <Box flexGrow={1}>
-            {debug && ( // TODO Remove this before merge
-                <NodePlacementsDisplay nodePlacements={nodePlacements} />
-            )}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
@@ -337,11 +252,11 @@ const NetworkModificationTree = ({
                     },
                 }}
             >
-                {isGridVisible && (
+                {isDragging && (
                     <Background
                         id="gridBackground"
                         color={'#0ca78933'}
-                        gap={isDragging && !enableFreeVerticalMovement ? [nodeWidth, 10000000] : nodeGrid}
+                        gap={nodeGrid}
                         variant={BackgroundVariant.Lines}
                         offset={[140, 80]}
                     />
@@ -388,38 +303,6 @@ const NetworkModificationTree = ({
                             </ControlButton>
                         </span>
                     </Tooltip>
-                    <Box sx={{ backgroundColor: '#5ba3ef', padding: '5px', left: '-5px', position: 'relative' }}>
-                        <span
-                            style={{
-                                top: '82px',
-                                left: '-18px',
-                                color: '#5ba3ef',
-                                position: 'absolute',
-                                width: 0,
-                                height: 0,
-                                transform: 'rotate(270deg)',
-                                display: 'inline-block',
-                                fontSize: 'smaller',
-                            }}
-                        >
-                            PROTOTYPE
-                        </span>
-                        <span>
-                            <ControlButton onClick={() => toggleShowGrid()}>
-                                {isGridVisible ? <GridOnIcon /> : <GridOffIcon />}
-                            </ControlButton>
-                        </span>
-                        <span>
-                            <ControlButton onClick={() => toggleEnableFreeVerticalMovement()}>
-                                {enableFreeVerticalMovement ? <ImportExportIcon /> : <MobiledataOffIcon />}
-                            </ControlButton>
-                        </span>
-                        <span>
-                            <ControlButton onClick={() => toggleDragWholeColumn()}>
-                                {dragWholeColumn ? <SignalCellularAltIcon /> : <WaterfallChartIcon />}
-                            </ControlButton>
-                        </span>
-                    </Box>
                 </Controls>
                 {isMinimapOpen && (
                     <MiniMap nodeColor={nodeColor} pannable inversePan zoomable zoomStep={1} nodeStrokeWidth={0} />

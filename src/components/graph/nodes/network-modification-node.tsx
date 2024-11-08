@@ -198,8 +198,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                             left: 0,
                             backgroundColor: 'yellow',
                             color: 'red',
-                            fontSize: '20px',
-                            width: '60px',
+                            fontSize: '36px',
+                            width: '70px',
                             textAlign: 'left',
                             paddingLeft: '3px',
                         }}
