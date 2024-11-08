@@ -10,7 +10,7 @@ import { Box } from '@mui/material';
 import LimitsPane from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import React from 'react';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
+import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
 
 const LineModificationDialogTabs = ({ studyUuid, currentNode, lineToModify, tabIndex }) => {
     return (

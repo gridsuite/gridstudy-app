@@ -210,7 +210,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName1,
                             connectionPosition: line.connectionPosition1,
                             voltageLevelId: line.voltageLevelId1,
-                            connected: line.connected1,
+                            terminalConnected: line.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -221,7 +221,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName2,
                             connectionPosition: line.connectionPosition2,
                             voltageLevelId: line.voltageLevelId2,
-                            connected: line.connected2,
+                            terminalConnected: line.connected2,
                         },
                         CONNECTIVITY_2
                     ),
