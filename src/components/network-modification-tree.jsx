@@ -224,7 +224,7 @@ const NetworkModificationTree = ({
         }
 
         if (dragWholeColumn) {
-            // When dragging a node, we not only drag all of its children, but also all of it's ancestor up to
+            // When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
             // an ancestor which has siblings.
             // To do so, we force the dragged node's positition to stay the same and create a new change for the
             // ancestor, with the ancestor's positions updated by the dragged node's movement.
@@ -248,7 +248,7 @@ const NetworkModificationTree = ({
                     const draggedNodeDeltaY = currentChange.position.y - initialDraggedNodeYPosition;
 
                     currentChange.position = {
-                        // updates the entry in "changes"
+                        // this updates the entry in "changes"
                         x: initialDraggedNodeXPosition,
                         y: initialDraggedNodeYPosition,
                     };
