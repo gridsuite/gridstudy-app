@@ -104,7 +104,7 @@ const withOperatingStatusMenu =
                     studyUuid,
                     currentNode?.id,
                     equipmentType,
-                    EQUIPMENT_INFOS_TYPES.LIST.type,
+                    EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
                     equipment.id,
                     false
                 ).then((value) => {
