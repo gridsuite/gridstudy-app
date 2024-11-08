@@ -151,8 +151,8 @@ const DeleteEquipmentForm = ({ studyUuid, currentNode, editData }) => {
     return (
         <>
             <Grid container spacing={2}>
-                <GridItem size={6}>{equipmentTypeField}</GridItem>
-                <GridItem size={6}>{equipmentField}</GridItem>
+                <GridItem>{equipmentTypeField}</GridItem>
+                <GridItem>{equipmentField}</GridItem>
             </Grid>
             {watchSpecificData?.specificType === HVDC_LINE_LCC_DELETION_SPECIFIC_TYPE && (
                 <HvdcLccDeletionSpecificForm />

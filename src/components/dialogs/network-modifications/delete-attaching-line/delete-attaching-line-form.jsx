@@ -96,8 +96,8 @@ const DeleteAttachingLineForm = ({ studyUuid, currentNode }) => {
             </Grid>
             <GridSection title="ReplacingLine" />
             <Grid container spacing={2}>
-                <GridItem size={6}>{replacingLineIdField}</GridItem>
-                <GridItem size={6}>{replacingLineNameField}</GridItem>
+                <GridItem>{replacingLineIdField}</GridItem>
+                <GridItem>{replacingLineNameField}</GridItem>
             </Grid>
         </>
     );

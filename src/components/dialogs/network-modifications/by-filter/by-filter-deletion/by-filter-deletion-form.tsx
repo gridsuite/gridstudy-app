@@ -73,8 +73,8 @@ const ByFilterDeletionForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                <GridItem size={6}>{equipmentTypeField}</GridItem>
-                <GridItem size={6}>{filtersField}</GridItem>
+                <GridItem>{equipmentTypeField}</GridItem>
+                <GridItem>{filtersField}</GridItem>
             </Grid>
         </>
     );

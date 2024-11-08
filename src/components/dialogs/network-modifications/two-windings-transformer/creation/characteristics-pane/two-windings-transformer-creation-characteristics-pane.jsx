@@ -60,7 +60,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
                 <Grid container spacing={2}>
                     <Grid item container direction="column">
                         <Grid container direction="column" spacing={2}>
-                            <GridItem size={6}>{connectivity1Field}</GridItem>
+                            <GridItem>{connectivity1Field}</GridItem>
                         </Grid>
                     </Grid>
                 </Grid>

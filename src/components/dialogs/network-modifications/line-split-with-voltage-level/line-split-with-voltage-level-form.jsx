@@ -96,13 +96,13 @@ const LineSplitWithVoltageLevelForm = ({
             </Grid>
             <GridSection title="Line1" />
             <Grid container spacing={2}>
-                <GridItem size={6}>{newLine1IdField}</GridItem>
-                <GridItem size={6}>{newLine1NameField}</GridItem>
+                <GridItem>{newLine1IdField}</GridItem>
+                <GridItem>{newLine1NameField}</GridItem>
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2}>
-                <GridItem size={6}>{newLine2IdField}</GridItem>
-                <GridItem size={6}>{newLine2NameField}</GridItem>
+                <GridItem>{newLine2IdField}</GridItem>
+                <GridItem>{newLine2NameField}</GridItem>
             </Grid>
             {voltageLevelDialogOpen && (
                 <VoltageLevelCreationDialog

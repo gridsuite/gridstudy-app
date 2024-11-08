@@ -184,24 +184,24 @@ const VscHvdcLinePane: FunctionComponent<VscHvdcLinePaneProps> = ({
         <Grid container spacing={2}>
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                <GridItem size={6}>{dcNominalVoltageField}</GridItem>
-                <GridItem size={6}>{dcResistanceField}</GridItem>
-                <GridItem size={6}>{maximumActivePowerField}</GridItem>
+                <GridItem>{dcNominalVoltageField}</GridItem>
+                <GridItem>{dcResistanceField}</GridItem>
+                <GridItem>{maximumActivePowerField}</GridItem>
             </Grid>
 
             <GridSection title={'Limits'} />
             <Grid container spacing={2}>
-                <GridItem size={6}>{operatorActivePowerLimitSide1Field}</GridItem>
-                <GridItem size={6}>{operatorActivePowerLimitSide2Field}</GridItem>
+                <GridItem>{operatorActivePowerLimitSide1Field}</GridItem>
+                <GridItem>{operatorActivePowerLimitSide2Field}</GridItem>
             </Grid>
 
             <GridSection title={'Setpoints'} />
             <Grid container spacing={2}>
-                <GridItem size={6}>{converterModeField}</GridItem>
-                <GridItem size={6}>{activePowerField}</GridItem>
+                <GridItem>{converterModeField}</GridItem>
+                <GridItem>{activePowerField}</GridItem>
                 <GridItem size={12}>{AngleDroopActivePowerControl}</GridItem>
-                <GridItem size={6}>{droopField}</GridItem>
-                <GridItem size={6}>{p0Field}</GridItem>
+                <GridItem>{droopField}</GridItem>
+                <GridItem>{p0Field}</GridItem>
             </Grid>
 
             <PropertiesForm isModification={isEquipementModification} />

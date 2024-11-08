@@ -106,11 +106,11 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
             </Grid>
             <GridSection title="ReplacingLines" />
             <Grid container spacing={2}>
-                <GridItem size={6}>{newLine1IdField}</GridItem>
-                <GridItem size={6}>{newLine1NameField}</GridItem>
+                <GridItem>{newLine1IdField}</GridItem>
+                <GridItem>{newLine1NameField}</GridItem>
                 <Box sx={{ width: '100%' }} />
-                <GridItem size={6}>{newLine2IdField}</GridItem>
-                <GridItem size={6}>{newLine2NameField}</GridItem>
+                <GridItem>{newLine2IdField}</GridItem>
+                <GridItem>{newLine2NameField}</GridItem>
             </Grid>
         </>
     );

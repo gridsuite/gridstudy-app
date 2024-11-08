@@ -148,8 +148,8 @@ const DynamicSimulationParametersSelector = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column" item xs={12} justifyContent={'center'} padding={1}>
-                        <Grid item>
-                            <GridItem size={6}>{mappingNameField}</GridItem>
+                        <Grid container item>
+                            <GridItem>{mappingNameField}</GridItem>
                         </Grid>
                     </Grid>
                 </DialogContent>
