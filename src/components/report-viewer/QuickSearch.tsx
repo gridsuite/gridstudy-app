@@ -15,7 +15,7 @@ interface QuickSearchProps {
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
-    setSearchResults: (results: string[]) => void;
+    setSearchResults: (results: number[]) => void;
 }
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
@@ -67,7 +67,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             value={searchTerm}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={intl.formatMessage({ id: 'searchPlaceholder' })}
+            placeholder={intl.formatMessage({ id: 'searchPlaceholderLog' })}
             sx={{ width: '30%' }}
             InputProps={{
                 startAdornment: (

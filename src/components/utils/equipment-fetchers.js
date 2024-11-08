@@ -22,6 +22,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
     fetchTieLines,
+    fetchBusbarSections,
 } from '../../services/study/network';
 
 export const EQUIPMENT_FETCHERS = {
@@ -43,4 +44,5 @@ export const EQUIPMENT_FETCHERS = {
     SWITCH: [],
     BUS: [fetchBuses],
     TIE_LINE: [fetchTieLines],
+    BUSBAR_SECTION: [fetchBusbarSections],
 };

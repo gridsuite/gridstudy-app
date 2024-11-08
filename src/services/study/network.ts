@@ -207,7 +207,6 @@ export function fetchSubstationsMapInfos(
         EQUIPMENT_TYPES.SUBSTATION,
         EQUIPMENT_INFOS_TYPES.MAP.type,
         inUpstreamBuiltParentNode,
-        undefined
     );
 }
 
@@ -466,7 +465,17 @@ export function fetchBuses(studyUuid: UUID, currentNodeUuid: UUID, substationsId
     );
 }
 
-export const fetchNetworkExistence = (studyUuid: UUID) => {
+export function fetchBusbarSections(studyUuid, currentNodeUuid, substationsIds) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.BUSBAR_SECTION,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}
+
+export const fetchNetworkExistence = (studyUuid:UUID) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
 
     return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
