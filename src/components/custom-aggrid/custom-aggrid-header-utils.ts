@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomColDef, FilterSelectorType, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
+import { CustomColDef, FILTER_DATA_TYPES, FilterSelectorType } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
@@ -80,9 +80,3 @@ export const mapFieldsToColumnsFilter = (
         column: columnToFieldMapping[filter.column],
     }));
 };
-
-export enum BooleanFilterValue {
-    TRUE = 'true',
-    FALSE = 'false',
-    UNDEFINED = 'undefinedValue',
-}

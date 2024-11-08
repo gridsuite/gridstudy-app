@@ -76,7 +76,7 @@ import {
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -592,7 +592,7 @@ const NetworkModificationNodeEditor = () => {
             setModifications([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
-            // reset the network modification and computing logs filter when the current node changes
+            // reset the network modification and computing logs filter when the user changes the current node
             dispatch(resetLogsFilter());
         }
     }, [currentNode, dispatch, dofetchNetworkModifications]);

@@ -1399,6 +1399,7 @@
     "stateEstimationError": "Une erreur est survenue lors de l'exécution de l'estimation d'état",
     "NoFilter": "Aucun filtre",
     "searchPlaceholder": "Recherche",
+    "searchPlaceholderLog": "Rechercher dans les Logs",
     "GeneratedModification": "Modification-générée",
     "guidancePopUp.title": "Sélection sur la carte",
     "guidancePopUp.firstVariant":"{symbol} Cliquez sur la carte pour commencer à dessiner un polygone.",
