@@ -19,29 +19,41 @@ import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter } from '../../utils/report/report-severity';
 import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
-import { Box } from '@mui/material';
+import { Box, Theme } from '@mui/material';
+import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { ReportLog, ReportType } from 'utils/report/report.type';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
-const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }) => {
+type LogTableProps = {
+    selectedReportId: string;
+    reportType: string;
+    reportNature: ReportType;
+    severities: string[];
+    onRowClick: (data: ReportLog) => void;
+};
+
+const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
-    const theme = useTheme();
+    const theme = useTheme<Theme>();
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs] = useReportFetcher(reportType);
+    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
     const { updateFilter, filterSelector } = useAggridRowFilter({
         filterType: LOGS_STORE_FIELD,
         filterTab: reportType,
         filterStoreAction: setLogsFilter,
     });
 
-    const [selectedRowIndex, setSelectedRowIndex] = useState(-1);
-    const [rowData, setRowData] = useState(null);
-    const [searchResults, setSearchResults] = useState([]);
+    const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
+    const [rowData, setRowData] = useState<ReportLog[] | null>(null);
+    const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
-    const gridRef = useRef(null);
+    const gridRef = useRef<AgGridReact>(null);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
@@ -52,18 +64,21 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     }, []);
 
     const refreshLogsOnSelectedReport = useCallback(() => {
-        if (severityFilter?.length === 0) {
+        if (severityFilter === 0) {
             setRowData([]);
             resetSearch();
             return;
         }
         fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
-            const transformedLogs = reportLogs.map((log) => ({
-                severity: log.severity.name,
-                message: log.message,
-                parentId: log.parentId,
-                backgroundColor: log.severity.colorName,
-            }));
+            const transformedLogs = reportLogs.map(
+                (log) =>
+                    ({
+                        severity: log.severity.name,
+                        message: log.message,
+                        parentId: log.parentId,
+                        backgroundColor: log.severity.colorName,
+                    } as unknown as ReportLog)
+            );
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
             resetSearch();
@@ -72,7 +87,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     useEffect(() => {
         // initialize the filter with the severities
-        if (filterSelector.length === 0 && severities?.length > 0) {
+        if (filterSelector?.length === 0 && severities?.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
@@ -89,7 +104,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         }
     }, [
         dispatch,
-        filterSelector.length,
+        filterSelector?.length,
         refreshLogsOnSelectedReport,
         reportNature,
         reportType,
@@ -101,14 +116,14 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const shouldDisplayFilterBadge = useMemo(() => {
         const defaultSeverityFilter = getDefaultSeverityFilter(severities);
 
-        const severitySet = new Set(severityFilter);
+        const severitySet: Set<string> = new Set(severityFilter);
         const defaultSeveritySet = new Set(defaultSeverityFilter);
 
         if (severitySet.size !== defaultSeveritySet.size) {
             return true;
         }
 
-        return ![...severitySet].every((severity) => defaultSeveritySet.has(severity));
+        return ![...severitySet].every((severity: string) => defaultSeveritySet.has(severity));
     }, [severityFilter, severities]);
 
     const COLUMNS_DEFINITIONS = useMemo(
@@ -145,7 +160,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
                 flex: 1,
-                cellRenderer: (param) =>
+                cellRenderer: (param: ICellRendererParams) =>
                     EllipsisCellRenderer({
                         param: param,
                         indexTextToHighlight: searchResults[currentResultIndex],
@@ -166,7 +181,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     );
 
     const handleRowClick = useCallback(
-        (row) => {
+        (row: CellClickedEvent) => {
             setSelectedRowIndex(row.rowIndex);
             onRowClick(row.data);
         },
@@ -174,8 +189,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     );
 
     const rowStyleFormat = useCallback(
-        (row) => {
-            if (row.index < 0) {
+        (row: RowClassParams): RowStyle => {
+            if (row.rowIndex && row.rowIndex < 0) {
                 return {};
             }
             return selectedRowIndex === row.rowIndex ? { backgroundColor: theme.palette.action.selected } : {};
@@ -183,7 +198,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         [selectedRowIndex, theme.palette.action.selected]
     );
 
-    const onGridReady = ({ api }) => {
+    const onGridReady = ({ api }: { api: GridApi }) => {
         api?.sizeColumnsToFit();
     };
 
@@ -193,8 +208,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         suppressMovable: true,
     };
 
-    // Function to scroll to the current match
-    const highlightAndScrollToMatch = useCallback((index, matches) => {
+    // Function to highlight the current match and scroll to it
+    const highlightAndScrollToMatch = useCallback((index: number, matches: number[]) => {
         if (!gridRef.current || matches.length === 0) {
             return;
         }
@@ -205,18 +220,18 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     }, []);
 
     const handleSearch = useCallback(
-        (searchTerm) => {
+        (searchTerm: string) => {
             if (!gridRef.current || !searchTerm) {
                 resetSearch();
                 return;
             }
 
             const api = gridRef.current.api;
-            const matches = [];
+            const matches: number[] = [];
             const searchTermLower = searchTerm.toLowerCase();
-            api.forEachNode((node) => {
+            api.forEachNode((node: IRowNode) => {
                 const { message } = node.data;
-                if (message?.toLowerCase().includes(searchTermLower)) {
+                if (node.rowIndex !== null && message?.toLowerCase().includes(searchTermLower)) {
                     matches.push(node.rowIndex);
                 }
             });
@@ -231,7 +246,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     );
 
     const handleNavigate = useCallback(
-        (direction) => {
+        (direction: 'next' | 'previous') => {
             if (!gridRef.current || searchResults.length === 0) {
                 return;
             }

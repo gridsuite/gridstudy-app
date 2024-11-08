@@ -287,7 +287,7 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
-import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
 import { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
@@ -296,6 +296,7 @@ import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
+import GSMapEquipments from 'components/network/gs-map-equipments';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -409,7 +410,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'>;
+export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'>;
 export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType | string, UnknownArray>;
 
 export type DiagramState = {
@@ -455,7 +456,7 @@ export interface AppState extends CommonStoreState {
     notificationIdList: UUID[];
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
-    mapEquipments: MapEquipments | null;
+    mapEquipments: GSMapEquipments | null;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
@@ -571,6 +572,8 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
+    [EQUIPMENT_TYPES.DISCONNECTOR]: null,
+    [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
 interface TablesState {
@@ -725,6 +728,8 @@ const initialState: AppState = {
         [EQUIPMENT_TYPES.DANGLING_LINE]: [],
         [EQUIPMENT_TYPES.BUS]: [],
         [EQUIPMENT_TYPES.TIE_LINE]: [],
+        [EQUIPMENT_TYPES.DISCONNECTOR]: [],
+        [EQUIPMENT_TYPES.BUSBAR_SECTION]: [],
     },
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
@@ -814,9 +819,9 @@ export const reducer = createReducer(initialState, (builder) => {
         let newMapEquipments;
         //if it's not initialised yet we take the empty one given in action
         if (!state.mapEquipments) {
-            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
+            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
         } else {
-            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
+            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
         }
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
@@ -1746,6 +1751,7 @@ export enum EquipmentUpdateType {
     VOLTAGE_LEVELS = 'voltageLevels',
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
@@ -1782,6 +1788,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPM
             return EQUIPMENT_TYPES.SUBSTATION;
         case 'buses':
             return EQUIPMENT_TYPES.BUS;
+        case 'busbarSections':
+            return EQUIPMENT_TYPES.BUSBAR_SECTION;
         default:
             return;
     }
