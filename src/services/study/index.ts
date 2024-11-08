@@ -18,15 +18,14 @@ import { EquipmentType } from '@gridsuite/commons-ui';
 import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
 import { ComputingType } from '../../components/computing-status/computing-type';
 
-// TODO: does it make sense that studyUuid can be null?
-function safeEncodeURIComponent(value: string | null | undefined): string {
+export function safeEncodeURIComponent(value: string | null | undefined): string {
     return value != null ? encodeURIComponent(value) : '';
 }
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export const getStudyUrl = (studyUuid: UUID) => `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;
 
-export const getStudyUrlWithNodeUuid = (studyUuid: UUID | null, nodeUuid: UUID | undefined) =>
+export const getStudyUrlWithNodeUuid = (studyUuid: UUID | string | null, nodeUuid: UUID | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
 export const fetchStudy = (studyUuid: UUID) => {

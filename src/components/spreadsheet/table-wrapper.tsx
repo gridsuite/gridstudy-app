@@ -471,7 +471,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         return [...equipments];
     }, [equipments, disabled]);
 
-    //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
+    //TODO fix network.ts update methods so that when an existing entry is modified or removed the whole collection
     //is reinstanciated in order to notify components using it.
     //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
     //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
