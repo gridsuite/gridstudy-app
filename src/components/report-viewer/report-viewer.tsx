@@ -62,7 +62,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
-        setSeverities(reportTree.severities);
+        setSeverities([...new Set(reportTree.severities)]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
@@ -73,7 +73,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
         if (selectedReportId !== reportId) {
             setSelectedReportId(reportId);
-            setSeverities(reportTreeData.current[reportId].severities);
+            setSeverities([...new Set(reportTreeData.current[reportId].severities)]);
             setSelectedReportType(reportTreeData.current[reportId].type);
         }
     };
