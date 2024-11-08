@@ -5,16 +5,19 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { MessageDescriptor } from 'react-intl';
+import type { ReactiveCapabilityCurvePointsData } from '../dialogs/network-modifications/vsc/converter-station/converter-station-utils';
+
 const NO_ERROR = {
     error: false,
     errorMsgId: null,
-};
+} as const;
 
-/*
+/**
  * Returns a Number corresponding to provided value, or NaN if not a valid number per
  * Gridsuite's standard (allows either coma or dots for decimal).
  */
-export function toNumber(value) {
+export function toNumber(value: unknown) {
     if (typeof value === 'number') {
         return value;
     } else if (typeof value === 'string') {
@@ -27,11 +30,12 @@ export function toNumber(value) {
     return NaN;
 }
 
-/*
+//type IsEmptyString<T> = T extends null | undefined ? true  : T extends string  ? Trim<T> extends ''  ? true  : false : false;
+/**
  * Returns true if value is either undefined, null, empty or only contains whitespaces.
  * Otherwise, if value is a boolean or a number, returns false.
  */
-export function isBlankOrEmpty(value) {
+export function isBlankOrEmpty<T>(value: T) {
     if (value === undefined || value === null) {
         return true;
     }
@@ -41,23 +45,23 @@ export function isBlankOrEmpty(value) {
     return false;
 }
 
-/*
+/**
  * Returns true if the value is a valid number, per Gridsuite's standard (allows either coma or dots for decimal).
  */
-export function validateValueIsANumber(value) {
+export function validateValueIsANumber(value: unknown) {
     if (value == null || value === '') {
         return false;
     }
     return !isNaN(toNumber(value));
 }
 
-/*
+/**
  * Returns true IF and ONLY IF :
  * - the first parameter value is a valid number
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is lower or equal to the second's
  */
-export function validateValueIsLessThanOrEqualTo(value, valueToCompareTo) {
+export function validateValueIsLessThanOrEqualTo(value: unknown, valueToCompareTo: unknown) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -65,13 +69,13 @@ export function validateValueIsLessThanOrEqualTo(value, valueToCompareTo) {
     );
 }
 
-/*
+/**
  * Returns true IF and ONLY IF :
  * - the first parameter value is a valid number
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater or equal to the second's
  */
-export function validateValueIsGreaterThanOrEqualTo(value, valueToCompareTo) {
+export function validateValueIsGreaterThanOrEqualTo(value: unknown, valueToCompareTo: unknown) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -79,13 +83,13 @@ export function validateValueIsGreaterThanOrEqualTo(value, valueToCompareTo) {
     );
 }
 
-/*
+/**
  * Returns true IF and ONLY IF :
  * - the first parameter value is a valid number
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is lower than the second's
  */
-export function validateValueIsLessThan(value, valueToCompareTo) {
+export function validateValueIsLessThan(value: unknown, valueToCompareTo: unknown) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -93,13 +97,13 @@ export function validateValueIsLessThan(value, valueToCompareTo) {
     );
 }
 
-/*
+/**
  * Returns true IF and ONLY IF :
  * - the first parameter value is a valid number
  * - the second parameter valueToCompareTo is a valid number
  * - the first parameter's value is greater than the second's
  */
-export function validateValueIsGreaterThan(value, valueToCompareTo) {
+export function validateValueIsGreaterThan(value: unknown, valueToCompareTo: unknown) {
     return (
         validateValueIsANumber(value) &&
         validateValueIsANumber(valueToCompareTo) &&
@@ -107,11 +111,11 @@ export function validateValueIsGreaterThan(value, valueToCompareTo) {
     );
 }
 
-/*
+/**
  * Rule : if the field is NOT required (toValidate.isFieldRequired is either undefined or equals to false),
  * then any check that applies to the value will pass if the value is empty.
  */
-export function validateField(value, toValidate, disabled = false) {
+export function validateField(value: unknown, toValidate: any, disabled = false) {
     if (disabled && !toValidate.forceValidation) {
         return NO_ERROR;
     }
@@ -153,14 +157,13 @@ export function validateField(value, toValidate, disabled = false) {
 }
 
 /**
- * Checks if the provided reactive capabilty curve is valid. Returns a list of
- * errors if any, or an empty array otherwise.
+ * Checks if the provided reactive capability curve is valid.
  * @param reactiveCapabilityCurve an array of reactive capability curve points of
  * this format : [{ p: '', minQ: '', maxQ: '' }, { p: '', minQ: '', maxQ: '' }]
  * @returns An array of error messages. If there is no error, returns an empty array.
  */
-export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
-    let errorMessages = [];
+export function checkReactiveCapabilityCurve(reactiveCapabilityCurve: ReactiveCapabilityCurvePointsData[]) {
+    let errorMessages: NonNullable<MessageDescriptor['id']>[] = [];
 
     // At least four points must be set
     if (reactiveCapabilityCurve.length < 2) {
@@ -203,7 +206,7 @@ export function checkReactiveCapabilityCurve(reactiveCapabilityCurve) {
     return errorMessages;
 }
 
-function makeErrorRecord(msgId) {
+function makeErrorRecord(msgId: MessageDescriptor['id']) {
     if (msgId === undefined) {
         console.warn('Error message id missing in validation function !');
     }
@@ -216,4 +219,4 @@ function makeErrorRecord(msgId) {
 export const exportedForTesting = {
     toNumber,
     isBlankOrEmpty,
-};
+} as const;

@@ -40,7 +40,7 @@ import { isNodeBuilt, isNodeInNotificationList } from '../graph/util/model-funct
 import { AutoSizer } from 'react-virtualized';
 import Diagram from './diagram';
 import { SLD_DISPLAY_MODE } from '../network/constants';
-import { useNameOrId } from '../utils/equipmentInfosHandler';
+import useNameOrId from '../utils/use-name-or-id';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
@@ -210,17 +210,15 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                         let nadTitle = '';
                         let substationsIds: UUID[] = [];
                         svg.additionalMetadata?.voltageLevels
-                            .map((vl: { name: string; substationId: UUID }) => ({
+                            .map((vl) => ({
                                 name: getNameOrId(vl),
                                 substationId: vl.substationId,
                             }))
                             .sort(
-                                (
-                                    vlA: { name: string; substationId: UUID },
-                                    vlB: { name: string; substationId: UUID }
-                                ) => vlA.name.toLowerCase().localeCompare(vlB.name.toLowerCase())
+                                (vlA, vlB) =>
+                                    vlA.name?.toLowerCase()?.localeCompare(vlB.name?.toLowerCase() ?? '') ?? -1
                             )
-                            .forEach((voltageLevel: { name: string; substationId: UUID }) => {
+                            .forEach((voltageLevel) => {
                                 const name = voltageLevel.name;
                                 if (name !== null) {
                                     nadTitle += (nadTitle !== '' ? ', ' : '') + name;

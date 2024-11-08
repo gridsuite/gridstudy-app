@@ -12,7 +12,7 @@ import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } f
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { useIsAnyNodeBuilding } from 'components/utils/is-any-node-building-hook';
+import useIsAnyNodeBuilding from '../utils/is-any-node-building-hook';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { useParameterState } from '../dialogs/parameters/parameters';

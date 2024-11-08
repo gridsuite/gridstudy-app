@@ -288,7 +288,7 @@ import {
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
-import { UnknownArray, ValueOf } from 'type-fest';
+import type { UnknownArray, ValueOf } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';

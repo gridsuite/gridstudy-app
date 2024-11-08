@@ -15,7 +15,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { useNameOrId } from '../utils/equipmentInfosHandler';
+import useNameOrId from '../utils/use-name-or-id';
 import { getCommonEquipmentType } from 'components/diagrams/diagram-common';
 import { isNodeReadOnly } from '../graph/util/model-functions';
 import { CustomMenuItem, CustomNestedMenuItem } from '../utils/custom-nested-menu';
@@ -237,6 +237,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.id}
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId(equipment)}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
@@ -247,6 +248,7 @@ const BaseEquipmentMenu = ({
                                 key={voltageLevel.id}
                                 equipmentType={EquipmentType.VOLTAGE_LEVEL}
                                 equipmentId={voltageLevel.id}
+                                // @ts-expect-error TS2322: Type string | null is not assignable to type string
                                 itemText={getNameOrId(voltageLevel)}
                                 handleViewInSpreadsheet={handleViewInSpreadsheet}
                             />
@@ -257,6 +259,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.id}
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId(equipment)}
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
@@ -267,6 +270,7 @@ const BaseEquipmentMenu = ({
                                 key={voltageLevel.id}
                                 equipmentType={EquipmentType.VOLTAGE_LEVEL}
                                 equipmentId={voltageLevel.id}
+                                // @ts-expect-error TS2322: Type string | null is not assignable to type string
                                 itemText={getNameOrId(voltageLevel)}
                                 handleDeleteEquipment={handleDeleteEquipment}
                             />
@@ -278,6 +282,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.id}
                             equipmentType={equipmentType}
                             equipmentId={equipment.id}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId(equipment)}
                             handleOpenModificationDialog={handleOpenModificationDialog}
                         />
@@ -288,6 +293,7 @@ const BaseEquipmentMenu = ({
                                 key={voltageLevel.id}
                                 equipmentType={EquipmentType.VOLTAGE_LEVEL}
                                 equipmentId={voltageLevel.id}
+                                // @ts-expect-error TS2322: Type string | null is not assignable to type string
                                 itemText={getNameOrId(voltageLevel)}
                                 handleOpenModificationDialog={handleOpenModificationDialog}
                             />
@@ -308,6 +314,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
                             equipmentId={equipment.substationId}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId({
                                 name: equipment.substationName,
                                 id: equipment.substationId,
@@ -319,6 +326,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.id}
                             equipmentType={EquipmentType.VOLTAGE_LEVEL}
                             equipmentId={equipment.id}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId(equipment)}
                             handleViewInSpreadsheet={handleViewInSpreadsheet}
                         />
@@ -329,6 +337,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
                             equipmentId={equipment.substationId}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId({
                                 name: equipment.substationName,
                                 id: equipment.substationId,
@@ -340,6 +349,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.id}
                             equipmentType={EquipmentType.VOLTAGE_LEVEL}
                             equipmentId={equipment.id}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId(equipment)}
                             handleDeleteEquipment={handleDeleteEquipment}
                         />
@@ -350,6 +360,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.substationId}
                             equipmentType={EquipmentType.SUBSTATION}
                             equipmentId={equipment.substationId}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId({
                                 name: equipment.substationName,
                                 id: equipment.substationId,
@@ -361,6 +372,7 @@ const BaseEquipmentMenu = ({
                             key={equipment.id}
                             equipmentType={EquipmentType.VOLTAGE_LEVEL}
                             equipmentId={equipment.id}
+                            // @ts-expect-error TS2322: Type string | null is not assignable to type string
                             itemText={getNameOrId(equipment)}
                             handleOpenModificationDialog={handleOpenModificationDialog}
                         />

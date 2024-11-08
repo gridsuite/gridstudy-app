@@ -19,11 +19,11 @@ import EnergiseOtherSideIcon from '@mui/icons-material/FirstPage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { useIntl } from 'react-intl';
-import { useNameOrId } from '../utils/equipmentInfosHandler';
+import useNameOrId from '../utils/use-name-or-id';
 import PropTypes from 'prop-types';
 import { EquipmentInfos, EquipmentType, OperatingStatus, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeReadOnly } from '../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../utils/is-any-node-building-hook';
+import useIsAnyNodeBuilding from '../utils/is-any-node-building-hook';
 import { BRANCH_SIDE } from '../network/constants';
 import { EQUIPMENT_INFOS_TYPES } from '../utils/equipment-types';
 import {

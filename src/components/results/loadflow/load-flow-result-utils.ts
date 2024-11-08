@@ -147,6 +147,7 @@ export const makeData = (
             subjectId: overloadedEquipment.subjectId,
             value: overloadedEquipment.value,
             actualOverloadDuration:
+                // @ts-expect-error TS2367: This comparison appears to be unintentional because the types 300 and 2147483647 have no overlap. => never true
                 overloadedEquipment.actualOverloadDuration === UNDEFINED_ACCEPTABLE_DURATION
                     ? null
                     : overloadedEquipment.actualOverloadDuration,

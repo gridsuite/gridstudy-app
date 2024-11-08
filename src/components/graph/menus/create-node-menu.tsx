@@ -8,7 +8,7 @@
 import React, { useCallback, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
+import useIsAnyNodeBuilding from '../../utils/is-any-node-building-hook';
 import { useSelector } from 'react-redux';
 import ChildMenuItem from './create-child-menu-item';
 import { NodeInsertModes } from '../nodes/node-insert-modes';

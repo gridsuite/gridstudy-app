@@ -6,7 +6,7 @@
  */
 
 import { EQUIPMENT_TYPES } from './equipment-types';
-import { ValueOf } from 'type-fest';
+import type { ValueOf } from 'type-fest';
 
 export const FEEDER_TYPES = {
     ...EQUIPMENT_TYPES,

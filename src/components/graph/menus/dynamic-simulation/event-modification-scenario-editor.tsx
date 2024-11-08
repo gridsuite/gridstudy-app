@@ -13,7 +13,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
-import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
+import useIsAnyNodeBuilding from '../../../utils/is-any-node-building-hook';
 import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../../redux/actions';
 import { EVENT_CRUD_FINISHED, EventCrudType } from 'components/network/constants.type';
 import { UUID } from 'crypto';

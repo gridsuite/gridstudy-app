@@ -25,7 +25,7 @@ import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu
 import withOperatingStatusMenu from '../../menus/operating-status-menu';
 import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
+import useIsAnyNodeBuilding from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
