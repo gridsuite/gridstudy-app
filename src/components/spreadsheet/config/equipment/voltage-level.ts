@@ -22,35 +22,30 @@ import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
 
-const generateEditableNumericColumnDefinition = (
-    id: string,
-    field: string,
-    fractionDigits: number,
-    changeCmd: string,
-    optional: boolean,
-    minExpression: string | undefined,
-    maxExpression: string | undefined,
-    excludeFromGlobalFilter: () => string
-) => {
+function generateEditableNumericColumnDefinition<
+    TId extends string,
+    TField extends string,
+    TCmd extends string,
+    TMin extends string | undefined,
+    TMax extends string | undefined
+>(id: TId, field: TField, changeCmd: TCmd, minExpression: TMin, maxExpression: TMax) {
     return {
         id: id,
         field: field,
         numeric: true,
         ...defaultNumericFilterConfig,
-        fractionDigits: fractionDigits,
+        fractionDigits: 1,
         changeCmd: changeCmd,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
         crossValidation: {
-            optional: optional,
+            optional: true,
             minExpression: minExpression,
             maxExpression: maxExpression,
         },
-        ...(excludeFromGlobalFilter && {
-            getQuickFilterText: excludeFromGlobalFilter,
-        }),
+        getQuickFilterText: excludeFromGlobalFilter,
     } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-};
+}
 
 export const VOLTAGE_LEVEL_TAB_DEF = {
     index: 1,
@@ -92,22 +87,16 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         generateEditableNumericColumnDefinition(
             'LowVoltageLimitkV',
             'lowVoltageLimit',
-            1,
             'equipment.setLowVoltageLimit({})\n',
-            true,
             undefined,
-            'highVoltageLimit',
-            excludeFromGlobalFilter
+            'highVoltageLimit'
         ),
         generateEditableNumericColumnDefinition(
             'HighVoltageLimitkV',
             'highVoltageLimit',
-            1,
             'equipment.setHighVoltageLimit({})\n',
-            true,
             'lowVoltageLimit',
-            undefined,
-            excludeFromGlobalFilter
+            undefined
         ),
         {
             id: 'IpMin',
@@ -125,9 +114,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 };
                 return true;
             },
-            ...(excludeFromGlobalFilter && {
-                getQuickFilterText: excludeFromGlobalFilter,
-            }),
+            getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 optional: true,
             },
@@ -148,9 +135,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
                 };
                 return true;
             },
-            ...(excludeFromGlobalFilter && {
-                getQuickFilterText: excludeFromGlobalFilter,
-            }),
+            getQuickFilterText: excludeFromGlobalFilter,
             ...{
                 crossValidation: {
                     requiredOn: {
