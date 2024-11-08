@@ -11,7 +11,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { alpha, Checkbox } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { treeItemClasses, TreeView, TreeItem } from '@mui/x-tree-view';
+import { treeItemClasses, SimpleTreeView, TreeItem } from '@mui/x-tree-view';
 
 export const CheckState = {
     UNCHECKED: 0,
@@ -200,9 +200,9 @@ const CheckboxTreeview = forwardRef(({ data: items, checkAll, onSelectionChanged
     };
 
     return (
-        <TreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />} {...rest}>
+        <SimpleTreeView defaultCollapseIcon={<ExpandMoreIcon />} defaultExpandIcon={<ChevronRightIcon />} {...rest}>
             {renderItems(items)}
-        </TreeView>
+        </SimpleTreeView>
     );
 });
 

@@ -25,8 +25,9 @@ export enum ReportType {
 
 export type ReportTree = Report & {
     type: ReportType;
+    label: string;
     highestSeverity: ReportSeverity;
-    subReports: ReportTree[];
+    children: ReportTree[];
 };
 
 export type Report = {
@@ -34,7 +35,7 @@ export type Report = {
     severities: string[];
     parentId: string | null;
     id: string;
-    subReports: Report[];
+    subReports?: Report[];
 };
 
 export type Log = {
