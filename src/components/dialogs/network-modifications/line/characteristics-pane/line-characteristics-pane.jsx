@@ -130,11 +130,11 @@ const LineCharacteristicsPane = ({
             {displayConnectivity && (
                 <>
                     <GridSection title="Connectivity" customStyle={styles.h3} />
-                    <GridSection title="Side1" heading="4" />
+                    <GridSection title="Side1" heading={4} />
                     <Grid container spacing={2}>
                         <GridItem size={12}>{connectivity1Field}</GridItem>
                     </Grid>
-                    <GridSection title="Side2" heading="4" />
+                    <GridSection title="Side2" heading={4} />
                     <Grid container spacing={2}>
                         <GridItem size={12}>{connectivity2Field}</GridItem>
                     </Grid>
@@ -145,12 +145,12 @@ const LineCharacteristicsPane = ({
                 <GridItem size={4}>{seriesResistanceField}</GridItem>
                 <GridItem size={4}>{seriesReactanceField}</GridItem>
             </Grid>
-            <GridSection title="Side1" heading="4" />
+            <GridSection title="Side1" heading={4} />
             <Grid container spacing={2}>
                 <GridItem size={4}>{shuntConductance1Field}</GridItem>
                 <GridItem size={4}>{shuntSusceptance1Field}</GridItem>
             </Grid>
-            <GridSection title="Side2" heading="4" />
+            <GridSection title="Side2" heading={4} />
             <Grid container spacing={2}>
                 <GridItem size={4}>{shuntConductance2Field}</GridItem>
                 <GridItem size={4}>{shuntSusceptance2Field}</GridItem>

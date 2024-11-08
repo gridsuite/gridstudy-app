@@ -159,12 +159,12 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
             <Grid container paddingTop={2} xl={6}>
                 <GridItem size={9}>{feederResult}</GridItem>
             </Grid>
-            <GridSection title="ShortCircuitPredefinedParameters" heading={'4'} />
+            <GridSection title="ShortCircuitPredefinedParameters" heading={4} />
             <Grid xl={6} container spacing={1} alignItems={'center'}>
                 <GridItem size={8}>{predefinedParameters}</GridItem>
                 <GridItem size={4}>{statusToShow}</GridItem>
             </Grid>
-            <GridSection title="ShortCircuitCharacteristics" heading={'4'} />
+            <GridSection title="ShortCircuitCharacteristics" heading={4} />
             <Grid container>
                 <GridItem>{loads}</GridItem>
                 <GridItem>{shuntCompensators}</GridItem>
@@ -174,7 +174,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
                 <GridItem size={8}>{neutralPosition}</GridItem>
             </Grid>
 
-            <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
+            <GridSection title="ShortCircuitVoltageProfileMode" heading={4} />
             <Grid container>
                 <GridItem size={12}>{initialVoltageProfileModeField}</GridItem>
             </Grid>

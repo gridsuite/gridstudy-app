@@ -190,7 +190,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             <Grid container spacing={2}>
                 <GridItem size={4}>{permanentCurrentLimit1Field}</GridItem>
             </Grid>
-            <GridSection title="TemporaryCurrentLimitsText" heading="4" />
+            <GridSection title="TemporaryCurrentLimitsText" heading={4} />
             <DndTable
                 arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
                 useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
@@ -208,7 +208,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             <Grid container spacing={2}>
                 <GridItem size={4}>{permanentCurrentLimit2Field}</GridItem>
             </Grid>
-            <GridSection title="TemporaryCurrentLimitsText" heading="4" />
+            <GridSection title="TemporaryCurrentLimitsText" heading={4} />
             <Grid container spacing={2}>
                 <DndTable
                     arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
