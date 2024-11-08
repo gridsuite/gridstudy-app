@@ -411,10 +411,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<
-    EQUIPMENT_TYPES,
-    'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'
->;
+export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'HVDC_CONVERTER_STATION' | 'SWITCH' | 'BREAKER'>;
 export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType | string, UnknownArray>;
 
 export type DiagramState = {
@@ -577,6 +574,7 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
     [EQUIPMENT_TYPES.DISCONNECTOR]: null,
+    [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
 interface TablesState {
@@ -732,6 +730,7 @@ const initialState: AppState = {
         [EQUIPMENT_TYPES.BUS]: [],
         [EQUIPMENT_TYPES.TIE_LINE]: [],
         [EQUIPMENT_TYPES.DISCONNECTOR]: [],
+        [EQUIPMENT_TYPES.BUSBAR_SECTION]: [],
     },
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
@@ -1753,6 +1752,7 @@ export enum EquipmentUpdateType {
     VOLTAGE_LEVELS = 'voltageLevels',
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
@@ -1789,6 +1789,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPM
             return EQUIPMENT_TYPES.SUBSTATION;
         case 'buses':
             return EQUIPMENT_TYPES.BUS;
+        case 'busbarSections':
+            return EQUIPMENT_TYPES.BUSBAR_SECTION;
         default:
             return;
     }
