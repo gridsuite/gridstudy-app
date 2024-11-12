@@ -30,7 +30,7 @@ import ModificationDialog from '../../commons/modificationDialog';
 import GenerationDispatchForm from './generation-dispatch-form';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import { generationDispatch } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../services/utils.js';
 
 const emptyFormData = {
     [LOSS_COEFFICIENT]: null,

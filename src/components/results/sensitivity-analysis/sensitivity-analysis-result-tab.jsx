@@ -27,7 +27,7 @@ import { RunningStatus } from '../../utils/running-status';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { exportSensitivityResultsAsCsv } from '../../../services/study/sensitivity-analysis';
-import { downloadZipFile } from '../../../services/utils';
+import { downloadZipFile } from '../../../services/utils.js';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';

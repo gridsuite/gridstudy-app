@@ -7,7 +7,7 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 
-import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils.js';
 
 export function getDynamicMappings(studyUuid) {
     console.info(`Fetching dynamic mappings on '${studyUuid}' ...`);

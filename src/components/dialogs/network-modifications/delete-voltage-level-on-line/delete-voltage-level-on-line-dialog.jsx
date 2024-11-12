@@ -23,7 +23,7 @@ import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../commons/modificationDialog';
 import DeleteVoltageLevelOnLineForm from './delete-voltage-level-on-line-form';
 import { deleteVoltageLevelOnLine } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../services/utils.js';
 import DeleteVoltageLevelOnLineIllustration from './delete-voltage-level-on-line-illustration';
 
 const emptyFormData = {

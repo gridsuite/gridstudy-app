@@ -8,15 +8,43 @@
 import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
+import { UUID } from 'crypto';
+import { EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
+import { ReactiveCapabilityCurvePointsData } from '../../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
+import { Property } from '../../components/dialogs/network-modifications/common/properties/property-utils';
+import {
+    Assignment,
+    AttachmentLine,
+    BatteryModificationInfo,
+    CurrentLimits,
+    GeneratorModificationInfo,
+    LoadModificationInfo,
+    ShuntCompensatorModificationInfo,
+    StaticVarCompensatorCreationInfo,
+    SubstationModificationInfo,
+    TemporaryLimit,
+    TwoWindingsTransformerModificationInfo,
+    Variations,
+    VoltageLeveCreationlInfo,
+    VoltageLeveModificationInfo,
+    VSCCreationConverterStation,
+    VSCModificationConverterStation,
+} from '../network-modification-types';
+import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 
-function getNetworkModificationUrl(studyUuid, nodeUuid) {
+function getNetworkModificationUrl(studyUuid: UUID | string | null | undefined, nodeUuid: UUID | string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
 
-export function changeNetworkModificationOrder(studyUuid, nodeUuid, itemUuid, beforeUuid) {
+export function changeNetworkModificationOrder(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    itemUuid: UUID,
+    beforeUuid: UUID
+) {
     console.info('reorder node ' + nodeUuid + ' of study ' + studyUuid + ' ...');
     const url =
         getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
@@ -28,10 +56,10 @@ export function changeNetworkModificationOrder(studyUuid, nodeUuid, itemUuid, be
     return backendFetch(url, { method: 'put' });
 }
 
-export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
+export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('stashed', true);
-    urlSearchParams.append('uuids', modificationUuids);
+    urlSearchParams.append('stashed', 'true');
+    urlSearchParams.append('uuids', String(modificationUuids));
     const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
     return backendFetch(modificationDeleteUrl, {
@@ -39,10 +67,15 @@ export function stashModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
-export function setModificationActivated(studyUuid, nodeUuid, modificationUuid, activated) {
+export function setModificationActivated(
+    studyUuid: UUID | null,
+    nodeUuid: UUID | undefined,
+    modificationUuid: UUID,
+    activated: boolean
+) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('activated', activated);
-    urlSearchParams.append('uuids', [modificationUuid]);
+    urlSearchParams.append('activated', String(activated));
+    urlSearchParams.append('uuids', String([modificationUuid]));
     const modificationUpdateActiveUrl =
         getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationUpdateActiveUrl);
@@ -51,10 +84,10 @@ export function setModificationActivated(studyUuid, nodeUuid, modificationUuid, 
     });
 }
 
-export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
+export function restoreModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('stashed', false);
-    urlSearchParams.append('uuids', modificationUuids);
+    urlSearchParams.append('stashed', 'false');
+    urlSearchParams.append('uuids', String(modificationUuids));
     const RestoreModificationsUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
 
     console.debug(RestoreModificationsUrl);
@@ -63,9 +96,9 @@ export function restoreModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
-export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
+export function deleteModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('uuids', modificationUuids);
+    urlSearchParams.append('uuids', String(modificationUuids));
 
     const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
 
@@ -75,7 +108,7 @@ export function deleteModifications(studyUuid, nodeUuid, modificationUuids) {
     });
 }
 
-export function requestNetworkChange(studyUuid, nodeUuid, groovyScript) {
+export function requestNetworkChange(studyUuid: string, nodeUuid: UUID, groovyScript: string) {
     console.info('Creating groovy script (request network change)');
     const changeUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug(changeUrl);
@@ -92,17 +125,22 @@ export function requestNetworkChange(studyUuid, nodeUuid, groovyScript) {
     });
 }
 
-function changeOperatingStatus(studyUuid, nodeUuid, equipment, action) {
+function changeOperatingStatus(
+    studyUuid: UUID | undefined | null,
+    nodeUuid: UUID | undefined,
+    equipment: Partial<EquipmentInfos> | null,
+    action: string
+) {
     const changeOperatingStatusUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug('%s with action: %s', changeOperatingStatusUrl, action);
 
     let energizedVoltageLevelId;
     switch (action) {
         case OPERATING_STATUS_ACTION.ENERGISE_END_ONE:
-            energizedVoltageLevelId = equipment.voltageLevelId1;
+            energizedVoltageLevelId = equipment?.voltageLevelId1;
             break;
         case OPERATING_STATUS_ACTION.ENERGISE_END_TWO:
-            energizedVoltageLevelId = equipment.voltageLevelId2;
+            energizedVoltageLevelId = equipment?.voltageLevelId2;
             break;
         default:
             energizedVoltageLevelId = undefined;
@@ -116,25 +154,38 @@ function changeOperatingStatus(studyUuid, nodeUuid, equipment, action) {
         },
         body: JSON.stringify({
             type: MODIFICATION_TYPES.OPERATING_STATUS_MODIFICATION.type,
-            equipmentId: equipment.id,
+            equipmentId: equipment?.id,
             energizedVoltageLevelId: energizedVoltageLevelId,
             action: action,
         }),
     });
 }
 
-export function lockoutEquipment(studyUuid, nodeUuid, equipment) {
-    console.info('locking out equipment ' + equipment.id + ' ...');
+export function lockoutEquipment(
+    studyUuid: UUID | undefined,
+    nodeUuid: UUID | undefined,
+    equipment: EquipmentInfos | null
+) {
+    console.info('locking out equipment ' + equipment?.id + ' ...');
     return changeOperatingStatus(studyUuid, nodeUuid, equipment, OPERATING_STATUS_ACTION.LOCKOUT);
 }
 
-export function tripEquipment(studyUuid, nodeUuid, equipment) {
-    console.info('tripping equipment ' + equipment.id + ' ...');
+export function tripEquipment(
+    studyUuid: UUID | undefined | null,
+    nodeUuid: UUID | undefined,
+    equipment: Partial<EquipmentInfos> | null
+) {
+    console.info('tripping equipment ' + equipment?.id + ' ...');
     return changeOperatingStatus(studyUuid, nodeUuid, equipment, OPERATING_STATUS_ACTION.TRIP);
 }
 
-export function energiseEquipmentEnd(studyUuid, nodeUuid, branch, branchSide) {
-    console.info('energise branch ' + branch.id + ' on side ' + branchSide + ' ...');
+export function energiseEquipmentEnd(
+    studyUuid: UUID | undefined,
+    nodeUuid: UUID | undefined,
+    branch: EquipmentInfos | null,
+    branchSide: string
+) {
+    console.info('energise branch ' + branch?.id + ' on side ' + branchSide + ' ...');
     return changeOperatingStatus(
         studyUuid,
         nodeUuid,
@@ -145,21 +196,25 @@ export function energiseEquipmentEnd(studyUuid, nodeUuid, branch, branchSide) {
     );
 }
 
-export function switchOnEquipment(studyUuid, nodeUuid, branch) {
-    console.info('switching on branch ' + branch.id + ' ...');
+export function switchOnEquipment(
+    studyUuid: UUID | undefined,
+    nodeUuid: UUID | undefined,
+    branch: EquipmentInfos | null
+) {
+    console.info('switching on branch ' + branch?.id + ' ...');
     return changeOperatingStatus(studyUuid, nodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
 }
 
 export function generationDispatch(
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lossCoefficient,
-    defaultOutageRate,
-    generatorsWithoutOutage,
-    generatorsWithFixedActivePower,
-    generatorsFrequencyReserve,
-    substationsGeneratorsOrdering
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    lossCoefficient: number,
+    defaultOutageRate: number,
+    generatorsWithoutOutage: any,
+    generatorsWithFixedActivePower: any,
+    generatorsFrequencyReserve: any,
+    substationsGeneratorsOrdering: any
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
@@ -189,7 +244,13 @@ export function generationDispatch(
     });
 }
 
-export function generatorScaling(studyUuid, nodeUuid, modificationUuid, variationType, variations) {
+export function generatorScaling(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    variationType: string,
+    variations: any[]
+) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATOR_SCALING.type,
         variationType,
@@ -209,33 +270,35 @@ export function generatorScaling(studyUuid, nodeUuid, modificationUuid, variatio
             'Content-Type': 'application/json',
         },
         body,
-    }).then((response) => (response.ok ? response.text() : response.text().then((text) => Promise.reject(text))));
+    }).then((response) =>
+        response.ok ? response.text() : response.text().then((text: string) => Promise.reject(text))
+    );
 }
 
 export function createBattery(
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    connectionName,
-    connectionDirection,
-    connectionPosition,
-    terminalConnected,
-    minP,
-    maxP,
-    isReactiveCapabilityCurveOn,
-    minQ,
-    maxQ,
-    reactiveCapabilityCurve,
-    targetP,
-    targetQ,
-    participate,
-    droop,
-    isUpdate = false,
-    modificationUuid,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    id: string,
+    name: string | null,
+    voltageLevelId: string,
+    busOrBusbarSectionId: string,
+    connectionName: string | null,
+    connectionDirection: string | null,
+    connectionPosition: string | null,
+    terminalConnected: boolean | null,
+    minP: number | null,
+    maxP: number | null,
+    isReactiveCapabilityCurveOn: boolean,
+    minQ: number | null,
+    maxQ: number | null,
+    reactiveCapabilityCurve: ReactiveCapabilityCurvePointsData | undefined,
+    targetP: number,
+    targetQ: number,
+    participate: boolean,
+    droop: number,
+    isUpdate: boolean = false,
+    modificationUuid: string,
+    properties: Property[]
 ) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -300,7 +363,7 @@ export function modifyBattery({
     minQ = undefined,
     reactiveCapabilityCurve = undefined,
     properties,
-}) {
+}: BatteryModificationInfo) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -344,22 +407,22 @@ export function modifyBattery({
 }
 
 export function createLoad(
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    loadType,
-    p0,
-    q0,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate = false,
-    modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    id: string,
+    name: string | null,
+    loadType: string,
+    p0: number,
+    q0: number,
+    voltageLevelId: string,
+    busOrBusbarSectionId: string,
+    isUpdate: boolean = false,
+    modificationUuid: string,
+    connectionDirection: string | null,
+    connectionName: string | null,
+    connectionPosition: string | null,
+    terminalConnected: boolean | null,
+    properties: Property[]
 ) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -410,7 +473,7 @@ export function modifyLoad({
     connectionPosition = undefined,
     terminalConnected = undefined,
     properties,
-}) {
+}: LoadModificationInfo) {
     let modifyLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -483,7 +546,7 @@ export function modifyGenerator({
     minQ = undefined,
     reactiveCapabilityCurve = undefined,
     properties,
-}) {
+}: GeneratorModificationInfo) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -542,43 +605,43 @@ export function modifyGenerator({
 }
 
 export function createGenerator(
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    energySource,
-    minP,
-    maxP,
-    ratedS,
-    targetP,
-    targetQ,
-    voltageRegulationOn,
-    targetV,
-    qPercent,
-    voltageLevelId,
-    busOrBusbarSectionId,
-    isUpdate = false,
-    modificationUuid,
-    plannedActivePowerSetPoint,
-    marginalCost,
-    plannedOutageRate,
-    forcedOutageRate,
-    directTransX,
-    stepUpTransformerX,
-    regulatingTerminalId,
-    regulatingTerminalType,
-    regulatingTerminalVlId,
-    isReactiveCapabilityCurveOn,
-    participate,
-    droop,
-    maxQ,
-    minQ,
-    reactiveCapabilityCurve,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    id: string,
+    name: string | null,
+    energySource: string,
+    minP: number,
+    maxP: number,
+    ratedS: number | null,
+    targetP: number | null,
+    targetQ: number | null,
+    voltageRegulationOn: boolean,
+    targetV: number | null,
+    qPercent: number | null,
+    voltageLevelId: string,
+    busOrBusbarSectionId: string,
+    isUpdate: boolean = false,
+    modificationUuid: string,
+    plannedActivePowerSetPoint: number,
+    marginalCost: number,
+    plannedOutageRate: number,
+    forcedOutageRate: number,
+    directTransX: number,
+    stepUpTransformerX: number,
+    regulatingTerminalId: string | null,
+    regulatingTerminalType: string | null,
+    regulatingTerminalVlId: string | null,
+    isReactiveCapabilityCurveOn: boolean,
+    participate: boolean,
+    droop: number | null,
+    maxQ: number | null,
+    minQ: number | null,
+    reactiveCapabilityCurve: ReactiveCapabilityCurvePointsData[] | undefined,
+    connectionDirection: string | null,
+    connectionName: string | null,
+    connectionPosition: string | null,
+    terminalConnected: boolean | null,
+    properties: Property[]
 ) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -635,23 +698,23 @@ export function createGenerator(
 }
 
 export function createShuntCompensator(
-    studyUuid,
-    nodeUuid,
-    shuntCompensatorId,
-    shuntCompensatorName,
-    maxSusceptance,
-    maxQAtNominalV,
-    shuntCompensatorType,
-    sectionCount,
-    maximumSectionCount,
-    connectivity,
-    isUpdate,
-    modificationUuid,
-    connectionDirection,
-    connectionName,
-    connectionPosition,
-    terminalConnected,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    shuntCompensatorId: string,
+    shuntCompensatorName: string | null,
+    maxSusceptance: number | null,
+    maxQAtNominalV: number | null,
+    shuntCompensatorType: string,
+    sectionCount: number,
+    maximumSectionCount: number,
+    connectivity: any,
+    isUpdate: boolean,
+    modificationUuid: string,
+    connectionDirection: string | null,
+    connectionName: string | null,
+    connectionPosition: string | null,
+    terminalConnected: boolean | null,
+    properties: Property[]
 ) {
     let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -706,7 +769,7 @@ export function modifyShuntCompensator({
     connectionPosition = undefined,
     terminalConnected = undefined,
     properties,
-}) {
+}: ShuntCompensatorModificationInfo) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -743,7 +806,7 @@ export function modifyShuntCompensator({
     });
 }
 
-export function createStaticVarCompensator(staticVarCompensatorCreationParameters) {
+export function createStaticVarCompensator(staticVarCompensatorCreationParameters: StaticVarCompensatorCreationInfo) {
     const {
         studyUuid,
         nodeUuid,
@@ -828,35 +891,35 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
 }
 
 export function createLine(
-    studyUuid,
-    nodeUuid,
-    lineId,
-    lineName,
-    r,
-    x,
-    g1,
-    b1,
-    g2,
-    b2,
-    voltageLevelId1,
-    busOrBusbarSectionId1,
-    voltageLevelId2,
-    busOrBusbarSectionId2,
-    permanentCurrentLimit1,
-    permanentCurrentLimit2,
-    temporaryCurrentLimits1,
-    temporaryCurrentLimits2,
-    isUpdate,
-    modificationUuid,
-    connectionName1,
-    connectionDirection1,
-    connectionName2,
-    connectionDirection2,
-    connectionPosition1,
-    connectionPosition2,
-    connected1,
-    connected2,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    lineId: string,
+    lineName: string | null,
+    r: number,
+    x: number,
+    g1: number,
+    b1: number,
+    g2: number,
+    b2: number,
+    voltageLevelId1: string,
+    busOrBusbarSectionId1: string,
+    voltageLevelId2: string,
+    busOrBusbarSectionId2: string,
+    permanentCurrentLimit1: number,
+    permanentCurrentLimit2: number,
+    temporaryCurrentLimits1: TemporaryLimit[],
+    temporaryCurrentLimits2: TemporaryLimit[],
+    isUpdate: boolean,
+    modificationUuid: string,
+    connectionName1: string | null,
+    connectionDirection1: string | null,
+    connectionName2: string | null,
+    connectionDirection2: string | null,
+    connectionPosition1: string | null,
+    connectionPosition2: string | null,
+    connected1: boolean,
+    connected2: boolean,
+    properties: Property[]
 ) {
     let createLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -909,33 +972,33 @@ export function createLine(
 }
 
 export function modifyLine(
-    studyUuid,
-    nodeUuid,
-    lineId,
-    lineName,
-    r,
-    x,
-    g1,
-    b1,
-    g2,
-    b2,
-    currentLimit1,
-    currentLimit2,
-    voltageLevelId1,
-    busOrBusbarSectionId1,
-    voltageLevelId2,
-    busOrBusbarSectionId2,
-    connectionName1,
-    connectionName2,
-    connectionDirection1,
-    connectionDirection2,
-    connectionPosition1,
-    connectionPosition2,
-    connected1,
-    connected2,
-    isUpdate,
-    modificationUuid,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    lineId: string,
+    lineName: string | null,
+    r: number,
+    x: number,
+    g1: number,
+    b1: number,
+    g2: number,
+    b2: number,
+    currentLimit1: CurrentLimits,
+    currentLimit2: CurrentLimits,
+    voltageLevelId1: string,
+    busOrBusbarSectionId1: string,
+    voltageLevelId2: string,
+    busOrBusbarSectionId2: string,
+    connectionName1: string | null,
+    connectionName2: string | null,
+    connectionDirection1: string | null,
+    connectionDirection2: string | null,
+    connectionPosition1: string | null,
+    connectionPosition2: string | null,
+    connected1: boolean,
+    connected2: boolean,
+    isUpdate: boolean,
+    modificationUuid: string,
+    properties: Property[]
 ) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -982,36 +1045,36 @@ export function modifyLine(
 }
 
 export function createTwoWindingsTransformer(
-    studyUuid,
-    nodeUuid,
-    twoWindingsTransformerId,
-    twoWindingsTransformerName,
-    r,
-    x,
-    g,
-    b,
-    ratedS,
-    ratedU1,
-    ratedU2,
-    currentLimit1,
-    currentLimit2,
-    voltageLevelId1,
-    busOrBusbarSectionId1,
-    voltageLevelId2,
-    busOrBusbarSectionId2,
-    ratioTapChanger,
-    phaseTapChanger,
-    isUpdate,
-    modificationUuid,
-    connectionName1,
-    connectionDirection1,
-    connectionName2,
-    connectionDirection2,
-    connectionPosition1,
-    connectionPosition2,
-    connected1,
-    connected2,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    twoWindingsTransformerId: string,
+    twoWindingsTransformerName: string | null,
+    r: number,
+    x: number,
+    g: number,
+    b: number,
+    ratedS: number | null,
+    ratedU1: number,
+    ratedU2: number,
+    currentLimit1: CurrentLimits,
+    currentLimit2: CurrentLimits,
+    voltageLevelId1: string,
+    busOrBusbarSectionId1: string,
+    voltageLevelId2: string,
+    busOrBusbarSectionId2: string,
+    ratioTapChanger: any,
+    phaseTapChanger: any,
+    isUpdate: boolean,
+    modificationUuid: string,
+    connectionName1: string | null,
+    connectionDirection1: string | null,
+    connectionName2: string | null,
+    connectionDirection2: string | null,
+    connectionPosition1: string | null,
+    connectionPosition2: string | null,
+    connected1: boolean,
+    connected2: boolean,
+    properties: Property[]
 ) {
     let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1090,7 +1153,7 @@ export function modifyTwoWindingsTransformer({
     connected1 = undefined,
     connected2 = undefined,
     properties: propertiesForBackend,
-}) {
+}: TwoWindingsTransformerModificationInfo) {
     let modifyTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -1140,12 +1203,12 @@ export function modifyTwoWindingsTransformer({
 }
 
 export function createTabulareModification(
-    studyUuid,
-    nodeUuid,
-    modificationType,
-    modifications,
-    isUpdate,
-    modificationUuid
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationType: string,
+    modifications: any,
+    isUpdate: boolean,
+    modificationUuid: UUID
 ) {
     let createTabulareModificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1171,14 +1234,14 @@ export function createTabulareModification(
 }
 
 export function createSubstation(
-    studyUuid,
-    nodeUuid,
-    substationId,
-    substationName,
-    country,
-    isUpdate = false,
-    modificationUuid,
-    properties
+    studyUuid: string,
+    nodeUuid: UUID,
+    substationId: string,
+    substationName: string | null,
+    country: string,
+    isUpdate: boolean = false,
+    modificationUuid: UUID,
+    properties?: Property[]
 ) {
     let url = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1211,7 +1274,7 @@ export function createSubstation(
  * Formats the properties of an array of properties so it can be consumed by the backend.
  * @returns {Array<{name: string, value: string, previousValue: string, added: boolean, deletionMark: boolean} | null>} - The modified properties.
  */
-export function formatPropertiesForBackend(previousProperties, newProperties) {
+export function formatPropertiesForBackend(previousProperties: any, newProperties: any) {
     if (JSON.stringify(previousProperties) === JSON.stringify(newProperties)) {
         // return null so the backend does not update the properties
         return null;
@@ -1221,7 +1284,7 @@ export function formatPropertiesForBackend(previousProperties, newProperties) {
     const previousPropertiesArray = Object.entries(previousProperties).map(([name, value]) => ({ name, value }));
     const newPropertiesArray = Object.entries(newProperties).map(([name, value]) => ({ name, value }));
 
-    const propertiesModifications = [];
+    const propertiesModifications: any = [];
     previousPropertiesArray.forEach((previousPropertiePair) => {
         const updatedProperty = newPropertiesArray.find((updatedObj) => updatedObj.name === previousPropertiePair.name);
 
@@ -1259,7 +1322,15 @@ export function formatPropertiesForBackend(previousProperties, newProperties) {
     return propertiesModifications;
 }
 
-export function modifySubstation({ studyUuid, nodeUuid, modificationUuid = undefined, id, name, country, properties }) {
+export function modifySubstation({
+    studyUuid,
+    nodeUuid,
+    modificationUuid = undefined,
+    id,
+    name,
+    country,
+    properties,
+}: SubstationModificationInfo) {
     let modifyUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -1304,11 +1375,11 @@ export function createVoltageLevel({
     isUpdate,
     modificationUuid,
     properties,
-}) {
+}: VoltageLeveCreationlInfo) {
     let createVoltageLevelUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
-        createVoltageLevelUrl += '/' + encodeURIComponent(modificationUuid);
+        createVoltageLevelUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating voltage level creation');
     } else {
         console.info('Creating voltage level creation');
@@ -1353,7 +1424,7 @@ export function modifyVoltageLevel({
     lowShortCircuitCurrentLimit,
     highShortCircuitCurrentLimit,
     properties,
-}) {
+}: VoltageLeveModificationInfo) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const isUpdate = !!modificationUuid;
@@ -1385,18 +1456,18 @@ export function modifyVoltageLevel({
 }
 
 export function divideLine(
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToSplitId,
-    percent,
-    mayNewVoltageLevelInfos,
-    existingVoltageLevelId,
-    bbsOrBusId,
-    newLine1Id,
-    newLine1Name,
-    newLine2Id,
-    newLine2Name
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: UUID,
+    lineToSplitId: string,
+    percent: number,
+    mayNewVoltageLevelInfos: any | null,
+    existingVoltageLevelId: string,
+    bbsOrBusId: string,
+    newLine1Id: string,
+    newLine1Name: string | null,
+    newLine2Id: string,
+    newLine2Name: string | null
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
@@ -1431,21 +1502,21 @@ export function divideLine(
 }
 
 export function attachLine(
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToAttachToId,
-    percent,
-    attachmentPointId,
-    attachmentPointName,
-    mayNewVoltageLevelInfos,
-    existingVoltageLevelId,
-    bbsOrBusId,
-    attachmentLine,
-    newLine1Id,
-    newLine1Name,
-    newLine2Id,
-    newLine2Name
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: UUID,
+    lineToAttachToId: string,
+    percent: number,
+    attachmentPointId: string,
+    attachmentPointName: string | null,
+    mayNewVoltageLevelInfos: any | null,
+    existingVoltageLevelId: string,
+    bbsOrBusId: string,
+    attachmentLine: AttachmentLine,
+    newLine1Id: string,
+    newLine1Name: string | null,
+    newLine2Id: string,
+    newLine2Name: string | null
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
@@ -1482,7 +1553,13 @@ export function attachLine(
     });
 }
 
-export function loadScaling(studyUuid, nodeUuid, modificationUuid, variationType, variations) {
+export function loadScaling(
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: UUID | undefined,
+    variationType: string,
+    variations: Variations
+) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LOAD_SCALING.type,
         variationType,
@@ -1502,22 +1579,24 @@ export function loadScaling(studyUuid, nodeUuid, modificationUuid, variationType
             'Content-Type': 'application/json',
         },
         body,
-    }).then((response) => (response.ok ? response.text() : response.text().then((text) => Promise.reject(text))));
+    }).then((response) =>
+        response.ok ? response.text() : response.text().then((text: string) => Promise.reject(text))
+    );
 }
 
 export function linesAttachToSplitLines(
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    attachedLineId,
-    voltageLevelId,
-    bbsBusId,
-    replacingLine1Id,
-    replacingLine1Name,
-    replacingLine2Id,
-    replacingLine2Name
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: UUID,
+    lineToAttachTo1Id: string,
+    lineToAttachTo2Id: string,
+    attachedLineId: string,
+    voltageLevelId: string,
+    bbsBusId: string,
+    replacingLine1Id: string,
+    replacingLine1Name: string | null,
+    replacingLine2Id: string,
+    replacingLine2Name: string | null
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
@@ -1552,13 +1631,13 @@ export function linesAttachToSplitLines(
 }
 
 export function deleteVoltageLevelOnLine(
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    replacingLine1Id,
-    replacingLine1Name
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: UUID,
+    lineToAttachTo1Id: string,
+    lineToAttachTo2Id: string,
+    replacingLine1Id: string,
+    replacingLine1Name: string | null
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.DELETE_VOLTAGE_LEVEL_ON_LINE.type,
@@ -1587,14 +1666,14 @@ export function deleteVoltageLevelOnLine(
 }
 
 export function deleteAttachingLine(
-    studyUuid,
-    nodeUuid,
-    modificationUuid,
-    lineToAttachTo1Id,
-    lineToAttachTo2Id,
-    attachedLineId,
-    replacingLine1Id,
-    replacingLine1Name
+    studyUuid: string,
+    nodeUuid: UUID,
+    modificationUuid: UUID,
+    lineToAttachTo1Id: string,
+    lineToAttachTo2Id: string,
+    attachedLineId: string,
+    replacingLine1Id: string,
+    replacingLine1Name: string | null
 ) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
@@ -1623,7 +1702,14 @@ export function deleteAttachingLine(
     });
 }
 
-export function deleteEquipment(studyUuid, nodeUuid, equipmentType, equipmentId, modificationUuid, equipmentInfos) {
+export function deleteEquipment(
+    studyUuid: string,
+    nodeUuid: UUID | undefined,
+    equipmentType: EquipmentType | string | null,
+    equipmentId: string,
+    modificationUuid: UUID | undefined,
+    equipmentInfos: any = undefined
+) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
@@ -1648,7 +1734,13 @@ export function deleteEquipment(studyUuid, nodeUuid, equipmentType, equipmentId,
     });
 }
 
-export function deleteEquipmentByFilter(studyUuid, nodeUuid, equipmentType, filters, modificationUuid) {
+export function deleteEquipmentByFilter(
+    studyUuid: string,
+    nodeUuid: string,
+    equipmentType: keyof typeof EQUIPMENT_TYPES | null,
+    filters: Filter[],
+    modificationUuid: string
+) {
     let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
@@ -1672,17 +1764,17 @@ export function deleteEquipmentByFilter(studyUuid, nodeUuid, equipmentType, filt
     });
 }
 
-export function fetchNetworkModifications(studyUuid, nodeUuid, onlyStashed) {
+export function fetchNetworkModifications(studyUuid: UUID | null, nodeUuid: string, onlyStashed: boolean) {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('onlyStashed', onlyStashed);
-    urlSearchParams.append('onlyMetadata', true);
+    urlSearchParams.append('onlyStashed', String(onlyStashed));
+    urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationsGetUrl);
     return backendFetchJson(modificationsGetUrl);
 }
 
-export function updateSwitchState(studyUuid, nodeUuid, switchId, open) {
+export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined, switchId: string, open: boolean) {
     console.info('updating switch ' + switchId + ' ...');
     const updateSwitchUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
     console.debug(updateSwitchUrl);
@@ -1703,25 +1795,25 @@ export function updateSwitchState(studyUuid, nodeUuid, switchId, open) {
 }
 
 export function createVsc(
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    operatorActivePowerLimitSide1,
-    operatorActivePowerLimitSide2,
-    convertersMode,
-    activePowerSetpoint,
-    angleDroopActivePowerControl,
-    p0,
-    droop,
-    converterStation1,
-    converterStation2,
-    properties,
-    isUpdate,
-    modificationUuid
+    studyUuid: string,
+    nodeUuid: UUID,
+    id: string,
+    name: string | null,
+    nominalV: number,
+    r: number,
+    maxP: number,
+    operatorActivePowerLimitSide1: any,
+    operatorActivePowerLimitSide2: any,
+    convertersMode: string,
+    activePowerSetpoint: number,
+    angleDroopActivePowerControl: boolean,
+    p0: number | null,
+    droop: number | null,
+    converterStation1: VSCCreationConverterStation,
+    converterStation2: VSCCreationConverterStation,
+    properties: Property[] | undefined,
+    isUpdate: boolean,
+    modificationUuid: UUID
 ) {
     let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1762,25 +1854,25 @@ export function createVsc(
 }
 
 export function modifyVsc(
-    studyUuid,
-    nodeUuid,
-    id,
-    name,
-    nominalV,
-    r,
-    maxP,
-    operatorActivePowerLimitSide1,
-    operatorActivePowerLimitSide2,
-    convertersMode,
-    activePowerSetpoint,
-    angleDroopActivePowerControl,
-    p0,
-    droop,
-    converterStation1,
-    converterStation2,
-    properties,
-    isUpdate,
-    modificationUuid
+    studyUuid: string,
+    nodeUuid: UUID,
+    id: string | null,
+    name: string | null,
+    nominalV: number,
+    r: number,
+    maxP: number,
+    operatorActivePowerLimitSide1: any,
+    operatorActivePowerLimitSide2: any,
+    convertersMode: string,
+    activePowerSetpoint: number,
+    angleDroopActivePowerControl: boolean,
+    p0: number | null,
+    droop: number | null,
+    converterStation1: VSCModificationConverterStation,
+    converterStation2: VSCModificationConverterStation,
+    properties: Property[] | undefined,
+    isUpdate: boolean,
+    modificationUuid: UUID
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1819,7 +1911,15 @@ export function modifyVsc(
         body: JSON.stringify(vscModification),
     });
 }
-export function modifyByFormula(studyUuid, nodeUuid, equipmentType, formulas, isUpdate, modificationUuid) {
+
+export function modifyByFormula(
+    studyUuid: string,
+    nodeUuid: UUID,
+    equipmentType: string,
+    formulas: any,
+    isUpdate: boolean,
+    modificationUuid: UUID
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1845,11 +1945,18 @@ export function modifyByFormula(studyUuid, nodeUuid, equipmentType, formulas, is
     });
 }
 
-export function modifyByAssignment(studyUuid, nodeUuid, equipmentType, assignmentsList, isUpdate, modificationUuid) {
+export function modifyByAssignment(
+    studyUuid: string,
+    nodeUuid: UUID,
+    equipmentType: string,
+    assignmentsList: Assignment[],
+    isUpdate: boolean,
+    modificationUuid: UUID | null
+) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
-        modificationUrl += '/' + encodeURIComponent(modificationUuid);
+        modificationUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating modification by assignment');
     } else {
         console.info('Creating modification by assignment');
@@ -1871,7 +1978,14 @@ export function modifyByAssignment(studyUuid, nodeUuid, equipmentType, assignmen
     });
 }
 
-export function createTabularCreation(studyUuid, nodeUuid, creationType, creations, isUpdate, modificationUuid) {
+export function createTabularCreation(
+    studyUuid: string,
+    nodeUuid: UUID,
+    creationType: string,
+    creations: any,
+    isUpdate: boolean,
+    modificationUuid: UUID
+) {
     let createTabularCreationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {

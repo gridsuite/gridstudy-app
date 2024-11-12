@@ -11,7 +11,7 @@
  */
 /*
     at src/redux/store.ts:12:33
-    at src/services/utils.js:7:1
+    at src/services/utils.ts:7:1
     at src/services/study/index.ts:8:1
     at src/components/utils/inputs/input-hooks.jsx:41:1
     at src/components/dialogs/commons/modification-dialog-content.jsx:19:1

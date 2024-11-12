@@ -45,7 +45,7 @@ import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
+import { FetchStatus } from '../../../../../services/utils.js';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,

@@ -9,7 +9,7 @@ import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent }
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 import { UUID } from 'crypto';
-import { GsLang } from '@gridsuite/commons-ui';
+import { EquipmentType, GsLang } from '@gridsuite/commons-ui';
 import { SubstationLayout } from '../../components/diagrams/diagram-common';
 
 /* voltage-levels */
@@ -164,9 +164,9 @@ export function fetchNetworkElementsInfos(
 }
 
 export function fetchNetworkElementInfos(
-    studyUuid: string,
+    studyUuid: UUID | string | undefined | null,
     currentNodeUuid: UUID | undefined,
-    elementType: EQUIPMENT_TYPES,
+    elementType: EquipmentType | EQUIPMENT_TYPES,
     infoType: string,
     elementId: string,
     inUpstreamBuiltParentNode: boolean

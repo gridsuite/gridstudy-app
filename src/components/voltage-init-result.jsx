@@ -23,7 +23,7 @@ import {
 import CircularProgress from '@mui/material/CircularProgress';
 import { Box } from '@mui/system';
 import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
-import { FetchStatus } from '../services/utils';
+import { FetchStatus } from '../services/utils.js';
 import { ComputationReportViewer } from './results/common/computation-report-viewer';
 import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
