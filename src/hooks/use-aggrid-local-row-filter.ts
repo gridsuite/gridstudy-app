@@ -15,7 +15,7 @@ import {
     FILTER_NUMBER_COMPARATORS,
     UNDISPLAYED_FILTER_NUMBER_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { countDecimalPlaces, countDecimalPlacesFromString, truncateNumber } from 'utils/rounding';
+import { countDecimalPlaces, countDecimalPlacesFromString } from 'utils/rounding';
 
 interface FilterModel {
     [colId: string]: any;
@@ -147,8 +147,6 @@ export const useAggridLocalRowFilter = (
                         finalTolerance = (1 / Math.pow(10, decimalPrecision)) * 0.5;
                     }
 
-                    // Call the truncateNumber function to accurately truncate 'valueAsNumber' to 'decimalPrecision' decimal places.
-                    let truncatedNumber = truncateNumber(valueAsNumber, decimalPrecision);
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
                         case FILTER_NUMBER_COMPARATORS.NOT_EQUAL:
@@ -157,24 +155,24 @@ export const useAggridLocalRowFilter = (
                                 {
                                     ...filter,
                                     type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                    value: truncatedNumber + finalTolerance,
+                                    value: valueAsNumber + finalTolerance,
                                 },
                                 {
                                     ...filter,
                                     type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.LESS_THAN,
-                                    value: truncatedNumber - finalTolerance,
+                                    value: valueAsNumber - finalTolerance,
                                 },
                             ];
                         case FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL:
                             // Adjust the value upwards by the tolerance
                             return {
                                 ...filter,
-                                value: truncatedNumber + finalTolerance,
+                                value: valueAsNumber + finalTolerance,
                             };
                         case FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL:
                             return {
                                 ...filter,
-                                value: truncatedNumber - finalTolerance,
+                                value: valueAsNumber - finalTolerance,
                             };
                         default:
                             return filter;
