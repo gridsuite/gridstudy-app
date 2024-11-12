@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { gridItem, GridSection, MicroSusceptanceAdornment, OhmAdornment } from '../../../dialogUtils';
+import { MicroSusceptanceAdornment, OhmAdornment } from '../../../dialog-utils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
@@ -20,10 +20,11 @@ import {
     R,
     X,
 } from 'components/utils/field-constants';
-import React from 'react';
 import { unitToMicroUnit } from 'utils/unit-converter';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 const styles = {
     h3: {
@@ -129,30 +130,30 @@ const LineCharacteristicsPane = ({
             {displayConnectivity && (
                 <>
                     <GridSection title="Connectivity" customStyle={styles.h3} />
-                    <GridSection title="Side1" heading="4" />
+                    <GridSection title="Side1" heading={4} />
                     <Grid container spacing={2}>
-                        {gridItem(connectivity1Field, 12)}
+                        <GridItem size={12}>{connectivity1Field}</GridItem>
                     </Grid>
-                    <GridSection title="Side2" heading="4" />
+                    <GridSection title="Side2" heading={4} />
                     <Grid container spacing={2}>
-                        {gridItem(connectivity2Field, 12)}
+                        <GridItem size={12}>{connectivity2Field}</GridItem>
                     </Grid>
                 </>
             )}
             <GridSection title="Characteristics" />
             <Grid container spacing={2}>
-                {gridItem(seriesResistanceField, 4)}
-                {gridItem(seriesReactanceField, 4)}
+                <GridItem size={4}>{seriesResistanceField}</GridItem>
+                <GridItem size={4}>{seriesReactanceField}</GridItem>
             </Grid>
-            <GridSection title="Side1" heading="4" />
+            <GridSection title="Side1" heading={4} />
             <Grid container spacing={2}>
-                {gridItem(shuntConductance1Field, 4)}
-                {gridItem(shuntSusceptance1Field, 4)}
+                <GridItem size={4}>{shuntConductance1Field}</GridItem>
+                <GridItem size={4}>{shuntSusceptance1Field}</GridItem>
             </Grid>
-            <GridSection title="Side2" heading="4" />
+            <GridSection title="Side2" heading={4} />
             <Grid container spacing={2}>
-                {gridItem(shuntConductance2Field, 4)}
-                {gridItem(shuntSusceptance2Field, 4)}
+                <GridItem size={4}>{shuntConductance2Field}</GridItem>
+                <GridItem size={4}>{shuntSusceptance2Field}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'line'} isModification={isModification} />
         </>

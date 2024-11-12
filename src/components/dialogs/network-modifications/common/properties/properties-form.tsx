@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { GridSection } from '../../../dialogUtils';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import { ADDED, ADDITIONAL_PROPERTIES, DELETION_MARK, PREVIOUS_VALUE } from '../../../../utils/field-constants';
 import PropertyForm from './property-form';
 import { fetchPredefinedProperties, initializedProperty, PredefinedProperties } from './property-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
+import GridSection from '../../../commons/grid-section';
 
 type PropertiesFormProps = {
     networkElementType?: string;

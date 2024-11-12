@@ -5,15 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useContext } from 'react';
-import Box from '@mui/material/Box';
-import { styled } from '@mui/system';
+import { useContext } from 'react';
+import { styled, Box, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Label from '@mui/icons-material/Label';
 import ReportTreeViewContext from './report-tree-view-context';
 import CustomTreeItem from './custom-tree-item';
 import { alpha } from '@mui/system';
-import { Theme } from '@mui/material';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 

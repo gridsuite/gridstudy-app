@@ -47,7 +47,7 @@ import VscCreationDialog from 'components/dialogs/network-modifications/vsc/crea
 import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 import {

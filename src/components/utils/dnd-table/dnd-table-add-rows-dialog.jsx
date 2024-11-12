@@ -7,7 +7,7 @@
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { CancelButton } from '@gridsuite/commons-ui';
 

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { getEnumLabelById } from 'components/utils/utils';
-import React from 'react';
 import { useIntl } from 'react-intl';
 import { EnumOption } from '../../utils/utils-type';
 
