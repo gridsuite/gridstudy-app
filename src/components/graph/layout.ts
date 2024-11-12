@@ -6,14 +6,15 @@
  */
 
 import { CurrentTreeNode } from 'redux/reducer';
-import { NodeType } from './tree-node.type';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
 export const snapGrid = [nodeWidth / 4, nodeHeight];
 export const nodeGrid = [nodeWidth, nodeHeight];
 
-function getPosition(placementArray, id) {
+type PlacementArray = string[][];
+
+function getPlacement(placementArray: PlacementArray, id: string) {
     for (let row = 0; row < placementArray.length; row++) {
         for (let column = 0; column < placementArray[row].length; column++) {
             if (placementArray[row][column] === id) {
@@ -24,7 +25,7 @@ function getPosition(placementArray, id) {
     return { row: -1, column: -1 };
 }
 
-function addValueAtPosition(placementArray, row, column, value) {
+function addValueAtPlacement(placementArray: PlacementArray, row: number, column: number, value: string) {
     while (placementArray.length <= row) {
         placementArray.push(['']);
     }
@@ -34,7 +35,7 @@ function addValueAtPosition(placementArray, row, column, value) {
     placementArray[row][column] = value;
 }
 
-function isSpaceEmpty(placementArray, row, column) {
+function isSpaceEmpty(placementArray: PlacementArray, row: number, column: number) {
     if (placementArray.length <= row) {
         return true;
     }
@@ -50,30 +51,29 @@ function isSpaceEmpty(placementArray, row, column) {
 /**
  * Builds an array representing the placements of nodes for the tree.
  * This array is then used to compute each node's position before being used by ReactFlow.
- * @param nodes
  */
-function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
-    const newPlacements = [];
+function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
+    const newPlacements: PlacementArray = [];
     let currentMaxColumn = 0;
 
     nodes.forEach((node) => {
         if (!node.parentId) {
             // ORIGIN/PARENT NODE
-            addValueAtPosition(newPlacements, 0, 0, node.id);
+            addValueAtPlacement(newPlacements, 0, 0, node.id);
         } else {
             // CHILDREN NODE
-            const parentPosition = getPosition(newPlacements, node.parentId);
+            const parentPlacement = getPlacement(newPlacements, node.parentId);
             // Check if there is an empty space below the parent
-            const tryRow = parentPosition.row + 1;
-            const tryColumn = parentPosition.column;
+            const tryRow = parentPlacement.row + 1;
+            const tryColumn = parentPlacement.column;
             if (isSpaceEmpty(newPlacements, tryRow, tryColumn)) {
-                addValueAtPosition(newPlacements, tryRow, tryColumn, node.id);
+                addValueAtPlacement(newPlacements, tryRow, tryColumn, node.id);
             } else {
                 // We check if there is an empty space on the right of the used space
                 do {
                     currentMaxColumn++;
                 } while (!isSpaceEmpty(newPlacements, tryRow, currentMaxColumn));
-                addValueAtPosition(newPlacements, tryRow, currentMaxColumn, node.id);
+                addValueAtPlacement(newPlacements, tryRow, currentMaxColumn, node.id);
             }
         }
     });
@@ -82,24 +82,26 @@ function getNodePositionsFromTreeNodes(nodes: CurrentTreeNode[]) {
 
 /**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
- * @param nodes
- * @param nodePlacements
  */
 export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
-    const nodePlacements = getNodePositionsFromTreeNodes(newNodes);
-    // Reactflow draws it's node with a position relative to the node's parent (the parent is in the node's parentId field).
-    // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
-    // the parent's position from the current node's position, this gives us the relative position to the parent.
+    const nodePlacements = getNodePlacementsFromTreeNodes(newNodes);
+
     newNodes.forEach((node) => {
-        const storedPosition = getPosition(nodePlacements, node.id);
-        const parentStoredPosition =
-            node.type !== NodeType.ROOT ? getPosition(nodePlacements, node.parentId) : { x: 0, y: 0 };
-        const ajustedColumn = (storedPosition?.column || 0) - (parentStoredPosition?.column || 0);
-        const ajustedRow = (storedPosition?.row || 0) - (parentStoredPosition?.row || 0);
+        const placement = getPlacement(nodePlacements, node.id);
+
+        if (node.parentId) {
+            // Reactflow draws it's node with a position relative to the node's parent (the parent is in the node's parentId field).
+            // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
+            // the parent's position from the current node's position, this gives us the relative position to the parent.
+            const parentPlacement = getPlacement(nodePlacements, node.parentId);
+            placement.row -= parentPlacement.row;
+            placement.column -= parentPlacement.column;
+        }
+
         node.position = {
-            x: ajustedColumn * nodeWidth,
-            y: ajustedRow * nodeHeight,
+            x: placement.column * nodeWidth,
+            y: placement.row * nodeHeight,
         };
     });
     return [...newNodes];
@@ -120,7 +122,7 @@ export function isNodeASibling(nodes: CurrentTreeNode[], nodeId: string) {
 
 export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: string) {
     const node = nodes.find((node) => node.id === nodeId);
-    if (node) {
+    if (node && node.parentId) {
         if (isNodeASibling(nodes, node.id)) {
             return nodeId;
         }
