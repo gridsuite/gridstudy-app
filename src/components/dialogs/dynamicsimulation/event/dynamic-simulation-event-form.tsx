@@ -36,8 +36,8 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
             value={equipmentId}
             InputProps={{
                 readOnly: true,
-                ...filledTextField,
             }}
+            {...filledTextField}
             disabled
         />
     );
