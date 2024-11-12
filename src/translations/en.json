@@ -619,6 +619,7 @@
     "EmptySelection": "No equipment is selected",
     "Connectivity": "Connectivity",
     "connected": "Connected",
+    "terminalConnected": "Connected",
     "disconnected": "Disconnected",
     "FieldAcceptNumeric": "This field only accepts numeric values",
     "FieldIsRequired": "This field is required",
