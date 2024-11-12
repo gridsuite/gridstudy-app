@@ -14,12 +14,12 @@ import {
     REACTIVE_LIMITS,
 } from 'components/utils/field-constants';
 import { REACTIVE_LIMIT_TYPES } from 'components/network/constants';
-import React from 'react';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { gridItem, ReactivePowerAdornment } from '../dialogUtils';
+import { ReactivePowerAdornment } from '../dialog-utils';
 import { ReactiveCapabilityCurveTable } from './reactive-capability-curve/reactive-capability-curve-table';
 import { useWatch } from 'react-hook-form';
 import Grid from '@mui/material/Grid';
+import GridItem from '../commons/grid-item';
 
 const headerIds = ['ActivePowerText', 'MinimumReactivePower', 'MaximumReactivePower'];
 
@@ -75,11 +75,11 @@ const ReactiveLimitsForm = ({
 
     return (
         <Grid container spacing={2}>
-            {gridItem(reactiveCapabilityCurveChoiceRadioField, 12)}
-
-            {!isReactiveCapabilityCurveOn && gridItem(minimumReactivePowerField, 4)}
-            {!isReactiveCapabilityCurveOn && gridItem(maximumReactivePowerField, 4)}
-            {isReactiveCapabilityCurveOn && gridItem(reactiveCapabilityCurveTableField, 12)}
+            <GridItem size={12}>{reactiveCapabilityCurveChoiceRadioField}</GridItem>
+            {!isReactiveCapabilityCurveOn && <GridItem size={4}>{minimumReactivePowerField}</GridItem>}
+            {!isReactiveCapabilityCurveOn && <GridItem size={4}>{maximumReactivePowerField}</GridItem>}
+            {!isReactiveCapabilityCurveOn && <GridItem size={'auto'}></GridItem>}
+            {isReactiveCapabilityCurveOn && <GridItem size={12}>{reactiveCapabilityCurveTableField}</GridItem>}
         </Grid>
     );
 };

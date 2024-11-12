@@ -131,6 +131,11 @@ const ByFormulaDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataF
                 open={open}
                 maxWidth={'xl'}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
+                PaperProps={{
+                    sx: {
+                        height: '95vh',
+                    },
+                }}
                 {...dialogProps}
             >
                 <ByFormulaForm />

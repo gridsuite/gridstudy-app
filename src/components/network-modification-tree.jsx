@@ -6,10 +6,10 @@
  */
 
 import { Box, Tooltip } from '@mui/material';
-import ReactFlow, { Controls, useStore, useReactFlow, ControlButton, MiniMap } from 'reactflow';
+import { ReactFlow, Controls, useStore, useReactFlow, ControlButton, MiniMap } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
@@ -42,27 +42,30 @@ const NetworkModificationTree = ({
     const [isMoving, setIsMoving] = useState(false);
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
-    const nodeColor = (node) => {
-        if (node.type === 'ROOT') {
-            return 'rgba(0, 0, 0, 0.0)';
-        } else {
+    const nodeColor = useCallback(
+        (node) => {
+            if (!node) {
+                return '#9196a1';
+            }
+            if (node.type === 'ROOT') {
+                return 'rgba(0, 0, 0, 0.0)';
+            }
             if (node.id === currentNode?.id) {
                 return '#4287f5';
             }
-            switch (
-                node.data.localBuildStatus // TODO replace the switch with a simpler if/else ?
-            ) {
-                case BUILD_STATUS.BUILT:
-                    return '#70d136';
-                case BUILD_STATUS.BUILT_WITH_WARNING:
-                    return '#FFA500';
-                case BUILD_STATUS.BUILT_WITH_ERROR:
-                    return '#DC143C';
-                default:
-                    return '#9196a1';
+            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT) {
+                return '#70d136';
             }
-        }
-    };
+            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_WARNING) {
+                return '#FFA500';
+            }
+            if (node.data?.localBuildStatus === BUILD_STATUS.BUILT_WITH_ERROR) {
+                return '#DC143C';
+            }
+            return '#9196a1';
+        },
+        [currentNode]
+    );
 
     const onNodeClick = useCallback(
         (event, node) => {
@@ -209,7 +212,6 @@ const NetworkModificationTree = ({
                         </span>
                     </Tooltip>
                 </Controls>
-
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} nodeStrokeWidth={0} />}
             </ReactFlow>
         </Box>

@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Typography } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import { gridItem } from '../../dialogUtils';
+import { Grid, Typography } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { areIdsEqual, getObjectId } from 'components/utils/utils';
 import { useEffect, useState } from 'react';
@@ -17,6 +15,7 @@ import { LINE_TO_ATTACH_OR_SPLIT_ID } from 'components/utils/field-constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
+import GridItem from '../../commons/grid-item';
 
 export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     const [line1Substation, setLine1Substation] = useState('');
@@ -66,10 +65,10 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     return (
         <>
             <Grid container spacing={2} alignItems="center">
-                {gridItem(lineToAttachOrSplitField, 5)}
-                {gridItem(<Typography>{line1Substation}</Typography>, 1)}
-                {gridItem(percentageArea, 5)}
-                {gridItem(<Typography>{line2Substation}</Typography>, 1)}
+                <GridItem size={5}>{lineToAttachOrSplitField}</GridItem>
+                <GridItem size={1}>{<Typography>{line1Substation}</Typography>}</GridItem>
+                <GridItem size={5}>{percentageArea}</GridItem>
+                <GridItem size={1}>{<Typography>{line2Substation}</Typography>}</GridItem>
             </Grid>
         </>
     );

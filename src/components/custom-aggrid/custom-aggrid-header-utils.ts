@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomColDef, FilterSelectorType, FILTER_DATA_TYPES } from './custom-aggrid-header.type';
+import { CustomColDef, FILTER_DATA_TYPES, FilterSelectorType } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
@@ -14,6 +14,7 @@ export const makeAgGridCustomHeaderColumn = ({
     filterProps, // filterProps: contains useAgGridRowFilter params
     filterParams, // filterParams: Parameters for the column's filtering functionality
     filterTab,
+    shouldDisplayFilterBadge,
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
@@ -63,6 +64,7 @@ export const makeAgGridCustomHeaderColumn = ({
             },
             getEnumLabel: props?.getEnumLabel,
             isCountry: props?.isCountry,
+            shouldDisplayFilterBadge,
         },
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
@@ -78,9 +80,3 @@ export const mapFieldsToColumnsFilter = (
         column: columnToFieldMapping[filter.column],
     }));
 };
-
-export enum BooleanFilterValue {
-    TRUE = 'true',
-    FALSE = 'false',
-    UNDEFINED = 'undefinedValue',
-}

@@ -7,8 +7,8 @@
 
 import { FloatInput } from '@gridsuite/commons-ui';
 import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
-import { ActivePowerAdornment, gridItem, ReactivePowerAdornment } from '../../dialogUtils';
-import React from 'react';
+import { ActivePowerAdornment, ReactivePowerAdornment } from '../../dialog-utils';
+import GridItem from '../../commons/grid-item';
 
 const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix, previousValues }) => {
     const pField = (
@@ -46,9 +46,9 @@ const ReactiveCapabilityCurveRowForm = ({ id, index, labelSuffix, previousValues
 
     return (
         <>
-            {gridItem(pField, 3)}
-            {gridItem(qminPField, 3)}
-            {gridItem(qmaxPField, 3)}
+            <GridItem size={3}>{pField}</GridItem>
+            <GridItem size={3}>{qminPField}</GridItem>
+            <GridItem size={3}>{qmaxPField}</GridItem>
         </>
     );
 };

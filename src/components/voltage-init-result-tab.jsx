@@ -11,13 +11,11 @@ import VoltageInitResult from './voltage-init-result';
 import { useSelector } from 'react-redux';
 import { ComputingType } from './computing-status/computing-type';
 import { fetchVoltageInitResult } from '../services/study/voltage-init';
-import { useState } from 'react';
 import RunningStatus from './utils/running-status';
 
 const voltageInitResultInvalidations = ['voltageInitResult'];
 
 export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
-    const [tabIndex, setTabIndex] = useState(0);
     const voltageInitStatus = useSelector((state) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]);
 
     const [voltageInitResult, isWaiting] = useNodeData(
@@ -34,14 +32,7 @@ export const VoltageInitResultTab = ({ studyUuid, nodeUuid }) => {
 
     return (
         <WaitingLoader message={'LoadingRemoteData'} loading={isWaiting}>
-            <VoltageInitResult
-                result={voltageInitResultToShow}
-                status={voltageInitStatus}
-                // TODO: Move the Tabs from the VoltageInitResult component to this component (VoltageInitResultTab)
-                // to avoid re-rendering everything, otherwise we lose the tabIndex.
-                tabIndex={tabIndex}
-                setTabIndex={setTabIndex}
-            />
+            <VoltageInitResult result={voltageInitResultToShow} status={voltageInitStatus} />
         </WaitingLoader>
     );
 };

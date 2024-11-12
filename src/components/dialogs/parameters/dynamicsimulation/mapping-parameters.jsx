@@ -9,7 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import { useMemo } from 'react';
-import { getIdOrSelf } from '../../dialogUtils';
+import { getIdOrSelf } from '../../dialog-utils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 
 export const MAPPING = 'mapping';

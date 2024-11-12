@@ -7,7 +7,7 @@
 
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
-import React, { useCallback, useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import CustomHeaderComponent from '../../custom-aggrid/custom-aggrid-header';
 import { TOOLTIP_DELAY } from 'utils/UIconstants';
 import { getNoRowsMessage, getRows, useIntlResultStatusMessages } from '../../utils/aggrid-rows-handler';
