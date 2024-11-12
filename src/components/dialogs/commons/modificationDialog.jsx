@@ -81,9 +81,7 @@ const ModificationDialog = ({
         <ModificationDialogContent
             submitButton={submitButton}
             closeAndClear={closeAndClear}
-            onValidated={onValidated}
             showNodeNotBuiltWarning={showNodeNotBuiltWarning}
-            onValidationError={onValidationError}
             {...props}
         />
     );
