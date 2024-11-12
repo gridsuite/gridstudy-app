@@ -17,7 +17,6 @@ import { IColumnsDef } from './columns-definitions';
 interface TableRowComponentProps {
     arrayFormName: string;
     columnsDefinition: IColumnsDef[];
-    row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
     disableDelete: boolean;

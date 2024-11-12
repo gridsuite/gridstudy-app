@@ -125,7 +125,6 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                             key={row.id}
                             arrayFormName={arrayFormName}
                             columnsDefinition={columnsDefinition}
-                            row={row}
                             index={index}
                             handleDeleteButton={handleDeleteButton}
                             disableDelete={disableDelete}
