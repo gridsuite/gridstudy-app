@@ -5,9 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-import Grid from '@mui/material/Grid';
-import { Box } from '@mui/system';
+import { Box, Grid } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { mergeSx } from '../../utils/functions';
 

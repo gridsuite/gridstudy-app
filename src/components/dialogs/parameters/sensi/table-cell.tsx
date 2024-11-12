@@ -7,7 +7,6 @@
 
 import { TableCell } from '@mui/material';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
-import React from 'react';
 import { MuiSelectInput, SwitchInput, FloatInput, TextInput } from '@gridsuite/commons-ui';
 
 function EditableTableCell(

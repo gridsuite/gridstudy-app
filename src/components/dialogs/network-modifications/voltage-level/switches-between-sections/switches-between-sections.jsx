@@ -6,7 +6,6 @@
  */
 
 import { IconButton } from '@mui/material';
-import { gridItem } from 'components/dialogs/dialogUtils';
 import { TextInput } from '@gridsuite/commons-ui';
 import { SECTION_COUNT, SWITCHES_BETWEEN_SECTIONS, SWITCH_KINDS, SWITCH_KIND } from 'components/utils/field-constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -14,6 +13,7 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import { CreateSwitchesDialog } from './create-switches-between-sections/create-switches-dialog';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import GridItem from '../../../commons/grid-item';
 
 export const SwitchesBetweenSections = () => {
     const { getValues, setValue } = useFormContext();
@@ -99,7 +99,7 @@ export const SwitchesBetweenSections = () => {
     } else {
         return (
             <>
-                {gridItem(switchesBetweenSectionsField, 4)}
+                <GridItem size={4}>{switchesBetweenSectionsField}</GridItem>
                 {openCreateSwitchesDialog && (
                     <CreateSwitchesDialog
                         openCreateSwitchesDialog={openCreateSwitchesDialog}

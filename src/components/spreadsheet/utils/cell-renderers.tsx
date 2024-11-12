@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Checkbox, Tooltip, IconButton } from '@mui/material';
+import { Checkbox, Tooltip, IconButton, Box } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { INVALID_LOADFLOW_OPACITY } from 'utils/colors';
 import EditIcon from '@mui/icons-material/Edit';
@@ -15,7 +15,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { useSelector } from 'react-redux';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
-import { Box } from '@mui/system';
+
 import { mergeSx } from '../../utils/functions';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import { AppState } from '../../../redux/reducer';

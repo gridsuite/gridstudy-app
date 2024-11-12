@@ -6,7 +6,7 @@
  */
 
 import yup from '../../utils/yup-config';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Typography from '@mui/material/Typography';
@@ -20,7 +20,8 @@ import {
 } from '../../../services/study/dynamic-simulation';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getIdOrSelf, gridItem } from '../dialogUtils';
+import { getIdOrSelf } from '../dialog-utils';
+import GridItem from '../commons/grid-item';
 
 export const checkDynamicSimulationParameters = (studyUuid) => {
     return fetchDynamicSimulationParameters(studyUuid).then((params) => {
@@ -147,7 +148,9 @@ const DynamicSimulationParametersSelector = (props) => {
                 </DialogTitle>
                 <DialogContent>
                     <Grid container spacing={2} direction="column" item xs={12} justifyContent={'center'} padding={1}>
-                        <Grid item>{gridItem(mappingNameField, 6)}</Grid>
+                        <Grid container item>
+                            <GridItem>{mappingNameField}</GridItem>
+                        </Grid>
                     </Grid>
                 </DialogContent>
                 <DialogActions>{renderButtons()}</DialogActions>
