@@ -7,7 +7,7 @@
 
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import { ActivePowerAdornment, ReactivePowerAdornment } from '../../../dialog-utils';
+import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { LOAD_TYPES } from 'components/network/constants';
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
@@ -27,10 +27,10 @@ export function LoadCreationForm({ studyUuid, currentNode }: Readonly<LoadCreati
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
-        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, variant: 'filled' }} />
+        <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ variant: 'filled' }} />;
+    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ ...filledTextField }} />;
 
     const loadTypeField = (
         <SelectInput

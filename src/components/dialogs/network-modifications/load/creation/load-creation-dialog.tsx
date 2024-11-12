@@ -38,6 +38,7 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
+    Properties,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
@@ -184,7 +185,7 @@ export function LoadCreationDialog({
                 connectionName: sanitizeString(load.connectivity?.connectionName),
                 connectionPosition: load.connectivity?.connectionPosition ?? null,
                 terminalConnected: load.connectivity?.terminalConnected,
-                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES]),
+                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES] as Properties | undefined),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,

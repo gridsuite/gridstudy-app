@@ -24,8 +24,8 @@ export type Property = {
     [ADDED]: boolean;
 };
 
-type Properties = {
-    [ADDITIONAL_PROPERTIES]: Property[];
+export type Properties = {
+    [ADDITIONAL_PROPERTIES]: Property[] | undefined;
 };
 
 export type PredefinedProperties = {
@@ -137,9 +137,13 @@ export const mergeModificationAndEquipmentProperties = (
     return Array.from(newModificationProperties.values());
 };
 
-export const toModificationProperties = (properties: Property[] | undefined) => {
-    const filteredProperties = properties?.filter((p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]);
-    return filteredProperties?.length === 0 ? undefined : filteredProperties;
+export const toModificationProperties = (properties: Properties | undefined) => {
+    if (properties) {
+        const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
+            (p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
+        );
+        return filteredProperties && filteredProperties?.length > 0 ? filteredProperties : undefined;
+    }
 };
 
 export const creationPropertiesSchema = yup.object({
