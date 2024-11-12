@@ -955,7 +955,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.parentId)
-                    .find((parentId) => !action.networkModificationTreeNodes.includes(parentId!));
+                    .find((parentId) => !action.networkModificationTreeNodes.includes((parentId as UUID)!));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 state.networkModificationTreeModel = newModel;
@@ -967,7 +967,7 @@ export const reducer = createReducer(initialState, (builder) => {
                         state.currentTreeNode?.id
                     )
                 ) {
-                    synchCurrentTreeNode(state, nextCurrentNodeUuid);
+                    synchCurrentTreeNode(state, nextCurrentNodeUuid as UUID);
                 } // check if parent node of the current node is in the nodes deleted list
                 else if (
                     action.networkModificationTreeNodes.includes(
