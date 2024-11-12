@@ -12,7 +12,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React from 'react';
 import { CancelButton } from '@gridsuite/commons-ui';
 
 const SelectOptionsDialog = ({ open, onClose, onClick, title, child, style, validateKey }) => {

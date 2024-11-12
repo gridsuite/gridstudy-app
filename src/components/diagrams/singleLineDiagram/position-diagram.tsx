@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { forwardRef, useEffect, useLayoutEffect, useRef, useState, Ref } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState, Ref } from 'react';
 import { useSelector } from 'react-redux';
 
 import Box from '@mui/material/Box';

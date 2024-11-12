@@ -21,13 +21,7 @@ import {
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import {
-    gridItem,
-    GridSection,
-    ReactivePowerAdornment,
-    SusceptanceAdornment,
-    VoltageAdornment,
-} from '../../../dialogUtils';
+import { ReactivePowerAdornment, SusceptanceAdornment, VoltageAdornment } from '../../../dialog-utils';
 import { useWatch } from 'react-hook-form';
 import { FunctionComponent } from 'react';
 import { UUID } from 'crypto';
@@ -35,6 +29,8 @@ import { REGULATION_TYPES } from '../../../../network/constants';
 import RegulatingTerminalForm from '../../../regulating-terminal/regulating-terminal-form';
 import { FormattedMessage } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
+import GridSection from '../../../commons/grid-section';
+import GridItem from '../../../commons/grid-item';
 
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;
@@ -116,14 +112,14 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                 </Grid>
                 {watchCharacteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                     <>
-                        {gridItem(minQAtNominalVField, 4)}
-                        {gridItem(maxQAtNominalVField, 4)}
+                        <GridItem size={4}>{minQAtNominalVField}</GridItem>
+                        <GridItem size={4}>{maxQAtNominalVField}</GridItem>
                     </>
                 )}
                 {watchCharacteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                     <>
-                        {gridItem(minSusceptanceField, 4)}
-                        {gridItem(maxSusceptanceField, 4)}
+                        <GridItem size={4}>{minSusceptanceField}</GridItem>
+                        <GridItem size={4}>{maxSusceptanceField}</GridItem>
                     </>
                 )}
             </Grid>
@@ -139,16 +135,16 @@ export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = 
                         size="small"
                     />
                 </Grid>
-                {gridItem(voltageSetPointField, 4)}
-                {gridItem(reactivePowerSetPointField, 4)}
-                {gridItem(voltageRegulationTypeField, 4)}
+                <GridItem size={4}>{voltageSetPointField}</GridItem>
+                <GridItem size={4}>{reactivePowerSetPointField}</GridItem>
+                <GridItem size={4}>{voltageRegulationTypeField}</GridItem>
             </Grid>
             {watchRegulationType === REGULATION_TYPES.DISTANT.id && (
                 <Grid container spacing={2} padding={1}>
                     <Grid item xs={4} alignItems={'center'}>
                         <FormattedMessage id="RegulatingTerminalGenerator" />
                     </Grid>
-                    {gridItem(regulatingTerminalField, 8)}
+                    <GridItem size={8}>{regulatingTerminalField}</GridItem>
                 </Grid>
             )}
         </>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { FilterOptionsState } from '@mui/material';
 import { useIntl } from 'react-intl';

@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useWatch } from 'react-hook-form';
-import { gridItem, KilometerAdornment } from '../dialogUtils';
+import { KilometerAdornment } from '../dialog-utils';
 import EditIcon from '@mui/icons-material/Edit';
 import { FloatInput } from '@gridsuite/commons-ui';
-import IconButton from '@mui/material/IconButton';
+import { IconButton } from '@mui/material';
 import {
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_TYPE_VALUE,
@@ -21,6 +21,7 @@ import {
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import { ButtonReadOnlyInput } from '../../utils/rhf-inputs/read-only/button-read-only-input';
 import PropTypes from 'prop-types';
+import GridItem from '../commons/grid-item';
 
 const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDistanceChange }) => {
     const watchDistance = useWatch({
@@ -62,11 +63,11 @@ const LineTypeSegmentCreation = ({ name, index, onEditButtonClick, onSegmentDist
 
     return (
         <>
-            {gridItem(segmentDistanceField, 2)}
-            {gridItem(segmentTypeField, 3)}
-            {gridItem(segmentResistanceField, 2)}
-            {gridItem(segmentReactanceField, 2)}
-            {gridItem(segmentSusceptanceField, 2)}
+            <GridItem size={2}>{segmentDistanceField}</GridItem>
+            <GridItem size={3}>{segmentTypeField}</GridItem>
+            <GridItem size={2}>{segmentResistanceField}</GridItem>
+            <GridItem size={2}>{segmentReactanceField}</GridItem>
+            <GridItem size={2}>{segmentSusceptanceField}</GridItem>
         </>
     );
 };

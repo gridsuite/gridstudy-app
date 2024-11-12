@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { yupResolver } from '@hookform/resolvers/yup';
-import { gridItem } from 'components/dialogs/dialogUtils';
 import {
     EQUIPMENT,
     ID,
@@ -28,6 +27,7 @@ import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { fetchVoltageLevelsListInfos } from 'services/study/network';
 import { getRegulatingTerminalFormData } from 'components/dialogs/regulating-terminal/regulating-terminal-form-utils';
 import { CustomFormProvider } from '@gridsuite/commons-ui';
+import GridItem from '../../../commons/grid-item';
 
 const emptyFormData = {
     [VOLTAGE_LEVEL]: null,
@@ -148,7 +148,7 @@ const RegulatingTerminalModificationDialog = ({
                             <Grid item xs={12}>
                                 <FormattedMessage id="RegulatingTerminalGenerator" />
                             </Grid>
-                            {gridItem(regulatingTerminalField, 12)}
+                            <GridItem size={12}>{regulatingTerminalField}</GridItem>
                         </>
                     }
                 </Grid>

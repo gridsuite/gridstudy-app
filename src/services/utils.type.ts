@@ -5,7 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-// These prefixes used in the path of keys in translation file dynamic-mapping-models-en.ts
-export const PREFIX_MODEL_KEY = 'models';
-export const PREFIX_VARIABLE_SET_KEY = 'variableSets';
-export const PREFIX_VARIABLE_KEY = 'variables';
+export enum FetchStatus {
+    SUCCEED = 'SUCCEED',
+    FAILED = 'FAILED',
+    IDLE = 'IDLE',
+    RUNNING = 'RUNNING',
+}
