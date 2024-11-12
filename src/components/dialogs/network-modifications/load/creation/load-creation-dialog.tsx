@@ -196,15 +196,16 @@ export function LoadCreationDialog({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
-
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
+
+    const clear = useCallback(() => {
+        reset(emptyFormData);
+    }, [reset]);
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
