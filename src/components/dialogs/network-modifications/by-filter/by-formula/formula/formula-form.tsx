@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
@@ -16,13 +16,13 @@ import {
     REFERENCE_FIELD_OR_VALUE_2,
 } from '../../../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
-import { gridItem } from '../../../../dialogUtils';
 import { EQUIPMENTS_FIELDS } from './formula-utils';
 import ReferenceAutocompleteInput from './reference-autocomplete-input';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
+import GridItem from '../../../../commons/grid-item';
 
 interface FormulaProps {
     name: string;
@@ -98,14 +98,14 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
 
     return (
         <>
-            {gridItem(filtersField, 2.25)}
-            {gridItem(editedField, 2.25)}
+            <GridItem size={2.25}>{filtersField}</GridItem>
+            <GridItem size={2.25}>{editedField}</GridItem>
             <Grid item xs={0.25} sx={{ marginTop: 0.75 }}>
                 <DragHandleIcon />
             </Grid>
-            {gridItem(referenceField1, 2.5)}
-            {gridItem(operatorField, 1.25)}
-            {gridItem(referenceField2, 2.5)}
+            <GridItem size={2.5}>{referenceField1}</GridItem>
+            <GridItem size={1.25}>{operatorField}</GridItem>
+            <GridItem size={2.5}>{referenceField2}</GridItem>
         </>
     );
 };

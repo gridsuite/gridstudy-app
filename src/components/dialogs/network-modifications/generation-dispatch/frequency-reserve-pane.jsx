@@ -7,7 +7,7 @@
 
 import { FREQUENCY_RESERVE, GENERATORS_FILTERS, GENERATORS_FREQUENCY_RESERVES } from 'components/utils/field-constants';
 import { useIntl } from 'react-intl';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useFieldArray } from 'react-hook-form';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';

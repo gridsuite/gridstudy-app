@@ -15,7 +15,7 @@ import {
 } from './shortcircuit-analysis-result.type';
 import { AppState } from 'redux/reducer';
 import { RunningStatus } from 'components/utils/running-status';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
