@@ -38,7 +38,6 @@ import {
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
-    Properties,
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
@@ -185,7 +184,7 @@ export function LoadCreationDialog({
                 connectionName: sanitizeString(load.connectivity?.connectionName),
                 connectionPosition: load.connectivity?.connectionPosition ?? null,
                 terminalConnected: load.connectivity?.terminalConnected,
-                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES] as Properties | undefined),
+                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES]),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -214,6 +213,7 @@ export function LoadCreationDialog({
                 aria-labelledby="dialog-create-load"
                 maxWidth={'md'}
                 titleId="CreateLoad"
+                searchCopy={searchCopy}
                 open={open}
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
