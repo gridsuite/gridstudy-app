@@ -17,7 +17,6 @@ import { IColumnsDef } from './columns-definitions';
 interface TableRowComponentProps {
     arrayFormName: string;
     columnsDefinition: IColumnsDef[];
-    row: Record<'id', string>;
     index: number;
     handleDeleteButton: (index: number) => void;
     disableDelete: boolean;
@@ -27,7 +26,6 @@ interface TableRowComponentProps {
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     arrayFormName,
     columnsDefinition,
-    row,
     index,
     handleDeleteButton,
     disableDelete = false,
@@ -43,7 +41,7 @@ const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     };
 
     return (
-        <TableRow key={row.id} onMouseEnter={() => handleHover(true)} onMouseLeave={() => handleHover(false)}>
+        <TableRow onMouseEnter={() => handleHover(true)} onMouseLeave={() => handleHover(false)}>
             {columnsDefinition.map((column: IColumnsDef) =>
                 EditableTableCell(arrayFormName, index, column, handleRowChanged)
             )}
