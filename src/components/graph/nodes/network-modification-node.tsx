@@ -173,8 +173,8 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const debug = false; // TODO remove this before merge
     return (
         <>
-            <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={true} />
-            <Handle type="target" position={Position.Top} style={{ background: '#555' }} isConnectable={true} />
+            <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />
+            <Handle type="target" position={Position.Top} style={{ background: '#555' }} isConnectable={false} />
             <Button
                 style={{
                     opacity: getNodeOpacity(),
