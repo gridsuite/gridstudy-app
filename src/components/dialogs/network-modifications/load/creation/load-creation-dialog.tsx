@@ -29,7 +29,7 @@ import {
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
-import { LoadCreationForm } from './load-creation-form';
+import LoadCreationForm from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';

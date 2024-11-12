@@ -23,7 +23,7 @@ interface LoadCreationFormProps {
     currentNode: CurrentTreeNode;
 }
 
-export function LoadCreationForm({ studyUuid, currentNode }: Readonly<LoadCreationFormProps>) {
+export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<LoadCreationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
