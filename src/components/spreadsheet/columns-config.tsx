@@ -17,8 +17,8 @@ import {
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     MAX_LOCKS_PER_TAB,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_NAMES,
-} from './utils/config-tables';
+} from './utils/constants';
+import { TABLES_NAMES } from './utils/config-tables';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';

@@ -18,7 +18,7 @@ import {
 } from 'components/utils/field-constants';
 import { useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { ActivePowerAdornment, AmpereAdornment, gridItem } from '../../../../dialogUtils';
+import { ActivePowerAdornment, AmpereAdornment } from '../../../../dialog-utils';
 import { PHASE_REGULATION_MODES, REGULATION_TYPES, SIDE } from 'components/network/constants';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { SelectInput } from '@gridsuite/commons-ui';
@@ -31,6 +31,7 @@ import {
 } from './phase-tap-changer-pane-utils';
 import { useMemo } from 'react';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
+import GridItem from '../../../../commons/grid-item';
 
 const PhaseTapChangerPane = ({
     id = PHASE_TAP_CHANGER,
@@ -240,7 +241,7 @@ const PhaseTapChangerPane = ({
                         <Grid item xs={4}>
                             {regulationTypeField}
                         </Grid>
-                        {regulationType === REGULATION_TYPES.LOCAL.id && gridItem(sideField, 4)}
+                        {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
                     </Grid>
                 )}
                 {phaseTapChangerEnabledWatch && regulationType === REGULATION_TYPES.DISTANT.id && (
@@ -253,7 +254,7 @@ const PhaseTapChangerPane = ({
                             marginLeft: '10px',
                         }}
                     >
-                        {gridItem(regulatingTerminalField, 2)}
+                        <GridItem size={2}>{regulatingTerminalField}</GridItem>
                     </Grid>
                 )}
                 <PhaseTapChangerPaneSteps

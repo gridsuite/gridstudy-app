@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -23,8 +23,8 @@ import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
-import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params.js';
-import { getNadIdentifier } from '../diagram-utils.js';
+import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
+import { getNadIdentifier } from '../diagram-utils';
 import { UUID } from 'crypto';
 
 const dynamicCssRules: CSS_RULE[] = [

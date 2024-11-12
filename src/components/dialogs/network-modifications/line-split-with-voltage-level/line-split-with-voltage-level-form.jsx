@@ -7,8 +7,7 @@
 
 import Grid from '@mui/material/Grid';
 import { LINE1_ID, LINE1_NAME, LINE2_ID, LINE2_NAME } from 'components/utils/field-constants';
-import React, { useMemo, useState } from 'react';
-import { gridItem, GridSection } from '../../dialogUtils';
+import { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import EditIcon from '@mui/icons-material/Edit';
 import { TextInput } from '@gridsuite/commons-ui';
@@ -19,6 +18,8 @@ import { LineToAttachOrSplitForm } from '../line-to-attach-or-split-form/line-to
 import VoltageLevelCreationDialog from 'components/dialogs/network-modifications/voltage-level/creation/voltage-level-creation-dialog';
 import { CONNECTIVITY, ID, VOLTAGE_LEVEL } from '../../../utils/field-constants';
 import { useWatch } from 'react-hook-form';
+import GridSection from '../../commons/grid-section';
+import GridItem from '../../commons/grid-item';
 
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
@@ -76,30 +77,32 @@ const LineSplitWithVoltageLevelForm = ({
     return (
         <>
             <GridSection title="LineToSplit" />
-            {gridItem(lineToSplitForm, 12)}
+            <GridItem size={12}>{lineToSplitForm}</GridItem>
             <GridSection title="VOLTAGE_LEVEL" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
-                {gridItem(
-                    <Button
-                        onClick={openVoltageLevelDialog}
-                        startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
-                    >
-                        <Typography align="left">
-                            <FormattedMessage id="NewVoltageLevel" />
-                        </Typography>
-                    </Button>
-                )}
+                <GridItem size={12}>{connectivityForm}</GridItem>
+                <GridItem>
+                    {
+                        <Button
+                            onClick={openVoltageLevelDialog}
+                            startIcon={isVoltageLevelEdit ? <EditIcon /> : <AddIcon />}
+                        >
+                            <Typography align="left">
+                                <FormattedMessage id="NewVoltageLevel" />
+                            </Typography>
+                        </Button>
+                    }
+                </GridItem>
             </Grid>
             <GridSection title="Line1" />
             <Grid container spacing={2}>
-                {gridItem(newLine1IdField, 6)}
-                {gridItem(newLine1NameField, 6)}
+                <GridItem>{newLine1IdField}</GridItem>
+                <GridItem>{newLine1NameField}</GridItem>
             </Grid>
             <GridSection title="Line2" />
             <Grid container spacing={2}>
-                {gridItem(newLine2IdField, 6)}
-                {gridItem(newLine2NameField, 6)}
+                <GridItem>{newLine2IdField}</GridItem>
+                <GridItem>{newLine2NameField}</GridItem>
             </Grid>
             {voltageLevelDialogOpen && (
                 <VoltageLevelCreationDialog

@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -14,7 +13,7 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { getNominalVoltageColor } from '../utils/colors';
 import { useNameOrId } from './utils/equipmentInfosHandler';
-import { Box } from '@mui/system';
+import { Box } from '@mui/material';
 
 const styles = {
     menu: {

@@ -5,17 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useFormContext, useWatch } from 'react-hook-form';
-import React, { ChangeEvent, useCallback } from 'react';
+import { ChangeEvent, useCallback } from 'react';
 import { ParameterSwitch, ParameterFloat } from '../widget';
 import { GENERAL, GENERAL_APPLY_MODIFICATIONS } from './voltage-init-parameters-form';
-import Alert from '@mui/material/Alert';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
-import { Grid } from '@mui/material';
-import { Box } from '@mui/system';
+import { Box, Grid, Alert } from '@mui/material';
 import { REACTIVE_SLACKS_THRESHOLD, SHUNT_COMPENSATOR_ACTIVATION_THRESHOLD } from './voltage-init-constants';
-import { ReactivePowerAdornment, LineSeparator } from '../../dialogUtils';
+import { ReactivePowerAdornment } from '../../dialog-utils';
 import { UPDATE_BUS_VOLTAGE } from 'components/utils/field-constants';
+import LineSeparator from '../../commons/line-separator';
 
 export const GeneralParameters = () => {
     const { setValue } = useFormContext();

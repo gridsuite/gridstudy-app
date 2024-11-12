@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     PARAM_CENTER_LABEL,
@@ -16,7 +16,7 @@ import {
     PARAM_SUBSTATION_LAYOUT,
     PARAM_USE_NAME,
 } from '../../utils/config-params';
-import { Chip, Stack, Theme } from '@mui/material';
+import { Box, Chip, Stack, Theme } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import {
@@ -44,13 +44,12 @@ import { useNameOrId } from '../utils/equipmentInfosHandler';
 import { syncDiagramStateWithSessionStorage } from '../../redux/session-storage/diagram-state';
 import SingleLineDiagramContent from './singleLineDiagram/single-line-diagram-content';
 import NetworkAreaDiagramContent from './networkAreaDiagram/network-area-diagram-content';
-import { OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, OverflowableText, useDebounce, useSnackMessage } from '@gridsuite/commons-ui';
 import { setNetworkAreaDiagramNbVoltageLevels } from '../../redux/actions';
 import { useIntl } from 'react-intl';
 import { getSubstationSingleLineDiagram, getVoltageLevelSingleLineDiagram } from '../../services/study/network';
 import { fetchSvg, getNetworkAreaDiagramUrl } from '../../services/study';
 import { mergeSx } from '../utils/functions';
-import { Box } from '@mui/system';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
@@ -294,7 +293,7 @@ const styles = {
 interface DiagramPaneProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    showInSpreadsheet: (equipment: { equipmentId: string | null; type: string | null }) => void;
+    showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
 
@@ -985,7 +984,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                     }}
                 >
                     {displayedDiagrams.map((diagramView, index, array) => (
-                        <React.Fragment key={diagramView.svgType + diagramView.id}>
+                        <Fragment key={diagramView.svgType + diagramView.id}>
                             {
                                 /*
                                 We put a space (a separator) before the first right aligned diagram.
@@ -1033,7 +1032,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                                     />
                                 )}
                             </Diagram>
-                        </React.Fragment>
+                        </Fragment>
                     ))}
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}

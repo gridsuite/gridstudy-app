@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import {
     SEGMENT_DISTANCE_VALUE,
     SEGMENT_REACTANCE,

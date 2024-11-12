@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
     ADDITIONAL_PROPERTIES,

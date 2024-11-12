@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -43,15 +43,21 @@ const styles = {
     },
 };
 
-const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChange }) => {
+type NominalVoltageFilterProps = {
+    nominalVoltages: number[];
+    filteredNominalVoltages: number[];
+    onChange: (filteredNominalVoltages: number[]) => void;
+};
+
+const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChange }: NominalVoltageFilterProps) => {
     // Set up filteredNominalVoltages
     useEffect(() => {
         if (nominalVoltages && !filteredNominalVoltages) {
-            onChange(nominalVoltages);
+            onChange(nominalVoltages as number[]);
         }
     }, [nominalVoltages, filteredNominalVoltages, onChange]);
 
-    const handleToggle = (vnoms, isToggle) => () => {
+    const handleToggle = (vnoms: number[], isToggle: boolean) => () => {
         // filter on nominal voltage
         let newFiltered = [...filteredNominalVoltages];
         if (isToggle) {
@@ -69,7 +75,7 @@ const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChan
         onChange(newFiltered);
     };
 
-    if (!nominalVoltages?.length > 0) {
+    if (!(nominalVoltages?.length > 0)) {
         return false;
     }
     return (

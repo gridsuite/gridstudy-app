@@ -5,12 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput, CustomAGGrid, ErrorInput, FieldErrorAlert, useSnackMessage } from '@gridsuite/commons-ui';
-import { gridItem } from 'components/dialogs/dialogUtils';
 import {
     CONNECTED,
     CONNECTED1,
@@ -23,11 +21,12 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useCSVPicker } from 'components/utils/inputs/input-hooks';
 import CsvDownloader from 'react-csv-downloader';
-import { Alert, Button } from '@mui/material';
+import { Alert, Button, Grid } from '@mui/material';
 import { TABULAR_MODIFICATION_FIELDS, styles } from './tabular-modification-utils';
 import { BooleanNullableCellRenderer, DefaultCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import Papa from 'papaparse';
 import { ColDef } from 'ag-grid-community';
+import GridItem from '../../commons/grid-item';
 
 const TabularModificationForm = () => {
     const intl = useIntl();
@@ -197,7 +196,7 @@ const TabularModificationForm = () => {
     return (
         <Grid container spacing={2} direction={'row'}>
             <Grid container item spacing={2} alignItems={'center'}>
-                {gridItem(equipmentTypeField, 4)}
+                <GridItem size={4}>{equipmentTypeField}</GridItem>
                 <Grid item>{FileField}</Grid>
             </Grid>
             <Grid container item spacing={2} alignItems={'center'}>
