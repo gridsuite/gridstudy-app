@@ -18,7 +18,7 @@ import { CurrentTreeNode } from '../../../../../redux/reducer';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-interface LoadCreationFormProps {
+export interface LoadCreationFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
 }
