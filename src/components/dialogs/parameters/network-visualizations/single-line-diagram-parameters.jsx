@@ -15,11 +15,11 @@ import {
     PARAM_DIAGONAL_LABEL,
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
-import { LineSeparator } from '../../dialogUtils';
 import { styles } from '../parameters';
 import { SubstationLayout } from '../../../diagrams/diagram-common';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';
 import ParameterLineSwitch from '../widget/parameter-line-switch';
+import LineSeparator from '../../commons/line-separator';
 
 export const useGetAvailableComponentLibraries = (user) => {
     const [componentLibraries, setComponentLibraries] = useState([]);

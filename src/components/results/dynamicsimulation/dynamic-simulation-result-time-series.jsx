@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { Box, LinearProgress } from '@mui/material';
 import DynamicSimulationResultChart from './timeseries/dynamic-simulation-result-chart';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { useIntl } from 'react-intl';
 import DroppableTabs from './common/draggable-tab/droppable-tabs';
 import DraggableTab from './common/draggable-tab/draggable-tab';

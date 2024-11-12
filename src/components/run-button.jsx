@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 
@@ -20,7 +20,7 @@ const RunButton = ({ runnables, activeRunnables, getStatus, computationStopped, 
         () => Object.fromEntries(activeRunnables.map((k) => [k, intl.formatMessage({ id: runnables[k].messageId })])),
         [intl, runnables, activeRunnables]
     );
-    const [selectedRunnable, setSelectedRunnable] = React.useState(activeRunnables[0]);
+    const [selectedRunnable, setSelectedRunnable] = useState(activeRunnables[0]);
 
     function getOptions() {
         switch (getRunningStatus()) {
