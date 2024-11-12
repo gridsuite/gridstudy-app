@@ -52,10 +52,10 @@ import {
     X,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -118,7 +118,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
+import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
@@ -482,38 +482,37 @@ const TwoWindingsTransformerModificationDialog = ({
                 };
             }
 
-            modifyTwoWindingsTransformer(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
-                toModificationOperation(characteristics[R]),
-                toModificationOperation(characteristics[X]),
-                toModificationOperation(microUnitToUnit(characteristics[G])),
-                toModificationOperation(microUnitToUnit(characteristics[B])),
-                toModificationOperation(characteristics[RATED_S]),
-                toModificationOperation(characteristics[RATED_U1]),
-                toModificationOperation(characteristics[RATED_U2]),
-                currentLimits1,
-                currentLimits2,
-                ratioTap,
-                phaseTap,
-                connectivity1[VOLTAGE_LEVEL]?.id,
-                connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
-                connectivity2[VOLTAGE_LEVEL]?.id,
-                connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
-                sanitizeString(connectivity1[CONNECTION_NAME]),
-                sanitizeString(connectivity2[CONNECTION_NAME]),
-                connectivity1[CONNECTION_DIRECTION],
-                connectivity2[CONNECTION_DIRECTION],
-                connectivity1[CONNECTION_POSITION],
-                connectivity2[CONNECTION_POSITION],
-                connectivity1[CONNECTED],
-                connectivity2[CONNECTED],
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(twt)
-            ).catch((error) => {
+            modifyTwoWindingsTransformer({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                twoWindingsTransformerId: selectedId,
+                twoWindingsTransformerName: toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
+                r: toModificationOperation(characteristics[R]),
+                x: toModificationOperation(characteristics[X]),
+                g: toModificationOperation(microUnitToUnit(characteristics[G])),
+                b: toModificationOperation(microUnitToUnit(characteristics[B])),
+                ratedS: toModificationOperation(characteristics[RATED_S]),
+                ratedU1: toModificationOperation(characteristics[RATED_U1]),
+                ratedU2: toModificationOperation(characteristics[RATED_U2]),
+                currentLimit1: currentLimits1,
+                currentLimit2: currentLimits2,
+                ratioTapChanger: ratioTap,
+                phaseTapChanger: phaseTap,
+                voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
+                busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
+                voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
+                busOrBusbarSectionId2: connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
+                connectionName1: sanitizeString(connectivity1[CONNECTION_NAME]),
+                connectionName2: sanitizeString(connectivity2[CONNECTION_NAME]),
+                connectionDirection1: connectivity1[CONNECTION_DIRECTION],
+                connectionDirection2: connectivity2[CONNECTION_DIRECTION],
+                connectionPosition1: connectivity1[CONNECTION_POSITION],
+                connectionPosition2: connectivity2[CONNECTION_POSITION],
+                connected1: connectivity1[CONNECTED],
+                connected2: connectivity2[CONNECTED],
+                properties: toModificationProperties(twt),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'TwoWindingsTransformerModificationError',

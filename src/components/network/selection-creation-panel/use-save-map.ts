@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -57,7 +57,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
 
                 if (isFilter) {
                     await createMapFilter(
-                        selection.equipmentType as EquipmentType,
+                        selection.equipmentType,
                         selection.name,
                         distDir.folderId,
                         // @ts-expect-error TODO: manage null case
@@ -73,7 +73,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                     });
                 } else {
                     await createMapContingencyList(
-                        selection.equipmentType as EquipmentType,
+                        selection.equipmentType,
                         selection.name,
                         distDir.folderId,
                         // @ts-expect-error TODO: manage null case

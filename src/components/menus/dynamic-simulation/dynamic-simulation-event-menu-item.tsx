@@ -13,6 +13,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import { CustomMenuItem } from '../../utils/custom-nested-menu';
+import { EquipmentType } from '@gridsuite/commons-ui';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     menuItem: {
@@ -25,8 +27,12 @@ const styles = {
 
 interface DynamicSimulationEventMenuItemProps {
     equipmentId: string;
-    equipmentType: string;
-    onOpenDynamicSimulationEventDialog: (equipmentId: string, equipmentType: string, dialogTitle: string) => void;
+    equipmentType: EquipmentType;
+    onOpenDynamicSimulationEventDialog: (
+        equipmentId: string,
+        equipmentType: EquipmentType,
+        dialogTitle: string
+    ) => void;
     disabled: boolean;
 }
 
@@ -40,10 +46,7 @@ const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemPro
                 onOpenDynamicSimulationEventDialog(
                     equipmentId,
                     equipmentType,
-                    `${getEventType(equipmentType)}${
-                        // @ts-expect-error TODO: conflicts types
-                        EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
-                    }`
+                    `${getEventType(equipmentType)}${EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]}`
                 )
             }
             disabled={disabled}
@@ -56,8 +59,9 @@ const DynamicSimulationEventMenuItem = (props: DynamicSimulationEventMenuItemPro
                     <Typography noWrap>
                         {intl.formatMessage({
                             id: `${getEventType(equipmentType)}${
-                                // @ts-expect-error TODO: conflicts types
-                                EQUIPMENT_TYPE_LABEL_KEYS[equipmentType]
+                                EQUIPMENT_TYPE_LABEL_KEYS[
+                                    EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES]
+                                ]
                             }`,
                         })}
                         {' ('}

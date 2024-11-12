@@ -4,14 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 
 import { NonEvacuatedEnergyResultProps } from './non-evacuated-energy-result.type';
-import Button from '@mui/material/Button';
-import { Box } from '@mui/system';
 import { FormattedMessage } from 'react-intl';
 import { RunningStatus } from '../../../utils/running-status';
 import fileSaver from 'file-saver';
+import { Box, Button } from '@mui/material';
 
 const styles = {
     buttonExportResult: {
