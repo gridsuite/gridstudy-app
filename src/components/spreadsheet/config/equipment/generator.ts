@@ -148,8 +148,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                 return {
                     defaultValue:
                         params.data?.activePowerControl?.participate != null
-                            ? +params.data?.activePowerControl?.participate
-                            : '',
+                            ? params.data.activePowerControl.participate
+                            : false,
                     gridContext: params.context,
                     gridApi: params.api,
                     colDef: params.colDef,
@@ -309,7 +309,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             cellEditor: BooleanListField,
             cellEditorParams: (params: any) => {
                 return {
-                    defaultValue: params.data.voltageRegulatorOn | 0,
+                    defaultValue: params.data?.voltageRegulatorOn != null ? params.data.voltageRegulatorOn : false,
                     gridContext: params.context,
                     gridApi: params.api,
                     colDef: params.colDef,

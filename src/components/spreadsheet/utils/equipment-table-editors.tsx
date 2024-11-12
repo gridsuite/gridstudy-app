@@ -30,11 +30,16 @@ interface EquipmentTableNumberEditorProps extends EquipmentTableDataEditorProps 
     defaultValue: number;
 }
 interface EquipmentTableBooleanListEditorProps extends EquipmentTableEditorProps {
-    defaultValue: any; // TODO should be boolean
+    defaultValue: boolean;
 }
 interface EquipmentTableEnumEditorProps extends EquipmentTableEditorProps {
     defaultValue: string;
     enumOptions: EnumOption[];
+}
+
+enum BooleanNumberValue {
+    TRUE = 1,
+    FALSE = 0,
 }
 
 export const GeneratorRegulatingTerminalEditor = forwardRef(
@@ -319,7 +324,7 @@ export const BooleanListField = forwardRef(
             () => {
                 return {
                     getValue: () => {
-                        return Boolean(value);
+                        return value;
                     },
                     getField: () => {
                         return colDef.field;
@@ -331,8 +336,8 @@ export const BooleanListField = forwardRef(
 
         const validateChange = useCallback(
             (ev: any) => {
-                const val = ev.target.value;
-                setValue(val);
+                const val: number = ev.target.value;
+                setValue(val === BooleanNumberValue.TRUE);
                 gridContext.dynamicValidation = deepUpdateValue(gridContext.dynamicValidation, colDef.field, val);
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
@@ -341,7 +346,7 @@ export const BooleanListField = forwardRef(
 
         return (
             <Select
-                value={value}
+                value={value ? BooleanNumberValue.TRUE : BooleanNumberValue.FALSE}
                 onChange={validateChange}
                 size={'medium'}
                 margin={'none'}
@@ -349,10 +354,10 @@ export const BooleanListField = forwardRef(
                 variant={'outlined'}
                 autoFocus
             >
-                <MenuItem value={1} key={colDef.field + '_1'}>
+                <MenuItem value={BooleanNumberValue.TRUE} key={colDef.field + '_1'}>
                     <em>{intl.formatMessage({ id: 'true' })}</em>
                 </MenuItem>
-                <MenuItem value={0} key={colDef.field + '_0'}>
+                <MenuItem value={BooleanNumberValue.FALSE} key={colDef.field + '_0'}>
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
             </Select>

@@ -241,8 +241,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return {
                     defaultValue:
                         params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities != null
-                            ? +params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities
-                            : '',
+                            ? params.data.ratioTapChanger.hasLoadTapChangingCapabilities
+                            : false,
                     gridContext: params.context,
                     gridApi: params.api,
                     colDef: params.colDef,

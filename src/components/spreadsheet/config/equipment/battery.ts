@@ -99,8 +99,8 @@ export const BATTERY_TAB_DEF: SpreadsheetTabDefinition = {
                 return {
                     defaultValue:
                         params.data?.activePowerControl?.participate != null
-                            ? +params.data?.activePowerControl?.participate
-                            : '',
+                            ? params.data.activePowerControl.participate
+                            : false,
                     gridContext: params.context,
                     gridApi: params.api,
                     colDef: params.colDef,
