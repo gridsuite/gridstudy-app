@@ -7,8 +7,8 @@
 
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { gridItem } from '../../../dialogUtils';
 import { TextInput } from '@gridsuite/commons-ui';
+import GridItem from '../../../commons/grid-item';
 
 const StaticVarCompensatorCreationDialogHeader = () => {
     const staticCompensatorIdField = (
@@ -20,8 +20,8 @@ const StaticVarCompensatorCreationDialogHeader = () => {
     );
     return (
         <Grid container item spacing={2}>
-            {gridItem(staticCompensatorIdField, 4)}
-            {gridItem(staticCompensatorNameField, 4)}
+            <GridItem size={4}>{staticCompensatorIdField}</GridItem>
+            <GridItem size={4}>{staticCompensatorNameField}</GridItem>
         </Grid>
     );
 };

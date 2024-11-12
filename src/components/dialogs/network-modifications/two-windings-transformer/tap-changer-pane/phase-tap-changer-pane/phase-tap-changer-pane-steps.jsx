@@ -18,7 +18,7 @@ import {
 import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../dialogUtils';
+import { parseIntData } from '../../../../dialog-utils';
 import { PHASE_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 
 const PhaseTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {

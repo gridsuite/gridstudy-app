@@ -5,17 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { FormattedMessage, useIntl } from 'react-intl';
-import Dialog from '@mui/material/Dialog';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Alert from '@mui/material/Alert';
-import Grid from '@mui/material/Grid';
 import { PARAM_FAVORITE_CONTINGENCY_LISTS } from '../../utils/config-params';
 import { useSelector } from 'react-redux';
 import { ElementType } from '@gridsuite/commons-ui';
@@ -28,7 +21,7 @@ import { isNodeBuilt } from 'components/graph/util/model-functions';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { toggleElementFromList } from 'components/utils/utils';
-import { DialogActions } from '@mui/material';
+import { Grid, DialogActions, Button, DialogTitle, Typography, Dialog, DialogContent, Alert } from '@mui/material';
 
 function makeButton(onClick, message, disabled) {
     return (
