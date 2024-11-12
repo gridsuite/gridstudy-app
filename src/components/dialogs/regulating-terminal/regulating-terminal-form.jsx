@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Popper } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { Grid, Popper } from '@mui/material';
 import { createFilterOptions } from '@mui/material/useAutocomplete';
 import { EQUIPMENT, ID, TYPE, VOLTAGE_LEVEL } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { fetchVoltageLevelEquipments } from '../../../services/study/network-map';

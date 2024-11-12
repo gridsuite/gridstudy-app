@@ -6,7 +6,7 @@
  */
 
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
-import React, { FunctionComponent, useCallback, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useState } from 'react';
 import { ShortCircuitAnalysisResultTabs } from './shortcircuit-analysis-result.type';
 import {
     computingTypeToShortcircuitTabRedirection,

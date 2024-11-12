@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState, useRef, useMemo } from 'react';
+import { useCallback, useEffect, useState, useRef, useMemo } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Grid, Box, Button, Typography, Switch, Select, MenuItem } from '@mui/material';

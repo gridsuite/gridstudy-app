@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
 import { useFieldArray } from 'react-hook-form';
 import LimitReductionTableRow from './limit-reduction-table-row';

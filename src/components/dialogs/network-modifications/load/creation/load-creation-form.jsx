@@ -5,21 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
+import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import React from 'react';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    gridItem,
-    GridSection,
-    ReactivePowerAdornment,
-} from '../../../dialogUtils';
+import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { LOAD_TYPES } from 'components/network/constants';
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const LoadCreationForm = ({ currentNode, studyUuid }) => {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
@@ -57,18 +52,20 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(loadIdField, 4)}
-                {gridItem(loadNameField, 4)}
-                {gridItem(loadTypeField, 4)}
+                <GridItem size={4}>{loadIdField}</GridItem>
+                <GridItem size={4}>{loadNameField}</GridItem>
+                <GridItem size={4}>{loadTypeField}</GridItem>
             </Grid>
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                <GridItem field={connectivityForm} size={12} />
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
+                <GridItem size={4}>{activePowerField}</GridItem>
+                <GridItem size={4}>{loadNameField}</GridItem>
+                <GridItem size={4}>{reactivePowerField}</GridItem>
+                <GridItem size={4}>{loadNameField}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'load'} />
         </>
