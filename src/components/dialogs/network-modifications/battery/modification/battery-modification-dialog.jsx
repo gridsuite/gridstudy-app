@@ -60,7 +60,7 @@ import {
 } from '../../../set-points/set-points-utils';
 import { modifyBattery } from '../../../../../services/study/network-modifications';
 import { fetchNetworkElementInfos } from '../../../../../services/study/network';
-import { FetchStatus } from '../../../../../services/utils.js';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     emptyProperties,
     getConcatenatedProperties,

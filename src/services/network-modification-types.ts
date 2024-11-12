@@ -163,7 +163,7 @@ export interface StaticVarCompensatorCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     staticCompensatorId: string;
-    staticCompensatorName: string | null;
+    staticCompensatorName: string | null | undefined;
     voltageLevelId: string;
     busOrBusbarSectionId?: string;
     connectionDirection?: string | null;

@@ -1857,7 +1857,7 @@ export function modifyVsc(
     studyUuid: string,
     nodeUuid: UUID,
     id: string | null,
-    name: string | null,
+    name: string | null | undefined,
     nominalV: number,
     r: number,
     maxP: number,

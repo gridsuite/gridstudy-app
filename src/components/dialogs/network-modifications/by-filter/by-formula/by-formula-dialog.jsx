@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useCallback, useEffect } from 'react';
-import { FetchStatus } from '../../../../../services/utils.js';
+import { FetchStatus } from '../../../../../services/utils';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';

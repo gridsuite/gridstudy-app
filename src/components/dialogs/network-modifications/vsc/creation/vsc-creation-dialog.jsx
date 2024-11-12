@@ -38,7 +38,7 @@ import {
     getVscHvdcLinePaneSchema,
     getVscHvdcLineTabFormData,
 } from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
-import { FetchStatus } from '../../../../../services/utils.js';
+import { FetchStatus } from '../../../../../services/utils';
 import {
     getConverterStationCreationData,
     getConverterStationFormEditData,

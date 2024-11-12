@@ -143,7 +143,14 @@ export function stashSubtree(studyUuid: UUID, parentNodeId: UUID) {
     });
 }
 
-export function updateTreeNode(studyUuid: UUID, node: UUID) {
+export function updateTreeNode(
+    studyUuid: UUID | null,
+    node: {
+        id: UUID | undefined;
+        type: NodeType | undefined;
+        name: string;
+    }
+) {
     const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes';
     console.debug(nodeUpdateUrl);
     return backendFetch(nodeUpdateUrl, {

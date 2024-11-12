@@ -124,7 +124,7 @@ export function getSubstationSingleLineDiagram(
 export function fetchNetworkElementsInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    substationsIds: string[] | undefined,
+    substationsIds: string[] | undefined | null,
     elementType: string,
     infoType: string,
     inUpstreamBuiltParentNode?: boolean,
@@ -197,7 +197,7 @@ export function fetchNetworkElementInfos(
 export function fetchSubstationsMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    substationsIds: string[] | undefined,
+    substationsIds: string[] | null | undefined,
     inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
@@ -213,7 +213,7 @@ export function fetchSubstationsMapInfos(
 export function fetchLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    substationsIds: string[] | undefined,
+    substationsIds: string[] | undefined | null,
     inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
@@ -229,7 +229,7 @@ export function fetchLinesMapInfos(
 export function fetchTieLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    substationsIds: string[] | undefined,
+    substationsIds: string[] | undefined | null,
     inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
@@ -245,7 +245,7 @@ export function fetchTieLinesMapInfos(
 export function fetchHvdcLinesMapInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    substationsIds: string[] | undefined,
+    substationsIds: string[] | undefined | null,
     inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
@@ -294,7 +294,7 @@ export function fetchVoltageLevels(studyUuid: UUID, currentNodeUuid: UUID, subst
 export function fetchVoltageLevelsListInfos(
     studyUuid: UUID,
     currentNodeUuid: UUID,
-    substationsIds: string[] | undefined
+    substationsIds?: string[] | undefined
 ) {
     return fetchNetworkElementsInfos(
         studyUuid,
