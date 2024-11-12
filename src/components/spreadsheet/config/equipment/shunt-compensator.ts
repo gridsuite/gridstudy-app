@@ -5,30 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
-export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
+export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
     name: 'ShuntCompensators',
     ...typeAndFetchers(EQUIPMENT_TYPES.SHUNT_COMPENSATOR),
@@ -44,8 +41,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             columnWidth: MIN_COLUMN_WIDTH,
         },
         {
@@ -79,19 +75,9 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'maximumSectionCount',
             field: 'maximumSectionCount',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maximumSectionCount,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -101,19 +87,9 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'sectionCount',
             field: 'sectionCount',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.sectionCount,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.sectionCount),
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -125,28 +101,15 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Type',
             field: 'type',
             ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(params, params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...editableColumnConfig,
+            ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },
         {
             id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maxQAtNominalV,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -158,7 +121,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'SwitchedOnMaxQAtNominalV',
             field: 'switchedOnQAtNominalV',
             numeric: true,
-            valueGetter: (params: ValueGetterParams) =>
+            valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
@@ -166,20 +129,10 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
         },
         {
             id: 'maxSusceptance',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             field: 'maxSusceptance',
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maxSusceptance,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -188,7 +141,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'SwitchedOnMaxSusceptance',
             field: 'switchedOnSusceptance',
             numeric: true,
-            valueGetter: (params: ValueGetterParams) =>
+            valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
             ...defaultNumericFilterConfig,
             fractionDigits: 5,
@@ -210,22 +163,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

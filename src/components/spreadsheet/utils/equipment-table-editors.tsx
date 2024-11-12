@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, forwardRef, useImperativeHandle, useMemo, useEffect } from 'react';
-import Select from '@mui/material/Select';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import Select, { type SelectProps } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Autocomplete, SelectChangeEvent, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -18,21 +18,29 @@ import { GridApi } from 'ag-grid-community';
 import { EnumOption } from '../../utils/utils-type';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
-interface EquipmentTableEditorProps {
-    gridContext: any;
-    colDef: CustomColDef;
-    gridApi: GridApi;
+interface EquipmentTableEditorProps<TData = any, TValue = any, TContext = any> {
+    gridContext: TContext;
+    colDef: CustomColDef<TData, TValue>;
+    gridApi: GridApi<TData>;
 }
-interface EquipmentTableDataEditorProps extends EquipmentTableEditorProps {
-    rowData?: any;
+
+export interface EquipmentTableDataEditorProps<TData = any, TValue = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, TValue, TContext> {
+    rowData?: TData;
 }
-interface EquipmentTableNumberEditorProps extends EquipmentTableDataEditorProps {
-    defaultValue: number;
+
+export interface EquipmentTableNumberEditorProps<TData = any, TContext = any>
+    extends EquipmentTableDataEditorProps<TData, number, TContext> {
+    defaultValue?: number;
 }
-interface EquipmentTableBooleanListEditorProps extends EquipmentTableEditorProps {
+
+export interface EquipmentTableBooleanListEditorProps<TData = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, boolean, TContext> {
     defaultValue: boolean;
 }
-interface EquipmentTableEnumEditorProps extends EquipmentTableEditorProps {
+
+export interface EquipmentTableEnumEditorProps<TData = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, string, TContext> {
     defaultValue: string;
     enumOptions: EnumOption[];
 }
@@ -321,22 +329,16 @@ export const BooleanListField = forwardRef(
 
         useImperativeHandle(
             ref,
-            () => {
-                return {
-                    getValue: () => {
-                        return value;
-                    },
-                    getField: () => {
-                        return colDef.field;
-                    },
-                };
-            },
+            () => ({
+                getValue: () => value,
+                getField: () => colDef.field,
+            }),
             [colDef.field, value]
         );
 
-        const validateChange = useCallback(
-            (ev: any) => {
-                const val: number = ev.target.value;
+        const validateChange = useCallback<NonNullable<SelectProps<BooleanNumberValue>['onChange']>>(
+            (ev) => {
+                const val = ev.target.value;
                 setValue(val === BooleanNumberValue.TRUE);
                 gridContext.dynamicValidation = deepUpdateValue(gridContext.dynamicValidation, colDef.field, val);
                 checkValidationsAndRefreshCells(gridApi, gridContext);
@@ -345,7 +347,7 @@ export const BooleanListField = forwardRef(
         );
 
         return (
-            <Select
+            <Select<BooleanNumberValue>
                 value={value ? BooleanNumberValue.TRUE : BooleanNumberValue.FALSE}
                 onChange={validateChange}
                 size={'medium'}

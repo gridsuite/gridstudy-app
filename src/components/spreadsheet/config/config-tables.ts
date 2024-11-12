@@ -5,7 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from './spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from './spreadsheet.type';
 import { SUBSTATION_TAB_DEF } from './equipment/substation';
 import { VOLTAGE_LEVEL_TAB_DEF } from './equipment/voltage-level';
 import { LINE_TAB_DEF } from './equipment/line';
@@ -24,7 +25,7 @@ import { BUS_TAB_DEF } from './equipment/bus';
 import { TIE_LINE_TAB_DEF } from './equipment/tie-line';
 import { BUSBAR_SECTION_TAB_DEF } from './equipment/busbar-section';
 
-export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
+export const TABLES_DEFINITIONS = [
     SUBSTATION_TAB_DEF,
     VOLTAGE_LEVEL_TAB_DEF,
     LINE_TAB_DEF,
@@ -42,11 +43,22 @@ export const TABLES_DEFINITIONS: SpreadsheetTabDefinition[] = [
     BUS_TAB_DEF,
     TIE_LINE_TAB_DEF,
     BUSBAR_SECTION_TAB_DEF,
-];
+] as const satisfies ReadonlyDeep<SpreadsheetTabDefinition[]>;
 
-export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => tabDef.columns).map(
-    (cols) => new Set(cols.map((c) => c.id))
-);
+export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
+export type TablesDefinitionsNames = TablesDefinitionsType[number]['name'];
+export type TablesDefinitionsTypes = TablesDefinitionsType[number]['type'];
+export type TablesDefinitionsIndex = Exclude<keyof TablesDefinitionsType, keyof any[]>;
+
+export type GenericTablesDefinitions = SpreadsheetTabDefinition[];
+export type GenericTablesColumnsNames = Set<string>[];
+export type GenericTablesColumnsNamesJson = string[];
+export type GenericTablesNames = string[];
+export type GenericTablesNamesIndexes = Map<string, number>;
+export type GenericTablesDefinitionTypes = Map<SpreadsheetEquipmentType, SpreadsheetTabDefinition>;
+export type GenericTablesDefinitionIndexes = Map<number, SpreadsheetTabDefinition>;
+
+export const TABLES_COLUMNS_NAMES = TABLES_DEFINITIONS.map((tabDef) => new Set(tabDef.columns.map((c) => c.id)));
 
 export const TABLES_COLUMNS_NAMES_JSON = TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols]));
 

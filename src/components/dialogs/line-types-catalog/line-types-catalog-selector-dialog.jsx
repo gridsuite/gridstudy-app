@@ -12,11 +12,21 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import PropTypes from 'prop-types';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { ALLOWED_KEYS } from '../../utils/utils.js';
+import { suppressEventsToPreventEditMode } from '../commons/utils';
 
 export const LineTypesCatalogSelectorDialogTabs = {
     AERIAL_TAB: 0,
     UNDERGROUND_TAB: 1,
+};
+
+const defaultColDef = {
+    filter: true,
+    sortable: true,
+    resizable: false,
+    lockPinned: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
+    suppressKeyboardEvent: suppressEventsToPreventEditMode,
 };
 
 const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowData, onClose, ...dialogProps }) => {
@@ -242,23 +252,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
         </Box>
     );
 
-    const suppressKeyEvent = (params) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
-
-    const defaultColDef = useMemo(
-        () => ({
-            filter: true,
-            sortable: true,
-            resizable: false,
-            lockPinned: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            suppressKeyboardEvent: (params) => suppressKeyEvent(params),
-        }),
-        []
-    );
-
     const displayTable = useCallback(
         (currentTab) => {
             let rowData, columnDefs;
@@ -284,7 +277,6 @@ const LineTypesCatalogSelectorDialog = ({ onSelectLine, preselectedRowId, rowDat
         [
             aerialColumnDefs,
             undergroundColumnDefs,
-            defaultColDef,
             scrollToPreselectedElement,
             onSelectionChanged,
             rowDataAerialTab,

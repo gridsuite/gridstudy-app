@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueSetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
@@ -17,12 +17,12 @@ import {
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
-import { MEDIUM_COLUMN_WIDTH, LARGE_COLUMN_WIDTH } from '../../utils/constants';
+import { LARGE_COLUMN_WIDTH, MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { genericColumnOfProperties } from '../common/column-properties';
 
-export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
+export const HVDC_LINE_TAB_DEF = {
     index: 10,
     name: 'HvdcLines',
     ...typeAndFetchers(EQUIPMENT_TYPES.HVDC_LINE),
@@ -147,18 +147,6 @@ export const HVDC_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfProperties,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

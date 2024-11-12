@@ -19,9 +19,9 @@ import {
     resetEquipmentsByTypes,
     updateEquipments,
 } from 'redux/actions';
-import { AppState } from 'redux/reducer';
+import type { AppState } from 'redux/reducer';
+import type { SpreadsheetEquipmentType } from '../spreadsheet/config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
-import { SpreadsheetEquipmentType } from '../spreadsheet/config/spreadsheet.type';
 
 export type EquipmentProps = {
     type: SpreadsheetEquipmentType;

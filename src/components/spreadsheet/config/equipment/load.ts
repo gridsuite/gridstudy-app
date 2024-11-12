@@ -5,30 +5,27 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { EnumListField, NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueSetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 
-export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
+export const LOAD_TAB_DEF = {
     index: 6,
     name: 'Loads',
     ...typeAndFetchers(EQUIPMENT_TYPES.LOAD),
@@ -45,21 +42,17 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'name',
             ...defaultTextFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
         },
         {
             id: 'loadType',
             field: 'type',
             ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(params, params.data?.type, [
-                    ...LOAD_TYPES,
-                    { id: 'UNDEFINED', label: 'Undefined' },
-                ]),
+            ...editableColumnConfig,
+            ...enumCellEditorConfig(
+                (params) => params.data?.type,
+                [...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]
+            ),
         },
         {
             id: 'VoltageLevelId',
@@ -103,18 +96,8 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.p0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.p0),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -123,18 +106,8 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.q0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.q0),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -145,22 +118,6 @@ export const LOAD_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

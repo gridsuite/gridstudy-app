@@ -5,24 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     excludeFromGlobalFilter,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
+import { genericColumnOfPropertiesReadonly } from '../common/column-properties';
 
-export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
+export const TIE_LINE_TAB_DEF = {
     index: 15,
     name: 'TieLines',
     ...typeAndFetchers(EQUIPMENT_TYPES.TIE_LINE),
@@ -134,7 +134,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g1),
+            valueGetter: (params) => unitToMicroUnit(params.data.g1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -143,7 +143,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g2),
+            valueGetter: (params) => unitToMicroUnit(params.data.g2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -152,7 +152,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b1),
+            valueGetter: (params) => unitToMicroUnit(params.data.b1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -161,7 +161,7 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b2),
+            valueGetter: (params) => unitToMicroUnit(params.data.b2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -180,14 +180,6 @@ export const TIE_LINE_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesReadonly,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

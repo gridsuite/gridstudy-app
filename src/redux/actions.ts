@@ -33,7 +33,7 @@ import {
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { UnknownArray } from 'type-fest';
+import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
@@ -45,7 +45,6 @@ import {
     SelectionForCopy,
     StudyIndexationStatus,
     StudyUpdatedEventData,
-    TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
@@ -63,6 +62,7 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
+import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
@@ -1184,12 +1184,12 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
 
 export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
 export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
-    table: TablesDefinitionsNames;
+    table: LiteralUnion<TablesDefinitionsNames, string>;
     definitions: ColumnWithFormula[];
     filter?: FormulaFilter;
 };
 export function setCustomColumDefinitions(
-    table: TablesDefinitionsNames,
+    table: LiteralUnion<TablesDefinitionsNames, string>,
     customColumns: ColumnWithFormula[],
     filter?: FormulaFilter
 ): CustomColumnsDefinitionsAction {

@@ -5,30 +5,25 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import {
-    BooleanListField,
-    EnumListField,
-    NumericalField,
-    TWTRegulatingTerminalEditor,
-} from '../../utils/equipment-table-editors';
+import { type EquipmentTableDataEditorProps, TWTRegulatingTerminalEditor } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import type { EditableCallback } from 'ag-grid-community';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
     generateTapPositions,
-    getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
     isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
@@ -36,8 +31,16 @@ import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE 
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { getComputedRegulationMode } from '../../../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import {
+    booleanCellEditorConfig,
+    enumCellEditorConfig,
+    type ICustomCellEditorParams,
+    numericalCellEditorConfig,
+    standardSelectCellEditorConfig,
+} from '../common/cell-editors';
 
-const getTwtRatioRegulationModeId = (twt: any) => {
+function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
     if (twt?.ratioTapChanger?.regulationMode !== undefined) {
         return twt.ratioTapChanger.regulationMode;
@@ -49,54 +52,55 @@ const getTwtRatioRegulationModeId = (twt: any) => {
     //otherwise, we compute it
     const computedRegulationMode = getComputedRegulationMode(twt);
     return computedRegulationMode?.id || null;
-};
+}
 
-const hasTwtRatioTapChanger = (params: EditableCallbackParams) => {
+const hasTwtRatioTapChanger: EditableCallback = (params) => {
     const ratioTapChanger = params.data?.ratioTapChanger;
     return ratioTapChanger !== null && ratioTapChanger !== undefined && Object.keys(ratioTapChanger).length > 0;
 };
 
-const isTwtRatioOnload = (params: EditableCallbackParams) => {
+const isTwtRatioOnload: EditableCallback = (params) => {
     const hasLoadTapChangingCapabilities = params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities;
     return hasLoadTapChangingCapabilities === true || hasLoadTapChangingCapabilities === 1;
 };
 
-const isTwtRatioOnloadAndEditable = (params: EditableCallbackParams) => {
-    return isEditable(params) && isTwtRatioOnload(params);
-};
+const isTwtRatioOnloadAndEditable: EditableCallback = (params) => isEditable(params) && isTwtRatioOnload(params);
 
-const hasTwtPhaseTapChanger = (params: EditableCallbackParams) => {
+const hasTwtPhaseTapChanger: EditableCallback = (params) => {
     const phaseTapChanger = params.data?.phaseTapChanger;
     return phaseTapChanger !== null && phaseTapChanger !== undefined && Object.keys(phaseTapChanger).length > 0;
 };
 
-const hasTwtPhaseTapChangerAndEditable = (params: EditableCallbackParams) => {
-    return isEditable(params) && hasTwtPhaseTapChanger(params);
-};
+const hasTwtPhaseTapChangerAndEditable: EditableCallback = (params) =>
+    isEditable(params) && hasTwtPhaseTapChanger(params);
 
-const isEditableTwtPhaseRegulationSideCell = (params: EditableCallbackParams) => {
-    return isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
-};
+const isEditableTwtPhaseRegulationSideCell: EditableCallback = (params) =>
+    isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
 
-const isEditableTwtRatioRegulationSideCell = (params: EditableCallbackParams) => {
-    return (
-        isTwtRatioOnloadAndEditable(params) &&
-        params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id
-    );
-};
+const isEditableTwtRatioRegulationSideCell: EditableCallback = (params) =>
+    isTwtRatioOnloadAndEditable(params) && params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.LOCAL.id;
 
-const isEditableTwtRatioRegulatingTerminalCell = (params: EditableCallbackParams) => {
-    return (
-        isTwtRatioOnloadAndEditable(params) &&
-        params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id
-    );
-};
+const isEditableTwtRatioRegulatingTerminalCell: EditableCallback = (params) =>
+    isTwtRatioOnloadAndEditable(params) && params.data?.ratioTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
 
-const isEditableTwtPhaseRegulatingTerminalCell = (params: EditableCallbackParams) => {
-    return isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
-};
+const isEditableTwtPhaseRegulatingTerminalCell: EditableCallback = (params) =>
+    isEditable(params) && params.data?.phaseTapChanger?.regulationType === REGULATION_TYPES.DISTANT.id;
 
-export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
+const TWTRegulatingTerminalCellEditorConfig = {
+    cellEditor: TWTRegulatingTerminalEditor,
+    // we generate the props for TWTRegulatingTerminalEditor component
+    cellEditorParams: (params: ICustomCellEditorParams<any, string, any>): EquipmentTableDataEditorProps => ({
+        // @ts-expect-error TODO: defaultValue does not exist in type EquipmentTableDataEditorProps
+        defaultValue: getTapChangerRegulationTerminalValue,
+        gridContext: params.context,
+        gridApi: params.api,
+        colDef: params.colDef,
+        rowData: params.data,
+    }),
+    cellEditorPopup: true,
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+
+export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
     index: 3,
     name: 'TwoWindingsTransformers',
     ...typeAndFetchers(EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER),
@@ -148,18 +152,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 0,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.ratedU1,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.ratedU1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -168,18 +162,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 0,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.ratedU2,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.ratedU2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -221,12 +205,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
+            valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            editable: (params: EditableCallbackParams) => isEditable(params) && hasTwtRatioTapChanger(params),
+            editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
             cellStyle: editableCellStyle,
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data.ratioTapChanger || {}),
                     hasLoadTapChangingCapabilities: params.newValue,
@@ -236,41 +220,29 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 };
                 return true;
             },
-            cellEditor: BooleanListField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue:
-                        params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities != null
-                            ? params.data.ratioTapChanger.hasLoadTapChangingCapabilities
-                            : false,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                };
-            },
+            ...booleanCellEditorConfig(
+                (params) => params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities ?? false
+            ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.regulationMode,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.ratioTapChanger?.regulationMode,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     regulationMode: params.newValue,
                 };
                 return true;
             },
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.ratioTapChanger?.regulationMode,
-                    Object.values(RATIO_REGULATION_MODES)
-                ),
+            ...enumCellEditorConfig(
+                (params) => params.data?.ratioTapChanger?.regulationMode,
+                Object.values(RATIO_REGULATION_MODES)
+            ),
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: (params: EditableCallbackParams) => isTwtRatioOnloadAndEditable(params),
+            editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
             crossValidation: {
                 requiredOn: {
@@ -285,19 +257,10 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'ratioTapChanger.targetV',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: (params: EditableCallbackParams) => isTwtRatioOnloadAndEditable(params),
+            editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.ratioTapChanger?.targetV,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueSetter: (params: ValueSetterParams) => {
+            ...numericalCellEditorConfig((params) => params.data?.ratioTapChanger?.targetV),
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     targetV: params.newValue,
@@ -311,19 +274,10 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'ratioTapChanger.targetDeadband',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: (params: EditableCallbackParams) => isTwtRatioOnloadAndEditable(params),
+            editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.ratioTapChanger.targetDeadband,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueSetter: (params: ValueSetterParams) => {
+            ...numericalCellEditorConfig((params) => params.data.ratioTapChanger.targetDeadband),
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     targetDeadband: params.newValue,
@@ -335,23 +289,20 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.regulationType,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.ratioTapChanger?.regulationType,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     regulationType: params.newValue,
                 };
                 return true;
             },
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.ratioTapChanger?.regulationType,
-                    Object.values(REGULATION_TYPES)
-                ),
+            ...enumCellEditorConfig(
+                (params) => params.data?.ratioTapChanger?.regulationType,
+                Object.values(REGULATION_TYPES)
+            ),
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            editable: (params: EditableCallbackParams) => isTwtRatioOnloadAndEditable(params),
+            editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
             getQuickFilterText: excludeFromGlobalFilter,
             ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
@@ -360,8 +311,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
             ...getDefaultEnumConfig(Object.values(SIDE)),
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.regulationSide,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     regulationSide: params.newValue,
@@ -370,13 +321,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             },
             editable: isEditableTwtRatioRegulationSideCell,
             cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.ratioTapChanger?.regulationSide,
-                    Object.values(SIDE)
-                ),
+            ...enumCellEditorConfig((params) => params.data?.ratioTapChanger?.regulationSide, Object.values(SIDE)),
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'ratioTapChanger.regulationType',
@@ -389,11 +334,10 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
             ...defaultTextFilterConfig,
-            valueGetter: (params: ValueGetterParams) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
+            valueGetter: (params) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
-            cellStyle: (params: CellClassParams) =>
-                isEditableTwtRatioRegulatingTerminalCell(params) ? editableCellStyle(params) : {},
+            cellStyle: (params) => (isEditableTwtRatioRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
             editable: isEditableTwtRatioRegulatingTerminalCell,
             crossValidation: {
                 requiredOn: {
@@ -401,17 +345,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     columnValue: REGULATION_TYPES.DISTANT.id,
                 },
             },
-            cellEditor: TWTRegulatingTerminalEditor,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: getTapChangerRegulationTerminalValue,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            cellEditorPopup: true,
+            ...TWTRegulatingTerminalCellEditorConfig,
         },
         {
             id: 'RatioLowTapPosition',
@@ -420,16 +354,10 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             numeric: true,
             fractionDigits: 0,
-            editable: (params: EditableCallbackParams) =>
-                isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
+            editable: (params) => isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
             cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data?.ratioTapChanger),
-                };
-            },
-            valueSetter: (params: ValueSetterParams) => {
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data?.ratioTapChanger)),
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
                     lowTapPosition: params.newValue,
@@ -446,7 +374,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RatioHighTapPosition',
             field: 'ratioTapChanger.highTapPosition',
             ...defaultNumericFilterConfig,
-            valueGetter: (params: ValueGetterParams) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
+            valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -455,8 +383,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             numeric: true,
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...params.data.ratioTapChanger,
                     tapPosition: params.newValue,
@@ -464,14 +392,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
 
                 return true;
             },
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data?.ratioTapChanger),
-                };
-            },
-            editable: (params: EditableCallbackParams) =>
-                isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data?.ratioTapChanger)),
+            editable: (params) => isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
             cellStyle: editableCellStyle,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -484,8 +406,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
             ...getDefaultEnumConfig(Object.values(PHASE_REGULATION_MODES)),
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger?.regulationMode,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationMode: params.newValue,
@@ -494,15 +416,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             },
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: (params: EditableCallbackParams) => hasTwtPhaseTapChangerAndEditable(params),
+            editable: hasTwtPhaseTapChangerAndEditable,
             cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.phaseTapChanger?.regulationMode,
-                    Object.values(PHASE_REGULATION_MODES)
-                ),
+            ...enumCellEditorConfig(
+                (params) => params.data?.phaseTapChanger?.regulationMode,
+                Object.values(PHASE_REGULATION_MODES)
+            ),
         },
         {
             id: 'RegulatingValue',
@@ -510,23 +429,14 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger?.regulationValue,
+            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationValue,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: (params: EditableCallbackParams) =>
+            editable: (params) =>
                 hasTwtPhaseTapChangerAndEditable(params) &&
                 params.data?.phaseTapChanger?.regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
             cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.phaseTapChanger?.regulationValue,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueSetter: (params: ValueSetterParams) => {
+            ...numericalCellEditorConfig((params) => params.data?.phaseTapChanger?.regulationValue),
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationValue: params.newValue,
@@ -540,21 +450,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: (params: EditableCallbackParams) =>
+            editable: (params) =>
                 hasTwtPhaseTapChangerAndEditable(params) &&
                 params.data?.phaseTapChanger?.regulationMode !== PHASE_REGULATION_MODES.FIXED_TAP.id,
             cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.phaseTapChanger?.targetDeadband,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueSetter: (params: ValueSetterParams) => {
+            ...numericalCellEditorConfig((params) => params.data?.phaseTapChanger?.targetDeadband),
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     targetDeadband: params.newValue,
@@ -566,8 +467,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
             ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-            valueGetter: (params: ValueGetterParams) => params.data?.phaseTapChanger?.regulationType,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationType: params.newValue,
@@ -575,23 +476,20 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                 return true;
             },
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            editable: (params: EditableCallbackParams) => hasTwtPhaseTapChangerAndEditable(params),
+            editable: hasTwtPhaseTapChangerAndEditable,
             cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.phaseTapChanger?.regulationType,
-                    Object.values(REGULATION_TYPES)
-                ),
+            ...enumCellEditorConfig(
+                (params) => params.data?.phaseTapChanger?.regulationType,
+                Object.values(REGULATION_TYPES)
+            ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
             ...getDefaultEnumConfig(Object.values(SIDE)),
-            valueGetter: (params: ValueGetterParams) => params.data?.phaseTapChanger?.regulationSide,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     regulationSide: params.newValue,
@@ -600,13 +498,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             },
             editable: isEditableTwtPhaseRegulationSideCell,
             cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.phaseTapChanger?.regulationSide,
-                    Object.values(SIDE)
-                ),
+            ...enumCellEditorConfig((params) => params.data?.phaseTapChanger?.regulationSide, Object.values(SIDE)),
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'phaseTapChanger.regulationType',
@@ -619,11 +511,10 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
             ...defaultTextFilterConfig,
-            valueGetter: (params: ValueGetterParams) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
+            valueGetter: (params) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
-            cellStyle: (params: CellClassParams) =>
-                isEditableTwtPhaseRegulatingTerminalCell(params) ? editableCellStyle(params) : {},
+            cellStyle: (params) => (isEditableTwtPhaseRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
             editable: isEditableTwtPhaseRegulatingTerminalCell,
             crossValidation: {
                 requiredOn: {
@@ -631,19 +522,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
                     columnValue: REGULATION_TYPES.DISTANT.id,
                 },
             },
-            cellEditor: TWTRegulatingTerminalEditor,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: (params: any) => {
-                        getTapChangerRegulationTerminalValue(params);
-                    },
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            cellEditorPopup: true,
+            ...TWTRegulatingTerminalCellEditorConfig,
         },
         {
             id: 'PhaseLowTapPosition',
@@ -652,16 +531,10 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             numeric: true,
             fractionDigits: 0,
-            editable: (params: EditableCallbackParams) =>
-                isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
+            editable: (params) => isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
             cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data?.phaseTapChanger),
-                };
-            },
-            valueSetter: (params: ValueSetterParams) => {
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data?.phaseTapChanger)),
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
                     lowTapPosition: params.newValue,
@@ -678,7 +551,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'PhaseHighTapPosition',
             field: 'phaseTapChanger.highTapPosition',
             ...defaultNumericFilterConfig,
-            valueGetter: (params: ValueGetterParams) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
+            valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -687,22 +560,16 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             numeric: true,
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...params.data.phaseTapChanger,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data?.phaseTapChanger),
-                };
-            },
-            editable: (params: EditableCallbackParams) =>
-                isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data?.phaseTapChanger)),
+            editable: (params) => isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
             cellStyle: editableCellStyle,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -733,7 +600,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.g),
+            valueGetter: (params) => unitToMicroUnit(params.data.g),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -742,7 +609,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params: ValueGetterParams) => unitToMicroUnit(params.data.b),
+            valueGetter: (params) => unitToMicroUnit(params.data.b),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -769,22 +636,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

@@ -5,15 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getEnumLabelById } from 'components/utils/utils';
+import type { ReadonlyDeep, Writable } from 'type-fest';
+import { getEnumLabelById } from '../../../utils/utils';
 import {
+    type CustomColDef,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-} from 'components/custom-aggrid/custom-aggrid-header.type';
+} from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
-import { CellClassParams, EditableCallbackParams, ValueGetterParams } from 'ag-grid-community';
-import EnumCellRenderer from '../../utils/enum-cell-renderer';
+import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';
+import EnumCellRenderer, { type EnumCellRendererProps } from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
@@ -81,20 +83,19 @@ export const getFetchers = (equipmentType: SpreadsheetEquipmentType): EquipmentF
     }
 };
 
-export const typeAndFetchers = (equipmentType: SpreadsheetEquipmentType) => ({
-    type: equipmentType,
-    fetchers: getFetchers(equipmentType),
-});
+export const typeAndFetchers = <TEquipType extends SpreadsheetEquipmentType>(equipmentType: TEquipType) =>
+    ({
+        type: equipmentType,
+        fetchers: getFetchers(equipmentType),
+    } as const);
 
 export const generateTapPositions = (params: TapPositionsType) => {
     return params ? Array.from(Array(params.highTapPosition - params.lowTapPosition + 1).keys()) : [];
 };
 
-export const isEditable = (params: EditableCallbackParams) => {
-    return params.context.isEditing && params.node.rowPinned === 'top';
-};
+export const isEditable: EditableCallback = (params) => params.context.isEditing && params.node.rowPinned === 'top';
 
-export const editableCellStyle = (params: CellClassParams) => {
+export const editableCellStyle: CellStyleFunc = (params) => {
     if (isEditable(params)) {
         if (Object.keys(params.context.editErrors).includes(params.column.getColId())) {
             return params.context.theme.editableCellError;
@@ -105,10 +106,15 @@ export const editableCellStyle = (params: CellClassParams) => {
     return null;
 };
 
+export const editableColumnConfig = {
+    editable: isEditable,
+    cellStyle: editableCellStyle,
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+
 //this function enables us to exclude some columns from the computation of the spreadsheet global filter
 // The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
-export const excludeFromGlobalFilter = () => '';
+export const excludeFromGlobalFilter = () => '' as const;
 
 export const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
@@ -116,7 +122,7 @@ export const defaultTextFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.TEXT,
         filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
     },
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 /**
  * Default configuration for an enum filter
@@ -129,11 +135,9 @@ export const defaultEnumFilterConfig = {
             {
                 displayKey: 'customInRange',
                 displayName: 'customInRange',
-                predicate: (filterValues: string[], cellValue: string) => {
+                predicate: (filterValues: string[], cellValue: string) =>
                     // We receive here the filter enum values as a string (filterValue)
-                    const filterValue = filterValues.at(0);
-                    return filterValue ? filterValue.includes(cellValue) : false;
-                },
+                    filterValues.at(0)?.includes(cellValue) ?? false,
             },
         ],
     },
@@ -141,7 +145,7 @@ export const defaultEnumFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.TEXT,
     },
     isEnum: true,
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 /**
  * Default configuration for a boolean filter
@@ -173,31 +177,25 @@ export const defaultBooleanFilterConfig = {
     customFilterParams: {
         filterDataType: FILTER_DATA_TYPES.BOOLEAN,
     },
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 // This function is used to generate the default configuration for an enum filter
 // It generates configuration for filtering, sorting and rendering
-export const getDefaultEnumConfig = (enumOptions: EnumOption[]) => ({
-    ...defaultEnumFilterConfig,
-    cellRenderer: EnumCellRenderer,
-    cellRendererParams: {
-        enumOptions: enumOptions,
-    },
-    getEnumLabel: (value: string) => getEnumLabelById(enumOptions, value),
-});
-
-export const getDefaultEnumCellEditorParams = (params: any, defaultValue: any, enumOptions: EnumOption[]) => ({
-    defaultValue: defaultValue,
-    enumOptions: enumOptions,
-    gridContext: params.context,
-    gridApi: params.api,
-    colDef: params.colDef,
-});
+export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
+    ({
+        ...defaultEnumFilterConfig,
+        cellRenderer: EnumCellRenderer,
+        cellRendererParams: {
+            enumOptions: enumOptions as Writable<typeof enumOptions>,
+            // @ts-expect-error TODO TS1360: Property value is missing in type
+        } satisfies EnumCellRendererProps,
+        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
+    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>);
 
 export const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
     isCountry: true,
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 export const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
@@ -205,15 +203,4 @@ export const defaultNumericFilterConfig = {
         filterDataType: FILTER_DATA_TYPES.NUMBER,
         filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
     },
-};
-
-export const propertiesGetter = (params: ValueGetterParams) => {
-    const properties = params?.data?.properties;
-    if (properties && Object.keys(properties).length) {
-        return Object.keys(properties)
-            .map((property) => property + ' : ' + properties[property])
-            .join(' | ');
-    } else {
-        return null;
-    }
-};
+} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;

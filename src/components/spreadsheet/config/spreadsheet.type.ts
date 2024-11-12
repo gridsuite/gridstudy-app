@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
-import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
-import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import type { UUID } from 'crypto';
+import type { EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import type { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
 export type EquipmentFetcher = (studyUuid: UUID, currentNodeUuid: UUID, substationsIds: string[]) => Promise<any>;
 
@@ -19,11 +19,11 @@ export type SpreadsheetEquipmentType = Exclude<
     | EQUIPMENT_TYPES.DISCONNECTOR
 >;
 
-export interface SpreadsheetTabDefinition {
+export interface SpreadsheetTabDefinition<TData = any, TValue = any> {
     index: number;
     name: string;
     type: SpreadsheetEquipmentType;
     fetchers: EquipmentFetcher[];
-    columns: CustomColDef[];
+    columns: CustomColDef<TData, TValue>[];
     groovyEquipmentGetter?: string;
 }

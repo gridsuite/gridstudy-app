@@ -8,8 +8,9 @@
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import type { ReadonlyDeep } from 'type-fest';
 
-export const BUSBAR_SECTION_TAB_DEF: SpreadsheetTabDefinition = {
+export const BUSBAR_SECTION_TAB_DEF = {
     index: 16,
     name: 'BusBarSections',
     ...typeAndFetchers(EQUIPMENT_TYPES.BUSBAR_SECTION),
@@ -26,4 +27,4 @@ export const BUSBAR_SECTION_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultTextFilterConfig,
         },
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

@@ -5,35 +5,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
-    BooleanListField,
-    EnumListField,
+    type EquipmentTableDataEditorProps,
     GeneratorRegulatingTerminalEditor,
-    NumericalField,
 } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { CellClassParams, EditableCallbackParams, ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
+import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
     editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    getDefaultEnumCellEditorParams,
     getDefaultEnumConfig,
-    isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import {
+    booleanCellEditorConfig,
+    enumCellEditorConfig,
+    type ICustomCellEditorParams,
+    numericalCellEditorConfig,
+} from '../common/cell-editors';
 
-const RegulatingTerminalCellGetter = (params: ValueGetterParams) => {
+const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
         params?.data || {};
 
@@ -49,7 +52,7 @@ const RegulatingTerminalCellGetter = (params: ValueGetterParams) => {
     return null;
 };
 
-const isEditableRegulatingTerminalCell = (params: EditableCallbackParams) => {
+const isEditableRegulatingTerminalCell: EditableCallback = (params) => {
     return (
         params.node.rowIndex === 0 &&
         params.node.rowPinned === 'top' &&
@@ -59,7 +62,7 @@ const isEditableRegulatingTerminalCell = (params: EditableCallbackParams) => {
     );
 };
 
-export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
+export const GENERATOR_TAB_DEF = {
     index: 5,
     name: 'Generators',
     ...typeAndFetchers(EQUIPMENT_TYPES.GENERATOR),
@@ -75,8 +78,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
         },
         {
             id: 'VoltageLevelId',
@@ -100,11 +102,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'energySource',
             field: 'energySource',
             ...getDefaultEnumConfig(ENERGY_SOURCES),
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(params, params.data?.energySource, ENERGY_SOURCES),
+            ...editableColumnConfig,
+            ...enumCellEditorConfig((params) => params.data?.energySource, ENERGY_SOURCES),
         },
         {
             id: 'activePower',
@@ -131,9 +130,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            valueSetter: (params: ValueSetterParams) => {
+            ...editableColumnConfig,
+            valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
                     participate: params.newValue,
@@ -141,18 +139,7 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
 
                 return true;
             },
-            cellEditor: BooleanListField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue:
-                        params.data?.activePowerControl?.participate != null
-                            ? params.data.activePowerControl.participate
-                            : false,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                };
-            },
+            ...booleanCellEditorConfig((params) => params.data?.activePowerControl?.participate ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -161,20 +148,10 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.activePowerControl?.droop,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => params.data?.activePowerControl?.droop,
-            valueSetter: (params: ValueSetterParams) => {
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
+            valueGetter: (params) => params.data?.activePowerControl?.droop,
+            valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
                     droop: params.newValue,
@@ -195,18 +172,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.minP,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.minP),
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 maxExpression: 'maxP',
@@ -218,18 +185,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.maxP,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.maxP),
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 minExpression: 'minP',
@@ -240,18 +197,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'targetP',
             numeric: true,
             ...defaultNumericFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.targetP,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.targetP),
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -266,18 +213,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.targetQ,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.targetQ),
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'voltageRegulatorOn',
@@ -291,17 +228,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: BooleanListField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.voltageRegulatorOn != null ? params.data.voltageRegulatorOn : false,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                };
-            },
+            ...editableColumnConfig,
+            ...booleanCellEditorConfig((params) => params.data?.voltageRegulatorOn ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -310,18 +238,8 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.targetV,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.targetV),
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'voltageRegulatorOn',
@@ -335,26 +253,18 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'coordinatedReactiveControl.qPercent',
             ...defaultNumericFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
             fractionDigits: 1,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
+            ...numericalCellEditorConfig((params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
-                return {
-                    defaultValue: isNaN(qPercent) ? 0 : qPercent,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => {
+                return isNaN(qPercent) ? 0 : qPercent;
+            }),
+            valueGetter: (params) => {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
             },
-            valueSetter: (params: ValueSetterParams) => {
+            valueSetter: (params) => {
                 params.data.coordinatedReactiveControl = {
                     ...params.data.coordinatedReactiveControl,
                     qPercent: params.newValue,
@@ -372,20 +282,10 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.generatorShortCircuit?.directTransX || 0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorShortCircuit?.directTransX,
-            valueSetter: (params: ValueSetterParams) => {
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data?.generatorShortCircuit?.directTransX || 0),
+            valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
+            valueSetter: (params) => {
                 params.data.generatorShortCircuit = {
                     ...params.data.generatorShortCircuit,
                     directTransX: params.newValue,
@@ -403,20 +303,10 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.generatorShortCircuit?.stepUpTransformerX || 0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorShortCircuit?.stepUpTransformerX,
-            valueSetter: (params: ValueSetterParams) => {
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data?.generatorShortCircuit?.stepUpTransformerX || 0),
+            valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
+            valueSetter: (params) => {
                 params.data.generatorShortCircuit = {
                     ...params.data.generatorShortCircuit,
                     stepUpTransformerX: params.newValue,
@@ -434,20 +324,10 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.generatorStartup?.plannedActivePowerSetPoint,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
-            valueSetter: (params: ValueSetterParams) => {
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.plannedActivePowerSetPoint),
+            valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     plannedActivePowerSetPoint: params.newValue,
@@ -461,24 +341,14 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'marginalCost',
             field: 'generatorStartup.marginalCost',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.marginalCost),
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.generatorStartup?.marginalCost,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.marginalCost,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     marginalCost: params.newValue,
@@ -496,25 +366,15 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data?.generatorStartup?.plannedOutageRate || 0,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.plannedOutageRate || 0),
             crossValidation: {
                 optional: true,
                 maxExpression: 1,
                 minExpression: 0,
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.plannedOutageRate,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     plannedOutageRate: params.newValue,
@@ -529,25 +389,15 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.generatorStartup?.forcedOutageRate,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.generatorStartup?.forcedOutageRate),
             crossValidation: {
                 optional: true,
                 maxExpression: 1,
                 minExpression: 0,
             },
-            valueGetter: (params: ValueGetterParams) => params.data?.generatorStartup?.forcedOutageRate,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
+            valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
                     forcedOutageRate: params.newValue,
@@ -567,24 +417,16 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'RegulationTypeText',
             field: 'RegulationTypeText',
             ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: EnumListField,
-            cellEditorParams: (params: any) =>
-                getDefaultEnumCellEditorParams(
-                    params,
-                    params.data?.RegulationTypeText,
-                    Object.values(REGULATION_TYPES)
-                ),
+            ...editableColumnConfig,
+            ...enumCellEditorConfig((params) => params.data?.RegulationTypeText, Object.values(REGULATION_TYPES)),
         },
         {
             id: 'RegulatingTerminalGenerator',
             field: 'RegulatingTerminalGenerator',
             ...defaultTextFilterConfig,
             valueGetter: RegulatingTerminalCellGetter,
-            cellStyle: (params: CellClassParams) =>
-                isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {},
-            editable: (params: EditableCallbackParams) => isEditableRegulatingTerminalCell(params),
+            cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
+            editable: isEditableRegulatingTerminalCell,
             crossValidation: {
                 requiredOn: {
                     dependencyColumn: 'RegulationTypeText',
@@ -592,33 +434,16 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
                 },
             },
             cellEditor: GeneratorRegulatingTerminalEditor,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: RegulatingTerminalCellGetter,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            cellEditorParams: (params: ICustomCellEditorParams): EquipmentTableDataEditorProps => ({
+                // @ts-expect-error TODO: defaultValue does not exist in type EquipmentTableDataEditorProps
+                defaultValue: RegulatingTerminalCellGetter,
+                gridContext: params.context,
+                gridApi: params.api,
+                colDef: params.colDef,
+                rowData: params.data,
+            }),
             cellEditorPopup: true,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

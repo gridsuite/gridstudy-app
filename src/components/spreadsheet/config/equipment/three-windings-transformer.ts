@@ -5,45 +5,40 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
-import { BooleanCellRenderer, PropertiesCellRenderer } from '../../utils/cell-renderers';
+import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     countryEnumFilterConfig,
     defaultBooleanFilterConfig,
     defaultEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
     generateTapPositions,
-    isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { genericColumnOfProperties } from '../common/column-properties';
+import { standardSelectCellEditorConfig } from '../common/cell-editors';
 
 function generateTapRequest(tapType: string, legNumber: number) {
-    const getLeg = '.getLeg' + legNumber + '()';
     return (
-        'tap = equipment' +
-        getLeg +
-        '.get' +
-        tapType +
-        'TapChanger()\n' +
-        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition() ) { \n' +
+        `tap = equipment.getLeg${legNumber}().get${tapType}TapChanger()\n` +
+        'if (tap.getLowTapPosition() <= {} && {} <= tap.getHighTapPosition()) { \n' +
         '    tap.setTapPosition({})\n' +
         // to force update of transformer as sub elements changes like tapChanger are not detected
         '    equipment.setFictitious(equipment.isFictitious())\n' +
         '} else {\n' +
-        "throw new Exception('incorrect value')\n" +
+        "    throw new Exception('incorrect value')\n" +
         ' }\n'
     );
 }
 
-export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
+export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
     index: 4,
     name: 'ThreeWindingsTransformers',
     ...typeAndFetchers(EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER),
@@ -186,22 +181,16 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Ratio', 1),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger1?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger1 = {
                     ...params.data.ratioTapChanger1,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.ratioTapChanger1),
-                };
-            },
+            ...editableColumnConfig,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -234,22 +223,16 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Ratio', 2),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger2?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger2 = {
                     ...params.data.ratioTapChanger2,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.ratioTapChanger2),
-                };
-            },
+            ...editableColumnConfig,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger2)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -282,22 +265,16 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Ratio', 3),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.ratioTapChanger3?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
+            valueSetter: (params) => {
                 params.data.ratioTapChanger3 = {
                     ...params.data.ratioTapChanger3,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.ratioTapChanger3),
-                };
-            },
+            ...editableColumnConfig,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.ratioTapChanger3)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -321,22 +298,16 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 1),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger1?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger1 = {
                     ...params.data.phaseTapChanger1,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.phaseTapChanger1),
-                };
-            },
+            ...editableColumnConfig,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -369,22 +340,16 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 2),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger2?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger2 = {
                     ...params.data.phaseTapChanger2,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.phaseTapChanger1),
-                };
-            },
+            ...editableColumnConfig,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger1)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -417,22 +382,16 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultNumericFilterConfig,
             changeCmd: generateTapRequest('Phase', 3),
             fractionDigits: 0,
-            valueGetter: (params: ValueGetterParams) => params?.data?.phaseTapChanger3?.tapPosition,
-            valueSetter: (params: ValueSetterParams) => {
+            valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
+            valueSetter: (params) => {
                 params.data.phaseTapChanger3 = {
                     ...params.data.phaseTapChanger3,
                     tapPosition: params.newValue,
                 };
                 return true;
             },
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: 'agSelectCellEditor',
-            cellEditorParams: (params: any) => {
-                return {
-                    values: generateTapPositions(params.data.phaseTapChanger3),
-                };
-            },
+            ...editableColumnConfig,
+            ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data.phaseTapChanger3)),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -468,18 +427,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF: SpreadsheetTabDefinition = {
             ...defaultBooleanFilterConfig,
             getQuickFilterText: excludeFromGlobalFilter,
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfProperties,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

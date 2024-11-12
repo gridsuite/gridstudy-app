@@ -27,6 +27,7 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
 
     const tablesNames = useMemo(() => {
         return allTablesNames.map((tabName) => {
+            // @ts-expect-error TODO: TS2345: Argument of type string is not assignable to parameter of typeof TABLES_NAMES
             return TABLES_NAMES.includes(tabName)
                 ? intl.formatMessage({
                       id: tabName,

@@ -616,6 +616,7 @@ const NetworkModificationNodeEditor = () => {
 
             if (
                 studyUpdatedForce.eventData.headers['updateType'] &&
+                // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
                 UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])
             ) {
                 if (studyUpdatedForce.eventData.headers['updateType'] === 'deletingInProgress') {

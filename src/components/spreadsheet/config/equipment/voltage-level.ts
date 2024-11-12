@@ -5,64 +5,47 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { ReadonlyDeep } from 'type-fest';
+import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
+import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { NumericalField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import { ValueGetterParams, ValueSetterParams } from 'ag-grid-community';
-import { PropertiesCellRenderer } from '../../utils/cell-renderers';
-import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import {
     countryEnumFilterConfig,
     defaultNumericFilterConfig,
     defaultTextFilterConfig,
-    editableCellStyle,
+    editableColumnConfig,
     excludeFromGlobalFilter,
-    isEditable,
-    propertiesGetter,
     typeAndFetchers,
 } from './common-config';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
+import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { numericalCellEditorConfig } from '../common/cell-editors';
 
-const generateEditableNumericColumnDefinition = (
-    id: string,
-    field: string,
-    fractionDigits: number,
-    optional: boolean,
-    minExpression: string | undefined,
-    maxExpression: string | undefined,
-    excludeFromGlobalFilter: () => string
-) => {
+function generateEditableNumericColumnDefinition<
+    TId extends string,
+    TField extends string,
+    TMin extends string | undefined,
+    TMax extends string | undefined
+>(id: TId, field: TField, minExpression: TMin, maxExpression: TMax) {
     return {
         id: id,
         field: field,
         numeric: true,
         ...defaultNumericFilterConfig,
-        fractionDigits: fractionDigits,
-        editable: isEditable,
-        cellStyle: editableCellStyle,
-        cellEditor: NumericalField,
-        cellEditorParams: (params: any) => {
-            return {
-                defaultValue: params.data[field],
-                gridContext: params.context,
-                gridApi: params.api,
-                colDef: params.colDef,
-                rowData: params.data,
-            };
-        },
+        fractionDigits: 1,
+        ...editableColumnConfig,
+        ...numericalCellEditorConfig((params) => params.data[field]),
         crossValidation: {
-            optional: optional,
+            optional: true,
             minExpression: minExpression,
             maxExpression: maxExpression,
         },
-        ...(excludeFromGlobalFilter && {
-            getQuickFilterText: excludeFromGlobalFilter,
-        }),
-    };
-};
+        getQuickFilterText: excludeFromGlobalFilter,
+    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
+}
 
-export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
+export const VOLTAGE_LEVEL_TAB_DEF = {
     index: 1,
     name: 'VoltageLevels',
     ...typeAndFetchers(EQUIPMENT_TYPES.VOLTAGE_LEVEL),
@@ -76,8 +59,7 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
         {
             id: 'Name',
             field: 'name',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             ...defaultTextFilterConfig,
         },
         {
@@ -97,66 +79,28 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 0,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: params.data.nominalV,
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
+            ...editableColumnConfig,
+            ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
-        generateEditableNumericColumnDefinition(
-            'LowVoltageLimitkV',
-            'lowVoltageLimit',
-            1,
-            true,
-            undefined,
-            'highVoltageLimit',
-            excludeFromGlobalFilter
-        ),
-        generateEditableNumericColumnDefinition(
-            'HighVoltageLimitkV',
-            'highVoltageLimit',
-            1,
-            true,
-            'lowVoltageLimit',
-            undefined,
-            excludeFromGlobalFilter
-        ),
+        generateEditableNumericColumnDefinition('LowVoltageLimitkV', 'lowVoltageLimit', undefined, 'highVoltageLimit'),
+        generateEditableNumericColumnDefinition('HighVoltageLimitkV', 'highVoltageLimit', 'lowVoltageLimit', undefined),
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
-            valueSetter: (params: ValueSetterParams) => {
+            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin)),
+            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
+            valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
                     ipMin: kiloUnitToUnit(params.newValue),
                 };
                 return true;
             },
-            ...(excludeFromGlobalFilter && {
-                getQuickFilterText: excludeFromGlobalFilter,
-            }),
+            getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 optional: true,
             },
@@ -166,54 +110,24 @@ export const VOLTAGE_LEVEL_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'identifiableShortCircuit.ipMax',
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            editable: isEditable,
-            cellStyle: editableCellStyle,
+            ...editableColumnConfig,
             numeric: true,
-            cellEditor: NumericalField,
-            cellEditorParams: (params: any) => {
-                return {
-                    defaultValue: unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
-                    gridContext: params.context,
-                    gridApi: params.api,
-                    colDef: params.colDef,
-                    rowData: params.data,
-                };
-            },
-            valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
-            valueSetter: (params: ValueSetterParams) => {
+            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax)),
+            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
+            valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
                     ipMax: kiloUnitToUnit(params.newValue),
                 };
                 return true;
             },
-            ...(excludeFromGlobalFilter && {
-                getQuickFilterText: excludeFromGlobalFilter,
-            }),
-            ...{
-                crossValidation: {
-                    requiredOn: {
-                        dependencyColumn: 'identifiableShortCircuit.ipMin',
-                    },
+            getQuickFilterText: excludeFromGlobalFilter,
+            crossValidation: {
+                requiredOn: {
+                    dependencyColumn: 'identifiableShortCircuit.ipMin',
                 },
             },
         },
-        {
-            id: 'Properties',
-            field: 'properties',
-            editable: isEditable,
-            cellStyle: editableCellStyle,
-            valueGetter: propertiesGetter,
-            cellRenderer: PropertiesCellRenderer,
-            minWidth: 300,
-            getQuickFilterText: excludeFromGlobalFilter,
-            valueSetter: (params: ValueSetterParams) => {
-                params.data.properties = params.newValue;
-                return true;
-            },
-            cellEditor: SitePropertiesEditor,
-            cellEditorPopup: true,
-            ...defaultTextFilterConfig,
-        },
+        genericColumnOfPropertiesEditPopup,
     ],
-};
+} as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
