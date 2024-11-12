@@ -27,7 +27,6 @@ interface TableRowComponentProps {
 const TableRowComponent: FunctionComponent<TableRowComponentProps> = ({
     arrayFormName,
     columnsDefinition,
-    row,
     index,
     handleDeleteButton,
     disableDelete = false,
