@@ -1002,10 +1002,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.id, studyUuid, getFieldValue]
     );
 
-    // TODO: when 3WT update will use a network modification, remove everything dealing with groovy
+    // TODO: when 3WT update will use a network modification, remove everything dealing with groovyEquipmentGetter/changeCmd
     const groovyUpdate = useCallback(
         (params: any) => {
-            const equipment: any = tablesDefinitionIndexes.get(tabIndex);
+            const equipment = tablesDefinitionIndexes.get(tabIndex);
             if (equipment && equipment.groovyEquipmentGetter) {
                 let groovyScript =
                     'equipment = network.' +
@@ -1016,7 +1016,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 const wrappedEditedData = {
                     data: editingData,
                 };
-                const columns: any[] = equipment.columns;
+                const columns = equipment.columns;
                 Object.entries(priorValuesBuffer).forEach(([field, _value]) => {
                     const column: any = columns.find((c: any) => c.field === field);
                     if (column && column.changeCmd) {

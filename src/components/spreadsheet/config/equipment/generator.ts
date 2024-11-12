@@ -75,7 +75,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            changeCmd: "equipment.setName('{}')\n",
             editable: isEditable,
             cellStyle: editableCellStyle,
         },
@@ -101,7 +100,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             id: 'energySource',
             field: 'energySource',
             ...getDefaultEnumConfig(ENERGY_SOURCES),
-            changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: EnumListField,
@@ -197,7 +195,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setMinP({})\n',
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: NumericalField,
@@ -221,7 +218,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setMaxP({})\n',
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: NumericalField,
@@ -244,13 +240,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'targetP',
             numeric: true,
             ...defaultNumericFilterConfig,
-            changeCmd:
-                'if ((equipment.getMinP() <= {} && {} <= equipment.getMaxP()) || {} == 0) { \n' +
-                '    equipment.setTargetP({})\n' +
-                '} else {\n' +
-                "    throw new Exception('incorrect value')\n" +
-                ' }\n',
-
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: NumericalField,
@@ -277,7 +266,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setTargetQ({})\n',
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: NumericalField,
@@ -303,7 +291,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: BooleanListField,
@@ -323,7 +310,6 @@ export const GENERATOR_TAB_DEF: SpreadsheetTabDefinition = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setTargetV({})\n',
             editable: isEditable,
             cellStyle: editableCellStyle,
             cellEditor: NumericalField,
