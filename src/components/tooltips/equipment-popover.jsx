@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Paper, Popover, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';

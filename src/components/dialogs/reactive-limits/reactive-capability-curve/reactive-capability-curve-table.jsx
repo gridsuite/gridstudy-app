@@ -5,17 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
-import IconButton from '@mui/material/IconButton';
-import Grid from '@mui/material/Grid';
+import { Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import { ErrorInput } from '@gridsuite/commons-ui';
 import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
-import { MidFormError } from '@gridsuite/commons-ui';
+import { MidFormError, ErrorInput } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 
 const MIN_LENGTH = 2;

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -14,6 +14,7 @@ import {
     removeNotificationByNode,
     networkModificationHandleSubtree,
     setSelectionForCopy,
+    resetLogsFilter,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -270,6 +271,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)
                 ) {
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
+                    // when the current node is updated, we need to reset the logs filter
+                    dispatch(resetLogsFilter());
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])) {

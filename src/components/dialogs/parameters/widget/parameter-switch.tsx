@@ -6,7 +6,6 @@
  */
 import { Grid, SwitchProps } from '@mui/material';
 import { SwitchWithLabel } from '../parameters';
-import React from 'react';
 
 export interface ParameterSwitchProps extends Pick<SwitchProps, 'onChange'> {
     label: string;

@@ -14,10 +14,10 @@ import {
     STEPS_SUSCEPTANCE,
     STEPS_TAP,
 } from 'components/utils/field-constants';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import TapChangerSteps from '../tap-changer-steps';
-import { parseIntData } from '../../../../dialogUtils';
+import { parseIntData } from '../../../../dialog-utils';
 import { RATIO_TAP } from '../../creation/two-windings-transformer-creation-dialog';
 
 const RatioTapChangerPaneSteps = ({ disabled, previousValues, editData, currentNode, isModification = false }) => {

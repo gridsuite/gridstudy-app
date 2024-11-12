@@ -5,13 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, DialogContentText, Theme } from '@mui/material';
+import {
+    Button,
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Theme,
+} from '@mui/material';
 import { CancelButton, CheckBoxList, useModificationLabelComputer } from '@gridsuite/commons-ui';
 import { deleteModifications, restoreModifications } from 'services/study/network-modifications';
 import { CustomDialog } from 'components/utils/custom-dialog';

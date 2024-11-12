@@ -6,7 +6,7 @@
  */
 
 import { TableRow } from '@mui/material';
-import React, { FunctionComponent } from 'react';
+import { FunctionComponent } from 'react';
 import LimitReductionTableCell from './limit-reduction-table-cell';
 import { IColumnsDef } from './columns-definitions';
 

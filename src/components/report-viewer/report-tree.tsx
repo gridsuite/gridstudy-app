@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { PropsWithChildren, SyntheticEvent } from 'react';
+import { PropsWithChildren, SyntheticEvent } from 'react';
 import { Grid } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';

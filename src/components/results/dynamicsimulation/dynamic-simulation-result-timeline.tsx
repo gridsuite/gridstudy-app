@@ -6,7 +6,7 @@
  */
 import { UUID } from 'crypto';
 import { Box, LinearProgress } from '@mui/material';
-import React, { memo, useMemo, useRef } from 'react';
+import { memo, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import {
