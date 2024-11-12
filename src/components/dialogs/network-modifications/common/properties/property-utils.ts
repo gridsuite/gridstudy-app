@@ -142,7 +142,7 @@ export const toModificationProperties = (properties: Properties | undefined) => 
         const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
             (p) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
         );
-        return filteredProperties && filteredProperties?.length > 0 ? filteredProperties : undefined;
+        return filteredProperties?.length === 0 ? undefined : filteredProperties;
     }
 };
 
