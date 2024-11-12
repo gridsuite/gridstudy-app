@@ -5,14 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
-import Typography from '@mui/material/Typography';
+import { useCallback } from 'react';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
-import IconButton from '@mui/material/IconButton';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import { Theme } from '@mui/material';
+import { Theme, Typography, IconButton } from '@mui/material';
 
 const styles = {
     counterText: (theme: Theme) => ({

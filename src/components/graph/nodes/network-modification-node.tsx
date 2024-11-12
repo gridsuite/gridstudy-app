@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import Button from '@mui/material/Button';
 import { Handle, NodeProps, Position } from '@xyflow/react';
 import { useSelector } from 'react-redux';
@@ -14,8 +13,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import { LIGHT_THEME, OverflowableText } from '@gridsuite/commons-ui';
 import { getLocalStorageTheme } from '../../../redux/session-storage/local-storage';
 import { BUILD_STATUS } from '../../network/constants';
-import { Box } from '@mui/system';
-import { Theme } from '@mui/material';
+import { Box, Theme } from '@mui/material';
 import { AppState, ModificationNode } from 'redux/reducer';
 import { CopyType } from 'components/network-modification.type';
 

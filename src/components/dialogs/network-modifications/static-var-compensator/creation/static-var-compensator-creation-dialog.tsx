@@ -46,7 +46,7 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';

@@ -7,7 +7,6 @@
 import { green, red } from '@mui/material/colors';
 import { Box } from '@mui/material';
 import { Lens } from '@mui/icons-material';
-import React from 'react';
 import { ICellRendererParams } from 'ag-grid-community';
 
 const styles = {

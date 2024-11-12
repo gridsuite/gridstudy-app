@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import Menu from '@mui/material/Menu';
 import { useIntl } from 'react-intl';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
