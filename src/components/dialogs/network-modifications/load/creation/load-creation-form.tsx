@@ -72,6 +72,7 @@ export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<Lo
             <Grid container spacing={2}>
                 <GridItem size={4}>{activePowerField}</GridItem>
                 <GridItem size={4}>{reactivePowerField}</GridItem>
+                <GridItem size={'auto'}></GridItem>
             </Grid>
             <PropertiesForm networkElementType={'load'} />
         </>
