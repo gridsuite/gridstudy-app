@@ -6,7 +6,7 @@
  */
 
 import { useIntl } from 'react-intl';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Paper from '@mui/material/Paper';
 import { LIGHT_THEME } from '@gridsuite/commons-ui';

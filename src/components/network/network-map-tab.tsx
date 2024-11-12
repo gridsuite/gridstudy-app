@@ -34,7 +34,7 @@ import LineModificationDialog from '../dialogs/network-modifications/line/modifi
 import { deleteEquipment } from '../../services/study/network-modifications';
 import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
-import { Box } from '@mui/system';
+
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
@@ -55,7 +55,7 @@ import {
     Line as LineMap,
     VoltageLevel as VoltageLevelMap,
 } from '@powsybl/diagram-viewer/dist/components/network-map-viewer/network/map-equipments';
-import { useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 const INITIAL_POSITION = [0, 0] as [number, number];
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;

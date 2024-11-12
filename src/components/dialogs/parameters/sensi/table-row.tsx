@@ -8,7 +8,7 @@
 import { TableCell, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-import React, { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useState } from 'react';
 import { useIntl } from 'react-intl';
 import EditableTableCell from './table-cell';
 import DeleteIcon from '@mui/icons-material/Delete';

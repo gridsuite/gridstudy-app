@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-import { CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { Box } from '@mui/system';
 
 const styles = {
     overlay: {

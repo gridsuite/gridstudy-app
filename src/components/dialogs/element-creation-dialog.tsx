@@ -16,9 +16,8 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Button, CircularProgress, Typography } from '@mui/material';
-import Grid from '@mui/material/Grid';
+import { useCallback, useEffect, useState } from 'react';
+import { Grid, Box, Button, CircularProgress, Typography } from '@mui/material';
 import { UniqueNameInput } from './commons/unique-name-input';
 import { DESCRIPTION, FOLDER_ID, FOLDER_NAME, NAME } from '../utils/field-constants';
 import { useForm } from 'react-hook-form';

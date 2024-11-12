@@ -10,7 +10,7 @@ import yup from 'components/utils/yup-config';
 import { DELETION_SPECIFIC_DATA, EQUIPMENT_ID, TYPE } from '../../../utils/field-constants';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import ModificationDialog from '../../commons/modificationDialog';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import DeleteEquipmentForm from './equipment-deletion-form';
