@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import Grid from '@mui/material/Grid';
-import { Tab, Tabs } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as nonEvacuatedEnergyParam from './columns-definitions';

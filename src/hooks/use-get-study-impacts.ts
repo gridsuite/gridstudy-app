@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { DeletedEquipment, NetworkImpactsInfos, AppState, NotificationType } from '../redux/reducer';
 import { UUID } from 'crypto';
 
@@ -20,6 +20,7 @@ interface StudyImpactsWithReset extends NetworkImpactsInfos {
  */
 export const useGetStudyImpacts = (): StudyImpactsWithReset => {
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
+    const dispatch = useDispatch();
 
     const [impactedSubstationsIds, setImpactedSubstationsIds] = useState<UUID[]>([]);
     const [deletedEquipments, setDeletedEquipments] = useState<DeletedEquipment[]>([]);
@@ -58,7 +59,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
                 setImpactedSubstationsIds(substationsIds);
             }
         }
-    }, [studyUpdatedForce]);
+    }, [dispatch, studyUpdatedForce]);
 
     return {
         impactedSubstationsIds,

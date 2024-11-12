@@ -38,7 +38,7 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
@@ -60,7 +60,7 @@ import {
     getLimitsValidationSchema,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
-import { filledTextField, gridItem, sanitizeString } from 'components/dialogs/dialogUtils';
+import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
@@ -75,6 +75,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import GridItem from '../../../commons/grid-item';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -210,7 +211,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName1,
                             connectionPosition: line.connectionPosition1,
                             voltageLevelId: line.voltageLevelId1,
-                            connected: line.connected1,
+                            terminalConnected: line.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -221,7 +222,7 @@ const LineCreationDialog = ({
                             connectionName: line.connectionName2,
                             connectionPosition: line.connectionPosition2,
                             voltageLevelId: line.voltageLevelId2,
-                            connected: line.connected2,
+                            terminalConnected: line.connected2,
                         },
                         CONNECTIVITY_2
                     ),
@@ -364,8 +365,8 @@ const LineCreationDialog = ({
             }}
         >
             <Grid container spacing={2}>
-                {gridItem(lineIdField, 4)}
-                {gridItem(lineNameField, 4)}
+                <GridItem size={4}>{lineIdField}</GridItem>
+                <GridItem size={4}>{lineNameField}</GridItem>
             </Grid>
             <LineDialogTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>

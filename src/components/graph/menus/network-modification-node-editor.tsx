@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
+import { CheckBoxList, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -47,10 +47,15 @@ import VscCreationDialog from 'components/dialogs/network-modifications/vsc/crea
 import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
+import {
+    addNotification,
+    removeNotificationByNode,
+    resetLogsFilter,
+    setModificationsInProgress,
+} from '../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
@@ -70,10 +75,8 @@ import {
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import CreateCompositeModificationDialog, {
-    ICompositeCreateModificationDialog,
-} from '../../dialogs/create-composite-modification-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
+import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
+import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -84,6 +87,7 @@ import {
     NetworkModificationMetadata,
 } from './network-modification-menu.type';
 import { SwitchNetworkModificationActive } from './switch-network-modification-active';
+import StaticVarCompensatorCreationDialog from '../../dialogs/network-modifications/static-var-compensator/creation/static-var-compensator-creation-dialog';
 import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
@@ -307,6 +311,11 @@ const NetworkModificationNodeEditor = () => {
                     action: () => withDefaultParams(ShuntCompensatorCreationDialog),
                 },
                 {
+                    id: MODIFICATION_TYPES.STATIC_VAR_COMPENSATOR_CREATION.type,
+                    label: 'StaticVarCompensator',
+                    action: () => withDefaultParams(StaticVarCompensatorCreationDialog),
+                },
+                {
                     id: MODIFICATION_TYPES.VSC_CREATION.type,
                     label: 'VSC',
                     action: () => withDefaultParams(VscCreationDialog),
@@ -479,10 +488,7 @@ const NetworkModificationNodeEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            const notifToDispatch = study.eventData.headers.nodes
-                ? [study.eventData.headers.parentNode, ...study.eventData.headers.nodes]
-                : [study.eventData.headers.parentNode];
-            dispatch(addNotification(notifToDispatch));
+            dispatch(addNotification([study.eventData.headers.parentNode ?? []]));
         },
         [dispatch]
     );
@@ -586,8 +592,10 @@ const NetworkModificationNodeEditor = () => {
             setModifications([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
+            // reset the network modification and computing logs filter when the user changes the current node
+            dispatch(resetLogsFilter());
         }
-    }, [currentNode, dofetchNetworkModifications]);
+    }, [currentNode, dispatch, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -629,9 +637,7 @@ const NetworkModificationNodeEditor = () => {
                 dispatch(
                     removeNotificationByNode([
                         studyUpdatedForce.eventData.headers['parentNode'],
-                        studyUpdatedForce.eventData.headers['nodes']
-                            ? [...studyUpdatedForce.eventData.headers['nodes']]
-                            : [],
+                        ...(studyUpdatedForce.eventData.headers.nodes ?? []),
                     ])
                 );
             }
@@ -697,7 +703,7 @@ const NetworkModificationNodeEditor = () => {
         description,
         folderName,
         folderId,
-    }: ICompositeCreateModificationDialog) => {
+    }: IElementCreationDialog) => {
         const selectedModificationsUuid = selectedItems.map((item) => item.uuid);
 
         setSaveInProgress(true);
@@ -767,7 +773,7 @@ const NetworkModificationNodeEditor = () => {
         }
     }, [copiedModifications, currentNode?.id, copyInfos, snackError, studyUuid]);
 
-    const removeNullFields = useCallback((data: any) => {
+    const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
         if (dataTemp) {
             Object.keys(dataTemp).forEach((key) => {
@@ -791,7 +797,7 @@ const NetworkModificationNodeEditor = () => {
             const modification = fetchNetworkModification(modificationUuid);
             modification
                 .then((res) => {
-                    return res.json().then((data: any) => {
+                    return res.json().then((data: NetworkModificationData) => {
                         //remove all null values to avoid showing a "null" in the forms
                         setEditData(removeNullFields(data));
                         setEditDataFetchStatus(FetchStatus.SUCCEED);
@@ -851,9 +857,9 @@ const NetworkModificationNodeEditor = () => {
 
     const intl = useIntl();
     const { computeLabel } = useModificationLabelComputer();
-    const getModificationLabel = (modif: NetworkModificationMetadata) => {
+    const getModificationLabel = (modif: NetworkModificationMetadata): string => {
         if (!modif) {
-            return null;
+            return '';
         }
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
@@ -975,10 +981,13 @@ const NetworkModificationNodeEditor = () => {
     };
     const renderCreateCompositeNetworkModificationsDialog = () => {
         return (
-            <CreateCompositeModificationDialog
+            <ElementCreationDialog
                 open={createCompositeModificationDialogOpen}
                 onSave={doCreateCompositeModificationsElements}
                 onClose={() => setCreateCompositeModificationDialogOpen(false)}
+                type={ElementType.MODIFICATION}
+                titleId={'CreateCompositeModification'}
+                prefixIdForGeneratedName={'GeneratedModification'}
             />
         );
     };

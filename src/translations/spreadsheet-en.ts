@@ -6,11 +6,27 @@
  */
 
 const spreadsheetEn = {
-    'spreadsheet/custom_column/main_button': 'Add custom columns',
-    'spreadsheet/custom_column/paste': 'Paste from clipboard',
+    'spreadsheet/custom_column/add_columns': 'Add custom columns',
     'spreadsheet/custom_column/column_name': 'Column name',
     'spreadsheet/custom_column/column_content': 'Column content',
     'spreadsheet/custom_column/column_content_tooltip': `Column content is described with variable names (in order to reference grid data) and operators provided by MathJS library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
+    'spreadsheet/custom_column/save_columns': 'Save',
+    'spreadsheet/custom_column/save_dialog_title': 'Save a spreadsheet model',
+    'spreadsheet/custom_column/save_error_message': 'Spreadsheet model creation error',
+    'spreadsheet/custom_column/save_confirmation_message': 'Spreadsheet model created in {folderName}',
+    'spreadsheet/create_new_spreadsheet/create_empty_spreadsheet': 'Create an empty spreadsheet',
+    'spreadsheet/create_new_spreadsheet/apply_spreadsheet_model': 'Apply a spreadsheet model',
+    'spreadsheet/create_new_spreadsheet/add_button_tooltip': 'Add spreadsheet',
+    'spreadsheet/create_new_spreadsheet/empty_spreadsheet_option': 'Empty',
+    'spreadsheet/create_new_spreadsheet/apply_model_option': 'Apply model',
+    'spreadsheet/create_new_spreadsheet/select_spreadsheet_model': 'Spreadsheet model',
+    'spreadsheet/create_new_spreadsheet/spreadsheet_name': 'Spreadsheet name',
+    'spreadsheet/create_new_spreadsheet/equipment_type': 'Equipment type',
+    'spreadsheet/create_new_spreadsheet/spreadsheet_name_already_exists': 'Spreadsheet name already exists',
+    'spreadsheet/create_new_spreadsheet/must_select_spreadsheet_model': 'You must select a spreadsheet model',
+    'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
+        'You must select only one spreadsheet model',
+    'spreadsheet/create_new_spreadsheet/error_loading_model': 'Error while retrieving spreadsheet model',
 };
 
 export default spreadsheetEn;

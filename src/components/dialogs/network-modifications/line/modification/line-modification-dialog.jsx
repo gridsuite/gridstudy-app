@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -38,7 +38,7 @@ import {
     X,
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -80,7 +80,7 @@ import {
     getCon1andCon2WithPositionValidationSchema,
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 export const LineModificationDialogTab = {
     CONNECTIVITY_TAB: 0,

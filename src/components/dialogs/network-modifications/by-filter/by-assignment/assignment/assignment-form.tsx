@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import {
     AutocompleteInput,
     DirectoryItemsInput,
@@ -19,12 +19,12 @@ import {
 import DensityLargeIcon from '@mui/icons-material/DensityLarge';
 import { EDITED_FIELD, FILTERS, PROPERTY_NAME_FIELD, VALUE_FIELD } from '../../../../../utils/field-constants';
 import { useFormContext, useWatch } from 'react-hook-form';
-import { gridItem } from '../../../../dialogUtils';
-import { getIdOrValue, getLabelOrValue } from '../../../../commons/utils';
+import { getIdOrValue } from '../../../../commons/utils';
 import { useIntl } from 'react-intl';
 import { DataType, FieldOptionType } from './assignment.type';
 import { areIdsEqual, comparatorStrIgnoreCase } from '../../../../../utils/utils';
 import { PredefinedProperties } from '../../../common/properties/property-utils';
+import GridItem from '../../../../commons/grid-item';
 
 interface AssignmentFormProps {
     name: string;
@@ -76,6 +76,15 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
         setValue(`${name}.${index}.${VALUE_FIELD}`, dataType === DataType.BOOLEAN ? false : null);
     }
 
+    const formatLabelWithUnit = useMemo(() => {
+        return (value: string | { label: string; unit?: string }) => {
+            if (typeof value === 'string') {
+                return value;
+            }
+            return `${intl.formatMessage({ id: value.label })} ${value.unit ?? ''}`;
+        };
+    }, [intl]);
+
     const filtersField = (
         <DirectoryItemsInput
             name={`${name}.${index}.${FILTERS}`}
@@ -95,7 +104,7 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => (option ? intl.formatMessage({ id: getLabelOrValue(option) }) : option)}
+            getOptionLabel={(option: any) => formatLabelWithUnit(option)}
             isOptionEqualToValue={areIdsEqual}
         />
     );
@@ -143,13 +152,13 @@ const AssignmentForm: FC<AssignmentFormProps> = ({
 
     return (
         <>
-            {gridItem(filtersField, 3.25)}
-            {gridItem(editedField, 3)}
+            <GridItem size={3.25}>{filtersField}</GridItem>
+            <GridItem size={3}>{editedField}</GridItem>
             <>
-                {dataType === DataType.PROPERTY && gridItem(propertyNameField, 2.0)}
-                {gridItem(<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />, 0.25)}
+                {dataType === DataType.PROPERTY && <GridItem size={2.0}>{propertyNameField}</GridItem>}
+                <GridItem size={0.25}>{<DensityLargeIcon fontSize="small" sx={{ marginTop: 1 }} />}</GridItem>
             </>
-            {gridItem(valueField, dataType === DataType.PROPERTY ? 2.25 : 4.25)}
+            <GridItem size={dataType === DataType.PROPERTY ? 2.25 : 4.25}>{valueField}</GridItem>
         </>
     );
 };

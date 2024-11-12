@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
     networkModificationTreeNodeAdded,
     networkModificationTreeNodeMoved,
@@ -14,6 +14,7 @@ import {
     removeNotificationByNode,
     networkModificationHandleSubtree,
     setSelectionForCopy,
+    resetLogsFilter,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -23,7 +24,7 @@ import { StudyDrawer } from './study-drawer';
 import NodeEditor from './graph/menus/node-editor';
 import CreateNodeMenu from './graph/menus/create-node-menu';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import { useStore } from 'reactflow';
+import { useStore } from '@xyflow/react';
 import ExportDialog from './dialogs/export-dialog';
 import { BUILD_STATUS, UPDATE_TYPE } from './network/constants';
 import {
@@ -41,7 +42,7 @@ import {
 import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study';
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
-import { StudyDisplayMode } from './network-modification.type';
+import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
 
 const styles = {
     container: {
@@ -62,17 +63,6 @@ const usePreviousTreeDisplay = (display, width) => {
         }
     }, [display, width]);
     return ref.current;
-};
-
-export const CopyType = {
-    NODE_COPY: 'NODE_COPY',
-    NODE_CUT: 'NODE_CUT',
-    SUBTREE_COPY: 'SUBTREE_COPY',
-    SUBTREE_CUT: 'SUBTREE_CUT',
-};
-export const UpdateType = {
-    NODE_CREATED: 'nodeCreated',
-    NODE_DELETED: 'nodeDeleted',
 };
 
 const noSelectionForCopy = {
@@ -281,6 +271,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)
                 ) {
                     dispatch(removeNotificationByNode([currentNodeRef.current?.id]));
+                    // when the current node is updated, we need to reset the logs filter
+                    dispatch(resetLogsFilter());
                 }
                 //creating, updating or deleting modifications must invalidate the node clipboard
             } else if (UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])) {
