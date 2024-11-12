@@ -4,7 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Collapse, Dialog, DialogTitle, Stack, Typography } from '@mui/material';
+import {
+    Collapse,
+    Dialog,
+    DialogTitle,
+    Stack,
+    Typography,
+    InputLabel,
+    Alert,
+    FormControl,
+    Select,
+    MenuItem,
+    CircularProgress,
+    IconButton,
+} from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -12,14 +25,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import Alert from '@mui/material/Alert';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
@@ -43,13 +49,13 @@ const STRING_LIST = 'STRING_LIST';
 
 const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) => {
     const [formatsWithParameters, setFormatsWithParameters] = useState([]);
-    const [selectedFormat, setSelectedFormat] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
-    const [exportStudyErr, setExportStudyErr] = React.useState('');
+    const [selectedFormat, setSelectedFormat] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
     const [fileName, setFileName] = useState();
     const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
-    const [unfolded, setUnfolded] = React.useState(false);
+    const [unfolded, setUnfolded] = useState(false);
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const nodeName = useMemo(

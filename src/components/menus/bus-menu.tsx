@@ -8,7 +8,7 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';

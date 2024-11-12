@@ -6,7 +6,6 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerCreationDialogTab } from './two-windings-transformer-creation-dialog';
 import { useWatch } from 'react-hook-form';

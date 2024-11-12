@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback } from 'react';
 import { Box, FilterOptionsState } from '@mui/material';
 import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
