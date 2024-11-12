@@ -169,12 +169,12 @@ export const useAggridLocalRowFilter = (
                             // Adjust the value upwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber + finalTolerance),
+                                value: truncatedNumber + finalTolerance,
                             };
                         case FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL:
                             return {
                                 ...filter,
-                                value: (truncatedNumber - finalTolerance),
+                                value: truncatedNumber - finalTolerance,
                             };
                         default:
                             return filter;
