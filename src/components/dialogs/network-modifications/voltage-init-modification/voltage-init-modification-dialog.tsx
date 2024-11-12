@@ -7,22 +7,22 @@
 
 import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
-import { BooleanCellRenderer, DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
+import { DefaultCellRenderer, BooleanCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
-    ANGLE,
-    CONNECT,
-    LEG_SIDE,
-    RATIO_TAP_CHANGER_POSITION,
-    RATIO_TAP_CHANGER_TARGET_V,
     REACTIVE_POWER_SET_POINT,
+    VOLTAGE_SET_POINT,
+    RATIO_TAP_CHANGER_POSITION,
+    LEG_SIDE,
     SECTION_COUNT,
+    CONNECT,
+    RATIO_TAP_CHANGER_TARGET_V,
     TARGET_V,
     V,
-    VOLTAGE_SET_POINT,
+    ANGLE,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
