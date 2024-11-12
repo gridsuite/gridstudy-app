@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, useMemo } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { useIntl } from 'react-intl';
 import { VoltageTableProps } from './short-circuit-parameters.type';

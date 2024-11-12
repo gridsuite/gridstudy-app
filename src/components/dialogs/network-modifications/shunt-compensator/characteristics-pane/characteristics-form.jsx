@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import {
     CHARACTERISTICS_CHOICE,
     CHARACTERISTICS_CHOICES,
@@ -17,13 +16,14 @@ import {
     SWITCHED_ON_Q_AT_NOMINAL_V,
     SWITCHED_ON_SUSCEPTANCE,
 } from 'components/utils/field-constants';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FloatInput, IntegerInput, RadioInput, SelectInput } from '@gridsuite/commons-ui';
-import { gridItem, ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialogUtils';
+import { ReactivePowerAdornment, SusceptanceAdornment } from '../../../dialog-utils';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../../network/constants';
+import GridItem from '../../../commons/grid-item';
 
 // this component needs to be isolated to avoid too many rerenders
 export const CharacteristicsForm = ({ previousValues, isModification = false }) => {
@@ -179,21 +179,21 @@ export const CharacteristicsForm = ({ previousValues, isModification = false }) 
 
     return (
         <Grid container spacing={2}>
-            {gridItem(maximumSectionCountField, 4)}
-            {gridItem(sectionCountField, 4)}
-            {gridItem(characteristicsChoiceField, 12)}
+            <GridItem size={4}>{maximumSectionCountField}</GridItem>
+            <GridItem size={4}>{sectionCountField}</GridItem>
+            <GridItem size={12}>{characteristicsChoiceField}</GridItem>
             {characteristicsChoice === CHARACTERISTICS_CHOICES.SUSCEPTANCE.id && (
                 <Grid item container spacing={2}>
-                    {gridItem(maxSusceptanceField, 4)}
-                    {gridItem(switchedOnSusceptanceField, 4)}
+                    <GridItem size={4}>{maxSusceptanceField}</GridItem>
+                    <GridItem size={4}>{switchedOnSusceptanceField}</GridItem>
                 </Grid>
             )}
             {characteristicsChoice === CHARACTERISTICS_CHOICES.Q_AT_NOMINAL_V.id && (
                 <Grid item container spacing={2}>
-                    {gridItem(shuntCompensatorTypeField, 4)}
+                    <GridItem size={4}>{shuntCompensatorTypeField}</GridItem>
                     <Box sx={{ width: '100%' }} />
-                    {gridItem(maxQAtNominalVField, 4)}
-                    {gridItem(switchedOnMaxQAtNominalVField, 4)}
+                    <GridItem size={4}>{maxQAtNominalVField}</GridItem>
+                    <GridItem size={4}>{switchedOnMaxQAtNominalVField}</GridItem>
                 </Grid>
             )}
         </Grid>

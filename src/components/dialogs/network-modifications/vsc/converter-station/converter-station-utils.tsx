@@ -38,7 +38,7 @@ import {
     getReactiveLimitsSchema,
 } from '../../../reactive-limits/reactive-limits-utils';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import {
     calculateCurvePointsToStore,
     completeReactiveCapabilityCurvePointsData,

@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import React from 'react';
-
 interface CountryCellRendererProps {
     value: string;
 }

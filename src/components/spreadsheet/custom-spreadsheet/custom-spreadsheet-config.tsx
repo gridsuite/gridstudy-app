@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState, MouseEvent, useCallback } from 'react';
+import { useState, MouseEvent, useCallback } from 'react';
 import { Button, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useStateBoolean } from '@gridsuite/commons-ui';
