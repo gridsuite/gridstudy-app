@@ -38,6 +38,9 @@ declare module '@mui/material/styles' {
             hover: string;
             border: string;
         };
+        searchedText: {
+            highlightColor: string;
+        };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}
 

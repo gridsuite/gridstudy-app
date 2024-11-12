@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useFormContext } from 'react-hook-form';
 import { SubmitButton } from '@gridsuite/commons-ui';
@@ -95,6 +95,7 @@ ModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
+    searchCopy: PropTypes.object,
     disabledSave: PropTypes.bool,
     onValidated: PropTypes.func,
     onValidationError: PropTypes.func,

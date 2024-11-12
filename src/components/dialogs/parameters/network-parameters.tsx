@@ -11,10 +11,10 @@ import { FormattedMessage } from 'react-intl';
 import { fetchDefaultParametersValues } from '../../../services/utils';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../../utils/config-params';
 import { mergeSx } from '../../utils/functions';
-import { LineSeparator } from '../dialogUtils';
 import { LabelledButton, styles, useParameterState } from './parameters';
 import ParameterLineDropdown from './widget/parameter-line-dropdown';
 import ParameterLineSwitch from './widget/parameter-line-switch';
+import LineSeparator from '../commons/line-separator';
 
 export enum FluxConventions {
     IIDM = 'iidm',

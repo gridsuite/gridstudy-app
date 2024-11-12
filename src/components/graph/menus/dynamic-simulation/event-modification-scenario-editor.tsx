@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
@@ -184,7 +184,6 @@ const EventModificationScenarioEditor = () => {
         setEditDialogOpen({
             eventType: event.eventType,
             equipmentId: event.equipmentId,
-            // @ts-expect-error TODO: sub range of equipments types
             equipmentType: event.equipmentType,
         });
     };
