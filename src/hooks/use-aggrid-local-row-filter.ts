@@ -149,12 +149,12 @@ export const useAggridLocalRowFilter = (
 
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
+                        // Creates two conditions to test we are not in [value-tolerance..value+tolerance] (handles rounded decimal precision)
                         case FILTER_NUMBER_COMPARATORS.NOT_EQUAL:
                             return [
-                                // Create two conditions to test we are not in [value-tolerance..value+tolerance] (handles rounded decimal precision)
                                 {
                                     ...filter,
-                                    type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                    type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.GREATER_THAN,
                                     value: valueAsNumber + finalTolerance,
                                 },
                                 {
