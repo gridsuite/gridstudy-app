@@ -27,7 +27,7 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipme
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
-import { EquipmentProps, useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
+import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
     formatPropertiesForBackend,
