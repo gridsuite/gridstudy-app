@@ -43,9 +43,9 @@ export type LoadCreationSchemaForm = {
     [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
-export interface LoadCreationInfo {
+export interface LoadCreationInfos {
     uuid: string;
-    equipmentType: keyof typeof EQUIPMENT_TYPES;
+    equipmentType: EQUIPMENT_TYPES;
     equipmentId: string;
     equipmentName: string;
     loadType: string;
@@ -67,7 +67,7 @@ interface ConnectablePositionInfos {
     connectionPosition?: string | null;
 }
 
-export interface LoadFormInfo {
+export interface LoadFormInfos {
     id: string;
     name: string;
     type: string;

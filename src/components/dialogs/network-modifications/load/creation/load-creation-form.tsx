@@ -30,7 +30,7 @@ export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<Lo
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
     );
 
-    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={{ ...filledTextField }} />;
+    const loadNameField = <TextInput name={EQUIPMENT_NAME} label={'Name'} formProps={filledTextField} />;
 
     const loadTypeField = (
         <SelectInput
@@ -39,7 +39,7 @@ export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<Lo
             options={LOAD_TYPES}
             fullWidth
             size={'small'}
-            formProps={{ variant: 'filled' }}
+            formProps={filledTextField}
         />
     );
 

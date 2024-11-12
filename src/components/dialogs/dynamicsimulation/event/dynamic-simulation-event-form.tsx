@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid, TextField } from '@mui/material';
+import { filledTextField } from '../../dialog-utils';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import GridItem from '../../commons/grid-item';
-import { filledTextField } from '../../dialog-utils';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;

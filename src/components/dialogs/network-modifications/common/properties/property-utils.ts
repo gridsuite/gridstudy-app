@@ -25,7 +25,7 @@ export type Property = {
 };
 
 export type Properties = {
-    [ADDITIONAL_PROPERTIES]: Property[] | undefined;
+    [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export type PredefinedProperties = {
@@ -140,7 +140,7 @@ export const mergeModificationAndEquipmentProperties = (
 export const toModificationProperties = (properties: Properties | undefined) => {
     if (properties) {
         const filteredProperties = properties[ADDITIONAL_PROPERTIES]?.filter(
-            (p: Property) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
+            (p) => !isBlankOrEmpty(p.value) || p[DELETION_MARK]
         );
         return filteredProperties && filteredProperties?.length > 0 ? filteredProperties : undefined;
     }

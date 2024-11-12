@@ -42,10 +42,11 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import { DeepNullable } from '../../../../utils/ts-utils';
-import { LoadCreationInfo, LoadCreationSchemaForm, LoadFormInfo } from './load-creation-dialog.type';
+import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
 import { CurrentTreeNode } from '../../../../../redux/reducer';
 import { UUID } from 'crypto';
 import { FetchStatus } from '../../../../../services/utils.type';
+import { DialogProps } from '@mui/material/Dialog/Dialog';
 
 /**
  * Dialog to create a load in the network
@@ -79,14 +80,13 @@ const formSchema = yup
     .concat(creationPropertiesSchema)
     .required();
 
-export interface LoadCreationDialogProps {
-    editData: LoadCreationInfo;
+export interface LoadCreationDialogProps extends Partial<DialogProps> {
+    editData: LoadCreationInfos;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
-    dialogProps: any;
 }
 
 export function LoadCreationDialog({
@@ -107,7 +107,7 @@ export function LoadCreationDialog({
 
     const { reset } = formMethods;
 
-    const fromSearchCopyToFormValues = (load: LoadFormInfo) => {
+    const fromSearchCopyToFormValues = (load: LoadFormInfos) => {
         reset({
             [EQUIPMENT_ID]: load.id + '(1)',
             [EQUIPMENT_NAME]: load.name ?? '',
@@ -130,7 +130,7 @@ export function LoadCreationDialog({
     };
 
     const fromEditDataToFormValues = useCallback(
-        (load: LoadCreationInfo) => {
+        (load: LoadCreationInfos) => {
             reset({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
@@ -156,7 +156,7 @@ export function LoadCreationDialog({
         studyUuid,
         currentNodeUuid,
         toFormValues: fromSearchCopyToFormValues,
-        setFormValues: (data: LoadCreationSchemaForm) => reset(data),
+        setFormValues: reset,
         elementType: EQUIPMENT_TYPES.LOAD,
         operation: undefined,
     });
@@ -202,9 +202,7 @@ export function LoadCreationDialog({
         delay: FORM_LOADING_DELAY,
     });
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
+    const clear = useCallback(() => reset(emptyFormData), [reset]);
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>

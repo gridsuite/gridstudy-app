@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { TextFieldProps, Theme } from '@mui/material';
+import { FilledTextFieldProps, Theme } from '@mui/material';
 
 export const styles = {
     helperText: {
@@ -97,7 +97,7 @@ export const KilometerAdornment = {
     position: 'end',
     text: 'km',
 };
-export const filledTextField: TextFieldProps = {
+export const filledTextField: FilledTextFieldProps = {
     variant: 'filled',
 };
 
