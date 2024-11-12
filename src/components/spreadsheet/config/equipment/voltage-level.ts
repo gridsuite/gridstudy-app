@@ -25,17 +25,15 @@ import { numericalCellEditorConfig } from '../common/cell-editors';
 function generateEditableNumericColumnDefinition<
     TId extends string,
     TField extends string,
-    TCmd extends string,
     TMin extends string | undefined,
     TMax extends string | undefined
->(id: TId, field: TField, changeCmd: TCmd, minExpression: TMin, maxExpression: TMax) {
+>(id: TId, field: TField, minExpression: TMin, maxExpression: TMax) {
     return {
         id: id,
         field: field,
         numeric: true,
         ...defaultNumericFilterConfig,
         fractionDigits: 1,
-        changeCmd: changeCmd,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
         crossValidation: {
@@ -84,20 +82,8 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
-        generateEditableNumericColumnDefinition(
-            'LowVoltageLimitkV',
-            'lowVoltageLimit',
-            'equipment.setLowVoltageLimit({})\n',
-            undefined,
-            'highVoltageLimit'
-        ),
-        generateEditableNumericColumnDefinition(
-            'HighVoltageLimitkV',
-            'highVoltageLimit',
-            'equipment.setHighVoltageLimit({})\n',
-            'lowVoltageLimit',
-            undefined
-        ),
+        generateEditableNumericColumnDefinition('LowVoltageLimitkV', 'lowVoltageLimit', undefined, 'highVoltageLimit'),
+        generateEditableNumericColumnDefinition('HighVoltageLimitkV', 'highVoltageLimit', 'lowVoltageLimit', undefined),
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',

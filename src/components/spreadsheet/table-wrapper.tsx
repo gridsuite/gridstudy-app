@@ -8,8 +8,8 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box } from '@mui/system';
-import { Alert, Grid } from '@mui/material';
+
+import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
@@ -62,7 +62,7 @@ import {
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { toModificationOperation } from 'components/utils/utils';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -1002,10 +1002,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.id, studyUuid, getFieldValue]
     );
 
-    // TODO: when 3WT update will use a network modification, remove everything dealing with groovy
+    // TODO: when 3WT update will use a network modification, remove everything dealing with groovyEquipmentGetter/changeCmd
     const groovyUpdate = useCallback(
         (params: any) => {
-            const equipment: any = tablesDefinitionIndexes.get(tabIndex);
+            const equipment = tablesDefinitionIndexes.get(tabIndex);
             if (equipment && equipment.groovyEquipmentGetter) {
                 let groovyScript =
                     'equipment = network.' +
@@ -1016,7 +1016,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 const wrappedEditedData = {
                     data: editingData,
                 };
-                const columns: any[] = equipment.columns;
+                const columns = equipment.columns;
                 Object.entries(priorValuesBuffer).forEach(([field, _value]) => {
                     const column: any = columns.find((c: any) => c.field === field);
                     if (column && column.changeCmd) {

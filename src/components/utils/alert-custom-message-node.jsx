@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';

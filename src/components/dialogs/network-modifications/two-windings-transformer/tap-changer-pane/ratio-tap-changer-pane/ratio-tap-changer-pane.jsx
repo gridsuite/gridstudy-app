@@ -20,7 +20,7 @@ import {
 import { useEffect, useMemo } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { gridItem, VoltageAdornment } from '../../../../dialogUtils';
+import { VoltageAdornment } from '../../../../dialog-utils';
 import { SwitchInput, FloatInput, SelectInput } from '@gridsuite/commons-ui';
 import RegulatingTerminalForm from '../../../../regulating-terminal/regulating-terminal-form';
 import RatioTapChangerPaneSteps from './ratio-tap-changer-pane-steps';
@@ -29,6 +29,7 @@ import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import CheckboxNullableInput from 'components/utils/rhf-inputs/boolean-nullable-input';
 import { getTapChangerEquipmentSectionTypeValue } from 'components/utils/utils';
 import { getComputedPreviousRatioRegulationType } from './ratio-tap-changer-pane-utils';
+import GridItem from '../../../../commons/grid-item';
 
 const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
@@ -252,7 +253,7 @@ const RatioTapChangerPane = ({
                             <Grid item xs={4}>
                                 {regulationTypeField}
                             </Grid>
-                            {regulationType === REGULATION_TYPES.LOCAL.id && gridItem(sideField, 4)}
+                            {regulationType === REGULATION_TYPES.LOCAL.id && <GridItem size={4}>{sideField}</GridItem>}
                         </Grid>
                         {regulationType === REGULATION_TYPES.DISTANT.id && (
                             <Grid
@@ -265,7 +266,7 @@ const RatioTapChangerPane = ({
                                     marginLeft: '10px',
                                 }}
                             >
-                                {gridItem(regulatingTerminalField, 2)}
+                                {GridItem(regulatingTerminalField, 2)}
                             </Grid>
                         )}
                     </>

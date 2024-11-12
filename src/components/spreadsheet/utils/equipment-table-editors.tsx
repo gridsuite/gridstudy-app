@@ -6,7 +6,7 @@
  */
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
-import Select from '@mui/material/Select';
+import Select, { type SelectProps } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Autocomplete, SelectChangeEvent, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -34,15 +34,20 @@ export interface EquipmentTableNumberEditorProps<TData = any, TContext = any>
     defaultValue?: number;
 }
 
-export interface EquipmentTableBooleanListEditorProps<TData = any, TValue = any, TContext = any>
-    extends EquipmentTableEditorProps<TData, TValue, TContext> {
-    defaultValue: any; // TODO should be boolean
+export interface EquipmentTableBooleanListEditorProps<TData = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, boolean, TContext> {
+    defaultValue: boolean;
 }
 
 export interface EquipmentTableEnumEditorProps<TData = any, TContext = any>
     extends EquipmentTableEditorProps<TData, string, TContext> {
     defaultValue: string;
     enumOptions: EnumOption[];
+}
+
+enum BooleanNumberValue {
+    TRUE = 1,
+    FALSE = 0,
 }
 
 export const GeneratorRegulatingTerminalEditor = forwardRef(
@@ -324,23 +329,17 @@ export const BooleanListField = forwardRef(
 
         useImperativeHandle(
             ref,
-            () => {
-                return {
-                    getValue: () => {
-                        return Boolean(value);
-                    },
-                    getField: () => {
-                        return colDef.field;
-                    },
-                };
-            },
+            () => ({
+                getValue: () => value,
+                getField: () => colDef.field,
+            }),
             [colDef.field, value]
         );
 
-        const validateChange = useCallback(
-            (ev: any) => {
+        const validateChange = useCallback<NonNullable<SelectProps<BooleanNumberValue>['onChange']>>(
+            (ev) => {
                 const val = ev.target.value;
-                setValue(val);
+                setValue(val === BooleanNumberValue.TRUE);
                 gridContext.dynamicValidation = deepUpdateValue(gridContext.dynamicValidation, colDef.field, val);
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
@@ -348,8 +347,8 @@ export const BooleanListField = forwardRef(
         );
 
         return (
-            <Select
-                value={value}
+            <Select<BooleanNumberValue>
+                value={value ? BooleanNumberValue.TRUE : BooleanNumberValue.FALSE}
                 onChange={validateChange}
                 size={'medium'}
                 margin={'none'}
@@ -357,10 +356,10 @@ export const BooleanListField = forwardRef(
                 variant={'outlined'}
                 autoFocus
             >
-                <MenuItem value={1} key={colDef.field + '_1'}>
+                <MenuItem value={BooleanNumberValue.TRUE} key={colDef.field + '_1'}>
                     <em>{intl.formatMessage({ id: 'true' })}</em>
                 </MenuItem>
-                <MenuItem value={0} key={colDef.field + '_0'}>
+                <MenuItem value={BooleanNumberValue.FALSE} key={colDef.field + '_0'}>
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
             </Select>

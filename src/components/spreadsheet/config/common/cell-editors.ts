@@ -47,14 +47,14 @@ export function numericalCellEditorConfig<TData = any, TContext = any>(
     } as const;
 }
 
-export function booleanCellEditorConfig<TData = any, TValue = any, TContext = any>(
-    getDefaultValue: (params: ICellEditorParams<TData, TValue, TContext>) => TValue
+export function booleanCellEditorConfig<TData = any, TContext = any>(
+    getDefaultValue: (params: ICellEditorParams<TData, boolean, TContext>) => boolean
 ) {
     return {
         cellEditor: BooleanListField,
         cellEditorParams: (
-            params: ICustomCellEditorParams<TData, TValue, TContext>
-        ): EquipmentTableBooleanListEditorProps<TData, TValue, TContext> => ({
+            params: ICustomCellEditorParams<TData, boolean, TContext>
+        ): EquipmentTableBooleanListEditorProps<TData, TContext> => ({
             defaultValue: getDefaultValue(params),
             gridContext: params.context,
             gridApi: params.api,

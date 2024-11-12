@@ -78,7 +78,6 @@ export const GENERATOR_TAB_DEF = {
             id: 'Name',
             field: 'name',
             ...defaultTextFilterConfig,
-            changeCmd: "equipment.setName('{}')\n",
             ...editableColumnConfig,
         },
         {
@@ -103,7 +102,6 @@ export const GENERATOR_TAB_DEF = {
             id: 'energySource',
             field: 'energySource',
             ...getDefaultEnumConfig(ENERGY_SOURCES),
-            changeCmd: 'equipment.setEnergySource(EnergySource.{})\n',
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.energySource, ENERGY_SOURCES),
         },
@@ -143,8 +141,8 @@ export const GENERATOR_TAB_DEF = {
             },
             ...booleanCellEditorConfig((params) =>
                 params.data?.activePowerControl?.participate != null
-                    ? +params.data?.activePowerControl?.participate
-                    : ''
+                    ? params.data.activePowerControl.participate
+                    : false
             ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -178,7 +176,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setMinP({})\n',
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.minP),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -192,7 +189,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setMaxP({})\n',
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.maxP),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -205,13 +201,6 @@ export const GENERATOR_TAB_DEF = {
             field: 'targetP',
             numeric: true,
             ...defaultNumericFilterConfig,
-            changeCmd:
-                'if ((equipment.getMinP() <= {} && {} <= equipment.getMaxP()) || {} == 0) { \n' +
-                '    equipment.setTargetP({})\n' +
-                '} else {\n' +
-                "    throw new Exception('incorrect value')\n" +
-                ' }\n',
-
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetP),
             fractionDigits: 1,
@@ -228,7 +217,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setTargetQ({})\n',
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetQ),
             crossValidation: {
@@ -244,9 +232,10 @@ export const GENERATOR_TAB_DEF = {
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
-            changeCmd: 'equipment.setVoltageRegulatorOn({})\n',
             ...editableColumnConfig,
-            ...booleanCellEditorConfig((params) => params.data.voltageRegulatorOn | 0),
+            ...booleanCellEditorConfig((params) =>
+                params.data?.voltageRegulatorOn != null ? params.data.voltageRegulatorOn : false
+            ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -255,7 +244,6 @@ export const GENERATOR_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            changeCmd: 'equipment.setTargetV({})\n',
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetV),
             crossValidation: {

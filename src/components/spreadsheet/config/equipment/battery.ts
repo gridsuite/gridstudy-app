@@ -92,8 +92,8 @@ export const BATTERY_TAB_DEF = {
             },
             ...booleanCellEditorConfig((params) =>
                 params.data?.activePowerControl?.participate != null
-                    ? +params.data?.activePowerControl?.participate
-                    : ''
+                    ? params.data.activePowerControl.participate
+                    : false
             ),
             getQuickFilterText: excludeFromGlobalFilter,
         },

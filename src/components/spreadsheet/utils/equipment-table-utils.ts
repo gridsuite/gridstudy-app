@@ -11,7 +11,7 @@ import {
     computeSwitchedOnValue,
     getTapChangerRegulationTerminalValue,
 } from 'components/utils/utils';
-import { EDIT_COLUMN } from '../utils/constants';
+import { EDIT_COLUMN } from './constants';
 import { CellEditingStoppedEvent, ColDef, Column, RefreshCellsParams, GridApi } from 'ag-grid-community';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import {
@@ -157,15 +157,11 @@ export const formatTwtDataForTable = (twt: any) => {
 
 const formatGeneratorDataForTable = (generator: any) => {
     const formattedGenerator = { ...generator };
-
     const hasDistantRegulation =
         formattedGenerator.regulatingTerminalVlId || formattedGenerator.regulatingTerminalConnectableId;
-    const regulationType =
+    formattedGenerator.RegulationTypeText =
         formattedGenerator.RegulationTypeText ||
         (hasDistantRegulation ? REGULATION_TYPES.DISTANT.id : REGULATION_TYPES.LOCAL.id);
-
-    formattedGenerator.RegulationTypeText = regulationType;
-
     return formattedGenerator;
 };
 
@@ -440,11 +436,12 @@ export const checkValidationsAndRefreshCells = (gridApi: GridApi, gridContext: a
 const checkCrossValidationRequiredOn = (dynamicValidation: DynamicValidation, colDef: CustomColDef) => {
     const requiredOn = colDef?.crossValidation?.requiredOn ?? {};
     let dependencyValue = deepFindValue(dynamicValidation, requiredOn?.dependencyColumn);
-    if (typeof dependencyValue === 'boolean') {
-        dependencyValue = dependencyValue ? 1 : 0;
-    }
+
     if ('columnValue' in requiredOn) {
         // if the prop columnValue exist, then we compare its value with the current value
+        if (dependencyValue && typeof requiredOn.columnValue === 'boolean') {
+            dependencyValue = Boolean(dependencyValue);
+        }
         return dependencyValue !== requiredOn.columnValue;
     } else {
         // otherwise, we just check if there is a current value

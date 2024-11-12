@@ -6,7 +6,6 @@
  */
 
 import { makeComponents, TYPES } from '../../util/make-component-utils';
-import React from 'react';
 import yup from '../../../../utils/yup-config';
 import { commonDefParams, getFormSchema as getCommonSolverFormSchema } from './common-solver-parameters';
 

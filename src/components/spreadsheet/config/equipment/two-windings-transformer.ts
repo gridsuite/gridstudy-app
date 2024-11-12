@@ -222,8 +222,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             },
             ...booleanCellEditorConfig((params) =>
                 params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities != null
-                    ? params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities
-                    : ''
+                    ? params.data.ratioTapChanger.hasLoadTapChangingCapabilities
+                    : false
             ),
             getQuickFilterText: excludeFromGlobalFilter,
         },
