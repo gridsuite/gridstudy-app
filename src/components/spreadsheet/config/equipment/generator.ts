@@ -139,11 +139,7 @@ export const GENERATOR_TAB_DEF = {
 
                 return true;
             },
-            ...booleanCellEditorConfig((params) =>
-                params.data?.activePowerControl?.participate != null
-                    ? params.data.activePowerControl.participate
-                    : false
-            ),
+            ...booleanCellEditorConfig((params) => params.data?.activePowerControl?.participate ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -233,9 +229,7 @@ export const GENERATOR_TAB_DEF = {
             cellRenderer: BooleanCellRenderer,
             ...defaultBooleanFilterConfig,
             ...editableColumnConfig,
-            ...booleanCellEditorConfig((params) =>
-                params.data?.voltageRegulatorOn != null ? params.data.voltageRegulatorOn : false
-            ),
+            ...booleanCellEditorConfig((params) => params.data?.voltageRegulatorOn ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

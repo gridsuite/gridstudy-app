@@ -220,10 +220,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
                 };
                 return true;
             },
-            ...booleanCellEditorConfig((params) =>
-                params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities != null
-                    ? params.data.ratioTapChanger.hasLoadTapChangingCapabilities
-                    : false
+            ...booleanCellEditorConfig(
+                (params) => params.data?.ratioTapChanger?.hasLoadTapChangingCapabilities ?? false
             ),
             getQuickFilterText: excludeFromGlobalFilter,
         },

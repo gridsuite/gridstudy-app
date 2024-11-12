@@ -90,11 +90,7 @@ export const BATTERY_TAB_DEF = {
                 };
                 return true;
             },
-            ...booleanCellEditorConfig((params) =>
-                params.data?.activePowerControl?.participate != null
-                    ? params.data.activePowerControl.participate
-                    : false
-            ),
+            ...booleanCellEditorConfig((params) => params.data?.activePowerControl?.participate ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

@@ -135,11 +135,9 @@ export const defaultEnumFilterConfig = {
             {
                 displayKey: 'customInRange',
                 displayName: 'customInRange',
-                predicate: (filterValues: string[], cellValue: string) => {
+                predicate: (filterValues: string[], cellValue: string) =>
                     // We receive here the filter enum values as a string (filterValue)
-                    const filterValue = filterValues.at(0);
-                    return filterValue ? filterValue.includes(cellValue) : false;
-                },
+                    filterValues.at(0)?.includes(cellValue) ?? false,
             },
         ],
     },
