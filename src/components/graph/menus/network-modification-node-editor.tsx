@@ -37,7 +37,7 @@ import LineCreationDialog from 'components/dialogs/network-modifications/line/cr
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
-import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
+import { LoadCreationDialog } from '../../dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
