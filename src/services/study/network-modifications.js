@@ -343,7 +343,7 @@ export function modifyBattery({
     });
 }
 
-export function createLoad(
+export function createLoad({
     studyUuid,
     nodeUuid,
     id,
@@ -359,8 +359,8 @@ export function createLoad(
     connectionName,
     connectionPosition,
     terminalConnected,
-    properties
-) {
+    properties,
+}) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
