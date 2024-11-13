@@ -16,7 +16,7 @@ import {
     styles,
     DiagramType,
 } from '../diagram-common';
-import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS } from '@powsybl/network-viewer';
+import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS, DiagramMetadata } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
@@ -26,8 +26,6 @@ import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import { UUID } from 'crypto';
-// TO DO: this should be imported fron newtork-viewer after merge of https://github.com/powsybl/powsybl-network-viewer/pull/122
-import { DiagramMetadata } from './diagram-metadata';
 const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)

@@ -53,8 +53,7 @@ import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
-import { SLDMetadata } from '@powsybl/network-viewer';
-import { DiagramMetadata } from './networkAreaDiagram/diagram-metadata';
+import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
