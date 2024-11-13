@@ -98,7 +98,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
 
     const getLabel = (modif: NetworkModificationMetadata) => {
         if (!modif) {
-            return null;
+            return '';
         }
         return intl.formatMessage(
             { id: 'network_modifications.' + modif.messageType },
@@ -106,7 +106,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                 ...modif,
                 ...computeLabel(modif),
             }
-        );
+        ) as unknown as string;
     };
     return (
         <Dialog
