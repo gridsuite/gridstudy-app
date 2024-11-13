@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -17,7 +17,7 @@ import {
     TEMPORARY_LIMIT_VALUE,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { FloatInput } from '@gridsuite/commons-ui';
@@ -25,14 +25,6 @@ import { AmpereAdornment } from 'components/dialogs/dialog-utils';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
-import GridSection from '../commons/grid-section';
-import GridItem from '../commons/grid-item';
-
-const styles = {
-    h3: {
-        marginTop: 0,
-    },
-};
 
 const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
     const intl = useIntl();
@@ -185,46 +177,74 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
     );
 
     return (
-        <>
-            <GridSection title="Side1" customStyle={styles.h3} />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{permanentCurrentLimit1Field}</GridItem>
+        <Grid container spacing={2}>
+            {/* titles */}
+            <Grid container item xs={12} columns={11} spacing={2}>
+                <Grid item xs={1} />
+                <Grid item xs={5}>
+                    <Box component={`h3`}>
+                        <FormattedMessage id="Side1" />
+                    </Box>
+                </Grid>
+                <Grid item xs={5}>
+                    <Box component={`h3`}>
+                        <FormattedMessage id="Side2" />
+                    </Box>
+                </Grid>
             </Grid>
-            <GridSection title="TemporaryCurrentLimitsText" heading={4} />
-            <DndTable
-                arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
-                useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
-                createRows={createLimitRows}
-                columnsDefinition={columnsDefinition}
-                tableHeight={270}
-                withLeftButtons={false}
-                withAddRowsDialog={false}
-                previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                disableTableCell={disableTableCell}
-                getPreviousValue={getTemporaryLimitPreviousValue}
-                isValueModified={isTemporaryLimitModified}
-            />
-            <GridSection title="Side2" />
-            <Grid container spacing={2}>
-                <GridItem size={4}>{permanentCurrentLimit2Field}</GridItem>
+            {/* active limit set */}
+            <Grid container item xs={12} columns={11} spacing={2}>
+                <Grid item xs={1} />
+                <Grid item xs={5}>
+                    [TODO]
+                </Grid>
+                <Grid item xs={5}>
+                    [TODO]
+                </Grid>
             </Grid>
-            <GridSection title="TemporaryCurrentLimitsText" heading={4} />
-            <Grid container spacing={2}>
-                <DndTable
-                    arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
-                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
-                    createRows={createLimitRows}
-                    columnsDefinition={columnsDefinition}
-                    tableHeight={270}
-                    withLeftButtons={false}
-                    withAddRowsDialog={false}
-                    previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                    disableTableCell={disableTableCell}
-                    getPreviousValue={getTemporaryLimitPreviousValue}
-                    isValueModified={isTemporaryLimitModified}
-                />
+            {/* limits */}
+            <Grid container item xs={12} columns={11} spacing={2}>
+                <Grid item xs={1}>
+                    [TODO Limit sets]
+                </Grid>
+                <Grid item xs={5}>
+                    {permanentCurrentLimit1Field}
+                    <Box component={`h4`}>
+                        <FormattedMessage id="TemporaryCurrentLimitsText" />
+                    </Box>
+                    <DndTable
+                        arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
+                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
+                        createRows={createLimitRows}
+                        columnsDefinition={columnsDefinition}
+                        withLeftButtons={false}
+                        withAddRowsDialog={false}
+                        previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
+                        disableTableCell={disableTableCell}
+                        getPreviousValue={getTemporaryLimitPreviousValue}
+                        isValueModified={isTemporaryLimitModified}
+                    />
+                </Grid>
+                <Grid item xs={5}>
+                    {permanentCurrentLimit2Field}
+                    <Box component={`h4`}>
+                        <FormattedMessage id="TemporaryCurrentLimitsText" />
+                    </Box>
+                    <DndTable
+                        arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
+                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
+                        createRows={createLimitRows}
+                        columnsDefinition={columnsDefinition}
+                        withLeftButtons={false}
+                        withAddRowsDialog={false}
+                        previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
+                        disableTableCell={disableTableCell}
+                        getPreviousValue={getTemporaryLimitPreviousValue}
+                        isValueModified={isTemporaryLimitModified}
+                    />
+                </Grid>
             </Grid>
-        </>
+        </Grid>
     );
 };
 
