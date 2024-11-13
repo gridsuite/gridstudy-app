@@ -239,7 +239,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
-                            nadMetadata: JSON.parse(svg.metadata as string) as DiagramMetadata,
+                            nadMetadata: svg.metadata as DiagramMetadata,
                             ...svg,
                         };
                     });
