@@ -19,6 +19,7 @@ import DiagramHeader from '../diagram-header';
 import { fetchSvg } from '../../../services/study';
 import { mergeSx } from '../../utils/functions';
 import { AppState } from 'redux/reducer';
+import { SLDMetadata } from '@powsybl/network-viewer';
 
 interface PositionDiagramProps {
     diagramTitle: string;
@@ -108,7 +109,7 @@ const PositionDiagram = forwardRef((props: PositionDiagramProps, ref: Ref<HTMLDi
             const sldViewer = new SingleLineDiagramViewer(
                 container, //container
                 svg.svg, //svgContent
-                svg.metadata, //svg metadata
+                svg.metadata as SLDMetadata, //svg metadata
                 svgType,
                 0,
                 0,
