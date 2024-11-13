@@ -157,23 +157,27 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
     );
 
     const permanentCurrentLimit1Field = (
-        <FloatInput
-            name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
-            label="PermanentCurrentLimitText"
-            adornment={AmpereAdornment}
-            previousValue={equipmentToModify?.currentLimits1?.permanentLimit}
-            clearable={clearableFields}
-        />
+        <Box sx={{ maxWidth: 200 }}>
+            <FloatInput
+                name={`${id}.${CURRENT_LIMITS_1}.${PERMANENT_LIMIT}`}
+                label="PermanentCurrentLimitText"
+                adornment={AmpereAdornment}
+                previousValue={equipmentToModify?.currentLimits1?.permanentLimit}
+                clearable={clearableFields}
+            />
+        </Box>
     );
 
     const permanentCurrentLimit2Field = (
-        <FloatInput
-            name={`${id}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
-            label="PermanentCurrentLimitText"
-            adornment={AmpereAdornment}
-            previousValue={equipmentToModify?.currentLimits2?.permanentLimit}
-            clearable={clearableFields}
-        />
+        <Box sx={{ maxWidth: 200 }}>
+            <FloatInput
+                name={`${id}.${CURRENT_LIMITS_2}.${PERMANENT_LIMIT}`}
+                label="PermanentCurrentLimitText"
+                adornment={AmpereAdornment}
+                previousValue={equipmentToModify?.currentLimits2?.permanentLimit}
+                clearable={clearableFields}
+            />
+        </Box>
     );
 
     return (
