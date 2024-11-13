@@ -37,6 +37,10 @@ const errors_locale_fr = {
         "Une erreur est survenue lors de la récupération du fournisseur courant d'analyse de sensibilité",
     fetchSensitivityAnalysisProvidersError:
         "Une erreur est survenue lors de la récupération des fournisseurs d'analyse de sensibilité",
+    fetchDynamicSimulationParametersError:
+        'Une erreur est survenue lors de la récupération des paramètres de la simulation dynamique',
+    fetchDynamicSimulationProvidersError:
+        'Une erreur est survenue lors de la récupération des fournisseurs de la simulation dynamique',
     updateLoadFlowParametersError:
         'Une erreur est survenue lors de la mise à jour des paramètres de calcul de répartition',
     updateLoadFlowProviderError:

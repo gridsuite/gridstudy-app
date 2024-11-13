@@ -23,6 +23,8 @@ const errors_locale_en = {
     fetchSensitivityAnalysisParametersError: 'An error occured when fetching the sensitivity analysis parameters',
     fetchSensitivityAnalysisProviderError: 'An error occured when fetching sensitivity analysis provider',
     fetchSensitivityAnalysisProvidersError: 'An error occured when fetching sensitivity analysis provider list',
+    fetchDynamicSimulationParametersError: 'An error occured when fetching the dynamic simulation parameters',
+    fetchDynamicSimulationProvidersError: 'An error occured when fetching dynamic simulation provider list',
     updateLoadFlowParametersError: 'An error occurred while updating the load flow parameters',
     updateLoadFlowProviderError: 'An error occurred while updating the load flow provider',
     updateSecurityAnalysisParametersError: 'An error occurred while updating the security analysis parameters',

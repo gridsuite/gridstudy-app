@@ -21,4 +21,28 @@ export const isValidComputingType = (value: string | undefined): boolean => {
     return Object.values(ComputingType).includes(value as ComputingType);
 };
 
+export const formatComputingTypeLabel = (type: ComputingType): string | undefined => {
+    switch (type) {
+        case ComputingType.LOAD_FLOW:
+            return 'LoadFlow';
+        case ComputingType.SECURITY_ANALYSIS:
+            return 'SecurityAnalysis';
+        case ComputingType.SENSITIVITY_ANALYSIS:
+            return 'SensitivityAnalysis';
+        case ComputingType.NON_EVACUATED_ENERGY_ANALYSIS:
+            return 'NonEvacuatedEnergy';
+        case ComputingType.SHORT_CIRCUIT:
+            return 'ShortCircuit';
+        case ComputingType.VOLTAGE_INITIALIZATION:
+            return 'VoltageInit';
+        case ComputingType.DYNAMIC_SIMULATION:
+            return 'DynamicSimulation';
+        case ComputingType.STATE_ESTIMATION:
+            return 'StateEstimation';
+        default:
+            console.warn(`Unrecognized computing type while formatting its label : ${type}`);
+            return undefined;
+    }
+};
+
 export default ComputingType;
