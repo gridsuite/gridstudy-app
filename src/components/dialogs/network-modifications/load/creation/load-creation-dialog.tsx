@@ -7,15 +7,7 @@
 
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ADDITIONAL_PROPERTIES,
-    CONNECTIVITY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
@@ -184,7 +176,7 @@ export function LoadCreationDialog({
                 connectionName: sanitizeString(load.connectivity?.connectionName),
                 connectionPosition: load.connectivity?.connectionPosition ?? null,
                 terminalConnected: load.connectivity?.terminalConnected,
-                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES]),
+                properties: toModificationProperties(load),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
