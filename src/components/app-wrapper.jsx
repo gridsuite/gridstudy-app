@@ -6,48 +6,49 @@
  */
 
 import App from './app';
-import React from 'react';
 import { createTheme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import {
     LIGHT_THEME,
     CardErrorBoundary,
-    login_en,
-    login_fr,
-    report_viewer_en,
-    report_viewer_fr,
+    loginEn,
+    loginFr,
+    reportViewerEn,
+    reportViewerFr,
     SnackbarProvider,
-    top_bar_en,
-    top_bar_fr,
-    table_en,
-    table_fr,
-    element_search_fr,
-    element_search_en,
-    equipment_search_fr,
-    equipment_search_en,
-    directory_items_input_fr,
-    directory_items_input_en,
-    treeview_finder_fr,
-    treeview_finder_en,
-    card_error_boundary_en,
-    card_error_boundary_fr,
-    flat_parameters_en,
-    flat_parameters_fr,
-    multiple_selection_dialog_en,
-    multiple_selection_dialog_fr,
-    common_button_en,
-    common_button_fr,
-    equipments_en,
-    equipments_fr,
+    topBarEn,
+    topBarFr,
+    tableEn,
+    tableFr,
+    elementSearchEn,
+    elementSearchFr,
+    equipmentSearchEn,
+    equipmentSearchFr,
+    directoryItemsInputEn,
+    directoryItemsInputFr,
+    treeviewFinderEn,
+    treeviewFinderFr,
+    cardErrorBoundaryEn,
+    cardErrorBoundaryFr,
+    flatParametersEn,
+    flatParametersFr,
+    multipleSelectionDialogEn,
+    multipleSelectionDialogFr,
+    commonButtonEn,
+    commonButtonFr,
+    equipmentsEn,
+    equipmentsFr,
+    networkModificationsEn,
+    networkModificationsFr,
+    importParamsEn,
+    importParamsFr,
+    exportParamsEn,
+    exportParamsFr,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider, useSelector } from 'react-redux';
 import messages_en from '../translations/en.json';
 import messages_fr from '../translations/fr.json';
-import network_modifications_locale_en from '../translations/dynamic/network-modifications-locale-en';
-import network_modifications_locale_fr from '../translations/dynamic/network-modifications-locale-fr';
-import exportParameters_en from '../translations/external/export-parameters-en.json';
-import exportParameters_fr from '../translations/external/export-parameters-fr.json';
 import messages_plugins from '../plugins/translations';
 import aggrid_locale_en from '../translations/external/aggrid-locale-en';
 import aggrid_locale_fr from '../translations/external/aggrid-locale-fr';
@@ -67,6 +68,8 @@ import errors_locale_en from '../translations/dynamic/errors-locale-en';
 import errors_locale_fr from '../translations/dynamic/errors-locale-fr';
 import events_locale_fr from '../translations/dynamic/events-locale-fr';
 import events_locale_en from '../translations/dynamic/events-locale-en';
+import spreadsheet_locale_fr from '../translations/spreadsheet-fr';
+import spreadsheet_locale_en from '../translations/spreadsheet-en';
 import { store } from '../redux/store';
 import CssBaseline from '@mui/material/CssBaseline';
 import {
@@ -126,6 +129,9 @@ let lightTheme = createTheme({
     },
     formFiller: {
         background: '#e6e6e6',
+    },
+    searchedText: {
+        highlightColor: '#53AAFF',
     },
     [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/light-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
@@ -204,6 +210,9 @@ let darkTheme = createTheme({
     formFiller: {
         background: '#2C2C2C',
     },
+    searchedText: {
+        highlightColor: '#123FBB',
+    },
     [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/dark-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
         'https://basemaps.cartocdn.com/gl/dark-matter-nolabels-gl-style/style.json',
@@ -242,22 +251,23 @@ const getMuiTheme = (theme) => {
 
 const messages = {
     en: {
-        ...treeview_finder_en,
+        ...treeviewFinderEn,
         ...messages_en,
-        ...network_modifications_locale_en,
-        ...exportParameters_en,
-        ...report_viewer_en,
-        ...login_en,
-        ...top_bar_en,
-        ...table_en,
-        ...element_search_en,
-        ...equipment_search_en,
-        ...directory_items_input_en,
-        ...card_error_boundary_en,
-        ...flat_parameters_en,
-        ...multiple_selection_dialog_en,
-        ...common_button_en,
-        ...equipments_en,
+        ...networkModificationsEn,
+        ...exportParamsEn,
+        ...importParamsEn,
+        ...reportViewerEn,
+        ...loginEn,
+        ...topBarEn,
+        ...tableEn,
+        ...elementSearchEn,
+        ...equipmentSearchEn,
+        ...directoryItemsInputEn,
+        ...cardErrorBoundaryEn,
+        ...flatParametersEn,
+        ...multipleSelectionDialogEn,
+        ...commonButtonEn,
+        ...equipmentsEn,
         ...aggrid_locale_en,
         ...backend_locale_en,
         ...dynamic_mapping_models_en,
@@ -267,25 +277,27 @@ const messages = {
         ...table_locale_en,
         ...errors_locale_en,
         ...events_locale_en,
+        ...spreadsheet_locale_en,
         ...messages_plugins.en, // keep it at the end to allow translation overwriting
     },
     fr: {
-        ...treeview_finder_fr,
+        ...treeviewFinderFr,
         ...messages_fr,
-        ...network_modifications_locale_fr,
-        ...exportParameters_fr,
-        ...report_viewer_fr,
-        ...login_fr,
-        ...top_bar_fr,
-        ...table_fr,
-        ...element_search_fr,
-        ...equipment_search_fr,
-        ...directory_items_input_fr,
-        ...card_error_boundary_fr,
-        ...flat_parameters_fr,
-        ...multiple_selection_dialog_fr,
-        ...common_button_fr,
-        ...equipments_fr,
+        ...networkModificationsFr,
+        ...exportParamsFr,
+        ...importParamsFr,
+        ...reportViewerFr,
+        ...loginFr,
+        ...topBarFr,
+        ...tableFr,
+        ...elementSearchFr,
+        ...equipmentSearchFr,
+        ...directoryItemsInputFr,
+        ...cardErrorBoundaryFr,
+        ...flatParametersFr,
+        ...multipleSelectionDialogFr,
+        ...commonButtonFr,
+        ...equipmentsFr,
         ...aggrid_locale_fr,
         ...backend_locale_fr,
         ...dynamic_mapping_models_fr,
@@ -295,6 +307,7 @@ const messages = {
         ...table_locale_fr,
         ...errors_locale_fr,
         ...events_locale_fr,
+        ...spreadsheet_locale_fr,
         ...messages_plugins.fr, // keep it at the end to allow translation overwriting
     },
 };

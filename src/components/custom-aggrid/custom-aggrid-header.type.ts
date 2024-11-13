@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FilterEnumsType, FilterPropsType } from '../../hooks/use-aggrid-row-filter';
 import { ColDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
@@ -24,11 +23,16 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
-    LESS_THAN = 'lessThan',
-    GREATER_THAN = 'greaterThan',
 }
 
-type FilterParams = {
+export type FilterEnumsType = Record<string, string[] | null>;
+
+export type FilterPropsType = {
+    updateFilter: (field: string, value: FilterDataType) => void;
+    filterSelector: FilterSelectorType[] | null;
+};
+
+export type FilterParams = {
     filterDataType?: string;
     isDuration?: boolean;
     filterComparators?: string[];
@@ -44,6 +48,7 @@ export interface CustomColDef extends ColDef {
     filterTab?: string[];
     getEnumLabel?: (value: string) => string;
     isCountry?: boolean;
+    shouldDisplayFilterBadge?: boolean;
 }
 
 export type FilterDataType = {

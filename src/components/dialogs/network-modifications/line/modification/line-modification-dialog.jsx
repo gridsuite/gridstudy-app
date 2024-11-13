@@ -5,19 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
     B1,
     B2,
+    BUS_OR_BUSBAR_SECTION,
     CHARACTERISTICS,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
+    CONNECTIVITY_1,
+    CONNECTIVITY_2,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     EQUIPMENT_NAME,
     G1,
     G2,
+    ID,
     LIMITS,
     PERMANENT_LIMIT,
     R,
@@ -25,10 +34,11 @@ import {
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
+    VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -65,10 +75,17 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import {
+    createConnectivityData,
+    getCon1andCon2WithPositionValidationSchema,
+    getConnectivityFormData,
+    getCont1Cont2WithPositionEmptyFormData,
+} from '../../../connectivity/connectivity-form-utils';
 
-export const LineCreationDialogTab = {
-    CHARACTERISTICS_TAB: 0,
-    LIMITS_TAB: 1,
+export const LineModificationDialogTab = {
+    CONNECTIVITY_TAB: 0,
+    CHARACTERISTICS_TAB: 1,
+    LIMITS_TAB: 2,
 };
 
 /**
@@ -98,12 +115,13 @@ const LineModificationDialog = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [lineToModify, setLineToModify] = useState(null);
-    const [tabIndex, setTabIndex] = useState(LineCreationDialogTab.CHARACTERISTICS_TAB);
+    const [tabIndex, setTabIndex] = useState(LineModificationDialogTab.CONNECTIVITY_TAB);
     const [isOpenLineTypesCatalogDialog, setOpenLineTypesCatalogDialog] = useState(false);
 
     const emptyFormData = useMemo(
         () => ({
             [EQUIPMENT_NAME]: '',
+            ...getCont1Cont2WithPositionEmptyFormData(true),
             ...getCharacteristicsEmptyFormData(CHARACTERISTICS, displayConnectivity),
             ...getLimitsEmptyFormData(),
             ...emptyProperties,
@@ -115,6 +133,7 @@ const LineModificationDialog = ({
         .object()
         .shape({
             [EQUIPMENT_NAME]: yup.string(),
+            ...getCon1andCon2WithPositionValidationSchema(true),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity, true),
             ...getLimitsValidationSchema(),
         })
@@ -135,6 +154,10 @@ const LineModificationDialog = ({
             }
             reset({
                 [EQUIPMENT_NAME]: line.equipmentName?.value ?? '',
+                [CONNECTIVITY]: {
+                    ...getConnectivityFormData(createConnectivityData(line, 1), CONNECTIVITY_1),
+                    ...getConnectivityFormData(createConnectivityData(line, 2), CONNECTIVITY_2),
+                },
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
@@ -181,6 +204,8 @@ const LineModificationDialog = ({
 
     const onSubmit = useCallback(
         (line) => {
+            const connectivity1 = line[CONNECTIVITY]?.[CONNECTIVITY_1];
+            const connectivity2 = line[CONNECTIVITY]?.[CONNECTIVITY_2];
             const characteristics = line[CHARACTERISTICS];
             const limits = line[LIMITS];
             const temporaryLimits1 = addModificationTypeToTemporaryLimits(
@@ -223,6 +248,18 @@ const LineModificationDialog = ({
                 microUnitToUnit(characteristics[B2]),
                 currentLimits1,
                 currentLimits2,
+                connectivity1[VOLTAGE_LEVEL]?.id,
+                connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
+                connectivity2[VOLTAGE_LEVEL]?.id,
+                connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
+                sanitizeString(connectivity1[CONNECTION_NAME]),
+                sanitizeString(connectivity2[CONNECTION_NAME]),
+                connectivity1[CONNECTION_DIRECTION],
+                connectivity2[CONNECTION_DIRECTION],
+                connectivity1[CONNECTION_POSITION],
+                connectivity2[CONNECTION_POSITION],
+                connectivity1[CONNECTED],
+                connectivity2[CONNECTED],
                 !!editData,
                 editData?.uuid,
                 toModificationProperties(line)
@@ -240,6 +277,13 @@ const LineModificationDialog = ({
         reset(emptyFormData);
     }, [emptyFormData, reset]);
 
+    const setConnectivityValue = useCallback(
+        (index, field, value) => {
+            setValue(`${CONNECTIVITY}.${index}.${field}.${ID}`, value);
+        },
+        [setValue]
+    );
+
     const onEquipmentIdChange = useCallback(
         (equipmentId) => {
             if (equipmentId) {
@@ -255,6 +299,10 @@ const LineModificationDialog = ({
                     .then((line) => {
                         if (line) {
                             setLineToModify(line);
+                            setConnectivityValue(CONNECTIVITY_1, VOLTAGE_LEVEL, line?.voltageLevelId1);
+                            setConnectivityValue(CONNECTIVITY_2, VOLTAGE_LEVEL, line?.voltageLevelId2);
+                            setConnectivityValue(CONNECTIVITY_1, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId1);
+                            setConnectivityValue(CONNECTIVITY_2, BUS_OR_BUSBAR_SECTION, line?.busOrBusbarSectionId2);
                             if (editData?.equipmentId !== selectedId) {
                                 reset((formValues) => ({
                                     ...formValues,
@@ -284,7 +332,7 @@ const LineModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData, getValues]
+        [studyUuid, currentNodeUuid, selectedId, editData, reset, emptyFormData, getValues, setConnectivityValue]
     );
 
     useEffect(() => {
@@ -296,10 +344,13 @@ const LineModificationDialog = ({
     const onValidationError = (errors) => {
         let tabsInError = [];
         if (errors?.[LIMITS] !== undefined) {
-            tabsInError.push(LineCreationDialogTab.LIMITS_TAB);
+            tabsInError.push(LineModificationDialogTab.LIMITS_TAB);
         }
         if (errors?.[CHARACTERISTICS] !== undefined) {
-            tabsInError.push(LineCreationDialogTab.CHARACTERISTICS_TAB);
+            tabsInError.push(LineModificationDialogTab.CHARACTERISTICS_TAB);
+        }
+        if (errors?.[CONNECTIVITY] !== undefined) {
+            tabsInError.push(LineModificationDialogTab.CONNECTIVITY_TAB);
         }
 
         if (tabsInError.length > 0) {

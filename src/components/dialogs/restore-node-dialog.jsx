@@ -4,19 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, DialogContentText } from '@mui/material';
+import { Button, Box, Dialog, DialogActions, DialogContent, DialogTitle, DialogContentText } from '@mui/material';
 import { deleteStashedNodes, fetchStashedNodes, restoreStashedNodes } from '../../services/study/tree-subtree';
 import LoaderWithOverlay from '../utils/loader-with-overlay';
-import { CancelButton, CheckboxList } from '@gridsuite/commons-ui';
+import { CancelButton, CheckBoxList } from '@gridsuite/commons-ui';
 import { CustomDialog } from 'components/utils/custom-dialog';
+import { toggleElementFromList } from 'components/utils/utils';
 
 /**
  * Dialog to select network modification to create
@@ -89,7 +85,7 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                     />
                 )}
                 {!isLoading && nodes && (
-                    <CheckboxList
+                    <CheckBoxList
                         items={nodes}
                         addSelectAllCheckbox
                         selectAllCheckBoxLabel={'SelectAll'}
@@ -97,6 +93,11 @@ const RestoreNodesDialog = ({ open, onClose, anchorNodeId, studyUuid }) => {
                         onSelectionChange={setSelectedNodes}
                         getItemId={(v) => v.first.id}
                         getItemLabel={(v) => v.first.name + (v.second !== 0 ? ' ( + ' + v.second + ' )' : '')}
+                        onItemClick={(node) =>
+                            setSelectedNodes((oldCheckedElements) =>
+                                toggleElementFromList(node, oldCheckedElements, (v) => v.first.id)
+                            )
+                        }
                         divider
                     />
                 )}

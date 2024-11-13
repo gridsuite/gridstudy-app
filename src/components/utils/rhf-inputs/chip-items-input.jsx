@@ -17,7 +17,7 @@ import {
     useCustomFormContext,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import React, { useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useController, useFieldArray } from 'react-hook-form';
 import { isFieldRequired } from '../utils';
 

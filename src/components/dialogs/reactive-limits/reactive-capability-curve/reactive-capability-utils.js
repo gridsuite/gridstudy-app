@@ -154,13 +154,14 @@ export const calculateCurvePointsToStore = (reactiveCapabilityCurve, equipmentTo
         const pointsToStore = [];
         reactiveCapabilityCurve.forEach((point, index) => {
             if (point) {
+                const previousPoint = equipmentToModify?.reactiveCapabilityCurveTable?.[index];
                 let pointToStore = {
                     p: point?.[P],
-                    oldP: equipmentToModify.reactiveCapabilityCurveTable?.[index]?.p ?? null,
+                    oldP: previousPoint?.p ?? null,
                     minQ: point?.minQ,
-                    oldMinQ: equipmentToModify.reactiveCapabilityCurveTable?.[index]?.minQ ?? null,
+                    oldMinQ: previousPoint?.minQ ?? null,
                     maxQ: point?.maxQ,
-                    oldMaxQ: equipmentToModify.reactiveCapabilityCurveTable?.[index]?.maxQ ?? null,
+                    oldMaxQ: previousPoint?.maxQ ?? null,
                 };
                 pointsToStore.push(pointToStore);
             }

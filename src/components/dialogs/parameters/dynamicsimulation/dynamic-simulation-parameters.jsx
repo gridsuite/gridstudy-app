@@ -9,7 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
     emptyFormData as timeDelayEmptyFormData,
     formSchema as timeDelayFormSchema,
@@ -27,7 +27,6 @@ import MappingParameters, {
     formSchema as mappingFormSchema,
     MAPPING,
 } from './mapping-parameters';
-import { LineSeparator } from '../../dialogUtils';
 import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
@@ -54,6 +53,8 @@ import { CustomFormProvider, SubmitButton } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
+import ComputingType from '../../../computing-status/computing-type';
+import LineSeparator from '../../commons/line-separator';
 
 const TAB_VALUES = {
     TIME_DELAY: 'timeDelay',
@@ -69,7 +70,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
         useParametersBackend(
             user,
-            'DynamicSimulation',
+            ComputingType.DYNAMIC_SIMULATION,
             dynamicSimulationAvailability,
             fetchDynamicSimulationProviders,
             fetchDynamicSimulationProvider,

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Grid } from '@mui/material';
 import { styles } from './parameters';
@@ -17,7 +17,6 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { LineSeparator } from '../dialogUtils';
 import {
     fetchShortCircuitParameters,
     getShortCircuitParameters,
@@ -43,15 +42,22 @@ import ShortCircuitFields from './shortcircuit/short-circuit-parameters';
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../utils/constants';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 
+import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
+import ComputingType from '../../computing-status/computing-type';
+import { isComputationParametersUpdated } from './common/computation-parameters-util';
+import LineSeparator from '../commons/line-separator';
+
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
+    const studyUpdated = useSelector((state) => state.studyUpdated);
+
     const { snackError } = useSnackMessage();
     const [shortCircuitParams, setShortCircuitParams] = useState(null);
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
-    useEffect(() => {
-        if (studyUuid && shortCircuitAvailability === OptionalServicesStatus.Up) {
+    const fetchShortCircuitParameters = useCallback(
+        (studyUuid) => {
             getShortCircuitParameters(studyUuid)
                 .then((params) => {
                     setShortCircuitParams(params);
@@ -62,8 +68,26 @@ export const useGetShortCircuitParameters = () => {
                         headerId: 'paramsRetrievingError',
                     });
                 });
+        },
+        [snackError]
+    );
+
+    useEffect(() => {
+        if (studyUuid && shortCircuitAvailability === OptionalServicesStatus.Up) {
+            fetchShortCircuitParameters(studyUuid);
         }
-    }, [shortCircuitAvailability, studyUuid, snackError]);
+    }, [shortCircuitAvailability, studyUuid, fetchShortCircuitParameters]);
+
+    // fetch the parameter if SHORT_CIRCUIT  notification type is received.
+    useEffect(() => {
+        if (
+            studyUuid &&
+            shortCircuitAvailability === OptionalServicesStatus.Up &&
+            isComputationParametersUpdated(ComputingType.SHORT_CIRCUIT, studyUpdated)
+        ) {
+            fetchShortCircuitParameters(studyUuid);
+        }
+    }, [studyUuid, shortCircuitAvailability, fetchShortCircuitParameters, studyUpdated]);
 
     return [shortCircuitParams, setShortCircuitParams];
 };
@@ -114,7 +138,6 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
     const [shortCircuitParams, setShortCircuitParams] = useShortCircuitParameters;
 
     const { snackError } = useSnackMessage();
-
     // get default values based on shortCircuitParams
     const emptyFormData = useMemo(() => {
         const { parameters, predefinedParameters } = shortCircuitParams;
@@ -147,17 +170,7 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
                 ...prepareDataToSend(shortCircuitParams, newParams),
             })
                 .then(() => {
-                    // fetch parameters and invalidate the short circuit status
-                    getShortCircuitParameters(studyUuid)
-                        .then((params) => {
-                            setShortCircuitParams(params);
-                        })
-                        .catch((error) => {
-                            snackError({
-                                messageTxt: error.message,
-                                headerId: 'paramsRetrievingError',
-                            });
-                        });
+                    // invalidate the short circuit status
 
                     invalidateShortCircuitStatus(studyUuid).catch((error) => {
                         snackError({
@@ -250,6 +263,13 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
         },
         [snackError, replaceFormValues]
     );
+    useEffect(() => {
+        if (shortCircuitParams) {
+            const { parameters, predefinedParameters } = shortCircuitParams;
+
+            reset(formatShortCircuitParameters(parameters, predefinedParameters));
+        }
+    }, [reset, shortCircuitParams]);
 
     const getCurrentValues = useCallback(() => {
         const currentValues = getValues();

@@ -7,20 +7,14 @@
 
 import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import {
-    ActivePowerAdornment,
-    filledTextField,
-    gridItem,
-    GridSection,
-    ReactivePowerAdornment,
-} from '../../../dialogUtils';
+import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
 import { getLoadTypeLabel, LOAD_TYPES } from 'components/network/constants';
-import Grid from '@mui/material/Grid';
-import React from 'react';
 import { useIntl } from 'react-intl';
-import { TextField } from '@mui/material';
+import { TextField, Grid } from '@mui/material';
 import PropertiesForm from '../../common/properties/properties-form';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form.jsx';
+import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentId }) => {
     const intl = useIntl();
@@ -100,19 +94,19 @@ const LoadModificationForm = ({ studyUuid, currentNode, loadToModify, equipmentI
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(loadIdField, 4)}
-                {gridItem(loadNameField, 4)}
-                {gridItem(loadTypeField, 4)}
+                <GridItem size={4}>{loadIdField}</GridItem>
+                <GridItem size={4}>{loadNameField}</GridItem>
+                <GridItem size={4}>{loadTypeField}</GridItem>
             </Grid>
             {/* Connectivity part */}
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                {gridItem(connectivityForm, 12)}
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
-                {gridItem(activePowerField, 4)}
-                {gridItem(reactivePowerField, 4)}
+                <GridItem size={4}>{activePowerField}</GridItem>
+                <GridItem size={4}>{reactivePowerField}</GridItem>
             </Grid>
             <PropertiesForm networkElementType={'load'} isModification={true} />
         </>

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
 import { DefaultCellRenderer, BooleanCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -27,6 +27,7 @@ import {
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
+import { FetchStatus } from '../../../../services/utils.type';
 
 export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
@@ -38,13 +39,6 @@ export const EquipmentTypeTabs = {
     SHUNT_COMPENSATOR_TAB: 4,
     BUS_TAB: 5,
 };
-
-enum FetchStatus {
-    SUCCEED = 'SUCCEED',
-    FAILED = 'FAILED',
-    IDLE = 'IDLE',
-    RUNNING = 'RUNNING',
-}
 
 interface CloseFunction {
     (): void;

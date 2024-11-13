@@ -6,7 +6,6 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { TwoWindingsTransformerModificationDialogTab } from './two-windings-transformer-modification-dialog';
 import { useWatch } from 'react-hook-form';
@@ -31,6 +30,10 @@ const TwoWindingsTransformerModificationDialogTabs = ({ tabIndex, tabIndexesWith
                     sx: getTabIndicatorStyle(tabIndexesWithError, tabIndex),
                 }}
             >
+                <Tab
+                    label={<FormattedMessage id="ConnectivityTab" />}
+                    sx={getTabStyle(tabIndexesWithError, TwoWindingsTransformerModificationDialogTab.CONNECTIVITY_TAB)}
+                />
                 <Tab
                     label={<FormattedMessage id="TwoWindingsTransformerCharacteristicsTab" />}
                     sx={getTabStyle(

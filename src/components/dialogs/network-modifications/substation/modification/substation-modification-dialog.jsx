@@ -7,13 +7,13 @@
 
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import { ADDITIONAL_PROPERTIES, COUNTRY, EQUIPMENT_NAME } from 'components/utils/field-constants';
 import SubstationModificationForm from './substation-modification-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
@@ -136,16 +136,15 @@ const SubstationModificationDialog = ({
 
     const onSubmit = useCallback(
         (substation) => {
-            modifySubstation(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(substation[EQUIPMENT_NAME]),
-                substation[COUNTRY],
-                !!editData,
-                editData?.uuid,
-                toModificationProperties(substation)
-            ).catch((error) => {
+            modifySubstation({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                id: selectedId,
+                name: sanitizeString(substation[EQUIPMENT_NAME]),
+                country: substation[COUNTRY],
+                properties: toModificationProperties(substation),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'SubstationModificationError',

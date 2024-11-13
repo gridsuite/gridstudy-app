@@ -24,6 +24,7 @@ export interface SCAFeederResult {
     connectableId: string;
     current: number;
     positiveMagnitude: number;
+    side: string;
 }
 
 interface SCAShortCircuitLimits {

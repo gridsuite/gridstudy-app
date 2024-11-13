@@ -4,10 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
-import { CustomFormProvider, Equipment, EquipmentType, fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import {
+    CustomFormProvider,
+    Equipment,
+    EquipmentType,
+    fetchDirectoryElementPath,
+    Identifiable,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -32,6 +38,7 @@ import {
     SelectionCreationPanelFormSchema,
     getSelectionCreationSchema,
 } from './selection-creation-schema';
+import { VoltageLevel } from '../../utils/equipment-types';
 
 type SelectionCreationPanelProps = {
     getEquipments: (equipmentType: EquipmentType) => Equipment[];
@@ -48,6 +55,10 @@ const emptyFormData = {
 };
 
 const formSchema = getSelectionCreationSchema();
+
+function isVoltageLevel(obj: Identifiable): obj is VoltageLevel {
+    return (obj as VoltageLevel).nominalV !== undefined;
+}
 
 const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
     getEquipments,
@@ -94,7 +105,14 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
             dispatch(
                 openNadList(
                     selectedSubstationsWithVl
-                        .flatMap((selectedSubstation) => selectedSubstation.voltageLevels?.map((vl) => vl.id))
+                        .flatMap((selectedSubstation) =>
+                            selectedSubstation.voltageLevels
+                                ?.filter(
+                                    (vl): vl is VoltageLevel =>
+                                        isVoltageLevel(vl) && nominalVoltages.includes(vl.nominalV)
+                                )
+                                .map((vl) => vl.id)
+                        )
                         .filter((id): id is string => !!id)
                 )
             );

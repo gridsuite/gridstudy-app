@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useState } from 'react';
-import Paper from '@mui/material/Paper';
+import { useState } from 'react';
+import { Box, Paper } from '@mui/material';
 import PropTypes from 'prop-types';
 import { ReportViewerTab } from './report-viewer-tab';
 import { ResultViewTab } from './result-view-tab';
@@ -14,7 +14,6 @@ import TabPanelLazy from './results/common/tab-panel-lazy';
 import { DiagramType, useDiagram } from './diagrams/diagram-common';
 import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
-import { Box } from '@mui/system';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
 
@@ -101,7 +100,6 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
                         disabled={disabled}
-                        visible={props.view === StudyView.SPREADSHEET}
                     />
                 </Paper>
             </TabPanelLazy>

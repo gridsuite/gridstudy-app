@@ -25,9 +25,9 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
@@ -47,7 +47,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -180,24 +180,23 @@ const LoadModificationDialog = ({
 
     const onSubmit = useCallback(
         (load) => {
-            modifyLoad(
-                studyUuid,
-                currentNodeUuid,
-                selectedId,
-                sanitizeString(load?.equipmentName),
-                load?.loadType,
-                load?.p0,
-                load?.q0,
-                load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
-                load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
-                load[CONNECTIVITY]?.[CONNECTION_POSITION],
-                load[CONNECTIVITY]?.[CONNECTED],
-                !!editData,
-                editData ? editData.uuid : undefined,
-                toModificationProperties(load)
-            ).catch((error) => {
+            modifyLoad({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
+                id: selectedId,
+                name: sanitizeString(load?.equipmentName),
+                loadType: load?.loadType,
+                p0: load?.p0,
+                q0: load?.q0,
+                voltageLevelId: load[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                busOrBusbarSectionId: load[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                connectionName: sanitizeString(load[CONNECTIVITY]?.[CONNECTION_NAME]),
+                connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
+                connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
+                terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
+                properties: toModificationProperties(load),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LoadModificationError',

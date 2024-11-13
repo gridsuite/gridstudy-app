@@ -5,13 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { EQUIPMENT_NAME } from 'components/utils/field-constants';
-import { Box, Grid } from '@mui/material';
-import { filledTextField, gridItem } from 'components/dialogs/dialogUtils';
+import { Box, Grid, TextField } from '@mui/material';
+import { filledTextField } from 'components/dialogs/dialog-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { TextInput } from '@gridsuite/commons-ui';
-import { TextField } from '@mui/material';
+import GridItem from '../../../commons/grid-item';
 
 const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIndex, setTabIndex, equipmentId }) => {
     const lineIdField = (
@@ -48,13 +47,14 @@ const LineModificationDialogHeader = ({ lineToModify, tabIndexesWithError, tabIn
                 }}
             >
                 <Grid container spacing={2}>
-                    {gridItem(lineIdField, 4)}
-                    {gridItem(lineNameField, 4)}
+                    <GridItem size={4}>{lineIdField}</GridItem>
+                    <GridItem size={4}>{lineNameField}</GridItem>
                 </Grid>
                 <LineDialogTabs
                     tabIndex={tabIndex}
                     tabIndexesWithError={tabIndexesWithError}
                     setTabIndex={setTabIndex}
+                    isModification={true}
                 />
             </Box>
         </>

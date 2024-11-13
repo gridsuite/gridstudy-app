@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
 import {
@@ -33,7 +33,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
@@ -104,8 +104,8 @@ const formSchema = yup
                 is: (lowShortCircuitCurrentLimit) => lowShortCircuitCurrentLimit != null,
                 then: (schema) => schema.required(),
             }),
-        [BUS_BAR_COUNT]: yup.number().min(1).nullable().required(),
-        [SECTION_COUNT]: yup.number().min(1).nullable().required(),
+        [BUS_BAR_COUNT]: yup.number().min(1, 'BusBarCountMustBeGreaterThanOrEqualToOne').nullable().required(),
+        [SECTION_COUNT]: yup.number().min(1, 'SectionCountMustBeGreaterThanOrEqualToOne').nullable().required(),
         [SWITCHES_BETWEEN_SECTIONS]: yup
             .string()
             .nullable()
@@ -207,8 +207,8 @@ const VoltageLevelCreationDialog = ({
     const onSubmit = useCallback(
         (voltageLevel) => {
             onCreateVoltageLevel({
-                studyUuid,
-                currentNodeUuid,
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: voltageLevel[SUBSTATION_ID],
