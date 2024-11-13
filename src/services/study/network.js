@@ -44,27 +44,29 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
-export function fetchBusesForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
+export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
     console.info(
-        `Fetching buses of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
-    const fetchBusesUrl =
+    const fetchSubstationIdUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
-        '/buses' +
+        '/substation-id' +
         '?' +
         urlSearchParams.toString();
-    console.debug(fetchBusesUrl);
-    return backendFetchJson(fetchBusesUrl);
+
+    console.debug(fetchSubstationIdUrl);
+
+    return backendFetchText(fetchSubstationIdUrl);
 }
 
-export function fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
+export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
     console.info(
-        `Fetching busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching buses or busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
@@ -73,7 +75,7 @@ export function fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, v
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
-        '/busbar-sections' +
+        '/buses-or-busbar-sections' +
         '?' +
         urlSearchParams.toString();
 

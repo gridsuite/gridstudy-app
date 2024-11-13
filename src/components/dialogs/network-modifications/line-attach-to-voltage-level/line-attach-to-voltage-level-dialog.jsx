@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ATTACHMENT_LINE_ID,
@@ -35,7 +35,6 @@ import {
     getNewVoltageLevelData,
 } from '../../connectivity/connectivity-form-utils';
 import LineAttachToVoltageLevelForm from './line-attach-to-voltage-level-form';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import {
     getLineToAttachOrSplitEmptyFormData,
     getLineToAttachOrSplitFormData,
