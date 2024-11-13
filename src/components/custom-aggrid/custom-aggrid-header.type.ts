@@ -39,7 +39,7 @@ export type FilterParams = {
     filterComparators?: string[];
     debounceMs?: number;
     filterEnums?: FilterEnumsType;
-    filterOptions?: any; // TODO
+    filterOptions?: any;
 };
 
 export type FilterDataType = {

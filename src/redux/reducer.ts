@@ -219,12 +219,8 @@ import {
     type GenericTablesNames,
     type GenericTablesNamesIndexes,
     TABLES_COLUMNS_NAMES,
-    TABLES_COLUMNS_NAMES_JSON,
-    TABLES_DEFINITION_INDEXES,
-    TABLES_DEFINITION_TYPES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
-    TABLES_NAMES_INDEXES,
     type TablesDefinitionsNames,
     type TablesDefinitionsType,
 } from '../components/spreadsheet/config/config-tables';
@@ -594,14 +590,16 @@ interface TablesState {
     allCustomColumnsDefinitions: Record<TypeOfArrayElement<GenericTablesNames>, CustomEntry>;
 }
 
+const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
+const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
     definitions: TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>,
     columnsNames: TABLES_COLUMNS_NAMES,
-    columnsNamesJson: TABLES_COLUMNS_NAMES_JSON,
+    columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
     names: TABLES_NAMES,
-    namesIndexes: TABLES_NAMES_INDEXES,
-    definitionTypes: TABLES_DEFINITION_TYPES as WritableDeep<typeof TABLES_DEFINITION_TYPES>,
-    definitionIndexes: TABLES_DEFINITION_INDEXES as WritableDeep<typeof TABLES_DEFINITION_INDEXES>,
+    namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
+    definitionTypes: TableDefinitionTypes as WritableDeep<typeof TableDefinitionTypes>,
+    definitionIndexes: TableDefinitionIndexes as WritableDeep<typeof TableDefinitionIndexes>,
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
         (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as Record<TablesDefinitionsNames, CustomEntry>

@@ -45,11 +45,6 @@ export interface EquipmentTableEnumEditorProps<TData = any, TContext = any>
     enumOptions: EnumOption[];
 }
 
-enum BooleanNumberValue {
-    TRUE = 1,
-    FALSE = 0,
-}
-
 export const GeneratorRegulatingTerminalEditor = forwardRef(
     ({ gridContext, colDef, gridApi, rowData }: EquipmentTableDataEditorProps, ref) => {
         const [openGeneratorPopup, setOpenGeneratorPopup] = useState(true);
@@ -336,10 +331,10 @@ export const BooleanListField = forwardRef(
             [colDef.field, value]
         );
 
-        const validateChange = useCallback<NonNullable<SelectProps<BooleanNumberValue>['onChange']>>(
+        const validateChange = useCallback<NonNullable<SelectProps<`${boolean}`>['onChange']>>(
             (ev) => {
                 const val = ev.target.value;
-                setValue(val === BooleanNumberValue.TRUE);
+                setValue(val === 'true');
                 gridContext.dynamicValidation = deepUpdateValue(gridContext.dynamicValidation, colDef.field, val);
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
@@ -347,8 +342,8 @@ export const BooleanListField = forwardRef(
         );
 
         return (
-            <Select<BooleanNumberValue>
-                value={value ? BooleanNumberValue.TRUE : BooleanNumberValue.FALSE}
+            <Select<`${boolean}`>
+                value={`${value}`}
                 onChange={validateChange}
                 size={'medium'}
                 margin={'none'}
@@ -356,10 +351,10 @@ export const BooleanListField = forwardRef(
                 variant={'outlined'}
                 autoFocus
             >
-                <MenuItem value={BooleanNumberValue.TRUE} key={colDef.field + '_1'}>
+                <MenuItem value="true" key={colDef.field + '_1'}>
                     <em>{intl.formatMessage({ id: 'true' })}</em>
                 </MenuItem>
-                <MenuItem value={BooleanNumberValue.FALSE} key={colDef.field + '_0'}>
+                <MenuItem value="false" key={colDef.field + '_0'}>
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
             </Select>
