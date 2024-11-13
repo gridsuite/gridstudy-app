@@ -196,7 +196,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
 
-    const [columnData, setColumnData] = useState<ColDef[]>([]);
+    const [columnData, setColumnData] = useState<CustomColDef[]>([]);
     const [customColumnData, setCustomColumnData] = useState<CustomColDef[]>([]);
     const [mergedColumnData, setMergedColumnData] = useState<ColDef[]>([]);
     const { createCustomColumn } = useCustomColumn(tabIndex);
@@ -238,32 +238,29 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const currentColumns = useCallback(() => {
-        const equipment: any = tablesDefinitionIndexes.get(tabIndex);
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.columns : [];
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const currentTabName = useCallback(() => {
-        const equipment: any = tablesDefinitionIndexes.get(tabIndex);
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.name : '';
     }, [tabIndex, tablesDefinitionIndexes]);
 
-    const currentCleanedType = useCallback(() => {
-        const equipment: any = tablesDefinitionIndexes.get(tabIndex);
-        // when a new spreadsheet is created tabIndex is added to type for now
-        // to avoid conflicts with existing tables for sorting and filtering
-        // we need to remove it to get the correct type
-        return equipment ? equipment.type.replace(/\d/g, '') : EQUIPMENT_TYPES.SUBSTATION;
+    const currentTabType = useCallback(() => {
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
+        return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
     }, [tabIndex, tablesDefinitionIndexes]);
 
     const isEditColumnVisible = useCallback(() => {
         return (
             !disabled &&
-            currentCleanedType() &&
+            currentTabType() &&
             currentColumns()
-                .filter((c: any) => c.editable)
-                .filter((c: any) => selectedColumnsNames.has(c.id)).length > 0
+                .filter((c) => c.editable)
+                .filter((c) => selectedColumnsNames.has(c.id)).length > 0
         );
-    }, [disabled, selectedColumnsNames, currentCleanedType, currentColumns]);
+    }, [disabled, selectedColumnsNames, currentTabType, currentColumns]);
 
     const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
 
@@ -275,10 +272,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const equipmentDefinition = useMemo(
         () => ({
-            type: currentCleanedType(),
+            type: currentTabType(),
             fetchers: tablesDefinitionIndexes.get(tabIndex)?.fetchers,
         }),
-        [currentCleanedType, tablesDefinitionIndexes, tabIndex]
+        [currentTabType, tablesDefinitionIndexes, tabIndex]
     );
 
     const formatFetchedEquipmentHandler = useCallback(
@@ -303,7 +300,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
     const getEnumFilterColumns = useCallback(() => {
-        return currentColumns().filter((c: any) => c.isEnum);
+        return currentColumns().filter((c) => c.isEnum);
     }, [currentColumns]);
 
     const generateEquipmentsFilterEnums = useCallback(() => {
@@ -311,8 +308,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             return {};
         }
         const filterEnums: any = {};
-        getEnumFilterColumns().forEach((column: any) => {
-            filterEnums[column.field] = [
+        getEnumFilterColumns().forEach((column) => {
+            filterEnums[column.field ?? ''] = [
                 ...new Set(
                     equipments
                         .map((equipment: any) => deepFindValue(equipment, column.field))
@@ -326,7 +323,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
 
     const enrichColumn = useCallback(
-        (column: any) => {
+        (column: CustomColDef) => {
             const columnExtended = { ...column };
             columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
@@ -353,6 +350,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         } else if (normedValueB === undefined) {
                             return 1;
                         }
+                        return 0;
                     };
                     // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
                     columnExtended.agGridFilterParams = {
@@ -578,10 +576,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         const lockedColumnsConfig = currentColumns()
-            .filter((column: any) => lockedColumnsNames.has(column.id))
-            .map((column: any) => {
+            .filter((column) => lockedColumnsNames.has(column.id))
+            .map((column) => {
                 const s: ColumnState = {
-                    colId: column.field,
+                    colId: column.field ?? '',
                     pinned: 'left',
                 };
                 return s;
@@ -1168,10 +1166,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const addEditColumn = useCallback(
-        (equipmentType: EQUIPMENT_TYPES, columns: any[]) => {
+        (equipmentType: EQUIPMENT_TYPES, columns: CustomColDef[]) => {
             columns.unshift({
+                id: EDIT_COLUMN,
                 field: EDIT_COLUMN,
-                locked: true,
                 pinned: 'left',
                 lockPosition: 'left',
                 sortable: false,
@@ -1210,10 +1208,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const generateTableColumns = useCallback(() => {
         let selectedTableColumns = currentColumns()
-            .filter((c: any) => {
+            .filter((c) => {
                 return selectedColumnsNames.has(c.id);
             })
-            .map((column: any) => enrichColumn(column));
+            .map((column) => enrichColumn(column));
 
         function sortByIndex(a: any, b: any) {
             return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
@@ -1222,7 +1220,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         selectedTableColumns.sort(sortByIndex);
 
         if (isEditColumnVisible()) {
-            addEditColumn(currentCleanedType(), selectedTableColumns);
+            addEditColumn(currentTabType(), selectedTableColumns);
         }
         return selectedTableColumns;
     }, [
@@ -1231,7 +1229,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         isEditColumnVisible,
         reorderedTableDefinitionIndexes,
         selectedColumnsNames,
-        currentCleanedType,
+        currentTabType,
         currentColumns,
     ]);
 

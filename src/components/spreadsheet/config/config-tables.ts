@@ -47,8 +47,6 @@ export const TABLES_DEFINITIONS = [
 
 export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
 export type TablesDefinitionsNames = TablesDefinitionsType[number]['name'];
-export type TablesDefinitionsTypes = TablesDefinitionsType[number]['type'];
-export type TablesDefinitionsIndex = Exclude<keyof TablesDefinitionsType, keyof any[]>;
 
 export type GenericTablesDefinitions = SpreadsheetTabDefinition[];
 export type GenericTablesColumnsNames = Set<string>[];
