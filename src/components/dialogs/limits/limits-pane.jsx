@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid } from '@mui/material';
+import { Box, Grid, Paper } from '@mui/material';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -25,6 +25,18 @@ import { AmpereAdornment } from 'components/dialogs/dialog-utils';
 import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle.js';
+
+const styles = {
+    limitsBackground: {
+        backgroundColor: '#383838',
+        padding: 2,
+    },
+    limitsBackgroundUnselected: {
+        backgroundColor: '#1a1919',
+    },
+};
 
 const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
     const intl = useIntl();
@@ -179,6 +191,9 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             />
         </Box>
     );
+    function handleAddLimitSetButton() {
+        // TODO (cf dnd-table.jsx)
+    }
 
     return (
         <Grid container spacing={2}>
@@ -200,52 +215,63 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             <Grid container item xs={12} columns={11} spacing={2}>
                 <Grid item xs={1} />
                 <Grid item xs={5}>
-                    [TODO]
+                    <Box component={`h4`}>[TODO limit set 1 actif]</Box>
                 </Grid>
                 <Grid item xs={5}>
-                    [TODO]
+                    <Box component={`h4`}>[TODO limit set 2 actif]</Box>
                 </Grid>
             </Grid>
             {/* limits */}
-            <Grid container item xs={12} columns={11} spacing={2}>
+            <Grid container item xs={12} columns={11}>
                 <Grid item xs={1}>
-                    [TODO Limit sets]
+                    <IconButton color="primary" onClick={() => handleAddLimitSetButton()} disabled>
+                        [TODO]
+                        <AddCircleIcon />
+                    </IconButton>
+                    <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 0]</Paper>
+                    <Paper sx={styles.limitsBackground}>[TODO Limit sets]</Paper>
+                    <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 1]</Paper>
+                    <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 2]</Paper>
                 </Grid>
                 <Grid item xs={5}>
-                    {permanentCurrentLimit1Field}
-                    <Box component={`h4`}>
-                        <FormattedMessage id="TemporaryCurrentLimitsText" />
-                    </Box>
-                    <DndTable
-                        arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
-                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
-                        createRows={createLimitRows}
-                        columnsDefinition={columnsDefinition}
-                        withLeftButtons={false}
-                        withAddRowsDialog={false}
-                        previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                        disableTableCell={disableTableCell}
-                        getPreviousValue={getTemporaryLimitPreviousValue}
-                        isValueModified={isTemporaryLimitModified}
-                    />
+                    <Paper sx={styles.limitsBackground}>
+                        {permanentCurrentLimit1Field}
+                        <Box component={`h4`}>
+                            <FormattedMessage id="TemporaryCurrentLimitsText" />
+                        </Box>
+                        <DndTable
+                            arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
+                            useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
+                            createRows={createLimitRows}
+                            columnsDefinition={columnsDefinition}
+                            withLeftButtons={false}
+                            withAddRowsDialog={false}
+                            previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
+                            disableTableCell={disableTableCell}
+                            getPreviousValue={getTemporaryLimitPreviousValue}
+                            isValueModified={isTemporaryLimitModified}
+                        />
+                    </Paper>
                 </Grid>
                 <Grid item xs={5}>
-                    {permanentCurrentLimit2Field}
-                    <Box component={`h4`}>
-                        <FormattedMessage id="TemporaryCurrentLimitsText" />
-                    </Box>
-                    <DndTable
-                        arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
-                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
-                        createRows={createLimitRows}
-                        columnsDefinition={columnsDefinition}
-                        withLeftButtons={false}
-                        withAddRowsDialog={false}
-                        previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                        disableTableCell={disableTableCell}
-                        getPreviousValue={getTemporaryLimitPreviousValue}
-                        isValueModified={isTemporaryLimitModified}
-                    />
+                    <Paper sx={styles.limitsBackground}>
+                        {permanentCurrentLimit2Field}
+                        <Box component={`h4`}>
+                            <FormattedMessage id="TemporaryCurrentLimitsText" />
+                        </Box>
+                        <DndTable
+                            arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
+                            useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
+                            createRows={createLimitRows}
+                            columnsDefinition={columnsDefinition}
+                            withLeftButtons={false}
+                            withAddRowsDialog={false}
+                            previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
+                            disableTableCell={disableTableCell}
+                            getPreviousValue={getTemporaryLimitPreviousValue}
+                            isValueModified={isTemporaryLimitModified}
+                        />
+                    </Paper>
                 </Grid>
             </Grid>
         </Grid>
