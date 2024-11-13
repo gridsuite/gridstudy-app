@@ -386,7 +386,7 @@ const LineCreationDialog = ({
                 onValidationError={onValidationError}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-line"
-                maxWidth={'md'}
+                maxWidth={'xl'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
                 onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}
