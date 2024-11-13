@@ -27,6 +27,7 @@ import {
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
+import { FetchStatus } from '../../../../services/utils.type';
 
 export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 
@@ -38,13 +39,6 @@ export const EquipmentTypeTabs = {
     SHUNT_COMPENSATOR_TAB: 4,
     BUS_TAB: 5,
 };
-
-enum FetchStatus {
-    SUCCEED = 'SUCCEED',
-    FAILED = 'FAILED',
-    IDLE = 'IDLE',
-    RUNNING = 'RUNNING',
-}
 
 interface CloseFunction {
     (): void;
