@@ -296,7 +296,7 @@ export const useDiagram = () => {
 
 export interface Svg {
     svg: string | null;
-    metadata: SLDMetadata | DiagramMetadata | null;
+    metadata: SLDMetadata | string | null;
     additionalMetadata:
         | (SLDMetadata & {
               country: string;
