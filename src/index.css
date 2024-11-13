@@ -251,19 +251,6 @@ code {
         stroke-width: 2;
     }
 }
-
-  
-  @keyframes sld-overload-blink-animation {
-    0%,
-    80%,
-    100% {
-      stroke-width: 1;
-    }
-    40% {
-      stroke: #ffeb3b;
-      stroke-width: 2;
-    }
-  }
   
   @keyframes sld-overvoltage-blink-animation {
     0%,
@@ -553,7 +540,6 @@ code {
 .sld-vl0to30 {
     --sld-vl-color: #abae28;
 }
-
 
 /* Network modification tree */
 
