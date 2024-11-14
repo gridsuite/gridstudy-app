@@ -230,6 +230,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
+            id: 'subjectId',
             field: 'subjectId',
             sortProps,
             filterProps,
@@ -237,6 +238,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitNameCurrentViolation' }),
+            id: 'limitName',
             field: 'limitName',
             sortProps,
             filterProps,
@@ -245,6 +247,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CurrentViolationLimit' }),
+            id: 'limit',
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
@@ -254,6 +257,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'CurrentViolationValue' }),
+            id: 'value',
             field: 'value',
             numeric: true,
             fractionDigits: 2,
@@ -263,6 +267,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Loading' }),
+            id: 'overload',
             field: 'overload',
             numeric: true,
             fractionDigits: 2,
@@ -272,6 +277,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'actualOverloadDuration' }),
+            id: 'actualOverloadDuration',
             field: 'actualOverloadDuration',
             sortProps,
             filterProps,
@@ -283,6 +289,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'upComingOverloadDuration' }),
+            id: 'upComingOverloadDuration',
             field: 'upComingOverloadDuration',
             sortProps,
             filterProps,
@@ -301,6 +308,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'LimitSide' }),
+            id: 'side',
             field: 'side',
             sortProps,
             filterProps,
@@ -324,6 +332,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
+            id: 'subjectId',
             field: 'subjectId',
             sortProps,
             filterProps,
@@ -331,6 +340,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'ViolationType' }),
+            id: 'limitType',
             field: 'limitType',
             sortProps,
             filterProps,
@@ -344,6 +354,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'VoltageViolationLimit' }),
+            id: 'limit',
             field: 'limit',
             numeric: true,
             fractionDigits: 2,
@@ -353,6 +364,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'VoltageViolationValue' }),
+            id: 'value',
             field: 'value',
             numeric: true,
             fractionDigits: 2,
@@ -374,6 +386,7 @@ export const loadFlowResultColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'connectedComponentNum' }),
+            id: 'connectedComponentNum',
             field: 'connectedComponentNum',
             sortProps,
             filterProps,
@@ -381,6 +394,7 @@ export const loadFlowResultColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'synchronousComponentNum' }),
+            id: 'synchronousComponentNum',
             field: 'synchronousComponentNum',
             sortProps,
             filterProps,
@@ -388,6 +402,7 @@ export const loadFlowResultColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'status' }),
+            id: 'status',
             field: 'status',
             sortProps,
             filterProps,
@@ -399,6 +414,7 @@ export const loadFlowResultColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'iterationCount' }),
+            id: 'iterationCount',
             field: 'iterationCount',
             sortProps,
             filterProps,
@@ -406,6 +422,7 @@ export const loadFlowResultColumnsDefinition = (
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'slackBusId' }),
+            id: 'id',
             field: 'id',
             filterProps,
             filterParams: textFilterParams,
@@ -414,6 +431,7 @@ export const loadFlowResultColumnsDefinition = (
             headerName: intl.formatMessage({
                 id: 'slackBusActivePowerMismatch',
             }),
+            id: 'activePowerMismatch',
             field: 'activePowerMismatch',
             numeric: true,
             fractionDigits: 2,
