@@ -253,6 +253,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                             disableTableCell={disableTableCell}
                             getPreviousValue={getTemporaryLimitPreviousValue}
                             isValueModified={isTemporaryLimitModified}
+                            minRowsNumber={5}
                         />
                     </Paper>
                 </Grid>
@@ -276,6 +277,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                             disableTableCell={disableTableCell}
                             getPreviousValue={getTemporaryLimitPreviousValue}
                             isValueModified={isTemporaryLimitModified}
+                            minRowsNumber={5}
                         />
                     </Paper>
                 </Grid>

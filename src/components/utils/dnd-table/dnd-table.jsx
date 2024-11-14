@@ -139,6 +139,7 @@ const DndTable = ({
     getPreviousValue,
     isValueModified,
     disableAddingRows = false,
+    minRowsNumber = 0,
 }) => {
     const intl = useIntl();
 
@@ -151,6 +152,10 @@ const DndTable = ({
         append,
         remove,
     } = useFieldArrayOutput;
+
+    if (currentRows.length < minRowsNumber) {
+        addNewRows(minRowsNumber - currentRows.length);
+    }
 
     const [openAddRowsDialog, setOpenAddRowsDialog] = useState(false);
 
@@ -212,7 +217,8 @@ const DndTable = ({
         append(rowsToAdd);
     }
 
-    function deleteSelectedRows() { // TODO : connecter ça un bouton PAR LIGNE QUI APPARAÎT EN SURBRILLANCE
+    function deleteSelectedRows() {
+        // TODO : connecter ça un bouton PAR LIGNE QUI APPARAÎT EN SURBRILLANCE
         const currentRowsValues = getValues(arrayFormName);
 
         let rowsToDelete = [];
