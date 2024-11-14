@@ -4,9 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ColDef } from 'ag-grid-community';
+import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
+import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -38,18 +39,8 @@ export type FilterParams = {
     filterComparators?: string[];
     debounceMs?: number;
     filterEnums?: FilterEnumsType;
+    filterOptions?: any;
 };
-
-export interface CustomColDef extends ColDef {
-    filterProps?: FilterPropsType;
-    filterParams?: FilterParams;
-    sortProps?: SortPropsType;
-    agGridFilterParams?: any;
-    filterTab?: string[];
-    getEnumLabel?: (value: string) => string;
-    isCountry?: boolean;
-    shouldDisplayFilterBadge?: boolean;
-}
 
 export type FilterDataType = {
     dataType: string;
@@ -66,3 +57,31 @@ export type FilterStorePropsType = {
     filterTab: string;
     filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
+
+export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {
+    agGridFilterParams?: {
+        filterOptions: IFilterOptionDef[];
+    };
+    boolean?: boolean;
+    canBeInvalidated?: boolean;
+    changeCmd?: string;
+    columnWidth?: number;
+    crossValidation?: CrossValidationOptions;
+    customFilterParams?: {
+        filterDataType: string;
+        filterComparators?: string[];
+    };
+    filterParams?: FilterParams;
+    filterProps?: FilterPropsType;
+    filterTab?: string[];
+    fractionDigits?: number;
+    getEnumLabel?: (value: string) => string | undefined;
+    id: string;
+    isCountry?: boolean;
+    isDefaultSort?: boolean;
+    isEnum?: boolean;
+    numeric?: boolean;
+    shouldDisplayFilterBadge?: boolean;
+    sortProps?: SortPropsType;
+    withFluxConvention?: boolean;
+}

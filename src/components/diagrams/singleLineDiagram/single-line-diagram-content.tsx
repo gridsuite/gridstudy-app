@@ -23,7 +23,7 @@ import {
 import withEquipmentMenu from '../../menus/equipment-menu';
 import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu';
 import withOperatingStatusMenu from '../../menus/operating-status-menu';
-import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
+import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
@@ -187,7 +187,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const handleBreakerClick: OnBreakerCallbackType = useCallback(
-        // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-diagram-viewer/pull/106/ is merged
+        // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-network-viewer/pull/106/ is merged
         (breakerId, newSwitchState, switchElement: any) => {
             if (!modificationInProgress) {
                 setModificationInProgress(true);
@@ -204,7 +204,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const handleNextVoltageLevelClick = useCallback(
         (id: string) => {
-            // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
+            // This function is called by powsybl-network-viewer when clicking on a navigation arrow in a single line diagram.
             // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
             if (!studyUuid || !currentNode) {
                 return;

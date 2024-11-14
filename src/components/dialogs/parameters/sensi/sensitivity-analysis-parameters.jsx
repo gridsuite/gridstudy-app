@@ -107,7 +107,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
 
     const emptyFormData = useMemo(() => {
         return {
-            [PROVIDER]: null,
+            [PROVIDER]: '',
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,

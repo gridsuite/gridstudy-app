@@ -53,7 +53,7 @@ import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
-import { SLDMetadata } from '@powsybl/diagram-viewer';
+import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 
 // Returns a callback that returns a promise
 const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
@@ -239,6 +239,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                             svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                             depth: depth,
                             substationIds: substationsIds,
+                            nadMetadata: svg.metadata as DiagramMetadata,
                             ...svg,
                         };
                     });
@@ -306,6 +307,7 @@ type DiagramView = {
     align: 'left' | 'right' | 'center';
     loadingState: boolean;
     metadata?: SLDMetadata;
+    nadMetadata?: DiagramMetadata;
     svg?: string;
     country?: string;
     depth?: number;
@@ -1027,6 +1029,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                                         diagramId={diagramView.id}
                                         svg={diagramView.svg}
                                         svgType={diagramView.svgType}
+                                        svgMetadata={diagramView.nadMetadata}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
                                     />
