@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
 import { Search, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
@@ -15,7 +15,7 @@ interface QuickSearchProps {
     onSearch: (searchTerm: string) => void;
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
-    setSearchResults: (results: string[]) => void;
+    setSearchResults: (results: number[]) => void;
 }
 
 export const QuickSearch: React.FC<QuickSearchProps> = ({
@@ -67,7 +67,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             value={searchTerm}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => onChange(event.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={intl.formatMessage({ id: 'searchPlaceholder' })}
+            placeholder={intl.formatMessage({ id: 'searchPlaceholderLog' })}
             sx={{ width: '30%' }}
             InputProps={{
                 startAdornment: (

@@ -6,7 +6,6 @@
  */
 
 import { Grid, Tab, Tabs } from '@mui/material';
-import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
 import { LineCreationDialogTab } from './creation/line-creation-dialog';

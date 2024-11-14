@@ -19,14 +19,14 @@ import {
     ID,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { useIntl } from 'react-intl';
 import PositionDiagramPane from '../../diagrams/singleLineDiagram/position-diagram-pane';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 import { CONNECTION_DIRECTIONS, getConnectionDirectionLabel } from '../../network/constants';
 import { AutocompleteInput, IntegerInput, SelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
-import { fetchBusbarSectionsForVoltageLevel, fetchBusesForVoltageLevel } from '../../../services/study/network';
+import { fetchBusesOrBusbarSectionsForVoltageLevel } from 'services/study/network';
 import CheckboxNullableInput from '../../utils/rhf-inputs/boolean-nullable-input';
 import { areIdsEqual, getObjectId } from '../../utils/utils';
 import { getConnectivityBusBarSectionData, getConnectivityVoltageLevelData } from './connectivity-form-utils';
@@ -79,28 +79,11 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            const voltageLevelTopologyKind = voltageLevelOptions.find(
-                (vl) => vl.id === watchVoltageLevelId
-            )?.topologyKind;
-            switch (voltageLevelTopologyKind) {
-                case 'NODE_BREAKER':
-                    fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
-                        (busbarSections) => {
-                            setBusOrBusbarSectionOptions(busbarSections);
-                        }
-                    );
-                    break;
-
-                case 'BUS_BREAKER':
-                    fetchBusesForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then((buses) =>
-                        setBusOrBusbarSectionOptions(buses)
-                    );
-                    break;
-
-                default:
-                    setBusOrBusbarSectionOptions([]);
-                    break;
-            }
+            fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
+                (busesOrbusbarSections) => {
+                    setBusOrBusbarSectionOptions(busesOrbusbarSections);
+                }
+            );
         } else {
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);

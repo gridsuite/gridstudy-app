@@ -10,11 +10,11 @@ import { equipmentStyles, TagRenderer, TagRendererProps } from '@gridsuite/commo
 import { IconButton } from '@mui/material';
 import { GpsFixed as GpsFixedIcon, Timeline as TimelineIcon } from '@mui/icons-material';
 import { DiagramType, NETWORK_AREA_DIAGRAM_NB_MAX_VOLTAGE_LEVELS } from '../diagrams/diagram-common';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { centerOnSubstation, openDiagram } from '../../redux/actions';
-import { fetchNetworkElementInfos } from '../../services/study/network';
 import { AppState } from '../../redux/reducer';
 import { AppDispatch } from '../../redux/store';
+import { fetchSubstationIdForVoltageLevel } from 'services/study/network';
 
 interface CustomSuffixRendererProps extends TagRendererProps {
     onClose?: () => void;
@@ -42,14 +42,7 @@ export const CustomSuffixRenderer: FunctionComponent<CustomSuffixRendererProps> 
             if (element.type === EQUIPMENT_TYPES.SUBSTATION) {
                 substationIdPromise = Promise.resolve(element.id);
             } else {
-                substationIdPromise = fetchNetworkElementInfos(
-                    studyUuid,
-                    currentNode.id,
-                    EQUIPMENT_TYPES.VOLTAGE_LEVEL,
-                    EQUIPMENT_INFOS_TYPES.LIST.type,
-                    element.id,
-                    true
-                ).then((vl) => vl.substationId);
+                substationIdPromise = fetchSubstationIdForVoltageLevel(studyUuid, currentNode.id, element.id);
             }
             substationIdPromise.then((substationId) => {
                 dispatch(centerOnSubstation(substationId));

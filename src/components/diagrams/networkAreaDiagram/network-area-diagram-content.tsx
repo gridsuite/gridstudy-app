@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -16,7 +16,7 @@ import {
     styles,
     DiagramType,
 } from '../diagram-common';
-import { CSS_RULE, NetworkAreaDiagramViewer } from '@powsybl/diagram-viewer';
+import { CSS_RULE, NetworkAreaDiagramViewer, DiagramMetadata } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
@@ -56,7 +56,7 @@ function getBranchStrokeWidth(value: number) {
     return '40';
 }
 
-const dynamicCssRule: CSS_RULE[] = [
+const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
         cssDeclaration: { display: (value: number) => getValueFromThreshold(value, 2500, 'none', 'block') },
@@ -129,6 +129,7 @@ const dynamicCssRule: CSS_RULE[] = [
 type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
     readonly svg?: string;
+    readonly svgMetadata?: DiagramMetadata;
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
@@ -165,6 +166,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             const diagramViewer = new NetworkAreaDiagramViewer(
                 svgRef.current,
                 props.svg,
+                props.svgMetadata ?? null,
                 MIN_WIDTH,
                 MIN_HEIGHT,
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
@@ -174,7 +176,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 true,
                 true,
-                dynamicCssRule
+                dynamicCssRules,
+                null
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -208,6 +211,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         props.diagramId,
         props.svgType,
         props.svg,
+        props.svgMetadata,
         currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,

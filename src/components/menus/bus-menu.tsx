@@ -8,7 +8,7 @@
 import { ListItemIcon, ListItemText, Menu, Typography } from '@mui/material';
 import BoltIcon from '@mui/icons-material/Bolt';
 import { FormattedMessage } from 'react-intl';
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { isNodeBuilt, isNodeReadOnly } from 'components/graph/util/model-functions';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
@@ -17,7 +17,7 @@ import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from 'components/utils/running-status';
 import { useParameterState } from '../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
+import { convertToEquipmentType, EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../utils/equipment-types';
 import { getEventType } from '../dialogs/dynamicsimulation/event/model/event.model';
 import DynamicSimulationEventMenuItem from './dynamic-simulation/dynamic-simulation-event-menu-item';
 import { CustomMenuItem } from '../utils/custom-nested-menu';
@@ -25,7 +25,7 @@ import { useOptionalServiceStatus } from '../../hooks/use-optional-service-statu
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
 import OfflineBoltOutlinedIcon from '@mui/icons-material/OfflineBoltOutlined';
 import { tripEquipment } from '../../services/study/network-modifications';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 
 interface BusMenuProps {
@@ -33,7 +33,7 @@ interface BusMenuProps {
     handleRunShortcircuitAnalysis: (busId: string) => void;
     onOpenDynamicSimulationEventDialog: (
         equipmentId: string,
-        equipmentType: EQUIPMENT_TYPES,
+        equipmentType: EquipmentType,
         dialogTitle: string
     ) => void;
     position: [number, number];
@@ -87,7 +87,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             studyUuid,
             currentNode?.id,
             EQUIPMENT_TYPES.BUSBAR_SECTION,
-            EQUIPMENT_INFOS_TYPES.LIST.type,
+            EQUIPMENT_INFOS_TYPES.OPERATING_STATUS.type,
             busId,
             false
         ).then((value: EquipmentInfo | null) => {
@@ -111,7 +111,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
     }, [busId, onClose, handleRunShortcircuitAnalysis]);
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: EQUIPMENT_TYPES, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType, dialogTitle: string) => {
             onClose();
             onOpenDynamicSimulationEventDialog(equipmentId, equipmentType, dialogTitle);
         },
@@ -173,7 +173,7 @@ export const BusMenu: FunctionComponent<BusMenuProps> = ({
             {enableDeveloperMode && getEventType(EQUIPMENT_TYPES.BUS) && (
                 <DynamicSimulationEventMenuItem
                     equipmentId={busId}
-                    equipmentType={EQUIPMENT_TYPES.BUS}
+                    equipmentType={convertToEquipmentType(EQUIPMENT_TYPES.BUS)}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     disabled={!isNodeEditable}
                 />

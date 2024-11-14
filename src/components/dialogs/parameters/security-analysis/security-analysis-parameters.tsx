@@ -17,7 +17,6 @@ import {
 } from 'react';
 import { Box, Grid } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters';
-import { LineSeparator } from '../../dialogUtils';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
 import {
@@ -47,6 +46,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
+import LineSeparator from '../../commons/line-separator';
 export const SecurityAnalysisParameters: FunctionComponent<{
     parametersBackend: any[];
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;

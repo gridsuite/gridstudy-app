@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/system';
+import { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
 
 const styles = {
     fullHeight: {

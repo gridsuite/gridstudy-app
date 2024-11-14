@@ -8,7 +8,7 @@
 import { useIntl } from 'react-intl';
 import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import Button from '@mui/material/Button';
-import React, { FunctionComponent, useEffect } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { useValidNodeName } from './inputs/input-hooks';
 import { useSelector } from 'react-redux';
 import Alert from '@mui/material/Alert';
@@ -36,7 +36,7 @@ interface AskTextDialogProps {
 export const AskTextDialog: FunctionComponent<AskTextDialogProps> = ({ title, value, show, onValidate, onClose }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const [triggerReset, setTriggerReset] = React.useState(false);
+    const [triggerReset, setTriggerReset] = useState(false);
 
     const [nameError, nameField, isNameOK, currentValue] = useValidNodeName({
         studyUuid,
