@@ -246,6 +246,9 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                             columnsDefinition={columnsDefinition}
                             withLeftButtons={false}
                             withAddRowsDialog={false}
+                            withBottomButtons={false}
+                            withCheckboxes={false}
+                            withTopRightAddButton
                             previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
                             disableTableCell={disableTableCell}
                             getPreviousValue={getTemporaryLimitPreviousValue}
@@ -266,6 +269,9 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                             columnsDefinition={columnsDefinition}
                             withLeftButtons={false}
                             withAddRowsDialog={false}
+                            withBottomButtons={false}
+                            withCheckboxes={false}
+                            withTopRightAddButton
                             previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
                             disableTableCell={disableTableCell}
                             getPreviousValue={getTemporaryLimitPreviousValue}

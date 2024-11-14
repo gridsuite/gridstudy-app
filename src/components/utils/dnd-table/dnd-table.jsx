@@ -34,6 +34,8 @@ import { FieldErrorAlert } from '@gridsuite/commons-ui';
 import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
+import IconButton from '@mui/material/IconButton';
+import AddCircleIcon from '@mui/icons-material/AddCircle.js';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -128,7 +130,10 @@ const DndTable = ({
     disabled = false,
     withResetButton = false,
     withLeftButtons = true,
+    withBottomButtons = true,
     withAddRowsDialog = true,
+    withCheckboxes = true,
+    withTopRightAddButton = false,
     previousValues,
     disableTableCell,
     getPreviousValue,
@@ -207,7 +212,7 @@ const DndTable = ({
         append(rowsToAdd);
     }
 
-    function deleteSelectedRows() {
+    function deleteSelectedRows() { // TODO : connecter ça un bouton PAR LIGNE QUI APPARAÎT EN SURBRILLANCE
         const currentRowsValues = getValues(arrayFormName);
 
         let rowsToDelete = [];
@@ -276,14 +281,16 @@ const DndTable = ({
             <TableHead>
                 <TableRow>
                     <TableCell sx={{ width: '3%' }}>{/* empty cell for the drag and drop column */}</TableCell>
-                    <TableCell sx={{ width: '5%', textAlign: 'center' }}>
-                        <MultiCheckbox
-                            arrayFormName={arrayFormName}
-                            handleClickCheck={selectAllRows}
-                            handleClickUncheck={unselectAllRows}
-                            disabled={disabled || currentRows.length === 0}
-                        />
-                    </TableCell>
+                    {withCheckboxes && (
+                        <TableCell sx={{ width: '5%', textAlign: 'center' }}>
+                            <MultiCheckbox
+                                arrayFormName={arrayFormName}
+                                handleClickCheck={selectAllRows}
+                                handleClickUncheck={unselectAllRows}
+                                disabled={disabled || currentRows.length === 0}
+                            />
+                        </TableCell>
+                    )}
                     {columnsDefinition.map((column) => (
                         <TableCell key={column.dataKey} sx={{ width: column.width }}>
                             <Box sx={styles.columnsStyle}>
@@ -292,6 +299,17 @@ const DndTable = ({
                             </Box>
                         </TableCell>
                     ))}
+                    {withTopRightAddButton && (
+                        <span>
+                            <IconButton
+                                color="primary"
+                                onClick={handleAddRowsButton}
+                                disabled={disabled || disableAddingRows}
+                            >
+                                <AddCircleIcon />
+                            </IconButton>
+                        </span>
+                    )}
                 </TableRow>
             </TableHead>
         );
@@ -317,12 +335,14 @@ const DndTable = ({
                                         <DragIndicatorIcon />
                                     </TableCell>
                                 </Tooltip>
-                                <TableCell sx={{ textAlign: 'center' }}>
-                                    <CheckboxInput
-                                        name={`${arrayFormName}[${index}].${SELECTED}`}
-                                        formProps={{ disabled }}
-                                    />
-                                </TableCell>
+                                {withCheckboxes && (
+                                    <TableCell sx={{ textAlign: 'center' }}>
+                                        <CheckboxInput
+                                            name={`${arrayFormName}[${index}].${SELECTED}`}
+                                            formProps={{ disabled }}
+                                        />
+                                    </TableCell>
+                                )}
                                 {columnsDefinition.map((column) => renderTableCell(row.id, index, column))}
                             </TableRow>
                         )}
@@ -369,15 +389,17 @@ const DndTable = ({
                         disabled={disabled}
                     />
                 )}
-                <DndTableBottomRightButtons
-                    arrayFormName={arrayFormName}
-                    handleAddButton={handleAddRowsButton}
-                    handleDeleteButton={deleteSelectedRows}
-                    handleMoveUpButton={moveUpSelectedRows}
-                    handleMoveDownButton={moveDownSelectedRows}
-                    disableAddingRows={disableAddingRows}
-                    disabled={disabled}
-                />
+                {withBottomButtons && (
+                    <DndTableBottomRightButtons
+                        arrayFormName={arrayFormName}
+                        handleAddButton={handleAddRowsButton}
+                        handleDeleteButton={deleteSelectedRows}
+                        handleMoveUpButton={moveUpSelectedRows}
+                        handleMoveDownButton={moveDownSelectedRows}
+                        disableAddingRows={disableAddingRows}
+                        disabled={disabled}
+                    />
+                )}
             </Grid>
             <DndTableAddRowsDialog
                 open={openAddRowsDialog}
