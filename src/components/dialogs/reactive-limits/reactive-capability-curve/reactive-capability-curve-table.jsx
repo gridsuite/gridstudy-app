@@ -5,18 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Grid, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
-import { MidFormError, ErrorInput } from '@gridsuite/commons-ui';
+import { MAX_Q, MIN_Q, P } from 'components/utils/field-constants';
+import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 
-const MIN_LENGTH = 2;
 export const ReactiveCapabilityCurveTable = ({
     id,
     tableHeadersIds,
@@ -26,22 +24,15 @@ export const ReactiveCapabilityCurveTable = ({
 }) => {
     const { fields: rows, insert, remove } = useFieldArray({ name: `${id}` });
 
-    const insertRow = useCallback(
-        (index) => {
-            if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
-                updatePreviousReactiveCapabilityCurveTable(INSERT, index);
-            }
-            insert(index, {
-                [P]: null,
-                [MIN_Q]: null,
-                [MAX_Q]: null,
-            });
-        },
-        [insert, updatePreviousReactiveCapabilityCurveTable, previousValues]
-    );
-
     const handleInsertRow = () => {
-        insertRow(rows.length - 1);
+        if (previousValues && updatePreviousReactiveCapabilityCurveTable) {
+            updatePreviousReactiveCapabilityCurveTable(INSERT, rows.length - 1);
+        }
+        insert(rows.length - 1, {
+            [P]: null,
+            [MIN_Q]: null,
+            [MAX_Q]: null,
+        });
     };
 
     const handleRemoveRow = (index) => {
@@ -50,14 +41,6 @@ export const ReactiveCapabilityCurveTable = ({
         }
         remove(index);
     };
-
-    useEffect(() => {
-        if (rows?.length < MIN_LENGTH) {
-            for (let i = 0; i < MIN_LENGTH - rows.length; i++) {
-                insertRow(rows.length);
-            }
-        }
-    }, [insertRow, rows]);
 
     return (
         <Grid item container spacing={2}>

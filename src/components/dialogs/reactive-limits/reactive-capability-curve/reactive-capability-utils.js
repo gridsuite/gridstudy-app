@@ -49,12 +49,6 @@ export const getRowEmptyFormData = () => ({
     [MIN_Q]: null,
 });
 
-export const getReactiveCapabilityCurveEmptyFormData = (id = REACTIVE_CAPABILITY_CURVE_TABLE) => {
-    return {
-        [id]: [getRowEmptyFormData(), getRowEmptyFormData()],
-    };
-};
-
 function getNotNullPFromArray(values, isEquipmentModification) {
     return values
         .map((element) => {
@@ -123,18 +117,24 @@ export const getReactiveCapabilityCurveValidationSchema = (
         }),
 });
 
-export const completeReactiveCapabilityCurvePointsData = (reactiveCapabilityCurvePoints) => {
-    reactiveCapabilityCurvePoints.map((rcc) => {
-        if (!(P in rcc)) {
-            rcc[P] = null;
+export const completeReactiveCapabilityCurvePointsData = (
+    reactiveCapabilityCurvePoints,
+    currentReactiveCapabilityCurveTable
+) => {
+    reactiveCapabilityCurvePoints.forEach((point) => {
+        const position = point.position - 1; // Adjust for 0-based index
+        if (position >= 0 && position < currentReactiveCapabilityCurveTable.length) {
+            currentReactiveCapabilityCurveTable[position] = {
+                p: point.p,
+                maxQ: point.maxQ,
+                minQ: point.minQ,
+            };
         }
-        if (!(MAX_Q in rcc)) {
-            rcc[MAX_Q] = null;
-        }
-        if (!(MIN_Q in rcc)) {
-            rcc[MIN_Q] = null;
-        }
-        return rcc;
+    });
+    reactiveCapabilityCurvePoints.forEach((point) => {
+        point.P = point.P ?? null;
+        point.MAX_Q = point.MAX_Q ?? null;
+        point.MIN_Q = point.MIN_Q ?? null;
     });
     return reactiveCapabilityCurvePoints;
 };
@@ -156,6 +156,7 @@ export const calculateCurvePointsToStore = (reactiveCapabilityCurve, equipmentTo
             if (point) {
                 const previousPoint = equipmentToModify?.reactiveCapabilityCurveTable?.[index];
                 let pointToStore = {
+                    position: index + 1,
                     p: point?.[P],
                     oldP: previousPoint?.p ?? null,
                     minQ: point?.minQ,
