@@ -7,8 +7,6 @@
 
 export type SeverityLevel = 'UNKNOWN' | 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
 
-export type SeverityFilter = Record<SeverityLevel, boolean>;
-
 export type ReportSeverity = {
     name: SeverityLevel;
     level: number;
