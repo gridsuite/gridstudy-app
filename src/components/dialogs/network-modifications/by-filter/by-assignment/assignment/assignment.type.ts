@@ -29,8 +29,11 @@ export enum DataType {
 export type FieldOptionType = {
     id: string;
     label: string;
+    unit?: string;
     dataType: DataType;
     values?: Option[];
+    outputConverter?: (value: number) => number | undefined;
+    inputConverter?: (value: number) => number | undefined;
 };
 
 export enum FieldType {
@@ -92,3 +95,5 @@ export type ModificationByAssignment = {
     [EQUIPMENT_TYPE_FIELD]: string;
     [ASSIGNMENTS]: Assignment[];
 };
+
+export type FieldValue = string | number | boolean;

@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid, TextField } from '@mui/material';
-import { filledTextField, gridItem } from '../../dialogUtils';
+import { filledTextField } from '../../dialog-utils';
 import { Event, EventDefinition, EventPropertyName } from './types/event.type';
-import React from 'react';
 import { makeComponentFor } from './util/event-rhf';
 import { useIntl } from 'react-intl';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import GridItem from '../../commons/grid-item';
 
 export type DynamicSimulationBasicEventFormProps = {
     equipmentId: string;
@@ -36,8 +36,8 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
             value={equipmentId}
             InputProps={{
                 readOnly: true,
-                ...filledTextField,
             }}
+            {...filledTextField}
             disabled
         />
     );
@@ -45,7 +45,7 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
     return (
         <Grid container rowSpacing={2} spacing={2} paddingTop={2}>
             <Grid container item spacing={2}>
-                {gridItem(EquipmentIdField, 12)}
+                <GridItem size={12}>{EquipmentIdField}</GridItem>
             </Grid>
             {/* event's properties defined in the eventDefinition   */}
             <Grid container item spacing={2}>
@@ -60,18 +60,18 @@ export const DynamicSimulationEventForm = (props: DynamicSimulationBasicEventFor
                     const visible = !propertyDefinition?.acceptOnly || propertyDefinition.acceptOnly(equipmentType);
 
                     return (
-                        visible &&
-                        gridItem(
-                            makeComponentFor(
-                                propertyName,
-                                propertyDefinition,
-                                propertyValue && hasEnumValues
-                                    ? intl.formatMessage({
-                                          id: propertyValue,
-                                      })
-                                    : propertyValue
-                            ),
-                            12
+                        visible && (
+                            <GridItem size={12}>
+                                {makeComponentFor(
+                                    propertyName,
+                                    propertyDefinition,
+                                    propertyValue && hasEnumValues
+                                        ? intl.formatMessage({
+                                              id: propertyValue,
+                                          })
+                                        : propertyValue
+                                )}
+                            </GridItem>
                         )
                     );
                 })}

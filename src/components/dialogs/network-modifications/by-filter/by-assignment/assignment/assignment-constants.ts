@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { ReadonlyDeep } from 'type-fest';
 import { DataType, FieldOptionType, FieldType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, kiloUnitToUnit, microUnitToUnit, unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
+import { KILO_AMPERE, MICRO_SIEMENS } from '../../../../../utils/field-constants';
 
-export const FIELD_OPTIONS: {
-    [key: string]: FieldOptionType;
-} = {
+export const FIELD_OPTIONS = {
     PROPERTY: {
         id: FieldType.PROPERTY,
         label: 'Property',
@@ -105,12 +105,18 @@ export const FIELD_OPTIONS: {
     MAXIMUM_SUSCEPTANCE: {
         id: FieldType.MAXIMUM_SUSCEPTANCE,
         label: 'maxSusceptance',
+        unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
     },
     MAXIMUM_Q_AT_NOMINAL_VOLTAGE: {
         id: FieldType.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
         label: 'maxQAtNominalV',
+        unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
     },
     NOMINAL_VOLTAGE: {
         id: FieldType.NOMINAL_VOLTAGE,
@@ -130,12 +136,18 @@ export const FIELD_OPTIONS: {
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'LowShortCircuitCurrentLimit',
+        unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => kiloUnitToUnit(value),
+        inputConverter: (value) => unitToKiloUnit(value),
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
+        unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
+        outputConverter: (value) => kiloUnitToUnit(value),
+        inputConverter: (value) => unitToKiloUnit(value),
     },
     ACTIVE_POWER: {
         id: FieldType.ACTIVE_POWER,
@@ -157,8 +169,22 @@ export const FIELD_OPTIONS: {
         label: 'SeriesReactanceText',
         dataType: DataType.DOUBLE,
     },
-    G: { id: FieldType.G, label: 'G', dataType: DataType.DOUBLE },
-    B: { id: FieldType.B, label: 'B', dataType: DataType.DOUBLE },
+    G: {
+        id: FieldType.G,
+        label: 'G',
+        unit: MICRO_SIEMENS,
+        dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
+    },
+    B: {
+        id: FieldType.B,
+        label: 'B',
+        unit: MICRO_SIEMENS,
+        dataType: DataType.DOUBLE,
+        outputConverter: (value) => microUnitToUnit(value),
+        inputConverter: (value) => unitToMicroUnit(value),
+    },
     RATED_U1: {
         id: FieldType.RATED_U1,
         label: 'RatedU1',
@@ -220,7 +246,7 @@ export const FIELD_OPTIONS: {
         dataType: DataType.ENUM,
         values: LOAD_TYPES,
     },
-};
+} as const satisfies Record<string, ReadonlyDeep<FieldOptionType>>;
 
 export const EQUIPMENTS_FIELDS = {
     [EquipmentType.SUBSTATION]: [FIELD_OPTIONS.PROPERTY],
@@ -293,4 +319,4 @@ export const EQUIPMENTS_FIELDS = {
     ],
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],
-};
+} as const;

@@ -19,13 +19,13 @@ import { fetchStudyMetadata } from '@gridsuite/commons-ui';
 export type Property = {
     [NAME]: string;
     [VALUE]: string | null;
-    [PREVIOUS_VALUE]: string | null;
+    [PREVIOUS_VALUE]?: string | null;
     [DELETION_MARK]: boolean;
     [ADDED]: boolean;
 };
 
-type Properties = {
-    [ADDITIONAL_PROPERTIES]: Property[];
+export type Properties = {
+    [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export type PredefinedProperties = {
@@ -43,7 +43,7 @@ export const fetchPredefinedProperties = (networkElementType: string): Promise<P
 };
 
 export const emptyProperties: Properties = {
-    [ADDITIONAL_PROPERTIES]: [],
+    [ADDITIONAL_PROPERTIES]: [] as Property[],
 };
 
 export const initializedProperty = (): Property => {

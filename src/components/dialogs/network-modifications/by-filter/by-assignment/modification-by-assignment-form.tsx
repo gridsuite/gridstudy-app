@@ -5,18 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { ASSIGNMENTS, EQUIPMENT_TYPE_FIELD } from '../../../../utils/field-constants';
-import ExpandableInput from '../../../../utils/rhf-inputs/expandable-input';
+import { ExpandableInput } from '../../../../utils/rhf-inputs/expandable-input';
 import AssignmentForm from './assignment/assignment-form';
-import Grid from '@mui/material/Grid';
-import { gridItem } from '../../../dialogUtils';
+import { Box, Grid } from '@mui/material';
 import { getAssignmentInitialValue } from './assignment/assignment-utils';
 import { useFormContext, useWatch } from 'react-hook-form';
 import SelectWithConfirmationInput from '../../../commons/select-with-confirmation-input';
-import { usePredefinedProperties } from '@gridsuite/commons-ui';
+import { mergeSx, unscrollableDialogStyles, usePredefinedProperties } from '@gridsuite/commons-ui';
 import { EQUIPMENTS_FIELDS } from './assignment/assignment-constants';
 import useGetLabelEquipmentTypes from '../../../../../hooks/use-get-label-equipment-types';
+import GridItem from '../../../commons/grid-item';
 
 interface ModificationByAssignmentFormProps {}
 
@@ -71,12 +71,14 @@ const ModificationByAssignmentForm: FC<ModificationByAssignmentFormProps> = () =
     );
 
     return (
-        <>
-            <Grid container paddingTop={'20px'}>
-                {gridItem(equipmentTypeField, 2.15)}
+        <Box sx={mergeSx(unscrollableDialogStyles.unscrollableContainer, { height: '100%' })}>
+            <Grid container sx={unscrollableDialogStyles.unscrollableHeader}>
+                <GridItem size={3.15}>{equipmentTypeField}</GridItem>
             </Grid>
-            <Grid container>{gridItem(assignmentsField, 12)}</Grid>
-        </>
+            <Grid container sx={unscrollableDialogStyles.scrollableContent}>
+                <GridItem size={12}>{assignmentsField}</GridItem>
+            </Grid>
+        </Box>
     );
 };
 

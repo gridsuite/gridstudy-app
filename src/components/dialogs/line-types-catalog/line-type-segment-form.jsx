@@ -5,19 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
-import Grid from '@mui/material/Grid';
-import { gridItem } from '../dialogUtils';
+import { Box, Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import ExpandableInput from '../../utils/rhf-inputs/expandable-input';
+import { ExpandableInput } from '../../utils/rhf-inputs/expandable-input';
 import { ReadOnlyInput } from '../../utils/rhf-inputs/read-only/read-only-input';
 import {
     SEGMENT_DISTANCE_VALUE,
-    SEGMENT_TYPE_ID,
     SEGMENT_REACTANCE,
     SEGMENT_RESISTANCE,
     SEGMENT_SUSCEPTANCE,
+    SEGMENT_TYPE_ID,
     SEGMENT_TYPE_VALUE,
     SEGMENTS,
     TOTAL_REACTANCE,
@@ -28,10 +27,10 @@ import LineTypesCatalogSelectorDialog from './line-types-catalog-selector-dialog
 import { roundToDefaultPrecision } from '../../../utils/rounding';
 import LineTypeSegmentCreation from './line-type-segment-creation';
 import { emptyLineSegment } from './line-type-segment-dialog';
-import { calculateResistance, calculateReactance, calculateSusceptance } from '../../utils/utils';
+import { calculateReactance, calculateResistance, calculateSusceptance } from '../../utils/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { getLineTypesCatalog } from '../../../services/network-modification';
-import { Box } from '@mui/system';
+import GridItem from '../commons/grid-item';
 
 const styles = {
     header: {
@@ -183,12 +182,12 @@ export const LineTypeSegmentForm = () => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(<div />, 2)}
-                {gridItem(segmentTypeHeader, 3)}
-                {gridItem(segmentResistanceHeader, 2)}
-                {gridItem(segmentReactanceHeader, 2)}
-                {gridItem(segmentSusceptanceHeader, 2)}
-                {gridItem(<div />, 1)}
+                <GridItem size={2}>{<div />}</GridItem>
+                <GridItem size={3}>{segmentTypeHeader}</GridItem>
+                <GridItem size={2}>{segmentResistanceHeader}</GridItem>
+                <GridItem size={2}>{segmentReactanceHeader}</GridItem>
+                <GridItem size={2}>{segmentSusceptanceHeader}</GridItem>
+                <GridItem size={1}>{<div />}</GridItem>
             </Grid>
             <ExpandableInput
                 name={SEGMENTS}
@@ -204,11 +203,11 @@ export const LineTypeSegmentForm = () => {
             />
             <hr />
             <Grid container spacing={2}>
-                {gridItem(<div />, 5)}
-                {gridItem(totalResistanceField, 2)}
-                {gridItem(totalReactanceField, 2)}
-                {gridItem(totalSusceptanceField, 2)}
-                {gridItem(<div />, 1)}
+                <GridItem size={5}>{<div />}</GridItem>
+                <GridItem size={2}>{totalResistanceField}</GridItem>
+                <GridItem size={2}>{totalReactanceField}</GridItem>
+                <GridItem size={2}>{totalSusceptanceField}</GridItem>
+                <GridItem size={1}>{<div />}</GridItem>
             </Grid>
 
             {openCatalogDialogIndex !== null && (

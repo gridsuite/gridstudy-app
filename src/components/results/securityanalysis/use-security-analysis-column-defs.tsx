@@ -9,7 +9,7 @@ import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
 import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
-import { fetchLineOrTransformer } from 'services/study/network-map';
+import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, Tooltip } from '@mui/material';
@@ -20,7 +20,7 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SortPropsType } from 'hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterPropsType } from 'hooks/use-aggrid-row-filter';
+import { FilterEnumsType, FilterPropsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
@@ -64,32 +64,28 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                 if (column?.field === 'subjectId') {
                     let vlId: string | undefined = '';
                     const { subjectId, side } = row || {};
+                    const getBranchSide = (side: string | undefined): BranchSide | null => {
+                        if (side === intl.formatMessage({ id: BranchSide.ONE })) {
+                            return BranchSide.ONE;
+                        } else if (side === intl.formatMessage({ id: BranchSide.TWO })) {
+                            return BranchSide.TWO;
+                        }
+                        return null;
+                    };
+
                     // ideally we would have the type of the network element, but we don't
-                    fetchLineOrTransformer(studyUuid, nodeUuid, subjectId)
-                        .then((equipment) => {
-                            if (!equipment) {
+                    fetchVoltageLevelIdForLineOrTransformerBySide(
+                        studyUuid,
+                        nodeUuid,
+                        subjectId ?? '',
+                        getBranchSide(side) ?? BranchSide.ONE
+                    )
+                        .then((voltageLevelId) => {
+                            if (!voltageLevelId) {
                                 // if we didnt find a line or transformer, it's a voltage level
                                 vlId = subjectId;
-                            } else if (row.side) {
-                                if (
-                                    side ===
-                                    intl.formatMessage({
-                                        id: BranchSide.ONE,
-                                    })
-                                ) {
-                                    vlId = equipment.voltageLevelId1;
-                                } else if (
-                                    side ===
-                                    intl.formatMessage({
-                                        id: BranchSide.TWO,
-                                    })
-                                ) {
-                                    vlId = equipment.voltageLevelId2;
-                                } else {
-                                    vlId = equipment.voltageLevelId3;
-                                }
                             } else {
-                                vlId = equipment.voltageLevelId1;
+                                vlId = voltageLevelId;
                             }
                         })
                         .finally(() => {
