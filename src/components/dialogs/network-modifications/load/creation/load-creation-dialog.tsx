@@ -96,10 +96,10 @@ export function LoadCreationDialog({
         resolver: yupResolver<DeepNullable<LoadCreationSchemaForm>>(formSchema),
     });
 
-    const { reset, setValue } = formMethods;
+    const { reset } = formMethods;
 
     const fromSearchCopyToFormValues = (load: LoadFormInfos) => ({
-        [EQUIPMENT_ID]: load.id,
+        [EQUIPMENT_ID]: load.id + '(1)',
         [EQUIPMENT_NAME]: load.name ?? '',
         [LOAD_TYPE]: load.type,
         [P0]: load.p0,
@@ -146,9 +146,7 @@ export function LoadCreationDialog({
         currentNodeUuid,
         toFormValues: fromSearchCopyToFormValues,
         setFormValues: (data: LoadCreationSchemaForm) => {
-            reset(data);
-            // modify id by setValue instead of reset to make the form dirty to enable validate button
-            setValue(EQUIPMENT_ID, data[EQUIPMENT_ID] + '(1)');
+            reset(data, { keepDefaultValues: true });
         },
         elementType: EQUIPMENT_TYPES.LOAD,
         operation: undefined,
