@@ -22,11 +22,11 @@ import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { AmpereAdornment } from 'components/dialogs/dialog-utils';
-import DndTable from 'components/utils/dnd-table/dnd-table';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle.js';
+import { LimitsSidePane } from './limits-side-pane.jsx';
 
 const styles = {
     limitsBackground: {
@@ -229,57 +229,35 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         <AddCircleIcon />
                     </IconButton>
                     <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 0]</Paper>
-                    <Paper sx={styles.limitsBackground}>[TODO Limit sets]</Paper>
+                    <Paper sx={styles.limitsBackground}>[TODO Sélectionné]</Paper>
                     <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 1]</Paper>
                     <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 2]</Paper>
                 </Grid>
                 <Grid item xs={5}>
-                    <Paper sx={styles.limitsBackground}>
-                        {permanentCurrentLimit1Field}
-                        <Box component={`h4`}>
-                            <FormattedMessage id="TemporaryCurrentLimitsText" />
-                        </Box>
-                        <DndTable
-                            arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
-                            useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
-                            createRows={createLimitRows}
-                            columnsDefinition={columnsDefinition}
-                            withLeftButtons={false}
-                            withAddRowsDialog={false}
-                            withBottomButtons={false}
-                            withCheckboxes={false}
-                            withTopRightAddButton
-                            previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                            disableTableCell={disableTableCell}
-                            getPreviousValue={getTemporaryLimitPreviousValue}
-                            isValueModified={isTemporaryLimitModified}
-                            minRowsNumber={5}
-                        />
-                    </Paper>
+                    <LimitsSidePane
+                        arrayFormName={`${id}.${CURRENT_LIMITS_1}.${TEMPORARY_LIMITS}`}
+                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1}
+                        createRows={createLimitRows}
+                        columnsDefinition={columnsDefinition}
+                        previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
+                        disableTableCell={disableTableCell}
+                        getPreviousValue={getTemporaryLimitPreviousValue}
+                        isValueModified={isTemporaryLimitModified}
+                        permanentCurrentLimitField={permanentCurrentLimit1Field}
+                    />
                 </Grid>
                 <Grid item xs={5}>
-                    <Paper sx={styles.limitsBackground}>
-                        {permanentCurrentLimit2Field}
-                        <Box component={`h4`}>
-                            <FormattedMessage id="TemporaryCurrentLimitsText" />
-                        </Box>
-                        <DndTable
-                            arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
-                            useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
-                            createRows={createLimitRows}
-                            columnsDefinition={columnsDefinition}
-                            withLeftButtons={false}
-                            withAddRowsDialog={false}
-                            withBottomButtons={false}
-                            withCheckboxes={false}
-                            withTopRightAddButton
-                            previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                            disableTableCell={disableTableCell}
-                            getPreviousValue={getTemporaryLimitPreviousValue}
-                            isValueModified={isTemporaryLimitModified}
-                            minRowsNumber={5}
-                        />
-                    </Paper>
+                    <LimitsSidePane
+                        arrayFormName={`${id}.${CURRENT_LIMITS_2}.${TEMPORARY_LIMITS}`}
+                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2}
+                        createRows={createLimitRows}
+                        columnsDefinition={columnsDefinition}
+                        previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
+                        disableTableCell={disableTableCell}
+                        getPreviousValue={getTemporaryLimitPreviousValue}
+                        isValueModified={isTemporaryLimitModified}
+                        permanentCurrentLimitField={permanentCurrentLimit2Field}
+                    />
                 </Grid>
             </Grid>
         </Grid>
