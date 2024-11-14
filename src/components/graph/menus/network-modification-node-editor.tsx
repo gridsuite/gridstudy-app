@@ -871,7 +871,7 @@ const NetworkModificationNodeEditor = () => {
                 ...modif,
                 ...computeLabel(modif),
             }
-        ) as unknown as string;
+        );
     };
 
     const handleSecondaryAction = useCallback(

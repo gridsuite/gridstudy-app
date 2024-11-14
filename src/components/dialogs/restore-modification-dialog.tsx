@@ -106,7 +106,7 @@ const RestoreModificationDialog = ({ open, onClose, modifToRestore }: RestoreMod
                 ...modif,
                 ...computeLabel(modif),
             }
-        ) as unknown as string;
+        );
     };
     return (
         <Dialog
