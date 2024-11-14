@@ -112,6 +112,9 @@ export const styles = {
         '& .nad-edge-infos': {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
+        '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
+            animation: 'none',
+        },
         '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
             {
                 animation: 'none',
