@@ -36,7 +36,7 @@ import { UUID } from 'crypto';
 import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import {
     AppState,
     CurrentTreeNode,
