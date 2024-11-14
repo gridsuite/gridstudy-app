@@ -25,7 +25,7 @@ import { AmpereAdornment } from 'components/dialogs/dialog-utils';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle.js';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane.jsx';
 
 const styles = {
