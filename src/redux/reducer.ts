@@ -826,23 +826,19 @@ export const reducer = createReducer(initialState, (builder) => {
         }
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
-            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
-            newMapEquipments.completeLinesInfos();
+            newMapEquipments.completeLinesInfos([]);
         }
         if (action.newTieLines) {
             newMapEquipments.tieLines = action.newTieLines;
-            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
-            newMapEquipments.completeTieLinesInfos();
+            newMapEquipments.completeTieLinesInfos([]);
         }
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
-            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
-            newMapEquipments.completeSubstationsInfos();
+            newMapEquipments.completeSubstationsInfos([]);
         }
         if (action.newHvdcLines) {
             newMapEquipments.hvdcLines = action.newHvdcLines;
-            // @ts-expect-error TODO: set parameter(s) optional in network-viewer
-            newMapEquipments.completeHvdcLinesInfos();
+            newMapEquipments.completeHvdcLinesInfos([]);
         }
         state.mapEquipments = newMapEquipments;
     });
