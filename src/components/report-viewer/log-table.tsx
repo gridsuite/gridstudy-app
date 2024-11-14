@@ -131,6 +131,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'report_viewer/severity' }),
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
+                id: 'severity',
                 field: 'severity',
                 filterProps: {
                     updateFilter,
@@ -150,6 +151,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'report_viewer/message' }),
+                id: 'message',
                 field: 'message',
                 filterProps: {
                     updateFilter,

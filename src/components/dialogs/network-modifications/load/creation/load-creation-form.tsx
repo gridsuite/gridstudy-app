@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { WritableDeep } from 'type-fest';
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
@@ -36,7 +37,7 @@ export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<Lo
         <SelectInput
             name={LOAD_TYPE}
             label="Type"
-            options={LOAD_TYPES}
+            options={LOAD_TYPES as WritableDeep<typeof LOAD_TYPES>}
             fullWidth
             size={'small'}
             formProps={filledTextField}
