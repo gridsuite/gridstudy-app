@@ -64,27 +64,9 @@ export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, vol
     return backendFetchText(fetchSubstationIdUrl);
 }
 
-export function fetchBusesForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
+export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
     console.info(
-        `Fetching buses of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
-    );
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
-
-    const fetchBusesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network/voltage-levels/' +
-        encodeURIComponent(voltageLevelId) +
-        '/buses' +
-        '?' +
-        urlSearchParams.toString();
-    console.debug(fetchBusesUrl);
-    return backendFetchJson(fetchBusesUrl);
-}
-
-export function fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
-    console.info(
-        `Fetching busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching buses or busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
@@ -93,7 +75,7 @@ export function fetchBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, v
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
-        '/busbar-sections' +
+        '/buses-or-busbar-sections' +
         '?' +
         urlSearchParams.toString();
 
