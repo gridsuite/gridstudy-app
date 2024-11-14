@@ -230,13 +230,7 @@ const GeneratorModificationDialog = ({
     );
 
     const updatePreviousReactiveCapabilityCurveTable = (action, index) => {
-        console.log('=============================updatePreviousReactiveCapabilityCurveTable', index);
-
         setGeneratorToModify((previousValue) => {
-            console.log(
-                '=============================updatePreviousReactiveCapabilityCurveTable',
-                previousValue?.reactiveCapabilityCurvePoints
-            );
             const newRccValues = previousValue?.reactiveCapabilityCurvePoints;
             action === REMOVE
                 ? newRccValues.splice(index, 1)
@@ -245,7 +239,6 @@ const GeneratorModificationDialog = ({
                       [MIN_Q]: null,
                       [MAX_Q]: null,
                   });
-            console.log('=============================newRccValues', newRccValues);
             return {
                 ...previousValue,
                 reactiveCapabilityCurvePoints: newRccValues,
@@ -273,17 +266,8 @@ const GeneratorModificationDialog = ({
                             // on first render, we need to adjust the UI for the reactive capability curve table
                             // we need to check if the generator we fetch has reactive capability curve table
                             if (previousReactiveCapabilityCurveTable) {
-                                console.log(
-                                    '=============================previousReactiveCapabilityCurveTable',
-                                    previousReactiveCapabilityCurveTable
-                                );
-
                                 const currentReactiveCapabilityCurveTable = getValues(
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`
-                                ).findIndex();
-                                console.log(
-                                    '=============================currentReactiveCapabilityCurveTable',
-                                    currentReactiveCapabilityCurveTable
                                 );
                                 const sizeDiff =
                                     previousReactiveCapabilityCurveTable.length -
