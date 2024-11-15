@@ -244,11 +244,11 @@ code {
     0%,
     80%,
     100% {
-        stroke-width: 0.25%;
+        stroke-width: 1;
     }
     40% {
         stroke: #ffeb3b;
-        stroke-width: 0.75%;
+        stroke-width: 2;
     }
 }
   
@@ -256,11 +256,11 @@ code {
       0%,
       80%,
       100% {
-          stroke-width: 0.25%;
+          stroke-width: 1;
       }
       40% {
           stroke: #ff5722;
-          stroke-width: 0.75%;
+          stroke-width: 2;
       }
   }
   
@@ -268,11 +268,11 @@ code {
       0%,
       80%,
       100% {
-          stroke-width: 0.25%;
+          stroke-width: 1;
       }
       40% {
           stroke: #00bcd4;
-          stroke-width: 0.75%;
+          stroke-width: 2;
       }
   }
   
