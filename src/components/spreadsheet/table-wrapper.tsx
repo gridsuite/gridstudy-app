@@ -1285,7 +1285,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnData}
-                            tableName={tablesDefinitionIndexes.get(tabIndex)?.name}
+                            tableName={currentTabName()}
                             disabled={!!(disabled || rowData.length === 0 || editingData)}
                         />
                     </Grid>
