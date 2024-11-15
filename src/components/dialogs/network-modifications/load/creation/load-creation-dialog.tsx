@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
-import PropTypes from 'prop-types';
+import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
@@ -20,13 +19,12 @@ import ModificationDialog from '../../../commons/modificationDialog';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
-    getConnectivityWithPositionValidationSchema,
+    getConnectivityWithPositionSchema,
 } from '../../../connectivity/connectivity-form-utils';
 import LoadCreationForm from './load-creation-form';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { createLoad } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
@@ -34,6 +32,12 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { DeepNullable } from '../../../../utils/ts-utils';
+import { LoadCreationInfos, LoadCreationSchemaForm, LoadFormInfos } from './load-creation.type';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { UUID } from 'crypto';
+import { FetchStatus } from '../../../../../services/utils.type';
+import { DialogProps } from '@mui/material/Dialog/Dialog';
 
 /**
  * Dialog to create a load in the network
@@ -62,23 +66,39 @@ const formSchema = yup
         [LOAD_TYPE]: yup.string().nullable(),
         [P0]: yup.number().nullable().required(),
         [Q0]: yup.number().nullable().required(),
-        ...getConnectivityWithPositionValidationSchema(),
+        [CONNECTIVITY]: getConnectivityWithPositionSchema(false),
     })
     .concat(creationPropertiesSchema)
     .required();
 
-const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
+export interface LoadCreationDialogProps extends Partial<DialogProps> {
+    editData: LoadCreationInfos;
+    currentNode: CurrentTreeNode;
+    studyUuid: UUID;
+    isUpdate: boolean;
+    editDataFetchStatus: FetchStatus;
+    disabledSave: boolean;
+}
+
+export function LoadCreationDialog({
+    editData,
+    currentNode,
+    studyUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}: Readonly<LoadCreationDialogProps>) {
     const currentNodeUuid = currentNode?.id;
     const { snackError } = useSnackMessage();
 
-    const formMethods = useForm({
+    const formMethods = useForm<DeepNullable<LoadCreationSchemaForm>>({
         defaultValues: emptyFormData,
-        resolver: yupResolver(formSchema),
+        resolver: yupResolver<DeepNullable<LoadCreationSchemaForm>>(formSchema),
     });
 
     const { reset } = formMethods;
 
-    const fromSearchCopyToFormValues = (load) => {
+    const fromSearchCopyToFormValues = (load: LoadFormInfos) => {
         reset({
             [EQUIPMENT_ID]: load.id + '(1)',
             [EQUIPMENT_NAME]: load.name ?? '',
@@ -88,16 +108,20 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
             ...getConnectivityFormData({
                 voltageLevelId: load.voltageLevelId,
                 busbarSectionId: load.busOrBusbarSectionId,
+                busbarSectionName: undefined,
                 connectionDirection: load.connectablePosition.connectionDirection,
                 connectionName: load.connectablePosition.connectionName,
+                connectionPosition: undefined,
+                terminalConnected: undefined,
+                isEquipmentModification: false,
                 // terminalConnected is not copied on purpose: we use the default value (true) in all cases
             }),
-            ...copyEquipmentPropertiesForCreation(load),
+            ...copyEquipmentPropertiesForCreation({ properties: load.properties }),
         });
     };
 
     const fromEditDataToFormValues = useCallback(
-        (load) => {
+        (load: LoadCreationInfos) => {
             reset({
                 [EQUIPMENT_ID]: load.equipmentId,
                 [EQUIPMENT_NAME]: load.equipmentName ?? '',
@@ -107,6 +131,7 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
                 ...getConnectivityFormData({
                     voltageLevelId: load.voltageLevelId,
                     busbarSectionId: load.busOrBusbarSectionId,
+                    busbarSectionName: undefined,
                     connectionDirection: load.connectionDirection,
                     connectionName: load.connectionName,
                     connectionPosition: load.connectionPosition,
@@ -121,9 +146,10 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
-        toFormValues: (data) => data,
-        setFormValues: fromSearchCopyToFormValues,
+        toFormValues: fromSearchCopyToFormValues,
+        setFormValues: reset,
         elementType: EQUIPMENT_TYPES.LOAD,
+        operation: undefined,
     });
 
     useEffect(() => {
@@ -133,25 +159,25 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
     }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
-        (load) => {
-            createLoad(
-                studyUuid,
-                currentNodeUuid,
-                load[EQUIPMENT_ID],
-                sanitizeString(load[EQUIPMENT_NAME]),
-                !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
-                load[P0],
-                load[Q0],
-                load.connectivity.voltageLevel.id,
-                load.connectivity.busOrBusbarSection.id,
-                !!editData,
-                editData ? editData.uuid : undefined,
-                load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
-                sanitizeString(load.connectivity?.connectionName),
-                load.connectivity?.connectionPosition ?? null,
-                load.connectivity?.terminalConnected,
-                toModificationProperties(load)
-            ).catch((error) => {
+        (load: LoadCreationSchemaForm) => {
+            createLoad({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                id: load[EQUIPMENT_ID],
+                name: sanitizeString(load[EQUIPMENT_NAME]),
+                loadType: !load[LOAD_TYPE] ? UNDEFINED_LOAD_TYPE : load[LOAD_TYPE],
+                p0: load[P0],
+                q0: load[Q0],
+                voltageLevelId: load.connectivity.voltageLevel.id,
+                busOrBusbarSectionId: load.connectivity.busOrBusbarSection.id,
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                connectionDirection: load.connectivity?.connectionDirection ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionName: sanitizeString(load.connectivity?.connectionName),
+                connectionPosition: load.connectivity?.connectionPosition ?? null,
+                terminalConnected: load.connectivity?.terminalConnected,
+                properties: toModificationProperties(load),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LoadCreationError',
@@ -161,19 +187,19 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const clear = useCallback(() => {
-        reset(emptyFormData);
-    }, [reset]);
-
     const open = useOpenShortWaitFetching({
         isDataFetched:
             !isUpdate || editDataFetchStatus === FetchStatus.SUCCEED || editDataFetchStatus === FetchStatus.FAILED,
         delay: FORM_LOADING_DELAY,
     });
+
+    const clear = useCallback(() => reset(emptyFormData), [reset]);
+
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
+                onClose={clear}
                 onClear={clear}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-load"
@@ -189,20 +215,11 @@ const LoadCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDa
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
-                    equipmentType={EQUIPMENT_TYPES.LOAD}
+                    equipmentType={EquipmentType.LOAD}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
-
-LoadCreationDialog.propTypes = {
-    editData: PropTypes.object,
-    studyUuid: PropTypes.string,
-    currentNode: PropTypes.object,
-    isUpdate: PropTypes.bool,
-};
-
-export default LoadCreationDialog;
+}

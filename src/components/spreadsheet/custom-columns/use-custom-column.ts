@@ -22,7 +22,7 @@ export function useCustomColumn(tabIndex: number) {
 
     const { onSortChanged, sortConfig } = useAgGridSort(
         SPREADSHEET_SORT_STORE,
-        tablesDefinitionIndexes.get(tabIndex)!.type as string
+        tablesDefinitionIndexes.get(tabIndex)!.name
     );
 
     const math = useMemo(() => {
@@ -85,6 +85,7 @@ export function useCustomColumn(tabIndex: number) {
         return customColumnsDefinitions.map((colWithFormula: ColumnWithFormula) => {
             return makeAgGridCustomHeaderColumn({
                 headerName: colWithFormula.name,
+                id: colWithFormula.name,
                 field: colWithFormula.name,
                 sortProps: {
                     onSortChanged,
