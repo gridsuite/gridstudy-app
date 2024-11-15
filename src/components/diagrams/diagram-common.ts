@@ -109,6 +109,9 @@ export const styles = {
         '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
             opacity: INVALID_LOADFLOW_OPACITY,
         },
+        '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
+            animation: 'none',
+        },
         '& .nad-edge-infos': {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
