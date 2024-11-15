@@ -112,6 +112,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
         return [
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IDNode' }),
+                id: 'elementId',
                 field: 'elementId',
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
@@ -119,6 +120,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Type' }),
+                id: 'faultType',
                 field: 'faultType',
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
@@ -126,6 +128,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Feeders' }),
+                id: 'connectableId',
                 field: 'connectableId',
                 sortProps: isAllBusesAnalysisType ? { ...sortProps, children: true } : sortProps,
                 filterProps: filterProps,
@@ -133,6 +136,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscKA' }),
+                id: 'current',
                 field: 'current',
                 numeric: true,
                 fractionDigits: 2,
@@ -143,6 +147,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Side' }),
+                id: 'side',
                 field: 'side',
                 sortProps,
                 hide: !isOneBusAnalysisType,
@@ -151,6 +156,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'LimitType' }),
+                id: 'limitType',
                 field: 'limitType',
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
@@ -158,6 +164,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMinKA' }),
+                id: 'limitMin',
                 field: 'limitMin',
                 numeric: true,
                 fractionDigits: 2,
@@ -168,6 +175,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
+                id: 'limitMax',
                 field: 'limitMax',
                 numeric: true,
                 fractionDigits: 2,
@@ -178,6 +186,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
+                id: 'shortCircuitPower',
                 field: 'shortCircuitPower',
                 numeric: true,
                 fractionDigits: 2,
@@ -187,6 +196,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMin' }),
+                id: 'deltaCurrentIpMin',
                 field: 'deltaCurrentIpMin',
                 numeric: true,
                 fractionDigits: 2,
@@ -197,6 +207,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
+                id: 'deltaCurrentIpMax',
                 field: 'deltaCurrentIpMax',
                 numeric: true,
                 fractionDigits: 2,
