@@ -22,6 +22,8 @@ interface CsvExportProps {
     skipColumnHeaders?: boolean;
 }
 
+const DEFAULT_FILENAME = 'csv-export';
+
 export const CsvExport: FunctionComponent<CsvExportProps> = ({
     gridRef,
     columns,
@@ -36,7 +38,7 @@ export const CsvExport: FunctionComponent<CsvExportProps> = ({
         const localisedTabName =
             (Object.keys(intl.messages).find((key) => key === tableName)
                 ? intl.formatMessage({ id: tableName })
-                : tableName) ?? '';
+                : tableName) ?? DEFAULT_FILENAME;
         return localisedTabName
             .trim()
             .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
