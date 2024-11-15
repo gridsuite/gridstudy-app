@@ -98,25 +98,28 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
     });
 
     const fromSearchCopyToFormValues = (hvdcLine) => {
-        reset({
-            [EQUIPMENT_ID]: hvdcLine.id + '(1)',
-            [EQUIPMENT_NAME]: hvdcLine.name ?? '',
-            ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
-                nominalV: hvdcLine.nominalV,
-                r: hvdcLine.r,
-                maxP: hvdcLine.maxP,
-                operatorActivePowerLimitFromSide1ToSide2: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-                operatorActivePowerLimitFromSide2ToSide1: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
-                convertersMode: hvdcLine.convertersMode,
-                activePowerSetpoint: hvdcLine.activePowerSetpoint,
-                angleDroopActivePowerControl: hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
-                p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
-                droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
-            }),
-            ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
-            ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
-            ...copyEquipmentPropertiesForCreation(hvdcLine),
-        });
+        reset(
+            {
+                [EQUIPMENT_ID]: hvdcLine.id + '(1)',
+                [EQUIPMENT_NAME]: hvdcLine.name ?? '',
+                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
+                    nominalV: hvdcLine.nominalV,
+                    r: hvdcLine.r,
+                    maxP: hvdcLine.maxP,
+                    operatorActivePowerLimitFromSide1ToSide2: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
+                    operatorActivePowerLimitFromSide2ToSide1: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
+                    convertersMode: hvdcLine.convertersMode,
+                    activePowerSetpoint: hvdcLine.activePowerSetpoint,
+                    angleDroopActivePowerControl: hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
+                    p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
+                    droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
+                }),
+                ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
+                ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
+                ...copyEquipmentPropertiesForCreation(hvdcLine),
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     const open = useOpenShortWaitFetching({
