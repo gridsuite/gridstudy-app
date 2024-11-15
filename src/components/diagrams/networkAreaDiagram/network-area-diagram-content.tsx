@@ -34,6 +34,8 @@ import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { FEEDER_TYPES } from 'components/utils/feederType';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -128,7 +130,12 @@ const dynamicCssRules: CSS_RULE[] = [
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
     },
 ];
-const equipmentsWithPopover = ['LINE', 'TWO_WINDINGS_TRANSFORMER', 'PHASE_SHIFT_TRANSFORMER'];
+
+const equipmentsWithPopover = [
+    EQUIPMENT_TYPES.LINE,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
+];
 
 type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
