@@ -253,27 +253,27 @@ code {
 }
   
   @keyframes sld-overvoltage-blink-animation {
-      0%,
-      80%,
-      100% {
-          stroke-width: 1;
-      }
-      40% {
-          stroke: #ff5722;
-          stroke-width: 2;
-      }
+    0%,
+    80%,
+    100% {
+      stroke-width: 1;
+    }
+    40% {
+      stroke: #ff5722;
+      stroke-width: 2;
+    }
   }
   
   @keyframes sld-undervoltage-blink-animation {
-      0%,
-      80%,
-      100% {
-          stroke-width: 1;
-      }
-      40% {
-          stroke: #00bcd4;
-          stroke-width: 2;
-      }
+    0%,
+    80%,
+    100% {
+      stroke-width: 1;
+    }
+    40% {
+      stroke: #00bcd4;
+      stroke-width: 2;
+    }
   }
   
   .sld-overload {
