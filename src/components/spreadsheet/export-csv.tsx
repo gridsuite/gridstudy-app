@@ -33,7 +33,10 @@ export const CsvExport: FunctionComponent<CsvExportProps> = ({
     const intl = useIntl();
 
     const getCSVFilename = useCallback(() => {
-        const localisedTabName = intl.formatMessage({ id: tableName });
+        const localisedTabName =
+            (Object.keys(intl.messages).find((key) => key === tableName)
+                ? intl.formatMessage({ id: tableName })
+                : tableName) ?? '';
         return localisedTabName
             .trim()
             .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters
