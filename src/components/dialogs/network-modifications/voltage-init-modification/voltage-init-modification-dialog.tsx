@@ -7,29 +7,50 @@
 
 import { FunctionComponent, useCallback, useMemo, useRef, useState } from 'react';
 import BasicModificationDialog from '../../commons/basicModificationDialog';
-import { DefaultCellRenderer, BooleanCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
+import { BooleanCellRenderer, DefaultCellRenderer } from '../../../spreadsheet/utils/cell-renderers';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import { useOpenShortWaitFetching } from '../../commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from '../../../network/constants';
 import {
-    REACTIVE_POWER_SET_POINT,
-    VOLTAGE_SET_POINT,
-    RATIO_TAP_CHANGER_POSITION,
-    LEG_SIDE,
-    SECTION_COUNT,
+    ANGLE,
     CONNECT,
+    LEG_SIDE,
+    RATIO_TAP_CHANGER_POSITION,
     RATIO_TAP_CHANGER_TARGET_V,
+    REACTIVE_POWER_SET_POINT,
+    SECTION_COUNT,
     TARGET_V,
     V,
-    ANGLE,
+    VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
 import { CsvExport } from '../../../spreadsheet/export-csv';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
+import type { ColDef, RowDataUpdatedEvent } from 'ag-grid-community';
+import { suppressEventsToPreventEditMode } from '../../commons/utils';
 
-export const ALLOWED_KEYS = ['Escape', 'ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
+const defaultColDef: ColDef = {
+    filter: true,
+    sortable: true,
+    resizable: false,
+    lockPinned: true,
+    wrapHeaderText: true,
+    autoHeaderHeight: true,
+    cellRenderer: DefaultCellRenderer,
+    suppressKeyboardEvent: suppressEventsToPreventEditMode,
+};
+
+function onRowDataUpdated(event: RowDataUpdatedEvent) {
+    if (event.api) {
+        event.api.sizeColumnsToFit();
+    }
+}
+
+function check(x: number | undefined) {
+    return x != null && 0 <= Math.abs(x);
+}
 
 export const EquipmentTypeTabs = {
     GENERATOR_TAB: 0,
@@ -175,10 +196,10 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
         setTabIndex(newValue);
     }, []);
 
-    const gridRef = useRef<AgGridReact<any>>(null);
+    const gridRef = useRef<AgGridReact>(null);
 
-    const generatorsColumnDefs = useMemo(() => {
-        return [
+    const generatorsColumnDefs = useMemo<ColDef[]>(
+        () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
                 field: 'ID',
@@ -198,11 +219,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
-    const transformersColumnDefs = useMemo(() => {
-        return [
+    const transformersColumnDefs = useMemo<ColDef[]>(
+        () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
                 field: 'ID',
@@ -230,11 +252,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
-    const staticVarCompensatorsColumnDefs = useMemo(() => {
-        return [
+    const staticVarCompensatorsColumnDefs = useMemo<ColDef[]>(
+        () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
                 field: 'ID',
@@ -254,11 +277,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
-    const vscConverterStationsColumnDefs = useMemo(() => {
-        return [
+    const vscConverterStationsColumnDefs = useMemo<ColDef[]>(
+        () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
                 field: 'ID',
@@ -278,11 +302,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
-    const shuntCompensatorsColumnDefs = useMemo(() => {
-        return [
+    const shuntCompensatorsColumnDefs = useMemo<ColDef[]>(
+        () => [
             {
                 headerName: intl.formatMessage({ id: 'ID' }),
                 field: 'ID',
@@ -310,11 +335,12 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
-    const busColumnDefs = useMemo(() => {
-        return [
+    const busColumnDefs = useMemo<ColDef[]>(
+        () => [
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'ID',
@@ -332,8 +358,9 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
                 cellRenderer: DefaultCellRenderer,
                 numeric: true,
             },
-        ];
-    }, [intl]);
+        ],
+        [intl]
+    );
 
     const equipmentTabs = (
         <Box
@@ -355,34 +382,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
             </Grid>
         </Box>
     );
-
-    const suppressKeyEvent = (params: any) => {
-        return !ALLOWED_KEYS.includes(params.event.key);
-    };
-
-    const defaultColDef = useMemo(
-        () => ({
-            filter: true,
-            sortable: true,
-            resizable: false,
-            lockPinned: true,
-            wrapHeaderText: true,
-            autoHeaderHeight: true,
-            cellRenderer: DefaultCellRenderer,
-            suppressKeyboardEvent: (params: any) => suppressKeyEvent(params),
-        }),
-        []
-    );
-
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    function check(x: number | undefined) {
-        return x != null && 0 <= Math.abs(x);
-    }
 
     const displayTable = useCallback(
         (currentTab: number) => {
@@ -536,8 +535,6 @@ const VoltageInitModificationDialog: FunctionComponent<VoltageInitModificationPr
         [
             editData,
             editDataFetchStatus,
-            defaultColDef,
-            onRowDataUpdated,
             generatorsColumnDefs,
             transformersColumnDefs,
             staticVarCompensatorsColumnDefs,

@@ -13,7 +13,7 @@ import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
-import { SLDMetadata } from '@powsybl/diagram-viewer';
+import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 import { UUID } from 'crypto';
 import { EquipmentType } from '@gridsuite/commons-ui';
 
@@ -108,6 +108,9 @@ export const styles = {
     divDiagramInvalid: {
         '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
             opacity: INVALID_LOADFLOW_OPACITY,
+        },
+        '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
+            animation: 'none',
         },
         '& .nad-edge-infos': {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
@@ -296,7 +299,7 @@ export const useDiagram = () => {
 
 export interface Svg {
     svg: string | null;
-    metadata: SLDMetadata | null;
+    metadata: SLDMetadata | DiagramMetadata | null;
     additionalMetadata:
         | (SLDMetadata & {
               country: string;

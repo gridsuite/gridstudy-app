@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState, forwardRef, useImperativeHandle, useMemo, useEffect } from 'react';
-import Select from '@mui/material/Select';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import Select, { type SelectProps } from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { Autocomplete, SelectChangeEvent, TextField, Tooltip } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -14,24 +14,33 @@ import { checkValidationsAndRefreshCells, deepUpdateValue } from './equipment-ta
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import RegulatingTerminalModificationDialog from 'components/dialogs/network-modifications/generator/modification/regulating-terminal-modification-dialog';
 import { getTapChangerRegulationTerminalValue } from 'components/utils/utils';
-import { ColDef, GridApi } from 'ag-grid-community';
+import { GridApi } from 'ag-grid-community';
 import { EnumOption } from '../../utils/utils-type';
+import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
 
-interface EquipmentTableEditorProps {
-    gridContext: any;
-    colDef: ColDef;
-    gridApi: GridApi;
+interface EquipmentTableEditorProps<TData = any, TValue = any, TContext = any> {
+    gridContext: TContext;
+    colDef: CustomColDef<TData, TValue>;
+    gridApi: GridApi<TData>;
 }
-interface EquipmentTableDataEditorProps extends EquipmentTableEditorProps {
-    rowData?: any;
+
+export interface EquipmentTableDataEditorProps<TData = any, TValue = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, TValue, TContext> {
+    rowData?: TData;
 }
-interface EquipmentTableNumberEditorProps extends EquipmentTableDataEditorProps {
-    defaultValue: number;
+
+export interface EquipmentTableNumberEditorProps<TData = any, TContext = any>
+    extends EquipmentTableDataEditorProps<TData, number, TContext> {
+    defaultValue?: number;
 }
-interface EquipmentTableBooleanListEditorProps extends EquipmentTableEditorProps {
-    defaultValue: any; // TODO should be boolean
+
+export interface EquipmentTableBooleanListEditorProps<TData = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, boolean, TContext> {
+    defaultValue: boolean;
 }
-interface EquipmentTableEnumEditorProps extends EquipmentTableEditorProps {
+
+export interface EquipmentTableEnumEditorProps<TData = any, TContext = any>
+    extends EquipmentTableEditorProps<TData, string, TContext> {
     defaultValue: string;
     enumOptions: EnumOption[];
 }
@@ -166,13 +175,12 @@ export const TWTRegulatingTerminalEditor = forwardRef(
         };
 
         const getTapChangerValue = () => {
-            const tapChanger = {
+            return {
                 ...rowData?.[tapChangerType],
                 regulatingTerminalConnectableId: rowData?.[tapChangerType]?.regulatingTerminalConnectableId || '',
                 regulatingTerminalConnectableType: rowData?.[tapChangerType]?.regulatingTerminalConnectableType || '',
                 regulatingTerminalVlId: rowData?.[tapChangerType]?.regulatingTerminalVlId || '',
             };
-            return tapChanger;
         };
 
         return (
@@ -316,23 +324,17 @@ export const BooleanListField = forwardRef(
 
         useImperativeHandle(
             ref,
-            () => {
-                return {
-                    getValue: () => {
-                        return Boolean(value);
-                    },
-                    getField: () => {
-                        return colDef.field;
-                    },
-                };
-            },
+            () => ({
+                getValue: () => value,
+                getField: () => colDef.field,
+            }),
             [colDef.field, value]
         );
 
-        const validateChange = useCallback(
-            (ev: any) => {
+        const validateChange = useCallback<NonNullable<SelectProps<`${boolean}`>['onChange']>>(
+            (ev) => {
                 const val = ev.target.value;
-                setValue(val);
+                setValue(val === 'true');
                 gridContext.dynamicValidation = deepUpdateValue(gridContext.dynamicValidation, colDef.field, val);
                 checkValidationsAndRefreshCells(gridApi, gridContext);
             },
@@ -340,8 +342,8 @@ export const BooleanListField = forwardRef(
         );
 
         return (
-            <Select
-                value={value}
+            <Select<`${boolean}`>
+                value={`${value}`}
                 onChange={validateChange}
                 size={'medium'}
                 margin={'none'}
@@ -349,10 +351,10 @@ export const BooleanListField = forwardRef(
                 variant={'outlined'}
                 autoFocus
             >
-                <MenuItem value={1} key={colDef.field + '_1'}>
+                <MenuItem value="true" key={colDef.field + '_1'}>
                     <em>{intl.formatMessage({ id: 'true' })}</em>
                 </MenuItem>
-                <MenuItem value={0} key={colDef.field + '_0'}>
+                <MenuItem value="false" key={colDef.field + '_0'}>
                     <em>{intl.formatMessage({ id: 'false' })}</em>
                 </MenuItem>
             </Select>

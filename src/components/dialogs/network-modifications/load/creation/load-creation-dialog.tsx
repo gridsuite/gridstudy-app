@@ -7,15 +7,7 @@
 
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
-import {
-    ADDITIONAL_PROPERTIES,
-    CONNECTIVITY,
-    EQUIPMENT_ID,
-    EQUIPMENT_NAME,
-    LOAD_TYPE,
-    P0,
-    Q0,
-} from 'components/utils/field-constants';
+import { CONNECTIVITY, EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from '../../../dialog-utils';
@@ -106,27 +98,25 @@ export function LoadCreationDialog({
 
     const { reset } = formMethods;
 
-    const fromSearchCopyToFormValues = (load: LoadFormInfos) => {
-        reset({
-            [EQUIPMENT_ID]: load.id + '(1)',
-            [EQUIPMENT_NAME]: load.name ?? '',
-            [LOAD_TYPE]: load.type,
-            [P0]: load.p0,
-            [Q0]: load.q0,
-            ...getConnectivityFormData({
-                voltageLevelId: load.voltageLevelId,
-                busbarSectionId: load.busOrBusbarSectionId,
-                busbarSectionName: undefined,
-                connectionDirection: load.connectablePosition.connectionDirection,
-                connectionName: load.connectablePosition.connectionName,
-                connectionPosition: undefined,
-                terminalConnected: undefined,
-                isEquipmentModification: false,
-                // terminalConnected is not copied on purpose: we use the default value (true) in all cases
-            }),
-            ...copyEquipmentPropertiesForCreation({ properties: load.properties }),
-        });
-    };
+    const fromSearchCopyToFormValues = (load: LoadFormInfos) => ({
+        [EQUIPMENT_ID]: load.id + '(1)',
+        [EQUIPMENT_NAME]: load.name ?? '',
+        [LOAD_TYPE]: load.type,
+        [P0]: load.p0,
+        [Q0]: load.q0,
+        ...getConnectivityFormData({
+            voltageLevelId: load.voltageLevelId,
+            busbarSectionId: load.busOrBusbarSectionId,
+            busbarSectionName: undefined,
+            connectionDirection: load.connectablePosition.connectionDirection,
+            connectionName: load.connectablePosition.connectionName,
+            connectionPosition: undefined,
+            terminalConnected: undefined,
+            isEquipmentModification: false,
+            // terminalConnected is not copied on purpose: we use the default value (true) in all cases
+        }),
+        ...copyEquipmentPropertiesForCreation({ properties: load.properties }),
+    });
 
     const fromEditDataToFormValues = useCallback(
         (load: LoadCreationInfos) => {
@@ -155,7 +145,9 @@ export function LoadCreationDialog({
         studyUuid,
         currentNodeUuid,
         toFormValues: fromSearchCopyToFormValues,
-        setFormValues: reset,
+        setFormValues: (data: LoadCreationSchemaForm) => {
+            reset(data, { keepDefaultValues: true });
+        },
         elementType: EQUIPMENT_TYPES.LOAD,
         operation: undefined,
     });
@@ -184,7 +176,7 @@ export function LoadCreationDialog({
                 connectionName: sanitizeString(load.connectivity?.connectionName),
                 connectionPosition: load.connectivity?.connectionPosition ?? null,
                 terminalConnected: load.connectivity?.terminalConnected,
-                properties: toModificationProperties(load[ADDITIONAL_PROPERTIES]),
+                properties: toModificationProperties(load),
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
