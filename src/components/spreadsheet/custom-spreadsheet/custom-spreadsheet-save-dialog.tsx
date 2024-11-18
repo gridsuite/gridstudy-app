@@ -5,10 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FormattedMessage, useIntl } from 'react-intl';
-import { IconButton } from '@mui/material';
-import SaveIcon from '@mui/icons-material/Save';
-import { ElementType, useSnackMessage, useStateBoolean } from '@gridsuite/commons-ui';
+import { useIntl } from 'react-intl';
+import { ElementType, useSnackMessage, UseStateBooleanReturn } from '@gridsuite/commons-ui';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import { useMemo } from 'react';
 import { createSpreadsheetModel } from '../../../services/explore';
@@ -17,11 +15,12 @@ import { AppState } from '../../../redux/reducer';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
 
-export type CustomSpreadsheetSaveProps = {
+export type CustomSpreadsheetSaveDialogProps = {
     indexTab: number;
+    open: UseStateBooleanReturn;
 };
 
-export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSpreadsheetSaveProps>) {
+export default function CustomSpreadsheetSaveDialog({ indexTab, open }: Readonly<CustomSpreadsheetSaveDialogProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const intl = useIntl();
 
@@ -33,7 +32,6 @@ export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSprea
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
     );
-    const dialogOpen = useStateBoolean(false);
 
     const currentType = useMemo(() => {
         const equipment = tablesDefinitionIndexes.get(indexTab);
@@ -95,18 +93,11 @@ export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSprea
 
     return (
         <>
-            <span>
-                <FormattedMessage id="spreadsheet/save/button" />
-            </span>
-            <IconButton aria-label="dialog" onClick={dialogOpen.setTrue}>
-                <SaveIcon />
-            </IconButton>
-
-            {dialogOpen.value && (
+            {open.value && (
                 <ElementCreationDialog
-                    open={dialogOpen.value}
+                    open={open.value}
+                    onClose={open.setFalse}
                     onSave={saveSpreadsheetColumnsConfiguration}
-                    onClose={dialogOpen.setFalse}
                     type={ElementType.SPREADSHEET_CONFIG}
                     titleId={'spreadsheet/save/dialog_title'}
                 />
