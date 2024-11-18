@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '../../components/utils/modification-type';
+import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid } from './index';
@@ -343,7 +343,7 @@ export function modifyBattery({
     });
 }
 
-export function createLoad(
+export function createLoad({
     studyUuid,
     nodeUuid,
     id,
@@ -359,8 +359,8 @@ export function createLoad(
     connectionName,
     connectionPosition,
     terminalConnected,
-    properties
-) {
+    properties,
+}) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {

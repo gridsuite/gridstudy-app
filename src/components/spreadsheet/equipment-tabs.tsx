@@ -7,8 +7,12 @@
 
 import { Grid, Tab, Tabs } from '@mui/material';
 import { useIntl } from 'react-intl';
-import { TABLES_NAMES } from './utils/config-tables';
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
+import CustomSpreadsheetConfig from './custom-spreadsheet/custom-spreadsheet-config';
+import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
+import { TABLES_NAMES } from './config/config-tables';
 
 interface EquipmentTabsProps {
     tabIndex: number;
@@ -18,26 +22,44 @@ interface EquipmentTabsProps {
 
 export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex, handleSwitchTab, disabled }) => {
     const intl = useIntl();
+    const allTablesNames = useSelector((state: AppState) => state.tables.names);
+    const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
+
+    const existsInTable = function (name: string) {
+        return TABLES_NAMES.findIndex((n) => n === name) !== -1;
+    };
+
+    const tablesNames = useMemo(() => {
+        return allTablesNames.map((tabName) => {
+            return existsInTable(tabName)
+                ? intl.formatMessage({
+                      id: tabName,
+                  })
+                : tabName;
+        });
+    }, [allTablesNames, intl]);
+
     return (
-        <Grid container justifyContent={'space-between'} item>
-            <Tabs
-                value={tabIndex}
-                variant="scrollable"
-                onChange={(_event, value) => {
-                    handleSwitchTab(value);
-                }}
-                aria-label="tables"
-            >
-                {TABLES_NAMES.map((table) => (
-                    <Tab
-                        key={table}
-                        label={intl.formatMessage({
-                            id: table,
-                        })}
-                        disabled={disabled}
-                    />
-                ))}
-            </Tabs>
+        <Grid container direction="row" wrap="nowrap" item>
+            {developerMode && (
+                <Grid item xs padding={1}>
+                    <CustomSpreadsheetConfig disabled={disabled} />
+                </Grid>
+            )}
+            <Grid item sx={{ flexGrow: 1, overflow: 'hidden' }}>
+                <Tabs
+                    value={tabIndex}
+                    variant="scrollable"
+                    onChange={(_event, value) => {
+                        handleSwitchTab(value);
+                    }}
+                    aria-label="tables"
+                >
+                    {tablesNames.map((tabName) => (
+                        <Tab key={tabName} label={tabName} disabled={disabled} />
+                    ))}
+                </Tabs>
+            </Grid>
         </Grid>
     );
 };

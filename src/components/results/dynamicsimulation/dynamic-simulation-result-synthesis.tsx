@@ -7,7 +7,7 @@
 
 import { useIntl } from 'react-intl';
 import { Box, LinearProgress } from '@mui/material';
-import React, { memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationStatus } from '../../../services/study/dynamic-simulation';
 import { dynamicSimulationResultInvalidations, MEDIUM_COLUMN_WIDTH } from './utils/dynamic-simulation-result-utils';
@@ -67,6 +67,7 @@ const DynamicSimulationResultSynthesis = memo(({ nodeUuid, studyUuid }: DynamicS
                 headerName: intl.formatMessage({
                     id: 'status',
                 }),
+                id: 'status',
                 field: 'status',
                 width: MEDIUM_COLUMN_WIDTH,
                 cellRenderer: StatusCellRender,

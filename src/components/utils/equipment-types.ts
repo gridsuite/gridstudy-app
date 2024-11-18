@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Identifiable } from '@gridsuite/commons-ui';
+import { EquipmentType, Identifiable } from '@gridsuite/commons-ui';
 
 type EquipmentInfosTypesStruct<T extends string = string> = { type: T };
 //TODO: rename to PascalCase
@@ -15,8 +15,11 @@ export const EQUIPMENT_INFOS_TYPES: Record<string, EquipmentInfosTypesStruct> = 
     FORM: { type: 'FORM' },
     TAB: { type: 'TAB' },
     TOOLTIP: { type: 'TOOLTIP' },
+    OPERATING_STATUS: { type: 'OPERATING_STATUS' },
 };
-export type EquipmentInfosTypes = EquipmentInfosTypesStruct<'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP'>;
+export type EquipmentInfosTypes = EquipmentInfosTypesStruct<
+    'LIST' | 'MAP' | 'FORM' | 'TAB' | 'TOOLTIP' | 'OPERATING_STATUS'
+>;
 
 //TODO: Compare with commons-ui's EquipmentType enum (not same order)
 //TODO: rename to PascalCase
@@ -40,9 +43,19 @@ export enum EQUIPMENT_TYPES {
     VSC_CONVERTER_STATION = 'VSC_CONVERTER_STATION',
     LCC_CONVERTER_STATION = 'LCC_CONVERTER_STATION',
     SWITCH = 'SWITCH',
+    DISCONNECTOR = 'DISCONNECTOR',
+    BREAKER = 'BREAKER',
 }
 
 export interface VoltageLevel extends Identifiable {
     nominalV: number;
     subtationId?: string;
 }
+
+export interface Substation extends Identifiable {
+    nominalV: number;
+}
+
+export const convertToEquipmentType = (type: EQUIPMENT_TYPES): EquipmentType => {
+    return EquipmentType[type as keyof typeof EquipmentType];
+};

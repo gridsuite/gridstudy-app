@@ -6,8 +6,8 @@
  */
 
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Box, Grid, Theme, Typography } from '@mui/material';
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
+import { Grid, Box, Typography, Theme } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
 import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
@@ -16,6 +16,39 @@ import { useSelector } from 'react-redux';
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { AppState } from 'redux/reducer';
+
+interface ModelVariableDefinitionInfos {
+    name: string;
+    unit: string;
+}
+
+interface DynamicSimulationModelBack {
+    modelName: string;
+    equipmentType: EQUIPMENT_TYPES;
+    variableDefinitions: ModelVariableDefinitionInfos[];
+    variablesSets: { name: string; variableDefinitions: ModelVariableDefinitionInfos[] }[];
+}
+
+interface DynamicSimulationModel {
+    name: string;
+    equipmentType: EQUIPMENT_TYPES;
+}
+
+export interface GetSelectedVariablesHandle {
+    api: {
+        getSelectedVariables: () => ModelVariable[];
+    };
+}
+
+interface ModelFilterProps {
+    equipmentType: EQUIPMENT_TYPES;
+}
+export type ModelVariable = {
+    id: string;
+    name: string;
+    parentId?: string;
+    variableId?: string;
+};
 
 const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
     return models.reduce<Record<string, Record<string, string | Record<string, string>>>>(
@@ -46,13 +79,6 @@ const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
         }),
         {}
     );
-};
-
-export type ModelVariable = {
-    id: string;
-    name: string;
-    parentId?: string;
-    variableId?: string;
 };
 
 const variablesTreeToVariablesArray = (variablesTree: Record<string, any>, parentId?: string) => {
@@ -139,33 +165,6 @@ const styles = {
     },
 };
 
-interface ModelVariableDefinitionInfos {
-    name: string;
-    unit: string;
-}
-
-interface DynamicSimulationModelBack {
-    modelName: string;
-    equipmentType: EQUIPMENT_TYPES;
-    variableDefinitions: ModelVariableDefinitionInfos[];
-    variablesSets: { name: string; variableDefinitions: ModelVariableDefinitionInfos[] }[];
-}
-
-interface DynamicSimulationModel {
-    name: string;
-    equipmentType: EQUIPMENT_TYPES;
-}
-
-export interface GetSelectedVariablesHandle {
-    api: {
-        getSelectedVariables: () => ModelVariable[];
-    };
-}
-
-interface ModelFilterProps {
-    equipmentType: EQUIPMENT_TYPES;
-}
-
 const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
     ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
         const intl = useIntl();
@@ -177,7 +176,6 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
         const [allVariables, setAllVariables] = useState<
             Record<string, Record<string, string | Record<string, string>>>
         >({}); // a variables tree
-
         const variablesRef = useRef<GetSelectedItemsHandle>(null);
 
         // --- models CheckboxSelect --- //
@@ -220,6 +218,9 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
 
         // fetch all associated models and variables for current node and study
         useEffect(() => {
+            if (!currentNode) {
+                return;
+            }
             fetchDynamicSimulationModels(studyUuid, currentNode.id).then((models: DynamicSimulationModelBack[]) => {
                 setAllModels(
                     models.map((model) => ({
@@ -232,7 +233,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
                 const variablesTree = modelsToVariablesTree(models);
                 setAllVariables(variablesTree);
             });
-        }, [studyUuid, currentNode.id]);
+        }, [studyUuid, currentNode?.id]);
 
         // expose some api for the component by using ref
         useImperativeHandle(

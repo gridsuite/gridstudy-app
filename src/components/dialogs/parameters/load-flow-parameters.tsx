@@ -22,7 +22,6 @@ import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../../../utils/conf
 import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
-import { LineSeparator } from '../dialogUtils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
 import {
     DropDown,
@@ -50,6 +49,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
 import { string } from 'yup';
 import yup from '@gridsuite/commons-ui/dist/utils/yupConfig';
+import LineSeparator from '../commons/line-separator';
 
 interface CountrySelectorProps {
     value: string[];

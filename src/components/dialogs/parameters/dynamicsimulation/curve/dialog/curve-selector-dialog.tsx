@@ -6,13 +6,12 @@
  */
 
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, useTheme } from '@mui/material';
-import React, { FunctionComponent, useCallback, useRef } from 'react';
+import { FunctionComponent, useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';
 import CurveSelector, { GetSelectedItemsHandler } from './curve-selector';
 import CurvePreview, { Curve, CurveHandler } from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { mergeSx } from '../../../../../utils/functions';

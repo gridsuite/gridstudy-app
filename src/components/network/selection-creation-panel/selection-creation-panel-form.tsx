@@ -6,7 +6,6 @@
  */
 import { SelectInput } from '@gridsuite/commons-ui';
 import { Grid } from '@mui/material';
-import { GridSection } from 'components/dialogs/dialogUtils';
 import { SELECTION_TYPE } from 'components/utils/field-constants';
 
 import { FC } from 'react';
@@ -15,6 +14,7 @@ import { ContingencyFilterCreationFields } from './contingency-filter-creation/c
 import { SELECTION_TYPES, selectionTypeToLabel } from './selection-types';
 import { SelectionCreationPaneFields } from './selection-creation-schema';
 import { Nullable } from 'components/utils/ts-utils';
+import GridSection from '../../dialogs/commons/grid-section';
 
 interface SelectionCreationPanelFormProps {
     pendingState: boolean;

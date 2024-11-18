@@ -17,7 +17,7 @@ import {
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
 } from '../../services/study/network';
-import { MapEquipments } from '@powsybl/diagram-viewer';
+import { MapEquipments } from '@powsybl/network-viewer';
 
 export default class GSMapEquipments extends MapEquipments {
     dispatch: Dispatch;
@@ -112,7 +112,7 @@ export default class GSMapEquipments extends MapEquipments {
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
-    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[]) {
+    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | null) {
         const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
@@ -153,6 +153,6 @@ export default class GSMapEquipments extends MapEquipments {
                 });
             }
         });
-        return [updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines];
+        return { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines };
     }
 }

@@ -46,7 +46,7 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import { FORM_LOADING_DELAY, REGULATION_TYPES, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
@@ -181,50 +181,54 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const fromSearchCopyToFormValues = useCallback(
         (staticCompensator: any) => {
-            reset({
-                [EQUIPMENT_ID]: staticCompensator.id + '(1)',
-                [EQUIPMENT_NAME]: staticCompensator.name ?? '',
-                ...getConnectivityFormData({
-                    voltageLevelId: staticCompensator.voltageLevelId ?? null,
-                    busbarSectionId: staticCompensator.busOrBusbarSectionId ?? null,
-                    busbarSectionName: undefined,
-                    connectionDirection: staticCompensator.connectablePosition.connectionDirection ?? null,
-                    connectionName: staticCompensator.connectablePosition.connectionName ?? null,
-                    connectionPosition: undefined,
-                    terminalConnected: undefined,
-                    isEquipmentModification: false,
-                }),
-                ...getReactiveFormData({
-                    maxSusceptance: staticCompensator.maxSusceptance ?? null,
-                    minSusceptance: staticCompensator.minSusceptance ?? null,
-                    nominalV: staticCompensator.nominalV,
-                    maxQAtNominalV: null,
-                    minQAtNominalV: null,
-                    regulationMode: staticCompensator.regulationMode,
-                    voltageSetpoint: staticCompensator.voltageSetpoint,
-                    reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
-                    voltageRegulationType:
-                        staticCompensator?.regulatingTerminalId || staticCompensator?.regulatingTerminalConnectableId
-                            ? REGULATION_TYPES.DISTANT.id
-                            : REGULATION_TYPES.LOCAL.id,
-                    voltageLevelId: staticCompensator.regulatingTerminalVlId,
-                    equipmentType: staticCompensator.regulatingTerminalConnectableType,
-                    equipmentId:
-                        staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
-                }),
-                ...getStandbyAutomatonFormData({
-                    addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
-                    standby: staticCompensator.standbyAutomatonInfos?.standby,
-                    b0: staticCompensator.standbyAutomatonInfos?.b0,
-                    q0: null,
-                    nominalV: staticCompensator.nominalV,
-                    lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
-                    hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
-                    lVoltageThreshold: staticCompensator.standbyAutomatonInfos?.lowVoltageThreshold,
-                    hVoltageThreshold: staticCompensator.standbyAutomatonInfos?.highVoltageThreshold,
-                }),
-                ...copyEquipmentPropertiesForCreation(staticCompensator),
-            });
+            reset(
+                {
+                    [EQUIPMENT_ID]: staticCompensator.id + '(1)',
+                    [EQUIPMENT_NAME]: staticCompensator.name ?? '',
+                    ...getConnectivityFormData({
+                        voltageLevelId: staticCompensator.voltageLevelId ?? null,
+                        busbarSectionId: staticCompensator.busOrBusbarSectionId ?? null,
+                        busbarSectionName: undefined,
+                        connectionDirection: staticCompensator.connectablePosition.connectionDirection ?? null,
+                        connectionName: staticCompensator.connectablePosition.connectionName ?? null,
+                        connectionPosition: undefined,
+                        terminalConnected: undefined,
+                        isEquipmentModification: false,
+                    }),
+                    ...getReactiveFormData({
+                        maxSusceptance: staticCompensator.maxSusceptance ?? null,
+                        minSusceptance: staticCompensator.minSusceptance ?? null,
+                        nominalV: staticCompensator.nominalV,
+                        maxQAtNominalV: null,
+                        minQAtNominalV: null,
+                        regulationMode: staticCompensator.regulationMode,
+                        voltageSetpoint: staticCompensator.voltageSetpoint,
+                        reactivePowerSetpoint: staticCompensator.reactivePowerSetpoint,
+                        voltageRegulationType:
+                            staticCompensator?.regulatingTerminalId ||
+                            staticCompensator?.regulatingTerminalConnectableId
+                                ? REGULATION_TYPES.DISTANT.id
+                                : REGULATION_TYPES.LOCAL.id,
+                        voltageLevelId: staticCompensator.regulatingTerminalVlId,
+                        equipmentType: staticCompensator.regulatingTerminalConnectableType,
+                        equipmentId:
+                            staticCompensator.regulatingTerminalConnectableId || staticCompensator.regulatingTerminalId,
+                    }),
+                    ...getStandbyAutomatonFormData({
+                        addStandbyAutomaton: !!staticCompensator.standbyAutomatonInfos,
+                        standby: staticCompensator.standbyAutomatonInfos?.standby,
+                        b0: staticCompensator.standbyAutomatonInfos?.b0,
+                        q0: null,
+                        nominalV: staticCompensator.nominalV,
+                        lVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.lowVoltageSetpoint,
+                        hVoltageSetpoint: staticCompensator.standbyAutomatonInfos?.highVoltageSetpoint,
+                        lVoltageThreshold: staticCompensator.standbyAutomatonInfos?.lowVoltageThreshold,
+                        hVoltageThreshold: staticCompensator.standbyAutomatonInfos?.highVoltageThreshold,
+                    }),
+                    ...copyEquipmentPropertiesForCreation(staticCompensator),
+                },
+                { keepDefaultValues: true }
+            );
         },
         [reset]
     );

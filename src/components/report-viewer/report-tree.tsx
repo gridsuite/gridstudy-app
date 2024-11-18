@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { PropsWithChildren, SyntheticEvent } from 'react';
+import { PropsWithChildren, SyntheticEvent } from 'react';
 import { Grid } from '@mui/material';
 import { TreeView } from '@mui/x-tree-view/TreeView';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -24,13 +24,13 @@ interface ReportTreeProps {
     handleSelectNode: (event: SyntheticEvent, reportId: string) => void;
 }
 
-export default function ReportTree({
+const ReportTree: React.FC<PropsWithChildren<ReportTreeProps>> = ({
     selectedReportId,
     expandedTreeReports,
     setExpandedTreeReports,
     handleSelectNode,
     children,
-}: PropsWithChildren<ReportTreeProps>) {
+}) => {
     const handleToggleNode = (event: SyntheticEvent, nodeIds: string[]) => {
         event.persist();
         //@ts-ignore
@@ -66,4 +66,6 @@ export default function ReportTree({
             </TreeView>
         </Grid>
     );
-}
+};
+
+export default ReportTree;

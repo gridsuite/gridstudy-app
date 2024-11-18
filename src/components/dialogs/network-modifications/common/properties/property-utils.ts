@@ -24,8 +24,8 @@ export type Property = {
     [ADDED]: boolean;
 };
 
-type Properties = {
-    [ADDITIONAL_PROPERTIES]: Property[];
+export type Properties = {
+    [ADDITIONAL_PROPERTIES]?: Property[];
 };
 
 export type PredefinedProperties = {

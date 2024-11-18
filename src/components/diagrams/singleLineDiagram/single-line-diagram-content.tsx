@@ -21,14 +21,14 @@ import {
     useDiagram,
 } from '../diagram-common';
 import withEquipmentMenu from '../../menus/equipment-menu';
-import BaseEquipmentMenu from '../../menus/base-equipment-menu';
+import BaseEquipmentMenu, { MapEquipment } from '../../menus/base-equipment-menu';
 import withOperatingStatusMenu from '../../menus/operating-status-menu';
-import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/diagram-viewer';
+import { OnBreakerCallbackType, SingleLineDiagramViewer, SLDMetadata } from '@powsybl/network-viewer';
 import { isNodeReadOnly } from '../../graph/util/model-functions';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import GeneratorModificationDialog from 'components/dialogs/network-modifications/generator/modification/generator-modification-dialog';
@@ -43,14 +43,14 @@ import { BusMenu } from 'components/menus/bus-menu';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
-import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../utils/equipment-types';
+import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES, convertToEquipmentType } from '../../utils/equipment-types';
 import EquipmentDeletionDialog from '../../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { startShortCircuitAnalysis } from '../../../services/study/short-circuit-analysis';
 import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
+import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 
@@ -62,7 +62,7 @@ type EquipmentMenuState = {
     display: boolean;
 };
 interface SingleLineDiagramContentProps {
-    readonly showInSpreadsheet: (menu: { equipmentId: string | null; type: string | null }) => void;
+    readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     readonly studyUuid: string;
     readonly svgType: DiagramType;
     readonly svg?: string;
@@ -146,9 +146,13 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         });
     }, []);
 
-    const handleOpenModificationDialog = (equipmentId: string, equipmentType: EQUIPMENT_TYPES) => {
+    const handleOpenModificationDialog = (equipmentId: string, equipmentType: EquipmentType | null) => {
         closeEquipmentMenu();
-        setEquipmentToModify({ equipmentId, equipmentType });
+        const equipmentEnumType = EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES];
+        setEquipmentToModify({
+            equipmentId,
+            equipmentType: equipmentEnumType,
+        });
     };
 
     const handleOpenDeletionDialog = useCallback(
@@ -183,7 +187,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const handleBreakerClick: OnBreakerCallbackType = useCallback(
-        // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-diagram-viewer/pull/106/ is merged
+        // switchElement should be SVGElement, this will be fixed once https://github.com/powsybl/powsybl-network-viewer/pull/106/ is merged
         (breakerId, newSwitchState, switchElement: any) => {
             if (!modificationInProgress) {
                 setModificationInProgress(true);
@@ -200,7 +204,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
 
     const handleNextVoltageLevelClick = useCallback(
         (id: string) => {
-            // This function is called by powsybl-diagram-viewer when clicking on a navigation arrow in a single line diagram.
+            // This function is called by powsybl-network-viewer when clicking on a navigation arrow in a single line diagram.
             // At the moment, there is no plan to open something other than a voltage-level by using these navigation arrows.
             if (!studyUuid || !currentNode) {
                 return;
@@ -249,7 +253,12 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     }, []);
 
     const handleViewInSpreadsheet = () => {
-        props.showInSpreadsheet({ equipmentId: equipmentMenu.equipmentId, type: equipmentMenu.equipmentType });
+        if (equipmentMenu.equipmentId && equipmentMenu.equipmentType) {
+            props.showInSpreadsheet({
+                equipmentId: equipmentMenu.equipmentId,
+                equipmentType: convertToEquipmentType(equipmentMenu.equipmentType),
+            });
+        }
         closeEquipmentMenu();
     };
 
@@ -280,7 +289,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.FAILED));
                     resetOneBusShortcircuitAnalysisLoader();
                 })
-                .finally(() => dispatch(setComputationStarting(false)));
+                .finally(() => {
+                    dispatch(setComputationStarting(false));
+                    // we clear the computation logs filter when a new computation is started
+                    dispatch(setLogsFilter(ComputingType.SHORT_CIRCUIT_ONE_BUS, []));
+                });
         },
         [
             dispatch,
@@ -308,9 +321,10 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     };
 
     const handleDeleteEquipment = useCallback(
-        (equipmentType: EQUIPMENT_TYPES, equipmentId: string) => {
-            if (equipmentType !== EQUIPMENT_TYPES.HVDC_LINE) {
-                removeEquipment(equipmentType, equipmentId);
+        (equipmentType: EquipmentType | null, equipmentId: string) => {
+            const equipmentEnumType = EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES];
+            if (equipmentEnumType !== EQUIPMENT_TYPES.HVDC_LINE) {
+                removeEquipment(equipmentEnumType, equipmentId);
             } else {
                 // need a query to know the HVDC converters type (LCC vs VSC)
                 fetchNetworkElementInfos(
@@ -326,7 +340,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                             // only hvdc line with LCC requires a Dialog (to select MCS)
                             handleOpenDeletionDialog(equipmentId, EQUIPMENT_TYPES.HVDC_LINE);
                         } else {
-                            removeEquipment(equipmentType, equipmentId);
+                            removeEquipment(equipmentEnumType, equipmentId);
                         }
                     })
                     .catch(() => {
@@ -341,11 +355,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(
-        (equipmentId: string, equipmentType: EQUIPMENT_TYPES, dialogTitle: string) => {
+        (equipmentId: string, equipmentType: EquipmentType | null, dialogTitle: string) => {
             setDynamicSimulationEventDialogTitle(dialogTitle);
             setEquipmentToConfigDynamicSimulationEvent({
                 equipmentId,
-                equipmentType,
+                equipmentType: EQUIPMENT_TYPES[equipmentType as keyof typeof EQUIPMENT_TYPES],
             });
         },
         []
@@ -358,6 +372,9 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const displayBranchMenu = () => {
         return (
             equipmentMenu.display &&
+            currentNode &&
+            studyUuid &&
+            equipmentMenu.equipmentId &&
             equipmentMenu.equipmentType &&
             [
                 EQUIPMENT_TYPES.LINE,
@@ -366,8 +383,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 EQUIPMENT_TYPES.HVDC_LINE,
             ].includes(equipmentMenu.equipmentType) && (
                 <MenuBranch
-                    equipment={{ id: equipmentMenu.equipmentId }}
-                    equipmentType={equipmentMenu.equipmentType}
+                    equipment={{ id: equipmentMenu.equipmentId } as MapEquipment}
+                    equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}
@@ -375,7 +392,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     currentNode={currentNode}
-                    studyUuid={studyUuid}
+                    studyUuid={studyUuid as UUID}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={setModificationInProgress}
                 />
@@ -384,12 +401,22 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     };
 
     const displayMenu = (equipmentType: EQUIPMENT_TYPES, menuId: string) => {
-        const Menu = withEquipmentMenu(BaseEquipmentMenu, menuId, equipmentType);
+        const Menu = withEquipmentMenu(
+            BaseEquipmentMenu,
+            EquipmentType[equipmentType as keyof typeof EquipmentType],
+            menuId
+        );
         return (
             equipmentMenu.display &&
+            equipmentMenu.equipmentId &&
             equipmentMenu.equipmentType === equipmentType && (
                 <Menu
-                    equipment={{ id: equipmentMenu.equipmentId }}
+                    equipment={
+                        {
+                            id: equipmentMenu.equipmentId,
+                        } as MapEquipment
+                    }
+                    equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}
                     handleViewInSpreadsheet={handleViewInSpreadsheet}

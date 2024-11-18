@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CheckBoxList,
+    useSnackMessage,
+    useModificationLabelComputer,
+    MODIFICATION_TYPES,
+    ElementType,
+} from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -31,7 +37,7 @@ import LineCreationDialog from 'components/dialogs/network-modifications/line/cr
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
-import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
+import { LoadCreationDialog } from '../../dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
@@ -47,17 +53,21 @@ import VscCreationDialog from 'components/dialogs/network-modifications/vsc/crea
 import VscModificationDialog from 'components/dialogs/network-modifications/vsc/modification/vsc-modification-dialog';
 import NetworkModificationsMenu from 'components/graph/menus/network-modifications-menu';
 import { UPDATE_TYPE } from 'components/network/constants';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
+import {
+    addNotification,
+    removeNotificationByNode,
+    resetLogsFilter,
+    setModificationsInProgress,
+} from '../../../redux/actions';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
 import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { UUID } from 'crypto';
 import { DropResult } from 'react-beautiful-dnd';
 import { AppState, StudyUpdated } from 'redux/reducer';
@@ -71,7 +81,6 @@ import {
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer.jsx';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -483,10 +492,7 @@ const NetworkModificationNodeEditor = () => {
             // (work for all users)
             // specific message id for each action type
             setMessageId(messageId);
-            const notifToDispatch = study.eventData.headers.nodes
-                ? [study.eventData.headers.parentNode, ...study.eventData.headers.nodes]
-                : [study.eventData.headers.parentNode];
-            dispatch(addNotification(notifToDispatch));
+            dispatch(addNotification([study.eventData.headers.parentNode ?? []]));
         },
         [dispatch]
     );
@@ -590,8 +596,10 @@ const NetworkModificationNodeEditor = () => {
             setModifications([]);
             setModificationsToRestore([]);
             dofetchNetworkModifications();
+            // reset the network modification and computing logs filter when the user changes the current node
+            dispatch(resetLogsFilter());
         }
-    }, [currentNode, dofetchNetworkModifications]);
+    }, [currentNode, dispatch, dofetchNetworkModifications]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -612,6 +620,7 @@ const NetworkModificationNodeEditor = () => {
 
             if (
                 studyUpdatedForce.eventData.headers['updateType'] &&
+                // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
                 UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])
             ) {
                 if (studyUpdatedForce.eventData.headers['updateType'] === 'deletingInProgress') {
@@ -984,7 +993,6 @@ const NetworkModificationNodeEditor = () => {
                 type={ElementType.MODIFICATION}
                 titleId={'CreateCompositeModification'}
                 prefixIdForGeneratedName={'GeneratedModification'}
-                withDescription={true}
             />
         );
     };

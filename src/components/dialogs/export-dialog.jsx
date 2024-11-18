@@ -4,7 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Collapse, Dialog, DialogTitle, Stack, Typography } from '@mui/material';
+import {
+    Collapse,
+    Dialog,
+    DialogTitle,
+    Stack,
+    Typography,
+    InputLabel,
+    Alert,
+    FormControl,
+    Select,
+    MenuItem,
+    CircularProgress,
+    IconButton,
+} from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -12,20 +25,15 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import InputLabel from '@mui/material/InputLabel';
-import Alert from '@mui/material/Alert';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import CircularProgress from '@mui/material/CircularProgress';
-import IconButton from '@mui/material/IconButton';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CancelButton, FlatParameters, fetchDirectoryElementPath, useSnackMessage } from '@gridsuite/commons-ui';
 import { getAvailableExportFormats } from '../../services/study';
 import { getExportUrl } from '../../services/study/network';
 import { isBlankOrEmpty } from 'components/utils/validation-functions';
 import TextField from '@mui/material/TextField';
 import { useSelector } from 'react-redux';
+import { useParameterState } from './parameters/parameters.jsx';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params.js';
 
 const STRING_LIST = 'STRING_LIST';
 
@@ -41,13 +49,13 @@ const STRING_LIST = 'STRING_LIST';
 
 const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) => {
     const [formatsWithParameters, setFormatsWithParameters] = useState([]);
-    const [selectedFormat, setSelectedFormat] = React.useState('');
-    const [loading, setLoading] = React.useState(false);
-    const [exportStudyErr, setExportStudyErr] = React.useState('');
+    const [selectedFormat, setSelectedFormat] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [exportStudyErr, setExportStudyErr] = useState('');
     const { snackError } = useSnackMessage();
     const [fileName, setFileName] = useState();
-
-    const [unfolded, setUnfolded] = React.useState(false);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [unfolded, setUnfolded] = useState(false);
 
     const treeModel = useSelector((state) => state.networkModificationTreeModel);
     const nodeName = useMemo(
@@ -75,10 +83,14 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
     useEffect(() => {
         if (open) {
             getAvailableExportFormats().then((formats) => {
+                const XIIDM_FORMAT = 'XIIDM';
+                const availableFormats = enableDeveloperMode
+                    ? formats
+                    : Object.fromEntries(Object.entries(formats).filter(([key]) => key === XIIDM_FORMAT));
                 // we check if the param is for extension, if it is, we select all possible values by default.
                 // the only way for the moment to check if the param is for extension, is by checking his type is name.
                 //TODO to be removed when extensions param default value corrected in backend to include all possible values
-                Object.values(formats).forEach((f) => {
+                Object.values(availableFormats).forEach((f) => {
                     f.parameters = f.parameters.map((parameter) => {
                         if (parameter.type === STRING_LIST && parameter.name?.endsWith('extensions')) {
                             parameter.defaultValue = parameter.possibleValues;
@@ -86,10 +98,10 @@ const ExportDialog = ({ open, onClose, onClick, studyUuid, nodeUuid, title }) =>
                         return parameter;
                     });
                 });
-                setFormatsWithParameters(formats);
+                setFormatsWithParameters(availableFormats);
             });
         }
-    }, [open]);
+    }, [open, enableDeveloperMode]);
 
     const handleFoldChange = () => {
         setUnfolded((prev) => !prev);

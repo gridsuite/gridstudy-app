@@ -5,21 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, MenuItem, Select, SelectChangeEvent, Theme, Typography } from '@mui/material';
+import { Grid, Box, MenuItem, Select, Typography, Theme, SelectChangeEvent } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
-import { Box } from '@mui/system';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
-import { ExpertFilter, IdentifiableAttributes, evaluateJsonFilter } from '../../../../../../services/study/filter';
+import { IdentifiableAttributes, evaluateJsonFilter } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from './curve-selector-utils';
-import { AgGridReact } from 'ag-grid-react';
-import { AppState } from 'redux/reducer';
 import { EQUIPMENT_TYPES, VoltageLevel } from 'components/utils/equipment-types';
+import { AppState } from 'redux/reducer';
+import { AgGridReact } from 'ag-grid-react';
 
 export interface GetSelectedEquipmentsHandle {
     api: {
@@ -88,7 +87,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // fetching options in different criterias
         useEffect(() => {
-            if (!studyUuid) {
+            if (!studyUuid || !currentNode) {
                 return;
             }
             // Load voltage level IDs
@@ -120,11 +119,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [studyUuid, currentNode.id, snackError]);
+        }, [studyUuid, currentNode?.id, snackError]);
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
-            if (!studyUuid) {
+            if (!studyUuid || !currentNode) {
                 return;
             }
             const expertFilter = buildExpertFilter(
@@ -138,7 +137,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter);
         }, [
             studyUuid,
-            currentNode.id,
+            currentNode?.id,
             equipmentType,
             selectedVoltageLevelIds,
             selectedCountries,

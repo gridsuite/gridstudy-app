@@ -9,7 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid, SelectChangeEvent, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
     emptyFormData as timeDelayEmptyFormData,
     formSchema as timeDelayFormSchema,
@@ -27,7 +27,6 @@ import MappingParameters, {
     formSchema as mappingFormSchema,
     MAPPING,
 } from './mapping-parameters';
-import { LineSeparator } from '../../dialogUtils';
 import { DropDown, LabelledButton, styles, TabPanel, useParametersBackend } from '../parameters';
 import NetworkParameters, {
     emptyFormData as networkEmptyFormData,
@@ -55,6 +54,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
+import LineSeparator from '../../commons/line-separator';
 
 enum TAB_VALUES {
     TIME_DELAY = 'timeDelay',

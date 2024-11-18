@@ -7,16 +7,17 @@
 
 import { useIntl } from 'react-intl';
 import { FunctionComponent, RefObject, useCallback } from 'react';
-import { EDIT_COLUMN } from './utils/config-tables';
+import { EDIT_COLUMN } from './utils/constants';
 import { ExportButton } from 'components/utils/export-button';
 import { formatNAValue } from './utils/cell-renderers';
 import { AgGridReact } from 'ag-grid-react';
 import { ColDef, ProcessCellForExportParams } from 'ag-grid-community';
+import { TABLES_NAMES } from './config/config-tables';
 
 interface CsvExportProps {
     gridRef: RefObject<AgGridReact>;
     columns: ColDef[];
-    tableName?: string;
+    tableName: string;
     disabled: boolean;
     tableNamePrefix?: string;
     skipColumnHeaders?: boolean;
@@ -32,8 +33,12 @@ export const CsvExport: FunctionComponent<CsvExportProps> = ({
 }) => {
     const intl = useIntl();
 
+    const existsInTable = function (name: string) {
+        return TABLES_NAMES.findIndex((n) => n === name) !== -1;
+    };
+
     const getCSVFilename = useCallback(() => {
-        const localisedTabName = intl.formatMessage({ id: tableName });
+        const localisedTabName = existsInTable(tableName) ? intl.formatMessage({ id: tableName }) : tableName;
         return localisedTabName
             .trim()
             .replace(/[\\/:"*?<>|\s]/g, '-') // Removes the filesystem sensible characters

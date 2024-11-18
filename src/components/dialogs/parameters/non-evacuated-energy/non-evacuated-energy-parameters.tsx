@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { UseParametersBackendReturnProps, styles } from '../parameters';
@@ -51,7 +51,6 @@ import {
     setNonEvacuatedEnergyParameters,
 } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
-import { LineSeparator } from '../../dialogUtils';
 import {
     getContingenciesFormSchema,
     getContingenciesParams,
@@ -71,6 +70,7 @@ import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
+import LineSeparator from '../../commons/line-separator';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

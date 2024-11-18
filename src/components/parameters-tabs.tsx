@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { Box, darken, DialogContentText, Divider, Grid, lighten, Tab, Tabs, Typography } from '@mui/material';
@@ -123,6 +123,10 @@ const styles = {
         paddingRight: 8,
         height: '100%',
     },
+    dividerTab: (theme: Theme) => ({
+        padding: 0,
+        minHeight: theme.spacing(1),
+    }),
 };
 
 enum TAB_VALUES {
@@ -366,7 +370,8 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="VoltageInit" />}
                                 value={TAB_VALUES.voltageInitParamsTabValue}
                             />
-                            <Divider />
+                            {/*In order to insert a Divider under a Tabs collection it need to be nested in a dedicated Tab to prevent console warnings*/}
+                            <Tab sx={styles.dividerTab} label="" icon={<Divider sx={{ flexGrow: 1 }} />} disabled />
                             <Tab
                                 label={<FormattedMessage id="NetworkVisualizations" />}
                                 value={TAB_VALUES.networkVisualizationsParams}

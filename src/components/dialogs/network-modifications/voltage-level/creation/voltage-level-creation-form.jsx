@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import Grid from '@mui/material/Grid';
 import {
     BUS_BAR_COUNT,
     EQUIPMENT_ID,
@@ -18,13 +17,13 @@ import {
     SECTION_COUNT,
     SUBSTATION_ID,
 } from 'components/utils/field-constants';
-import React, { useEffect, useState } from 'react';
-import { gridItem, GridSection, VoltageAdornment, KiloAmpereAdornment } from 'components/dialogs/dialogUtils';
+import { useEffect, useState } from 'react';
+import { VoltageAdornment, KiloAmpereAdornment } from 'components/dialogs/dialog-utils';
 import { FloatInput } from '@gridsuite/commons-ui';
 import { TextInput } from '@gridsuite/commons-ui';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
-import { Box } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import { IntegerInput } from '@gridsuite/commons-ui';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
@@ -32,6 +31,8 @@ import { SwitchesBetweenSections } from '../switches-between-sections/switches-b
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
 import PropertiesForm from '../../common/properties/properties-form';
 import { useWatch } from 'react-hook-form';
+import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../commons/grid-section';
 
 const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const currentNodeUuid = currentNode?.id;
@@ -108,32 +109,34 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     return (
         <>
             <Grid container spacing={2}>
-                {gridItem(voltageLevelIdField, 4)}
-                {gridItem(voltageLevelNameField, 4)}
-                {gridItem(substationField, 4)}
+                <GridItem size={4}>{voltageLevelIdField}</GridItem>
+                <GridItem size={4}>{voltageLevelNameField}</GridItem>
+                <GridItem size={4}>{substationField}</GridItem>
             </Grid>
             <GridSection title={'VoltageText'} />
             <Grid container spacing={2}>
-                {gridItem(nominalVoltageField, 4)}
-                {gridItem(lowVoltageLimitField, 4)}
-                {gridItem(highVoltageLimitField, 4)}
+                <GridItem size={4}>{nominalVoltageField}</GridItem>
+                <GridItem size={4}>{lowVoltageLimitField}</GridItem>
+                <GridItem size={4}>{highVoltageLimitField}</GridItem>
             </Grid>
             <GridSection title={'ShortCircuit'} />
             <Grid container spacing={2}>
-                {gridItem(lowShortCircuitCurrentLimitField, 4)}
-                {gridItem(highShortCircuitCurrentLimitField, 4)}
+                <GridItem size={4}>{lowShortCircuitCurrentLimitField}</GridItem>
+                <GridItem size={4}>{highShortCircuitCurrentLimitField}</GridItem>
                 <Box sx={{ width: '100%' }} />
             </Grid>
             <GridSection title={'BusBarSections'} />
             <Grid container spacing={2}>
-                {gridItem(busBarCountField, 4)}
-                {gridItem(sectionCountField, 4)}
+                <GridItem size={4}>{busBarCountField}</GridItem>
+                <GridItem size={4}>{sectionCountField}</GridItem>
                 <SwitchesBetweenSections />
             </Grid>
             {displayOmnibus && (
                 <>
                     <GridSection title={'Coupling_Omnibus'} />
-                    <Grid container>{gridItem(couplingOmnibusForm, 12)}</Grid>
+                    <Grid container>
+                        <GridItem size={12}>{couplingOmnibusForm}</GridItem>
+                    </Grid>
                 </>
             )}
             <PropertiesForm networkElementType={'voltageLevel'} />

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import { Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
@@ -19,7 +19,6 @@ import {
 import { CheckboxInput, FieldLabel, MuiSelectInput, RadioInput, SwitchInput } from '@gridsuite/commons-ui';
 
 import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS, STATUS } from '../../../utils/constants';
-import { gridItem, GridSection } from '../../dialogUtils';
 import { green, red } from '@mui/material/colors';
 import { useWatch } from 'react-hook-form';
 import VoltageTable from './short-circuit-voltage-table';
@@ -29,6 +28,8 @@ import {
     intlPredefinedParametersOptions,
 } from './short-circuit-parameters-utils';
 import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
+import GridItem from '../../commons/grid-item';
+import GridSection from '../../commons/grid-section';
 
 const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetAll }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);
@@ -156,25 +157,27 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
     return (
         <Grid container spacing={2} paddingLeft={2}>
             <Grid container paddingTop={2} xl={6}>
-                {gridItem(feederResult, 9)}
+                <GridItem size={9}>{feederResult}</GridItem>
             </Grid>
-            <GridSection title="ShortCircuitPredefinedParameters" heading={'4'} />
+            <GridSection title="ShortCircuitPredefinedParameters" heading={4} />
             <Grid xl={6} container spacing={1} alignItems={'center'}>
-                {gridItem(predefinedParameters, 8)}
-                {gridItem(statusToShow, 4)}
+                <GridItem size={8}>{predefinedParameters}</GridItem>
+                <GridItem size={4}>{statusToShow}</GridItem>
             </Grid>
-            <GridSection title="ShortCircuitCharacteristics" heading={'4'} />
-            <Grid>
-                {gridItem(loads, 6)}
-                {gridItem(shuntCompensators, 6)}
+            <GridSection title="ShortCircuitCharacteristics" heading={4} />
+            <Grid container>
+                <GridItem>{loads}</GridItem>
+                <GridItem>{shuntCompensators}</GridItem>
             </Grid>
-            <Grid marginLeft={4}>
-                {gridItem(vsc, 4)}
-                {gridItem(neutralPosition, 8)}
+            <Grid container marginLeft={4}>
+                <GridItem size={4}>{vsc}</GridItem>
+                <GridItem size={8}>{neutralPosition}</GridItem>
             </Grid>
 
-            <GridSection title="ShortCircuitVoltageProfileMode" heading={'4'} />
-            <Grid>{gridItem(initialVoltageProfileModeField, 12)}</Grid>
+            <GridSection title="ShortCircuitVoltageProfileMode" heading={4} />
+            <Grid container>
+                <GridItem size={12}>{initialVoltageProfileModeField}</GridItem>
+            </Grid>
             <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
         </Grid>
     );

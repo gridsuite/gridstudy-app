@@ -10,16 +10,14 @@ import { Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemT
 import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { SelectOptionsDialog } from 'utils/dialogs';
+import { TABLES_NAMES } from './config/config-tables';
 import {
     DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
     LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    MAX_LOCKS_PER_TAB,
     REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_COLUMNS_NAMES,
-    TABLES_NAMES,
-} from './utils/config-tables';
+} from './utils/constants';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
@@ -27,6 +25,9 @@ import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautif
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
 import { AppState } from '../../redux/reducer';
+import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
+
+const MAX_LOCKS_PER_TAB = 5;
 
 const styles = {
     checkboxSelectAll: (theme: Theme) => ({
@@ -70,11 +71,15 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
 }) => {
     const [popupSelectColumnNames, setPopupSelectColumnNames] = useState<boolean>(false);
 
-    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
     const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
     );
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
+    const columnsNames = useSelector((state: AppState) => state.tables.columnsNames);
+
+    const dispatch = useDispatch();
 
     const { snackError } = useSnackMessage();
     const intl = useIntl();
@@ -107,55 +112,78 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     ]);
 
     const handleSaveSelectedColumnNames = useCallback(() => {
-        updateConfigParameter(
-            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-            JSON.stringify([...selectedColumnsNames])
-        ).catch((error) => {
-            const allDisplayedTemp = allDisplayedColumnsNames[tabIndex];
-            setSelectedColumnsNames(new Set(allDisplayedTemp ? JSON.parse(allDisplayedTemp) : []));
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
-        });
-        let lockedColumnsToSave = [...lockedColumnsNames].filter((name) => selectedColumnsNames.has(name));
-        updateConfigParameter(
-            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-            JSON.stringify(lockedColumnsToSave)
-        ).catch((error) => {
-            const allLockedTemp = allLockedColumnsNames[tabIndex];
-            setLockedColumnsNames(new Set(allLockedTemp ? JSON.parse(allLockedTemp) : []));
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
-        });
-        setLockedColumnsNames(lockedColumnsNames);
+        const saveConfigParameter = async (
+            prefix: string,
+            value: any,
+            index: number,
+            setState: Function,
+            allState: any[],
+            dispatchAction: Function
+        ) => {
+            // for newly added tabs, we should not save the state in the database because the tabs are only persisted in the redux store
+            // we should only save the state in the redux store
+            if (index < TABLES_NAMES.length) {
+                updateConfigParameter(prefix + tablesNames[index], JSON.stringify(value)).catch((error) => {
+                    const allTemp = allState[index];
+                    setState(new Set(allTemp ? JSON.parse(allTemp) : []));
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'paramsChangingError',
+                    });
+                });
+            } else {
+                const columns = new Array(tablesNames.length);
+                columns[index] = {
+                    index: index,
+                    value: JSON.stringify(value),
+                };
+                dispatch(dispatchAction(columns));
+            }
+        };
 
-        updateConfigParameter(
-            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
-            JSON.stringify(reorderedTableDefinitionIndexes)
-        ).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'paramsChangingError',
-            });
-        });
+        const selectedColumnsArray = Array.from(selectedColumnsNames);
+        const lockedColumnsToSave = [...lockedColumnsNames].filter((name) => selectedColumnsNames.has(name));
+
+        saveConfigParameter(
+            DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+            selectedColumnsArray,
+            tabIndex,
+            setSelectedColumnsNames,
+            allDisplayedColumnsNames,
+            changeDisplayedColumns
+        );
+        saveConfigParameter(
+            LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+            lockedColumnsToSave,
+            tabIndex,
+            setLockedColumnsNames,
+            allLockedColumnsNames,
+            changeLockedColumns
+        );
+        saveConfigParameter(
+            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+            reorderedTableDefinitionIndexes,
+            tabIndex,
+            () => {},
+            [],
+            changeReorderedColumns
+        );
 
         handleCloseColumnsSettingDialog();
     }, [
         tabIndex,
-        selectedColumnsNames,
         lockedColumnsNames,
+        tablesNames,
         setLockedColumnsNames,
         reorderedTableDefinitionIndexes,
         handleCloseColumnsSettingDialog,
+        selectedColumnsNames,
         allDisplayedColumnsNames,
         setSelectedColumnsNames,
         snackError,
+        dispatch,
         allLockedColumnsNames,
     ]);
-
     const handleToggle = (value: string) => () => {
         const newChecked = new Set(selectedColumnsNames.values());
         const newLocked = new Set(lockedColumnsNames.values());
@@ -172,9 +200,9 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     };
 
     const handleToggleAll = () => {
-        let isAllChecked = selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isAllChecked = selectedColumnsNames.size === columnsNames[tabIndex].size;
         // If all columns are selected/checked, then we hide all of them.
-        setSelectedColumnsNames(isAllChecked ? new Set() : TABLES_COLUMNS_NAMES[tabIndex]);
+        setSelectedColumnsNames(isAllChecked ? new Set() : columnsNames[tabIndex]);
         if (isAllChecked) {
             setLockedColumnsNames(new Set());
         }
@@ -217,7 +245,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     };
 
     const checkListColumnsNames = () => {
-        let isAllChecked = selectedColumnsNames.size === TABLES_COLUMNS_NAMES[tabIndex].size;
+        let isAllChecked = selectedColumnsNames.size === columnsNames[tabIndex].size;
         let isSomeChecked = selectedColumnsNames.size !== 0 && !isAllChecked;
 
         return (

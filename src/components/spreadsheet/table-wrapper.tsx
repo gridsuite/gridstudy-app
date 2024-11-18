@@ -8,17 +8,10 @@
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box } from '@mui/system';
-import { Alert, Grid } from '@mui/material';
+
+import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import {
-    EDIT_COLUMN,
-    MIN_COLUMN_WIDTH,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    TABLES_DEFINITION_INDEXES,
-    TABLES_DEFINITION_TYPES,
-    TABLES_NAMES,
-} from './utils/config-tables';
+import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
@@ -34,7 +27,7 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipme
 import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
-import { useSpreadsheetEquipments } from 'components/network/use-spreadsheet-equipments';
+import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
 import { updateConfigParameter } from '../../services/config';
 import {
     formatPropertiesForBackend,
@@ -69,7 +62,7 @@ import {
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
 import { toModificationOperation } from 'components/utils/utils';
-import { sanitizeString } from 'components/dialogs/dialogUtils';
+import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -92,7 +85,9 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
+import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
+import { FluxConventions } from '../dialogs/parameters/network-parameters';
+import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -141,7 +136,7 @@ const styles = {
         marginLeft: theme.spacing(1),
     }),
     selectColumns: (theme: Theme) => ({
-        marginLeft: theme.spacing(6),
+        marginLeft: theme.spacing(4),
     }),
 };
 
@@ -149,7 +144,7 @@ interface TableWrapperProps {
     studyUuid: string;
     currentNode: CurrentTreeNode;
     equipmentId: string;
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: SpreadsheetEquipmentType;
     equipmentChanged: boolean;
     disabled: boolean;
 }
@@ -171,14 +166,17 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const allDisplayedColumnsNames = useSelector((state: AppState) => state.allDisplayedColumnsNames);
+    const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
     const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
     );
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.allCustomColumnsDefinitions[TABLES_NAMES[tabIndex]]
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]]
     );
+    const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
+    const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
     const [selectedColumnsNames, setSelectedColumnsNames] = useState<Set<string>>(new Set());
@@ -198,7 +196,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const isLockedColumnNamesEmpty = useMemo(() => lockedColumnsNames.size === 0, [lockedColumnsNames.size]);
 
-    const [columnData, setColumnData] = useState<ColDef[]>([]);
+    const [columnData, setColumnData] = useState<CustomColDef[]>([]);
     const [customColumnData, setCustomColumnData] = useState<CustomColDef[]>([]);
     const [mergedColumnData, setMergedColumnData] = useState<ColDef[]>([]);
     const { createCustomColumn } = useCustomColumn(tabIndex);
@@ -232,41 +230,52 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         rollbackEdit();
     }, [rollbackEdit]);
 
-    const currentColumns = useCallback(() => {
-        const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
-        return equipment ? equipment.columns : [];
-    }, [tabIndex]);
+    const applyFluxConvention = useCallback(
+        (val: number) => {
+            return fluxConvention === FluxConventions.TARGET && val !== undefined ? -val : val;
+        },
+        [fluxConvention]
+    );
 
-    const currentType = useCallback(() => {
-        const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
+    const currentColumns = useCallback(() => {
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
+        return equipment ? equipment.columns : [];
+    }, [tabIndex, tablesDefinitionIndexes]);
+
+    const currentTabName = useCallback(() => {
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
+        return equipment ? equipment.name : '';
+    }, [tabIndex, tablesDefinitionIndexes]);
+
+    const currentTabType = useCallback(() => {
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
-    }, [tabIndex]);
+    }, [tabIndex, tablesDefinitionIndexes]);
 
     const isEditColumnVisible = useCallback(() => {
         return (
             !disabled &&
-            currentType() &&
+            currentTabType() &&
             currentColumns()
-                .filter((c: any) => c.editable)
-                .filter((c: any) => selectedColumnsNames.has(c.id)).length > 0
+                .filter((c) => c.editable)
+                .filter((c) => selectedColumnsNames.has(c.id)).length > 0
         );
-    }, [disabled, selectedColumnsNames, currentType, currentColumns]);
+    }, [disabled, selectedColumnsNames, currentTabType, currentColumns]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentType());
+    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
 
     const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
         filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: currentType().toString(),
-        // @ts-expect-error TODO: found how to have Action type in props type
+        filterTab: currentTabName(),
         filterStoreAction: setSpreadsheetFilter,
     });
 
     const equipmentDefinition = useMemo(
         () => ({
-            type: currentType(),
-            fetchers: TABLES_DEFINITION_INDEXES.get(tabIndex)?.fetchers,
+            type: currentTabType(),
+            fetchers: tablesDefinitionIndexes.get(tabIndex)?.fetchers,
         }),
-        [tabIndex, currentType]
+        [currentTabType, tablesDefinitionIndexes, tabIndex]
     );
 
     const formatFetchedEquipmentHandler = useCallback(
@@ -285,13 +294,13 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const { equipments, errorMessage, isFetching } = useSpreadsheetEquipments(
-        equipmentDefinition,
+        equipmentDefinition as EquipmentProps,
         formatFetchedEquipmentsHandler
     );
 
     // Function to get the columns that have isEnum filter set to true in customFilterParams
     const getEnumFilterColumns = useCallback(() => {
-        return currentColumns().filter((c: any) => c.isEnum);
+        return currentColumns().filter((c) => c.isEnum);
     }, [currentColumns]);
 
     const generateEquipmentsFilterEnums = useCallback(() => {
@@ -299,8 +308,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             return {};
         }
         const filterEnums: any = {};
-        getEnumFilterColumns().forEach((column: any) => {
-            filterEnums[column.field] = [
+        getEnumFilterColumns().forEach((column) => {
+            filterEnums[column.field ?? ''] = [
                 ...new Set(
                     equipments
                         .map((equipment: any) => deepFindValue(equipment, column.field))
@@ -314,22 +323,24 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
 
     const enrichColumn = useCallback(
-        (column: any) => {
-            column.headerName = intl.formatMessage({ id: column.id });
+        (column: CustomColDef) => {
+            const columnExtended = { ...column };
+            columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
-            if (column.numeric) {
+            if (columnExtended.numeric) {
                 //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
-                const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && column.canBeInvalidated;
+                const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && columnExtended.canBeInvalidated;
 
-                column.cellRendererParams = {
+                columnExtended.cellRendererParams = {
                     isValueInvalid: isValueInvalid,
                 };
-
-                if (column.normed) {
-                    column.cellRendererParams.fluxConvention = fluxConvention;
-                    column.comparator = (valueA: number, valueB: number) => {
-                        const normedValueA = valueA !== undefined ? column.normed(fluxConvention, valueA) : undefined;
-                        const normedValueB = valueB !== undefined ? column.normed(fluxConvention, valueB) : undefined;
+                if (columnExtended.withFluxConvention) {
+                    // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
+                    // to get the convention, which requires a component context.
+                    columnExtended.cellRendererParams.applyFluxConvention = applyFluxConvention;
+                    columnExtended.comparator = (valueA: number, valueB: number) => {
+                        const normedValueA = valueA !== undefined ? applyFluxConvention(valueA) : undefined;
+                        const normedValueB = valueB !== undefined ? applyFluxConvention(valueB) : undefined;
                         if (normedValueA !== undefined && normedValueB !== undefined) {
                             return normedValueA - normedValueB;
                         } else if (normedValueA === undefined && normedValueB === undefined) {
@@ -339,31 +350,61 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         } else if (normedValueB === undefined) {
                             return 1;
                         }
+                        return 0;
+                    };
+                    // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
+                    columnExtended.agGridFilterParams = {
+                        filterOptions: [
+                            {
+                                displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
+                                predicate: (filterValues: number[], cellValue: number) => {
+                                    const filterValue = filterValues.at(0);
+                                    if (filterValue === undefined) {
+                                        return false;
+                                    }
+                                    const transformedValue = applyFluxConvention(cellValue);
+                                    return transformedValue != null ? transformedValue >= filterValue : false;
+                                },
+                            },
+                            {
+                                displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
+                                predicate: (filterValues: number[], cellValue: number) => {
+                                    const filterValue = filterValues.at(0);
+                                    if (filterValue === undefined) {
+                                        return false;
+                                    }
+                                    const transformedValue = applyFluxConvention(cellValue);
+                                    return transformedValue != null ? transformedValue <= filterValue : false;
+                                },
+                            },
+                        ],
                     };
                 }
             }
 
-            if (column.cellRenderer == null) {
-                column.cellRenderer = DefaultCellRenderer;
+            if (columnExtended.cellRenderer == null) {
+                columnExtended.cellRenderer = DefaultCellRenderer;
             }
 
-            column.width = column.columnWidth || MIN_COLUMN_WIDTH;
+            columnExtended.width = columnExtended.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
             //we reuse and mutate the column objects so we need to clear to undefined
-            column.pinned = lockedColumnsNames.has(column.id) ? 'left' : undefined;
+            columnExtended.pinned = lockedColumnsNames.has(columnExtended.id) ? 'left' : undefined;
 
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
-            if (column?.isEnum) {
-                column.comparator = (valueA: string, valueB: string) => {
+            if (columnExtended?.isEnum) {
+                columnExtended.comparator = (valueA: string, valueB: string) => {
                     const getTranslatedOrOriginalValue = (value: string) => {
                         if (value === undefined || value === null) {
                             return '';
                         }
-                        if (column.isCountry) {
+                        if (columnExtended.isCountry) {
                             return translate(value);
-                        } else if (column.getEnumLabel) {
-                            const labelId = column.getEnumLabel(value);
+                        } else if (columnExtended.getEnumLabel) {
+                            const labelId = columnExtended.getEnumLabel(value);
                             return intl.formatMessage({
                                 id: labelId || value,
                                 defaultMessage: value,
@@ -380,8 +421,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             }
 
             return makeAgGridCustomHeaderColumn({
-                headerName: column.headerName,
-                field: column.field,
+                headerName: columnExtended.headerName,
+                field: columnExtended.field,
                 sortProps: {
                     onSortChanged,
                     sortConfig,
@@ -391,10 +432,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     filterSelector,
                 },
                 filterParams: {
-                    ...column?.customFilterParams,
+                    ...columnExtended?.customFilterParams,
                     filterEnums,
                 },
-                ...column,
+                ...columnExtended,
             });
         },
         [
@@ -405,7 +446,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             updateFilter,
             filterSelector,
             loadFlowStatus,
-            fluxConvention,
+            applyFluxConvention,
             filterEnums,
             translate,
         ]
@@ -432,8 +473,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (disabled || !equipments) {
             return [];
         }
-
-        return equipments;
+        // return new instance of the array to trigger ag-grid update
+        return [...equipments];
     }, [equipments, disabled]);
 
     //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
@@ -471,9 +512,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setReorderedTableDefinitionIndexes(
             allReorderedTemp
                 ? JSON.parse(allReorderedTemp)
-                : TABLES_DEFINITION_INDEXES.get(tabIndex)?.columns.map((item) => item.id)
+                : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.id)
         );
-    }, [allReorderedTableDefinitionIndexes, tabIndex]);
+    }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
     useEffect(() => {
         setManualTabSwitch(false);
@@ -493,7 +534,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         if (equipmentId !== null && equipmentType !== null && !manualTabSwitch) {
-            const definition = TABLES_DEFINITION_TYPES.get(equipmentType);
+            const definition = tablesDefinitionTypes.get(equipmentType);
             if (definition) {
                 if (tabIndex === definition.index) {
                     // already in expected tab => explicit call to scroll to expected row
@@ -504,7 +545,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 }
             }
         }
-    }, [equipmentId, equipmentType, equipmentChanged, manualTabSwitch, tabIndex, scrollToEquipmentIndex]);
+    }, [
+        equipmentId,
+        equipmentType,
+        equipmentChanged,
+        manualTabSwitch,
+        tabIndex,
+        scrollToEquipmentIndex,
+        tablesDefinitionTypes,
+    ]);
 
     const handleGridReady = useCallback(() => {
         if (globalFilterRef.current) {
@@ -527,10 +576,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     useEffect(() => {
         const lockedColumnsConfig = currentColumns()
-            .filter((column: any) => lockedColumnsNames.has(column.id))
-            .map((column: any) => {
+            .filter((column) => lockedColumnsNames.has(column.id))
+            .map((column) => {
                 const s: ColumnState = {
-                    colId: column.field,
+                    colId: column.field ?? '',
                     pinned: 'left',
                 };
                 return s;
@@ -563,7 +612,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     if (reorderedTableDefinitionIndexes.toString() !== tmpIndexes.toString()) {
                         setReorderedTableDefinitionIndexes(tmpIndexes);
                         updateConfigParameter(
-                            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + TABLES_NAMES[tabIndex],
+                            REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE + tablesNames[tabIndex],
                             JSON.stringify(tmpIndexes)
                         ).catch((error) => {
                             snackError({
@@ -585,7 +634,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 }
             }
         },
-        [columnData, isEditColumnVisible, reorderedTableDefinitionIndexes, snackError, tabIndex]
+        [columnData, isEditColumnVisible, reorderedTableDefinitionIndexes, snackError, tabIndex, tablesNames]
     );
 
     const getFieldValue = useCallback((newField: any, oldField: any) => {
@@ -951,10 +1000,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         [currentNode?.id, studyUuid, getFieldValue]
     );
 
-    // TODO: when 3WT update will use a network modification, remove everything dealing with groovy
+    // TODO: when 3WT update will use a network modification, remove everything dealing with groovyEquipmentGetter/changeCmd
     const groovyUpdate = useCallback(
         (params: any) => {
-            const equipment: any = TABLES_DEFINITION_INDEXES.get(tabIndex);
+            const equipment = tablesDefinitionIndexes.get(tabIndex);
             if (equipment && equipment.groovyEquipmentGetter) {
                 let groovyScript =
                     'equipment = network.' +
@@ -965,7 +1014,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 const wrappedEditedData = {
                     data: editingData,
                 };
-                const columns: any[] = equipment.columns;
+                const columns = equipment.columns;
                 Object.entries(priorValuesBuffer).forEach(([field, _value]) => {
                     const column: any = columns.find((c: any) => c.field === field);
                     if (column && column.changeCmd) {
@@ -976,7 +1025,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 return requestNetworkChange(studyUuid, currentNode?.id, groovyScript);
             }
         },
-        [currentNode?.id, studyUuid, editingData, priorValuesBuffer, tabIndex]
+        [tablesDefinitionIndexes, tabIndex, editingData, priorValuesBuffer, studyUuid, currentNode?.id]
     );
 
     const buildEditPromise = useCallback(
@@ -1117,10 +1166,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
 
     const addEditColumn = useCallback(
-        (equipmentType: EQUIPMENT_TYPES, columns: any[]) => {
+        (equipmentType: EQUIPMENT_TYPES, columns: CustomColDef[]) => {
             columns.unshift({
+                id: EDIT_COLUMN,
                 field: EDIT_COLUMN,
-                locked: true,
                 pinned: 'left',
                 lockPosition: 'left',
                 sortable: false,
@@ -1159,10 +1208,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
     const generateTableColumns = useCallback(() => {
         let selectedTableColumns = currentColumns()
-            .filter((c: any) => {
+            .filter((c) => {
                 return selectedColumnsNames.has(c.id);
             })
-            .map((column: any) => enrichColumn(column));
+            .map((column) => enrichColumn(column));
 
         function sortByIndex(a: any, b: any) {
             return reorderedTableDefinitionIndexes.indexOf(a.id) - reorderedTableDefinitionIndexes.indexOf(b.id);
@@ -1171,7 +1220,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         selectedTableColumns.sort(sortByIndex);
 
         if (isEditColumnVisible()) {
-            addEditColumn(currentType(), selectedTableColumns);
+            addEditColumn(currentTabType(), selectedTableColumns);
         }
         return selectedTableColumns;
     }, [
@@ -1180,7 +1229,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         isEditColumnVisible,
         reorderedTableDefinitionIndexes,
         selectedColumnsNames,
-        currentType,
+        currentTabType,
         currentColumns,
     ]);
 
@@ -1205,14 +1254,14 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     tabIndex={tabIndex}
                     handleSwitchTab={handleSwitchTab}
                 />
-                <Grid container sx={styles.toolbar}>
+                <Grid container columnSpacing={2} sx={styles.toolbar}>
                     <Grid item sx={styles.filter}>
                         <GlobalFilter disabled={!!(disabled || editingData)} gridRef={gridRef} ref={globalFilterRef} />
                     </Grid>
                     <Grid item sx={styles.selectColumns}>
                         <ColumnsConfig
                             tabIndex={tabIndex}
-                            disabled={!!(disabled || editingData)}
+                            disabled={!!(disabled || editingData || currentColumns().length === 0)}
                             reorderedTableDefinitionIndexes={reorderedTableDefinitionIndexes}
                             setReorderedTableDefinitionIndexes={setReorderedTableDefinitionIndexes}
                             selectedColumnsNames={selectedColumnsNames}
@@ -1222,17 +1271,21 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         />
                     </Grid>
                     {developerMode && (
-                        <Grid item sx={{ marginLeft: '15px' }}>
-                            <CustomColumnsConfig indexTab={tabIndex} />
-                            <CustomColumnsSave indexTab={tabIndex} />
-                        </Grid>
+                        <>
+                            <Grid item>
+                                <CustomColumnsConfig indexTab={tabIndex} />
+                            </Grid>
+                            <Grid item>
+                                <CustomColumnsSave indexTab={tabIndex} />
+                            </Grid>
+                        </>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item>
                         <CsvExport
                             gridRef={gridRef}
                             columns={columnData}
-                            tableName={TABLES_DEFINITION_INDEXES.get(tabIndex)?.name}
+                            tableName={currentTabName()}
                             disabled={!!(disabled || rowData.length === 0 || editingData)}
                         />
                     </Grid>
@@ -1251,7 +1304,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         rowData={rowData}
                         columnData={mergedColumnData}
                         topPinnedData={topPinnedData}
-                        fetched={equipments || errorMessage}
+                        fetched={!!equipments || !!errorMessage}
                         handleColumnDrag={handleColumnDrag}
                         handleCellEditingStarted={handleCellEditingStarted}
                         handleCellEditingStopped={handleCellEditingStopped}

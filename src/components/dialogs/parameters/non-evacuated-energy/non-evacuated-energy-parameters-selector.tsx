@@ -5,12 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import Grid from '@mui/material/Grid';
-import { Tab, Tabs } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import { TabPanel } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as nonEvacuatedEnergyParam from './columns-definitions';
@@ -27,7 +26,7 @@ import GeneratorsCappingsThreshold from './generators-cappings-threshold';
 import { IColumnsDef } from '../sensi/columns-definitions';
 
 interface NonEvacuatedEnergyParametersSelectorProps {
-    onFormChanged: any;
+    onFormChanged: any; //TODO: fix anys
     onChangeParams: any;
 }
 
@@ -37,7 +36,7 @@ const NonEvacuatedEnergyParametersSelector: FunctionComponent<NonEvacuatedEnergy
 }) => {
     const intl = useIntl();
 
-    const [tabValue, setTabValue] = useState<TAB_VALUES>(TAB_VALUES.GenerationStages);
+    const [tabValue, setTabValue] = useState(TAB_VALUES.GenerationStages);
     const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: number) => {
         setTabValue(newValue);
     }, []);
@@ -83,100 +82,104 @@ const NonEvacuatedEnergyParametersSelector: FunctionComponent<NonEvacuatedEnergy
     );
 
     return (
-        <Grid sx={{ width: '100%' }}>
-            <Tabs value={tabValue} onChange={handleTabChange}>
+        <>
+            <Grid sx={{ width: '100%' }}>
+                <Tabs value={tabValue} onChange={handleTabChange}>
+                    {tabInfo.map((tab, index) => (
+                        <Tab
+                            key={tab.label}
+                            label={<FormattedMessage id={tab.label} />}
+                            value={index}
+                            sx={{
+                                fontSize: 17,
+                                fontWeight: 'bold',
+                                textTransform: 'capitalize',
+                            }}
+                        />
+                    ))}
+                </Tabs>
+
                 {tabInfo.map((tab, index) => (
-                    <Tab
-                        key={tab.label}
-                        label={<FormattedMessage id={tab.label} />}
-                        value={index}
-                        sx={{
-                            fontSize: 17,
-                            fontWeight: 'bold',
-                            textTransform: 'capitalize',
-                        }}
-                    />
+                    <TabPanel key={tab.label} value={tabValue} index={index}>
+                        {tabValue === TAB_VALUES.GenerationStages && (
+                            <SensitivityTable
+                                arrayFormName={`${NonEvacuatedEnergyGenerationStages.name}`}
+                                columnsDefinition={getColumnsDefinition(
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES
+                                )}
+                                useFieldArrayOutput={useFieldArrayOutputGenerationStages}
+                                createRows={rowDataGenerationStages}
+                                tableHeight={295}
+                                disableAdd={true}
+                                disableDelete={true}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
+                            />
+                        )}
+
+                        {tabValue === TAB_VALUES.GenerationStages && (
+                            <SensitivityTable
+                                arrayFormName={`${NonEvacuatedEnergyStagesSelection.name}`}
+                                columnsDefinition={getColumnsDefinition(
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES_SELECTION
+                                )}
+                                useFieldArrayOutput={useFieldArrayOutputGenerationStagesSelection}
+                                createRows={rowDataGenerationStagesSelection}
+                                tableHeight={367}
+                                disableAdd={true}
+                                disableDelete={true}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
+                            />
+                        )}
+
+                        {tabValue === TAB_VALUES.GeneratorsCappings && <GeneratorsCappingsThreshold />}
+
+                        {tabValue === TAB_VALUES.GeneratorsCappings && (
+                            <SensitivityTable
+                                arrayFormName={`${NonEvacuatedEnergyGeneratorsCappings.name}`}
+                                columnsDefinition={getColumnsDefinition(
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS
+                                )}
+                                useFieldArrayOutput={useFieldArrayOutputGeneratorsCappings}
+                                createRows={rowDataGeneratorsCappings}
+                                tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
+                            />
+                        )}
+
+                        {tabValue === TAB_VALUES.MonitoredBranches && (
+                            <SensitivityTable
+                                arrayFormName={`${NonEvacuatedEnergyMonitoredBranches.name}`}
+                                columnsDefinition={getColumnsDefinition(
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_MONITORED_BRANCHES
+                                )}
+                                useFieldArrayOutput={useFieldArrayOutputMonitoredBranches}
+                                createRows={rowDataMonitoredBranches}
+                                tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
+                            />
+                        )}
+
+                        {tabValue === TAB_VALUES.Contingencies && (
+                            <SensitivityTable
+                                arrayFormName={`${NonEvacuatedEnergyContingencies.name}`}
+                                columnsDefinition={getColumnsDefinition(
+                                    nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_CONTINGENCIES
+                                )}
+                                useFieldArrayOutput={useFieldArrayOutputContingencies}
+                                createRows={rowDataContingencies}
+                                tableHeight={367}
+                                onFormChanged={onFormChanged}
+                                onChangeParams={onChangeParams}
+                            />
+                        )}
+                    </TabPanel>
                 ))}
-            </Tabs>
-
-            {tabInfo.map((tab, index) => (
-                <TabPanel key={tab.label} value={tabValue} index={index}>
-                    {tabValue === TAB_VALUES.GenerationStages && (
-                        <SensitivityTable
-                            arrayFormName={`${NonEvacuatedEnergyGenerationStages.name}`}
-                            columnsDefinition={getColumnsDefinition(nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES)}
-                            useFieldArrayOutput={useFieldArrayOutputGenerationStages}
-                            createRows={rowDataGenerationStages}
-                            tableHeight={295}
-                            disableAdd={true}
-                            disableDelete={true}
-                            onFormChanged={onFormChanged}
-                            onChangeParams={onChangeParams}
-                        />
-                    )}
-
-                    {tabValue === TAB_VALUES.GenerationStages && (
-                        <SensitivityTable
-                            arrayFormName={`${NonEvacuatedEnergyStagesSelection.name}`}
-                            columnsDefinition={getColumnsDefinition(
-                                nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_STAGES_SELECTION
-                            )}
-                            useFieldArrayOutput={useFieldArrayOutputGenerationStagesSelection}
-                            createRows={rowDataGenerationStagesSelection}
-                            tableHeight={367}
-                            disableAdd={true}
-                            disableDelete={true}
-                            onFormChanged={onFormChanged}
-                            onChangeParams={onChangeParams}
-                        />
-                    )}
-
-                    {tabValue === TAB_VALUES.GeneratorsCappings && <GeneratorsCappingsThreshold />}
-
-                    {tabValue === TAB_VALUES.GeneratorsCappings && (
-                        <SensitivityTable
-                            arrayFormName={`${NonEvacuatedEnergyGeneratorsCappings.name}`}
-                            columnsDefinition={getColumnsDefinition(
-                                nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS
-                            )}
-                            useFieldArrayOutput={useFieldArrayOutputGeneratorsCappings}
-                            createRows={rowDataGeneratorsCappings}
-                            tableHeight={367}
-                            onFormChanged={onFormChanged}
-                            onChangeParams={onChangeParams}
-                        />
-                    )}
-
-                    {tabValue === TAB_VALUES.MonitoredBranches && (
-                        <SensitivityTable
-                            arrayFormName={`${NonEvacuatedEnergyMonitoredBranches.name}`}
-                            columnsDefinition={getColumnsDefinition(
-                                nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_MONITORED_BRANCHES
-                            )}
-                            useFieldArrayOutput={useFieldArrayOutputMonitoredBranches}
-                            createRows={rowDataMonitoredBranches}
-                            tableHeight={367}
-                            onFormChanged={onFormChanged}
-                            onChangeParams={onChangeParams}
-                        />
-                    )}
-
-                    {tabValue === TAB_VALUES.Contingencies && (
-                        <SensitivityTable
-                            arrayFormName={`${NonEvacuatedEnergyContingencies.name}`}
-                            columnsDefinition={getColumnsDefinition(
-                                nonEvacuatedEnergyParam.COLUMNS_DEFINITIONS_CONTINGENCIES
-                            )}
-                            useFieldArrayOutput={useFieldArrayOutputContingencies}
-                            createRows={rowDataContingencies}
-                            tableHeight={367}
-                            onFormChanged={onFormChanged}
-                            onChangeParams={onChangeParams}
-                        />
-                    )}
-                </TabPanel>
-            ))}
-        </Grid>
+            </Grid>
+        </>
     );
 };
 

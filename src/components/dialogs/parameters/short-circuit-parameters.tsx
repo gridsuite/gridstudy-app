@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Grid } from '@mui/material';
 import { styles } from './parameters';
@@ -18,7 +18,6 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
-import { LineSeparator } from '../dialogUtils';
 import {
     fetchShortCircuitParameters,
     getShortCircuitParameters,
@@ -50,6 +49,7 @@ import { isComputationParametersUpdated } from './common/computation-parameters-
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import { ShortCircuitParametersDto, VoltageRange } from './shortcircuit/short-circuit-parameters.type';
+import LineSeparator from '../commons/line-separator';
 
 export const useGetShortCircuitParameters = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

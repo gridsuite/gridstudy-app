@@ -7,7 +7,7 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid, Typography, Box, useTheme } from '@mui/material';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
 import CurveSelectorDialog from './curve/dialog/curve-selector-dialog';

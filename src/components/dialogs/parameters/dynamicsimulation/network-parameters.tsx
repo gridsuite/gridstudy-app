@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
 import { Grid } from '@mui/material';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import yup from '../../../utils/yup-config';
