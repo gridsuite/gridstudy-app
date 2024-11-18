@@ -79,7 +79,7 @@ export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSprea
         createSpreadsheetModel(name, description, folderId, spreadsheetConfig)
             .then(() => {
                 snackInfo({
-                    headerId: 'spreadsheet/custom_column/save_confirmation_message',
+                    headerId: 'spreadsheet/save/confirmation_message',
                     headerValues: {
                         folderName: folderName,
                     },
@@ -88,7 +88,7 @@ export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSprea
             .catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
-                    headerId: 'spreadsheet/custom_column/save_error_message',
+                    headerId: 'spreadsheet/save/error_message',
                 });
             });
     };
@@ -96,7 +96,7 @@ export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSprea
     return (
         <>
             <span>
-                <FormattedMessage id="spreadsheet/custom_column/save_columns" />
+                <FormattedMessage id="spreadsheet/save/button" />
             </span>
             <IconButton aria-label="dialog" onClick={dialogOpen.setTrue}>
                 <SaveIcon />
@@ -108,7 +108,7 @@ export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSprea
                     onSave={saveSpreadsheetColumnsConfiguration}
                     onClose={dialogOpen.setFalse}
                     type={ElementType.SPREADSHEET_CONFIG}
-                    titleId={'spreadsheet/custom_column/save_dialog_title'}
+                    titleId={'spreadsheet/save/dialog_title'}
                 />
             )}
         </>
