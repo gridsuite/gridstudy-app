@@ -17,11 +17,11 @@ import { AppState } from '../../../redux/reducer';
 import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
 
-export type CustomColumnsSaveProps = {
+export type CustomSpreadsheetSaveProps = {
     indexTab: number;
 };
 
-export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSaveProps>) {
+export default function CustomSpreadsheetSave({ indexTab }: Readonly<CustomSpreadsheetSaveProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const intl = useIntl();
 
