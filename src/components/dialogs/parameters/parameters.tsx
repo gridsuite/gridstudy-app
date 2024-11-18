@@ -19,6 +19,7 @@ import {
     Theme,
     ButtonProps,
     SelectChangeEvent,
+    TypographyProps,
 } from '@mui/material';
 
 import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
@@ -236,7 +237,7 @@ export const styles = {
     }),
 };
 
-interface TabPanelProps<T> {
+interface TabPanelProps<T> extends TypographyProps {
     value: T;
     index: T;
     keepState?: boolean;
