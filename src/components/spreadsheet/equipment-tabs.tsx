@@ -25,10 +25,13 @@ export const EquipmentTabs: FunctionComponent<EquipmentTabsProps> = ({ tabIndex,
     const allTablesNames = useSelector((state: AppState) => state.tables.names);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
 
+    const existsInTable = function (name: string) {
+        return TABLES_NAMES.findIndex((n) => n === name) !== -1;
+    };
+
     const tablesNames = useMemo(() => {
         return allTablesNames.map((tabName) => {
-            // @ts-expect-error TODO: TS2345: Argument of type string is not assignable to parameter of typeof TABLES_NAMES
-            return TABLES_NAMES.includes(tabName)
+            return existsInTable(tabName)
                 ? intl.formatMessage({
                       id: tabName,
                   })

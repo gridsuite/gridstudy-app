@@ -104,30 +104,33 @@ const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, edi
 
     const { reset } = formMethods;
     const fromSearchCopyToFormValues = (battery) => {
-        reset({
-            [EQUIPMENT_ID]: battery.id + '(1)',
-            [EQUIPMENT_NAME]: battery.name ?? '',
-            [MAXIMUM_ACTIVE_POWER]: battery.maxP,
-            [MINIMUM_ACTIVE_POWER]: battery.minP,
-            [ACTIVE_POWER_SET_POINT]: battery.targetP,
-            [REACTIVE_POWER_SET_POINT]: battery.targetQ,
-            [FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
-            [DROOP]: battery.activePowerControl?.droop,
-            ...getConnectivityFormData({
-                voltageLevelId: battery.voltageLevelId,
-                busbarSectionId: battery.busOrBusbarSectionId,
-                connectionDirection: battery.connectablePosition.connectionDirection,
-                connectionName: battery.connectablePosition.connectionName,
-                // connected is not copied on purpose: we use the default value (true) in all cases
-            }),
-            ...getReactiveLimitsFormData({
-                reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
-                minimumReactivePower: battery?.minMaxReactiveLimits?.minQ ?? null,
-                maximumReactivePower: battery?.minMaxReactiveLimits?.maxQ ?? null,
-                reactiveCapabilityCurveTable: battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
-            }),
-            ...copyEquipmentPropertiesForCreation(battery),
-        });
+        reset(
+            {
+                [EQUIPMENT_ID]: battery.id + '(1)',
+                [EQUIPMENT_NAME]: battery.name ?? '',
+                [MAXIMUM_ACTIVE_POWER]: battery.maxP,
+                [MINIMUM_ACTIVE_POWER]: battery.minP,
+                [ACTIVE_POWER_SET_POINT]: battery.targetP,
+                [REACTIVE_POWER_SET_POINT]: battery.targetQ,
+                [FREQUENCY_REGULATION]: battery.activePowerControl?.participate,
+                [DROOP]: battery.activePowerControl?.droop,
+                ...getConnectivityFormData({
+                    voltageLevelId: battery.voltageLevelId,
+                    busbarSectionId: battery.busOrBusbarSectionId,
+                    connectionDirection: battery.connectablePosition.connectionDirection,
+                    connectionName: battery.connectablePosition.connectionName,
+                    // connected is not copied on purpose: we use the default value (true) in all cases
+                }),
+                ...getReactiveLimitsFormData({
+                    reactiveCapabilityCurveChoice: battery?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
+                    minimumReactivePower: battery?.minMaxReactiveLimits?.minQ ?? null,
+                    maximumReactivePower: battery?.minMaxReactiveLimits?.maxQ ?? null,
+                    reactiveCapabilityCurveTable: battery?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                }),
+                ...copyEquipmentPropertiesForCreation(battery),
+            },
+            { keepDefaultValues: true }
+        );
     };
     const searchCopy = useFormSearchCopy({
         studyUuid,
