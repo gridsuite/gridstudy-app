@@ -35,10 +35,7 @@ import {
 } from 'services/study/sensitivity-analysis';
 import { fetchSensitivityAnalysisProviders } from 'services/sensitivity-analysis';
 import { SensitivityAnalysisParameters } from './dialogs/parameters/sensi/sensitivity-analysis-parameters';
-import {
-    ShortCircuitParametersProps,
-    useGetShortCircuitParameters,
-} from './dialogs/parameters/short-circuit-parameters';
+import { ShortCircuitParameters, useGetShortCircuitParameters } from './dialogs/parameters/short-circuit-parameters';
 import { VoltageInitParameters } from './dialogs/parameters/voltageinit/voltage-init-parameters';
 import { LoadFlowParameters } from './dialogs/parameters/load-flow-parameters';
 import DynamicSimulationParameters from './dialogs/parameters/dynamicsimulation/dynamic-simulation-parameters';
@@ -59,6 +56,8 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
+import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
+import { UUID } from 'crypto';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex
@@ -346,25 +345,25 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="SensitivityAnalysis" />}
                                 value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                             />
-                            {enableDeveloperMode && (
+                            {enableDeveloperMode ? (
                                 <Tab
                                     disabled={nonEvacuatedEnergyAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="NonEvacuatedEnergyAnalysis" />}
                                     value={TAB_VALUES.nonEvacuatedEnergyParamsTabValue}
                                 />
-                            )}
+                            ) : null}
                             <Tab
                                 disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
-                            {enableDeveloperMode && (
+                            {enableDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSimulation" />}
                                     value={TAB_VALUES.dynamicSimulationParamsTabValue}
                                 />
-                            )}
+                            ) : null}
                             <Tab
                                 disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="VoltageInit" />}

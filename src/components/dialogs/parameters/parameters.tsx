@@ -30,6 +30,9 @@ import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { UUID } from 'crypto';
 import { ISAParameters } from './common/limitreductions/columns-definitions';
+import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
+import { User } from 'oidc-client';
+import { ParametersInfos, SpecificParametersInfos, UseParametersBackendReturnProps } from './parameters.type';
 
 interface CloseButtonProps extends ButtonProps {
     hideParameters: React.MouseEventHandler<HTMLButtonElement>;
@@ -262,32 +265,18 @@ export const TabPanel = <T,>(props: PropsWithChildren<TabPanelProps<T>>) => {
 
 const INITIAL_PROVIDERS = {};
 
-export type UseParametersBackendReturnProps = [
-    Record<string, string>,
-    string | undefined,
-    (newProvider: string) => void,
-    () => void,
-    Record<string, any> | null,
-    (newParams: Record<string, any>) => void,
-    () => Promise<void> | undefined,
-    Record<string, any> | null
-];
-
-export const useParametersBackend = (
-    user: string,
-    type: ComputingType,
+export const useParametersBackend = <T extends ComputingType>(
+    user: User | null,
+    type: T,
     optionalServiceStatus: OptionalServicesStatus | undefined,
     backendFetchProviders: () => Promise<string[]>,
-    backendFetchProvider: (studyUuid: UUID) => Promise<string>,
+    backendFetchProvider: ((studyUuid: UUID) => Promise<string>) | null,
     backendFetchDefaultProvider: () => Promise<string>,
-    backendUpdateProvider: (studyUuid: UUID, newProvider: string) => Promise<void>,
-    backendFetchParameters: (studyUuid: UUID) => Promise<Record<string, any>>, //TODO: fix Record
-    backendUpdateParameters: (
-        studyUuid: UUID,
-        newParam: Record<string, string> | null /*TODO: fix Record*/
-    ) => Promise<any>,
-    backendFetchSpecificParametersDescription?: () => Promise<any> //TODO: fix any
-): UseParametersBackendReturnProps => {
+    backendUpdateProvider: ((studyUuid: UUID, newProvider: string) => Promise<void>) | null,
+    backendFetchParameters: (studyUuid: UUID) => Promise<ParametersInfos<T>>,
+    backendUpdateParameters?: (studyUuid: UUID, newParam: ParametersInfos<T> | null) => Promise<any>,
+    backendFetchSpecificParametersDescription?: () => Promise<SpecificParametersInfos>
+): UseParametersBackendReturnProps<T> => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
@@ -298,7 +287,7 @@ export const useParametersBackend = (
     const providerRef = useRef(provider);
     providerRef.current = provider;
 
-    const [params, setParams] = useState<Record<string, any> | ISAParameters | null>(null);
+    const [params, setParams] = useState<ParametersInfos<T> | null>(null);
     const [specificParamsDescription, setSpecificParamsDescription] = useState<Record<string, any> | null>(null);
 
     const optionalServiceStatusRef = useRef(optionalServiceStatus);
@@ -313,6 +302,7 @@ export const useParametersBackend = (
     }, [params, provider]);
 
     // PROVIDER UPDATE
+    //TODO: if backendUpdateProvider is null, should it work ?
     const updateProvider = useCallback(
         (newProvider: string) => {
             if (!studyUuid) {
@@ -320,7 +310,7 @@ export const useParametersBackend = (
             }
             const oldProvider = providerRef.current;
             setProvider(newProvider); // local state
-            backendUpdateProvider(studyUuid, newProvider).catch((error) => {
+            backendUpdateProvider?.(studyUuid, newProvider).catch((error) => {
                 setProvider(oldProvider);
                 snackError({
                     messageTxt: error.message,
@@ -442,7 +432,7 @@ export const useParametersBackend = (
 
     // PARAMETERS UPDATE
     const backendUpdateParametersCb = useCallback(
-        (studyUuid: UUID, newParams: Record<string, string>, oldParams: Record<string, string>) => {
+        (studyUuid: UUID, newParams: ParametersInfos<T>, oldParams: ParametersInfos<T> | null) => {
             backendUpdateParameters?.(studyUuid, newParams).catch((error) => {
                 // Restore old local params and provider if update didn't work
                 setParams(oldParams);
@@ -458,11 +448,11 @@ export const useParametersBackend = (
     const debouncedBackendUpdateParameters = useDebounce(backendUpdateParametersCb, 1000);
 
     const updateParameter = useCallback(
-        (newParams: Record<string, any>) => {
+        (newParams: ParametersInfos<T>) => {
             if (!studyUuid) {
                 return;
             }
-            const oldParams = { ...currentParams };
+            const oldParams: ParametersInfos<T> | null = currentParams ? { ...currentParams } : null;
             // Set local states first to components rendering
             setParams(newParams);
             setProvider(newParams['provider']);
@@ -474,7 +464,7 @@ export const useParametersBackend = (
 
     // PARAMETERS RESET
     const resetParameters = useCallback(() => {
-        if (!studyUuid) {
+        if (!studyUuid || !backendUpdateParameters) {
             return;
         }
         return backendUpdateParameters(studyUuid, null)
@@ -549,12 +539,12 @@ export const useParametersBackend = (
     ];
 };
 
-type useParameterStateParam = keyof AppState;
+export type UseParameterStateParamName = keyof AppState;
 
-export function useParameterState(paramName: useParameterStateParam) {
+export function useParameterState(paramName: UseParameterStateParamName) {
     const { snackError } = useSnackMessage();
 
-    const paramGlobalState = useSelector((state: AppState) => state[paramName]);
+    const paramGlobalState: any = useSelector((state: AppState) => state[paramName]);
 
     const [paramLocalState, setParamLocalState] = useState(paramGlobalState);
 

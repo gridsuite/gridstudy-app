@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { UUID } from 'crypto';
 import {
     backendFetch,
     backendFetchJson,
@@ -12,43 +13,59 @@ import {
     getQueryParamsList,
     getRequestParamFromList,
 } from '../utils';
+import ComputingType from 'components/computing-status/computing-type';
+import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modification-menu.type';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
-export const getStudyUrl = (studyUuid) => `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;
+export const getStudyUrl = (studyUuid: UUID) => `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;
 
-export const getStudyUrlWithNodeUuid = (studyUuid, nodeUuid) =>
+export const getStudyUrlWithNodeUuid = (studyUuid: UUID, nodeUuid: UUID) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/nodes/${encodeURIComponent(nodeUuid)}`;
 
-export const fetchStudy = (studyUuid) => {
+export const fetchStudy = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
     return backendFetchJson(fetchStudiesUrl);
 };
 
-export const fetchStudyExists = (studyUuid) => {
+export const fetchStudyExists = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' existence ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
     console.debug(fetchStudiesUrl);
     return backendFetch(fetchStudiesUrl, { method: 'head' });
 };
 
-export function getNetworkAreaDiagramUrl(studyUuid, currentNodeUuid, voltageLevelsIds, depth, withGeoData) {
+export function getNetworkAreaDiagramUrl(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    voltageLevelsIds: UUID[],
+    depth: number,
+    withGeoData: boolean
+) {
     console.info(`Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`);
     return (
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
-            depth: depth,
-            withGeoData: withGeoData,
+            depth: depth.toString(),
+            withGeoData: withGeoData.toString(),
         }) +
         '&' +
         getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
     );
 }
 
-export function fetchParentNodesReport(studyUuid, nodeUuid, nodeOnlyReport, severityFilterList, reportType) {
+export function fetchParentNodesReport(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    nodeOnlyReport: boolean,
+    severityFilterList: string[],
+    reportType: keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
+) {
     console.info(
         'get node report with its parent for : ' +
             nodeUuid +
@@ -73,7 +90,14 @@ export function fetchParentNodesReport(studyUuid, nodeUuid, nodeOnlyReport, seve
     return backendFetchJson(url);
 }
 
-export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilterList, messageFilter, isGlobalLogs) {
+export function fetchNodeReportLogs(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    reportId: string | null,
+    severityFilterList: string[],
+    messageFilter: string,
+    isGlobalLogs: boolean
+) {
     let url;
     if (isGlobalLogs) {
         url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/logs?';
@@ -90,25 +114,25 @@ export function fetchNodeReportLogs(studyUuid, nodeUuid, reportId, severityFilte
     return backendFetchJson(url);
 }
 
-export function fetchSvg(svgUrl) {
+export function fetchSvg(svgUrl: string) {
     console.debug(svgUrl);
     return backendFetch(svgUrl).then((response) => (response.status === 204 ? null : response.json()));
 }
 
 export function searchEquipmentsInfos(
-    studyUuid,
-    nodeUuid,
-    searchTerm,
-    getUseNameParameterKey,
-    inUpstreamBuiltParentNode,
-    equipmentType
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    searchTerm: string,
+    getUseNameParameterKey: () => 'name' | 'id',
+    inUpstreamBuiltParentNode?: boolean,
+    equipmentType?: EquipmentType
 ) {
     console.info("Fetching equipments infos matching with '%s' term ... ", searchTerm);
     let urlSearchParams = new URLSearchParams();
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', getUseNameParameterKey());
     if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode);
+        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
     }
     if (equipmentType !== undefined) {
         urlSearchParams.append('equipmentType', equipmentType);
@@ -118,7 +142,7 @@ export function searchEquipmentsInfos(
     );
 }
 
-export function fetchContingencyCount(studyUuid, currentNodeUuid, contingencyListNames) {
+export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, contingencyListNames: string[]) {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
     );
@@ -132,7 +156,12 @@ export function fetchContingencyCount(studyUuid, currentNodeUuid, contingencyLis
     return backendFetchJson(url);
 }
 
-export function copyOrMoveModifications(studyUuid, targetNodeId, modificationToCutUuidList, copyInfos) {
+export function copyOrMoveModifications(
+    studyUuid: UUID,
+    targetNodeId: UUID,
+    modificationToCutUuidList: string[],
+    copyInfos: NetworkModificationCopyInfo
+) {
     console.info(copyInfos.copyType + ' modifications');
     const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
@@ -170,21 +199,21 @@ export function getAvailableComponentLibraries() {
     return backendFetchJson(getAvailableComponentLibrariesUrl) as Promise<string[]>;
 }
 
-export function unbuildNode(studyUuid, currentNodeUuid) {
+export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info('Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/unbuild';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
 
-export function buildNode(studyUuid, currentNodeUuid) {
+export function buildNode(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info('Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/build';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
 
-export function fetchCaseName(studyUuid) {
+export function fetchCaseName(studyUuid: UUID) {
     console.info('Fetching case name');
     const url = getStudyUrl(studyUuid) + '/case/name';
     console.debug(url);
@@ -192,7 +221,7 @@ export function fetchCaseName(studyUuid) {
     return backendFetchText(url);
 }
 
-export function isNodeExists(studyUuid, nodeName) {
+export function isNodeExists(studyUuid: UUID, nodeName: string) {
     const existsNodeUrl =
         getStudyUrl(studyUuid) +
         '/nodes?' +
@@ -203,7 +232,7 @@ export function isNodeExists(studyUuid, nodeName) {
     return backendFetch(existsNodeUrl, { method: 'head' });
 }
 
-export function getUniqueNodeName(studyUuid) {
+export function getUniqueNodeName(studyUuid: UUID) {
     const uniqueNodeNameUrl = getStudyUrl(studyUuid) + '/nodes/nextUniqueName';
     console.debug(uniqueNodeNameUrl);
     return backendFetchText(uniqueNodeNameUrl);
@@ -224,7 +253,12 @@ export function getServersInfos() {
     });
 }
 
-export function fetchAvailableFilterEnumValues(studyUuid, nodeUuid, computingType, filterEnum) {
+export function fetchAvailableFilterEnumValues(
+    studyUuid: UUID,
+    nodeUuid: UUID,
+    computingType: ComputingType,
+    filterEnum: string
+) {
     console.info('fetch available filter values');
     const url = `${getStudyUrlWithNodeUuid(
         studyUuid,

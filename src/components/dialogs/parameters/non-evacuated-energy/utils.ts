@@ -36,28 +36,7 @@ import {
     STAGES_DEFINITION_GENERATORS,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
-
-interface IStagesDefinition {
-    [STAGES_DEFINITION]: Array<{
-        [STAGES_DEFINITION_GENERATORS]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [GENERATION_STAGES_KIND]: string;
-        [GENERATION_STAGES_PERCENT_MAXP_1]: number;
-        [GENERATION_STAGES_PERCENT_MAXP_2]: number;
-        [GENERATION_STAGES_PERCENT_MAXP_3]: number;
-    }>;
-}
-
-interface IStagesSelection {
-    [STAGES_SELECTION]: Array<{
-        [NAME]: string;
-        [STAGES_DEFINITION_INDEX]: number[];
-        [PMAX_PERCENTS_INDEX]: number[];
-        [ACTIVATED]: boolean;
-    }>;
-}
+import { NonEvacuatedEnergyParametersForm } from './non-evacuated-energy-parameters';
 
 interface IGeneratorsCappings {
     [SENSITIVITY_THRESHOLD]: number;
@@ -129,12 +108,12 @@ export const getGenerationStagesDefinitionFormSchema = () => ({
     ),
 });
 
-export const getGenerationStagesDefinitionParams = (params: IStagesDefinition) => {
+export const getGenerationStagesDefinitionParams = (params: NonEvacuatedEnergyParametersForm) => {
     return {
-        [STAGES_DEFINITION]: params[STAGES_DEFINITION].map((generationStage) => {
+        [STAGES_DEFINITION]: params[STAGES_DEFINITION]?.map((generationStage) => {
             return {
                 [GENERATION_STAGES_KIND]: generationStage[GENERATION_STAGES_KIND],
-                [STAGES_DEFINITION_GENERATORS]: generationStage[STAGES_DEFINITION_GENERATORS].map((container) => {
+                [STAGES_DEFINITION_GENERATORS]: generationStage[STAGES_DEFINITION_GENERATORS]?.map((container) => {
                     return {
                         [CONTAINER_ID]: container[ID],
                         [CONTAINER_NAME]: container[NAME],
@@ -156,15 +135,17 @@ export const getGenerationStagesSelectionFormSchema = () => ({
         .of(
             yup.object().shape({
                 [NAME]: yup.string().required(),
+                [STAGES_DEFINITION_INDEX]: yup.array().of(yup.number()), //TODO check if ok to add
+                [PMAX_PERCENTS_INDEX]: yup.array().of(yup.number()), //TODO check if ok to add
                 [ACTIVATED]: yup.boolean().required(),
             })
         )
         .min(1, 'NoSimulatedStageGiven'),
 });
 
-export const getGenerationStagesSelectionParams = (params: IStagesSelection) => {
+export const getGenerationStagesSelectionParams = (params: NonEvacuatedEnergyParametersForm) => {
     return {
-        [STAGES_SELECTION]: params[STAGES_SELECTION].map((generationStageSelection) => {
+        [STAGES_SELECTION]: params[STAGES_SELECTION]?.map((generationStageSelection) => {
             return {
                 [NAME]: generationStageSelection[NAME],
                 [STAGES_DEFINITION_INDEX]: generationStageSelection[STAGES_DEFINITION_INDEX],
@@ -204,10 +185,13 @@ export const getGeneratorsCappingsFormSchema = () => ({
     }),
 });
 
-export const getGeneratorsCappingsParams = (sensitivityThreshold: number, params: IGeneratorsCappings) => {
+export const getGeneratorsCappingsParams = (
+    sensitivityThreshold: number,
+    params: NonEvacuatedEnergyParametersForm['generatorsCappings']
+) => {
     return {
         [SENSITIVITY_THRESHOLD]: sensitivityThreshold,
-        [GENERATORS_CAPPINGS_FILTER]: params[GENERATORS_CAPPINGS].map((generatorsCapping) => {
+        [GENERATORS_CAPPINGS_FILTER]: params[GENERATORS_CAPPINGS]?.map((generatorsCapping) => {
             return {
                 [GENERATORS_CAPPINGS_KIND]: generatorsCapping[GENERATORS_CAPPINGS_KIND],
                 [GENERATORS_CAPPINGS_FILTER]: generatorsCapping[GENERATORS_CAPPINGS_FILTER].map((container) => {
@@ -261,9 +245,9 @@ export const getMonitoredBranchesFormSchema = () => ({
     ),
 });
 
-export const getMonitoredBranchesParams = (params: IMonitoredBranches) => {
+export const getMonitoredBranchesParams = (params: NonEvacuatedEnergyParametersForm) => {
     return {
-        [MONITORED_BRANCHES]: params[MONITORED_BRANCHES].map((monitoredBranches) => {
+        [MONITORED_BRANCHES]: params[MONITORED_BRANCHES]?.map((monitoredBranches) => {
             return {
                 [BRANCHES]: monitoredBranches[BRANCHES].map((container) => {
                     return {
@@ -304,9 +288,9 @@ export const getContingenciesFormSchema = () => ({
     ),
 });
 
-export const getContingenciesParams = (params: IContingencies) => {
+export const getContingenciesParams = (params: NonEvacuatedEnergyParametersForm) => {
     return {
-        [CONTINGENCIES]: params[CONTINGENCIES].map((contingencies) => {
+        [CONTINGENCIES]: params[CONTINGENCIES]?.map((contingencies) => {
             return {
                 [CONTINGENCIES]: contingencies[CONTINGENCIES].map((container) => {
                     return {

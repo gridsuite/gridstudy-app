@@ -7,7 +7,7 @@
 
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Box, Typography } from '@mui/material';
+import { Grid, Box, Typography, Theme } from '@mui/material';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';

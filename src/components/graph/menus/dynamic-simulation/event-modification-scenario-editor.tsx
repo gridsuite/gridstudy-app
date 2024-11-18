@@ -31,8 +31,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
-    const params = useParams();
-    const studyUuid = params?.studyUuid ? decodeURIComponent(params.studyUuid) : undefined;
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -94,11 +93,11 @@ const EventModificationScenarioEditor = () => {
 
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION' || !studyUuid) {
             return;
         }
         setLaunchLoader(true);
-        fetchDynamicSimulationEvents(studyUuid ?? '', currentNode.id)
+        fetchDynamicSimulationEvents(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -166,13 +165,11 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
+        if (!studyUuid || !currentNode) {
+            return;
+        }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(
-            studyUuid ?? '',
-            // @ts-expect-error TODO: manage null case
-            currentNode?.id,
-            selectedEvents
-        ).catch((errMsg) => {
+        deleteDynamicSimulationEvents(studyUuid, currentNode?.id, selectedEvents).catch((errMsg) => {
             snackError({
                 messageTxt: errMsg,
                 headerId: 'DynamicSimulationEventDeleteError',

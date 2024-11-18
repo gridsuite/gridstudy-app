@@ -63,7 +63,7 @@ type EquipmentMenuState = {
 };
 interface SingleLineDiagramContentProps {
     readonly showInSpreadsheet: (menu: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
-    readonly studyUuid: string;
+    readonly studyUuid: UUID;
     readonly svgType: DiagramType;
     readonly svg?: string;
     readonly svgMetadata?: SLDMetadata;
@@ -640,7 +640,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
                     studyUuid={studyUuid}
-                    currentNodeId={currentNode?.id ?? ''}
+                    currentNodeId={currentNode?.id}
                     equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
                     equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}

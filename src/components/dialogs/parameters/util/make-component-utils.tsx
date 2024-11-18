@@ -10,6 +10,7 @@ import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import LineSeparator from '../../commons/line-separator';
+import { ReactElement } from 'react';
 
 // --- define data types --- //
 export enum TYPES {

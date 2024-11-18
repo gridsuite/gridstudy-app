@@ -23,15 +23,7 @@ import { mergeSx } from '../../utils/functions';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { replaceAllDefaultValues } from '../../utils/utils';
 import CreateParameterDialog from './common/parameters-creation-dialog';
-import {
-    DropDown,
-    LabelledButton,
-    SwitchWithLabel,
-    TabPanel,
-    UseParametersBackendReturnProps,
-    styles,
-    useParameterState,
-} from './parameters';
+import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParameterState } from './parameters';
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
 import {
@@ -50,6 +42,8 @@ import { toFormValuesLimitReductions } from './common/limitreductions/limit-redu
 import { string } from 'yup';
 import yup from '@gridsuite/commons-ui/dist/utils/yupConfig';
 import LineSeparator from '../commons/line-separator';
+import { UseParametersBackendReturnProps } from './parameters.type';
+import ComputingType from 'components/computing-status/computing-type';
 
 interface CountrySelectorProps {
     value: string[];
@@ -449,7 +443,7 @@ const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParameters> 
 };
 
 interface LoadFlowParameters {
-    parametersBackend: UseParametersBackendReturnProps;
+    parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;
     setHaveDirtyFields: (haveDirtyField: boolean) => void;
 }
 

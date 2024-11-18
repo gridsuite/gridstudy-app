@@ -21,10 +21,11 @@ import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../.
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { UUID } from 'crypto';
 
 export type DynamicSimulationEventDialogProps = {
-    studyUuid: string;
-    currentNodeId: string;
+    studyUuid: UUID;
+    currentNodeId: UUID | undefined;
     equipmentId: string;
     equipmentType: EQUIPMENT_TYPES;
     onClose: () => void;
@@ -92,6 +93,9 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
 
     // load event for equipment
     useEffect(() => {
+        if (!studyUuid || !currentNodeId) {
+            return;
+        }
         setDataFetchStatus(FetchStatus.RUNNING);
         fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
             setDataFetchStatus(FetchStatus.SUCCEED);
@@ -120,6 +124,9 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
     // submit form
     const handleSubmit = useCallback(
         (formObj: { [KEY in EventPropertyName]: any }) => {
+            if (!studyUuid || !currentNodeId) {
+                return;
+            }
             // formObj to EventProperty[]
             const propertyNames = Object.keys(formObj ?? {}) as EventPropertyName[];
 

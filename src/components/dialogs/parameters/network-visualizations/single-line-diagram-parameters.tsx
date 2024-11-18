@@ -20,6 +20,7 @@ import { SubstationLayout } from '../../../diagrams/diagram-common.js';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown.js';
 import ParameterLineSwitch from '../widget/parameter-line-switch.js';
 import { User } from 'oidc-client';
+import LineSeparator from 'components/dialogs/commons/line-separator';
 
 export const useGetAvailableComponentLibraries = (user: User | null) => {
     const [componentLibraries, setComponentLibraries] = useState<string[]>([]);

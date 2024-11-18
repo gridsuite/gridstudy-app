@@ -76,9 +76,11 @@ import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
 import { AppState } from 'redux/reducer';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
+import ComputingType from 'components/computing-status/computing-type';
+import { UseParametersBackendReturnProps } from '../parameters.type';
 
 interface SensitivityAnalysisParametersProps {
-    parametersBackend: any; //TODO: fix any
+    parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
     setHaveDirtyFields: any;
 }
 

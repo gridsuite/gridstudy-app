@@ -758,18 +758,18 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.id, selectedModificationsIds]);
 
     const doPasteModifications = useCallback(() => {
-        if (!copyInfos) {
+        if (!copyInfos || !studyUuid || !currentNode) {
             return;
         }
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {
-            copyOrMoveModifications(studyUuid, currentNode?.id, copiedModifications, copyInfos).catch((errmsg) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errCutModificationMsg',
                 });
             });
         } else {
-            copyOrMoveModifications(studyUuid, currentNode?.id, copiedModifications, copyInfos).catch((errmsg) => {
+            copyOrMoveModifications(studyUuid, currentNode.id, copiedModifications, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDuplicateModificationMsg',

@@ -55,6 +55,7 @@ import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
+import { User } from 'oidc-client';
 
 enum TAB_VALUES {
     TIME_DELAY = 'timeDelay',
@@ -65,7 +66,7 @@ enum TAB_VALUES {
 }
 
 interface DynamicSimulationParametersProps {
-    user: string;
+    user: User | null;
     setHaveDirtyFields: (haveDirtyFields: boolean) => void;
 }
 

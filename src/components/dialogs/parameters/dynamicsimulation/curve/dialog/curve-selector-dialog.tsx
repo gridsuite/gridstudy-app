@@ -5,7 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Typography, useTheme } from '@mui/material';
+import {
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    IconButton,
+    Typography,
+    useTheme,
+} from '@mui/material';
 import { FunctionComponent, useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';

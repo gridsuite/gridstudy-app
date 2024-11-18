@@ -10,7 +10,7 @@ import { Button, DialogActions, Grid } from '@mui/material';
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { UseParametersBackendReturnProps, styles } from '../parameters';
+import { styles } from '../parameters';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import {
@@ -71,6 +71,7 @@ import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import LineSeparator from '../../commons/line-separator';
+import { UseParametersBackendReturnProps } from '../parameters.type';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -129,10 +130,10 @@ const formSchema = yup
     })
     .required();
 
-type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
+export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
 
 interface NonEvacuatedEnergyParametersProps {
-    parametersBackend: UseParametersBackendReturnProps;
+    parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
     useNonEvacuatedEnergyParameters: any; //TODO: fix any
 }
 
@@ -220,11 +221,15 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
         });
     }, [studyUuid, emptyFormData, snackError]);
 
-    const formatNewParams = useCallback((newParams, withProvider = true) => {
+    const formatNewParams = useCallback((newParams: NonEvacuatedEnergyParametersForm, withProvider = true) => {
         let params = {
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
-            [GENERATORS_LIMIT]: getGeneratorsCappingsParams(newParams[SENSITIVITY_THRESHOLD], newParams),
+            [GENERATORS_LIMIT]: getGeneratorsCappingsParams(
+                //TODO why did I need this change ? was it buggy ?
+                newParams[GENERATORS_CAPPINGS][SENSITIVITY_THRESHOLD],
+                newParams[GENERATORS_CAPPINGS]
+            ),
             ...getMonitoredBranchesParams(newParams),
             ...getContingenciesParams(newParams),
         };
@@ -237,7 +242,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     }, []);
 
     const onSubmit = useCallback(
-        (newParams) => {
+        (newParams: NonEvacuatedEnergyParametersForm) => {
             setNonEvacuatedEnergyParameters(studyUuid, formatNewParams(newParams, true))
                 .then(() => {
                     setNonEvacuatedEnergyParams(formatNewParams(newParams, false));
@@ -254,14 +259,14 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     );
 
     const fromNonEvacuatedEnergyParamsDataToFormValues = useCallback(
-        (parameters) => {
+        (parameters: NonEvacuatedEnergyParametersForm) => {
             reset({
                 [PROVIDER]: parameters[PROVIDER],
                 [STAGES_DEFINITION]:
                     parameters[STAGES_DEFINITION]?.map((stageDefinition) => {
                         return {
                             [GENERATION_STAGES_KIND]: stageDefinition[GENERATION_STAGES_KIND],
-                            [STAGES_DEFINITION_GENERATORS]: stageDefinition[STAGES_DEFINITION_GENERATORS].map(
+                            [STAGES_DEFINITION_GENERATORS]: stageDefinition[STAGES_DEFINITION_GENERATORS]?.map(
                                 (generationStageFilter) => {
                                     return {
                                         [ID]: generationStageFilter[CONTAINER_ID],
@@ -340,54 +345,60 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
         [reset]
     );
 
-    const combineStagesDefinition = useCallback((stagesDefinition) => {
-        const stagesDefinitionsCount = 3; // only 3 stage definitions
-        const stagesPmaxPercentsCount = 3; // only 3 pmax percents
-        const stagesSelectionsCount = Math.pow(stagesPmaxPercentsCount, stagesDefinitionsCount);
-        let res = [];
-        for (let i = 0; i < stagesSelectionsCount; ++i) {
-            const indexPmax1 = Math.trunc(i / (stagesPmaxPercentsCount * stagesPmaxPercentsCount));
-            const indexPmax2 = Math.trunc(i / stagesPmaxPercentsCount) % stagesPmaxPercentsCount;
-            const indexPmax3 = i % stagesPmaxPercentsCount;
-            const valPmax1 =
-                indexPmax1 === 0
-                    ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_1]
-                    : indexPmax1 === 1
-                    ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
-                    : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
-            const valPmax2 =
-                indexPmax2 === 0
-                    ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_1]
-                    : indexPmax2 === 1
-                    ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
-                    : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
-            const valPmax3 =
-                indexPmax3 === 0
-                    ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_1]
-                    : indexPmax3 === 1
-                    ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
-                    : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
-            let stageSelection = {
-                [ACTIVATED]: true,
-                [NAME]:
-                    stagesDefinition[0][GENERATION_STAGES_KIND] +
-                    '_' +
-                    valPmax1 +
-                    '-' +
-                    stagesDefinition[1][GENERATION_STAGES_KIND] +
-                    '_' +
-                    valPmax2 +
-                    '-' +
-                    stagesDefinition[2][GENERATION_STAGES_KIND] +
-                    '_' +
-                    valPmax3,
-                [STAGES_DEFINITION_INDEX]: Array.from(Array(stagesDefinitionsCount).keys()),
-                [PMAX_PERCENTS_INDEX]: [indexPmax1, indexPmax2, indexPmax3],
-            };
-            res.push(stageSelection);
-        }
-        return res;
-    }, []);
+    const combineStagesDefinition = useCallback(
+        (stagesDefinition: NonEvacuatedEnergyParametersForm['stagesDefinition']) => {
+            if (!stagesDefinition) {
+                return []; //TODO: check it's ok
+            }
+            const stagesDefinitionsCount = 3; // only 3 stage definitions
+            const stagesPmaxPercentsCount = 3; // only 3 pmax percents
+            const stagesSelectionsCount = Math.pow(stagesPmaxPercentsCount, stagesDefinitionsCount);
+            let res = [];
+            for (let i = 0; i < stagesSelectionsCount; ++i) {
+                const indexPmax1 = Math.trunc(i / (stagesPmaxPercentsCount * stagesPmaxPercentsCount));
+                const indexPmax2 = Math.trunc(i / stagesPmaxPercentsCount) % stagesPmaxPercentsCount;
+                const indexPmax3 = i % stagesPmaxPercentsCount;
+                const valPmax1 =
+                    indexPmax1 === 0
+                        ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_1]
+                        : indexPmax1 === 1
+                        ? stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_2]
+                        : stagesDefinition[0][GENERATION_STAGES_PERCENT_MAXP_3];
+                const valPmax2 =
+                    indexPmax2 === 0
+                        ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_1]
+                        : indexPmax2 === 1
+                        ? stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_2]
+                        : stagesDefinition[1][GENERATION_STAGES_PERCENT_MAXP_3];
+                const valPmax3 =
+                    indexPmax3 === 0
+                        ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_1]
+                        : indexPmax3 === 1
+                        ? stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_2]
+                        : stagesDefinition[2][GENERATION_STAGES_PERCENT_MAXP_3];
+                let stageSelection = {
+                    [ACTIVATED]: true,
+                    [NAME]:
+                        stagesDefinition[0][GENERATION_STAGES_KIND] +
+                        '_' +
+                        valPmax1 +
+                        '-' +
+                        stagesDefinition[1][GENERATION_STAGES_KIND] +
+                        '_' +
+                        valPmax2 +
+                        '-' +
+                        stagesDefinition[2][GENERATION_STAGES_KIND] +
+                        '_' +
+                        valPmax3,
+                    [STAGES_DEFINITION_INDEX]: Array.from(Array(stagesDefinitionsCount).keys()),
+                    [PMAX_PERCENTS_INDEX]: [indexPmax1, indexPmax2, indexPmax3],
+                };
+                res.push(stageSelection);
+            }
+            return res;
+        },
+        []
+    );
 
     const generateStagesSelection = useCallback(() => {
         setValue(STAGES_SELECTION, combineStagesDefinition(getValues()[STAGES_DEFINITION]), { shouldDirty: true });
@@ -403,7 +414,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
 
     useEffect(() => {
         const subscription = watch((value, { name, type }) => {
-            if (type === 'change' && name.trim().startsWith(STAGES_DEFINITION)) {
+            if (type === 'change' && name?.trim().startsWith(STAGES_DEFINITION)) {
                 // a change has been made in the stages definition :
                 // ==> regeneration of the stages selection
                 generateStagesSelection();
