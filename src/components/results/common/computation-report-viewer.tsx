@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import ReportViewer from '../../report-viewer/report-viewer';
+import ReportViewer, { renameSubReport } from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
@@ -33,6 +33,7 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
         if (shouldFetchReport) {
             fetchReport().then((report) => {
                 if (report !== undefined) {
+                    renameSubReport(report);
                     setReport(report);
                 }
             });

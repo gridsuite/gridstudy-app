@@ -7,7 +7,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Paper from '@mui/material/Paper';
-import ReportViewer from './report-viewer/report-viewer';
+import ReportViewer, { renameSubReport } from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
 import AlertCustomMessageNode from './utils/alert-custom-message-node';
@@ -63,6 +63,7 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
         if (visible && !disabled) {
             fetchReport(nodeOnlyReport).then((r) => {
                 if (r !== undefined) {
+                    renameSubReport(r);
                     setReport(r);
                 }
             });

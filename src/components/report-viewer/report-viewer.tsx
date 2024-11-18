@@ -23,6 +23,17 @@ const styles = {
     },
 };
 
+export function renameSubReport(report: Report) {
+    if (report.subReports) {
+        report.children = report.subReports;
+        delete report.subReports;
+    }
+    // Recursively rename in children
+    if (report.children && Array.isArray(report.children)) {
+        report.children.forEach(renameSubReport);
+    }
+}
+
 type ReportViewerProps = { report: Report; reportType: string };
 
 export default function ReportViewer({ report, reportType }: ReportViewerProps) {
@@ -44,22 +55,22 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
      * @type {Function}
      */
     /*    const initializeTreeDataAndComponent = useCallback((report: ReportTreeType) => {
-        reportTreeData.current[report.id] = report;
-        return (
-            <ReportItem
-                labelText={report.message}
-                labelIconColor={report.highestSeverity.colorName}
-                key={report.id}
-                sx={styles.treeItem}
-                nodeId={report.id}
-            >
-                {report.subReports.map((value: ReportTreeType) => initializeTreeDataAndComponent(value))}
-            </ReportItem>
-        );*/
+reportTreeData.current[report.id] = report;
+return (
+    <ReportItem
+        labelText={report.message}
+        labelIconColor={report.highestSeverity.colorName}
+        key={report.id}
+        sx={styles.treeItem}
+        nodeId={report.id}
+    >
+        {report.subReports.map((value: ReportTreeType) => initializeTreeDataAndComponent(value))}
+    </ReportItem>
+);*/
 
     const mapReportsTree = useCallback((report: Report | undefined, reportType?: ReportType): any => {
         if (report) {
-            const severityList = report.severities || report.subReports?.flatMap((subReport) => subReport.severities);
+            const severityList = report.severities || report.children?.flatMap((subReport) => subReport.severities);
             const formatedReport = {
                 type: reportType ?? (report.message === GLOBAL_REPORT_NODE_LABEL ? ReportType.GLOBAL : ReportType.NODE),
                 id: report.id,
@@ -68,11 +79,8 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 parentId: report.parentId,
                 severities: severityList,
                 highestSeverity: getHighestSeverity(severityList),
-                subReports: report.subReports
-                    ?.filter((subReport) => (subReport.subReports && subReport.subReports.length > 0) || subReport.id)
-                    .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
-                children: report.subReports
-                    ?.filter((subReport) => (subReport.subReports && subReport.subReports.length > 0) || subReport.id)
+                children: report.children
+                    ?.filter((subReport) => (subReport.children && subReport.children.length > 0) || subReport.id)
                     .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
             };
             // @ts-ignore

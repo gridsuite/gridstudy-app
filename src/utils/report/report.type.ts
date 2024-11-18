@@ -31,6 +31,7 @@ export type ReportTree = Report & {
 };
 
 export type Report = {
+  children?: Report[];
     message: string;
     severities: string[];
     parentId: string | null;
