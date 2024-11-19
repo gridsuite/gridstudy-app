@@ -30,7 +30,7 @@ export const customColumnFormSchema = yup.object().shape({
             })
         )
         .required()
-        .test('unique-column-names', 'Column names must be unique', function (columns) {
+        .test('unique-column-names', 'spreadsheet/custom_column/error/not_unique', function (columns) {
             const columnNames = columns.map((col) => col[COLUMN_NAME]);
             const uniqueNames = new Set(columnNames);
             return uniqueNames.size === columnNames.length; // Checks that each name is unique
