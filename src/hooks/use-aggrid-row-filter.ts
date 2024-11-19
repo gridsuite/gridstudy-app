@@ -60,7 +60,7 @@ export const useAggridRowFilter = (
             const newFilter = {
                 column: field,
                 dataType: data.dataType,
-                tolerance: (data.dataType === FILTER_DATA_TYPES.NUMBER) ? computeTolerance(data.value) : undefined,
+                tolerance: data.dataType === FILTER_DATA_TYPES.NUMBER ? computeTolerance(data.value) : undefined,
                 type: data.type,
                 value: data.value,
             };
