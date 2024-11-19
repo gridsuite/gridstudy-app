@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useMemo, useCallback } from 'react';
+import { useLayoutEffect, useRef, useMemo, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
@@ -16,7 +16,13 @@ import {
     styles,
     DiagramType,
 } from '../diagram-common';
-import { CSS_RULE, NetworkAreaDiagramViewer, THRESHOLD_STATUS, DiagramMetadata } from '@powsybl/network-viewer';
+import {
+    CSS_RULE,
+    NetworkAreaDiagramViewer,
+    THRESHOLD_STATUS,
+    DiagramMetadata,
+    OnToggleNadHoverCallbackType,
+} from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
@@ -25,7 +31,12 @@ import { AppState } from 'redux/reducer';
 import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
+import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
+import { Point } from '@svgdotjs/svg.js';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { FEEDER_TYPES } from 'components/utils/feederType';
+
 const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
@@ -120,6 +131,12 @@ const dynamicCssRules: CSS_RULE[] = [
     },
 ];
 
+const equipmentsWithPopover = [
+    EQUIPMENT_TYPES.LINE,
+    EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
+    FEEDER_TYPES.PHASE_SHIFT_TRANSFORMER,
+];
+
 type NetworkAreaDiagramContentProps = {
     readonly svgType: DiagramType;
     readonly svg?: string;
@@ -139,6 +156,11 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
+    const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
+    const [anchorPosition, setAnchorPosition] = useState({ top: 0, left: 0 });
+    const [hoveredEquipmentId, setHoveredEquipmentId] = useState('');
+    const [hoveredEquipmentType, setHoveredEquipmentType] = useState('');
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
 
     const nadIdentifier = useMemo(() => {
         return getNadIdentifier(diagramStates, initNadWithGeoData);
@@ -151,6 +173,28 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         [dispatch, nadIdentifier]
     );
 
+    const OnToggleHoverCallback: OnToggleNadHoverCallbackType = useCallback(
+        (shouldDisplay: boolean, mousePosition: Point | null, equipmentId: string, equipmentType: string) => {
+            if (mousePosition) {
+                const anchorPosition = {
+                    top: mousePosition.y + 10,
+                    left: mousePosition.x + 10,
+                };
+
+                setAnchorPosition(anchorPosition);
+                setHoveredEquipmentId(equipmentId);
+                setHoveredEquipmentType(equipmentType);
+
+                // Only show tooltip if the equipment type is in the hoverable list
+                const isEquipmentHoverable = equipmentsWithPopover.includes(equipmentType);
+                setShouldDisplayTooltip(shouldDisplay && isEquipmentHoverable); // Show or hide based on shouldDisplay
+            } else {
+                setShouldDisplayTooltip(false);
+            }
+        },
+
+        [setShouldDisplayTooltip, setAnchorPosition]
+    );
     /**
      * DIAGRAM CONTENT BUILDING
      */
@@ -171,7 +215,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 true,
                 true,
                 dynamicCssRules,
-                null
+                OnToggleHoverCallback
             );
 
             // Update the diagram-pane's list of sizes with the width and height from the backend
@@ -209,6 +253,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         currentNode,
         diagramSizeSetter,
         onMoveNodeCallback,
+        OnToggleHoverCallback,
         nadIdentifier,
         nadNodeMovements,
     ]);
@@ -220,6 +265,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
+            {shouldDisplayTooltip && (
+                <EquipmentPopover
+                    studyUuid={studyUuid}
+                    anchorPosition={anchorPosition}
+                    anchorEl={null}
+                    equipmentType={hoveredEquipmentType}
+                    equipmentId={hoveredEquipmentId}
+                    loadFlowStatus={loadFlowStatus}
+                />
+            )}
             <Box
                 ref={svgRef}
                 sx={mergeSx(
