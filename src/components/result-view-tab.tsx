@@ -27,6 +27,7 @@ import ComputingType from './computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { usePrevious } from './utils/utils';
 import { Box, Tabs, Tab, Paper } from '@mui/material';
+import { StateEstimationResultTab } from './results/stateestimation/state-estimation-result-tab';
 
 const styles = {
     table: {
@@ -86,6 +87,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
     const voltageInitAvailability = useOptionalServiceStatus(OptionalServicesNames.VoltageInit);
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
+    const stateEstimationAvailability = useOptionalServiceStatus(OptionalServicesNames.StateEstimation);
 
     const renderLoadFlowResult = useMemo(() => {
         return (
@@ -147,6 +149,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         );
     }, [studyUuid, currentNode]);
 
+    const renderStateEstimationResult = useMemo(() => {
+        return (
+            <Paper sx={styles.analysisResult}>
+                <StateEstimationResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+            </Paper>
+        );
+    }, [studyUuid, currentNode]);
+
     const services: IService[] = useMemo(() => {
         return [
             {
@@ -191,6 +201,12 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 displayed: voltageInitAvailability === OptionalServicesStatus.Up,
                 renderResult: renderVoltageInitResult,
             },
+            {
+                id: 'StateEstimation',
+                computingType: [ComputingType.STATE_ESTIMATION],
+                displayed: stateEstimationAvailability === OptionalServicesStatus.Up,
+                renderResult: renderStateEstimationResult,
+            },
         ].filter(({ displayed }: IService) => displayed);
     }, [
         sensitivityAnalysisUnavailability,
@@ -199,6 +215,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         dynamicSimulationAvailability,
         voltageInitAvailability,
         shortCircuitAvailability,
+        stateEstimationAvailability,
         enableDeveloperMode,
         renderDynamicSimulationResult,
         renderSecurityAnalysisResult,
@@ -207,6 +224,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderShortCircuitAnalysisResult,
         renderVoltageInitResult,
         renderLoadFlowResult,
+        renderStateEstimationResult,
     ]);
 
     const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
