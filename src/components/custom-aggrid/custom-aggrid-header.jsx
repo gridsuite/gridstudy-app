@@ -29,6 +29,8 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
 import { countDecimalPlaces } from '../../utils/rounding.js';
+import { computeTolerance } from '../../hooks/use-aggrid-local-row-filter';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
     iconSize: {
@@ -87,6 +89,7 @@ const CustomHeaderComponent = ({
     const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const columnSort = sortConfig?.find((value) => value.colId === field);
     const isColumnSorted = !!columnSort;
+    const { snackWarning } = useSnackMessage();
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -117,6 +120,7 @@ const CustomHeaderComponent = ({
             value: undefined,
             type: selectedFilterComparator,
             dataType: filterDataType,
+            tolerance: undefined,
         });
     };
 
@@ -143,14 +147,21 @@ const CustomHeaderComponent = ({
             value: value,
             type: selectedFilterComparator,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(value) : undefined,
         });
         if (isNumberInput) {
+            let decimalAfterDot = countDecimalPlaces(value);
+            if (decimalAfterDot >= 13) {
+                snackWarning({
+                    headerId: 'filter.warnRounding',
+                });
+            }
             const precisionLabel =
                 intl.formatMessage({
                     id: 'filter.rounded',
                 }) +
                 ' : ' +
-                1 / Math.pow(10, countDecimalPlaces(value));
+                1 / Math.pow(10, decimalAfterDot);
             setDecimalPrecision(precisionLabel);
         }
     };
@@ -161,6 +172,7 @@ const CustomHeaderComponent = ({
             value: value,
             type: selectedFilterComparator,
             dataType: FILTER_DATA_TYPES.NUMBER,
+            tolerance: undefined,
         });
     };
 
@@ -174,6 +186,7 @@ const CustomHeaderComponent = ({
             value: data,
             type: FILTER_TEXT_COMPARATORS.EQUALS,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(data) : undefined,
         });
     };
 
@@ -184,6 +197,7 @@ const CustomHeaderComponent = ({
             value: selectedFilterData,
             type: newType,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(selectedFilterData) : undefined,
         });
     };
 

@@ -52,6 +52,7 @@ export type FilterDataType = {
     dataType: string;
     type: string;
     value: undefined | null | number | string | string[];
+    tolerance?: number; // tolerance when comparing values. Only useful for the number type
 };
 
 export type FilterSelectorType = FilterDataType & {
