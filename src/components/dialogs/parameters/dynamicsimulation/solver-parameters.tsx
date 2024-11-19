@@ -8,7 +8,7 @@
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { FunctionComponent, useEffect, useMemo } from 'react';
-import { FieldErrors, UseFormClearErrors, useWatch } from 'react-hook-form';
+import { UseFormClearErrors, useWatch } from 'react-hook-form';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters, { getFormSchema as getIdaFormSchema } from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters, {

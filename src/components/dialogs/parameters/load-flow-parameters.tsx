@@ -27,7 +27,6 @@ import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParamet
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
 import {
-    ILimitReductionsByVoltageLevel,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
@@ -39,7 +38,6 @@ import LimitReductionsTableForm from './common/limitreductions/limit-reductions-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
-import { string } from 'yup';
 import yup from '@gridsuite/commons-ui/dist/utils/yupConfig';
 import LineSeparator from '../commons/line-separator';
 import { UseParametersBackendReturnProps } from './parameters.type';
@@ -340,12 +338,15 @@ const BasicLoadFlowParameters: FunctionComponent<BasicLoadFlowParametersProps> =
     return makeComponentsFor(defParams, lfParams?.commonParameters || {}, lfParams, commitLFParameter);
 };
 
-interface AdvancedLoadFlowParameters {
+interface AdvancedLoadFlowParametersProps {
     lfParams: Record<string, any>;
     commitLFParameter: (newParams: Record<string, any>) => void;
 }
 
-const AdvancedLoadFlowParameters: FunctionComponent<AdvancedLoadFlowParameters> = ({ lfParams, commitLFParameter }) => {
+const AdvancedLoadFlowParameters: FunctionComponent<AdvancedLoadFlowParametersProps> = ({
+    lfParams,
+    commitLFParameter,
+}) => {
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     const defParams = {
@@ -401,7 +402,7 @@ const AdvancedLoadFlowParameters: FunctionComponent<AdvancedLoadFlowParameters> 
     );
 };
 
-interface SpecificLoadFlowParameters {
+interface SpecificLoadFlowParametersProps {
     disabled: boolean;
     subText: string;
     specificParamsDescription: Parameter[];
@@ -409,7 +410,7 @@ interface SpecificLoadFlowParameters {
     onSpecificParamChange: (paramnName: string, value: any) => void;
 }
 
-const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParameters> = ({
+const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParametersProps> = ({
     disabled,
     subText,
     specificParamsDescription,
@@ -437,17 +438,18 @@ const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParameters> 
                 paramsAsArray={specificParamsDescription ?? []}
                 initValues={specificCurrentParams}
                 onChange={onChange}
+                variant="standard"
             />
         </ParameterGroup>
     );
 };
 
-interface LoadFlowParameters {
+interface LoadFlowParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;
     setHaveDirtyFields: (haveDirtyField: boolean) => void;
 }
 
-export const LoadFlowParameters: FunctionComponent<LoadFlowParameters> = ({
+export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
     parametersBackend,
     setHaveDirtyFields,
 }) => {

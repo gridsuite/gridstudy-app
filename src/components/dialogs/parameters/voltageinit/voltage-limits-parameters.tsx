@@ -26,6 +26,7 @@ import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
 
 const VoltageLimitsParameters = () => {
+    const DndTableTyped = DndTable as React.ComponentType<any>;
     const intl = useIntl();
     const VoltageLevelFilterTooltip = useMemo(() => {
         return (
@@ -122,7 +123,7 @@ const VoltageLimitsParameters = () => {
     }, [VoltageLevelFilterTooltip, intl]);
 
     const newModificationRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: Record<string, any> = {};
         newRowData[SELECTED] = false;
         VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS.forEach(
             (column) => (newRowData[column.dataKey] = column.initialValue)
@@ -133,7 +134,7 @@ const VoltageLimitsParameters = () => {
     const createVoltageLimitModificationRows = () => [newModificationRowData];
 
     const newDefaultRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: Record<string, any> = {};
         newRowData[SELECTED] = false;
         VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS.forEach(
             (column) => (newRowData[column.dataKey] = column.initialValue)
@@ -159,7 +160,7 @@ const VoltageLimitsParameters = () => {
             <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="AdjustExistingLimitsInfo" />
             </Alert>
-            <DndTable
+            <DndTableTyped
                 arrayFormName={`${VOLTAGE_LIMITS_MODIFICATION}`}
                 columnsDefinition={VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useVoltageLimitsModificationFieldArrayOutput}
@@ -172,7 +173,7 @@ const VoltageLimitsParameters = () => {
             <Typography component="span" variant="h6">
                 <FormattedMessage id="SetDefaultLimits" />
             </Typography>
-            <DndTable
+            <DndTableTyped
                 arrayFormName={`${VOLTAGE_LIMITS_DEFAULT}`}
                 columnsDefinition={VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useVoltageLimitsDefaultFieldArrayOutput}

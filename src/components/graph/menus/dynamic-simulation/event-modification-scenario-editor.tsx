@@ -10,7 +10,6 @@ import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -165,7 +164,7 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
-        if (!studyUuid || !currentNode) {
+        if (!studyUuid || !currentNode?.id) {
             return;
         }
         const selectedEvents = [...selectedItems];
@@ -341,9 +340,6 @@ const EventModificationScenarioEditor = () => {
 
             {editDialogOpen && (
                 <DynamicSimulationEventDialog
-                    studyUuid={studyUuid ?? ''}
-                    // @ts-expect-error TODO: manage null case
-                    currentNodeId={currentNode?.id}
                     equipmentId={editDialogOpen.equipmentId}
                     equipmentType={editDialogOpen.equipmentType}
                     onClose={() => handleCloseDialog()}

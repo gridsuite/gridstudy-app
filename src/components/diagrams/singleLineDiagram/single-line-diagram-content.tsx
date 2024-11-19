@@ -639,8 +639,6 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             {equipmentToDelete && displayDeletionDialog()}
             {equipmentToConfigDynamicSimulationEvent && (
                 <DynamicSimulationEventDialog
-                    studyUuid={studyUuid}
-                    currentNodeId={currentNode?.id}
                     equipmentId={equipmentToConfigDynamicSimulationEvent.equipmentId}
                     equipmentType={equipmentToConfigDynamicSimulationEvent.equipmentType}
                     onClose={() => handleCloseDynamicSimulationEventDialog()}

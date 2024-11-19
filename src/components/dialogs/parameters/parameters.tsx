@@ -29,8 +29,6 @@ import { isComputationParametersUpdated } from './common/computation-parameters-
 import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { UUID } from 'crypto';
-import { ISAParameters } from './common/limitreductions/columns-definitions';
-import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
 import { User } from 'oidc-client';
 import { ParametersInfos, SpecificParametersInfos, UseParametersBackendReturnProps } from './parameters.type';
 
@@ -436,7 +434,11 @@ export const useParametersBackend = <T extends ComputingType>(
             backendUpdateParameters?.(studyUuid, newParams).catch((error) => {
                 // Restore old local params and provider if update didn't work
                 setParams(oldParams);
-                setProvider(oldParams['provider']);
+                if (oldParams && 'provider' in oldParams) {
+                    setProvider(oldParams['provider']);
+                } else {
+                    setProvider(undefined);
+                }
                 snackError({
                     messageTxt: error.message,
                     headerId: 'update' + type + 'ParametersError',
@@ -455,7 +457,11 @@ export const useParametersBackend = <T extends ComputingType>(
             const oldParams: ParametersInfos<T> | null = currentParams ? { ...currentParams } : null;
             // Set local states first to components rendering
             setParams(newParams);
-            setProvider(newParams['provider']);
+            if (newParams && 'provider' in newParams) {
+                setProvider(newParams['provider']);
+            } else {
+                setProvider(undefined);
+            }
             // then send request to save it
             debouncedBackendUpdateParameters(studyUuid, newParams, oldParams);
         },

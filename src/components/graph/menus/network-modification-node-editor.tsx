@@ -758,7 +758,7 @@ const NetworkModificationNodeEditor = () => {
     }, [currentNode?.id, selectedModificationsIds]);
 
     const doPasteModifications = useCallback(() => {
-        if (!copyInfos || !studyUuid || !currentNode) {
+        if (!copyInfos || !studyUuid || !currentNode?.id) {
             return;
         }
         if (copyInfos.copyType === NetworkModificationCopyType.MOVE) {

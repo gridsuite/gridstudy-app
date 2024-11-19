@@ -56,8 +56,6 @@ import RunningStatus from './utils/running-status';
 import GlassPane from './results/common/glass-pane';
 import { SecurityAnalysisParameters } from './dialogs/parameters/security-analysis/security-analysis-parameters';
 import { NetworkVisualizationsParameters } from './dialogs/parameters/network-visualizations/network-visualizations-parameters';
-import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
-import { UUID } from 'crypto';
 
 const stylesLayout = {
     // <Tabs/> need attention with parents flex

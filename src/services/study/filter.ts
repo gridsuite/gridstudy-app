@@ -9,7 +9,6 @@ import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
-import { number } from 'yup';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 export interface ExpertFilter {

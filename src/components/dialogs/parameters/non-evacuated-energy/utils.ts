@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { EnergySource } from 'services/study/non-evacuated-energy.type';
 import {
     CONTINGENCIES,
     ID,
@@ -38,48 +39,10 @@ import {
 import yup from '../../../utils/yup-config';
 import { NonEvacuatedEnergyParametersForm } from './non-evacuated-energy-parameters';
 
-interface IGeneratorsCappings {
-    [SENSITIVITY_THRESHOLD]: number;
-    [GENERATORS_CAPPINGS]: Array<{
-        [GENERATORS_CAPPINGS_KIND]: string;
-        [GENERATORS_CAPPINGS_FILTER]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
-interface IMonitoredBranches {
-    [MONITORED_BRANCHES]: Array<{
-        [BRANCHES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [MONITORED_BRANCHES_IST_N]: boolean;
-        [MONITORED_BRANCHES_LIMIT_NAME_N]: string;
-        [MONITORED_BRANCHES_COEFF_N]: number;
-        [MONITORED_BRANCHES_IST_N_1]: boolean;
-        [MONITORED_BRANCHES_LIMIT_NAME_N_1]: string;
-        [MONITORED_BRANCHES_COEFF_N_1]: number;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
-interface IContingencies {
-    [CONTINGENCIES]: Array<{
-        [CONTINGENCIES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
 export const getGenerationStagesDefinitionFormSchema = () => ({
     [STAGES_DEFINITION]: yup.array().of(
         yup.object().shape({
-            [GENERATION_STAGES_KIND]: yup.string().required(),
+            [GENERATION_STAGES_KIND]: yup.mixed<EnergySource>().oneOf(Object.values(EnergySource)).required(),
             [STAGES_DEFINITION_GENERATORS]: yup
                 .array()
                 .of(
@@ -165,7 +128,7 @@ export const getGeneratorsCappingsFormSchema = () => ({
             .required(),
         [GENERATORS_CAPPINGS]: yup.array().of(
             yup.object().shape({
-                [GENERATORS_CAPPINGS_KIND]: yup.string().required(),
+                [GENERATORS_CAPPINGS_KIND]: yup.mixed<EnergySource>().oneOf(Object.values(EnergySource)).required(),
                 [GENERATORS_CAPPINGS_FILTER]: yup
                     .array()
                     .of(

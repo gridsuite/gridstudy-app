@@ -182,7 +182,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     ]);
 
     useEffect(() => {
-        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode) {
+        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
             return;
         }
 

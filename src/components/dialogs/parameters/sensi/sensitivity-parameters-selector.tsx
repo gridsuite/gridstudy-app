@@ -62,7 +62,7 @@ const styles = {
 
 interface SensitivityParametersSelectorProps {
     onFormChanged: (hasFormChanged: boolean) => void;
-    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
+    onChangeParams: (a: any, b: any, c: number) => void; //TODO: fix b any
     launchLoader: boolean;
     analysisComputeComplexity: number;
 }
@@ -80,7 +80,7 @@ const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSele
 }) => {
     const intl = useIntl();
 
-    const [enableDeveloperMode]: [boolean] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE) as [boolean];
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(TAB_VALUES.SensiInjectionsSet);

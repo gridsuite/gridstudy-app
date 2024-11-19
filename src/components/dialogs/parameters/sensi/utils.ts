@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { DistributionType, SensitivityType } from 'services/study/sensitivity-analysis.type';
 import {
     CONTINGENCIES,
     HVDC_LINES,
@@ -25,83 +26,10 @@ import {
     INJECTIONS,
     PARAMETER_SENSI_INJECTION,
     ACTIVATED,
+    COUNT,
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 import { SensitivityAnalysisParametersFormSchema } from './sensitivity-analysis-parameters';
-
-interface INewParamsPst {
-    sensitivityPST: Array<{
-        [MONITORED_BRANCHES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [PSTS]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [SENSITIVITY_TYPE]: string;
-        [CONTINGENCIES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
-interface INewParamsNodes {
-    sensitivityNodes: Array<{
-        [SUPERVISED_VOLTAGE_LEVELS]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [EQUIPMENTS_IN_VOLTAGE_REGULATION]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [CONTINGENCIES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
-interface INewParamsHvdc {
-    sensitivityHVDC: Array<{
-        [MONITORED_BRANCHES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [HVDC_LINES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [SENSITIVITY_TYPE]: string;
-        [CONTINGENCIES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
-interface INewParamsInjections {
-    sensitivityInjection: Array<{
-        [MONITORED_BRANCHES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [INJECTIONS]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [CONTINGENCIES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
 
 export const getSensiHVDCsFormSchema = () => ({
     [PARAMETER_SENSI_HVDC]: yup.array().of(
@@ -119,10 +47,13 @@ export const getSensiHVDCsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [SENSITIVITY_TYPE]: yup.string().when([ACTIVATED], {
-                is: (activated: boolean) => activated,
-                then: (schema) => schema.required(),
-            }),
+            [SENSITIVITY_TYPE]: yup
+                .mixed<SensitivityType>()
+                .oneOf(Object.values(SensitivityType))
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.required(),
+                }),
             [HVDC_LINES]: yup
                 .array()
                 .of(
@@ -142,8 +73,8 @@ export const getSensiHVDCsFormSchema = () => ({
                     [NAME]: yup.string().required(),
                 })
             ),
-
             [ACTIVATED]: yup.boolean().required(),
+            [COUNT]: yup.number().nullable(),
         })
     ),
 });
@@ -213,6 +144,7 @@ export const getSensiInjectionsFormSchema = () => ({
                 })
             ),
             [ACTIVATED]: yup.boolean().required(),
+            [COUNT]: yup.number().nullable(),
         })
     ),
 });
@@ -274,10 +206,13 @@ export const getSensiInjectionsSetFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [DISTRIBUTION_TYPE]: yup.string().when([ACTIVATED], {
-                is: (activated: boolean) => activated,
-                then: (schema) => schema.required(),
-            }),
+            [DISTRIBUTION_TYPE]: yup
+                .mixed<DistributionType>()
+                .oneOf(Object.values(DistributionType))
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.required(),
+                }),
             [CONTINGENCIES]: yup.array().of(
                 yup.object().shape({
                     [ID]: yup.string().required(),
@@ -285,29 +220,10 @@ export const getSensiInjectionsSetFormSchema = () => ({
                 })
             ),
             [ACTIVATED]: yup.boolean().nullable(),
+            [COUNT]: yup.number().nullable(),
         })
     ),
 });
-
-interface INewParamsInjectionsSet {
-    sensitivityInjectionsSet: Array<{
-        [MONITORED_BRANCHES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [INJECTIONS]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [DISTRIBUTION_TYPE]: string;
-        [CONTINGENCIES]: Array<{
-            [ID]: string;
-            [NAME]: string;
-        }>;
-        [ACTIVATED]: boolean;
-    }>;
-}
-
 export interface IRowNewParams {
     [MONITORED_BRANCHES]: Array<{
         [ID]: string;
@@ -392,6 +308,7 @@ export const getSensiNodesFormSchema = () => ({
                 })
             ),
             [ACTIVATED]: yup.boolean().required(),
+            [COUNT]: yup.number().nullable(),
         })
     ),
 });
@@ -442,10 +359,13 @@ export const getSensiPSTsFormSchema = () => ({
                     is: (activated: boolean) => activated,
                     then: (schema) => schema.min(1, 'FieldIsRequired'),
                 }),
-            [SENSITIVITY_TYPE]: yup.string().when([ACTIVATED], {
-                is: (activated: boolean) => activated,
-                then: (schema) => schema.required(),
-            }),
+            [SENSITIVITY_TYPE]: yup
+                .mixed<SensitivityType>()
+                .oneOf(Object.values(SensitivityType))
+                .when([ACTIVATED], {
+                    is: (activated: boolean) => activated,
+                    then: (schema) => schema.required(),
+                }),
             [PSTS]: yup
                 .array()
                 .of(
@@ -466,6 +386,7 @@ export const getSensiPSTsFormSchema = () => ({
                 })
             ),
             [ACTIVATED]: yup.boolean().required(),
+            [COUNT]: yup.number().nullable(),
         })
     ),
 });

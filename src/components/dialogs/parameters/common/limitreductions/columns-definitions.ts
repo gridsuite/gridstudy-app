@@ -107,7 +107,7 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
         .required();
 };
 
-export const getSAParametersFromSchema = (limitReductions: ILimitReductionsByVoltageLevel[]) => {
+export const getSAParametersFromSchema = (limitReductions?: ILimitReductionsByVoltageLevel[]) => {
     const limitReductionsSchema = getLimitReductionsFormSchema(
         limitReductions ? limitReductions[0].temporaryLimitReductions.length : 0
     );

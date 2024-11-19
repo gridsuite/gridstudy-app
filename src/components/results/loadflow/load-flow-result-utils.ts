@@ -177,7 +177,7 @@ export const useFetchFiltersEnums = (): {
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode) {
+        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
             return;
         }
 

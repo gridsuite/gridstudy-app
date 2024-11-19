@@ -87,7 +87,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // fetching options in different criterias
         useEffect(() => {
-            if (!studyUuid || !currentNode) {
+            if (!studyUuid || !currentNode?.id) {
                 return;
             }
             // Load voltage level IDs
@@ -123,7 +123,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
-            if (!studyUuid || !currentNode) {
+            if (!studyUuid || !currentNode?.id) {
                 return;
             }
             const expertFilter = buildExpertFilter(

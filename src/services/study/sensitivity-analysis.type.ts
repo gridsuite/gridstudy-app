@@ -19,55 +19,55 @@ export enum SensitivityType {
     DELTA_A = 'DELTA_A',
 }
 
-export interface EquipmentsContainer {
-    containerId: UUID;
+interface EquipmentsContainer {
+    containerId: string;
     containerName: string;
 }
 
 interface SensitivityParamsCommon {
-    contingencies: EquipmentsContainer[];
-    activated: boolean;
+    contingencies?: EquipmentsContainer[];
+    activated?: boolean | null;
 }
 
 export interface SensitivityInjectionsSet extends SensitivityParamsCommon {
-    monitoredBranches: EquipmentsContainer[];
-    injections: EquipmentsContainer[];
-    distributionType: DistributionType;
+    monitoredBranches?: EquipmentsContainer[];
+    injections?: EquipmentsContainer[];
+    distributionType?: DistributionType;
 }
 
 export interface SensitivityInjection extends SensitivityParamsCommon {
-    monitoredBranches: EquipmentsContainer[];
-    injections: EquipmentsContainer[];
+    monitoredBranches?: EquipmentsContainer[];
+    injections?: EquipmentsContainer[];
 }
 
 export interface SensitivityHVDC extends SensitivityParamsCommon {
-    monitoredBranches: EquipmentsContainer[];
-    sensitivityType: SensitivityType;
-    hvdcs: EquipmentsContainer[];
+    monitoredBranches?: EquipmentsContainer[];
+    sensitivityType?: SensitivityType;
+    hvdcs?: EquipmentsContainer[];
 }
 
 export interface SensitivityPST extends SensitivityParamsCommon {
-    monitoredBranches: EquipmentsContainer[];
-    sensitivityType: SensitivityType;
-    psts: EquipmentsContainer[];
+    monitoredBranches?: EquipmentsContainer[];
+    sensitivityType?: SensitivityType;
+    psts?: EquipmentsContainer[];
 }
 
 export interface SensitivityNodes extends SensitivityParamsCommon {
-    monitoredVoltageLevels: EquipmentsContainer[];
-    equipmentsInVoltageRegulation: EquipmentsContainer[];
+    monitoredVoltageLevels?: EquipmentsContainer[];
+    equipmentsInVoltageRegulation?: EquipmentsContainer[];
 }
 
 export interface SensitivityAnalysisParametersInfos {
     provider: string;
-    uuid: UUID;
-    date: Date;
-    name: string;
+    uuid?: UUID;
+    date?: Date;
+    name?: string;
     flowFlowSensitivityValueThreshold: number;
     angleFlowSensitivityValueThreshold: number;
     flowVoltageSensitivityValueThreshold: number;
-    sensitivityInjectionsSet: SensitivityInjectionsSet[];
-    sensitivityInjection: SensitivityInjection[];
-    sensitivityHVDC: SensitivityHVDC[];
-    sensitivityPST: SensitivityPST[];
-    sensitivityNodes: SensitivityNodes[];
+    sensitivityInjectionsSet?: SensitivityInjectionsSet[];
+    sensitivityInjection?: SensitivityInjection[];
+    sensitivityHVDC?: SensitivityHVDC[];
+    sensitivityPST?: SensitivityPST[];
+    sensitivityNodes?: SensitivityNodes[];
 }

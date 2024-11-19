@@ -587,7 +587,7 @@ export const useFetchFiltersEnums = () => {
     );
 
     useEffect(() => {
-        if (securityAnalysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode) {
+        if (securityAnalysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
             return;
         }
 

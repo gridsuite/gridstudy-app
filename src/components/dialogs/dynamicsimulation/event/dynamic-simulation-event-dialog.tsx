@@ -21,11 +21,10 @@ import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../.
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { UUID } from 'crypto';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 export type DynamicSimulationEventDialogProps = {
-    studyUuid: UUID;
-    currentNodeId: UUID | undefined;
     equipmentId: string;
     equipmentType: EQUIPMENT_TYPES;
     onClose: () => void;
@@ -34,18 +33,12 @@ export type DynamicSimulationEventDialogProps = {
 } & Omit<DialogProps, 'open'>;
 
 export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialogProps) => {
-    const {
-        studyUuid,
-        currentNodeId,
-        equipmentId,
-        equipmentType,
-        onClose,
-        title,
-        open: defaultOpen,
-        ...dialogProps
-    } = props;
+    const { equipmentId, equipmentType, onClose, title, open: defaultOpen, ...dialogProps } = props;
 
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentNodeId = currentNode?.id;
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
 

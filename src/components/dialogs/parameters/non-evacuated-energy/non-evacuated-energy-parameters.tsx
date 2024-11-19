@@ -72,13 +72,21 @@ import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 import LineSeparator from '../../commons/line-separator';
 import { UseParametersBackendReturnProps } from '../parameters.type';
+import { EnergySource, NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 
-export const useGetNonEvacuatedEnergyParameters = () => {
+type UseGetNonEvacuatedEnergyParametersReturnProps = [
+    NonEvacuatedEnergyParametersInfos | null,
+    React.Dispatch<React.SetStateAction<NonEvacuatedEnergyParametersInfos | null>>
+];
+
+export const useGetNonEvacuatedEnergyParameters = (): UseGetNonEvacuatedEnergyParametersReturnProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
     const { snackError } = useSnackMessage();
-    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState(null);
+    const [nonEvacuatedEnergyParams, setNonEvacuatedEnergyParams] = useState<NonEvacuatedEnergyParametersInfos | null>(
+        null
+    );
 
     const nonEvacuatedEnergyAvailability = useOptionalServiceStatus(OptionalServicesNames.SensitivityAnalysis);
     const nonEvacuatedEnergyAvailabilityRef = useRef(nonEvacuatedEnergyAvailability);
@@ -87,7 +95,7 @@ export const useGetNonEvacuatedEnergyParameters = () => {
     const fetchNonEvacuatedEnergyParameters = useCallback(
         (studyUuid: UUID) => {
             getNonEvacuatedEnergyParameters(studyUuid)
-                .then((params) => setNonEvacuatedEnergyParams(params))
+                .then((params: NonEvacuatedEnergyParametersInfos) => setNonEvacuatedEnergyParams(params))
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -134,7 +142,7 @@ export type NonEvacuatedEnergyParametersForm = yup.InferType<typeof formSchema>;
 
 interface NonEvacuatedEnergyParametersProps {
     parametersBackend: UseParametersBackendReturnProps<ComputingType.NON_EVACUATED_ENERGY_ANALYSIS>;
-    useNonEvacuatedEnergyParameters: any; //TODO: fix any
+    useNonEvacuatedEnergyParameters: UseGetNonEvacuatedEnergyParametersReturnProps;
 }
 
 export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyParametersProps> = ({
@@ -150,17 +158,17 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
             [PROVIDER]: provider,
             [STAGES_DEFINITION]: [
                 {
-                    [GENERATION_STAGES_KIND]: 'WIND',
+                    [GENERATION_STAGES_KIND]: EnergySource.WIND,
                     [STAGES_DEFINITION_GENERATORS]: [],
                     [PMAX_PERCENTS]: [100, 100, 100],
                 },
                 {
-                    [GENERATION_STAGES_KIND]: 'SOLAR',
+                    [GENERATION_STAGES_KIND]: EnergySource.SOLAR,
                     [STAGES_DEFINITION_GENERATORS]: [],
                     [PMAX_PERCENTS]: [100, 100, 100],
                 },
                 {
-                    [GENERATION_STAGES_KIND]: 'HYDRO',
+                    [GENERATION_STAGES_KIND]: EnergySource.HYDRO,
                     [STAGES_DEFINITION_GENERATORS]: [],
                     [PMAX_PERCENTS]: [100, 100, 100],
                 },
@@ -222,7 +230,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     }, [studyUuid, emptyFormData, snackError]);
 
     const formatNewParams = useCallback((newParams: NonEvacuatedEnergyParametersForm, withProvider = true) => {
-        let params = {
+        let params: NonEvacuatedEnergyParametersInfos = {
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
             [GENERATORS_LIMIT]: getGeneratorsCappingsParams(
@@ -259,15 +267,19 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     );
 
     const fromNonEvacuatedEnergyParamsDataToFormValues = useCallback(
-        (parameters: NonEvacuatedEnergyParametersForm) => {
+        (parameters: any) => {
+            // left to any because there is probably a confusion here...
+            // parameters can be "nonEvacuatedEnergyParams" or "emptyFormData", they don't have the same structure
+            // for instance, "nonEvacuatedEnergyParams" does not have "provider" field
+
             reset({
                 [PROVIDER]: parameters[PROVIDER],
                 [STAGES_DEFINITION]:
-                    parameters[STAGES_DEFINITION]?.map((stageDefinition) => {
+                    parameters[STAGES_DEFINITION]?.map((stageDefinition: any) => {
                         return {
                             [GENERATION_STAGES_KIND]: stageDefinition[GENERATION_STAGES_KIND],
                             [STAGES_DEFINITION_GENERATORS]: stageDefinition[STAGES_DEFINITION_GENERATORS]?.map(
-                                (generationStageFilter) => {
+                                (generationStageFilter: any) => {
                                     return {
                                         [ID]: generationStageFilter[CONTAINER_ID],
                                         [NAME]: generationStageFilter[CONTAINER_NAME],
@@ -281,7 +293,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                     }) ?? [],
 
                 [STAGES_SELECTION]:
-                    parameters[STAGES_SELECTION]?.map((stageSelection) => {
+                    parameters[STAGES_SELECTION]?.map((stageSelection: any) => {
                         return {
                             [ACTIVATED]: stageSelection[ACTIVATED],
                             [NAME]: stageSelection[NAME],
@@ -290,14 +302,14 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                         };
                     }) ?? [],
 
-                [SENSITIVITY_THRESHOLD]: parameters[GENERATORS_LIMIT][SENSITIVITY_THRESHOLD],
-
+                // [SENSITIVITY_THRESHOLD]: parameters[GENERATORS_LIMIT][SENSITIVITY_THRESHOLD],
+                // SENSITIVITY_THRESHOLD does not seem to exist... was not doing anything ?
                 [GENERATORS_CAPPINGS]:
-                    parameters[GENERATORS_LIMIT][GENERATORS_CAPPINGS_FILTER]?.map((generatorCappings) => {
+                    parameters[GENERATORS_LIMIT][GENERATORS_CAPPINGS_FILTER]?.map((generatorCappings: any) => {
                         return {
                             [GENERATORS_CAPPINGS_KIND]: generatorCappings[GENERATORS_CAPPINGS_KIND],
                             [GENERATORS_CAPPINGS_FILTER]: generatorCappings[GENERATORS_CAPPINGS_FILTER].map(
-                                (generatorFilter) => {
+                                (generatorFilter: any) => {
                                     return {
                                         [ID]: generatorFilter[CONTAINER_ID],
                                         [NAME]: generatorFilter[CONTAINER_NAME],
@@ -309,9 +321,9 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                     }) ?? [],
 
                 [MONITORED_BRANCHES]:
-                    parameters[MONITORED_BRANCHES]?.map((monitoredBranches) => {
+                    parameters[MONITORED_BRANCHES]?.map((monitoredBranches: any) => {
                         return {
-                            [BRANCHES]: monitoredBranches[BRANCHES].map((monitoredBranchFilter) => {
+                            [BRANCHES]: monitoredBranches[BRANCHES].map((monitoredBranchFilter: any) => {
                                 return {
                                     [ID]: monitoredBranchFilter[CONTAINER_ID],
                                     [NAME]: monitoredBranchFilter[CONTAINER_NAME],
@@ -329,9 +341,9 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                     }) ?? [],
 
                 [CONTINGENCIES]:
-                    parameters[CONTINGENCIES]?.map((contingencies) => {
+                    parameters[CONTINGENCIES]?.map((contingencies: any) => {
                         return {
-                            [CONTINGENCIES]: contingencies[CONTINGENCIES].map((contingency) => {
+                            [CONTINGENCIES]: contingencies[CONTINGENCIES].map((contingency: any) => {
                                 return {
                                     [ID]: contingency[CONTAINER_ID],
                                     [NAME]: contingency[CONTAINER_NAME],
@@ -405,6 +417,9 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     }, [setValue, getValues, combineStagesDefinition]);
 
     useEffect(() => {
+        if (!nonEvacuatedEnergyParams) {
+            return;
+        }
         let params =
             nonEvacuatedEnergyParams[STAGES_DEFINITION] && nonEvacuatedEnergyParams[STAGES_DEFINITION].length > 0
                 ? nonEvacuatedEnergyParams
