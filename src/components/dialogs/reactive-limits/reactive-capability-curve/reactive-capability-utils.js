@@ -166,15 +166,7 @@ export const calculateCurvePointsToStore = (reactiveCapabilityCurve, equipmentTo
                 pointsToStore.push(pointToStore);
             }
         });
-        return pointsToStore.filter(
-            (point) =>
-                point.p != null ||
-                point.oldP != null ||
-                point.maxQ != null ||
-                point.oldMaxQ != null ||
-                point.minQ != null ||
-                point.oldMinQ != null
-        );
+        return pointsToStore;
     }
 };
 
