@@ -800,7 +800,7 @@ export const NetworkMapTab = ({
         }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
-        if (!reloadMapNeeded && isInitialized) {
+        if (!reloadMapNeeded) {
             return;
         }
         if (!isMapEquipmentsInitialized) {
