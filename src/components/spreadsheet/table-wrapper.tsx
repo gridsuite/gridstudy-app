@@ -1270,11 +1270,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         />
                     </Grid>
                     {developerMode && (
-                        <>
-                            <Grid item>
-                                <CustomColumnsConfig indexTab={tabIndex} />
-                            </Grid>
-                        </>
+                        <Grid item>
+                            <CustomColumnsConfig indexTab={tabIndex} />
+                        </Grid>
                     )}
                     <Grid item>
                         <SpreadsheetSave
