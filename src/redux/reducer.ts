@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { createReducer } from '@reduxjs/toolkit';
+import { createReducer, Draft } from '@reduxjs/toolkit';
 import {
     AuthenticationActions,
     AuthenticationRouterErrorAction,
@@ -29,9 +29,13 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
+    ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_NOTIFICATION,
+    ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
+    AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
+    AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
     CENTER_LABEL,
@@ -94,6 +98,8 @@ import {
     LOADFLOW_RESULT_FILTER,
     LoadflowResultFilterAction,
     LoadNetworkModificationTreeSuccessAction,
+    LOGS_FILTER,
+    LogsFilterAction,
     MAP_BASEMAP,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
@@ -129,11 +135,13 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
+    RESET_LOGS_FILTER,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
+    ResetLogsFilterAction,
     ResetMapReloadedAction,
     ResetNetworkAreaDiagramDepthAction,
     SECURITY_ANALYSIS_RESULT_FILTER,
@@ -189,19 +197,11 @@ import {
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_EQUIPMENTS,
+    UPDATE_TABLE_DEFINITION,
     UpdateEquipmentsAction,
+    UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
-    LOGS_FILTER,
-    LogsFilterAction,
-    UPDATE_TABLE_DEFINITION,
-    UpdateTableDefinitionAction,
-    ADD_FILTER_FOR_NEW_SPREADSHEET,
-    AddFilterForNewSpreadsheetAction,
-    ADD_SORT_FOR_NEW_SPREADSHEET,
-    AddSortForNewSpreadsheetAction,
-    RESET_LOGS_FILTER,
-    ResetLogsFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -211,14 +211,19 @@ import {
     saveLocalStorageTheme,
 } from './session-storage/local-storage';
 import {
+    type GenericTablesColumnsNames,
+    type GenericTablesColumnsNamesJson,
+    type GenericTablesDefinitionIndexes,
+    type GenericTablesDefinitions,
+    type GenericTablesDefinitionTypes,
+    type GenericTablesNames,
+    type GenericTablesNamesIndexes,
     TABLES_COLUMNS_NAMES,
-    TABLES_COLUMNS_NAMES_JSON,
-    TABLES_DEFINITION_INDEXES,
-    TABLES_DEFINITION_TYPES,
     TABLES_DEFINITIONS,
     TABLES_NAMES,
-    TABLES_NAMES_INDEXES,
-} from '../components/spreadsheet/utils/config-tables';
+    type TablesDefinitionsNames,
+    type TablesDefinitionsType,
+} from '../components/spreadsheet/config/config-tables';
 import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
@@ -287,15 +292,17 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
-import { LineFlowColorMode, LineFlowMode, MapEquipments } from '@powsybl/diagram-viewer';
-import { UnknownArray, ValueOf } from 'type-fest';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
+import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'constants/report.constant';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
+import GSMapEquipments from 'components/network/gs-map-equipments';
+import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -410,8 +417,7 @@ export type TableSort = {
 };
 export type TableSortKeysType = keyof TableSort;
 
-export type SpreadsheetEquipmentType = Exclude<EQUIPMENT_TYPES, 'BUSBAR_SECTION' | 'HVDC_CONVERTER_STATION' | 'SWITCH'>;
-export type SpreadsheetFilterState = Record<SpreadsheetEquipmentType | string, UnknownArray>;
+export type SpreadsheetFilterState = Record<string, UnknownArray>;
 
 export type DiagramState = {
     id: UUID;
@@ -436,10 +442,6 @@ export type SelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-export type TablesDefinitionsType = typeof TABLES_DEFINITIONS;
-export type TablesDefinitionsKeys = keyof TablesDefinitionsType;
-export type TablesDefinitionsNames = TablesDefinitionsType[TablesDefinitionsKeys]['name'];
-
 export interface AppState extends CommonStoreState {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
@@ -456,7 +458,7 @@ export interface AppState extends CommonStoreState {
     notificationIdList: UUID[];
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
-    mapEquipments: MapEquipments | null;
+    mapEquipments: GSMapEquipments | null;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
@@ -572,27 +574,32 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: null,
     [EQUIPMENT_TYPES.BUS]: null,
+    [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
+export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
+
 interface TablesState {
-    definitions: TablesDefinitionsType;
-    columnsNames: Set<string>[];
-    columnsNamesJson: string[];
-    names: string[];
-    namesIndexes: typeof TABLES_NAMES_INDEXES;
-    definitionTypes: typeof TABLES_DEFINITION_TYPES;
-    definitionIndexes: typeof TABLES_DEFINITION_INDEXES;
-    allCustomColumnsDefinitions: Record<TablesDefinitionsNames, CustomEntry>;
+    definitions: GenericTablesDefinitions;
+    columnsNames: GenericTablesColumnsNames;
+    columnsNamesJson: GenericTablesColumnsNamesJson;
+    names: GenericTablesNames;
+    namesIndexes: GenericTablesNamesIndexes;
+    definitionTypes: GenericTablesDefinitionTypes;
+    definitionIndexes: GenericTablesDefinitionIndexes;
+    allCustomColumnsDefinitions: Record<TypeOfArrayElement<GenericTablesNames>, CustomEntry>;
 }
 
+const TableDefinitionIndexes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.index, tabDef]));
+const TableDefinitionTypes = new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.type, tabDef]));
 const initialTablesState: TablesState = {
-    definitions: TABLES_DEFINITIONS,
+    definitions: TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>,
     columnsNames: TABLES_COLUMNS_NAMES,
-    columnsNamesJson: TABLES_COLUMNS_NAMES_JSON,
+    columnsNamesJson: TABLES_COLUMNS_NAMES.map((cols) => JSON.stringify([...cols])),
     names: TABLES_NAMES,
-    namesIndexes: TABLES_NAMES_INDEXES,
-    definitionTypes: TABLES_DEFINITION_TYPES,
-    definitionIndexes: TABLES_DEFINITION_INDEXES,
+    namesIndexes: new Map(TABLES_DEFINITIONS.map((tabDef) => [tabDef.name, tabDef.index])),
+    definitionTypes: TableDefinitionTypes as WritableDeep<typeof TableDefinitionTypes>,
+    definitionIndexes: TableDefinitionIndexes as WritableDeep<typeof TableDefinitionIndexes>,
     allCustomColumnsDefinitions: TABLES_NAMES.reduce(
         (acc, columnName) => ({ ...acc, [columnName]: { columns: [], filter: { formula: '' } } }),
         {} as Record<TablesDefinitionsNames, CustomEntry>
@@ -709,37 +716,24 @@ const initialState: AppState = {
     },
 
     // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: {
-        [EQUIPMENT_TYPES.SUBSTATION]: [],
-        [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [],
-        [EQUIPMENT_TYPES.LINE]: [],
-        [EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER]: [],
-        [EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER]: [],
-        [EQUIPMENT_TYPES.GENERATOR]: [],
-        [EQUIPMENT_TYPES.LOAD]: [],
-        [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [],
-        [EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR]: [],
-        [EQUIPMENT_TYPES.BATTERY]: [],
-        [EQUIPMENT_TYPES.HVDC_LINE]: [],
-        [EQUIPMENT_TYPES.LCC_CONVERTER_STATION]: [],
-        [EQUIPMENT_TYPES.VSC_CONVERTER_STATION]: [],
-        [EQUIPMENT_TYPES.DANGLING_LINE]: [],
-        [EQUIPMENT_TYPES.BUS]: [],
-        [EQUIPMENT_TYPES.TIE_LINE]: [],
-    },
+    [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
+        .map((tabDef) => tabDef.name)
+        .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {}),
 
     [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
 
     [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions).reduce((acc, current) => {
-            acc[current.type] = [
-                {
-                    colId: 'id',
-                    sort: SortWay.ASC,
-                },
-            ];
-            return acc;
-        }, {} as TableSortConfig),
+        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions)
+            .map((tabDef) => tabDef.name)
+            .reduce((acc, tabName) => {
+                acc[tabName] = [
+                    {
+                        colId: 'id',
+                        sort: SortWay.ASC,
+                    },
+                ];
+                return acc;
+            }, {} as TableSortConfig),
         [LOADFLOW_RESULT_SORT_STORE]: {
             [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
                 {
@@ -815,54 +809,44 @@ export const reducer = createReducer(initialState, (builder) => {
         let newMapEquipments;
         //if it's not initialised yet we take the empty one given in action
         if (!state.mapEquipments) {
-            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
+            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
         } else {
-            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
+            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
         }
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-            newMapEquipments.completeLinesInfos();
+            newMapEquipments.completeLinesInfos([]);
         }
         if (action.newTieLines) {
             newMapEquipments.tieLines = action.newTieLines;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-            newMapEquipments.completeTieLinesInfos();
+            newMapEquipments.completeTieLinesInfos([]);
         }
         if (action.newSubstations) {
             newMapEquipments.substations = action.newSubstations;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-            newMapEquipments.completeSubstationsInfos();
+            newMapEquipments.completeSubstationsInfos([]);
         }
         if (action.newHvdcLines) {
             newMapEquipments.hvdcLines = action.newHvdcLines;
-            // @ts-expect-error TODO: set parameter(s) optional in diagram-viewer
-            newMapEquipments.completeHvdcLinesInfos();
+            newMapEquipments.completeHvdcLinesInfos([]);
         }
         state.mapEquipments = newMapEquipments;
     });
 
     builder.addCase(UPDATE_TABLE_DEFINITION, (state, action: UpdateTableDefinitionAction) => {
-        const { key, value, customColumns } = action.payload;
-        const updatedDefinitions = {
-            ...state.tables.definitions,
-            [key]: value,
-        };
-        const updatedColumnsNames = Object.values(updatedDefinitions)
-            .map((table) => table.columns)
+        const { newTableDefinition, customColumns } = action.payload;
+        const updatedDefinitions = [...state.tables.definitions];
+        updatedDefinitions.push(newTableDefinition as Draft<SpreadsheetTabDefinition>);
+        const updatedColumnsNames = updatedDefinitions
+            .map((tabDef) => tabDef.columns)
             .map((cols) => new Set(cols.map((c) => c.id)));
         const updatedColumnsNamesJson = updatedColumnsNames.map((cols) => JSON.stringify([...cols]));
-        const updatedNames = Object.values(updatedDefinitions).map((table) => table.name);
-        const updatedNamesIndexes = new Map(
-            Object.values(updatedDefinitions).map((table) => [table.name, table.index])
-        );
-        const updatedDefinitionTypes = new Map(Object.values(updatedDefinitions).map((table) => [table.type, table]));
-        const updatedDefinitionIndexes = new Map(
-            Object.values(updatedDefinitions).map((table) => [table.index, table])
-        );
+        const updatedNames = updatedDefinitions.map((tabDef) => tabDef.name);
+        const updatedNamesIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.name, tabDef.index]));
+        const updatedDefinitionTypes = new Map(updatedDefinitions.map((tabDef) => [tabDef.type, tabDef]));
+        const updatedDefinitionIndexes = new Map(updatedDefinitions.map((tabDef) => [tabDef.index, tabDef]));
         const updatedAllCustomColumnsDefinitions = {
             ...state.tables.allCustomColumnsDefinitions,
-            [(value as unknown as { name: string }).name]: {
+            [newTableDefinition.name]: {
                 columns: customColumns,
                 filter: {
                     formula: '',
@@ -1688,8 +1672,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
-        const { newEquipmentType, value } = action.payload;
-        state[SPREADSHEET_STORE_FIELD][newEquipmentType] = value;
+        const { newTabName, value } = action.payload;
+        state[SPREADSHEET_STORE_FIELD][newTabName] = value;
     });
 
     builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
@@ -1707,9 +1691,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(ADD_SORT_FOR_NEW_SPREADSHEET, (state, action: AddSortForNewSpreadsheetAction) => {
-        const { newEquipmentType, value } = action.payload;
-        state.tableSort[SPREADSHEET_SORT_STORE][newEquipmentType] = value;
-        console.log('newEquipmentType', newEquipmentType);
+        const { newTabName, value } = action.payload;
+        state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
@@ -1747,6 +1730,7 @@ export enum EquipmentUpdateType {
     VOLTAGE_LEVELS = 'voltageLevels',
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
+    BUSBAR_SECTIONS = 'busbarSections',
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
@@ -1783,6 +1767,8 @@ function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPM
             return EQUIPMENT_TYPES.SUBSTATION;
         case 'buses':
             return EQUIPMENT_TYPES.BUS;
+        case 'busbarSections':
+            return EQUIPMENT_TYPES.BUSBAR_SECTION;
         default:
             return;
     }
@@ -1835,7 +1821,7 @@ function updateEquipments(currentEquipments: Identifiable[], newOrUpdatedEquipme
     return currentEquipments;
 }
 
-function synchCurrentTreeNode(state: AppState, nextCurrentNodeUuid?: UUID) {
+function synchCurrentTreeNode(state: Draft<AppState>, nextCurrentNodeUuid?: UUID) {
     const nextCurrentNode = state.networkModificationTreeModel?.treeNodes.find(
         (node) => node?.id === nextCurrentNodeUuid
     );

@@ -52,11 +52,11 @@ import {
 } from 'components/utils/field-constants';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
 import {
@@ -232,7 +232,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             connectionName: twt.connectionName1,
                             connectionPosition: twt.connectionPosition1,
                             voltageLevelId: twt.voltageLevelId1,
-                            connected: twt.connected1,
+                            terminalConnected: twt.connected1,
                         },
                         CONNECTIVITY_1
                     ),
@@ -243,7 +243,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             connectionName: twt.connectionName2,
                             connectionPosition: twt.connectionPosition2,
                             voltageLevelId: twt.voltageLevelId2,
-                            connected: twt.connected2,
+                            terminalConnected: twt.connected2,
                         },
                         CONNECTIVITY_2
                     ),
@@ -304,94 +304,98 @@ const TwoWindingsTransformerCreationDialog = ({
 
     const fromSearchCopyToFormValues = useCallback(
         (twt) => {
-            reset({
-                [EQUIPMENT_ID]: twt.id + '(1)',
-                [EQUIPMENT_NAME]: twt.name ?? '',
-                ...getTwoWindingsTransformerFormData({
-                    r: twt.r,
-                    x: twt.x,
-                    g: unitToMicroUnit(twt.g),
-                    b: unitToMicroUnit(twt.b),
-                    ratedU1: twt.ratedU1,
-                    ratedU2: twt.ratedU2,
-                    ratedS: twt.ratedS,
-                    permanentLimit1: twt.permanentLimit1,
-                    permanentLimit2: twt.permanentLimit2,
-                    ...getConnectivityFormData(
-                        {
-                            busbarSectionId: twt.busOrBusbarSectionId1,
-                            connectionDirection: twt.connectablePosition1?.connectionDirection,
-                            connectionName: twt.connectablePosition1?.connectionName,
-                            voltageLevelId: twt.voltageLevelId1,
-                        },
-                        CONNECTIVITY_1
-                    ),
-                    ...getConnectivityFormData(
-                        {
-                            busbarSectionId: twt.busOrBusbarSectionId2,
-                            connectionDirection: twt.connectablePosition2?.connectionDirection,
-                            connectionName: twt.connectablePosition2?.connectionName,
-                            voltageLevelId: twt.voltageLevelId2,
-                        },
-                        CONNECTIVITY_2
-                    ),
-                }),
-                ...getLimitsFormData({
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
-                    ),
-                }),
-                ...getRatioTapChangerFormData({
-                    enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],
-                    regulationMode: computeRatioTapChangerRegulationMode(twt?.[RATIO_TAP_CHANGER]),
-                    regulationType: getRegulationTypeForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
-                    regulationSide: getTapSideForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
-                    targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
-                    targetDeadband: isNaN(twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND])
-                        ? null
-                        : twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
-                    lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
-                    highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
-                    tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
-                    equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId,
-                    equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableType,
-                    voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
-                }),
-                ...getPhaseTapChangerFormData({
-                    enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
-                    regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
-                        ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
-                        : PHASE_REGULATION_MODES.FIXED_TAP.id,
-                    regulationType: getRegulationTypeForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
-                    regulationSide: getTapSideForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
-                    currentLimiterRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id
-                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
-                            : null,
-                    flowSetpointRegulatingValue:
-                        twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] === PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
-                            ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
-                            : null,
-                    targetDeadband: isNaN(twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND])
-                        ? null
-                        : twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
-                    lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
-                    highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                    tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
-                    steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
-                    voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
-                    equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId,
-                    equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableType,
-                }),
-                ...copyEquipmentPropertiesForCreation(twt),
-            });
+            reset(
+                {
+                    [EQUIPMENT_ID]: twt.id + '(1)',
+                    [EQUIPMENT_NAME]: twt.name ?? '',
+                    ...getTwoWindingsTransformerFormData({
+                        r: twt.r,
+                        x: twt.x,
+                        g: unitToMicroUnit(twt.g),
+                        b: unitToMicroUnit(twt.b),
+                        ratedU1: twt.ratedU1,
+                        ratedU2: twt.ratedU2,
+                        ratedS: twt.ratedS,
+                        permanentLimit1: twt.permanentLimit1,
+                        permanentLimit2: twt.permanentLimit2,
+                        ...getConnectivityFormData(
+                            {
+                                busbarSectionId: twt.busOrBusbarSectionId1,
+                                connectionDirection: twt.connectablePosition1?.connectionDirection,
+                                connectionName: twt.connectablePosition1?.connectionName,
+                                voltageLevelId: twt.voltageLevelId1,
+                            },
+                            CONNECTIVITY_1
+                        ),
+                        ...getConnectivityFormData(
+                            {
+                                busbarSectionId: twt.busOrBusbarSectionId2,
+                                connectionDirection: twt.connectablePosition2?.connectionDirection,
+                                connectionName: twt.connectablePosition2?.connectionName,
+                                voltageLevelId: twt.voltageLevelId2,
+                            },
+                            CONNECTIVITY_2
+                        ),
+                    }),
+                    ...getLimitsFormData({
+                        permanentLimit1: twt.currentLimits1?.permanentLimit,
+                        permanentLimit2: twt.currentLimits2?.permanentLimit,
+                        temporaryLimits1: addSelectedFieldToRows(
+                            formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
+                        ),
+                        temporaryLimits2: addSelectedFieldToRows(
+                            formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
+                        ),
+                    }),
+                    ...getRatioTapChangerFormData({
+                        enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                        hasLoadTapChangingCapabilities: twt?.[RATIO_TAP_CHANGER]?.[LOAD_TAP_CHANGING_CAPABILITIES],
+                        regulationMode: computeRatioTapChangerRegulationMode(twt?.[RATIO_TAP_CHANGER]),
+                        regulationType: getRegulationTypeForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
+                        regulationSide: getTapSideForCopy(twt, twt?.[RATIO_TAP_CHANGER]),
+                        targetV: twt?.[RATIO_TAP_CHANGER]?.[TARGET_V],
+                        targetDeadband: isNaN(twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND])
+                            ? null
+                            : twt?.[RATIO_TAP_CHANGER]?.[TARGET_DEADBAND],
+                        lowTapPosition: twt?.[RATIO_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                        highTapPosition: computeHighTapPosition(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
+                        tapPosition: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION],
+                        steps: addSelectedFieldToRows(twt?.[RATIO_TAP_CHANGER]?.[STEPS]),
+                        equipmentId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableId,
+                        equipmentType: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalConnectableType,
+                        voltageLevelId: twt?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId,
+                    }),
+                    ...getPhaseTapChangerFormData({
+                        enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
+                        regulationMode: twt?.[PHASE_TAP_CHANGER]?.[REGULATING]
+                            ? twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE]
+                            : PHASE_REGULATION_MODES.FIXED_TAP.id,
+                        regulationType: getRegulationTypeForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
+                        regulationSide: getTapSideForCopy(twt, twt?.[PHASE_TAP_CHANGER]),
+                        currentLimiterRegulatingValue:
+                            twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] === PHASE_REGULATION_MODES.CURRENT_LIMITER.id
+                                ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                                : null,
+                        flowSetpointRegulatingValue:
+                            twt?.[PHASE_TAP_CHANGER]?.[REGULATION_MODE] ===
+                            PHASE_REGULATION_MODES.ACTIVE_POWER_CONTROL.id
+                                ? twt?.[PHASE_TAP_CHANGER]?.regulationValue
+                                : null,
+                        targetDeadband: isNaN(twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND])
+                            ? null
+                            : twt?.[PHASE_TAP_CHANGER]?.[TARGET_DEADBAND],
+                        lowTapPosition: twt?.[PHASE_TAP_CHANGER]?.[LOW_TAP_POSITION],
+                        highTapPosition: computeHighTapPosition(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
+                        tapPosition: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION],
+                        steps: addSelectedFieldToRows(twt?.[PHASE_TAP_CHANGER]?.[STEPS]),
+                        voltageLevelId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalVlId,
+                        equipmentId: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableId,
+                        equipmentType: twt?.[PHASE_TAP_CHANGER]?.regulatingTerminalConnectableType,
+                    }),
+                    ...copyEquipmentPropertiesForCreation(twt),
+                },
+                { keepDefaultValues: true }
+            );
         },
         [reset]
     );

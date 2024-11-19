@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { Grid } from '@mui/material';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import { useState } from 'react';
 import {
     MAP_BASEMAP_CARTO,
@@ -19,11 +19,11 @@ import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../../utils/config-params';
-import { LineSeparator } from '../../dialogUtils';
 import { styles, useParameterState } from '../parameters';
 import ParameterLineDropdown from '../widget/parameter-line-dropdown';
 import ParameterLineSlider from '../widget/parameter-line-slider';
 import ParameterLineSwitch from '../widget/parameter-line-switch';
+import LineSeparator from '../../commons/line-separator';
 
 export const MapParameters = () => {
     const alertThresholdMarks = [

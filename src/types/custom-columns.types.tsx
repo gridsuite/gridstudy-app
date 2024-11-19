@@ -7,7 +7,7 @@
 
 // only moved here to resolve cyclic dependency problem
 
-import { EQUIPMENT_TYPES } from '../components/utils/equipment-types';
+import { SpreadsheetEquipmentType } from '../components/spreadsheet/config/spreadsheet.type';
 
 export type ColumnWithFormula = {
     name: string;
@@ -24,6 +24,6 @@ export type CustomEntry = {
 };
 
 export type SpreadsheetConfig = {
-    sheetType: EQUIPMENT_TYPES;
+    sheetType: SpreadsheetEquipmentType;
     customColumns: ColumnWithFormula[];
 };

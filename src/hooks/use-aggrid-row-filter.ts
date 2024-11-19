@@ -15,13 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/reducer';
 
-export type FilterEnumsType = Record<string, string[] | null>;
-
-export type FilterPropsType = {
-    updateFilter: (field: string, value: FilterDataType) => void;
-    filterSelector: FilterSelectorType[] | null;
-};
-
 export type UseAggridRowFilterOutputType = {
     updateFilter: (field: string, data: FilterDataType) => void;
     filterSelector: FilterSelectorType[] | null;
@@ -88,6 +81,6 @@ export const useAggridRowFilter = (
     return { updateFilter, filterSelector: filterStore };
 };
 
-export const getColumnFilterValue = (array: FilterSelectorType[], columnName: string): unknown => {
+export const getColumnFilterValue = (array: FilterSelectorType[] | null, columnName: string): any => {
     return array?.find((item) => item.column === columnName)?.value ?? null;
 };

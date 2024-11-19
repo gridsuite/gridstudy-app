@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, TextInput, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -26,10 +26,9 @@ import {
     P0,
     R,
 } from '../../../../utils/field-constants';
-import Grid from '@mui/material/Grid';
-import { filledTextField, gridItem, sanitizeString } from '../../../dialogUtils';
+import { Box, Grid } from '@mui/material';
+import { filledTextField, sanitizeString } from '../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
-import { Box } from '@mui/system';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import { FORM_LOADING_DELAY } from '../../../../network/constants';
@@ -59,6 +58,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import GridItem from '../../../commons/grid-item';
 
 const formSchema = yup
     .object()
@@ -98,25 +98,28 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
     });
 
     const fromSearchCopyToFormValues = (hvdcLine) => {
-        reset({
-            [EQUIPMENT_ID]: hvdcLine.id + '(1)',
-            [EQUIPMENT_NAME]: hvdcLine.name ?? '',
-            ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
-                nominalV: hvdcLine.nominalV,
-                r: hvdcLine.r,
-                maxP: hvdcLine.maxP,
-                operatorActivePowerLimitFromSide1ToSide2: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
-                operatorActivePowerLimitFromSide2ToSide1: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
-                convertersMode: hvdcLine.convertersMode,
-                activePowerSetpoint: hvdcLine.activePowerSetpoint,
-                angleDroopActivePowerControl: hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
-                p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
-                droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
-            }),
-            ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
-            ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
-            ...copyEquipmentPropertiesForCreation(hvdcLine),
-        });
+        reset(
+            {
+                [EQUIPMENT_ID]: hvdcLine.id + '(1)',
+                [EQUIPMENT_NAME]: hvdcLine.name ?? '',
+                ...getVscHvdcLineTabFormData(HVDC_LINE_TAB, {
+                    nominalV: hvdcLine.nominalV,
+                    r: hvdcLine.r,
+                    maxP: hvdcLine.maxP,
+                    operatorActivePowerLimitFromSide1ToSide2: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS1toCS2,
+                    operatorActivePowerLimitFromSide2ToSide1: hvdcLine.hvdcOperatorActivePowerRange?.oprFromCS2toCS1,
+                    convertersMode: hvdcLine.convertersMode,
+                    activePowerSetpoint: hvdcLine.activePowerSetpoint,
+                    angleDroopActivePowerControl: hvdcLine.hvdcAngleDroopActivePowerControl?.isEnabled,
+                    p0: hvdcLine.hvdcAngleDroopActivePowerControl?.p0,
+                    droop: hvdcLine.hvdcAngleDroopActivePowerControl?.droop,
+                }),
+                ...getConverterStationFromSearchCopy(CONVERTER_STATION_1, hvdcLine.converterStation1),
+                ...getConverterStationFromSearchCopy(CONVERTER_STATION_2, hvdcLine.converterStation2),
+                ...copyEquipmentPropertiesForCreation(hvdcLine),
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     const open = useOpenShortWaitFetching({
@@ -148,8 +151,8 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
             }}
         >
             <Grid container spacing={2}>
-                {gridItem(generatorIdField, 4)}
-                {gridItem(generatorNameField, 4)}
+                <GridItem size={4}>{generatorIdField}</GridItem>
+                <GridItem size={4}>{generatorNameField}</GridItem>
             </Grid>
             <VscTabs tabIndex={tabIndex} tabIndexesWithError={tabIndexesWithError} setTabIndex={setTabIndex} />
         </Box>
