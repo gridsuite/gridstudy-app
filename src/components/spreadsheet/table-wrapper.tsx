@@ -24,7 +24,6 @@ import {
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
@@ -1278,11 +1277,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         </>
                     )}
                     <Grid item>
-                        <SpreadsheetSave indexTab={tabIndex} />
-                    </Grid>
-                    <Grid item style={{ flexGrow: 1 }}></Grid>
-                    <Grid item>
-                        <CsvExport
+                        <SpreadsheetSave
+                            indexTab={tabIndex}
                             gridRef={gridRef}
                             columns={columnData}
                             tableName={currentTabName()}

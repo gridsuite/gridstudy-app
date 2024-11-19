@@ -8,22 +8,35 @@
 import { useState, MouseEvent, useCallback } from 'react';
 import { IconButton, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { SPREADSHEET_SAVE_OPTIONS } from './utils/constants';
 import SaveIcon from '@mui/icons-material/Save';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../redux/reducer';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
 import CustomSpreadsheetSaveDialog from './custom-spreadsheet/custom-spreadsheet-save-dialog';
 import { useStateBoolean } from '@gridsuite/commons-ui';
+import { useCsvExport } from './csv-export/use-csv-export';
+import { CsvExportProps } from './csv-export/csv-export.type';
 
-interface SpreadsheetSaveProps {
+const SPREADSHEET_SAVE_OPTIONS = {
+    SAVE_MODEL: { id: 'SAVE_MODEL', label: 'spreadsheet/save/options/model' },
+    EXPORT_CSV: { id: 'EXPORT_CSV', label: 'spreadsheet/save/options/csv' },
+};
+
+interface SpreadsheetSaveProps extends CsvExportProps {
     indexTab: number;
 }
 
-export default function SpreadsheetSave({ indexTab }: Readonly<SpreadsheetSaveProps>) {
+export default function SpreadsheetSave({
+    indexTab,
+    gridRef,
+    columns,
+    tableName,
+    disabled,
+}: Readonly<SpreadsheetSaveProps>) {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const developerMode = useSelector((state: AppState) => state[PARAM_DEVELOPER_MODE]);
     const customSaveDialogOpen = useStateBoolean(false);
+    const { downloadCSVData } = useCsvExport();
 
     const handleClick = useCallback((event: MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
@@ -37,13 +50,12 @@ export default function SpreadsheetSave({ indexTab }: Readonly<SpreadsheetSavePr
         (option: { id: string; label: string }) => {
             if (option.id === SPREADSHEET_SAVE_OPTIONS.SAVE_MODEL.id) {
                 customSaveDialogOpen.setTrue();
-            }
-            if (option.id === SPREADSHEET_SAVE_OPTIONS.EXPORT_CSV.id) {
-                // TODO
+            } else if (option.id === SPREADSHEET_SAVE_OPTIONS.EXPORT_CSV.id) {
+                downloadCSVData({ gridRef, columns, tableName });
             }
             handleClose();
         },
-        [customSaveDialogOpen, handleClose]
+        [customSaveDialogOpen, handleClose, downloadCSVData, gridRef, columns, tableName]
     );
 
     return (
@@ -55,13 +67,21 @@ export default function SpreadsheetSave({ indexTab }: Readonly<SpreadsheetSavePr
                 <SaveIcon />
             </IconButton>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-                {Object.values(SPREADSHEET_SAVE_OPTIONS)
-                    .filter((option) => developerMode || !option.devMode)
-                    .map((option) => (
-                        <MenuItem key={option.id} onClick={() => handleMenuItemClick(option)}>
-                            {<FormattedMessage id={option.label} />}
-                        </MenuItem>
-                    ))}
+                {developerMode && (
+                    <MenuItem
+                        key={SPREADSHEET_SAVE_OPTIONS.SAVE_MODEL.id}
+                        onClick={() => handleMenuItemClick(SPREADSHEET_SAVE_OPTIONS.SAVE_MODEL)}
+                    >
+                        {<FormattedMessage id={SPREADSHEET_SAVE_OPTIONS.SAVE_MODEL.label} />}
+                    </MenuItem>
+                )}
+                <MenuItem
+                    key={SPREADSHEET_SAVE_OPTIONS.EXPORT_CSV.id}
+                    onClick={() => handleMenuItemClick(SPREADSHEET_SAVE_OPTIONS.EXPORT_CSV)}
+                    disabled={disabled}
+                >
+                    {<FormattedMessage id={SPREADSHEET_SAVE_OPTIONS.EXPORT_CSV.label} />}
+                </MenuItem>
             </Menu>
             <CustomSpreadsheetSaveDialog indexTab={indexTab} open={customSaveDialogOpen}></CustomSpreadsheetSaveDialog>
         </>

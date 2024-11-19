@@ -14,8 +14,3 @@ export const EDIT_COLUMN = 'edit';
 export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.';
 export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
 export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'reorderedColumns.';
-
-export const SPREADSHEET_SAVE_OPTIONS = {
-    SAVE_MODEL: { id: 'SAVE_MODEL', label: 'spreadsheet/save/options/model', devMode: true },
-    EXPORT_CSV: { id: 'EXPORT_CSV', label: 'spreadsheet/save/options/csv', devMode: false },
-};
