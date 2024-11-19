@@ -880,10 +880,10 @@ export const reducer = createReducer(initialState, (builder) => {
             if (state.networkModificationTreeModel) {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate();
 
-                const firstNode = newModel.treeNodes.find((n) => n.id === action.firstNodeId);
-                const secondNode = newModel.treeNodes.find((n) => n.id === action.secondNodeId);
-                if (firstNode && secondNode) {
-                    newModel.switchBranches(firstNode, secondNode);
+                const draggedNode = newModel.treeNodes.find((n) => n.id === action.draggedNodeId);
+                const destinationNode = newModel.treeNodes.find((n) => n.id === action.destinationNodeId);
+                if (draggedNode && destinationNode) {
+                    newModel.switchBranches(draggedNode, destinationNode);
                 }
                 state.networkModificationTreeModel = newModel;
             }

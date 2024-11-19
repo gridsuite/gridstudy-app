@@ -90,6 +90,15 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     newNodes.forEach((node) => {
         const placement = getPlacement(nodePlacements, node.id);
 
+        // TODO CHARLY commentaire pour expliquer cet ajout
+        node.data = {
+            ...node.data,
+            absolutePosition: {
+                x: placement.column * nodeWidth,
+                y: placement.row * nodeHeight,
+            },
+        };
+
         if (node.parentId) {
             // Reactflow draws it's node with a position relative to the node's parent (the parent is in the node's parentId field).
             // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
@@ -131,4 +140,24 @@ export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: 
         return getFirstAncestorIdWithSibling(nodes, node.parentId);
     }
     return null;
+}
+
+// TODO CHARLY commentaire pour differencier les deux fonctions
+export function getCurrentAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
+    let currentNode = node;
+    let absolutePosition = { x: 0, y: 0 };
+    while (currentNode) {
+        absolutePosition.x += currentNode.position.x;
+        absolutePosition.y += currentNode.position.y;
+
+        if (!currentNode.parentId) {
+            break;
+        }
+        currentNode = nodes.find((node) => node.id === currentNode.parentId);
+    }
+    return absolutePosition;
+}
+// TODO CHARLY commentaire pour differencier les deux fonctions
+export function getStoredAbsolutePosition(node: CurrentTreeNode) {
+    return node?.data?.absolutePosition;
 }

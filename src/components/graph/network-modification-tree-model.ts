@@ -24,11 +24,6 @@ const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     }, 0);
 };
 
-export enum Direction {
-    LEFT = 'LEFT',
-    RIGHT = 'RIGHT',
-}
-
 export default class NetworkModificationTreeModel {
     treeNodes: CurrentTreeNode[] = [];
     treeEdges: Edge[] = [];
@@ -37,21 +32,31 @@ export default class NetworkModificationTreeModel {
 
     /**
      * Will switch the order of two nodes in the tree.
+     * The draggedNode will be moved, either to the left or right of the destinationNode, depending
+     * on their initial positions.
      * Both nodes should have the same parent.
      */
-    private switchSiblingsOrder(firstSibling: CurrentTreeNode, secondSibling: CurrentTreeNode) {
-        if (!firstSibling.parentId || firstSibling.parentId !== secondSibling.parentId) {
+    private switchSiblingsOrder(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+        if (!draggedNode.parentId || draggedNode.parentId !== destinationNode.parentId) {
             console.error('Both nodes should have the same parent to switch their order');
             return;
         }
-        const firstSiblingIndex = this.treeNodes.findIndex((node) => node.id === firstSibling.id);
-        const secondSiblingIndex = this.treeNodes.findIndex((node) => node.id === secondSibling.id);
+        const draggedNodeIndex = this.treeNodes.findIndex((node) => node.id === draggedNode.id);
+        const destinationNodeIndex = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
 
-        const lowerIndex = firstSiblingIndex < secondSiblingIndex ? firstSiblingIndex : secondSiblingIndex;
-        const higherIndex = firstSiblingIndex < secondSiblingIndex ? secondSiblingIndex : firstSiblingIndex;
-        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, this.treeNodes[higherIndex].id);
-        const nodesToMove = this.treeNodes.splice(higherIndex, numberOfNodesToMove);
-        this.treeNodes.splice(lowerIndex, 0, ...nodesToMove);
+        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, draggedNode.id);
+        const nodesToMove = this.treeNodes.splice(draggedNodeIndex, numberOfNodesToMove);
+
+        if (draggedNodeIndex > destinationNodeIndex) {
+            this.treeNodes.splice(destinationNodeIndex, 0, ...nodesToMove);
+        } else {
+            // When moving the draggedNode to the right, we have to take into account the splice that changed the nodes' indexes.
+            // We also need to find the correct position of the dragged node, to the right of the destination node, meaning we need to find
+            // how many children the destination node has and add all of them to the new index.
+            const destinationNodeIndexAfterSplice = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
+            const destinationNodeFamilySize: number = 1 + countNodes(this.treeNodes, destinationNode.id);
+            this.treeNodes.splice(destinationNodeIndexAfterSplice + destinationNodeFamilySize, 0, ...nodesToMove);
+        }
 
         this.treeNodes = [...this.treeNodes];
     }
@@ -128,12 +133,12 @@ export default class NetworkModificationTreeModel {
         return null;
     }
 
-    switchBranches(nodeFromFirstBranch: CurrentTreeNode, nodeFromSecondBranch: CurrentTreeNode) {
+    switchBranches(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
         // We find the nodes from the two branches that share the same parent
-        const commonAncestor = this.getCommonAncestor(nodeFromFirstBranch, nodeFromSecondBranch);
-        const siblingFromFirstBranch = this.getChildOfAncestorInLineage(commonAncestor, nodeFromFirstBranch);
-        const siblingFromSecondBranch = this.getChildOfAncestorInLineage(commonAncestor, nodeFromSecondBranch);
-        this.switchSiblingsOrder(siblingFromFirstBranch, siblingFromSecondBranch);
+        const commonAncestor = this.getCommonAncestor(draggedNode, destinationNode);
+        const siblingFromDraggedNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, draggedNode);
+        const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
+        this.switchSiblingsOrder(siblingFromDraggedNodeBranch, siblingFromDestinationNodeBranch);
     }
 
     addChild(

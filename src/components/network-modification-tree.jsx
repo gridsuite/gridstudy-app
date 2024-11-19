@@ -31,7 +31,14 @@ import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
-import { getFirstAncestorIdWithSibling, getTreeNodesWithUpdatedPositions, nodeGrid, snapGrid } from './graph/layout';
+import {
+    getCurrentAbsolutePosition,
+    getFirstAncestorIdWithSibling,
+    getStoredAbsolutePosition,
+    getTreeNodesWithUpdatedPositions,
+    nodeGrid,
+    snapGrid,
+} from './graph/layout';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -163,15 +170,17 @@ const NetworkModificationTree = ({
     }, [isStudyDrawerOpen, fitView]);
 
     const handleNodeDragStop = (event, node) => {
-        setIsDragging(false);
-        console.error('DRAGGED NODE ' + node.id + ' to X position ' + node.position?.x);
+        // NOTE : This is triggered too late to be useful for real position management.
 
-        // TODO With node.position.x, we have the node's new position. EDIT : Maybe this value was changed by the dragWholeColumn algorithm
-        // We need to find the adjacent columns positions and switch them.
-        // For that we need to implement the index system for the treeModel.treeNodes.
+        setIsDragging(false);
+        //console.error('DRAGGED NODE ' + node.id.substring(0, 3) + ' position.x=' + node.position?.x + ', data.absolutePosition.x=' + node.data?.absolutePosition?.x+ ', data.absolutePosition.y=' + node.data?.absolutePosition?.y);
+        //console.error('END OF DRAG NODE', node);
+        //updateNodePositions(treeModel);
     };
 
     const handleNodeDrag = (event, node) => {
+        // NOTE : This is triggered too late to be useful for real position management.
+
         setIsDragging(true);
     };
 
@@ -216,14 +225,28 @@ const NetworkModificationTree = ({
                 };
                 changes.push(newChangeForAncestor);
             }
+
+            // TODO CHARLY description de cette partie. Maybe refactoring pour qu'on s'y retrouve dans cette méga fonction
+            if (changes[0].dragging !== undefined && !changes[0].dragging) {
+                console.error('CHARLY DRAGGING END');
+                console.error('CHARLY dragged node ' + changes[0].id.substring(0, 3));
+                console.error(
+                    'CHARLY dragged node absolute position (computed) ',
+                    getCurrentAbsolutePosition(nodes, draggedNode)
+                );
+                console.error(
+                    'CHARLY dragged node absolute position (stored) ',
+                    getStoredAbsolutePosition(draggedNode)
+                );
+            }
         }
         return onNodesChange(changes);
     };
     const handleDebug = () => {
         dispatch(
             networkModificationTreeSwitchNodes(
-                '35c77287-f76c-4aa7-afb9-b103d3993b16',
-                '82b73012-7005-400c-831b-910532ced837'
+                '0f6d31a0-8c39-4c2f-8bda-f7480f484744',
+                '75e593b5-a2cf-4d11-b521-43a7ea98fdbf'
             )
         );
         updateNodePositions(treeModel);
