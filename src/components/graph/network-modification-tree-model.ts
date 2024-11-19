@@ -24,11 +24,117 @@ const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     }, 0);
 };
 
+export enum Direction {
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
+}
+
 export default class NetworkModificationTreeModel {
     treeNodes: CurrentTreeNode[] = [];
     treeEdges: Edge[] = [];
 
     isAnyNodeBuilding = false;
+
+    /**
+     * Will switch the order of two nodes in the tree.
+     * Both nodes should have the same parent.
+     */
+    private switchSiblingsOrder(firstSibling: CurrentTreeNode, secondSibling: CurrentTreeNode) {
+        if (!firstSibling.parentId || firstSibling.parentId !== secondSibling.parentId) {
+            console.error('Both nodes should have the same parent to switch their order');
+            return;
+        }
+        const firstSiblingIndex = this.treeNodes.findIndex((node) => node.id === firstSibling.id);
+        const secondSiblingIndex = this.treeNodes.findIndex((node) => node.id === secondSibling.id);
+
+        const lowerIndex = firstSiblingIndex < secondSiblingIndex ? firstSiblingIndex : secondSiblingIndex;
+        const higherIndex = firstSiblingIndex < secondSiblingIndex ? secondSiblingIndex : firstSiblingIndex;
+        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, this.treeNodes[higherIndex].id);
+        const nodesToMove = this.treeNodes.splice(higherIndex, numberOfNodesToMove);
+        this.treeNodes.splice(lowerIndex, 0, ...nodesToMove);
+
+        this.treeNodes = [...this.treeNodes];
+    }
+
+    /**
+     * Finds the lowest common ancestor of two nodes in the tree.
+     *
+     * Example tree:
+     *     A
+     *    / \
+     *   B   D
+     *  /   / \
+     * C   E   F
+     *
+     * Examples:
+     * - getCommonAncestor(B, E) will return A
+     * - getCommonAncestor(E, F) will return D
+     */
+    private getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
+        const getAncestors = (node) => {
+            const ancestors = [];
+            let current = node;
+            while (current && current.parentId) {
+                ancestors.push(current.parentId);
+                current = this.treeNodes.find((n) => n.id === current.parentId);
+            }
+            return ancestors;
+        };
+        // We get the entire ancestors of one of the nodes in an array, then iterate over the other node's ancestors
+        // until we find a node that is in the first array : this common node is an ancestor of both intial nodes.
+        const ancestorsA: UUID[] = getAncestors(nodeA);
+        let current: CurrentTreeNode = nodeB;
+        while (current && current.parentId) {
+            current = this.treeNodes.find((n) => n.id === current.parentId);
+            if (ancestorsA.includes(current.id)) {
+                return current;
+            }
+        }
+        console.warn('No common ancestor found !');
+        return null;
+    }
+
+    /**
+     * Finds the child of the ancestor node that is on the path to the descendant node.
+     *
+     * Example tree:
+     *     A
+     *    / \
+     *   B   D
+     *  /   / \
+     * C   E   F
+     *
+     * Examples:
+     * - getChildOfAncestorInLineage(A, E) will return D
+     * - getChildOfAncestorInLineage(D, F) will return F
+     *
+     * @param ancestor node, must be an ancestor of descendant node
+     * @param descendant node, must be a descendant of ancestor
+     * @returns The child of the ancestor node in the lineage or null if not found.
+     * @private
+     */
+    private getChildOfAncestorInLineage(
+        ancestor: currentTreeNode,
+        descendant: currentTreeNode
+    ): CurrentTreeNode | null {
+        let current = descendant;
+        while (current && current.parentId) {
+            if (current.parentId === ancestor.id) {
+                return current;
+            }
+            current = this.treeNodes.find((n) => n.id === current.parentId);
+        }
+        console.warn('The ancestor and descendant do not share the same branch !');
+        return null;
+    }
+
+    switchBranches(nodeFromFirstBranch: CurrentTreeNode, nodeFromSecondBranch: CurrentTreeNode) {
+        // We find the nodes from the two branches that share the same parent
+        const commonAncestor = this.getCommonAncestor(nodeFromFirstBranch, nodeFromSecondBranch);
+        const siblingFromFirstBranch = this.getChildOfAncestorInLineage(commonAncestor, nodeFromFirstBranch);
+        const siblingFromSecondBranch = this.getChildOfAncestorInLineage(commonAncestor, nodeFromSecondBranch);
+        this.switchSiblingsOrder(siblingFromFirstBranch, siblingFromSecondBranch);
+    }
 
     addChild(
         newNode: NetworkModificationNodeData | RootNodeData,

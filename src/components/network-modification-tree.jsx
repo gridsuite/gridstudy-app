@@ -21,7 +21,7 @@ import {
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
+import { setModificationsDrawerOpen, setCurrentTreeNode, networkModificationTreeSwitchNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import { DRAWER_NODE_EDITOR_WIDTH, TOOLTIP_DELAY } from '../utils/UIconstants';
@@ -219,9 +219,33 @@ const NetworkModificationTree = ({
         }
         return onNodesChange(changes);
     };
-
+    const handleDebug = () => {
+        dispatch(
+            networkModificationTreeSwitchNodes(
+                '35c77287-f76c-4aa7-afb9-b103d3993b16',
+                '82b73012-7005-400c-831b-910532ced837'
+            )
+        );
+        updateNodePositions(treeModel);
+    };
+    const debug = true; // TODO REMOVE THIS
     return (
         <Box flexGrow={1}>
+            {debug && (
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        backgroundColor: 'red',
+                        color: 'white',
+                        display: 'block',
+                    }}
+                    onClick={handleDebug}
+                >
+                    CLICK
+                </Box>
+            )}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}

@@ -170,7 +170,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 return styles.bottomBuildBannerNotBuilt;
         }
     }
-    const debug = false; // TODO remove this before merge
+    const debug = true; // TODO remove this before merge
     return (
         <>
             <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />

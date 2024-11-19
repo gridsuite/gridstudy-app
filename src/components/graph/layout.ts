@@ -107,20 +107,22 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     return [...newNodes];
 }
 
-export function hasNodeMultipleChildren(nodes: CurrentTreeNode[], nodeId: string) {
-    return nodes.filter((node) => node.parentId === nodeId).length > 1;
-}
-
+/**
+ * Check if nodeId has at least one sibling, meaning its parent has multiple children.
+ */
 export function isNodeASibling(nodes: CurrentTreeNode[], nodeId: string) {
-    const parentNode = nodes.find((node) => node.id === nodeId)?.parentId;
-    if (parentNode) {
-        return hasNodeMultipleChildren(nodes, parentNode);
+    const parentNodeId = nodes.find((node) => node.id === nodeId)?.parentId;
+    if (parentNodeId) {
+        return nodes.filter((node) => node.parentId === parentNodeId).length > 1;
     }
-    // Root node has no parents
     return false;
 }
 
-export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: string) {
+/**
+ * Traverse the tree node hierarchy to find the first node that is an ancestor of nodeId and has a sibling.
+ * This function is used to find the starting point of a branch in the tree.
+ */
+export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: string): string | null {
     const node = nodes.find((node) => node.id === nodeId);
     if (node && node.parentId) {
         if (isNodeASibling(nodes, node.id)) {
