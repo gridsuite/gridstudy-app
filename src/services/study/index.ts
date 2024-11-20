@@ -26,10 +26,7 @@ export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 export const getStudyUrl = (studyUuid: UUID | null) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
 
-export const getStudyUrlWithNodeUuid = (
-    studyUuid: UUID | string | null | undefined,
-    nodeUuid: UUID | string | undefined
-) =>
+export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: UUID | string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
 export const fetchStudy = (studyUuid: UUID) => {

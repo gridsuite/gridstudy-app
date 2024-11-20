@@ -18,10 +18,15 @@ import { Property } from '../../components/dialogs/network-modifications/common/
 import {
     Assignment,
     AttachmentLine,
+    BatteryCreationInfo,
     BatteryModificationInfo,
     CurrentLimits,
+    GeneratorCreationInfo,
     GeneratorModificationInfo,
+    LineCreationInfo,
+    LoadCreationInfo,
     LoadModificationInfo,
+    ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
     SubstationModificationInfo,
@@ -275,31 +280,31 @@ export function generatorScaling(
     );
 }
 
-export function createBattery(
-    studyUuid: string,
-    nodeUuid: UUID,
-    id: string,
-    name: string | null,
-    voltageLevelId: string,
-    busOrBusbarSectionId: string,
-    connectionName: string | null,
-    connectionDirection: string | null,
-    connectionPosition: string | null,
-    terminalConnected: boolean | null,
-    minP: number | null,
-    maxP: number | null,
-    isReactiveCapabilityCurveOn: boolean,
-    minQ: number | null,
-    maxQ: number | null,
-    reactiveCapabilityCurve: ReactiveCapabilityCurvePointsData | undefined,
-    targetP: number,
-    targetQ: number,
-    participate: boolean,
-    droop: number,
-    isUpdate: boolean = false,
-    modificationUuid: string,
-    properties: Property[]
-) {
+export function createBattery({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    connectionName,
+    connectionDirection,
+    connectionPosition,
+    terminalConnected,
+    minP,
+    maxP,
+    isReactiveCapabilityCurveOn,
+    minQ,
+    maxQ,
+    reactiveCapabilityCurve,
+    targetP,
+    targetQ,
+    participate,
+    droop,
+    isUpdate = false,
+    modificationUuid,
+    properties,
+}: BatteryCreationInfo) {
     let createBatteryUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -406,28 +411,28 @@ export function modifyBattery({
     });
 }
 
-export function createLoad(
-    studyUuid: string,
-    nodeUuid: UUID,
-    id: string,
-    name: string | null,
-    loadType: string,
-    p0: number,
-    q0: number,
-    voltageLevelId: string,
-    busOrBusbarSectionId: string,
-    isUpdate: boolean = false,
-    modificationUuid: string,
-    connectionDirection: string | null,
-    connectionName: string | null,
-    connectionPosition: string | null,
-    terminalConnected: boolean | null,
-    properties: Property[]
-) {
+export function createLoad({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    loadType,
+    p0,
+    q0,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    isUpdate,
+    modificationUuid,
+    connectionDirection,
+    connectionName,
+    connectionPosition,
+    terminalConnected,
+    properties,
+}: LoadCreationInfo) {
     let createLoadUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
-        createLoadUrl += '/' + encodeURIComponent(modificationUuid);
+        createLoadUrl += '/' + safeEncodeURIComponent(modificationUuid);
         console.info('Updating load creation');
     } else {
         console.info('Creating load creation');
@@ -604,45 +609,45 @@ export function modifyGenerator({
     });
 }
 
-export function createGenerator(
-    studyUuid: string,
-    nodeUuid: UUID,
-    id: string,
-    name: string | null,
-    energySource: string,
-    minP: number,
-    maxP: number,
-    ratedS: number | null,
-    targetP: number | null,
-    targetQ: number | null,
-    voltageRegulationOn: boolean,
-    targetV: number | null,
-    qPercent: number | null,
-    voltageLevelId: string,
-    busOrBusbarSectionId: string,
-    isUpdate: boolean = false,
-    modificationUuid: string,
-    plannedActivePowerSetPoint: number,
-    marginalCost: number,
-    plannedOutageRate: number,
-    forcedOutageRate: number,
-    directTransX: number,
-    stepUpTransformerX: number,
-    regulatingTerminalId: string | null,
-    regulatingTerminalType: string | null,
-    regulatingTerminalVlId: string | null,
-    isReactiveCapabilityCurveOn: boolean,
-    participate: boolean,
-    droop: number | null,
-    maxQ: number | null,
-    minQ: number | null,
-    reactiveCapabilityCurve: ReactiveCapabilityCurvePointsData[] | undefined,
-    connectionDirection: string | null,
-    connectionName: string | null,
-    connectionPosition: string | null,
-    terminalConnected: boolean | null,
-    properties: Property[]
-) {
+export function createGenerator({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    energySource,
+    minP,
+    maxP,
+    ratedS,
+    targetP,
+    targetQ,
+    voltageRegulationOn,
+    targetV,
+    qPercent,
+    voltageLevelId,
+    busOrBusbarSectionId,
+    isUpdate = false,
+    modificationUuid,
+    plannedActivePowerSetPoint,
+    marginalCost,
+    plannedOutageRate,
+    forcedOutageRate,
+    directTransX,
+    stepUpTransformerX,
+    regulatingTerminalId,
+    regulatingTerminalType,
+    regulatingTerminalVlId,
+    isReactiveCapabilityCurveOn,
+    participate,
+    droop,
+    maxQ,
+    minQ,
+    reactiveCapabilityCurve,
+    connectionDirection,
+    connectionName,
+    connectionPosition,
+    terminalConnected,
+    properties,
+}: GeneratorCreationInfo) {
     let createGeneratorUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -697,25 +702,25 @@ export function createGenerator(
     });
 }
 
-export function createShuntCompensator(
-    studyUuid: string,
-    nodeUuid: UUID,
-    shuntCompensatorId: string,
-    shuntCompensatorName: string | null,
-    maxSusceptance: number | null,
-    maxQAtNominalV: number | null,
-    shuntCompensatorType: string,
-    sectionCount: number,
-    maximumSectionCount: number,
-    connectivity: any,
-    isUpdate: boolean,
-    modificationUuid: string,
-    connectionDirection: string | null,
-    connectionName: string | null,
-    connectionPosition: string | null,
-    terminalConnected: boolean | null,
-    properties: Property[]
-) {
+export function createShuntCompensator({
+    studyUuid,
+    nodeUuid,
+    shuntCompensatorId,
+    shuntCompensatorName,
+    maxSusceptance,
+    maxQAtNominalV,
+    shuntCompensatorType,
+    sectionCount,
+    maximumSectionCount,
+    connectivity,
+    isUpdate = false,
+    modificationUuid,
+    connectionDirection,
+    connectionName,
+    connectionPosition,
+    terminalConnected,
+    properties,
+}: ShuntCompensatorCreationInfo) {
     let createShuntUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -890,37 +895,37 @@ export function createStaticVarCompensator(staticVarCompensatorCreationParameter
     });
 }
 
-export function createLine(
-    studyUuid: string,
-    nodeUuid: UUID,
-    lineId: string,
-    lineName: string | null,
-    r: number,
-    x: number,
-    g1: number,
-    b1: number,
-    g2: number,
-    b2: number,
-    voltageLevelId1: string,
-    busOrBusbarSectionId1: string,
-    voltageLevelId2: string,
-    busOrBusbarSectionId2: string,
-    permanentCurrentLimit1: number,
-    permanentCurrentLimit2: number,
-    temporaryCurrentLimits1: TemporaryLimit[],
-    temporaryCurrentLimits2: TemporaryLimit[],
-    isUpdate: boolean,
-    modificationUuid: string,
-    connectionName1: string | null,
-    connectionDirection1: string | null,
-    connectionName2: string | null,
-    connectionDirection2: string | null,
-    connectionPosition1: string | null,
-    connectionPosition2: string | null,
-    connected1: boolean,
-    connected2: boolean,
-    properties: Property[]
-) {
+export function createLine({
+    studyUuid,
+    nodeUuid,
+    lineId,
+    lineName,
+    r,
+    x,
+    g1,
+    b1,
+    g2,
+    b2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2,
+    permanentCurrentLimit1,
+    permanentCurrentLimit2,
+    temporaryCurrentLimits1,
+    temporaryCurrentLimits2,
+    isUpdate = false,
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2,
+    connected1,
+    connected2,
+    properties,
+}: LineCreationInfo) {
     let createLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1871,7 +1876,6 @@ export function modifyVsc(
     converterStation1: VSCModificationConverterStation,
     converterStation2: VSCModificationConverterStation,
     properties: Property[] | undefined,
-    isUpdate: boolean,
     modificationUuid: UUID
 ) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);

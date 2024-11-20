@@ -11,7 +11,7 @@ import {
 } from '../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
 import { UUID } from 'crypto';
 import { Property } from '../components/dialogs/network-modifications/common/properties/property-utils';
-import { MODIFICATION_TYPE } from '../components/utils/modification-type';
+
 import {
     DataType,
     FieldValue,
@@ -68,12 +68,30 @@ export interface BatteryModificationInfo {
     isReactiveCapabilityCurveOn?: boolean;
     minQ?: number | null;
     maxQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData | undefined;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData;
     targetP: number;
     targetQ: number;
     participate: boolean;
     droop: number;
     isUpdate?: boolean;
+    properties?: Property[];
+}
+export interface LoadCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string;
+    name?: string | null;
+    loadType: string;
+    p0: number;
+    q0: number;
+    voltageLevelId?: string;
+    busOrBusbarSectionId?: string;
+    isUpdate: boolean;
+    modificationUuid?: string;
+    connectionDirection: string | null;
+    connectionName?: string | null;
+    connectionPosition?: number | null;
+    terminalConnected?: boolean;
     properties?: Property[];
 }
 
@@ -151,7 +169,7 @@ export interface GeneratorModificationInfo {
     droop: number | null;
     maxQ?: number | null;
     minQ?: number | null;
-    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData[] | undefined;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData[];
     connectionDirection?: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
@@ -163,7 +181,7 @@ export interface StaticVarCompensatorCreationInfo {
     studyUuid: string;
     nodeUuid: UUID;
     staticCompensatorId: string;
-    staticCompensatorName: string | null | undefined;
+    staticCompensatorName?: string | null;
     voltageLevelId: string;
     busOrBusbarSectionId?: string;
     connectionDirection?: string | null;
@@ -302,7 +320,7 @@ export interface Variations {
 }
 
 export interface VSCCreationConverterStation {
-    type: MODIFICATION_TYPE;
+    type: string;
     equipmentId: string;
     equipmentName: string | null;
     lossFactor: number;
@@ -325,7 +343,7 @@ export interface VSCModificationConverterStation {
     lossFactor: AttributeModification<number> | null;
     reactiveCapabilityCurve: AttributeModification<boolean> | null;
     busOrBusbarSectionId: AttributeModification<string> | null;
-    type: MODIFICATION_TYPE;
+    type: string;
     minQ: AttributeModification<number> | null;
     equipmentId: string;
     reactiveCapabilityCurvePoints:
@@ -346,9 +364,126 @@ export interface VSCModificationConverterStation {
 }
 
 export interface Assignment {
-    dataType: DataType | undefined;
-    value: FieldValue | undefined;
+    dataType?: DataType;
+    value?: FieldValue;
     filters: Filter[];
     editedField: string;
-    propertyName?: string | undefined;
+    propertyName?: string;
+}
+export interface BatteryCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string;
+    name: string | null;
+    voltageLevelId: string;
+    busOrBusbarSectionId: string;
+    connectionName: string | null;
+    connectionDirection: string | null;
+    connectionPosition: string | null;
+    terminalConnected: boolean | null;
+    minP: number | null;
+    maxP: number | null;
+    isReactiveCapabilityCurveOn: boolean;
+    minQ: number | null;
+    maxQ: number | null;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData;
+    targetP: number;
+    targetQ: number;
+    participate: boolean;
+    droop: number;
+    isUpdate: boolean;
+    modificationUuid: string;
+    properties?: Property[];
+}
+
+export interface GeneratorCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string;
+    name: string | null;
+    energySource: string;
+    minP: number;
+    maxP: number;
+    ratedS: number | null;
+    targetP: number | null;
+    targetQ: number | null;
+    voltageRegulationOn: boolean;
+    targetV: number | null;
+    qPercent: number | null;
+    voltageLevelId: string;
+    busOrBusbarSectionId: string;
+    isUpdate: boolean;
+    modificationUuid: string;
+    plannedActivePowerSetPoint: number;
+    marginalCost: number;
+    plannedOutageRate: number;
+    forcedOutageRate: number;
+    directTransX: number;
+    stepUpTransformerX: number;
+    regulatingTerminalId: string | null;
+    regulatingTerminalType: string | null;
+    regulatingTerminalVlId: string | null;
+    isReactiveCapabilityCurveOn: boolean;
+    participate: boolean;
+    droop: number | null;
+    maxQ: number | null;
+    minQ: number | null;
+    reactiveCapabilityCurve?: ReactiveCapabilityCurvePointsData[];
+    connectionDirection: string | null;
+    connectionName: string | null;
+    connectionPosition: string | null;
+    terminalConnected: boolean | null;
+    properties?: Property[];
+}
+
+export interface ShuntCompensatorCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    shuntCompensatorId: string;
+    shuntCompensatorName: string | null;
+    maxSusceptance: number | null;
+    maxQAtNominalV: number | null;
+    shuntCompensatorType: string;
+    sectionCount: number;
+    maximumSectionCount: number;
+    connectivity: any;
+    isUpdate: boolean;
+    modificationUuid: string;
+    connectionDirection: string | null;
+    connectionName: string | null;
+    connectionPosition: string | null;
+    terminalConnected: boolean | null;
+    properties?: Property[];
+}
+
+export interface LineCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    lineId: string;
+    lineName: string | null;
+    r: number;
+    x: number;
+    g1: number;
+    b1: number;
+    g2: number;
+    b2: number;
+    voltageLevelId1: string;
+    busOrBusbarSectionId1: string;
+    voltageLevelId2: string;
+    busOrBusbarSectionId2: string;
+    permanentCurrentLimit1: number;
+    permanentCurrentLimit2: number;
+    temporaryCurrentLimits1: TemporaryLimit[];
+    temporaryCurrentLimits2: TemporaryLimit[];
+    isUpdate: boolean;
+    modificationUuid: string;
+    connectionName1: string | null;
+    connectionDirection1: string | null;
+    connectionName2: string | null;
+    connectionDirection2: string | null;
+    connectionPosition1: string | null;
+    connectionPosition2: string | null;
+    connected1: boolean;
+    connected2: boolean;
+    properties?: Property[];
 }

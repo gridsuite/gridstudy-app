@@ -15,7 +15,7 @@ import { GlobalFilter } from '../../components/results/loadflow/load-flow-result
 interface QueryParams {
     sort?: SortConfigType[];
     filters: FilterSelectorType[] | null;
-    globalFilters?: GlobalFilter | undefined;
+    globalFilters?: GlobalFilter;
 }
 
 export function getDefaultLoadFlowProvider() {
