@@ -9,9 +9,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import {
+    Box,
     Autocomplete,
     Badge,
     debounce,
+    FormHelperText,
     Grid,
     IconButton,
     InputAdornment,
@@ -33,6 +35,11 @@ import { computeTolerance } from '../../hooks/use-aggrid-local-row-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
+    exponent: {
+        position: 'relative',
+        bottom: '1ex',
+        fontSize: '80%',
+    },
     iconSize: {
         fontSize: '1rem',
     },
@@ -56,6 +63,35 @@ const styles = {
         },
     },
 };
+
+/**
+ * displays a rounding precision like this : 'Rounded to 10^decimalAfterDot' or as a decimal number if decimalAfterDot <= 4
+ */
+export function DisplayRounding({ decimalAfterDot }) {
+    const intl = useIntl();
+    const displayAsPower10 = decimalAfterDot > 4;
+    const baseMessage =
+        intl.formatMessage({
+            id: 'filter.rounded',
+        }) + ' ';
+
+    const decimalAfterDotStr = -decimalAfterDot;
+    return (
+        <FormHelperText>
+            {baseMessage}
+            {displayAsPower10 ? (
+                <>
+                    10
+                    <Box component="span" sx={styles.exponent}>
+                        {decimalAfterDotStr}
+                    </Box>
+                </>
+            ) : (
+                1 / Math.pow(10, decimalAfterDot)
+            )}
+        </FormHelperText>
+    );
+}
 
 const CustomHeaderComponent = ({
     field,
@@ -103,11 +139,7 @@ const CustomHeaderComponent = ({
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState();
-    const [decimalPrecision, setDecimalPrecision] = useState(
-        intl.formatMessage({
-            id: 'filter.rounded',
-        })
-    );
+    const [decimalAfterDot, setDecimalAfterDot] = useState(0);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -156,13 +188,7 @@ const CustomHeaderComponent = ({
                     headerId: 'filter.warnRounding',
                 });
             }
-            const precisionLabel =
-                intl.formatMessage({
-                    id: 'filter.rounded',
-                }) +
-                ' : ' +
-                1 / Math.pow(10, decimalAfterDot);
-            setDecimalPrecision(precisionLabel);
+            setDecimalAfterDot(decimalAfterDot);
         }
     };
 
@@ -449,15 +475,9 @@ const CustomHeaderComponent = ({
                                             }}
                                         />
                                     </Grid>
-                                    {isNumberInput ? (
+                                    {isNumberInput && decimalAfterDot > 0 ? (
                                         <Grid item>
-                                            <TextField
-                                                size={'small'}
-                                                fullWidth
-                                                disabled
-                                                sx={styles.input}
-                                                value={decimalPrecision}
-                                            />
+                                            <DisplayRounding decimalAfterDot={decimalAfterDot} />
                                         </Grid>
                                     ) : null}
                                 </Grid>
