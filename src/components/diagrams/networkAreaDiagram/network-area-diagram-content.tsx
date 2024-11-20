@@ -21,6 +21,7 @@ import {
     NetworkAreaDiagramViewer,
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
+    getValueFromThreshold,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
@@ -32,15 +33,9 @@ import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
 import { UUID } from 'crypto';
-
-export function getValueFromThreshold(
-    value: number,
-    threshold: number,
-    aboveThreshold: string,
-    belowThreshold: string
-) {
-    return value > threshold ? aboveThreshold : belowThreshold;
-}
+import { Point } from '@svgdotjs/svg.js';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { FEEDER_TYPES } from 'components/utils/feederType';
 
 function between(x, min, max) {
     return x >= min && x <= max;
@@ -61,9 +56,6 @@ function getBranchStrokeWidth(value: number) {
     }
     return '40';
 }
-import { Point } from '@svgdotjs/svg.js';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { FEEDER_TYPES } from 'components/utils/feederType';
 
 const dynamicCssRules: CSS_RULE[] = [
     {
