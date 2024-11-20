@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { WritableDeep } from 'type-fest';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
 import {
@@ -19,7 +20,6 @@ import {
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
-
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     getEmptySpreadsheetFormSchema,
@@ -30,17 +30,19 @@ import {
     SPREADSHEET_NAME,
 } from './custom-spreadsheet-form';
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
-import { TABLES_DEFINITIONS } from '../utils/config-tables';
+import { TABLES_DEFINITIONS, TABLES_TYPES, type TablesDefinitionsType } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
 import { SortWay } from 'hooks/use-aggrid-sort';
+import { typeAndFetchers } from '../config/equipment/common-config';
+import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;
     selectedOption: { id: string; label: string } | undefined;
@@ -66,7 +68,7 @@ export default function CustomSpreadsheetConfigDialog({
     const emptySpreadsheetFormSchema = useMemo(() => getEmptySpreadsheetFormSchema(tablesNames), [tablesNames]);
     const spreadsheetFromModelFormSchema = useMemo(() => getSpreadsheetFromModelFormSchema(tablesNames), [tablesNames]);
 
-    const shema: typeof emptySpreadsheetFormSchema | typeof spreadsheetFromModelFormSchema =
+    const schema: typeof emptySpreadsheetFormSchema | typeof spreadsheetFromModelFormSchema =
         selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id
             ? emptySpreadsheetFormSchema
             : spreadsheetFromModelFormSchema;
@@ -78,28 +80,37 @@ export default function CustomSpreadsheetConfigDialog({
 
     const formMethods = useForm<typeof defaultFormValues>({
         defaultValues: defaultFormValues,
-        resolver: yupResolver(shema as yup.ObjectSchema<typeof defaultFormValues>),
+        resolver: yupResolver(schema as yup.ObjectSchema<typeof defaultFormValues>),
     });
 
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const { handleSubmit, reset, setValue, getValues } = formMethods;
 
+    const getTableColumns = useCallback((type: SpreadsheetEquipmentType) => {
+        const tableDef = (TABLES_DEFINITIONS as WritableDeep<TablesDefinitionsType>).find(
+            (tabDef) => tabDef.type === type
+        );
+        return tableDef ? tableDef.columns : [];
+    }, []);
+
     const onSubmit = useCallback(
         (newParams: any) => {
             if (selectedOption?.id === NEW_SPREADSHEET_CREATION_OPTIONS.EMPTY.id) {
-                const equipmentType = newParams.equipmentType as keyof typeof TABLES_DEFINITIONS;
+                // New tab with default columns
+                const equipmentType = newParams.equipmentType as SpreadsheetEquipmentType;
                 const tabIndex = tablesDefinitionIndexes.size;
-                const newTableDefinition = {
-                    ...TABLES_DEFINITIONS[equipmentType],
-                    name: newParams[SPREADSHEET_NAME],
+                const tabName = newParams[SPREADSHEET_NAME];
+                const newTableDefinition: SpreadsheetTabDefinition = {
                     index: tabIndex,
-                    type: equipmentType + tabIndex, // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
+                    name: tabName,
+                    ...typeAndFetchers(equipmentType),
+                    columns: getTableColumns(equipmentType),
                 };
-                dispatch(updateTableDefinition('new' + tabIndex + newParams.equipmentType, newTableDefinition, []));
-                dispatch(addFilterForNewSpreadsheet(equipmentType + tabIndex, []));
+                dispatch(updateTableDefinition(newTableDefinition, []));
+                dispatch(addFilterForNewSpreadsheet(tabName, []));
                 dispatch(
-                    addSortForNewSpreadsheet(equipmentType + tabIndex, [
+                    addSortForNewSpreadsheet(tabName, [
                         {
                             colId: 'id',
                             sort: SortWay.ASC,
@@ -107,31 +118,25 @@ export default function CustomSpreadsheetConfigDialog({
                     ])
                 );
             } else {
+                // Load existing model into new tab
                 getSpreadsheetModel(newParams[SPREADSHEET_MODEL][0].id)
                     .then(
                         (selectedModel: {
                             customColumns: ColumnWithFormula[];
-                            sheetType: keyof typeof TABLES_DEFINITIONS;
+                            sheetType: SpreadsheetEquipmentType;
                         }) => {
-                            const equipmentType = selectedModel.sheetType;
                             const tabIndex = tablesDefinitionIndexes.size;
-                            const newTableDefinition = {
-                                ...TABLES_DEFINITIONS[selectedModel.sheetType],
-                                name: newParams[SPREADSHEET_NAME],
-                                index: tablesDefinitionIndexes.size,
+                            const tabName = newParams[SPREADSHEET_NAME];
+                            const newTableDefinition: SpreadsheetTabDefinition = {
+                                index: tabIndex,
+                                name: tabName,
+                                ...typeAndFetchers(selectedModel.sheetType),
                                 columns: [],
-                                type: equipmentType + tabIndex, // we need to add tabIndex for now to avoid conflicts with existing tables for sorting and filtering
                             };
+                            dispatch(updateTableDefinition(newTableDefinition, selectedModel.customColumns));
+                            dispatch(addFilterForNewSpreadsheet(tabName, []));
                             dispatch(
-                                updateTableDefinition(
-                                    'new' + tablesDefinitionIndexes.size + newParams[SPREADSHEET_MODEL][0].name,
-                                    newTableDefinition,
-                                    selectedModel.customColumns
-                                )
-                            );
-                            dispatch(addFilterForNewSpreadsheet(equipmentType + tabIndex, []));
-                            dispatch(
-                                addSortForNewSpreadsheet(equipmentType + tabIndex, [
+                                addSortForNewSpreadsheet(tabName, [
                                     {
                                         colId: 'ID',
                                         sort: SortWay.ASC,
@@ -150,7 +155,7 @@ export default function CustomSpreadsheetConfigDialog({
             open.setFalse();
         },
 
-        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size]
+        [dispatch, open, selectedOption?.id, snackError, tablesDefinitionIndexes.size, getTableColumns]
     );
 
     useEffect(() => {
@@ -180,7 +185,7 @@ export default function CustomSpreadsheetConfigDialog({
             </Grid>
             <Grid item xs>
                 <SelectInput
-                    options={Object.values(EQUIPMENT_TYPES).map((equipmentType) => {
+                    options={Object.values(TABLES_TYPES).map((equipmentType) => {
                         return { id: equipmentType, label: equipmentType };
                     })}
                     name={EQUIPMENT_TYPE_FIELD}
@@ -216,7 +221,7 @@ export default function CustomSpreadsheetConfigDialog({
             ? addEmptySpreadsheetConfigContent
             : addSpreadsheetFromModelContent;
     return (
-        <CustomFormProvider validationSchema={shema} {...formMethods}>
+        <CustomFormProvider validationSchema={schema} {...formMethods}>
             <Dialog
                 id="emty-spreadsheet-dialog"
                 open={open.value}
