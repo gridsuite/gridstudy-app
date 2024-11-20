@@ -27,6 +27,7 @@ import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParamet
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
 import {
+    ILimitReductionsByVoltageLevel,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
@@ -42,6 +43,7 @@ import yup from '@gridsuite/commons-ui/dist/utils/yupConfig';
 import LineSeparator from '../commons/line-separator';
 import { UseParametersBackendReturnProps } from './parameters.type';
 import ComputingType from 'components/computing-status/computing-type';
+import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 
 interface CountrySelectorProps {
     value: string[];
@@ -174,7 +176,7 @@ export const DoubleEditor: FunctionComponent<DoubleEditorProps> = ({
     );
 };
 
-const fusionSpecificWithOtherParams = (allParams: Record<string, any>, specificParams: Record<string, any>) => {
+const fusionSpecificWithOtherParams = (allParams: LoadFlowParametersInfos, specificParams: Record<string, any>) => {
     const commitParameters = allParams;
     commitParameters['specificParametersPerProvider'] =
         Object.keys(specificParams).length > 0
@@ -186,9 +188,9 @@ const fusionSpecificWithOtherParams = (allParams: Record<string, any>, specificP
 
 function makeComponentsFor(
     defParams: Record<string, any>,
-    localParams: Record<string, any>,
-    allParams: Record<string, any>,
-    setter: (newParams: Record<string, any>) => void,
+    localParams: Record<string, string | number | boolean | string[]>,
+    allParams: LoadFlowParametersInfos | null,
+    setter: (newParams: LoadFlowParametersInfos) => void,
     provider?: string
 ) {
     return Object.keys(defParams).map((key) => (
@@ -209,12 +211,15 @@ function getValue(param: any, key: string) {
 function makeComponentFor(
     defParam: Record<string, any>,
     key: string,
-    localParams: Record<string, any>,
-    allParams: Record<string, any>,
-    setter: (newParams: Record<string, any>) => void,
+    localParams: Record<string, string | number | boolean | string[]>,
+    allParams: LoadFlowParametersInfos | null,
+    setter: (newParams: LoadFlowParametersInfos) => void,
     provider?: string
 ) {
     function updateValues(newval: boolean | string | string[] | number) {
+        if (!allParams) {
+            return;
+        }
         localParams = { ...localParams, [key]: newval }; // single value update made
         let newParams = { ...allParams }; // but we send/update all params to the back
         if (provider === undefined) {
@@ -227,8 +232,10 @@ function makeComponentFor(
             'specificParametersPerProvider' in newParams &&
             provider in newParams['specificParametersPerProvider']
         ) {
+            const stringifiedLocalParams: Record<string, string> = {};
+            Object.keys(localParams).forEach((key) => (stringifiedLocalParams[key] = localParams[key].toString()));
             newParams['specificParametersPerProvider'][provider] = {
-                ...localParams,
+                ...stringifiedLocalParams,
             };
         }
         setter(newParams);
@@ -289,8 +296,8 @@ const TYPES = {
 };
 
 interface BasicLoadFlowParametersProps {
-    lfParams: Record<string, any>;
-    commitLFParameter: (newParams: Record<string, any>) => void;
+    lfParams: LoadFlowParametersInfos | null;
+    commitLFParameter: (newParams: LoadFlowParametersInfos) => void;
 }
 
 const BasicLoadFlowParameters: FunctionComponent<BasicLoadFlowParametersProps> = ({ lfParams, commitLFParameter }) => {
@@ -339,8 +346,8 @@ const BasicLoadFlowParameters: FunctionComponent<BasicLoadFlowParametersProps> =
 };
 
 interface AdvancedLoadFlowParametersProps {
-    lfParams: Record<string, any>;
-    commitLFParameter: (newParams: Record<string, any>) => void;
+    lfParams: LoadFlowParametersInfos | null;
+    commitLFParameter: (newParams: LoadFlowParametersInfos) => void;
 }
 
 const AdvancedLoadFlowParameters: FunctionComponent<AdvancedLoadFlowParametersProps> = ({
@@ -605,18 +612,19 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
     });
 
     const toLimitReductions = useCallback(
-        (formLimits: any /*TODO: fix any*/) => {
-            return params?.limitReductions.map((vlLimits: any, indexVl: number) => {
-                //TODO: fix any
+        (formLimits: LoadFlowParametersForm['limitReductionsForm']) => {
+            if (!params || !formLimits) {
+                return undefined;
+            }
+            return params.limitReductions.map<ILimitReductionsByVoltageLevel>((vlLimits, indexVl) => {
                 let vlLNewLimits = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],
                 };
-                vlLimits.temporaryLimitReductions.forEach((temporaryLimit: any, index: number) => {
-                    //TODO: fix any
+                vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
                     vlLNewLimits.temporaryLimitReductions[index] = {
                         ...temporaryLimit,
-                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM][index],
                     };
                 });
                 return vlLNewLimits;
@@ -629,9 +637,16 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
 
     const updateLimitReductions = useCallback(
         (formLimits: LoadFlowParametersForm) => {
+            if (!params) {
+                return;
+            }
+            const limitReductions = toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]);
+            if (!limitReductions) {
+                return;
+            }
             updateParameters({
                 ...params,
-                limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
+                limitReductions: limitReductions,
             });
         },
         [params, updateParameters, toLimitReductions]
@@ -639,7 +654,10 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
 
     const { reset } = formMethods;
     useEffect(() => {
-        reset(toFormValuesLimitReductions(params?.limitReductions));
+        if (!params?.limitReductions) {
+            return;
+        }
+        reset(toFormValuesLimitReductions(params.limitReductions));
     }, [params?.limitReductions, reset]);
 
     useEffect(() => {
@@ -717,11 +735,11 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                                             {tabValue === TAB_VALUES.General && (
                                                 <>
                                                     <BasicLoadFlowParameters
-                                                        lfParams={params || {}}
+                                                        lfParams={params}
                                                         commitLFParameter={updateParameters}
                                                     />
                                                     <AdvancedLoadFlowParameters
-                                                        lfParams={params || {}}
+                                                        lfParams={params}
                                                         commitLFParameter={updateParameters}
                                                     />
                                                     <SpecificLoadFlowParameters
@@ -754,10 +772,8 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                                                         paddingLeft={2}
                                                         sx={{ width: '100%' }}
                                                     >
-                                                        {params?.limitReductions !== null ? (
-                                                            <LimitReductionsTableForm
-                                                                limits={params?.limitReductions}
-                                                            />
+                                                        {params?.limitReductions ? (
+                                                            <LimitReductionsTableForm limits={params.limitReductions} />
                                                         ) : (
                                                             <ParameterLineSlider
                                                                 paramNameId={PARAM_LIMIT_REDUCTION}

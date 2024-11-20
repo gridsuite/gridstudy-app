@@ -9,6 +9,7 @@ import ComputingType from 'components/computing-status/computing-type';
 import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
 import { ISAParameters } from './common/limitreductions/columns-definitions';
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
+import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 
 enum ParameterType {
     BOOLEAN = 'BOOLEAN',
@@ -34,6 +35,8 @@ export type ParametersInfos<T extends ComputingType> = T extends ComputingType.S
     ? ISAParameters
     : T extends ComputingType.NON_EVACUATED_ENERGY_ANALYSIS
     ? NonEvacuatedEnergyParametersInfos
+    : T extends ComputingType.LOAD_FLOW
+    ? LoadFlowParametersInfos
     : Record<string, any>;
 
 export type UseParametersBackendReturnProps<T extends ComputingType> = [
