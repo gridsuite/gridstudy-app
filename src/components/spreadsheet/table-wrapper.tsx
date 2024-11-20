@@ -13,7 +13,7 @@ import { Alert, Box, Grid } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
-import { useSnackMessage } from '@gridsuite/commons-ui';
+import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
@@ -188,6 +188,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [lastModifiedEquipment, setLastModifiedEquipment] = useState<any>();
 
     const [manualTabSwitch, setManualTabSwitch] = useState<boolean>(true);
+
+    const [rowData, setRowData] = useState<Identifiable[]>([]);
 
     const [priorValuesBuffer, addDataToBuffer, resetBuffer] = useEditBuffer();
     const [editingData, setEditingData] = useState<any>();
@@ -468,19 +470,17 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         });
     }, [sortConfig, mergedColumnData]);
 
-    const getRows = useCallback(() => {
+    useEffect(() => {
         if (disabled || !equipments) {
-            return [];
+            return;
         }
-        // return new instance of the array to trigger ag-grid update
-        return [...equipments];
-    }, [equipments, disabled]);
-
-    //TODO fix network.js update methods so that when an existing entry is modified or removed the whole collection
-    //is reinstanciated in order to notify components using it.
-    //this variable is regenerated on every renders in order to gather latest external updates done to the dataset,
-    //it is necessary since we curently lack the system to detect changes done to it after receiving a notification
-    const rowData = getRows();
+        // To handle cases where a "customSpreadsheet" tab is opened.
+        // This ensures that the grid correctly displays data specific to the custom tab.
+        if (gridRef.current?.api) {
+            gridRef.current.api.setGridOption('rowData', equipments);
+        }
+        setRowData(equipments);
+    }, [tabIndex, disabled, equipments]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {

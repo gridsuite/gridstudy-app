@@ -10,6 +10,7 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/column_name': 'Column name',
     'spreadsheet/custom_column/column_content': 'Column content',
     'spreadsheet/custom_column/column_content_tooltip': `Column content is described with variable names (in order to reference grid data) and operators provided by MathJS library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
+    'spreadsheet/custom_column/error/not_unique': 'Column names must be unique',
     'spreadsheet/save/button': 'Save',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/csv': 'Export CSV',
