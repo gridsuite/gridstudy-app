@@ -32,6 +32,8 @@ import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {
+    findClosestNodeBetweenVerticalPositions,
+    findSiblings,
     getCurrentAbsolutePosition,
     getFirstAncestorIdWithSibling,
     getStoredAbsolutePosition,
@@ -170,17 +172,11 @@ const NetworkModificationTree = ({
     }, [isStudyDrawerOpen, fitView]);
 
     const handleNodeDragStop = (event, node) => {
-        // NOTE : This is triggered too late to be useful for real position management.
-
         setIsDragging(false);
-        //console.error('DRAGGED NODE ' + node.id.substring(0, 3) + ' position.x=' + node.position?.x + ', data.absolutePosition.x=' + node.data?.absolutePosition?.x+ ', data.absolutePosition.y=' + node.data?.absolutePosition?.y);
-        //console.error('END OF DRAG NODE', node);
-        //updateNodePositions(treeModel);
+        updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch
     };
 
     const handleNodeDrag = (event, node) => {
-        // NOTE : This is triggered too late to be useful for real position management.
-
         setIsDragging(true);
     };
 
@@ -204,9 +200,11 @@ const NetworkModificationTree = ({
             currentChange.position.y = initialDraggedNodeYPosition;
 
             // We test if we should move the ancestor instead of the currently moving node
+            let movedNode;
             if (firstAncestorIdWithSibling && firstAncestorIdWithSibling !== currentChange.id) {
                 // We find the movement of the dragged node and apply it to its ancestor instead.
                 const ancestorNode = nodes.find((node) => node.id === firstAncestorIdWithSibling);
+                movedNode = ancestorNode;
                 const initialAncestorXPosition = ancestorNode.position.x;
                 const initialAncestorYPosition = ancestorNode.position.y;
                 const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
@@ -224,23 +222,32 @@ const NetworkModificationTree = ({
                     },
                 };
                 changes.push(newChangeForAncestor);
+            } else {
+                movedNode = draggedNode;
             }
 
             // TODO CHARLY description de cette partie. Maybe refactoring pour qu'on s'y retrouve dans cette méga fonction
             if (changes[0].dragging !== undefined && !changes[0].dragging) {
+                // SOLUTION : on trouve les sibling du noeud draggé fixed (noeud ou bien ancestor).
+                // Ensuite on gère la position par rapport à ce petit groupe de siblings.
+                // TODO CHARLY commentaire propre pour expliquer cette solution
                 console.error('CHARLY DRAGGING END');
-                console.error('CHARLY dragged node ' + changes[0].id.substring(0, 3));
-                console.error(
-                    'CHARLY dragged node absolute position (computed) ',
-                    getCurrentAbsolutePosition(nodes, draggedNode)
-                );
-                console.error(
-                    'CHARLY dragged node absolute position (stored) ',
-                    getStoredAbsolutePosition(draggedNode)
-                );
+                console.error('CHARLY dragged node ' + movedNode.id.substring(0, 3));
+
+                const xDestination = getCurrentAbsolutePosition(nodes, movedNode)?.x;
+                const xOrigin = getStoredAbsolutePosition(movedNode)?.x;
+                // TODO CHARLY améliorer les positions pour prendre en compte un déplacement si on est à peu près à la moitié du node
+                // TODO CHARLY réduire la grille de déplacement pour rendre le drag and drop plus fluide
+                console.error('CHARLY dragged node absolute position (computed) ', xDestination);
+                console.error('CHARLY dragged node absolute position (stored) ', xOrigin);
+                const siblings = findSiblings(nodes, movedNode);
+                const nodeToSwitchWith = findClosestNodeBetweenVerticalPositions(siblings, xOrigin, xDestination);
+                if (nodeToSwitchWith) {
+                    dispatch(networkModificationTreeSwitchNodes(movedNode.id, nodeToSwitchWith.id));
+                }
             }
         }
-        return onNodesChange(changes);
+        onNodesChange(changes);
     };
     const handleDebug = () => {
         dispatch(
@@ -284,7 +291,6 @@ const NetworkModificationTree = ({
                 nodeTypes={nodeTypes}
                 minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
-                nodesDraggable={true}
                 onNodeDrag={handleNodeDrag}
                 onNodeDragStop={handleNodeDragStop}
                 defaultEdgeOptions={{

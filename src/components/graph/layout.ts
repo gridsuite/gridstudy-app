@@ -161,3 +161,43 @@ export function getCurrentAbsolutePosition(nodes: CurrentTreeNode[], node: Curre
 export function getStoredAbsolutePosition(node: CurrentTreeNode) {
     return node?.data?.absolutePosition;
 }
+
+/**
+ * Will find all the nodes between the two X positions provided, then return only one node
+ * whose X position is closer to xDestination.
+ * If zero node is found, will return null.
+ * @param nodes
+ * @param xOrigin
+ * @param xDestination
+ */
+export function findClosestNodeBetweenVerticalPositions(
+    nodes: CurrentTreeNode[],
+    xOrigin: number,
+    xDestination: number
+): CurrentTreeNode | null {
+    const minX = Math.min(xOrigin, xDestination);
+    const maxX = Math.max(xOrigin, xDestination);
+    const nodesBetween = nodes.filter((n) => {
+        const absolutePosition = getStoredAbsolutePosition(n);
+        return absolutePosition?.x < maxX && absolutePosition?.x > minX;
+    });
+    if (nodesBetween.length > 0) {
+        console.error(
+            'CHARLY found nodes : ' +
+                nodesBetween.map((n) => n.id.substring(0, 3) + '_' + getStoredAbsolutePosition(n)?.x)
+        );
+        const closestNode = nodesBetween.reduce((closest, current) =>
+            Math.abs(getStoredAbsolutePosition(current)?.x - xDestination) <
+            Math.abs(getStoredAbsolutePosition(closest)?.x - xDestination)
+                ? current
+                : closest
+        );
+        console.error('CHARLY closest node : ' + closestNode.id.substring(0, 3));
+        return closestNode;
+    }
+    return null;
+}
+
+export function findSiblings(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
+    return nodes.filter((n) => n.parentId === node.parentId && n.id !== node.id);
+}
