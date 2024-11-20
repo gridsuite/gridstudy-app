@@ -122,9 +122,9 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
                 <TableBody>
                     {currentRows.map((row: Record<'id', string>, index: number) => (
                         <TableRowComponent
+                            key={row.id}
                             arrayFormName={arrayFormName}
                             columnsDefinition={columnsDefinition}
-                            row={row}
                             index={index}
                             handleDeleteButton={handleDeleteButton}
                             disableDelete={disableDelete}

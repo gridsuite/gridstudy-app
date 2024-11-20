@@ -33,21 +33,18 @@ import {
 import { Action } from 'redux';
 import { GsLang, GsLangUser, GsTheme, Identifiable } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
-import { UnknownArray } from 'type-fest';
+import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/diagram-viewer';
+import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
-    SpreadsheetEquipmentType,
     StudyIndexationStatus,
     StudyUpdatedEventData,
-    TablesDefinitionsType,
-    TablesDefinitionsNames,
     TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
@@ -65,11 +62,13 @@ import {
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
+import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
+import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
 
 type MutableUnknownArray = unknown[];
 
@@ -1185,12 +1184,12 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
 
 export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
 export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
-    table: TablesDefinitionsNames;
+    table: LiteralUnion<TablesDefinitionsNames, string>;
     definitions: ColumnWithFormula[];
     filter?: FormulaFilter;
 };
 export function setCustomColumDefinitions(
-    table: TablesDefinitionsNames,
+    table: LiteralUnion<TablesDefinitionsNames, string>,
     customColumns: ColumnWithFormula[],
     filter?: FormulaFilter
 ): CustomColumnsDefinitionsAction {
@@ -1206,32 +1205,31 @@ export const UPDATE_TABLE_DEFINITION = 'UPDATE_TABLE_DEFINITION';
 
 export type UpdateTableDefinitionAction = {
     type: typeof UPDATE_TABLE_DEFINITION;
-    payload: { key: string; value: TablesDefinitionsType; customColumns: ColumnWithFormula[] };
+    payload: { newTableDefinition: SpreadsheetTabDefinition; customColumns: ColumnWithFormula[] };
 };
 
 export const updateTableDefinition = (
-    key: string,
-    value: any,
+    newTableDefinition: SpreadsheetTabDefinition,
     customColumns: ColumnWithFormula[]
 ): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
-    payload: { key, value, customColumns },
+    payload: { newTableDefinition, customColumns },
 });
 
 export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
 
 export type AddFilterForNewSpreadsheetAction = {
     type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newEquipmentType: string; value: MutableUnknownArray };
+    payload: { newTabName: string; value: MutableUnknownArray };
 };
 
 export const addFilterForNewSpreadsheet = (
-    newEquipmentType: string,
+    newTabName: string,
     value: MutableUnknownArray
 ): AddFilterForNewSpreadsheetAction => ({
     type: ADD_FILTER_FOR_NEW_SPREADSHEET,
     payload: {
-        newEquipmentType,
+        newTabName,
         value,
     },
 });
@@ -1240,16 +1238,16 @@ export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
 
 export type AddSortForNewSpreadsheetAction = {
     type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newEquipmentType: string; value: SortConfigType[] };
+    payload: { newTabName: string; value: SortConfigType[] };
 };
 
 export const addSortForNewSpreadsheet = (
-    newEquipmentType: string,
+    newTabName: string,
     value: SortConfigType[]
 ): AddSortForNewSpreadsheetAction => ({
     type: ADD_SORT_FOR_NEW_SPREADSHEET,
     payload: {
-        newEquipmentType,
+        newTabName,
         value,
     },
 });

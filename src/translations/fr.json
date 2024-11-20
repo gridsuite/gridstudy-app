@@ -247,7 +247,7 @@
     "DynamicSimulationSeriesListAvailableCurves": "Courbes disponibles",
     "DynamicSimulationSeriesListRightAxis": "Axe droit",
     "DynamicSimulationResultLayoutCols": "Colonnes",
-    "DynamicSimulationProviderDynaWaltz": "DynaWaltz",
+    "DynamicSimulationProviderDynawo": "Dynawo",
     "DynamicSimulationTimeDelay": "Temporisation",
     "DynamicSimulationSolver": "Solveur",
     "DynamicSimulationMapping": "Mappage",

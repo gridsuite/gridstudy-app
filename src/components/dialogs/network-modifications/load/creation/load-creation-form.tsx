@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { WritableDeep } from 'type-fest';
 import { Grid } from '@mui/material';
 import { EQUIPMENT_ID, EQUIPMENT_NAME, LOAD_TYPE, P0, Q0 } from 'components/utils/field-constants';
 import { ActivePowerAdornment, filledTextField, ReactivePowerAdornment } from '../../../dialog-utils';
@@ -13,10 +14,17 @@ import { FloatInput, SelectInput, TextInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
+import { UUID } from 'crypto';
+import { CurrentTreeNode } from '../../../../../redux/reducer';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const LoadCreationForm = ({ currentNode, studyUuid }) => {
+export interface LoadCreationFormProps {
+    studyUuid: UUID;
+    currentNode: CurrentTreeNode;
+}
+
+export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<LoadCreationFormProps>) {
     const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
 
     const loadIdField = (
@@ -29,7 +37,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
         <SelectInput
             name={LOAD_TYPE}
             label="Type"
-            options={LOAD_TYPES}
+            options={LOAD_TYPES as WritableDeep<typeof LOAD_TYPES>}
             fullWidth
             size={'small'}
             formProps={filledTextField}
@@ -46,6 +54,7 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            previousValues={undefined}
         />
     );
 
@@ -58,18 +67,15 @@ const LoadCreationForm = ({ currentNode, studyUuid }) => {
             </Grid>
             <GridSection title="Connectivity" />
             <Grid container spacing={2}>
-                <GridItem field={connectivityForm} size={12} />
+                <GridItem size={12}>{connectivityForm}</GridItem>
             </Grid>
             <GridSection title="Setpoints" />
             <Grid container spacing={2}>
                 <GridItem size={4}>{activePowerField}</GridItem>
-                <GridItem size={4}>{loadNameField}</GridItem>
                 <GridItem size={4}>{reactivePowerField}</GridItem>
-                <GridItem size={4}>{loadNameField}</GridItem>
+                <GridItem size={'auto'}></GridItem>
             </Grid>
             <PropertiesForm networkElementType={'load'} />
         </>
     );
-};
-
-export default LoadCreationForm;
+}
