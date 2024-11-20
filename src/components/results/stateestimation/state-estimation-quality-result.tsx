@@ -55,6 +55,28 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         delay: RESULTS_LOADING_DELAY,
     });
 
+    const getRowStyle = useCallback(
+        (params: RowClassParams) => {
+            if (params?.data?.elementId) {
+                return {
+                    backgroundColor: theme.selectedRow.background,
+                };
+            }
+        },
+        [theme.selectedRow.background]
+    );
+
+    const onRowDataUpdated = useCallback((params: any) => {
+        if (params.api) {
+            params.api.sizeColumnsToFit();
+        }
+    }, []);
+
+    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
+        api?.sizeColumnsToFit();
+    }, []);
+    const messages = useIntlResultStatusMessages(intl, true);
+
     const defaultColDef = useMemo(
         () => ({
             filter: true,
@@ -69,28 +91,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         }),
         []
     );
-
-    const onRowDataUpdated = useCallback((params: any) => {
-        if (params.api) {
-            params.api.sizeColumnsToFit();
-        }
-    }, []);
-
-    const getRowStyle = useCallback(
-        (params: RowClassParams) => {
-            if (params?.data?.elementId) {
-                return {
-                    backgroundColor: theme.selectedRow.background,
-                };
-            }
-        },
-        [theme.selectedRow.background]
-    );
-
-    const onGridReady = useCallback(({ api }: GridReadyEvent) => {
-        api?.sizeColumnsToFit();
-    }, []);
-    const messages = useIntlResultStatusMessages(intl, true);
 
     const renderStateEstimationQualities = () => {
         const message = getNoRowsMessage(
