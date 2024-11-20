@@ -15,7 +15,7 @@ export const RESULTS_LOADING_DELAY = 500;
 export const LOAD_TYPES = [
     { id: 'AUXILIARY', label: 'Auxiliary' },
     { id: 'FICTITIOUS', label: 'Fictitious' },
-];
+] as const;
 // and the undefined/default one (not displayed)
 export const UNDEFINED_LOAD_TYPE = 'UNDEFINED';
 
@@ -27,17 +27,17 @@ export const ENERGY_SOURCES = [
     { id: 'THERMAL', label: 'Thermal' },
     { id: 'SOLAR', label: 'Solar' },
     { id: 'OTHER', label: 'Other' },
-];
+] as const;
 
 export const SHUNT_COMPENSATOR_TYPES = {
     REACTOR: { id: 'REACTOR', label: 'Reactor' },
     CAPACITOR: { id: 'CAPACITOR', label: 'Capacitor' },
-};
+} as const;
 
 export const REGULATION_TYPES = {
     DISTANT: { id: 'DISTANT', label: 'Distant' },
     LOCAL: { id: 'LOCAL', label: 'Local' },
-};
+} as const;
 
 export const UPDATE_TYPE = [
     'creatingInProgress',
@@ -45,7 +45,7 @@ export const UPDATE_TYPE = [
     'stashingInProgress',
     'restoringInProgress',
     'deletingInProgress',
-];
+] as const;
 
 export const PHASE_REGULATION_MODES = {
     FIXED_TAP: { id: 'FIXED_TAP', label: 'FixedTap' },
@@ -54,7 +54,7 @@ export const PHASE_REGULATION_MODES = {
         id: 'ACTIVE_POWER_CONTROL',
         label: 'PhaseActivePowerControl',
     },
-};
+} as const;
 
 export const RATIO_REGULATION_MODES = {
     FIXED_RATIO: {
@@ -65,18 +65,18 @@ export const RATIO_REGULATION_MODES = {
         id: 'VOLTAGE_REGULATION',
         label: 'VoltageRegulation',
     },
-};
+} as const;
 
 export const SIDE = {
     SIDE1: { id: 'SIDE1', label: 'RegulatedSide1' },
     SIDE2: { id: 'SIDE2', label: 'RegulatedSide2' },
-};
+} as const;
 
 // Relevant ConnectablePosition.Direction Powsybl enum values
 export const CONNECTION_DIRECTIONS = [
     { id: 'TOP', label: 'Top' },
     { id: 'BOTTOM', label: 'Bottom' },
-];
+] as const;
 // and the undefined/default one (not displayed)
 export const UNDEFINED_CONNECTION_DIRECTION = 'UNDEFINED';
 
@@ -94,19 +94,19 @@ export function getConnectionDirectionLabel(connectionDirectionId: string) {
 export const REACTIVE_LIMIT_TYPES = [
     { id: 'MINMAX', label: 'ReactiveLimitsKindMinMax' },
     { id: 'CURVE', label: 'ReactiveLimitsKindCurve' },
-];
+] as const;
 
-const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' };
+const PROPORTIONAL = { id: 'PROPORTIONAL', label: 'Proportional' } as const;
 const REGULAR_DISTRIBUTION = {
     id: 'REGULAR_DISTRIBUTION',
     label: 'RegularDistribution',
-};
-const VENTILATION = { id: 'VENTILATION', label: 'Ventilation' };
+} as const;
+const VENTILATION = { id: 'VENTILATION', label: 'Ventilation' } as const;
 export const ACTIVE_VARIATION_MODES = {
     PROPORTIONAL,
     REGULAR_DISTRIBUTION,
     VENTILATION,
-};
+} as const;
 
 export const VARIATION_MODES = {
     PROPORTIONAL,
@@ -117,12 +117,12 @@ export const VARIATION_MODES = {
     REGULAR_DISTRIBUTION,
     STACKING_UP: { id: 'STACKING_UP', label: 'StackingUp' },
     VENTILATION,
-};
+} as const;
 
 export const REACTIVE_VARIATION_MODES = {
     CONSTANT_Q: { id: 'CONSTANT_Q', label: 'ConstantQWithoutUnit' },
     TAN_PHI_FIXED: { id: 'TAN_PHI_FIXED', label: 'TanPhiFixed' },
-};
+} as const;
 
 export function getLoadTypeLabel(loadTypeId: string) {
     return LOAD_TYPES.find(({ id }) => id === loadTypeId)?.label;
@@ -131,12 +131,12 @@ export function getLoadTypeLabel(loadTypeId: string) {
 export const SLD_DISPLAY_MODE = {
     FEEDER_POSITION: 'FEEDER_POSITION',
     STATE_VARIABLE: 'STATE_VARIABLE',
-};
+} as const;
 
 export const BRANCH_SIDE = {
     ONE: 'ONE',
     TWO: 'TWO',
-};
+} as const;
 
 export const OPERATING_STATUS_ACTION = {
     LOCKOUT: 'LOCKOUT',
@@ -144,17 +144,12 @@ export const OPERATING_STATUS_ACTION = {
     ENERGISE_END_ONE: 'ENERGISE_END_ONE',
     ENERGISE_END_TWO: 'ENERGISE_END_TWO',
     SWITCH_ON: 'SWITCH_ON',
-};
+} as const;
 
 export const VARIATION_TYPES = {
     DELTA_P: { id: 'DELTA_P', label: 'DeltaP' },
     TARGET_P: { id: 'TARGET_P', label: 'TargetPText' },
-};
-
-export const VOLTAGE_LEVEL_COMPONENTS = {
-    BUS_BAR_SECTION_CREATION: 'BusBarSectionCreation',
-    BUS_BAR_SECTION_CONNECTION: 'BusBarSectionConnection',
-};
+} as const;
 
 export enum BUILD_STATUS {
     NOT_BUILT = 'NOT_BUILT',
@@ -167,7 +162,7 @@ export enum BUILD_STATUS {
 export const SWITCH_TYPE = {
     BREAKER: { id: 'BREAKER', label: 'Breaker' },
     DISCONNECTOR: { id: 'DISCONNECTOR', label: 'Disconnector' },
-};
+} as const;
 
 export const VSC_CONVERTER_MODE = {
     SIDE_1_RECTIFIER_SIDE_2_INVERTER: {
@@ -178,4 +173,4 @@ export const VSC_CONVERTER_MODE = {
         id: 'SIDE_1_INVERTER_SIDE_2_RECTIFIER',
         label: 'side1InverterSide2Rectifier',
     },
-};
+} as const;

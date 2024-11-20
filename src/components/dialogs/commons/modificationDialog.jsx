@@ -81,9 +81,7 @@ const ModificationDialog = ({
         <ModificationDialogContent
             submitButton={submitButton}
             closeAndClear={closeAndClear}
-            onValidated={onValidated}
             showNodeNotBuiltWarning={showNodeNotBuiltWarning}
-            onValidationError={onValidationError}
             {...props}
         />
     );
@@ -95,6 +93,7 @@ ModificationDialog.propTypes = {
     onClose: PropTypes.func.isRequired,
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
+    searchCopy: PropTypes.object,
     disabledSave: PropTypes.bool,
     onValidated: PropTypes.func,
     onValidationError: PropTypes.func,

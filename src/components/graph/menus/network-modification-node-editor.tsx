@@ -5,7 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CheckBoxList, ElementType, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    CheckBoxList,
+    useSnackMessage,
+    useModificationLabelComputer,
+    MODIFICATION_TYPES,
+    ElementType,
+} from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
@@ -31,7 +37,7 @@ import LineCreationDialog from 'components/dialogs/network-modifications/line/cr
 import LineModificationDialog from 'components/dialogs/network-modifications/line/modification/line-modification-dialog';
 import LinesAttachToSplitLinesDialog from 'components/dialogs/network-modifications/lines-attach-to-split-lines/lines-attach-to-split-lines-dialog';
 import LoadScalingDialog from 'components/dialogs/network-modifications/load-scaling/load-scaling-dialog';
-import LoadCreationDialog from 'components/dialogs/network-modifications/load/creation/load-creation-dialog';
+import { LoadCreationDialog } from '../../dialogs/network-modifications/load/creation/load-creation-dialog';
 import LoadModificationDialog from 'components/dialogs/network-modifications/load/modification/load-modification-dialog';
 import ShuntCompensatorCreationDialog from 'components/dialogs/network-modifications/shunt-compensator/creation/shunt-compensator-creation-dialog';
 import ShuntCompensatorModificationDialog from 'components/dialogs/network-modifications/shunt-compensator/modification/shunt-compensator-modification-dialog';
@@ -62,7 +68,6 @@ import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 import { RestoreFromTrash } from '@mui/icons-material';
 import ImportModificationDialog from 'components/dialogs/import-modification-dialog';
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
-import { MODIFICATION_TYPES } from 'components/utils/modification-type';
 import { UUID } from 'crypto';
 import { DropResult } from 'react-beautiful-dnd';
 import { AppState, StudyUpdated } from 'redux/reducer';
@@ -76,7 +81,6 @@ import {
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
-import { useModificationLabelComputer } from '../util/use-modification-label-computer';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -616,6 +620,7 @@ const NetworkModificationNodeEditor = () => {
 
             if (
                 studyUpdatedForce.eventData.headers['updateType'] &&
+                // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
                 UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])
             ) {
                 if (studyUpdatedForce.eventData.headers['updateType'] === 'deletingInProgress') {
