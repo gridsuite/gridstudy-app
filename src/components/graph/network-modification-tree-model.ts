@@ -80,7 +80,7 @@ export default class NetworkModificationTreeModel {
             const ancestors = [];
             let current: CurrentTreeNode | undefined = node;
             while (current && current.parentId) {
-                const parentId = current.parentId;
+                const parentId: string = current.parentId;
                 ancestors.push(parentId);
                 current = this.treeNodes.find((n) => n.id === parentId);
             }
@@ -88,12 +88,12 @@ export default class NetworkModificationTreeModel {
         };
         // We get the entire ancestors of one of the nodes in an array, then iterate over the other node's ancestors
         // until we find a node that is in the first array : this common node is an ancestor of both intial nodes.
-        const ancestorsA: UUID[] = getAncestors(nodeA);
-        let current: CurrentTreeNode = nodeB;
+        const ancestorsA: string[] = getAncestors(nodeA);
+        let current: CurrentTreeNode | undefined = nodeB;
         while (current && current.parentId) {
-            const parentId = current.parentId;
+            const parentId: string = current.parentId;
             current = this.treeNodes.find((n) => n.id === parentId);
-            if (ancestorsA.includes(current.id)) {
+            if (current && ancestorsA.includes(current.id)) {
                 return current;
             }
         }
@@ -124,9 +124,9 @@ export default class NetworkModificationTreeModel {
         ancestor: CurrentTreeNode,
         descendant: CurrentTreeNode
     ): CurrentTreeNode | null {
-        let current = descendant;
+        let current: CurrentTreeNode | undefined = descendant;
         while (current && current.parentId) {
-            const parentId = current.parentId;
+            const parentId: string = current.parentId;
             if (parentId === ancestor.id) {
                 return current;
             }
