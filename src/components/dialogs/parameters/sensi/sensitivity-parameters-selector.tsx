@@ -62,7 +62,7 @@ const styles = {
 
 interface SensitivityParametersSelectorProps {
     onFormChanged: (hasFormChanged: boolean) => void;
-    onChangeParams: (a: any, b: any, c: number) => void; //TODO: fix b any
+    onChangeParams: (a: any, b: any, c: number) => void; // fixing any on "b" here is not trivial, will need to fix SensitivityTable which is used in another unrelated component
     launchLoader: boolean;
     analysisComputeComplexity: number;
 }

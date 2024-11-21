@@ -174,7 +174,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                 // merge only the current selected solver, others are ignored
                 [SOLVERS]: parameters?.[SOLVERS]?.reduce(
                     (arr, curr, index) => [
-                        //TODO: fix any
                         ...arr,
                         newParams[TAB_VALUES.SOLVER][SOLVERS]?.[index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
                             ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]

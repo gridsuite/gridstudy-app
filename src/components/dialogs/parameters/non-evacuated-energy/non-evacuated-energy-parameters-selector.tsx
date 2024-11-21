@@ -26,8 +26,8 @@ import GeneratorsCappingsThreshold from './generators-cappings-threshold';
 import { IColumnsDef } from '../sensi/columns-definitions';
 
 interface NonEvacuatedEnergyParametersSelectorProps {
-    onFormChanged: any; //TODO: fix anys
-    onChangeParams: any;
+    onFormChanged: (hasFormChanged: boolean) => void;
+    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
 
 const NonEvacuatedEnergyParametersSelector: FunctionComponent<NonEvacuatedEnergyParametersSelectorProps> = ({

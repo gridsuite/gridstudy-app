@@ -186,7 +186,9 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             'sensitivityPST',
         ];
         tabsToCheck.forEach((tab) => {
-            const tabToCheck = values[tab] as any[] | undefined; // TODO: fix any - tabToCheck.filter is causing TS bugs
+            const tabToCheck = values[tab] as any[] | undefined;
+            // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
+            // "none of those signatures are compatible with each other
             if (tabToCheck) {
                 const count = tabToCheck
                     .filter((entry) => entry[ACTIVATED])
@@ -220,7 +222,8 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
 
     const onChangeParams = useCallback(
         (row: any, arrayFormName: SubTabsValues, index: number) => {
-            //TODO: fix any
+            // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
+            // "none of those signatures are compatible with each other
             if (!currentNode) {
                 return;
             }
@@ -233,7 +236,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             )
                 .then((response) => {
                     response.text().then((value: string) => {
-                        setValue(`${arrayFormName}.${index}.${COUNT}`, !isNaN(Number(value)) ? parseInt(value) : 0); //TODO fix this
+                        setValue(`${arrayFormName}.${index}.${COUNT}`, !isNaN(Number(value)) ? parseInt(value) : 0);
                         getResultCount();
                     });
                 })
@@ -407,10 +410,12 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
 
     const initRowsCount = useCallback(() => {
         const handleEntries = (entries: any[] | undefined, parameter: SubTabsValues) => {
+            // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
+            // "none of those signatures are compatible with each other
             if (!entries) {
                 return;
             }
-            //TODO: try to fix any + test if is not buggy
+
             const entriesWithIndices = entries.map((entry, index) => ({
                 entry,
                 index,

@@ -492,7 +492,6 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
 
     const onSpecificParamChange = (paramName: string, newValue: unknown) => {
         if (!provider || !params) {
-            //TODO: check if ok
             return;
         }
         const specificParamDescr: Parameter | undefined = Object.values(
@@ -500,7 +499,6 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
         ).find((descr: Parameter) => descr.name === paramName);
 
         if (!specificParamDescr) {
-            //TODO: check is ok
             return;
         }
 

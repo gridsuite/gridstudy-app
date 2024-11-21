@@ -11,6 +11,7 @@ import { DefParam, makeComponents, TYPES } from '../util/make-component-utils';
 import { FunctionComponent, useMemo } from 'react';
 import { getIdOrSelf } from '../../dialog-utils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { MappingInfos } from 'services/study/dynamic-simulation.type';
 
 export const MAPPING = 'mapping';
 
@@ -24,8 +25,8 @@ export const emptyFormData = {
 
 interface MappingParametersProps {
     mapping?: {
-        mappings: any[];
-    }; //TODO fix any
+        mappings?: MappingInfos[];
+    };
     path: string;
 }
 
@@ -33,7 +34,12 @@ const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping,
     const { mappings } = mapping ?? {};
 
     const mappingOptions = useMemo(() => {
-        return mappings?.map((elem) => elem.name) ?? [];
+        return (
+            mappings?.map((elem) => ({
+                id: elem.name,
+                label: elem.name,
+            })) ?? []
+        );
     }, [mappings]);
 
     const defParams: Record<string, DefParam> = {

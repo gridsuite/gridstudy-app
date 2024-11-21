@@ -12,7 +12,7 @@ export enum SolverTypeInfos {
     SIM = 'SIM',
 }
 
-interface CommonSolverInfos {
+type CommonSolverInfos = {
     id: string;
     name: string;
     type: SolverTypeInfos;
@@ -39,9 +39,9 @@ interface CommonSolverInfos {
     printFlAlgInit: number;
     maximumNumberSlowStepIncrease: number;
     minimalAcceptableStep: number;
-}
+};
 
-interface IdaSolverInfos extends CommonSolverInfos {
+type IdaSolverInfos = CommonSolverInfos & {
     name: 'IDA';
     type: SolverTypeInfos.IDA;
     order: number;
@@ -50,9 +50,9 @@ interface IdaSolverInfos extends CommonSolverInfos {
     maxStep: number;
     absAccuracy: number;
     relAccuracy: number;
-}
+};
 
-interface SimSolverInfos extends CommonSolverInfos {
+type SimSolverInfos = CommonSolverInfos & {
     name: 'SIM';
     type: SolverTypeInfos.SIM;
     hMin: number;
@@ -73,7 +73,7 @@ interface SimSolverInfos extends CommonSolverInfos {
     optimizeReInitAlgebraicResidualsEvaluations: boolean;
     minimumModeChangeTypeForAlgebraicRestoration: string;
     minimumModeChangeTypeForAlgebraicRestorationInit: string;
-}
+};
 
 type NetworkInfos = Record<string, number | string | boolean>;
 
@@ -109,7 +109,11 @@ type EventInfos = {
 
 export type SolverInfos = IdaSolverInfos | SimSolverInfos;
 
-export interface DynamicSimulationParametersInfos {
+export type MappingInfos = {
+    name: string;
+};
+
+export type DynamicSimulationParametersInfos = {
     startTime?: number;
     stopTime?: number;
     mapping?: string;
@@ -118,4 +122,8 @@ export interface DynamicSimulationParametersInfos {
     network?: NetworkInfos;
     curves?: CurveInfos[] | null;
     event?: EventInfos[];
-}
+};
+
+export type DynamicSimulationParametersFetchReturn = DynamicSimulationParametersInfos & {
+    mappings?: MappingInfos[];
+};

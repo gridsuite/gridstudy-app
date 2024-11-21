@@ -98,8 +98,8 @@ export const getGenerationStagesSelectionFormSchema = () => ({
         .of(
             yup.object().shape({
                 [NAME]: yup.string().required(),
-                [STAGES_DEFINITION_INDEX]: yup.array().of(yup.number()), //TODO check if ok to add
-                [PMAX_PERCENTS_INDEX]: yup.array().of(yup.number()), //TODO check if ok to add
+                [STAGES_DEFINITION_INDEX]: yup.array().of(yup.number()),
+                [PMAX_PERCENTS_INDEX]: yup.array().of(yup.number()),
                 [ACTIVATED]: yup.boolean().required(),
             })
         )

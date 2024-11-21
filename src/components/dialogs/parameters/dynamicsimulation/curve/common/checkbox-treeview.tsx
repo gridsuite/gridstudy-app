@@ -52,7 +52,7 @@ export interface GetSelectedItemsHandle {
 }
 
 interface CheckBoxTreeViewProps {
-    data: ModelVariable[]; //TODO: fix any
+    data: ModelVariable[];
     checkAll: boolean;
     onSelectionChanged?: (newSelection: ModelVariable[]) => void;
     getLabel: (element: ModelVariable) => string;
@@ -124,7 +124,6 @@ const CheckboxTreeview = forwardRef<GetSelectedItemsHandle, CheckBoxTreeViewProp
             const setState = (itemStates: ItemState[], items: ModelVariable[], id: string, newState: CheckState) => {
                 const itemToModify = itemStates.find((elem) => elem.id === id);
                 if (itemToModify) {
-                    //TODO: fix change ok
                     itemToModify.state = newState;
                 }
                 // set all children the same state of current element

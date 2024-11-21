@@ -8,6 +8,7 @@
 import { ExpertFilter } from 'services/study/filter';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
+import { RuleGroupTypeExport, RuleTypeExport } from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
     EQUIPMENT_TYPES.GENERATOR,
@@ -36,9 +37,7 @@ export const buildExpertRules = (
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined
 ) => {
-    const rules: any[] = []; //TODO: fix any
-
-    //TODO: check values changed to value is correct, check if combinator shoud be mandatory as well
+    const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
 
     // create rule IN for voltageLevelIds
     if (voltageLevelIds?.length) {
