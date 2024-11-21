@@ -146,10 +146,12 @@ export function findClosestSiblingInRange(
     const siblingNodes = findSiblings(nodes, movedNode);
     const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
     if (nodesBetween.length > 0) {
-        const closestNode = nodesBetween.reduce((closest, current) =>
-            Math.abs(current.position.x - xDestination) < Math.abs(closest.position.x - xDestination)
-                ? current
-                : closest
+        const closestNode = nodesBetween.reduce(
+            (closest, current) =>
+                Math.abs(current.position.x - xDestination) < Math.abs(closest.position.x - xDestination)
+                    ? current
+                    : closest,
+            nodesBetween[0]
         );
         return closestNode;
     }

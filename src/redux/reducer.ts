@@ -954,7 +954,7 @@ export const reducer = createReducer(initialState, (builder) => {
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
                     .map((node) => node.parentId)
-                    .find((parentId) => !action.networkModificationTreeNodes.includes((parentId as UUID)!));
+                    .find((parentId) => !action.networkModificationTreeNodes.includes(parentId as UUID));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
                 state.networkModificationTreeModel = newModel;
