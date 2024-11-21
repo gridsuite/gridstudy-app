@@ -87,7 +87,7 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
                     [VOLTAGE_LEVELS_FORM]: yup.string(),
                     [IST_FORM]: yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required(),
                     [LIMIT_DURATION_FORM]: yup
-                        .array() //TODO check still working
+                        .array()
                         .length(nbTemporaryLimits)
                         .of(yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required())
                         .required(),

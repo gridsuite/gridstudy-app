@@ -56,6 +56,7 @@ import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
 import { User } from 'oidc-client';
+import { SolverInfos } from 'services/study/dynamic-simulation.type';
 
 enum TAB_VALUES {
     TIME_DELAY = 'timeDelay',
@@ -171,15 +172,15 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                 ...newParams[TAB_VALUES.TIME_DELAY],
                 [SOLVER_ID]: newParams[TAB_VALUES.SOLVER][SOLVER_ID],
                 // merge only the current selected solver, others are ignored
-                [SOLVERS]: parameters?.[SOLVERS].reduce(
-                    (arr: any[], curr: any[], index: number) => [
+                [SOLVERS]: parameters?.[SOLVERS]?.reduce(
+                    (arr, curr, index) => [
                         //TODO: fix any
                         ...arr,
                         newParams[TAB_VALUES.SOLVER][SOLVERS]?.[index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
                             ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
                             : curr,
                     ],
-                    []
+                    [] as SolverInfos[]
                 ),
                 ...newParams[TAB_VALUES.MAPPING],
                 ...newParams[TAB_VALUES.MAPPING],

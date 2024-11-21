@@ -16,11 +16,7 @@ import SimplifiedSolverParameters, {
 } from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
 import { DynamicSimulationForm } from './dynamic-simulation-parameters';
-
-enum SOLVER_TYPES {
-    IDA = 'IDA',
-    SIM = 'SIM',
-}
+import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
 
 export const SOLVER_ID = 'solverId';
 
@@ -39,12 +35,11 @@ export const formSchema = yup.object().shape({
                 }
 
                 // chose the right schema for each type of solver
-                if (type === SOLVER_TYPES.IDA) {
+                if (type === SolverTypeInfos.IDA) {
                     return getIdaFormSchema();
-                } else if (type === SOLVER_TYPES.SIM) {
+                } else {
                     return getSimplifiedFormSchema();
                 }
-                return yup.object().default(undefined); //TODO check change is ok
             })
         )
     ),
@@ -97,10 +92,10 @@ const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, pa
     return (
         <Grid xl={6} container>
             {makeComponents(defParams, path)}
-            <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.IDA}>
+            <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.IDA}>
                 <IdaSolverParameters path={`${path}.${SOLVERS}[0]`} />
             </TabPanel>
-            <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.SIM}>
+            <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.SIM}>
                 <SimplifiedSolverParameters path={`${path}.${SOLVERS}[1]`} />
             </TabPanel>
         </Grid>

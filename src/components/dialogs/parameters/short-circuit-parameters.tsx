@@ -48,22 +48,27 @@ import ComputingType from '../../computing-status/computing-type';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
-import { ShortCircuitParametersDto, VoltageRange } from './shortcircuit/short-circuit-parameters.type';
 import LineSeparator from '../commons/line-separator';
+import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
 
-export const useGetShortCircuitParameters = () => {
+export type UseGetShortCircuitParametersProps = [
+    ShortCircuitParametersInfos | null,
+    React.Dispatch<React.SetStateAction<ShortCircuitParametersInfos | null>>
+];
+
+export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProps => {
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
     const { snackError } = useSnackMessage();
-    const [shortCircuitParams, setShortCircuitParams] = useState<ShortCircuitParametersDto | null>(null);
+    const [shortCircuitParams, setShortCircuitParams] = useState<ShortCircuitParametersInfos | null>(null);
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
     const fetchShortCircuitParameters = useCallback(
         (studyUuid: UUID) => {
             getShortCircuitParameters(studyUuid)
-                .then((params: ShortCircuitParametersDto) => {
+                .then((params: ShortCircuitParametersInfos) => {
                     setShortCircuitParams(params);
                 })
                 .catch((error) => {
@@ -103,7 +108,7 @@ const formSchema = yup
         [SHORT_CIRCUIT_PREDEFINED_PARAMS]: yup
             .mixed<PREDEFINED_PARAMETERS>()
             .oneOf(Object.values(PREDEFINED_PARAMETERS))
-            .required(), // yup.string().required(),
+            .required(),
         [SHORT_CIRCUIT_WITH_LOADS]: yup.boolean(),
         [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: yup.boolean(),
         [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: yup.boolean(),
@@ -111,17 +116,17 @@ const formSchema = yup
         [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: yup
             .mixed<INITIAL_VOLTAGE>()
             .oneOf(Object.values(INITIAL_VOLTAGE))
-            .required(), //.string().required(), //TODO: check changes have not broken anything
+            .required(),
     })
     .required();
 
 const prepareDataToSend = (
-    shortCircuitParams: ShortCircuitParametersBack,
+    shortCircuitParams: ShortCircuitParametersInfos | null,
     newParameters: ShortCircuitParametersFormProps
-): ShortCircuitParametersBack => {
-    const oldParameters = { ...shortCircuitParams.parameters };
+) => {
+    const oldParameters = { ...shortCircuitParams?.parameters };
     const { predefinedParameters: omit, ...newParametersWithoutPredefinedParameters } = newParameters;
-    let parameters: ShortCircuitParametersDto = {
+    let parameters = {
         ...oldParameters,
         ...newParametersWithoutPredefinedParameters,
         // we need to add voltageRanges to the parameters only when initialVoltageProfileMode is equals to CEI909
@@ -131,7 +136,7 @@ const prepareDataToSend = (
     if (newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CEI909) {
         parameters = {
             ...parameters,
-            voltageRanges: shortCircuitParams.cei909VoltageRanges,
+            voltageRanges: shortCircuitParams?.cei909VoltageRanges,
             initialVoltageProfileMode: INITIAL_VOLTAGE.CONFIGURED,
         };
     }
@@ -144,15 +149,8 @@ const prepareDataToSend = (
 
 type ShortCircuitParametersFormProps = yup.InferType<typeof formSchema>;
 
-interface ShortCircuitParametersBack {
-    //TODO: fix any
-    parameters: ShortCircuitParametersDto;
-    predefinedParameters: PREDEFINED_PARAMETERS;
-    cei909VoltageRanges?: VoltageRange[];
-}
-
 interface ShortCircuitParametersProps {
-    useShortCircuitParameters: any; //TODO remove any
+    useShortCircuitParameters: UseGetShortCircuitParametersProps;
     setHaveDirtyFields: (hasDirtyField: boolean) => void;
 }
 
@@ -169,23 +167,23 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
 
     const { snackError } = useSnackMessage();
     // get default values based on shortCircuitParams
-    const emptyFormData: ShortCircuitParametersFormProps = useMemo(() => {
-        const { parameters, predefinedParameters } = shortCircuitParams;
+    const emptyFormData = useMemo(() => {
+        const { parameters, predefinedParameters } = shortCircuitParams || {};
         return {
-            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters.withFeederResult,
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters?.withFeederResult,
             [SHORT_CIRCUIT_PREDEFINED_PARAMS]: predefinedParameters,
-            [SHORT_CIRCUIT_WITH_LOADS]: parameters.withLoads,
-            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: parameters.withVSCConverterStations,
-            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: parameters.withShuntCompensators,
-            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: !parameters.withNeutralPosition,
+            [SHORT_CIRCUIT_WITH_LOADS]: parameters?.withLoads,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: parameters?.withVSCConverterStations,
+            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: parameters?.withShuntCompensators,
+            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: !parameters?.withNeutralPosition,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                parameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
+                parameters?.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
                     ? INITIAL_VOLTAGE.CEI909
-                    : parameters.initialVoltageProfileMode,
+                    : parameters?.initialVoltageProfileMode,
         };
     }, [shortCircuitParams]);
 
-    const formMethods = useForm({
+    const formMethods = useForm<ShortCircuitParametersFormProps>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -195,7 +193,7 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
     // submit the new parameters
     const onSubmit = useCallback(
         (newParams: ShortCircuitParametersFormProps) => {
-            const oldParams = { ...shortCircuitParams };
+            const oldParams = shortCircuitParams;
             setShortCircuitParameters(studyUuid, {
                 ...prepareDataToSend(shortCircuitParams, newParams),
             })
@@ -251,7 +249,7 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
     }, [formState, setHaveDirtyFields]);
 
     const replaceFormValues = useCallback(
-        (param: ShortCircuitParametersBack) => {
+        (param: ShortCircuitParametersInfos) => {
             const dirty = { shouldDirty: true };
             setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, param.parameters.withFeederResult, dirty);
             setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, param.predefinedParameters, dirty);
@@ -276,7 +274,7 @@ export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersPro
                 setOpenSelectParameterDialog(false);
                 const paramUuid = newParams[0].id;
                 fetchShortCircuitParameters(paramUuid)
-                    .then((parameters: ShortCircuitParametersBack) => {
+                    .then((parameters: ShortCircuitParametersInfos) => {
                         console.info('loading the following shortcircuit parameters : ' + paramUuid);
                         // Replace form data with fetched data
                         replaceFormValues(parameters);

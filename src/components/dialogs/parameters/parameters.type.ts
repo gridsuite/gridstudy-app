@@ -10,6 +10,7 @@ import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-a
 import { ISAParameters } from './common/limitreductions/columns-definitions';
 import { NonEvacuatedEnergyParametersInfos } from 'services/study/non-evacuated-energy.type';
 import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
+import { DynamicSimulationParametersInfos } from 'services/study/dynamic-simulation.type';
 
 enum ParameterType {
     BOOLEAN = 'BOOLEAN',
@@ -37,6 +38,8 @@ export type ParametersInfos<T extends ComputingType> = T extends ComputingType.S
     ? NonEvacuatedEnergyParametersInfos
     : T extends ComputingType.LOAD_FLOW
     ? LoadFlowParametersInfos
+    : T extends ComputingType.DYNAMIC_SIMULATION
+    ? DynamicSimulationParametersInfos
     : Record<string, any>;
 
 export type UseParametersBackendReturnProps<T extends ComputingType> = [

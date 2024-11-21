@@ -234,7 +234,6 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
             ...getGenerationStagesDefinitionParams(newParams),
             ...getGenerationStagesSelectionParams(newParams),
             [GENERATORS_LIMIT]: getGeneratorsCappingsParams(
-                //TODO why did I need this change ? was it buggy ?
                 newParams[GENERATORS_CAPPINGS][SENSITIVITY_THRESHOLD],
                 newParams[GENERATORS_CAPPINGS]
             ),
@@ -271,7 +270,6 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
             // left to any because there is probably a confusion here...
             // parameters can be "nonEvacuatedEnergyParams" or "emptyFormData", they don't have the same structure
             // for instance, "nonEvacuatedEnergyParams" does not have "provider" field
-
             reset({
                 [PROVIDER]: parameters[PROVIDER],
                 [STAGES_DEFINITION]:
@@ -301,25 +299,24 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                             [PMAX_PERCENTS_INDEX]: stageSelection[PMAX_PERCENTS_INDEX],
                         };
                     }) ?? [],
-
-                // [SENSITIVITY_THRESHOLD]: parameters[GENERATORS_LIMIT][SENSITIVITY_THRESHOLD],
-                // SENSITIVITY_THRESHOLD does not seem to exist... was not doing anything ?
-                [GENERATORS_CAPPINGS]:
-                    parameters[GENERATORS_LIMIT][GENERATORS_CAPPINGS_FILTER]?.map((generatorCappings: any) => {
-                        return {
-                            [GENERATORS_CAPPINGS_KIND]: generatorCappings[GENERATORS_CAPPINGS_KIND],
-                            [GENERATORS_CAPPINGS_FILTER]: generatorCappings[GENERATORS_CAPPINGS_FILTER].map(
-                                (generatorFilter: any) => {
-                                    return {
-                                        [ID]: generatorFilter[CONTAINER_ID],
-                                        [NAME]: generatorFilter[CONTAINER_NAME],
-                                    };
-                                }
-                            ),
-                            [ACTIVATED]: generatorCappings[ACTIVATED],
-                        };
-                    }) ?? [],
-
+                [GENERATORS_CAPPINGS]: {
+                    [SENSITIVITY_THRESHOLD]: parameters[GENERATORS_LIMIT][SENSITIVITY_THRESHOLD],
+                    [GENERATORS_CAPPINGS]:
+                        parameters[GENERATORS_LIMIT][GENERATORS_CAPPINGS_FILTER]?.map((generatorCappings: any) => {
+                            return {
+                                [GENERATORS_CAPPINGS_KIND]: generatorCappings[GENERATORS_CAPPINGS_KIND],
+                                [GENERATORS_CAPPINGS_FILTER]: generatorCappings[GENERATORS_CAPPINGS_FILTER].map(
+                                    (generatorFilter: any) => {
+                                        return {
+                                            [ID]: generatorFilter[CONTAINER_ID],
+                                            [NAME]: generatorFilter[CONTAINER_NAME],
+                                        };
+                                    }
+                                ),
+                                [ACTIVATED]: generatorCappings[ACTIVATED],
+                            };
+                        }) ?? [],
+                },
                 [MONITORED_BRANCHES]:
                     parameters[MONITORED_BRANCHES]?.map((monitoredBranches: any) => {
                         return {
@@ -360,7 +357,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
     const combineStagesDefinition = useCallback(
         (stagesDefinition: NonEvacuatedEnergyParametersForm['stagesDefinition']) => {
             if (!stagesDefinition) {
-                return []; //TODO: check it's ok
+                return [];
             }
             const stagesDefinitionsCount = 3; // only 3 stage definitions
             const stagesPmaxPercentsCount = 3; // only 3 pmax percents

@@ -414,7 +414,7 @@ interface SpecificLoadFlowParametersProps {
     subText: string;
     specificParamsDescription: Parameter[];
     specificCurrentParams: Record<string, string>;
-    onSpecificParamChange: (paramnName: string, value: any) => void;
+    onSpecificParamChange: (paramnName: string, value: unknown) => void;
 }
 
 const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParametersProps> = ({
@@ -425,7 +425,7 @@ const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParametersPr
     onSpecificParamChange,
 }) => {
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
-    const onChange = (paramName: string, value: any, isEdit: boolean) => {
+    const onChange = (paramName: string, value: unknown, isEdit: boolean) => {
         if (isEdit) {
             return;
         }
@@ -490,14 +490,19 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
-    const onSpecificParamChange = (paramName: string, newValue: any) => {
+    const onSpecificParamChange = (paramName: string, newValue: unknown) => {
         if (!provider || !params) {
-            // check if ok
+            //TODO: check if ok
             return;
         }
-        const specificParamDescr: any /*TODO fix any*/ = Object.values(
+        const specificParamDescr: Parameter | undefined = Object.values(
             specificParamsDescrWithoutNanVals[provider]
-        ).find((descr: any /*TODO: fix any*/) => descr.name === paramName);
+        ).find((descr: Parameter) => descr.name === paramName);
+
+        if (!specificParamDescr) {
+            //TODO: check is ok
+            return;
+        }
 
         let specParamsToSave;
         if (specificParamDescr.defaultValue !== newValue) {
@@ -521,7 +526,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
     };
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
-        let specificParamsDescrCopy: Record<string, any> = {};
+        let specificParamsDescrCopy: Record<string, Parameter[]> = {};
         specificParamsDescriptions &&
             Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
                 specificParamsDescrCopy = {
@@ -689,7 +694,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                             justifyContent={'space-between'}
                         >
                             <DropDown
-                                value={provider ?? ''} //TODO check change ok
+                                value={provider ?? ''}
                                 label="Provider"
                                 values={LoadFlowProviders}
                                 callback={updateLfProviderCallback}

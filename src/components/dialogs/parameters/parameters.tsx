@@ -300,7 +300,6 @@ export const useParametersBackend = <T extends ComputingType>(
     }, [params, provider]);
 
     // PROVIDER UPDATE
-    //TODO: if backendUpdateProvider is null, should it work ?
     const updateProvider = useCallback(
         (newProvider: string) => {
             if (!studyUuid) {
