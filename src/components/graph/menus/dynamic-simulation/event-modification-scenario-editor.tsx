@@ -10,7 +10,6 @@ import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -31,8 +30,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
-    const params = useParams();
-    const studyUuid = params?.studyUuid ? decodeURIComponent(params.studyUuid) : undefined;
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);

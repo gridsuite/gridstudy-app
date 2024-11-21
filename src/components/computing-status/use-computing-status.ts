@@ -14,7 +14,6 @@ import { ComputingType } from './computing-type';
 import { OptionalServicesStatus } from '../utils/optional-services';
 import { setComputingStatus, setLastCompletedComputation } from '../../redux/actions';
 import { AppState, StudyUpdated } from 'redux/reducer';
-import useStudyUuid from 'hooks/use-study-uuid';
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
@@ -102,7 +101,7 @@ export const useComputingStatus: UseComputingStatusProps = (
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
     const nodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
-    const studyUuid = useStudyUuid();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const nodeUuidRef = useRef<UUID | null>(null);
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
