@@ -111,7 +111,7 @@ export const VoltageInitParameters = ({
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'VoltageInitParametersError',
+                        headerId: 'updateVoltageInitParametersError',
                     });
                 });
             onValidationError();
