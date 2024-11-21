@@ -487,3 +487,179 @@ export interface LineCreationInfo {
     connected2: boolean;
     properties?: Property[];
 }
+
+export interface LineModificationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    lineId: string;
+    lineName: string | null;
+    r: number;
+    x: number;
+    g1: number;
+    b1: number;
+    g2: number;
+    b2: number;
+    currentLimit1: CurrentLimits;
+    currentLimit2: CurrentLimits;
+    voltageLevelId1: string;
+    busOrBusbarSectionId1: string;
+    voltageLevelId2: string;
+    busOrBusbarSectionId2: string;
+    connectionName1: string | null;
+    connectionName2: string | null;
+    connectionDirection1: string | null;
+    connectionDirection2: string | null;
+    connectionPosition1: string | null;
+    connectionPosition2: string | null;
+    connected1: boolean;
+    connected2: boolean;
+    isUpdate: boolean;
+    modificationUuid: string;
+    properties?: Property[];
+}
+
+export interface TwoWindingsTransformerCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    twoWindingsTransformerId: string;
+    twoWindingsTransformerName: string | null;
+    r: number;
+    x: number;
+    g: number;
+    b: number;
+    ratedS: number | null;
+    ratedU1: number;
+    ratedU2: number;
+    currentLimit1: CurrentLimits;
+    currentLimit2: CurrentLimits;
+    voltageLevelId1: string;
+    busOrBusbarSectionId1: string;
+    voltageLevelId2: string;
+    busOrBusbarSectionId2: string;
+    ratioTapChanger: any;
+    phaseTapChanger: any;
+    isUpdate: boolean;
+    modificationUuid: string;
+    connectionName1: string | null;
+    connectionDirection1: string | null;
+    connectionName2: string | null;
+    connectionDirection2: string | null;
+    connectionPosition1: string | null;
+    connectionPosition2: string | null;
+    connected1: boolean;
+    connected2: boolean;
+    properties?: Property[];
+}
+export interface SubstationCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    substationId: string;
+    substationName: string | null;
+    country: string;
+    isUpdate: boolean;
+    modificationUuid: UUID;
+    properties?: Property[];
+}
+
+export interface DivideLineInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    modificationUuid: UUID;
+    lineToSplitId: string;
+    percent: number;
+    mayNewVoltageLevelInfos: any;
+    existingVoltageLevelId: string;
+    bbsOrBusId: string;
+    newLine1Id: string;
+    newLine1Name: string | null;
+    newLine2Id: string;
+    newLine2Name: string | null;
+}
+
+export interface AttachLineInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    modificationUuid: UUID;
+    lineToAttachToId: string;
+    percent: number;
+    attachmentPointId: string;
+    attachmentPointName: string | null;
+    mayNewVoltageLevelInfos: any | null;
+    existingVoltageLevelId: string;
+    bbsOrBusId: string;
+    attachmentLine: AttachmentLine;
+    newLine1Id: string;
+    newLine1Name: string | null;
+    newLine2Id: string;
+    newLine2Name: string | null;
+}
+
+export interface LinesAttachToSplitLinesInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    modificationUuid: UUID;
+    lineToAttachTo1Id: string;
+    lineToAttachTo2Id: string;
+    attachedLineId: string;
+    voltageLevelId: string;
+    bbsBusId: string;
+    replacingLine1Id: string;
+    replacingLine1Name: string | null;
+    replacingLine2Id: string;
+    replacingLine2Name: string | null;
+}
+
+export interface DeleteAttachingLineInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    modificationUuid: UUID;
+    lineToAttachTo1Id: string;
+    lineToAttachTo2Id: string;
+    attachedLineId: string;
+    replacingLine1Id: string;
+    replacingLine1Name: string | null;
+}
+
+export interface VSCCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string;
+    name: string | null;
+    nominalV: number;
+    r: number;
+    maxP: number;
+    operatorActivePowerLimitSide1: any;
+    operatorActivePowerLimitSide2: any;
+    convertersMode: string;
+    activePowerSetpoint: number;
+    angleDroopActivePowerControl: boolean;
+    p0: number | null;
+    droop: number | null;
+    converterStation1: VSCCreationConverterStation;
+    converterStation2: VSCCreationConverterStation;
+    properties?: Property[];
+    isUpdate: boolean;
+    modificationUuid: UUID;
+}
+
+export interface VSCModificationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string | null;
+    name?: string | null;
+    nominalV: number;
+    r: number;
+    maxP: number;
+    operatorActivePowerLimitSide1: any;
+    operatorActivePowerLimitSide2: any;
+    convertersMode: string;
+    activePowerSetpoint: number;
+    angleDroopActivePowerControl: boolean;
+    p0: number | null;
+    droop: number | null;
+    converterStation1: VSCModificationConverterStation;
+    converterStation2: VSCModificationConverterStation;
+    properties?: Property[];
+    isUpdate: boolean;
+    modificationUuid: UUID;
+}

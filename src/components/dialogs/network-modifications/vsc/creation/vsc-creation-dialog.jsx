@@ -199,27 +199,27 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
             const hvdcLineTab = hvdcLine[HVDC_LINE_TAB];
             const converterStation1 = getConverterStationCreationData(hvdcLine[CONVERTER_STATION_1]);
             const converterStation2 = getConverterStationCreationData(hvdcLine[CONVERTER_STATION_2]);
-            createVsc(
-                studyUuid,
-                currentNodeUuid,
-                hvdcLine[EQUIPMENT_ID],
-                sanitizeString(hvdcLine[EQUIPMENT_NAME]),
-                hvdcLineTab[NOMINAL_V],
-                hvdcLineTab[R],
-                hvdcLineTab[MAX_P],
-                hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
-                hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
-                hvdcLineTab[CONVERTERS_MODE],
-                hvdcLineTab[ACTIVE_POWER_SETPOINT],
-                hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
-                hvdcLineTab[P0],
-                hvdcLineTab[DROOP],
-                converterStation1,
-                converterStation2,
-                toModificationProperties(hvdcLine),
-                !!editData,
-                editData?.uuid ?? null
-            ).catch((error) => {
+            createVsc({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                id: hvdcLine[EQUIPMENT_ID],
+                name: sanitizeString(hvdcLine[EQUIPMENT_NAME]),
+                nominalV: hvdcLineTab[NOMINAL_V],
+                r: hvdcLineTab[R],
+                maxP: hvdcLineTab[MAX_P],
+                operatorActivePowerLimitSide1: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE1],
+                operatorActivePowerLimitSide2: hvdcLineTab[OPERATOR_ACTIVE_POWER_LIMIT_SIDE2],
+                convertersMode: hvdcLineTab[CONVERTERS_MODE],
+                activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
+                angleDroopActivePowerControl: hvdcLineTab[ANGLE_DROOP_ACTIVE_POWER_CONTROL],
+                p0: hvdcLineTab[P0],
+                droop: hvdcLineTab[DROOP],
+                converterStation1: converterStation1,
+                converterStation2: converterStation2,
+                properties: toModificationProperties(hvdcLine),
+                isUpdate: !!editData,
+                modificationUuid: editData?.uuid ?? null,
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'VscCreationError',

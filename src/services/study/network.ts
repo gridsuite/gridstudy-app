@@ -12,18 +12,30 @@ import { UUID } from 'crypto';
 import { EquipmentType, GsLang } from '@gridsuite/commons-ui';
 import { SubstationLayout } from '../../components/diagrams/diagram-common';
 
+interface VoltageLevelSingleLineDiagram {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    voltageLevelId?: UUID;
+    useName: boolean;
+    centerLabel: boolean;
+    diagonalLabel: boolean;
+    componentLibrary: unknown | null;
+    sldDisplayMode: string;
+    language: GsLang;
+}
+
 /* voltage-levels */
-export function getVoltageLevelSingleLineDiagram(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    voltageLevelId: UUID | undefined,
-    useName: boolean,
-    centerLabel: boolean,
-    diagonalLabel: boolean,
-    componentLibrary: unknown | null,
-    sldDisplayMode: string,
-    language: GsLang
-) {
+export function getVoltageLevelSingleLineDiagram({
+    studyUuid,
+    currentNodeUuid,
+    voltageLevelId,
+    useName,
+    centerLabel,
+    diagonalLabel,
+    componentLibrary,
+    sldDisplayMode,
+    language,
+}: VoltageLevelSingleLineDiagram) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
@@ -48,7 +60,7 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
-export function fetchSubstationIdForVoltageLevel(studyUuid: UUID, currentNodeUuid: UUID, voltageLevelId: UUID) {
+export function fetchSubstationIdForVoltageLevel(studyUuid: UUID, currentNodeUuid: UUID, voltageLevelId: string) {
     console.info(
         `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );

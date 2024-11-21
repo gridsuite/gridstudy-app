@@ -69,17 +69,17 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getVoltageLevelSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelId,
-                      paramUseName,
-                      centerName,
-                      diagonalName,
-                      componentLibrary,
-                      SLD_DISPLAY_MODE.STATE_VARIABLE,
-                      language
-                  )
+                ? getVoltageLevelSingleLineDiagram({
+                      studyUuid: studyUuid,
+                      currentNodeUuid: currentNode?.id,
+                      voltageLevelId: voltageLevelId,
+                      useName: paramUseName,
+                      centerLabel: centerName,
+                      diagonalLabel: diagonalName,
+                      componentLibrary: componentLibrary,
+                      sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language: language,
+                  })
                 : null,
         [currentNode, studyUuid, paramUseName, centerName, diagonalName, componentLibrary, language]
     );

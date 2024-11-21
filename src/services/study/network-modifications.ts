@@ -13,30 +13,32 @@ import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import { UUID } from 'crypto';
 import { EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
-import { ReactiveCapabilityCurvePointsData } from '../../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
-import { Property } from '../../components/dialogs/network-modifications/common/properties/property-utils';
 import {
     Assignment,
-    AttachmentLine,
+    AttachLineInfo,
     BatteryCreationInfo,
     BatteryModificationInfo,
-    CurrentLimits,
+    DeleteAttachingLineInfo,
+    DivideLineInfo,
     GeneratorCreationInfo,
     GeneratorModificationInfo,
     LineCreationInfo,
+    LineModificationInfo,
+    LinesAttachToSplitLinesInfo,
     LoadCreationInfo,
     LoadModificationInfo,
     ShuntCompensatorCreationInfo,
     ShuntCompensatorModificationInfo,
     StaticVarCompensatorCreationInfo,
+    SubstationCreationInfo,
     SubstationModificationInfo,
-    TemporaryLimit,
+    TwoWindingsTransformerCreationInfo,
     TwoWindingsTransformerModificationInfo,
     Variations,
     VoltageLeveCreationlInfo,
     VoltageLeveModificationInfo,
-    VSCCreationConverterStation,
-    VSCModificationConverterStation,
+    VSCCreationInfo,
+    VSCModificationInfo,
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 
@@ -976,35 +978,35 @@ export function createLine({
     });
 }
 
-export function modifyLine(
-    studyUuid: string,
-    nodeUuid: UUID,
-    lineId: string,
-    lineName: string | null,
-    r: number,
-    x: number,
-    g1: number,
-    b1: number,
-    g2: number,
-    b2: number,
-    currentLimit1: CurrentLimits,
-    currentLimit2: CurrentLimits,
-    voltageLevelId1: string,
-    busOrBusbarSectionId1: string,
-    voltageLevelId2: string,
-    busOrBusbarSectionId2: string,
-    connectionName1: string | null,
-    connectionName2: string | null,
-    connectionDirection1: string | null,
-    connectionDirection2: string | null,
-    connectionPosition1: string | null,
-    connectionPosition2: string | null,
-    connected1: boolean,
-    connected2: boolean,
-    isUpdate: boolean,
-    modificationUuid: string,
-    properties: Property[]
-) {
+export function modifyLine({
+    studyUuid,
+    nodeUuid,
+    lineId,
+    lineName,
+    r,
+    x,
+    g1,
+    b1,
+    g2,
+    b2,
+    currentLimit1,
+    currentLimit2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2,
+    connectionName1,
+    connectionName2,
+    connectionDirection1,
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2,
+    connected1,
+    connected2,
+    isUpdate,
+    modificationUuid,
+    properties,
+}: LineModificationInfo) {
     let modifyLineUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1049,38 +1051,38 @@ export function modifyLine(
     });
 }
 
-export function createTwoWindingsTransformer(
-    studyUuid: string,
-    nodeUuid: UUID,
-    twoWindingsTransformerId: string,
-    twoWindingsTransformerName: string | null,
-    r: number,
-    x: number,
-    g: number,
-    b: number,
-    ratedS: number | null,
-    ratedU1: number,
-    ratedU2: number,
-    currentLimit1: CurrentLimits,
-    currentLimit2: CurrentLimits,
-    voltageLevelId1: string,
-    busOrBusbarSectionId1: string,
-    voltageLevelId2: string,
-    busOrBusbarSectionId2: string,
-    ratioTapChanger: any,
-    phaseTapChanger: any,
-    isUpdate: boolean,
-    modificationUuid: string,
-    connectionName1: string | null,
-    connectionDirection1: string | null,
-    connectionName2: string | null,
-    connectionDirection2: string | null,
-    connectionPosition1: string | null,
-    connectionPosition2: string | null,
-    connected1: boolean,
-    connected2: boolean,
-    properties: Property[]
-) {
+export function createTwoWindingsTransformer({
+    studyUuid,
+    nodeUuid,
+    twoWindingsTransformerId,
+    twoWindingsTransformerName,
+    r,
+    x,
+    g,
+    b,
+    ratedS,
+    ratedU1,
+    ratedU2,
+    currentLimit1,
+    currentLimit2,
+    voltageLevelId1,
+    busOrBusbarSectionId1,
+    voltageLevelId2,
+    busOrBusbarSectionId2,
+    ratioTapChanger,
+    phaseTapChanger,
+    isUpdate,
+    modificationUuid,
+    connectionName1,
+    connectionDirection1,
+    connectionName2,
+    connectionDirection2,
+    connectionPosition1,
+    connectionPosition2,
+    connected1,
+    connected2,
+    properties,
+}: TwoWindingsTransformerCreationInfo) {
     let createTwoWindingsTransformerUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1238,16 +1240,16 @@ export function createTabulareModification(
     });
 }
 
-export function createSubstation(
-    studyUuid: string,
-    nodeUuid: UUID,
-    substationId: string,
-    substationName: string | null,
-    country: string,
-    isUpdate: boolean = false,
-    modificationUuid: UUID,
-    properties?: Property[]
-) {
+export function createSubstation({
+    studyUuid,
+    nodeUuid,
+    substationId,
+    substationName,
+    country,
+    isUpdate = false,
+    modificationUuid,
+    properties,
+}: SubstationCreationInfo) {
     let url = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     const body = JSON.stringify({
@@ -1460,20 +1462,20 @@ export function modifyVoltageLevel({
     });
 }
 
-export function divideLine(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationUuid: UUID,
-    lineToSplitId: string,
-    percent: number,
-    mayNewVoltageLevelInfos: any | null,
-    existingVoltageLevelId: string,
-    bbsOrBusId: string,
-    newLine1Id: string,
-    newLine1Name: string | null,
-    newLine2Id: string,
-    newLine2Name: string | null
-) {
+export function divideLine({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    lineToSplitId,
+    percent,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name,
+}: DivideLineInfo) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LINE_SPLIT_WITH_VOLTAGE_LEVEL.type,
         lineToSplitId,
@@ -1506,23 +1508,23 @@ export function divideLine(
     });
 }
 
-export function attachLine(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationUuid: UUID,
-    lineToAttachToId: string,
-    percent: number,
-    attachmentPointId: string,
-    attachmentPointName: string | null,
-    mayNewVoltageLevelInfos: any | null,
-    existingVoltageLevelId: string,
-    bbsOrBusId: string,
-    attachmentLine: AttachmentLine,
-    newLine1Id: string,
-    newLine1Name: string | null,
-    newLine2Id: string,
-    newLine2Name: string | null
-) {
+export function attachLine({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    lineToAttachToId,
+    percent,
+    attachmentPointId,
+    attachmentPointName,
+    mayNewVoltageLevelInfos,
+    existingVoltageLevelId,
+    bbsOrBusId,
+    attachmentLine,
+    newLine1Id,
+    newLine1Name,
+    newLine2Id,
+    newLine2Name,
+}: AttachLineInfo) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LINE_ATTACH_TO_VOLTAGE_LEVEL.type,
         lineToAttachToId,
@@ -1589,20 +1591,20 @@ export function loadScaling(
     );
 }
 
-export function linesAttachToSplitLines(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationUuid: UUID,
-    lineToAttachTo1Id: string,
-    lineToAttachTo2Id: string,
-    attachedLineId: string,
-    voltageLevelId: string,
-    bbsBusId: string,
-    replacingLine1Id: string,
-    replacingLine1Name: string | null,
-    replacingLine2Id: string,
-    replacingLine2Name: string | null
-) {
+export function linesAttachToSplitLines({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    voltageLevelId,
+    bbsBusId,
+    replacingLine1Id,
+    replacingLine1Name,
+    replacingLine2Id,
+    replacingLine2Name,
+}: LinesAttachToSplitLinesInfo) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.LINES_ATTACH_TO_SPLIT_LINES.type,
         lineToAttachTo1Id,
@@ -1670,16 +1672,16 @@ export function deleteVoltageLevelOnLine(
     });
 }
 
-export function deleteAttachingLine(
-    studyUuid: string,
-    nodeUuid: UUID,
-    modificationUuid: UUID,
-    lineToAttachTo1Id: string,
-    lineToAttachTo2Id: string,
-    attachedLineId: string,
-    replacingLine1Id: string,
-    replacingLine1Name: string | null
-) {
+export function deleteAttachingLine({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    lineToAttachTo1Id,
+    lineToAttachTo2Id,
+    attachedLineId,
+    replacingLine1Id,
+    replacingLine1Name,
+}: DeleteAttachingLineInfo) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.DELETE_ATTACHING_LINE.type,
         lineToAttachTo1Id,
@@ -1799,27 +1801,27 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
     });
 }
 
-export function createVsc(
-    studyUuid: string,
-    nodeUuid: UUID,
-    id: string,
-    name: string | null,
-    nominalV: number,
-    r: number,
-    maxP: number,
-    operatorActivePowerLimitSide1: any,
-    operatorActivePowerLimitSide2: any,
-    convertersMode: string,
-    activePowerSetpoint: number,
-    angleDroopActivePowerControl: boolean,
-    p0: number | null,
-    droop: number | null,
-    converterStation1: VSCCreationConverterStation,
-    converterStation2: VSCCreationConverterStation,
-    properties: Property[] | undefined,
-    isUpdate: boolean,
-    modificationUuid: UUID
-) {
+export function createVsc({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    operatorActivePowerLimitSide1,
+    operatorActivePowerLimitSide2,
+    convertersMode,
+    activePowerSetpoint,
+    angleDroopActivePowerControl,
+    p0,
+    droop,
+    converterStation1,
+    converterStation2,
+    properties,
+    isUpdate,
+    modificationUuid,
+}: VSCCreationInfo) {
     let createVscUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1858,26 +1860,27 @@ export function createVsc(
     });
 }
 
-export function modifyVsc(
-    studyUuid: string,
-    nodeUuid: UUID,
-    id: string | null,
-    name: string | null | undefined,
-    nominalV: number,
-    r: number,
-    maxP: number,
-    operatorActivePowerLimitSide1: any,
-    operatorActivePowerLimitSide2: any,
-    convertersMode: string,
-    activePowerSetpoint: number,
-    angleDroopActivePowerControl: boolean,
-    p0: number | null,
-    droop: number | null,
-    converterStation1: VSCModificationConverterStation,
-    converterStation2: VSCModificationConverterStation,
-    properties: Property[] | undefined,
-    modificationUuid: UUID
-) {
+export function modifyVsc({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    operatorActivePowerLimitSide1,
+    operatorActivePowerLimitSide2,
+    convertersMode,
+    activePowerSetpoint,
+    angleDroopActivePowerControl,
+    p0,
+    droop,
+    converterStation1,
+    converterStation2,
+    properties,
+    isUpdate,
+    modificationUuid,
+}: VSCModificationInfo) {
     let modificationUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {

@@ -52,17 +52,17 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         () =>
-            getVoltageLevelSingleLineDiagram(
-                studyUuid,
-                currentNodeUuid,
-                voltageLevelId?.id,
-                useName,
-                centerName,
-                diagonalName,
-                componentLibrary,
-                SLD_DISPLAY_MODE.FEEDER_POSITION,
-                language
-            ),
+            getVoltageLevelSingleLineDiagram({
+                studyUuid: studyUuid,
+                currentNodeUuid: currentNodeUuid,
+                voltageLevelId: voltageLevelId?.id,
+                useName: useName,
+                centerLabel: centerName,
+                diagonalLabel: diagonalName,
+                componentLibrary: componentLibrary,
+                sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
+                language: language,
+            }),
         [studyUuid, currentNodeUuid, voltageLevelId?.id, useName, centerName, diagonalName, componentLibrary, language]
     );
 
