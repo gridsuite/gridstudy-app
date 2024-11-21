@@ -78,10 +78,11 @@ export default class NetworkModificationTreeModel {
     private getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
         const getAncestors = (node: CurrentTreeNode) => {
             const ancestors = [];
-            let current = node;
+            let current: CurrentTreeNode | undefined = node;
             while (current && current.parentId) {
-                ancestors.push(current.parentId);
-                current = this.treeNodes.find((n) => n.id === current.parentId);
+                const parentId = current.parentId;
+                ancestors.push(parentId);
+                current = this.treeNodes.find((n) => n.id === parentId);
             }
             return ancestors;
         };
@@ -90,7 +91,8 @@ export default class NetworkModificationTreeModel {
         const ancestorsA: UUID[] = getAncestors(nodeA);
         let current: CurrentTreeNode = nodeB;
         while (current && current.parentId) {
-            current = this.treeNodes.find((n) => n.id === current.parentId);
+            const parentId = current.parentId;
+            current = this.treeNodes.find((n) => n.id === parentId);
             if (ancestorsA.includes(current.id)) {
                 return current;
             }
@@ -124,10 +126,11 @@ export default class NetworkModificationTreeModel {
     ): CurrentTreeNode | null {
         let current = descendant;
         while (current && current.parentId) {
-            if (current.parentId === ancestor.id) {
+            const parentId = current.parentId;
+            if (parentId === ancestor.id) {
                 return current;
             }
-            current = this.treeNodes.find((n) => n.id === current.parentId);
+            current = this.treeNodes.find((n) => n.id === parentId);
         }
         console.warn('The ancestor and descendant do not share the same branch !');
         return null;
