@@ -15,8 +15,6 @@ import {
     MiniMap,
     useEdgesState,
     useNodesState,
-    Background,
-    BackgroundVariant,
 } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterGraphButton from './graph/util/center-graph-button';
@@ -32,11 +30,9 @@ import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {
-    findClosestNodeInRange,
-    findSiblings,
+    findClosestSiblingInRange,
     getFirstAncestorIdWithSibling,
     getTreeNodesWithUpdatedPositions,
-    nodeGrid,
     snapGrid,
 } from './graph/layout';
 
@@ -56,7 +52,6 @@ const NetworkModificationTree = ({
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
     const { setViewport, fitView } = useReactFlow();
-    const [isDragging, setIsDragging] = useState(false);
 
     const nodeColor = useCallback(
         (node) => {
@@ -217,18 +212,18 @@ const NetworkModificationTree = ({
                 movedNode = draggedNode;
             }
 
-            // TODO CHARLY description de cette partie. Maybe refactoring pour qu'on s'y retrouve dans cette méga fonction
+            // We test if the user stopped dragging the node. If yes, then we apply the new nodes placements.
             if (changes[0].dragging !== undefined && !changes[0].dragging) {
-                const siblings = findSiblings(nodes, movedNode);
-
-                // TODO CHARLY améliorer ce commentaire pour expliquer les deux lignes au lieu de seulement la première
-                // NOTE : We get the node position from the treeModel.treeNodes variable and not from the nodes variable
-                // because its position corresponds to the initial position before we started dragging the node.
+                // In the treeModel.treeNodes variable we can find the positions of the nodes before they are updated by
+                // the end of drag handling (right now, in this if clause), whereas in the movedNode variable (which
+                // comes from the nodes variable), we can find the position of the node updated by ReactFlow's
+                // onNodesChanges function, as the user is still dragging a node.
                 const movedNodeXPositionBeforeDrag = treeModel.treeNodes.find((n) => n.id === movedNode.id).position.x;
                 const movedNodeXPositionAfterDrag = movedNode.position.x;
 
-                const nodeToSwitchWith = findClosestNodeInRange(
-                    siblings,
+                const nodeToSwitchWith = findClosestSiblingInRange(
+                    nodes,
+                    movedNode,
                     movedNodeXPositionBeforeDrag,
                     movedNodeXPositionAfterDrag
                 );
@@ -240,12 +235,7 @@ const NetworkModificationTree = ({
         onNodesChange(changes);
     };
 
-    const handleNodeDrag = (event, node) => {
-        setIsDragging(true);
-    };
-
-    const handleNodeDragStop = (event, node) => {
-        setIsDragging(false);
+    const handleNodeDragStop = () => {
         updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch
     };
 
@@ -266,7 +256,6 @@ const NetworkModificationTree = ({
                 nodeTypes={nodeTypes}
                 minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
-                onNodeDrag={handleNodeDrag}
                 onNodeDragStop={handleNodeDragStop}
                 defaultEdgeOptions={{
                     type: 'smoothstep',
@@ -280,15 +269,6 @@ const NetworkModificationTree = ({
                     },
                 }}
             >
-                {isDragging && (
-                    <Background
-                        id="gridBackground"
-                        color={'#0ca78933'}
-                        gap={nodeGrid}
-                        variant={BackgroundVariant.Lines}
-                        offset={[140, 80]}
-                    />
-                )}
                 <Controls
                     style={{ margin: '10px' }} // This component uses "style" instead of "sx"
                     position="top-right"

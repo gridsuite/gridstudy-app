@@ -10,7 +10,6 @@ import { CurrentTreeNode } from 'redux/reducer';
 export const nodeWidth = 230;
 export const nodeHeight = 110;
 export const snapGrid = [1, nodeHeight];
-export const nodeGrid = [nodeWidth, nodeHeight];
 
 type PlacementArray = string[][];
 
@@ -58,7 +57,7 @@ function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
 
     nodes.forEach((node) => {
         if (!node.parentId) {
-            // ORIGIN/PARENT NODE
+            // ROOT NODE
             addValueAtPlacement(newPlacements, 0, 0, node.id);
         } else {
             // CHILDREN NODE
@@ -134,15 +133,17 @@ export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: 
 }
 
 /**
- * Will find the node whose X position is closer to xDestination in the range provided.
+ * Will find the sibling node whose X position is closer to xDestination in the X range provided.
  */
-export function findClosestNodeInRange(
-    siblingNodes: CurrentTreeNode[],
+export function findClosestSiblingInRange(
+    nodes: CurrentTreeNode[],
+    movedNode: CurrentTreeNode,
     xOrigin: number,
     xDestination: number
 ): CurrentTreeNode | null {
     const minX = Math.min(xOrigin, xDestination);
     const maxX = Math.max(xOrigin, xDestination);
+    const siblingNodes = findSiblings(nodes, movedNode);
     const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
     if (nodesBetween.length > 0) {
         const closestNode = nodesBetween.reduce((closest, current) =>

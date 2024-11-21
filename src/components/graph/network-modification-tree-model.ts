@@ -76,7 +76,7 @@ export default class NetworkModificationTreeModel {
      * - getCommonAncestor(E, F) will return D
      */
     private getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
-        const getAncestors = (node) => {
+        const getAncestors = (node: CurrentTreeNode) => {
             const ancestors = [];
             let current = node;
             while (current && current.parentId) {
@@ -119,8 +119,8 @@ export default class NetworkModificationTreeModel {
      * @private
      */
     private getChildOfAncestorInLineage(
-        ancestor: currentTreeNode,
-        descendant: currentTreeNode
+        ancestor: CurrentTreeNode,
+        descendant: CurrentTreeNode
     ): CurrentTreeNode | null {
         let current = descendant;
         while (current && current.parentId) {
@@ -136,9 +136,13 @@ export default class NetworkModificationTreeModel {
     switchBranches(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
         // We find the nodes from the two branches that share the same parent
         const commonAncestor = this.getCommonAncestor(draggedNode, destinationNode);
-        const siblingFromDraggedNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, draggedNode);
-        const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
-        this.switchSiblingsOrder(siblingFromDraggedNodeBranch, siblingFromDestinationNodeBranch);
+        if (commonAncestor) {
+            const siblingFromDraggedNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, draggedNode);
+            const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
+            if (siblingFromDraggedNodeBranch && siblingFromDestinationNodeBranch) {
+                this.switchSiblingsOrder(siblingFromDraggedNodeBranch, siblingFromDestinationNodeBranch);
+            }
+        }
     }
 
     addChild(
@@ -147,9 +151,8 @@ export default class NetworkModificationTreeModel {
         insertMode?: NodeInsertModes,
         referenceNodeId?: UUID
     ) {
-        // we have to keep a precise order of nodes in the array to avoid gettings children
-        // nodes before their parents when building graph in dagre library which have uncontrolled results
-        // We also need to do this to keep a correct order when inserting nodes and not loose the user.
+        // We have to keep a precise order of nodes in the array to avoid gettings children nodes before
+        // their parents when building the graph's layout.
         const referenceNodeIndex = this.treeNodes.findIndex((node) => node.id === referenceNodeId);
         switch (insertMode) {
             case NodeInsertModes.Before: {
