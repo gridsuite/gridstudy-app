@@ -141,50 +141,53 @@ const GeneratorCreationDialog = ({
 
     const { reset } = formMethods;
     const fromSearchCopyToFormValues = (generator) => {
-        reset({
-            [EQUIPMENT_ID]: generator.id + '(1)',
-            [EQUIPMENT_NAME]: generator.name ?? '',
-            [ENERGY_SOURCE]: generator.energySource,
-            [MAXIMUM_ACTIVE_POWER]: generator.maxP,
-            [MINIMUM_ACTIVE_POWER]: generator.minP,
-            [RATED_NOMINAL_POWER]: generator.ratedS,
-            [ACTIVE_POWER_SET_POINT]: generator.targetP,
-            [VOLTAGE_REGULATION]: generator.voltageRegulatorOn,
-            [VOLTAGE_SET_POINT]: generator.targetV,
-            [REACTIVE_POWER_SET_POINT]: generator.targetQ,
-            [PLANNED_ACTIVE_POWER_SET_POINT]: generator.generatorStartup?.plannedActivePowerSetPoint,
-            [MARGINAL_COST]: generator.generatorStartup?.marginalCost,
-            [PLANNED_OUTAGE_RATE]: generator.generatorStartup?.plannedOutageRate,
-            [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
-            [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
-            [DROOP]: generator.activePowerControl?.droop,
-            [TRANSIENT_REACTANCE]: generator.generatorShortCircuit?.directTransX,
-            [TRANSFORMER_REACTANCE]: generator.generatorShortCircuit?.stepUpTransformerX,
-            [VOLTAGE_REGULATION_TYPE]:
-                generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
-                    ? REGULATION_TYPES.DISTANT.id
-                    : REGULATION_TYPES.LOCAL.id,
-            [Q_PERCENT]: isNaN(generator?.[Q_PERCENT]) ? null : generator?.[Q_PERCENT],
-            ...getReactiveLimitsFormData({
-                reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
-                minimumReactivePower: generator?.minMaxReactiveLimits?.minQ ?? null,
-                maximumReactivePower: generator?.minMaxReactiveLimits?.maxQ ?? null,
-                reactiveCapabilityCurveTable: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
-            }),
-            ...getRegulatingTerminalFormData({
-                equipmentId: generator.regulatingTerminalConnectableId || generator.regulatingTerminalId,
-                equipmentType: generator.regulatingTerminalConnectableType,
-                voltageLevelId: generator.regulatingTerminalVlId,
-            }),
-            ...getConnectivityFormData({
-                voltageLevelId: generator.voltageLevelId,
-                busbarSectionId: generator.busOrBusbarSectionId,
-                connectionDirection: generator.connectablePosition.connectionDirection,
-                connectionName: generator.connectablePosition.connectionName,
-                // connected is not copied on purpose: we use the default value (true) in all cases
-            }),
-            ...copyEquipmentPropertiesForCreation(generator),
-        });
+        reset(
+            {
+                [EQUIPMENT_ID]: generator.id + '(1)',
+                [EQUIPMENT_NAME]: generator.name ?? '',
+                [ENERGY_SOURCE]: generator.energySource,
+                [MAXIMUM_ACTIVE_POWER]: generator.maxP,
+                [MINIMUM_ACTIVE_POWER]: generator.minP,
+                [RATED_NOMINAL_POWER]: generator.ratedS,
+                [ACTIVE_POWER_SET_POINT]: generator.targetP,
+                [VOLTAGE_REGULATION]: generator.voltageRegulatorOn,
+                [VOLTAGE_SET_POINT]: generator.targetV,
+                [REACTIVE_POWER_SET_POINT]: generator.targetQ,
+                [PLANNED_ACTIVE_POWER_SET_POINT]: generator.generatorStartup?.plannedActivePowerSetPoint,
+                [MARGINAL_COST]: generator.generatorStartup?.marginalCost,
+                [PLANNED_OUTAGE_RATE]: generator.generatorStartup?.plannedOutageRate,
+                [FORCED_OUTAGE_RATE]: generator.generatorStartup?.forcedOutageRate,
+                [FREQUENCY_REGULATION]: generator.activePowerControl?.participate,
+                [DROOP]: generator.activePowerControl?.droop,
+                [TRANSIENT_REACTANCE]: generator.generatorShortCircuit?.directTransX,
+                [TRANSFORMER_REACTANCE]: generator.generatorShortCircuit?.stepUpTransformerX,
+                [VOLTAGE_REGULATION_TYPE]:
+                    generator?.regulatingTerminalId || generator?.regulatingTerminalConnectableId
+                        ? REGULATION_TYPES.DISTANT.id
+                        : REGULATION_TYPES.LOCAL.id,
+                [Q_PERCENT]: isNaN(generator?.[Q_PERCENT]) ? null : generator?.[Q_PERCENT],
+                ...getReactiveLimitsFormData({
+                    reactiveCapabilityCurveChoice: generator?.minMaxReactiveLimits ? 'MINMAX' : 'CURVE',
+                    minimumReactivePower: generator?.minMaxReactiveLimits?.minQ ?? null,
+                    maximumReactivePower: generator?.minMaxReactiveLimits?.maxQ ?? null,
+                    reactiveCapabilityCurveTable: generator?.reactiveCapabilityCurvePoints ?? [{}, {}],
+                }),
+                ...getRegulatingTerminalFormData({
+                    equipmentId: generator.regulatingTerminalConnectableId || generator.regulatingTerminalId,
+                    equipmentType: generator.regulatingTerminalConnectableType,
+                    voltageLevelId: generator.regulatingTerminalVlId,
+                }),
+                ...getConnectivityFormData({
+                    voltageLevelId: generator.voltageLevelId,
+                    busbarSectionId: generator.busOrBusbarSectionId,
+                    connectionDirection: generator.connectablePosition.connectionDirection,
+                    connectionName: generator.connectablePosition.connectionName,
+                    // connected is not copied on purpose: we use the default value (true) in all cases
+                }),
+                ...copyEquipmentPropertiesForCreation(generator),
+            },
+            { keepDefaultValues: true }
+        );
     };
 
     const searchCopy = useFormSearchCopy({
