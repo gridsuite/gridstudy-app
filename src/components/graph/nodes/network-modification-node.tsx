@@ -170,7 +170,6 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                 return styles.bottomBuildBannerNotBuilt;
         }
     }
-
     return (
         <>
             <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} isConnectable={false} />
@@ -187,6 +186,7 @@ const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
                     )}
                 </Box>
                 <Box sx={getStyleForBottomBanner(props.data.globalBuildStatus)}></Box>
+
                 <Box sx={styles.labelWrapper}>
                     <span
                         style={{

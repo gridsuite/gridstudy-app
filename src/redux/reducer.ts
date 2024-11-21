@@ -637,7 +637,7 @@ const initialState: AppState = {
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
-    studyDisplayMode: StudyDisplayMode.TREE, // TODO Revert to HYBRID before merge
+    studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
     reloadMap: true,

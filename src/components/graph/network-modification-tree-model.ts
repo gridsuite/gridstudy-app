@@ -151,8 +151,19 @@ export default class NetworkModificationTreeModel {
         insertMode?: NodeInsertModes,
         referenceNodeId?: UUID
     ) {
-        // We have to keep a precise order of nodes in the array to avoid gettings children nodes before
-        // their parents when building the graph's layout.
+        /**
+         * The layout algorithm used to draw the graph is dependant on the order of nodes in the array.
+         * We have to keep a precise order of nodes in the array to always have a child node after its parent.
+         *
+         * Example tree :
+         *     A
+         *    / \
+         *   B   D
+         *  /   / \
+         * C   E   F
+         *
+         * This tree should have its nodes in the array in this order : [A, B, C, D, E, F]
+         */
         const referenceNodeIndex = this.treeNodes.findIndex((node) => node.id === referenceNodeId);
         switch (insertMode) {
             case NodeInsertModes.Before: {

@@ -82,7 +82,7 @@ const NetworkModificationTree = ({
 
     const updateNodePositions = useCallback(
         (model) => {
-            if (model && model.treeNodes?.length > 0 && model.treeEdges?.length > 0) {
+            if (model && model.treeNodes?.length > 0) {
                 setNodes(getTreeNodesWithUpdatedPositions(model.treeNodes));
                 setEdges([...model.treeEdges]);
                 window.requestAnimationFrame(() => fitView());
@@ -175,8 +175,7 @@ const NetworkModificationTree = ({
         if (changes.length === 1 && changes[0].type === 'position') {
             let movedNode; // Will be initialized either with the dragged node or its ancestor
 
-            const currentChange = changes[0]; // corresponds to the dragged node
-
+            const currentChange = changes[0]; // corresponds to a list of changes affecting the dragged node
             const draggedNode = nodes.find((node) => node.id === currentChange.id);
             const initialDraggedNodeXPosition = draggedNode.position.x;
             const initialDraggedNodeYPosition = draggedNode.position.y;
@@ -184,16 +183,18 @@ const NetworkModificationTree = ({
             // We do not allow vertical movement, so we force the Y value of the dragged node to stays the same
             currentChange.position.y = initialDraggedNodeYPosition;
 
-            // We test if we should move the ancestor instead of the currently moving node
+            // We test if the dragged node is the start of a branch. If this is not the case, we should find
+            // the start of the branch and move this ancestor node instead.
             const firstAncestorIdWithSibling = getFirstAncestorIdWithSibling(nodes, draggedNode.id);
             if (firstAncestorIdWithSibling && firstAncestorIdWithSibling !== currentChange.id) {
-                // We find the movement of the dragged node and apply it to its ancestor instead.
+                // We calculate the movement of the dragged node and apply it to its ancestor instead.
                 const ancestorNode = nodes.find((node) => node.id === firstAncestorIdWithSibling);
                 const initialAncestorXPosition = ancestorNode.position.x;
                 const initialAncestorYPosition = ancestorNode.position.y;
                 const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
 
-                // We move the ancestor instead of the dragged node, so we force it's X value to its initial value.
+                // We will move the ancestor instead of the dragged node, so we force the dragged node's X value
+                // to its initial value.
                 currentChange.position.x = initialDraggedNodeXPosition;
 
                 const newChangeForAncestor = {
@@ -205,6 +206,8 @@ const NetworkModificationTree = ({
                         y: initialAncestorYPosition, // We do not allow vertical movement, so the Y value stays the same
                     },
                 };
+                // After reverting the position changes of the dragged node, we add our custom change to the list, to be
+                // processed by ReactFlow.
                 changes.push(newChangeForAncestor);
 
                 movedNode = ancestorNode;
@@ -215,9 +218,9 @@ const NetworkModificationTree = ({
             // We test if the user stopped dragging the node. If yes, then we apply the new nodes placements.
             if (changes[0].dragging !== undefined && !changes[0].dragging) {
                 // In the treeModel.treeNodes variable we can find the positions of the nodes before they are updated by
-                // the end of drag handling (right now, in this if clause), whereas in the movedNode variable (which
-                // comes from the nodes variable), we can find the position of the node updated by ReactFlow's
-                // onNodesChanges function, as the user is still dragging a node.
+                // the end of drag handling (that is : what is happening right here, in this "if" clause), whereas in
+                // the movedNode variable (which comes from the nodes variable), we can find the position of the node
+                // which has been updated by ReactFlow's onNodesChanges function as the user kept on dragging the node.
                 const movedNodeXPositionBeforeDrag = treeModel.treeNodes.find((n) => n.id === movedNode.id).position.x;
                 const movedNodeXPositionAfterDrag = movedNode.position.x;
 
@@ -236,7 +239,8 @@ const NetworkModificationTree = ({
     };
 
     const handleNodeDragStop = () => {
-        updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch
+        // Note : this function triggers far too late to be usable for node positioning computation like we do in the handleNodesChange function.
+        updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch.
     };
 
     return (

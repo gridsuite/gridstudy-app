@@ -14,7 +14,6 @@ import Tooltip from '@mui/material/Tooltip';
 import { BUILD_STATUS } from '../../network/constants';
 import { AppState, RootNode as RootNodeType } from 'redux/reducer';
 import { Theme } from '@mui/material/styles';
-import { Box } from '@mui/system';
 
 const styles = {
     rootSelected: (theme: Theme) => ({
