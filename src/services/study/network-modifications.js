@@ -1702,6 +1702,30 @@ export function updateSwitchState(studyUuid, nodeUuid, switchId, open) {
     });
 }
 
+export function createLcc({ studyUuid, nodeUuid, id, name, isUpdate = false, modificationUuid }) {
+    let createLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+
+    if (isUpdate) {
+        createLccUrl += '/' + encodeURIComponent(modificationUuid);
+        console.info('Updating lcc hvdc line creation');
+    } else {
+        console.info('Creating lcc hvdc line creation');
+    }
+
+    return backendFetchText(createLccUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LCC_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+        }),
+    });
+}
+
 export function createVsc(
     studyUuid,
     nodeUuid,

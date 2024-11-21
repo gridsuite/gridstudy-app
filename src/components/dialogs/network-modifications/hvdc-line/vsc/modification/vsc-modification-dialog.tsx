@@ -7,10 +7,10 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import ModificationDialog from '../../../commons/modificationDialog';
-import { EquipmentIdSelector } from '../../../equipment-id/equipment-id-selector';
+import ModificationDialog from '../../../../commons/modificationDialog';
+import { EquipmentIdSelector } from '../../../../equipment-id/equipment-id-selector';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { sanitizeString } from '../../../dialog-utils';
+import { sanitizeString } from '../../../../dialog-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
 import {
@@ -36,8 +36,8 @@ import {
     REACTIVE_CAPABILITY_CURVE_CHOICE,
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
-} from '../../../../utils/field-constants';
-import { FetchStatus } from '../../../../../services/utils';
+} from '../../../../../utils/field-constants';
+import { FetchStatus } from '../../../../../../services/utils';
 import {
     getVscHvdcLineModificationPaneSchema,
     getVscHvdcLineModificationTabFormData,
@@ -54,7 +54,7 @@ import { VscModificationForm } from './vsc-modification-from';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { modifyVsc } from 'services/study/network-modifications';
-import { fetchNetworkElementInfos } from '../../../../../services/study/network';
+import { fetchNetworkElementInfos } from '../../../../../../services/study/network';
 import { VscModificationInfo } from 'services/network-modification-types';
 import {
     REMOVE,
@@ -68,7 +68,7 @@ import {
     getPropertiesFromModification,
     modificationPropertiesSchema,
     toModificationProperties,
-} from '../../common/properties/property-utils';
+} from '../../../common/properties/property-utils';
 
 const formSchema = yup
     .object()
