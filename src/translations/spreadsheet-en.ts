@@ -6,6 +6,9 @@
  */
 
 const spreadsheetEn = {
+    'spreadsheet/column/button': 'Show / hide columns',
+    'spreadsheet/column/dialog/title': 'Column list',
+    'spreadsheet/column/dialog/check_all': 'Select all / none',
     'spreadsheet/custom_column/add_columns': 'Add custom columns',
     'spreadsheet/custom_column/column_name': 'Column name',
     'spreadsheet/custom_column/column_content': 'Column content',

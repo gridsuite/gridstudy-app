@@ -6,6 +6,9 @@
  */
 
 const spreadsheetFr = {
+    'spreadsheet/column/button': 'Afficher / masquer colonnes',
+    'spreadsheet/column/dialog/title': 'Liste des colonnes',
+    'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
     'spreadsheet/custom_column/add_columns': 'Ajouter colonnes personnalisées',
     'spreadsheet/custom_column/column_name': 'Nom colonne',
     'spreadsheet/custom_column/column_content': 'Contenu colonne',

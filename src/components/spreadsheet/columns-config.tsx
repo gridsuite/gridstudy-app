@@ -253,7 +253,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
                 <ListItem sx={styles.checkboxSelectAll}>
                     <ListItemButton role={undefined} onClick={handleToggleAll} dense>
                         <Checkbox style={{ marginLeft: '21px' }} checked={isAllChecked} indeterminate={isSomeChecked} />
-                        <FormattedMessage id="CheckAll" />
+                        <FormattedMessage id="spreadsheet/column/dialog/check_all" />
                     </ListItemButton>
                 </ListItem>
 
@@ -314,7 +314,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
     return (
         <>
             <span>
-                <FormattedMessage id="LabelSelectList" />
+                <FormattedMessage id="spreadsheet/column/button" />
             </span>
             <IconButton disabled={disabled} aria-label="dialog" onClick={handleOpenPopupSelectColumnNames}>
                 <ViewColumnIcon />
@@ -325,7 +325,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
                 onClose={handleCancelPopupSelectColumnNames}
                 onClick={handleSaveSelectedColumnNames}
                 title={intl.formatMessage({
-                    id: 'ColumnsList',
+                    id: 'spreadsheet/column/dialog/title',
                 })}
                 child={checkListColumnsNames()}
                 //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beautiful-dnd warning related to nested scroll containers
