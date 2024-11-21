@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, RTE (http://www.rte-france.com)
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -9,7 +9,7 @@ import { CurrentTreeNode } from 'redux/reducer';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
-export const snapGrid = [nodeWidth / 4, nodeHeight];
+export const snapGrid = [1, nodeHeight];
 export const nodeGrid = [nodeWidth, nodeHeight];
 
 type PlacementArray = string[][];
@@ -90,15 +90,6 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     newNodes.forEach((node) => {
         const placement = getPlacement(nodePlacements, node.id);
 
-        // TODO CHARLY commentaire pour expliquer cet ajout
-        node.data = {
-            ...node.data,
-            absolutePosition: {
-                x: placement.column * nodeWidth,
-                y: placement.row * nodeHeight,
-            },
-        };
-
         if (node.parentId) {
             // Reactflow draws it's node with a position relative to the node's parent (the parent is in the node's parentId field).
             // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
@@ -142,57 +133,23 @@ export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: 
     return null;
 }
 
-// TODO CHARLY commentaire pour differencier les deux fonctions
-export function getCurrentAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
-    let currentNode = node;
-    let absolutePosition = { x: 0, y: 0 };
-    while (currentNode) {
-        absolutePosition.x += currentNode.position.x;
-        absolutePosition.y += currentNode.position.y;
-
-        if (!currentNode.parentId) {
-            break;
-        }
-        currentNode = nodes.find((node) => node.id === currentNode.parentId);
-    }
-    return absolutePosition;
-}
-// TODO CHARLY commentaire pour differencier les deux fonctions
-export function getStoredAbsolutePosition(node: CurrentTreeNode) {
-    return node?.data?.absolutePosition;
-}
-
 /**
- * Will find all the nodes between the two X positions provided, then return only one node
- * whose X position is closer to xDestination.
- * If zero node is found, will return null.
- * @param nodes
- * @param xOrigin
- * @param xDestination
+ * Will find the node whose X position is closer to xDestination in the range provided.
  */
-export function findClosestNodeBetweenVerticalPositions(
-    nodes: CurrentTreeNode[],
+export function findClosestNodeInRange(
+    siblingNodes: CurrentTreeNode[],
     xOrigin: number,
     xDestination: number
 ): CurrentTreeNode | null {
     const minX = Math.min(xOrigin, xDestination);
     const maxX = Math.max(xOrigin, xDestination);
-    const nodesBetween = nodes.filter((n) => {
-        const absolutePosition = getStoredAbsolutePosition(n);
-        return absolutePosition?.x < maxX && absolutePosition?.x > minX;
-    });
+    const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
     if (nodesBetween.length > 0) {
-        console.error(
-            'CHARLY found nodes : ' +
-                nodesBetween.map((n) => n.id.substring(0, 3) + '_' + getStoredAbsolutePosition(n)?.x)
-        );
         const closestNode = nodesBetween.reduce((closest, current) =>
-            Math.abs(getStoredAbsolutePosition(current)?.x - xDestination) <
-            Math.abs(getStoredAbsolutePosition(closest)?.x - xDestination)
+            Math.abs(current.position.x - xDestination) < Math.abs(closest.position.x - xDestination)
                 ? current
                 : closest
         );
-        console.error('CHARLY closest node : ' + closestNode.id.substring(0, 3));
         return closestNode;
     }
     return null;

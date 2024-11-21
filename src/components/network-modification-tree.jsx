@@ -32,11 +32,9 @@ import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {
-    findClosestNodeBetweenVerticalPositions,
+    findClosestNodeInRange,
     findSiblings,
-    getCurrentAbsolutePosition,
     getFirstAncestorIdWithSibling,
-    getStoredAbsolutePosition,
     getTreeNodesWithUpdatedPositions,
     nodeGrid,
     snapGrid,
@@ -171,15 +169,6 @@ const NetworkModificationTree = ({
         window.requestAnimationFrame(() => fitView());
     }, [isStudyDrawerOpen, fitView]);
 
-    const handleNodeDragStop = (event, node) => {
-        setIsDragging(false);
-        updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch
-    };
-
-    const handleNodeDrag = (event, node) => {
-        setIsDragging(true);
-    };
-
     const handleNodesChange = (changes) => {
         // When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
         // an ancestor which has siblings.
@@ -189,22 +178,22 @@ const NetworkModificationTree = ({
         // the dragged node's ancestor, we effectively move the ancestor and all its children, including the
         // dragged node.
         if (changes.length === 1 && changes[0].type === 'position') {
+            let movedNode; // Will be initialized either with the dragged node or its ancestor
+
             const currentChange = changes[0]; // corresponds to the dragged node
 
             const draggedNode = nodes.find((node) => node.id === currentChange.id);
             const initialDraggedNodeXPosition = draggedNode.position.x;
             const initialDraggedNodeYPosition = draggedNode.position.y;
-            const firstAncestorIdWithSibling = getFirstAncestorIdWithSibling(nodes, draggedNode.id);
 
             // We do not allow vertical movement, so we force the Y value of the dragged node to stays the same
             currentChange.position.y = initialDraggedNodeYPosition;
 
             // We test if we should move the ancestor instead of the currently moving node
-            let movedNode;
+            const firstAncestorIdWithSibling = getFirstAncestorIdWithSibling(nodes, draggedNode.id);
             if (firstAncestorIdWithSibling && firstAncestorIdWithSibling !== currentChange.id) {
                 // We find the movement of the dragged node and apply it to its ancestor instead.
                 const ancestorNode = nodes.find((node) => node.id === firstAncestorIdWithSibling);
-                movedNode = ancestorNode;
                 const initialAncestorXPosition = ancestorNode.position.x;
                 const initialAncestorYPosition = ancestorNode.position.y;
                 const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
@@ -222,26 +211,27 @@ const NetworkModificationTree = ({
                     },
                 };
                 changes.push(newChangeForAncestor);
+
+                movedNode = ancestorNode;
             } else {
                 movedNode = draggedNode;
             }
 
             // TODO CHARLY description de cette partie. Maybe refactoring pour qu'on s'y retrouve dans cette méga fonction
             if (changes[0].dragging !== undefined && !changes[0].dragging) {
-                // SOLUTION : on trouve les sibling du noeud draggé fixed (noeud ou bien ancestor).
-                // Ensuite on gère la position par rapport à ce petit groupe de siblings.
-                // TODO CHARLY commentaire propre pour expliquer cette solution
-                console.error('CHARLY DRAGGING END');
-                console.error('CHARLY dragged node ' + movedNode.id.substring(0, 3));
-
-                const xDestination = getCurrentAbsolutePosition(nodes, movedNode)?.x;
-                const xOrigin = getStoredAbsolutePosition(movedNode)?.x;
-                // TODO CHARLY améliorer les positions pour prendre en compte un déplacement si on est à peu près à la moitié du node
-                // TODO CHARLY réduire la grille de déplacement pour rendre le drag and drop plus fluide
-                console.error('CHARLY dragged node absolute position (computed) ', xDestination);
-                console.error('CHARLY dragged node absolute position (stored) ', xOrigin);
                 const siblings = findSiblings(nodes, movedNode);
-                const nodeToSwitchWith = findClosestNodeBetweenVerticalPositions(siblings, xOrigin, xDestination);
+
+                // TODO CHARLY améliorer ce commentaire pour expliquer les deux lignes au lieu de seulement la première
+                // NOTE : We get the node position from the treeModel.treeNodes variable and not from the nodes variable
+                // because its position corresponds to the initial position before we started dragging the node.
+                const movedNodeXPositionBeforeDrag = treeModel.treeNodes.find((n) => n.id === movedNode.id).position.x;
+                const movedNodeXPositionAfterDrag = movedNode.position.x;
+
+                const nodeToSwitchWith = findClosestNodeInRange(
+                    siblings,
+                    movedNodeXPositionBeforeDrag,
+                    movedNodeXPositionAfterDrag
+                );
                 if (nodeToSwitchWith) {
                     dispatch(networkModificationTreeSwitchNodes(movedNode.id, nodeToSwitchWith.id));
                 }
@@ -249,33 +239,18 @@ const NetworkModificationTree = ({
         }
         onNodesChange(changes);
     };
-    const handleDebug = () => {
-        dispatch(
-            networkModificationTreeSwitchNodes(
-                '0f6d31a0-8c39-4c2f-8bda-f7480f484744',
-                '75e593b5-a2cf-4d11-b521-43a7ea98fdbf'
-            )
-        );
-        updateNodePositions(treeModel);
+
+    const handleNodeDrag = (event, node) => {
+        setIsDragging(true);
     };
-    const debug = true; // TODO REMOVE THIS
+
+    const handleNodeDragStop = (event, node) => {
+        setIsDragging(false);
+        updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch
+    };
+
     return (
         <Box flexGrow={1}>
-            {debug && (
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        top: 0,
-                        left: 0,
-                        backgroundColor: 'red',
-                        color: 'white',
-                        display: 'block',
-                    }}
-                    onClick={handleDebug}
-                >
-                    CLICK
-                </Box>
-            )}
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
