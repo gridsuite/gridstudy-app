@@ -234,7 +234,7 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'NonEvacuatedEnergyParametersError',
+                        headerId: 'updateNonEvacuatedEnergyParametersError',
                     });
                 });
         },
