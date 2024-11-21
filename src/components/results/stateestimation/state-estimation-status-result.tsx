@@ -25,19 +25,23 @@ export const StateEstimationStatusResult: FunctionComponent<StateEstimationResul
     const renderStateEstimationStatusResult = () => {
         return (
             <>
-                <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
-                    <Typography sx={styles.typography}>
-                        <FormattedMessage id="StateEstimationStatus" />
-                    </Typography>
-                    <Typography sx={styles.valueTypography}>{result.status}</Typography>
-                </Stack>
+                {result.status && (
+                    <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
+                        <Typography sx={styles.typography}>
+                            <FormattedMessage id="StateEstimationStatus" />
+                        </Typography>
+                        <Typography sx={styles.valueTypography}>{result.status}</Typography>
+                    </Stack>
+                )}
 
-                <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
-                    <Typography sx={styles.typography}>
-                        <FormattedMessage id="StateEstimationQuality" />
-                    </Typography>
-                    <Typography sx={styles.valueTypography}>{result.qualityLevel}</Typography>
-                </Stack>
+                {result.qualityLevel && (
+                    <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
+                        <Typography sx={styles.typography}>
+                            <FormattedMessage id="StateEstimationQuality" />
+                        </Typography>
+                        <Typography sx={styles.valueTypography}>{result.qualityLevel}</Typography>
+                    </Stack>
+                )}
             </>
         );
     };
