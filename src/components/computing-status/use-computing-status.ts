@@ -58,7 +58,7 @@ function isWorthUpdate(
     return false;
 }
 
-const genetateStatusFromComputingType = (base: string) => ({
+const generateStatusFromComputingType = (base: string) => ({
     invalidations: [`${base}_status`, `${base}_failed`],
     completions: [`${base}Result`, `${base}_failed`],
 });
@@ -69,15 +69,15 @@ type AnalysisStatusType = {
 };
 type ComputingTypeToStatusMapperType = Record<ComputingType, AnalysisStatusType>;
 const computingTypeToStatusMapper: ComputingTypeToStatusMapperType = {
-    [ComputingType.LOAD_FLOW]: genetateStatusFromComputingType('loadflow'),
-    [ComputingType.SECURITY_ANALYSIS]: genetateStatusFromComputingType('securityAnalysis'),
-    [ComputingType.SENSITIVITY_ANALYSIS]: genetateStatusFromComputingType('sensitivityAnalysis'),
-    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: genetateStatusFromComputingType('nonEvacuatedEnergy'),
-    [ComputingType.SHORT_CIRCUIT]: genetateStatusFromComputingType('shortCircuitAnalysis'),
-    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: genetateStatusFromComputingType('oneBusShortCircuitAnalysis'),
-    [ComputingType.DYNAMIC_SIMULATION]: genetateStatusFromComputingType('dynamicSimulation'),
-    [ComputingType.VOLTAGE_INITIALIZATION]: genetateStatusFromComputingType('voltageInit'),
-    [ComputingType.STATE_ESTIMATION]: genetateStatusFromComputingType('stateEstimation'),
+    [ComputingType.LOAD_FLOW]: generateStatusFromComputingType('loadflow'),
+    [ComputingType.SECURITY_ANALYSIS]: generateStatusFromComputingType('securityAnalysis'),
+    [ComputingType.SENSITIVITY_ANALYSIS]: generateStatusFromComputingType('sensitivityAnalysis'),
+    [ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]: generateStatusFromComputingType('nonEvacuatedEnergy'),
+    [ComputingType.SHORT_CIRCUIT]: generateStatusFromComputingType('shortCircuitAnalysis'),
+    [ComputingType.SHORT_CIRCUIT_ONE_BUS]: generateStatusFromComputingType('oneBusShortCircuitAnalysis'),
+    [ComputingType.DYNAMIC_SIMULATION]: generateStatusFromComputingType('dynamicSimulation'),
+    [ComputingType.VOLTAGE_INITIALIZATION]: generateStatusFromComputingType('voltageInit'),
+    [ComputingType.STATE_ESTIMATION]: generateStatusFromComputingType('stateEstimation'),
 };
 
 interface UseComputingStatusProps {
@@ -91,7 +91,6 @@ interface UseComputingStatusProps {
 /**
  *  this hook loads <computingType> state into redux, then keeps it updated according to notifications
  * @param fetcher method fetching current <computingType> state
- * @param invalidations when receiving notifications, if updateType is included in <invalidations>, this hook will update
  * @param resultConversion converts <fetcher> result to RunningStatus
  * @param computingType ComputingType targeted by this hook
  * @param optionalServiceAvailabilityStatus status of an optional service
