@@ -41,7 +41,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
 
-    const [isOverloadedEquipmentsReady, setIsOverloadedEquipmentsReady] = useState(false);
+    const [isQualityReady, setIsQualityReady] = useState(false);
 
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
@@ -50,7 +50,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             stateEstimationStatus === RunningStatus.RUNNING ||
             // We still want the loader to be displayed for the remaining time there is between "the state estimation is over"
             // and "the data is post processed and can be displayed"
-            (!isOverloadedEquipmentsReady && stateEstimationStatus === RunningStatus.SUCCEED) ||
+            (!isQualityReady && stateEstimationStatus === RunningStatus.SUCCEED) ||
             isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -126,7 +126,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
     useEffect(() => {
         //reset everything at initial state
         if (stateEstimationStatus === RunningStatus.FAILED || stateEstimationStatus === RunningStatus.IDLE) {
-            setIsOverloadedEquipmentsReady(false);
+            setIsQualityReady(false);
         }
     }, [stateEstimationStatus]);
 
