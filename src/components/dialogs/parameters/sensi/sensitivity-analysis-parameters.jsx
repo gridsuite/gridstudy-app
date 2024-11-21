@@ -208,7 +208,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
                     setLaunchLoader(false);
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisFilteredActiveParametersError',
+                        headerId: 'getSensitivityAnalysisFactorsCountError',
                     });
                 });
         },
@@ -396,7 +396,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
+                        headerId: 'updateSensitivityAnalysisParametersError',
                     });
                 });
         },

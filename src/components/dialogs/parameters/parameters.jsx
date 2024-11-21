@@ -14,6 +14,7 @@ import { useSnackMessage, useDebounce } from '@gridsuite/commons-ui';
 import { OptionalServicesStatus } from 'components/utils/optional-services';
 import { updateConfigParameter } from 'services/config';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
+import { formatComputingTypeLabel } from '../../computing-status/computing-type';
 
 export const CloseButton = ({ hideParameters, ...props }) => {
     return <LabelledButton callback={hideParameters} label={'close'} {...props} />;
@@ -263,7 +264,7 @@ export const useParametersBackend = (
                 setProvider(oldProvider);
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'update' + type + 'ProviderError',
+                    headerId: 'update' + formatComputingTypeLabel(type) + 'ProviderError',
                 });
             });
         },
@@ -285,7 +286,7 @@ export const useParametersBackend = (
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'fetchDefault' + type + 'ProviderError',
+                    headerId: 'fetchDefault' + formatComputingTypeLabel(type) + 'ProviderError',
                 });
             });
     }, [backendFetchDefaultProvider, updateProvider, snackError, type]);
@@ -306,7 +307,7 @@ export const useParametersBackend = (
             .catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'fetch' + type + 'ProvidersError',
+                    headerId: 'fetch' + formatComputingTypeLabel(type) + 'ProvidersError',
                 });
             });
     }, [backendFetchProviders, snackError, type]);
@@ -325,7 +326,7 @@ export const useParametersBackend = (
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'fetch' + type + 'ProviderError',
+                        headerId: 'fetch' + formatComputingTypeLabel(type) + 'ProviderError',
                     });
                 });
         },
@@ -364,7 +365,7 @@ export const useParametersBackend = (
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'fetch' + type + 'SpecificParametersError',
+                        headerId: 'fetch' + formatComputingTypeLabel(type) + 'SpecificParametersError',
                     });
                 });
         },
@@ -388,7 +389,7 @@ export const useParametersBackend = (
                 setProvider(oldParams['provider']);
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'update' + type + 'ParametersError',
+                    headerId: 'update' + formatComputingTypeLabel(type) + 'ParametersError',
                 });
             });
         },
@@ -415,7 +416,7 @@ export const useParametersBackend = (
                 .then((response) => {
                     if (response.status === 204) {
                         snackWarning({
-                            headerId: 'reset' + type + 'ParametersWarning',
+                            headerId: 'reset' + formatComputingTypeLabel(type) + 'ParametersWarning',
                         });
                     }
                     // Parameters will be updated after an ComputationParametersUpdated notification
@@ -425,7 +426,7 @@ export const useParametersBackend = (
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'update' + type + 'ParametersError',
+                        headerId: 'update' + formatComputingTypeLabel(type) + 'ParametersError',
                     });
                 });
         },
@@ -445,7 +446,7 @@ export const useParametersBackend = (
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'fetch' + type + 'ParametersError',
+                        headerId: 'fetch' + formatComputingTypeLabel(type) + 'ParametersError',
                     });
                 });
         },
