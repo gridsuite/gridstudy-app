@@ -28,7 +28,7 @@ import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
+import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
@@ -154,6 +154,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
+    const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
@@ -169,6 +170,28 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
             dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+        },
+        [dispatch, nadIdentifier]
+    );
+
+    const onMoveTextNodeCallback = useCallback(
+        (
+            equipmentId: string,
+            vlNodeId: string,
+            textNodeId: string,
+            shiftX: number,
+            shiftY: number,
+            shiftXOrig: number,
+            shiftYOrig: number,
+            connectionShiftX: number,
+            connectionShiftY: number,
+            connectionShiftXOrig: number,
+            connectionShiftYOrig: number,
+            mousePosition: Point
+        ) => {
+            dispatch(
+                storeNetworkAreaDiagramTextNodeMovement(nadIdentifier, equipmentId, mousePosition.x, mousePosition.y)
+            );
         },
         [dispatch, nadIdentifier]
     );
@@ -210,7 +233,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
-                null,
+                onMoveTextNodeCallback,
                 null,
                 true,
                 true,
@@ -243,6 +266,16 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                 });
             }
+            // Repositioning the previously moved nodes
+            const correspondingTextMovements = nadTextNodeMovements.filter(
+                (movement) => movement.nadIdentifier === nadIdentifier
+            );
+            if (correspondingTextMovements.length > 0) {
+                correspondingTextMovements.forEach((movement) => {
+                    diagramViewer.moveTextNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                });
+            }
+
             diagramViewerRef.current = diagramViewer;
         }
     }, [
@@ -256,6 +289,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         OnToggleHoverCallback,
         nadIdentifier,
         nadNodeMovements,
+        nadTextNodeMovements,
+        onMoveTextNodeCallback,
     ]);
 
     /**

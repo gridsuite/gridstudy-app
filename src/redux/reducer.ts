@@ -187,7 +187,9 @@ import {
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
+    STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
     StoreNetworkAreaDiagramNodeMovementAction,
+    StoreNetworkAreaDiagramTextNodeMovementAction,
     STUDY_UPDATED,
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
@@ -473,6 +475,7 @@ export interface AppState extends CommonStoreState {
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
     nadNodeMovements: NadNodeMovement[];
+    nadTextNodeMovements: NadNodeMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -639,6 +642,7 @@ const initialState: AppState = {
     studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
+    nadTextNodeMovements: [],
     reloadMap: true,
     isMapEquipmentsInitialized: false,
     networkAreaDiagramDepth: 0,
@@ -1487,6 +1491,27 @@ export const reducer = createReducer(initialState, (builder) => {
             );
             if (correspondingMovement.length === 0) {
                 state.nadNodeMovements.push({
+                    nadIdentifier: action.nadIdentifier,
+                    equipmentId: action.equipmentId,
+                    x: action.x,
+                    y: action.y,
+                });
+            } else {
+                correspondingMovement[0].x = action.x;
+                correspondingMovement[0].y = action.y;
+            }
+        }
+    );
+
+    builder.addCase(
+        STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+        (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
+            const correspondingMovement: NadNodeMovement[] = state.nadTextNodeMovements.filter(
+                (movement) =>
+                    movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
+            );
+            if (correspondingMovement.length === 0) {
+                state.nadTextNodeMovements.push({
                     nadIdentifier: action.nadIdentifier,
                     equipmentId: action.equipmentId,
                     x: action.x,

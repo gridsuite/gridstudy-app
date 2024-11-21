@@ -938,6 +938,29 @@ export function storeNetworkAreaDiagramNodeMovement(
     };
 }
 
+export const STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT = 'STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT';
+export type StoreNetworkAreaDiagramTextNodeMovementAction = Readonly<
+    Action<typeof STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT>
+> & {
+    nadIdentifier: string;
+    equipmentId: string;
+    x: number;
+    y: number;
+};
+export function storeNetworkAreaDiagramTextNodeMovement(
+    nadIdentifier: string,
+    equipmentId: string,
+    x: number,
+    y: number
+): StoreNetworkAreaDiagramTextNodeMovementAction {
+    return {
+        type: STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
+        nadIdentifier: nadIdentifier,
+        equipmentId: equipmentId,
+        x: x,
+        y: y,
+    };
+}
 export const NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS = 'NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS';
 export type NetworkAreaDiagramNbVoltageLevelsAction = Readonly<
     Action<typeof NETWORK_AREA_DIAGRAM_NB_VOLTAGE_LEVELS>
