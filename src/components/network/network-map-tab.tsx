@@ -22,7 +22,7 @@ import NominalVoltageFilter from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_BASEMAP, PARAM_MAP_MANUAL_REFRESH, PARAM_USE_NAME } from '../../utils/config-params';
 import { Equipment, EquipmentType, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import { isNodeBuilt, isNodeRenamed, isSameNodeAndBuilt } from '../graph/util/model-functions';
+import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -144,6 +144,8 @@ export const NetworkMapTab = ({
     const intlRef = useIntlRef();
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
+    const isInitializedRef = useRef<boolean>();
+    isInitializedRef.current = isInitialized;
     const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
@@ -784,14 +786,13 @@ export const NetworkMapTab = ({
     useEffect(() => {
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
+        let previousNodeStatus = isCurrentNodeBuiltRef.current;
+        isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
         }
         if (disabled) {
-            return;
-        }
-        if (refIsMapManualRefreshEnabled.current && isInitialized) {
             return;
         }
         // as long as rootNodeId is not set, we don't fetch any geodata
@@ -811,9 +812,21 @@ export const NetworkMapTab = ({
             // load root node geodata
             loadRootNodeGeoData();
         }
-        if (isRootNodeGeoDataLoaded && isMapEquipmentsInitialized) {
-            updateMapEquipmentsAndGeoData();
+        // manual reload
+        if (refIsMapManualRefreshEnabled.current && isInitialized) {
+            // this reloads the mapEquipments when, in manual refresh mode, the current node is built.
+            if (
+                isSameNode(previousCurrentNode, currentNode) && // must be the same node
+                !previousNodeStatus && // must pass from unbuilt ...
+                isCurrentNodeBuiltRef.current // to built
+            ) {
+                updateMapEquipmentsAndGeoData();
+            }
+            // return to avoid update in manual reload or to avoid double upate
+            return;
         }
+        // auto reload
+        updateMapEquipmentsAndGeoData();
         // Note: studyUuid and dispatch don't change
     }, [
         rootNodeId,
@@ -846,18 +859,6 @@ export const NetworkMapTab = ({
             loadGeoData();
         }
     }, [isInitialized, lineFullPath, loadGeoData]);
-
-    /* TODO : this useEffect reloads the mapEquipments when, in manual refresh mode, the current node is built.
-     */
-    useEffect(() => {
-        let previousNodeStatus = isCurrentNodeBuiltRef.current;
-        isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
-
-        // when we build node we want the map to be up to date
-        if (refIsMapManualRefreshEnabled.current && !previousNodeStatus && isCurrentNodeBuiltRef.current) {
-            updateMapEquipmentsAndGeoData();
-        }
-    }, [currentNode, updateMapEquipmentsAndGeoData]);
 
     let choiceVoltageLevelsSubstation: EquipmentMap | null = null;
     if (choiceVoltageLevelsSubstationId) {
