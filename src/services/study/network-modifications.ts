@@ -42,7 +42,7 @@ import {
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 
-function getNetworkModificationUrl(studyUuid: UUID | string | null | undefined, nodeUuid: string | undefined) {
+function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
 

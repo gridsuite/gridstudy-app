@@ -31,7 +31,6 @@ export function stopSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID) {
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-//TODO: any to be changed
 export function fetchSecurityAnalysisResult(studyUuid: string, currentNodeUuid: string, queryParams: any) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result`;
@@ -47,9 +46,7 @@ export function fetchSecurityAnalysisResult(studyUuid: string, currentNodeUuid: 
     }
 
     if (typeof page === 'number') {
-        // @ts-ignore
-        //TODO: change this
-        params.append('page', page);
+        params.append('page', String(page));
         params.append('size', size);
     }
 

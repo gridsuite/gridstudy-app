@@ -42,11 +42,11 @@ interface SensitivityAnalysisParameters
 }
 
 interface SensitivityAnalysisFactorsCountParameters {
-    injections: string[] | undefined;
-    monitoredBranches: string[] | undefined;
-    contingencies: string[] | undefined;
-    hvdcs: string[] | undefined;
-    psts: string[] | undefined;
+    injections?: string[];
+    monitoredBranches?: string[];
+    contingencies?: string[];
+    hvdcs?: string[];
+    psts?: string[];
 }
 
 interface CsvConfig {
@@ -160,7 +160,6 @@ export function getSensitivityAnalysisFactorsCount(
     urlSearchParams.append('isInjectionsSet', jsoned);
     Object.keys(newParams)
         // @ts-ignore
-        //TODO: check this  later
         .filter((key) => newParams[key])
         // @ts-ignore
         .forEach((key) => urlSearchParams.append(`ids[${key}]`, newParams[key]));

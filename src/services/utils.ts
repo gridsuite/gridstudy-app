@@ -35,7 +35,7 @@ const handleError = (response: Response) => {
         const errorName = 'HttpResponseError : ';
         let error: ErrorType;
         const errorJson = parseError(text);
-        if (errorJson && errorJson.status && errorJson.error && errorJson.message) {
+        if (errorJson?.status && errorJson.error && errorJson.message) {
             error = new Error(
                 errorName + errorJson.status + ' ' + errorJson.error + ', message : ' + errorJson.message
             );
@@ -54,7 +54,7 @@ const prepareRequest = (init: any, token: string | undefined) => {
     }
     const initCopy = Object.assign({}, init);
     initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token ? token : getUserToken();
+    const tokenCopy = token || getUserToken();
     initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
     return initCopy;
 };
@@ -130,7 +130,7 @@ export const fetchDefaultParametersValues = () => {
         console.info('fecthing default parameters values from apps-metadata file');
         const studyMetadata = res.find((metadata) => metadata.name === 'Study');
         if (!studyMetadata) {
-            return Promise.reject('Study entry could not be found in metadatas');
+            return Promise.reject(new Error('Study entry could not be found in metadatas'));
         }
 
         //FIXME: Metadata doesn't contain defaultParametersValues. We need to change it to StudyMetadata.
