@@ -18,17 +18,17 @@ import { EQUIPMENT_TYPES } from '../../utils/equipment-types';
 import { SpreadsheetConfig } from '../../../types/custom-columns.types';
 
 export type CustomColumnsSaveProps = {
-    indexTab: number;
+    tabIndex: number;
 };
 
-export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSaveProps>) {
+export default function CustomColumnsSave({ tabIndex }: Readonly<CustomColumnsSaveProps>) {
     const { snackInfo, snackError } = useSnackMessage();
     const intl = useIntl();
 
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[indexTab]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
     const allReorderedTableDefinitionIndexes = useSelector(
         (state: AppState) => state.allReorderedTableDefinitionIndexes
@@ -36,25 +36,25 @@ export default function CustomColumnsSave({ indexTab }: Readonly<CustomColumnsSa
     const dialogOpen = useStateBoolean(false);
 
     const currentType = useMemo(() => {
-        const equipment = tablesDefinitionIndexes.get(indexTab);
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? equipment.type : EQUIPMENT_TYPES.SUBSTATION;
-    }, [indexTab, tablesDefinitionIndexes]);
+    }, [tabIndex, tablesDefinitionIndexes]);
 
     const customColumns = useMemo(() => {
         return customColumnsDefinitions.map(({ name, formula }) => ({ name, formula }));
     }, [customColumnsDefinitions]);
 
     const staticColumnIdToField = useMemo(() => {
-        const equipment = tablesDefinitionIndexes.get(indexTab);
+        const equipment = tablesDefinitionIndexes.get(tabIndex);
         return equipment ? new Map<string, string>(equipment.columns.map((c) => [c.id, c.field ?? ''])) : null;
-    }, [indexTab, tablesDefinitionIndexes]);
+    }, [tabIndex, tablesDefinitionIndexes]);
 
     const reorderedStaticColumnIds = useMemo(() => {
-        const allReorderedColumns = allReorderedTableDefinitionIndexes[indexTab];
+        const allReorderedColumns = allReorderedTableDefinitionIndexes[tabIndex];
         return allReorderedColumns
             ? JSON.parse(allReorderedColumns)
-            : tablesDefinitionIndexes.get(indexTab)?.columns.map((item) => item.id);
-    }, [allReorderedTableDefinitionIndexes, indexTab, tablesDefinitionIndexes]);
+            : tablesDefinitionIndexes.get(tabIndex)?.columns.map((item) => item.id);
+    }, [allReorderedTableDefinitionIndexes, tabIndex, tablesDefinitionIndexes]);
 
     const staticColumnFormulas = useMemo(() => {
         return reorderedStaticColumnIds && staticColumnIdToField

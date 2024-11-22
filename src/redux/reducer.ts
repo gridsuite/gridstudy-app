@@ -58,8 +58,10 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
-    CUSTOM_COLUMNS_DEFINITIONS,
-    CustomColumnsDefinitionsAction,
+    UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    REMOVE_CUSTOM_COLUMNS_DEFINITION,
+    UpdateCustomColumnsDefinitionsAction,
+    RemoveCustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -1695,8 +1697,20 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
-    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+    builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
+        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
+            action.table
+        ].columns.some((column) => column.id === action.definition.id)
+            ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
+                  column.id === action.definition.id ? action.definition : column
+              )
+            : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
+    });
+
+    builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
+        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
+            action.table
+        ].columns.filter((column) => column.id !== action.definitionId);
     });
 });
 

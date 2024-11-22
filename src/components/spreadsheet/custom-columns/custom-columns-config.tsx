@@ -14,14 +14,14 @@ import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
 
 export type CustomColumnsConfigProps = {
-    indexTab: number;
+    tabIndex: number;
 };
 
-export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
+export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumnsConfigProps>) {
     const dialogOpen = useStateBoolean(false);
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[indexTab]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
 
     return (
@@ -43,7 +43,7 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
             </IconButton>
 
             <CustomColumnDialog
-                indexTab={indexTab}
+                tabIndex={tabIndex}
                 open={dialogOpen}
                 customColumnsDefinitions={customColumnsDefinitions}
             />

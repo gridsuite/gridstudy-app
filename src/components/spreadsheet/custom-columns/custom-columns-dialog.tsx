@@ -7,34 +7,54 @@
 
 import { useCallback, useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, Grid, SxProps, Theme } from '@mui/material';
-import { CancelButton, CustomFormProvider, SubmitButton, UseStateBooleanReturn } from '@gridsuite/commons-ui';
+import {
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Grid,
+    SxProps,
+    Theme,
+    Typography,
+} from '@mui/material';
+import {
+    CancelButton,
+    CustomFormProvider,
+    ExpandingTextField,
+    SubmitButton,
+    TextInput,
+    UseStateBooleanReturn,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import {
+    COLUMN_NAME,
     CustomColumnForm,
     customColumnFormSchema,
+    FORMULA,
     initialCustomColumnForm,
-    TAB_CUSTOM_COLUMN,
 } from './custom-columns-form';
 
 import { yupResolver } from '@hookform/resolvers/yup';
-import CustomColumnTable from './custom-columns-table';
-import { setCustomColumDefinitions } from 'redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { AppState } from 'redux/reducer';
+import { filledTextField } from '../constants';
+import { setUpdateCustomColumDefinitions } from 'redux/actions';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
-    indexTab: number;
-    customColumnsDefinitions: ColumnWithFormula[];
+    tabIndex: number;
+    customColumnsDefinition?: ColumnWithFormula;
+    customColumnsDefinitions?: ColumnWithFormula[];
+    isCreate?: boolean;
 };
 
 const styles = {
     dialogContent: {
-        width: '50%',
-        height: '60%',
+        width: '40%',
+        height: '50%',
         maxWidth: 'none',
         margin: 'auto',
     },
@@ -43,13 +63,17 @@ const styles = {
 
 export default function CustomColumnDialog({
     open,
-    indexTab,
+    tabIndex,
+    customColumnsDefinition,
     customColumnsDefinitions,
+    isCreate = true,
 }: Readonly<CustomColumnDialogProps>) {
     const formMethods = useForm({
         defaultValues: initialCustomColumnForm,
         resolver: yupResolver(customColumnFormSchema),
     });
+
+    const { setError } = formMethods;
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
@@ -58,25 +82,56 @@ export default function CustomColumnDialog({
 
     const tablesNames = useSelector((state: AppState) => state.tables.names);
 
+    const columnNameField = (
+        <TextInput
+            name={COLUMN_NAME}
+            label={'spreadsheet/custom_column/column_name'}
+            formProps={{ autoFocus: true, ...filledTextField }}
+        />
+    );
+
+    const formulaField = (
+        <ExpandingTextField
+            name={FORMULA}
+            label="spreadsheet/custom_column/column_content"
+            minRows={3}
+            rows={3}
+            sx={{ flexGrow: 1 }}
+        />
+    );
+
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
-            dispatch(setCustomColumDefinitions(tablesNames[indexTab], newParams[TAB_CUSTOM_COLUMN]));
+            if (customColumnsDefinitions?.find((column) => column.name === newParams.name)) {
+                setError(COLUMN_NAME, {
+                    type: 'validate',
+                    message: 'spreadsheet/custom_column/column_name_already_exist',
+                });
+                return;
+            }
+            dispatch(
+                setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
+                    id: customColumnsDefinition?.id || crypto.randomUUID(),
+                    name: newParams.name,
+                    formula: newParams.formula,
+                })
+            );
             reset(initialCustomColumnForm);
             open.setFalse();
         },
-
-        [dispatch, indexTab, open, reset, tablesNames]
+        [customColumnsDefinitions, dispatch, tablesNames, tabIndex, customColumnsDefinition?.id, reset, open, setError]
     );
 
     useEffect(() => {
-        if (open.value && customColumnsDefinitions.length !== 0) {
+        if (open.value && customColumnsDefinition) {
             reset({
-                [TAB_CUSTOM_COLUMN]: customColumnsDefinitions,
+                [COLUMN_NAME]: customColumnsDefinition.name,
+                [FORMULA]: customColumnsDefinition.formula,
             });
         } else {
             reset(initialCustomColumnForm);
         }
-    }, [customColumnsDefinitions, indexTab, open.value, reset]);
+    }, [customColumnsDefinition, tabIndex, open.value, reset]);
 
     return (
         <CustomFormProvider validationSchema={customColumnFormSchema} {...formMethods}>
@@ -88,10 +143,24 @@ export default function CustomColumnDialog({
                 PaperProps={{ sx: styles.dialogContent }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({ id: 'spreadsheet/custom_column/add_columns' })}
+                    {intl.formatMessage({
+                        id: isCreate
+                            ? 'spreadsheet/custom_column/add_columns'
+                            : 'spreadsheet/custom_column/edit_columns',
+                    })}
                 </DialogTitle>
                 <DialogContent dividers>
-                    <CustomColumnTable />
+                    <Grid container spacing={2} direction="column" alignItems="center">
+                        <Typography align={'justify'} sx={{ width: '95%', marginTop: '20px', marginBottom: '20px' }}>
+                            {intl.formatMessage({ id: 'spreadsheet/custom_column/column_content_description' })}
+                        </Typography>
+                        <Grid item sx={{ width: '70%' }}>
+                            {columnNameField}
+                        </Grid>
+                        <Grid item sx={{ width: '70%' }}>
+                            {formulaField}
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
                     <Grid container spacing={0.5}>
