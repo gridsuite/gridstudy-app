@@ -341,18 +341,10 @@ const VoltageInitResult = ({ result, status }) => {
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
                         <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'ReactiveSlacks',
-                                })}
-                            />
+                            <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
                             <Tab label={intl.formatMessage({ id: 'Indicators' })} />
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'BusVoltages',
-                                })}
-                            />
-                            <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
+                            <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
+                            <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
                         </Tabs>
                     </Box>
 
