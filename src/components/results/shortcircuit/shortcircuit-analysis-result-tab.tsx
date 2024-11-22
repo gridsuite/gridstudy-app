@@ -38,6 +38,9 @@ function getDisplayedColumns(params: any) {
     return params.api.columnModel.columnDefs.filter((c: any) => !c.hide).map((c: any) => c.headerName);
 }
 
+const RESULTS_TAB_INDEX = 0;
+const LOGS_TAB_INDEX = 1;
+
 export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalysisResultTabProps> = ({
     studyUuid,
     nodeUuid,
@@ -76,9 +79,6 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
         },
         [setTabIndex, setRedirectionLock]
     );
-
-    const RESULTS_TAB_INDEX = 0;
-    const LOGS_TAB_INDEX = 1;
 
     const handleSubTabChange = useCallback(
         (event: React.SyntheticEvent, newIndex: number) => {

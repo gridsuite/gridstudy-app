@@ -30,6 +30,10 @@ import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
 import { useParameterState } from '../../dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
 import ComputingType from '../../computing-status/computing-type';
+import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
+import { LOADFLOW_RESULT_STORE_FILTER, LOADFLOW_RESULT_STORE_SORT } from '../../../utils/store-sort-filter-fields';
+import { mappingTabs } from '../loadflow/load-flow-result-utils';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 
 const styles = {
     container: {
@@ -81,6 +85,23 @@ const styles = {
     },
 };
 
+const defaultColDef = {
+    filter: true,
+    sortable: true,
+    resizable: false,
+    lockPinned: true,
+    wrapHeaderText: true,
+    lockVisible: true,
+};
+
+function calculateTotal(reactiveSlacks, isPositive) {
+    return (
+        reactiveSlacks
+            ?.filter((reactiveSlack) => (isPositive ? reactiveSlack.slack > 0 : reactiveSlack.slack < 0))
+            .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0) ?? 0
+    );
+}
+
 const VoltageInitResult = ({ result, status }) => {
     const [tabIndex, setTabIndex] = useState(0);
     const studyUuid = decodeURIComponent(useParams().studyUuid);
@@ -97,33 +118,25 @@ const VoltageInitResult = ({ result, status }) => {
 
     const intl = useIntl();
 
+    // @ts-expect-error TODO: split component between results and logs to explictly limit tabIndex possible values
+    const { onSortChanged, sortConfig } = useAgGridSort(LOADFLOW_RESULT_STORE_SORT, mappingTabs(tabIndex));
+    // @ts-expect-error TODO: split component between results and logs to explictly limit tabIndex possible values
+    const { updateFilter, filterSelector } = useAggridRowFilter(LOADFLOW_RESULT_STORE_FILTER, mappingTabs(tabIndex));
+
     const openLoader = useOpenLoaderShortWait({
         isLoading: status === RunningStatus.RUNNING,
         delay: RESULTS_LOADING_DELAY,
     });
 
-    const closePreviewModificationsDialog = () => {
-        setPreviewModificationsDialogOpen(false);
-    };
+    const closePreviewModificationsDialog = useCallback(() => setPreviewModificationsDialogOpen(false), []);
     const gridRef = useRef();
-    const defaultColDef = useMemo(
-        () => ({
-            filter: true,
-            sortable: true,
-            resizable: false,
-            lockPinned: true,
-            wrapHeaderText: true,
-            lockVisible: true,
-        }),
-        []
-    );
     const onRowDataUpdated = useCallback((params) => {
         if (params.api) {
             params.api.sizeColumnsToFit();
         }
     }, []);
 
-    const applyModifications = () => {
+    const applyModifications = useCallback(() => {
         setApplyingModifications(true);
         setDisableApplyModifications(true);
         cloneVoltageInitModifications(studyUuid, currentNode.id)
@@ -137,7 +150,7 @@ const VoltageInitResult = ({ result, status }) => {
             .finally(() => {
                 setApplyingModifications(false);
             });
-    };
+    }, [currentNode.id, snackError, studyUuid]);
 
     const previewModifications = useCallback(() => {
         setApplyingModifications(true);
@@ -168,228 +181,189 @@ const VoltageInitResult = ({ result, status }) => {
         });
     }, [studyUuid]);
 
-    const renderPreviewModificationsDialog = () => {
-        return (
-            <VoltageInitModificationDialog
-                currentNode={currentNode.id}
-                studyUuid={studyUuid}
-                editData={voltageInitModification}
-                onClose={() => closePreviewModificationsDialog(false)}
-                onPreviewModeSubmit={applyModifications}
-                editDataFetchStatus={FetchStatus.IDLE}
-                dialogProps={undefined}
-                disabledSave={autoApplyModifications}
-            />
-        );
-    };
     const indicatorsColumnDefs = useMemo(() => {
         return [
             {
                 field: 'key',
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
             {
                 field: 'value',
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
         ];
-    }, []);
-
-    function renderHeaderReactiveSlacks(result) {
-        const calculateTotal = (reactiveSlacks, isPositive) => {
-            return reactiveSlacks
-                ? reactiveSlacks
-                      .filter((reactiveSlack) => (isPositive ? reactiveSlack.slack > 0 : reactiveSlack.slack < 0))
-                      .reduce((sum, reactiveSlack) => sum + reactiveSlack.slack, 0)
-                : 0;
-        };
-
-        const totalInjection = calculateTotal(result.reactiveSlacks, false);
-        const totalConsumption = calculateTotal(result.reactiveSlacks, true);
-        return (
-            <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
-                <Typography sx={styles.typography}>
-                    <FormattedMessage id="TotalInjection" />
-                </Typography>
-                <Typography sx={styles.totalTypography}>{totalInjection.toFixed(2)} MVar</Typography>
-
-                <Typography sx={styles.secondTypography}>
-                    <FormattedMessage id="TotalConsumption" />
-                </Typography>
-                <Typography sx={styles.totalTypography}>{totalConsumption.toFixed(2)} MVar</Typography>
-
-                {result.reactiveSlacksOverThreshold && (
-                    <Typography sx={styles.reactiveSlacksOverThresholdTypography}>
-                        <FormattedMessage
-                            id={'REACTIVE_SLACKS_OVER_THRESHOLD'}
-                            values={{
-                                threshold: result.reactiveSlacksThreshold,
-                            }}
-                        />
-                    </Typography>
-                )}
-            </Stack>
-        );
-    }
-
-    function renderIndicatorsTable(indicators) {
-        const rows = indicators
-            ? Object.entries(indicators).map((i) => {
-                  return { key: i[0], value: i[1] };
-              })
-            : null;
-        const color = status === 'SUCCEED' ? styles.succeed : styles.fail;
-        const statusToShow = status === 'SUCCEED' ? 'OK' : 'KO';
-        return (
-            <>
-                <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
-                    <Typography style={{ fontWeight: 'bold' }}>
-                        <FormattedMessage id="VoltageInitStatus" />
-                        <span style={{ marginLeft: '4px' }}>{statusToShow}</span>
-                    </Typography>
-                    <Lens fontSize={'medium'} sx={color} />
-                </Stack>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={indicatorsColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'Indicators' })}
-                    rows={rows}
-                    onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
-                />
-            </>
-        );
-    }
+    }, [filterSelector, onSortChanged, sortConfig, updateFilter]);
 
     const reactiveSlacksColumnDefs = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
             {
                 headerName: intl.formatMessage({ id: 'Slack' }),
                 field: 'slack',
                 numeric: true,
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
         ];
-    }, [intl]);
-
-    function renderReactiveSlacksTable(result) {
-        return (
-            <>
-                {renderHeaderReactiveSlacks(result)}
-
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={reactiveSlacksColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
-                    rows={result.reactiveSlacks}
-                    onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
-                />
-            </>
-        );
-    }
+    }, [filterSelector, intl, onSortChanged, sortConfig, updateFilter]);
 
     const busVoltagesColumnDefs = useMemo(() => {
         return [
             {
                 headerName: intl.formatMessage({ id: 'BusId' }),
                 field: 'busId',
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
             {
                 headerName: intl.formatMessage({ id: 'BusVoltage' }),
                 field: 'v',
                 numeric: true,
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
             {
                 headerName: intl.formatMessage({ id: 'BusAngle' }),
                 field: 'angle',
                 numeric: true,
+                sortProps: { sortConfig, onSortChanged },
+                filterProps: { updateFilter, filterSelector },
             },
         ];
-    }, [intl]);
+    }, [filterSelector, intl, onSortChanged, sortConfig, updateFilter]);
 
-    function renderBusVoltagesTable(busVoltages) {
-        return (
-            <>
-                <RenderTableAndExportCsv
-                    gridRef={gridRef}
-                    columns={busVoltagesColumnDefs}
-                    defaultColDef={defaultColDef}
-                    tableName={intl.formatMessage({ id: 'BusVoltages' })}
-                    rows={busVoltages}
-                    onRowDataUpdated={onRowDataUpdated}
-                    skipColumnHeaders={true}
-                />
-            </>
-        );
-    }
+    const csvIndicators = useMemo(
+        () => (result.indicators ? Object.entries(result.indicators).map(([key, value]) => ({ key, value })) : null),
+        [result.indicators]
+    );
 
-    const renderReportViewer = () => {
-        return (
-            <>
-                <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
-                {(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && (
-                    <ComputationReportViewer reportType={ComputingType.VOLTAGE_INITIALIZATION} />
-                )}
-            </>
-        );
-    };
-
-    function renderTabs() {
-        return (
-            <>
-                <Box sx={styles.container}>
-                    <Box sx={styles.tabs}>
-                        <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'ReactiveSlacks',
-                                })}
-                            />
-                            <Tab label={intl.formatMessage({ id: 'Indicators' })} />
-                            {enableDeveloperMode && (
-                                <Tab
-                                    label={intl.formatMessage({
-                                        id: 'BusVoltages',
-                                    })}
-                                />
-                            )}
-                            <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
-                        </Tabs>
-                    </Box>
-
-                    <Box sx={styles.buttonApplyModifications}>
-                        <Button
-                            variant="outlined"
-                            onClick={previewModifications}
-                            disabled={!result || !result.modificationsGroupUuid || disabledApplyModifications}
-                        >
-                            <FormattedMessage id="previewModifications" />
-                        </Button>
-                        {previewModificationsDialogOpen && renderPreviewModificationsDialog()}
-                        {result && !result.modificationsGroupUuid && status === RunningStatus.SUCCEED && (
-                            <Box sx={{ paddingLeft: 2 }}>
-                                <FormattedMessage id="modificationsAlreadyApplied" />
-                            </Box>
-                        )}
-                        {applyingModifications && <CircularProgress sx={{ paddingLeft: 2 }} size={'1em'} />}
-                    </Box>
+    return (
+        <>
+            <Box sx={styles.container}>
+                <Box sx={styles.tabs}>
+                    <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
+                        <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
+                        <Tab label={intl.formatMessage({ id: 'Indicators' })} />
+                        {enableDeveloperMode && <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />}
+                        <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
+                    </Tabs>
                 </Box>
-                <div style={{ flexGrow: 1 }}>
-                    {result && tabIndex === 0 && renderReactiveSlacksTable(result)}
-                    {result && tabIndex === 1 && renderIndicatorsTable(result.indicators)}
-                    {result && tabIndex === 2 && enableDeveloperMode && renderBusVoltagesTable(result.busVoltages)}
-                    {((tabIndex === 3 && enableDeveloperMode) || (tabIndex === 2 && !enableDeveloperMode)) &&
-                        renderReportViewer()}
-                </div>
-            </>
-        );
-    }
+                <Box sx={styles.buttonApplyModifications}>
+                    <Button
+                        variant="outlined"
+                        onClick={previewModifications}
+                        disabled={!result || !result.modificationsGroupUuid || disabledApplyModifications}
+                    >
+                        <FormattedMessage id="previewModifications" />
+                    </Button>
+                    {previewModificationsDialogOpen && (
+                        <VoltageInitModificationDialog
+                            currentNode={currentNode.id}
+                            studyUuid={studyUuid}
+                            editData={voltageInitModification}
+                            onClose={closePreviewModificationsDialog}
+                            onPreviewModeSubmit={applyModifications}
+                            editDataFetchStatus={FetchStatus.IDLE}
+                            dialogProps={undefined}
+                            disabledSave={autoApplyModifications}
+                        />
+                    )}
+                    {result && !result.modificationsGroupUuid && status === RunningStatus.SUCCEED && (
+                        <Box sx={{ paddingLeft: 2 }}>
+                            <FormattedMessage id="modificationsAlreadyApplied" />
+                        </Box>
+                    )}
+                    {applyingModifications && <CircularProgress sx={{ paddingLeft: 2 }} size={'1em'} />}
+                </Box>
+            </Box>
+            <div style={{ flexGrow: 1 }}>
+                {result && tabIndex === 0 && (
+                    <>
+                        <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
+                            <Typography sx={styles.typography}>
+                                <FormattedMessage id="TotalInjection" />
+                            </Typography>
+                            <Typography sx={styles.totalTypography}>
+                                {calculateTotal(result.reactiveSlacks, false).toFixed(2)} MVar
+                            </Typography>
 
-    return renderTabs();
+                            <Typography sx={styles.secondTypography}>
+                                <FormattedMessage id="TotalConsumption" />
+                            </Typography>
+                            <Typography sx={styles.totalTypography}>
+                                {calculateTotal(result.reactiveSlacks, true).toFixed(2)} MVar
+                            </Typography>
+
+                            {result.reactiveSlacksOverThreshold && (
+                                <Typography sx={styles.reactiveSlacksOverThresholdTypography}>
+                                    <FormattedMessage
+                                        id={'REACTIVE_SLACKS_OVER_THRESHOLD'}
+                                        values={{ threshold: result.reactiveSlacksThreshold }}
+                                    />
+                                </Typography>
+                            )}
+                        </Stack>
+
+                        <RenderTableAndExportCsv
+                            gridRef={gridRef}
+                            columns={reactiveSlacksColumnDefs}
+                            defaultColDef={defaultColDef}
+                            tableName={intl.formatMessage({ id: 'ReactiveSlacks' })}
+                            rows={result.reactiveSlacks}
+                            onRowDataUpdated={onRowDataUpdated}
+                            skipColumnHeaders={true}
+                        />
+                    </>
+                )}
+                {result && tabIndex === 1 && (
+                    <>
+                        <Stack direction={'row'} gap={1} marginBottom={2} marginTop={1.5} marginLeft={2}>
+                            <Typography style={{ fontWeight: 'bold' }}>
+                                <FormattedMessage id="VoltageInitStatus" />
+                                <span style={{ marginLeft: '4px' }}>{status === 'SUCCEED' ? 'OK' : 'KO'}</span>
+                            </Typography>
+                            <Lens fontSize={'medium'} sx={status === 'SUCCEED' ? styles.succeed : styles.fail} />
+                        </Stack>
+                        <RenderTableAndExportCsv
+                            gridRef={gridRef}
+                            columns={indicatorsColumnDefs}
+                            defaultColDef={defaultColDef}
+                            tableName={intl.formatMessage({ id: 'Indicators' })}
+                            rows={csvIndicators}
+                            onRowDataUpdated={onRowDataUpdated}
+                            skipColumnHeaders={true}
+                        />
+                    </>
+                )}
+                {result && tabIndex === 2 && enableDeveloperMode && (
+                    <RenderTableAndExportCsv
+                        gridRef={gridRef}
+                        columns={busVoltagesColumnDefs}
+                        defaultColDef={defaultColDef}
+                        tableName={intl.formatMessage({ id: 'BusVoltages' })}
+                        rows={result.busVoltages}
+                        onRowDataUpdated={onRowDataUpdated}
+                        skipColumnHeaders={true}
+                    />
+                )}
+                {((tabIndex === 3 && enableDeveloperMode) || (tabIndex === 2 && !enableDeveloperMode)) && (
+                    <>
+                        <Box sx={{ height: '4px' }}>{openLoader && <LinearProgress />}</Box>
+                        {(status === RunningStatus.SUCCEED || status === RunningStatus.FAILED) && (
+                            <ComputationReportViewer reportType={ComputingType.VOLTAGE_INITIALIZATION} />
+                        )}
+                    </>
+                )}
+            </div>
+        </>
+    );
 };
 
 VoltageInitResult.defaultProps = {

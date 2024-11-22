@@ -40,12 +40,11 @@ const styles = {
 };
 
 export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = ['nonEvacuatedEnergyResult'];
+const RESULTS_TAB_INDEX = 0;
+const LOGS_TAB_INDEX = 1;
 
 export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({ studyUuid, nodeUuid }) => {
     const [tabIndex, setTabIndex] = useState(0);
-
-    const RESULTS_TAB_INDEX = 0;
-    const LOGS_TAB_INDEX = 1;
 
     const nonEvacuatedEnergyStatus = useSelector(
         (state: AppState) => state.computingStatus[ComputingType.NON_EVACUATED_ENERGY_ANALYSIS]
