@@ -6,7 +6,7 @@
  */
 
 import { useState, MouseEvent, useCallback, useMemo } from 'react';
-import { IconButton, Menu, MenuItem } from '@mui/material';
+import { Button, Menu, MenuItem } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import SaveIcon from '@mui/icons-material/Save';
 import { useSelector } from 'react-redux';
@@ -16,6 +16,7 @@ import CustomSpreadsheetSaveDialog from './custom-spreadsheet/custom-spreadsheet
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import { useCsvExport } from './csv-export/use-csv-export';
 import { CsvExportProps } from './csv-export/csv-export.type';
+import { spreadsheetStyles } from './utils/style';
 
 enum SpreadsheetSaveOptionId {
     SAVE_MODEL = 'SAVE_MODEL',
@@ -96,12 +97,10 @@ export default function SpreadsheetSave({
 
     return (
         <>
-            <span>
-                <FormattedMessage id="spreadsheet/save/button" />
-            </span>
-            <IconButton aria-label="dialog" onClick={handleClick}>
+            <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={handleClick}>
                 <SaveIcon />
-            </IconButton>
+                <FormattedMessage id="spreadsheet/save/button" />
+            </Button>
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>

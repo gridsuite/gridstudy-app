@@ -137,6 +137,9 @@ const styles = {
     selectColumns: (theme: Theme) => ({
         marginLeft: theme.spacing(4),
     }),
+    save: (theme: Theme) => ({
+        marginRight: theme.spacing(1),
+    }),
 };
 
 interface TableWrapperProps {
@@ -1274,7 +1277,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             <CustomColumnsConfig indexTab={tabIndex} />
                         </Grid>
                     )}
-                    <Grid item>
+                    <Grid item style={{ flexGrow: 1 }}></Grid>
+                    <Grid item sx={styles.save}>
                         <SpreadsheetSave
                             indexTab={tabIndex}
                             gridRef={gridRef}
