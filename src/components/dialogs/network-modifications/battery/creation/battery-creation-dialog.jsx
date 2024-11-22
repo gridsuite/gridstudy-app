@@ -54,7 +54,7 @@ import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modi
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 import PropTypes from 'prop-types';
 import { createBattery } from '../../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../../services/utils';
+import { FetchStatus } from '../../../../../services/utils.type';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,

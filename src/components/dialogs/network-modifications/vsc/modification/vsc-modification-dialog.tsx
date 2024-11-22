@@ -37,7 +37,7 @@ import {
     REACTIVE_CAPABILITY_CURVE_TABLE,
     REACTIVE_LIMITS,
 } from '../../../../utils/field-constants';
-import { FetchStatus } from '../../../../../services/utils';
+import { FetchStatus } from '../../../../../services/utils.type';
 import {
     getVscHvdcLineModificationPaneSchema,
     getVscHvdcLineModificationTabFormData,

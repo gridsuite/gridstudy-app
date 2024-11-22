@@ -19,7 +19,7 @@ import { getSchema } from './util/event-yup';
 import { eventDefinitions, getEventType } from './model/event.model';
 import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../../../services/dynamic-simulation';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../services/utils.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
 export type DynamicSimulationEventDialogProps = {

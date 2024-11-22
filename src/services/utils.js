@@ -7,13 +7,6 @@
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { getUserToken } from '../redux/user-store';
 
-export const FetchStatus = {
-    SUCCEED: 'SUCCEED',
-    FAILED: 'FAILED',
-    IDLE: 'IDLE',
-    RUNNING: 'RUNNING',
-};
-
 export const getWsBase = () => document.baseURI.replace(/^http:\/\//, 'ws://').replace(/^https:\/\//, 'wss://');
 
 export const getRequestParamFromList = (params, paramName) => {

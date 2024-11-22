@@ -79,7 +79,7 @@ import {
     fetchNetworkModifications,
     stashModifications,
 } from '../../../services/study/network-modifications';
-import { FetchStatus } from '../../../services/utils';
+import { FetchStatus } from '../../../services/utils.type';
 import ElementCreationDialog, { IElementCreationDialog } from '../../dialogs/element-creation-dialog';
 import {
     MenuDefinition,

@@ -18,7 +18,7 @@ import PropTypes from 'prop-types';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { deleteEquipment } from '../../../../services/study/network-modifications';
-import { FetchStatus } from '../../../../services/utils';
+import { FetchStatus } from '../../../../services/utils.type';
 
 const formSchema = yup
     .object()
