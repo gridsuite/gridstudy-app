@@ -19,8 +19,20 @@ interface VoltageLevelSingleLineDiagram {
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
-    componentLibrary: unknown | null;
+    componentLibrary: unknown;
     sldDisplayMode: string;
+    language: GsLang;
+}
+
+interface SubstationSingleLineDiagram {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    substationId: UUID;
+    useName: boolean;
+    centerLabel: boolean;
+    diagonalLabel: boolean;
+    substationLayout: SubstationLayout;
+    componentLibrary: unknown;
     language: GsLang;
 }
 
@@ -104,17 +116,17 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(
 }
 
 /* substations */
-export function getSubstationSingleLineDiagram(
-    studyUuid: UUID,
-    currentNodeUuid: UUID,
-    substationId: UUID,
-    useName: boolean,
-    centerLabel: boolean,
-    diagonalLabel: boolean,
-    substationLayout: SubstationLayout,
-    componentLibrary: unknown | null,
-    language: GsLang
-) {
+export function getSubstationSingleLineDiagram({
+    studyUuid,
+    currentNodeUuid,
+    substationId,
+    useName,
+    centerLabel,
+    diagonalLabel,
+    substationLayout,
+    componentLibrary,
+    language,
+}: SubstationSingleLineDiagram) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
@@ -182,7 +194,7 @@ export function fetchNetworkElementsInfos(
 }
 
 export function fetchNetworkElementInfos(
-    studyUuid: UUID | string | undefined | null,
+    studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
     elementType: EquipmentType | EQUIPMENT_TYPES,
     infoType: string,

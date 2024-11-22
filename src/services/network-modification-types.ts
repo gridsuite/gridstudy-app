@@ -584,7 +584,7 @@ export interface AttachLineInfo {
     percent: number;
     attachmentPointId: string;
     attachmentPointName: string | null;
-    mayNewVoltageLevelInfos: any | null;
+    mayNewVoltageLevelInfos: any;
     existingVoltageLevelId: string;
     bbsOrBusId: string;
     attachmentLine: AttachmentLine;
@@ -662,4 +662,16 @@ export interface VSCModificationInfo {
     properties?: Property[];
     isUpdate: boolean;
     modificationUuid: UUID;
+}
+
+export interface GenerationDispatchInfo {
+    studyUuid: UUID;
+    nodeUuid: UUID;
+    modificationUuid?: UUID;
+    lossCoefficient: number;
+    defaultOutageRate: number;
+    generatorsWithoutOutage: any;
+    generatorsWithFixedActivePower: any;
+    generatorsFrequencyReserve: any;
+    substationsGeneratorsOrdering: any;
 }

@@ -5,14 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { MODIFICATION_TYPES, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import { UUID } from 'crypto';
-import { EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import {
     Assignment,
     AttachLineInfo,
@@ -20,6 +19,7 @@ import {
     BatteryModificationInfo,
     DeleteAttachingLineInfo,
     DivideLineInfo,
+    GenerationDispatchInfo,
     GeneratorCreationInfo,
     GeneratorModificationInfo,
     LineCreationInfo,
@@ -42,7 +42,7 @@ import {
 } from '../network-modification-types';
 import { Filter } from '../../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
 
-function getNetworkModificationUrl(studyUuid: UUID | string | null | undefined, nodeUuid: UUID | string | undefined) {
+function getNetworkModificationUrl(studyUuid: UUID | string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
 
@@ -212,17 +212,17 @@ export function switchOnEquipment(
     return changeOperatingStatus(studyUuid, nodeUuid, branch, OPERATING_STATUS_ACTION.SWITCH_ON);
 }
 
-export function generationDispatch(
-    studyUuid: UUID,
-    nodeUuid: UUID,
-    modificationUuid: UUID | undefined,
-    lossCoefficient: number,
-    defaultOutageRate: number,
-    generatorsWithoutOutage: any,
-    generatorsWithFixedActivePower: any,
-    generatorsFrequencyReserve: any,
-    substationsGeneratorsOrdering: any
-) {
+export function generationDispatch({
+    studyUuid,
+    nodeUuid,
+    modificationUuid,
+    lossCoefficient,
+    defaultOutageRate,
+    generatorsWithoutOutage,
+    generatorsWithFixedActivePower,
+    generatorsFrequencyReserve,
+    substationsGeneratorsOrdering,
+}: GenerationDispatchInfo) {
     const body = JSON.stringify({
         type: MODIFICATION_TYPES.GENERATION_DISPATCH.type,
         lossCoefficient: lossCoefficient,
@@ -278,7 +278,9 @@ export function generatorScaling(
         },
         body,
     }).then((response) =>
-        response.ok ? response.text() : response.text().then((text: string) => Promise.reject(text))
+        response.ok
+            ? response.text()
+            : response.text().then((text: string) => Promise.reject(new Error('Error generator scaling : ' + text)))
     );
 }
 
@@ -1587,7 +1589,9 @@ export function loadScaling(
         },
         body,
     }).then((response) =>
-        response.ok ? response.text() : response.text().then((text: string) => Promise.reject(text))
+        response.ok
+            ? response.text()
+            : response.text().then((text: string) => Promise.reject(new Error('Error load scaling: ' + text)))
     );
 }
 

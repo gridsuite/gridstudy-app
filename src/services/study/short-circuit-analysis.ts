@@ -20,7 +20,7 @@ const PREFIX_SHORT_CIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '
 
 interface ShortCircuitAnalysisResult {
     studyUuid: UUID | null;
-    currentNodeUuid: UUID | undefined;
+    currentNodeUuid?: UUID;
     type: ShortCircuitAnalysisType;
 }
 interface Selector {
@@ -47,7 +47,7 @@ interface ShortCircuitParameters {
         withShuntCompensators: boolean;
         withNeutralPosition: boolean;
         initialVoltageProfileMode: INITIAL_VOLTAGE;
-        voltageRanges?: VoltageRanges | undefined;
+        voltageRanges?: VoltageRanges;
     };
 }
 
