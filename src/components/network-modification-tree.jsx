@@ -17,7 +17,7 @@ import {
     useNodesState,
 } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
-import CenterGraphButton from './graph/util/center-graph-button';
+import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode, networkModificationTreeSwitchNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
@@ -31,8 +31,11 @@ import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {
     findClosestSiblingInRange,
+    getAbsolutePosition,
     getFirstAncestorIdWithSibling,
     getTreeNodesWithUpdatedPositions,
+    nodeHeight,
+    nodeWidth,
     snapGrid,
 } from './graph/layout';
 
@@ -51,7 +54,7 @@ const NetworkModificationTree = ({
 
     const [isMinimapOpen, setIsMinimapOpen] = useState(false);
 
-    const { setViewport, fitView } = useReactFlow();
+    const { setViewport, fitView, setCenter, getZoom } = useReactFlow();
 
     const nodeColor = useCallback(
         (node) => {
@@ -161,8 +164,7 @@ const NetworkModificationTree = ({
                 zoom: zoom,
             });
         }
-        window.requestAnimationFrame(() => fitView());
-    }, [isStudyDrawerOpen, fitView]);
+    }, [isStudyDrawerOpen]);
 
     const handleNodesChange = (changes) => {
         // When dragging a node, we not only drag all of its children, but also all of it's ancestors up to
@@ -243,6 +245,13 @@ const NetworkModificationTree = ({
         updateNodePositions(treeModel); // This is needed to "clean" the positions of nodes that were dragged without triggering a branch switch.
     };
 
+    const handleFocusNode = () => {
+        const currentNodeAbsolutePosition = getAbsolutePosition(nodes, currentNode);
+        const x = currentNodeAbsolutePosition.x + nodeWidth * 0.5;
+        const y = currentNodeAbsolutePosition.y + nodeHeight * 0.5;
+        setCenter(x, y, { zoom: getZoom() });
+    };
+
     return (
         <Box flexGrow={1}>
             <ReactFlow
@@ -295,7 +304,23 @@ const NetworkModificationTree = ({
                             </ControlButton>
                         </span>
                     </Tooltip>
-                    <CenterGraphButton currentNode={currentNode} />
+                    <Tooltip
+                        placement="left"
+                        title={intl.formatMessage({ id: 'CenterSelectedNode' })}
+                        arrow
+                        enterDelay={TOOLTIP_DELAY}
+                        enterNextDelay={TOOLTIP_DELAY}
+                    >
+                        <span>
+                            <ControlButton
+                                onClick={() => {
+                                    handleFocusNode();
+                                }}
+                            >
+                                <CenterFocusIcon />
+                            </ControlButton>
+                        </span>
+                    </Tooltip>
                     <Tooltip
                         placement="left"
                         title={

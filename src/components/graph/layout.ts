@@ -161,3 +161,18 @@ export function findClosestSiblingInRange(
 export function findSiblings(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
     return nodes.filter((n) => n.parentId === node.parentId && n.id !== node.id);
 }
+
+export function getAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
+    let current: CurrentTreeNode | undefined = node;
+    let absolutePosition = { x: 0, y: 0 };
+    while (current) {
+        absolutePosition.x += current.position.x;
+        absolutePosition.y += current.position.y;
+        const parentId: string | undefined = current.parentId;
+        if (!parentId) {
+            break;
+        }
+        current = nodes.find((node) => node.id === parentId);
+    }
+    return absolutePosition;
+}
