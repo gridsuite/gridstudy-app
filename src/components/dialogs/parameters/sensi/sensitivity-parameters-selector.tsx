@@ -223,12 +223,13 @@ const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSele
                                             label={<FormattedMessage id={subTab.label} />}
                                         ></Tab>
                                     ))}
-                                    <Box sx={styles.boxContent}>
-                                        {launchLoader ? renderComputingEventLoading() : renderComputingEvent()}
-                                        <FormattedMessage id="sensitivityAnalysis.separator" />
-                                        <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
-                                    </Box>
                                 </Tabs>
+                                <Box sx={styles.boxContent}>
+                                    {launchLoader ? renderComputingEventLoading() : renderComputingEvent()}
+                                    <FormattedMessage id="sensitivityAnalysis.separator" />
+                                    <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
+                                </Box>
+
                                 <TabPanel index={TAB_VALUES.SensiInjectionsSet} value={subTabValue}>
                                     <SensitivityTable
                                         arrayFormName={`${SensiInjectionsSet.name}`}

@@ -1,5 +1,4 @@
 import { UUID } from 'crypto';
-import { string } from 'yup';
 
 /**
  * Copyright (c) 2024, RTE (http://www.rte-france.com)

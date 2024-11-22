@@ -244,7 +244,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                     setLaunchLoader(false);
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisFilteredActiveParametersError',
+                        headerId: 'getSensitivityAnalysisFactorsCountError',
                     });
                 });
         },
@@ -451,7 +451,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
+                        headerId: 'updateSensitivityAnalysisParametersError',
                     });
                 });
         },

@@ -258,7 +258,7 @@ export const NonEvacuatedEnergyParameters: FunctionComponent<NonEvacuatedEnergyP
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'NonEvacuatedEnergyParametersError',
+                        headerId: 'updateNonEvacuatedEnergyParametersError',
                     });
                 });
         },
