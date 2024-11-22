@@ -25,9 +25,9 @@ import {
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 import LoadModificationForm from './load-modification-form';
@@ -47,7 +47,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -183,6 +183,7 @@ const LoadModificationDialog = ({
             modifyLoad({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 id: selectedId,
                 name: sanitizeString(load?.equipmentName),
                 loadType: load?.loadType,
@@ -194,8 +195,6 @@ const LoadModificationDialog = ({
                 connectionDirection: load[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: load[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: load[CONNECTIVITY]?.[CONNECTED],
-                isUpdate: !!editData,
-                modificationUuid: editData ? editData.uuid : undefined,
                 properties: toModificationProperties(load),
             }).catch((error) => {
                 snackError({

@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Paper from '@mui/material/Paper';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ReportViewer from './report-viewer/report-viewer';
 import PropTypes from 'prop-types';
 import WaitingLoader from './utils/waiting-loader';
@@ -15,10 +14,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
-import { Box } from '@mui/system';
+
 import { useReportFetcher } from '../hooks/use-report-fetcher';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../constants/report.constant';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
+import { Box, Paper } from '@mui/material';
 
 const styles = {
     div: {
@@ -66,6 +66,10 @@ export const ReportViewerTab = ({ visible, currentNode, disabled }) => {
                     setReport(r);
                 }
             });
+        } else {
+            // if the user unbuilds a node, the report needs to be reset.
+            // otherwise, the report will be kept in the state and useless report fetches with previous id will be made when the user rebuilds the node.
+            setReport();
         }
         // It is important to keep the notifications in the useEffect's dependencies (even if it is not
         // apparent that they are used) to trigger the update of reports when a notification happens.

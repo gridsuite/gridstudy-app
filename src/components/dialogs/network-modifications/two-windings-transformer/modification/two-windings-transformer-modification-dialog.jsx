@@ -52,10 +52,10 @@ import {
     X,
 } from 'components/utils/field-constants';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import {
     FORM_LOADING_DELAY,
     PHASE_REGULATION_MODES,
@@ -118,7 +118,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form.tsx';
+import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
 import {
     createConnectivityData,
     getCon1andCon2WithPositionValidationSchema,
@@ -485,6 +485,7 @@ const TwoWindingsTransformerModificationDialog = ({
             modifyTwoWindingsTransformer({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 twoWindingsTransformerId: selectedId,
                 twoWindingsTransformerName: toModificationOperation(sanitizeString(twt[EQUIPMENT_NAME])),
                 r: toModificationOperation(characteristics[R]),
@@ -510,8 +511,6 @@ const TwoWindingsTransformerModificationDialog = ({
                 connectionPosition2: connectivity2[CONNECTION_POSITION],
                 connected1: connectivity1[CONNECTED],
                 connected2: connectivity2[CONNECTED],
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
                 properties: toModificationProperties(twt),
             }).catch((error) => {
                 snackError({

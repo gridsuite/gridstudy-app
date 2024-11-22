@@ -12,3 +12,15 @@ export enum StudyDisplayMode {
     HYBRID = 'Hybrid',
     DRAW = 'Draw',
 }
+
+export enum CopyType {
+    NODE_COPY = 'NODE_COPY',
+    NODE_CUT = 'NODE_CUT',
+    SUBTREE_COPY = 'SUBTREE_COPY',
+    SUBTREE_CUT = 'SUBTREE_CUT',
+}
+
+export enum UpdateType {
+    NODE_CREATED = 'nodeCreated',
+    NODE_DELETED = 'nodeDeleted',
+}

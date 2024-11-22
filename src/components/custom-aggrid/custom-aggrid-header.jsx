@@ -7,7 +7,19 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
-import { Autocomplete, Badge, debounce, Grid, IconButton, MenuItem, Popover, Select, TextField } from '@mui/material';
+import ClearIcon from '@mui/icons-material/Clear';
+import {
+    Autocomplete,
+    Badge,
+    debounce,
+    Grid,
+    IconButton,
+    InputAdornment,
+    MenuItem,
+    Popover,
+    Select,
+    TextField,
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { useIntl } from 'react-intl';
 import { SortWay } from '../../hooks/use-aggrid-sort';
@@ -51,6 +63,7 @@ const CustomHeaderComponent = ({
     filterParams = {},
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
+    shouldDisplayFilterBadge,
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -85,12 +98,21 @@ const CustomHeaderComponent = ({
     const [filterAnchorElement, setFilterAnchorElement] = useState(null);
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
-    const [selectedFilterData, setSelectedFilterData] = useState(undefined);
+    const [selectedFilterData, setSelectedFilterData] = useState();
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
         !!selectedFilterData?.length || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
+
+    const handleClearFilter = () => {
+        setSelectedFilterData(undefined);
+        updateFilter(field, {
+            value: undefined,
+            type: selectedFilterComparator,
+            dataType: filterDataType,
+        });
+    };
 
     const handleShowFilter = (event) => {
         setFilterAnchorElement(event.currentTarget);
@@ -274,16 +296,24 @@ const CustomHeaderComponent = ({
                                 overflow: 'visible',
                             }}
                         >
-                            {shouldDisplayFilterIcon && (
+                            {(shouldDisplayFilterIcon || shouldDisplayFilterBadge) && (
                                 <Grid item>
                                     <IconButton size={'small'} onClick={handleShowFilter}>
-                                        <Badge
-                                            color="secondary"
-                                            variant={selectedFilterData?.length ? 'dot' : null}
-                                            invisible={!selectedFilterData}
-                                        >
+                                        {shouldDisplayFilterBadge ?? true ? (
+                                            <Badge
+                                                color="secondary"
+                                                variant={
+                                                    selectedFilterData?.length || shouldDisplayFilterBadge
+                                                        ? 'dot'
+                                                        : null
+                                                }
+                                                invisible={!selectedFilterData}
+                                            >
+                                                <FilterAlt sx={styles.iconSize} />
+                                            </Badge>
+                                        ) : (
                                             <FilterAlt sx={styles.iconSize} />
-                                        </Badge>
+                                        )}
                                     </IconButton>
                                 </Grid>
                             )}
@@ -372,6 +402,20 @@ const CustomHeaderComponent = ({
                                         type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
                                     }}
                                     sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                                    InputProps={{
+                                        endAdornment: selectedFilterData ? (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    aria-label="clear filter"
+                                                    onClick={handleClearFilter}
+                                                    edge="end"
+                                                    size="small"
+                                                >
+                                                    <ClearIcon />
+                                                </IconButton>
+                                            </InputAdornment>
+                                        ) : null,
+                                    }}
                                 />
                             )}
                         </Grid>

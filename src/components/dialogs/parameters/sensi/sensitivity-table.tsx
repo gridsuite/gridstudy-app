@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import React, { FunctionComponent, useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 import { UseFieldArrayReturn, useFormContext } from 'react-hook-form';
 import TableRowComponent from './table-row';
@@ -28,6 +28,7 @@ interface SensitivityTableProps {
     onFormChanged: (a: boolean) => void;
     onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
 }
+
 const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
     arrayFormName,
     useFieldArrayOutput,
@@ -100,31 +101,33 @@ const SensitivityTable: FunctionComponent<SensitivityTableProps> = ({
         >
             <Table stickyHeader size="small" sx={{ tableLayout: 'fixed' }}>
                 <TableHead>
-                    {columnsDefinition.map((column: IColumnsDef) => (
-                        <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                            <Box>{column.label}</Box>
+                    <TableRow>
+                        {columnsDefinition.map((column: IColumnsDef) => (
+                            <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
+                                <Box>{column.label}</Box>
+                            </TableCell>
+                        ))}
+                        <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'AddRows',
+                                })}
+                            >
+                                <span>
+                                    <IconButton disabled={disableAdd} onClick={handleAddRowsButton}>
+                                        <AddCircleIcon />
+                                    </IconButton>
+                                </span>
+                            </Tooltip>
                         </TableCell>
-                    ))}
-                    <TableCell sx={{ width: '5rem', textAlign: 'center' }}>
-                        <Tooltip
-                            title={intl.formatMessage({
-                                id: 'AddRows',
-                            })}
-                        >
-                            <span>
-                                <IconButton disabled={disableAdd} onClick={handleAddRowsButton}>
-                                    <AddCircleIcon />
-                                </IconButton>
-                            </span>
-                        </Tooltip>
-                    </TableCell>
+                    </TableRow>
                 </TableHead>
                 <TableBody>
                     {currentRows.map((row: Record<'id', string>, index: number) => (
                         <TableRowComponent
+                            key={row.id}
                             arrayFormName={arrayFormName}
                             columnsDefinition={columnsDefinition}
-                            row={row}
                             index={index}
                             handleDeleteButton={handleDeleteButton}
                             disableDelete={disableDelete}

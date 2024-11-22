@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import VoltageLevelModificationForm from './voltage-level-modification-form';
 import {
     ADDITIONAL_PROPERTIES,
@@ -170,6 +170,7 @@ const VoltageLevelModificationDialog = ({
             modifyVoltageLevel({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 voltageLevelId: selectedId,
                 voltageLevelName: voltageLevel[EQUIPMENT_NAME],
                 nominalV: voltageLevel[NOMINAL_V],
@@ -177,8 +178,6 @@ const VoltageLevelModificationDialog = ({
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
                 lowShortCircuitCurrentLimit: kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
                 highShortCircuitCurrentLimit: kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
                 properties: toModificationProperties(voltageLevel),
             }).catch((error) => {
                 snackError({

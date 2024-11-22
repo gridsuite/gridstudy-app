@@ -5,14 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import ReportViewer from '../../report-viewer/report-viewer';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { ComputingType } from '../../computing-status/computing-type';
 import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
-import { Report } from '../../../types/report.type';
+import { Report } from '../../../utils/report/report.type';
+import { BUILD_STATUS } from 'components/network/constants';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
@@ -23,20 +24,28 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [isReportLoading, fetchReport] = useReportFetcher(reportType);
+    const shouldFetchReport = useMemo(
+        () => studyUuid && currentNode?.id && currentNode?.data?.globalBuildStatus !== BUILD_STATUS.NOT_BUILT,
+        [studyUuid, currentNode]
+    );
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id) {
+        if (shouldFetchReport) {
             fetchReport().then((report) => {
                 if (report !== undefined) {
                     setReport(report);
                 }
             });
+        } else {
+            // if the user unbuilds a node, the report needs to be reset.
+            // otherwise, the report will be kept in the state and useless report fetches with previous id will be made when the user rebuilds the node.
+            setReport(undefined);
         }
-    }, [studyUuid, currentNode?.id, reportType, fetchReport]);
+    }, [reportType, fetchReport, shouldFetchReport]);
 
     return (
         <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-            {report && <ReportViewer report={report} reportType={reportType} />}
+            {shouldFetchReport && report && <ReportViewer report={report} reportType={reportType} />}
         </WaitingLoader>
     );
 };

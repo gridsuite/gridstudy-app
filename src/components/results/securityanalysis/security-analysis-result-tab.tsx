@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { SyntheticEvent, FunctionComponent, useState, useCallback, useMemo, useEffect } from 'react';
+import { SyntheticEvent, FunctionComponent, useState, useCallback, useMemo, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
 import { AppState } from '../../../redux/reducer';
-import { Box } from '@mui/system';
-import { Tabs, Tab, Select, MenuItem, LinearProgress } from '@mui/material';
+
+import { Tabs, Tab, Select, MenuItem, LinearProgress, Box } from '@mui/material';
 import { fetchSecurityAnalysisResult } from '../../../services/study/security-analysis';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RunningStatus } from '../../utils/running-status';

@@ -7,7 +7,7 @@
 
 import { CustomFormProvider, MuiSelectInput, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
@@ -51,7 +51,6 @@ import {
     setNonEvacuatedEnergyParameters,
 } from '../../../../services/study/non-evacuated-energy';
 import NonEvacuatedEnergyParametersSelector from './non-evacuated-energy-parameters-selector';
-import { LineSeparator } from '../../dialogUtils';
 import {
     getContingenciesFormSchema,
     getContingenciesParams,
@@ -69,6 +68,7 @@ import ComputingType from '../../../computing-status/computing-type';
 import { isComputationParametersUpdated } from '../common/computation-parameters-util';
 import { OptionalServicesNames, OptionalServicesStatus } from 'components/utils/optional-services';
 import { useOptionalServiceStatus } from 'hooks/use-optional-service-status';
+import LineSeparator from '../../commons/line-separator';
 
 export const useGetNonEvacuatedEnergyParameters = () => {
     const studyUuid = useSelector((state) => state.studyUuid);
@@ -234,7 +234,7 @@ export const NonEvacuatedEnergyParameters = ({ parametersBackend, useNonEvacuate
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'NonEvacuatedEnergyParametersError',
+                        headerId: 'updateNonEvacuatedEnergyParametersError',
                     });
                 });
         },

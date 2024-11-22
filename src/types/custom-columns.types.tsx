@@ -6,6 +6,9 @@
  */
 
 // only moved here to resolve cyclic dependency problem
+
+import { SpreadsheetEquipmentType } from '../components/spreadsheet/config/spreadsheet.type';
+
 export type ColumnWithFormula = {
     name: string;
     formula: string;
@@ -18,4 +21,9 @@ export type FormulaFilter = {
 export type CustomEntry = {
     columns: ColumnWithFormula[];
     filter: FormulaFilter;
+};
+
+export type SpreadsheetConfig = {
+    sheetType: SpreadsheetEquipmentType;
+    customColumns: ColumnWithFormula[];
 };

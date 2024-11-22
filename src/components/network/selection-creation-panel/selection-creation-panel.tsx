@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { Box, Button } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
@@ -100,7 +100,7 @@ const SelectionCreationPanel: React.FC<SelectionCreationPanelProps> = ({
 
     const handleValidate = (formData: SelectionCreationPaneFields) => {
         if (formData.selectionType === SELECTION_TYPES.NAD) {
-            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-diagram-viewer is migrated to TS
+            const selectedSubstationsWithVl = getEquipments(EquipmentType.VOLTAGE_LEVEL); // when getting anything but LINE equipment type, returned type is Equipment. Will need to be fixed after powsybl-network-viewer is migrated to TS
 
             dispatch(
                 openNadList(

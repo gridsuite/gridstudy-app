@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -37,7 +37,7 @@ import {
     REACTIVE_POWER_SET_POINT,
     VOLTAGE_LEVEL,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import BatteryModificationForm from './battery-modification-form';
 import {
     getReactiveLimitsEmptyFormData,
@@ -72,7 +72,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -292,6 +292,7 @@ const BatteryModificationDialog = ({
             modifyBattery({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 batteryId: selectedId,
                 name: sanitizeString(battery[EQUIPMENT_NAME]),
                 minP: battery[MINIMUM_ACTIVE_POWER],
@@ -304,7 +305,6 @@ const BatteryModificationDialog = ({
                 connectionDirection: battery[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: battery[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: battery[CONNECTIVITY]?.[CONNECTED],
-                modificationId: editData?.uuid,
                 participate: battery[FREQUENCY_REGULATION],
                 droop: battery[DROOP],
                 isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,

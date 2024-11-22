@@ -14,7 +14,7 @@ import {
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
@@ -55,7 +55,7 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
-import { LineSeparator, parseIntData } from '../../dialogUtils';
+import { parseIntData } from '../../dialog-utils';
 import {
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
@@ -71,6 +71,7 @@ import {
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
+import LineSeparator from '../../commons/line-separator';
 
 const formSchema = yup
     .object()
@@ -106,7 +107,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
 
     const emptyFormData = useMemo(() => {
         return {
-            [PROVIDER]: null,
+            [PROVIDER]: '',
             [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: 0,
             [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: 0,
@@ -207,7 +208,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
                     setLaunchLoader(false);
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisFilteredActiveParametersError',
+                        headerId: 'getSensitivityAnalysisFactorsCountError',
                     });
                 });
         },
@@ -395,7 +396,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
-                        headerId: 'SensitivityAnalysisParametersError',
+                        headerId: 'updateSensitivityAnalysisParametersError',
                     });
                 });
         },

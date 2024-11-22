@@ -7,7 +7,7 @@
 
 import { useForm } from 'react-hook-form';
 import ModificationDialog from '../../../commons/modificationDialog';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
@@ -50,7 +50,7 @@ import {
     VOLTAGE_REGULATION_TYPE,
     VOLTAGE_SET_POINT,
 } from 'components/utils/field-constants';
-import { sanitizeString } from '../../../dialogUtils';
+import { sanitizeString } from '../../../dialog-utils';
 import { REGULATION_TYPES } from 'components/network/constants';
 import GeneratorModificationForm from './generator-modification-form';
 import { getSetPointsEmptyFormData, getSetPointsSchema } from '../../../set-points/set-points-utils';
@@ -84,7 +84,7 @@ import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils.js';
+} from '../../../connectivity/connectivity-form-utils';
 
 const emptyFormData = {
     [EQUIPMENT_NAME]: '',
@@ -346,6 +346,7 @@ const GeneratorModificationDialog = ({
             modifyGenerator({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid,
                 generatorId: selectedId,
                 name: sanitizeString(generator[EQUIPMENT_NAME]),
                 energySource: generator[ENERGY_SOURCE],
@@ -362,7 +363,6 @@ const GeneratorModificationDialog = ({
                 connectionDirection: generator[CONNECTIVITY]?.[CONNECTION_DIRECTION],
                 connectionPosition: generator[CONNECTIVITY]?.[CONNECTION_POSITION],
                 terminalConnected: generator[CONNECTIVITY]?.[CONNECTED],
-                modificationId: editData?.uuid,
                 qPercent: generator[Q_PERCENT],
                 plannedActivePowerSetPoint: generator[PLANNED_ACTIVE_POWER_SET_POINT],
                 marginalCost: generator[MARGINAL_COST],

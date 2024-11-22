@@ -15,7 +15,7 @@ import {
 } from './shortcircuit-analysis-result.type';
 import { AppState } from 'redux/reducer';
 import { RunningStatus } from 'components/utils/running-status';
-import React, { FunctionComponent, useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
     PAGE_OPTIONS,
@@ -32,7 +32,8 @@ import { Box, LinearProgress } from '@mui/material';
 import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { RESULTS_LOADING_DELAY } from '../../network/constants';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
-import { FilterEnumsType, useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
+import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
+import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
 import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
@@ -185,18 +186,32 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
             return;
         }
 
-        const filterTypes = ['fault-types', 'limit-violation-types'];
+        const allBusesFilterTypes = ['fault-types', 'limit-violation-types'];
+        const oneBusFilterTypes = ['branch-sides'];
+        const currentComputingType = isOneBusShortCircuitAnalysisType
+            ? computingType.SHORT_CIRCUIT_ONE_BUS
+            : computingType.SHORT_CIRCUIT;
+
+        const filterTypes = isOneBusShortCircuitAnalysisType ? oneBusFilterTypes : allBusesFilterTypes;
 
         const promises = filterTypes.map((filter) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.SHORT_CIRCUIT, filter)
+            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, currentComputingType, filter)
         );
 
         Promise.all(promises)
-            .then(([faultTypesResult, limitViolationTypesResult]) => {
-                setFilterEnums({
-                    limitType: limitViolationTypesResult,
-                    faultType: faultTypesResult,
-                });
+            .then((results) => {
+                if (isOneBusShortCircuitAnalysisType) {
+                    const [branchSidesResult] = results;
+                    setFilterEnums({
+                        side: branchSidesResult,
+                    });
+                } else {
+                    const [faultTypesResult, limitViolationTypesResult] = results;
+                    setFilterEnums({
+                        limitType: limitViolationTypesResult,
+                        faultType: faultTypesResult,
+                    });
+                }
             })
             .catch((err) =>
                 snackError({
@@ -204,7 +219,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
                     headerId: 'ShortCircuitAnalysisResultsError',
                 })
             );
-    }, [analysisStatus, intl, snackError, studyUuid, currentNode?.id]);
+    }, [analysisStatus, intl, snackError, isOneBusShortCircuitAnalysisType, studyUuid, currentNode?.id]);
 
     const openLoader = useOpenLoaderShortWait({
         isLoading: analysisStatus === RunningStatus.RUNNING || isFetching,

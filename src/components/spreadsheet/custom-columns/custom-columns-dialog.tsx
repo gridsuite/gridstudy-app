@@ -20,10 +20,10 @@ import {
 import { yupResolver } from '@hookform/resolvers/yup';
 import CustomColumnTable from './custom-columns-table';
 import { setCustomColumDefinitions } from 'redux/actions';
-import { TABLES_NAMES } from '../utils/config-tables';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { ColumnWithFormula } from 'types/custom-columns.types';
+import { AppState } from 'redux/reducer';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -56,14 +56,16 @@ export default function CustomColumnDialog({
 
     const intl = useIntl();
 
+    const tablesNames = useSelector((state: AppState) => state.tables.names);
+
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
-            dispatch(setCustomColumDefinitions(TABLES_NAMES[indexTab], newParams[TAB_CUSTOM_COLUMN]));
+            dispatch(setCustomColumDefinitions(tablesNames[indexTab], newParams[TAB_CUSTOM_COLUMN]));
             reset(initialCustomColumnForm);
             open.setFalse();
         },
 
-        [dispatch, indexTab, open, reset]
+        [dispatch, indexTab, open, reset, tablesNames]
     );
 
     useEffect(() => {
@@ -86,7 +88,7 @@ export default function CustomColumnDialog({
                 PaperProps={{ sx: styles.dialogContent }}
             >
                 <DialogTitle id="custom-column-dialog-edit-title">
-                    {intl.formatMessage({ id: 'spreadsheet/custom_column/main_button' })}
+                    {intl.formatMessage({ id: 'spreadsheet/custom_column/add_columns' })}
                 </DialogTitle>
                 <DialogContent dividers>
                     <CustomColumnTable />

@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React from 'react';
-
 import Container from '@mui/material/Container';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 

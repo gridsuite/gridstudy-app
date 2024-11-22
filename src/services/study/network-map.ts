@@ -6,7 +6,7 @@
  */
 
 import { getStudyUrlWithNodeUuid } from './index';
-import { backendFetchJson, getQueryParamsList } from '../utils';
+import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import { EquipmentInfos, EquipmentType, createFilter } from '@gridsuite/commons-ui';
 import { fetchNetworkElementsInfos } from './network';
@@ -112,21 +112,27 @@ export function fetchEquipmentsIds(
     });
 }
 
-//TODO: equipmentId should not be null
-export function fetchLineOrTransformer(studyUuid: UUID, currentNodeUuid: UUID, equipmentId?: string) {
+export function fetchVoltageLevelIdForLineOrTransformerBySide(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    equipmentId: string,
+    side: string
+) {
     console.info(
-        `Fetching specific equipment '${equipmentId}' of type branch-or-3wt of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching voltage level ID for equipment '${equipmentId}' in study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
+
     let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('inUpstreamBuiltParentNode', true.toString());
-    const fetchEquipmentInfosUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network-map/branch-or-3wt/' +
-        encodeURIComponent(equipmentId ?? '') +
-        '?' +
-        urlSearchParams.toString();
+    urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
+    urlSearchParams.append('side', side);
+
+    const fetchEquipmentInfosUrl = `${getStudyUrlWithNodeUuid(
+        studyUuid,
+        currentNodeUuid
+    )}/network-map/branch-or-3wt/${encodeURIComponent(equipmentId)}/voltage-level-id?${urlSearchParams.toString()}`;
+
     console.debug(fetchEquipmentInfosUrl);
-    return backendFetchJson(fetchEquipmentInfosUrl);
+    return backendFetchText(fetchEquipmentInfosUrl);
 }
 
 export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID) {

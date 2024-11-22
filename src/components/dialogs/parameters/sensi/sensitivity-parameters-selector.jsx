@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -205,12 +205,13 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams, launchLo
                                             label={<FormattedMessage id={subTab.label} />}
                                         ></Tab>
                                     ))}
-                                    <Box sx={styles.boxContent}>
-                                        {launchLoader ? renderComputingEventLoading() : renderComputingEvent()}
-                                        <FormattedMessage id="sensitivityAnalysis.separator" />
-                                        <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
-                                    </Box>
                                 </Tabs>
+                                <Box sx={styles.boxContent}>
+                                    {launchLoader ? renderComputingEventLoading() : renderComputingEvent()}
+                                    <FormattedMessage id="sensitivityAnalysis.separator" />
+                                    <FormattedMessage id="sensitivityAnalysis.maximumSimulatedComputations" />
+                                </Box>
+
                                 <TabPanel index={TAB_VALUES.SensiInjectionsSet} value={subTabValue}>
                                     <SensitivityTable
                                         arrayFormName={`${SensiInjectionsSet.name}`}

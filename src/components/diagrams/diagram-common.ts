@@ -13,6 +13,9 @@ import { FEEDER_TYPES, FeederTypes } from 'components/utils/feederType';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Theme } from '@mui/material';
 import { AppDispatch } from '../../redux/store';
+import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
+import { UUID } from 'crypto';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export const LOADING_WIDTH = 300;
 export const LOADING_HEIGHT = 300;
@@ -106,9 +109,16 @@ export const styles = {
         '& .sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle': {
             opacity: INVALID_LOADFLOW_OPACITY,
         },
+        '& .sld-overload .sld-vl-overvoltage .sld-vl-undervoltage': {
+            animation: 'none',
+        },
         '& .nad-edge-infos': {
             opacity: NAD_INVALID_LOADFLOW_OPACITY,
         },
+        '& .nad-branch-edges .nad-overload .nad-edge-path, .nad-vl-nodes .nad-overvoltage, .nad-vl-nodes .nad-undervoltage':
+            {
+                animation: 'none',
+            },
     },
     paperBorders: (theme: Theme) => ({
         borderLeft: '1px solid ' + theme.palette.action.disabled,
@@ -138,7 +148,7 @@ export enum DiagramType {
 }
 
 // be careful when using this method because there are treatments made on purpose
-export function getEquipmentTypeFromFeederType(feederType: FeederTypes) {
+export function getEquipmentTypeFromFeederType(feederType: FeederTypes | null): EQUIPMENT_TYPES | null {
     switch (feederType) {
         case FEEDER_TYPES.LINE:
             return EQUIPMENT_TYPES.LINE;
@@ -207,7 +217,34 @@ export function getFeederTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES) {
         case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
             return FEEDER_TYPES.THREE_WINDINGS_TRANSFORMER;
         default: {
-            console.log('bad equipment type ', equipmentType);
+            console.info('Unrecognized equipment type encountered ', equipmentType);
+            return null;
+        }
+    }
+}
+
+export function getCommonEquipmentType(equipmentType: EquipmentType): EquipmentType | null {
+    switch (equipmentType) {
+        case EquipmentType.SUBSTATION:
+        case EquipmentType.VOLTAGE_LEVEL:
+        case EquipmentType.LINE:
+        case EquipmentType.LOAD:
+        case EquipmentType.BATTERY:
+        case EquipmentType.TIE_LINE:
+        case EquipmentType.DANGLING_LINE:
+        case EquipmentType.GENERATOR:
+        case EquipmentType.HVDC_LINE:
+        case EquipmentType.SHUNT_COMPENSATOR:
+        case EquipmentType.STATIC_VAR_COMPENSATOR:
+        case EquipmentType.TWO_WINDINGS_TRANSFORMER:
+        case EquipmentType.THREE_WINDINGS_TRANSFORMER:
+            return equipmentType;
+
+        case EquipmentType.VSC_CONVERTER_STATION:
+        case EquipmentType.LCC_CONVERTER_STATION:
+            return EquipmentType.HVDC_CONVERTER_STATION;
+        default: {
+            console.info('Unrecognized equipment type encountered ', equipmentType);
             return null;
         }
     }
@@ -260,9 +297,25 @@ export const useDiagram = () => {
     };
 };
 
-export const NoSvg = {
+export interface Svg {
+    svg: string | null;
+    metadata: SLDMetadata | DiagramMetadata | null;
+    additionalMetadata:
+        | (SLDMetadata & {
+              country: string;
+              substationId?: string;
+              voltageLevels: { name: string; substationId: UUID }[];
+              nbVoltageLevels?: number;
+          })
+        | null;
+    error?: string | null;
+    svgUrl?: string | null;
+}
+
+export const NoSvg: Svg = {
     svg: null,
     metadata: null,
     additionalMetadata: null,
-    error: null,
+    error: undefined,
+    svgUrl: undefined,
 };
