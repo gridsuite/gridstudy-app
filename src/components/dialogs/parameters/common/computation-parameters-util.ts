@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { NotificationType, StudyUpdated } from '../../../../redux/reducer';
 import { ComputingType, isValidComputingType } from '../../../computing-status/computing-type';
+import { NotificationType, type StudyUpdated } from '../../../../redux/type-notification';
 
 export const UPDATE_TYPE_HEADER = 'updateType';
 export const COMPUTATION_TYPE_HEADER = 'computationType';

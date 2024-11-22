@@ -8,8 +8,8 @@
 import { ColDef } from 'ag-grid-community';
 import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { UUID } from 'crypto';
-import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { BranchSide } from '../../utils/constants';
+import type { SortConfigType } from '../../../hooks/use-aggrid.type';
 
 export interface ComponentResult {
     componentResultUuid: UUID;

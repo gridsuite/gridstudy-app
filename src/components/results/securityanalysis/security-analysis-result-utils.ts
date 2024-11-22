@@ -11,6 +11,7 @@ import {
     ConstraintsFromContingencyItem,
     ContingenciesFromConstraintItem,
     LimitViolation,
+    type SecurityAnalysisFilterEnumsType,
     SecurityAnalysisNmkTableRow,
     SubjectIdRendererType,
 } from './security-analysis.type';
@@ -25,7 +26,6 @@ import {
     FilterPropsType,
     FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
-import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
 import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import { SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K } from 'utils/store-sort-filter-fields';
@@ -34,8 +34,8 @@ import computingType, { ComputingType } from '../../computing-status/computing-t
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
-import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
 import type { IntRange } from 'type-fest';
+import type { SortPropsType } from '../../../hooks/use-aggrid.type';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {

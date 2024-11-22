@@ -22,7 +22,6 @@ import HorizontalToolbar from './horizontal-toolbar';
 import NetworkModificationTreePane from './network-modification-tree-pane';
 import NetworkMapTab from './network/network-map-tab';
 import { DiagramPane } from './diagrams/diagram-pane';
-import { StudyView } from './study-pane';
 import { darken } from '@mui/material/styles';
 
 import { Global, css } from '@emotion/react';
@@ -34,6 +33,7 @@ import { Button, Typography, Box } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import BackHandOutlinedIcon from '@mui/icons-material/BackHandOutlined';
 import KeyboardReturnOutlinedIcon from '@mui/icons-material/KeyboardReturnOutlined';
+import StudyView from './study-view';
 
 const styles = {
     map: {

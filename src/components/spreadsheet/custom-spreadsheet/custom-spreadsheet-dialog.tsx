@@ -40,9 +40,9 @@ import { FormattedMessage } from 'react-intl';
 import yup from 'components/utils/yup-config';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { getSpreadsheetModel } from 'services/spreadsheet';
-import { SortWay } from 'hooks/use-aggrid-sort';
 import { typeAndFetchers } from '../config/equipment/common-config';
 import type { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../config/spreadsheet.type';
+import { SortWay } from '../../../hooks/use-aggrid.type';
 
 export type CustomSpreadsheetConfigDialogProps = {
     open: UseStateBooleanReturn;

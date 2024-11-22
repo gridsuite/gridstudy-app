@@ -43,14 +43,12 @@ import {
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
     StudyIndexationStatus,
-    StudyUpdatedEventData,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
 import { IOptionalService } from '../components/utils/optional-services';
 import { FluxConventions } from '../components/dialogs/parameters/network-parameters';
 import { DiagramType, SubstationLayout } from '../components/diagrams/diagram-common';
-import { Filter } from '../components/results/common/results-global-filter';
 import {
     type AddFilterForNewSpreadsheetAction,
     type AddSortForNewSpreadsheetAction,
@@ -65,6 +63,8 @@ import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import type { Filter } from '../components/results/common/types';
+import type { NetworkImpactsInfos, StudyUpdatedEventDataHeader } from './type-notification';
 
 type MutableUnknownArray = unknown[];
 
@@ -539,14 +539,20 @@ export function limitReductionModified(limitReductionModified: boolean): LimitRe
 
 export const STUDY_UPDATED = 'STUDY_UPDATED';
 export type StudyUpdatedAction = Readonly<Action<typeof STUDY_UPDATED>> & {
-    eventData: StudyUpdatedEventData;
+    eventData: {
+        headers: StudyUpdatedEventDataHeader;
+        payload: NetworkImpactsInfos;
+    };
 };
 /*
 export type StudyUpdated = {
     force: IntRange<0, 1>;
 } & (StudyUpdatedUndefined | StudyUpdatedStudy);
  */
-export function studyUpdated(eventData: StudyUpdatedEventData): StudyUpdatedAction {
+export function studyUpdated(eventData: {
+    headers: StudyUpdatedEventDataHeader;
+    payload: NetworkImpactsInfos;
+}): StudyUpdatedAction {
     return { type: STUDY_UPDATED, eventData };
 }
 

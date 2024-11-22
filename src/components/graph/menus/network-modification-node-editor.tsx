@@ -66,7 +66,7 @@ import ImportModificationDialog from 'components/dialogs/import-modification-dia
 import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
 import { DropResult } from 'react-beautiful-dnd';
-import { AppState, StudyUpdated } from 'redux/reducer';
+import { AppState } from 'redux/reducer';
 import { createCompositeModifications } from '../../../services/explore';
 import { fetchNetworkModification } from '../../../services/network-modification';
 import { copyOrMoveModifications } from '../../../services/study';
@@ -91,6 +91,7 @@ import StaticVarCompensatorCreationDialog from '../../dialogs/network-modificati
 import ModificationByAssignmentDialog from '../../dialogs/network-modifications/by-filter/by-assignment/modification-by-assignment-dialog';
 import ByFormulaDialog from '../../dialogs/network-modifications/by-filter/by-formula/by-formula-dialog';
 import ByFilterDeletionDialog from '../../dialogs/network-modifications/by-filter/by-filter-deletion/by-filter-deletion-dialog';
+import type { StudyUpdated } from '../../../redux/type-notification';
 
 export const styles = {
     listContainer: (theme: Theme) => ({

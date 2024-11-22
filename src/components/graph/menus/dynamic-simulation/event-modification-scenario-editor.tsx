@@ -24,9 +24,10 @@ import { getStartTime, getStartTimeUnit } from '../../../dialogs/dynamicsimulati
 import { isChecked, isPartial, styles } from '../network-modification-node-editor';
 import { EQUIPMENT_TYPE_LABEL_KEYS } from '../../util/model-constants';
 import EditIcon from '@mui/icons-material/Edit';
-import { AppState, StudyUpdated } from '../../../../redux/reducer';
+import { AppState } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import type { StudyUpdated } from '../../../../redux/type-notification';
 
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();

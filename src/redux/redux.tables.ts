@@ -36,7 +36,6 @@ import {
     type StoreTableTabs,
     TIMELINE,
 } from '../utils/store-sort-filter-fields';
-import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
 import { TABLES_DEFINITIONS } from '../components/spreadsheet/config/config-tables';
 import { createAction } from '@reduxjs/toolkit';
 import type { FilterSelectorType } from '../components/custom-aggrid/custom-aggrid-header.type';
@@ -44,6 +43,7 @@ import {
     COMPUTING_AND_NETWORK_MODIFICATION_TYPE,
     type ComputingTypeAndNetworkModificationKeys,
 } from '../utils/report/report.constant';
+import { type SortConfigType, SortWay } from '../hooks/use-aggrid.type';
 
 export type AppStateTables = {
     // result & spreadsheet config for tables sort & filter

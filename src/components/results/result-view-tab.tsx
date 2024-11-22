@@ -6,7 +6,15 @@
  */
 
 import { useIntl } from 'react-intl';
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+    type FunctionComponent,
+    type ReactNode,
+    type SyntheticEvent,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from 'react';
 import { ShortCircuitAnalysisResultTab } from './shortcircuit/shortcircuit-analysis-result-tab';
 import AlertCustomMessageNode from '../utils/alert-custom-message-node';
 import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
@@ -14,7 +22,7 @@ import { useParameterState } from '../dialogs/parameters/parameters';
 import DynamicSimulationResultTab from './dynamicsimulation/dynamic-simulation-result-tab';
 import TabPanelLazy from './common/tab-panel-lazy';
 import { VoltageInitResultTab } from './voltage-init/voltage-init-result-tab';
-import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './common/use-results-tab';
+import { computingTypeToRootTabRedirection, useResultsTab } from './common/use-results-tab';
 import SensitivityAnalysisResultTab from './sensitivity-analysis/sensitivity-analysis-result-tab';
 import { NonEvacuatedEnergyResultTab } from './non-evacuated-energy/non-evacuated-energy-result-tab';
 import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
@@ -27,6 +35,7 @@ import ComputingType from '../computing-status/computing-type';
 import { useSelector } from 'react-redux';
 import { usePrevious } from '../utils/utils';
 import { Box, Paper, Tab, Tabs } from '@mui/material';
+import type { IService } from './common/types';
 
 const styles = {
     table: {
@@ -50,23 +59,6 @@ interface IResultViewTabProps {
     view: string;
 }
 
-export interface IService {
-    id: string;
-    computingType: ComputingType[];
-    displayed: boolean;
-    renderResult: React.ReactNode;
-}
-
-/**
- * control results views
- * @param studyUuid : string uuid of study
- * @param currentNode : object current node
- * @param openVoltageLevelDiagram : function
- * @param resultTabIndexRedirection : ResultTabIndexRedirection to specific tab [RootTab, LevelOneTab, ...]
- * @param disabled
- * @returns {JSX.Element}
- * @constructor
- */
 export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     studyUuid,
     currentNode,
@@ -209,7 +201,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
         renderLoadFlowResult,
     ]);
 
-    const resultTabIndexRedirection = useMemo<ResultTabIndexRedirection>(
+    const resultTabIndexRedirection = useMemo(
         () => computingTypeToRootTabRedirection(lastCompletedComputation ?? ComputingType.LOAD_FLOW, services),
         [lastCompletedComputation, services]
     );
@@ -229,7 +221,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             />
         );
     };
-    const renderTabPanelLazy = (service: IService, index: number): React.ReactNode => {
+    const renderTabPanelLazy = (service: IService, index: number): ReactNode => {
         return (
             <TabPanelLazy key={service.id + 'tabPanel'} selected={tabIndex === index && !disabled}>
                 {service.renderResult}
@@ -245,7 +237,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     }, [enableDeveloperMode, previousEnableDeveloperMode, lastCompletedComputation]);
 
     const handleChangeTab = useCallback(
-        (event: React.SyntheticEvent, newTabIndex: number) => {
+        (event: SyntheticEvent, newTabIndex: number) => {
             setTabIndex(newTabIndex);
             //when we manually browse results we ought to block further redirections until the next completed computation
             setRedirectionLock(true);

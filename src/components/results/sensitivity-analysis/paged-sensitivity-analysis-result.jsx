@@ -26,8 +26,8 @@ import {
 import { useSelector } from 'react-redux';
 import { ComputingType } from 'components/computing-status/computing-type';
 import { RunningStatus } from '../../utils/running-status';
-import { SensitivityResultTabs } from './sensitivity-analysis-result-tab';
-import { SortWay } from 'hooks/use-aggrid-sort';
+import { SortWay } from '../../../hooks/use-aggrid.type';
+import { SensitivityResultTabs } from './sensitivity-result-utils';
 
 const PagedSensitivityAnalysisResult = ({
     nOrNkIndex,

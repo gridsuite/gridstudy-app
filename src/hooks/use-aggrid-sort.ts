@@ -9,24 +9,8 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setTableSort } from '../redux/redux.tables';
 import { type AppState } from '../redux/reducer';
-import type { StoreTableKeys, StoreTableTabs } from '../utils/store-sort-filter-fields';
-
-export type SortConfigType = {
-    colId: string;
-    sort: SortWay;
-    children?: boolean;
-};
-
-export type SortPropsType = {
-    onSortChanged: (sortConfig: SortConfigType) => void;
-    sortConfig: SortConfigType[];
-    children?: boolean;
-};
-
-export enum SortWay {
-    ASC = 'asc',
-    DESC = 'desc',
-}
+import { type StoreTableKeys, type StoreTableTabs } from '../utils/store-sort-filter-fields';
+import { type SortConfigType, type SortPropsType } from './use-aggrid.type';
 
 export function useAgGridSort<T extends StoreTableKeys>(table: T, tab: StoreTableTabs<T>): SortPropsType {
     // @ts-expect-error we don't know at compile time which table tab it is

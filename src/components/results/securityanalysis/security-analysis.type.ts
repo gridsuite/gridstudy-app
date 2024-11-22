@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import * as React from 'react';
+import { type ChangeEventHandler, type MouseEvent, type ReactElement } from 'react';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { AgGridReactProps } from 'ag-grid-react';
-import { SortConfigType } from '../../../hooks/use-aggrid-sort';
-import { UUID } from 'crypto';
-import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { type SortConfigType } from '../../../hooks/use-aggrid.type';
+import type { UUID } from 'crypto';
+import { type FilterEnumsType, type FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 
 export interface LimitViolation {
     subjectId?: string;
@@ -98,11 +98,11 @@ type PaginationProps = {
     count?: number;
     rowsPerPage?: number;
     page?: number;
-    onPageChange?: (event: React.MouseEvent<HTMLButtonElement> | null, page: number) => void;
-    onRowsPerPageChange?: React.ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+    onPageChange?: (event: MouseEvent<HTMLButtonElement> | null, page: number) => void;
+    onRowsPerPageChange?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
 };
 
-export type SubjectIdRendererType = (cellData: ICellRendererParams) => React.JSX.Element | undefined;
+export type SubjectIdRendererType = (cellData: ICellRendererParams) => ReactElement | undefined;
 
 export interface SecurityAnalysisNmkResult {
     content?: ContingenciesFromConstraintItem[] | ConstraintsFromContingencyItem[] | null;
@@ -152,4 +152,9 @@ export interface SecurityAnalysisResultProps {
     columnDefs: ColDef[];
     isLoadingResult: boolean;
     agGridProps?: AgGridReactProps;
+}
+
+export interface SecurityAnalysisFilterEnumsType {
+    n: FilterEnumsType;
+    nmk: FilterEnumsType;
 }

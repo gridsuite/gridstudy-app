@@ -13,7 +13,6 @@ import {
     OptionalServicesStatus,
 } from './utils/optional-services';
 import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
-import { StudyView } from './study-pane';
 import {
     AuthenticationRouter,
     CardErrorBoundary,
@@ -87,6 +86,7 @@ import {
     setOptionalServices,
     setParamsLoaded,
 } from '../redux/actions';
+import StudyView from './study-view';
 
 const noUserManager = { instance: null, error: null };
 

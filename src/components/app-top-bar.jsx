@@ -9,7 +9,6 @@ import { useCallback, useEffect, useState } from 'react';
 import { LIGHT_THEME, logout, OverflowableText, TopBar } from '@gridsuite/commons-ui';
 import GridStudyLogoLight from '../images/GridStudy_logo_light.svg?react';
 import GridStudyLogoDark from '../images/GridStudy_logo_dark.svg?react';
-import { StudyView } from './study-pane';
 import { Badge, Box, Button, Tab, Tabs, Tooltip } from '@mui/material';
 import { Search, Settings } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -29,6 +28,7 @@ import { useComputationResultsCount } from '../hooks/use-computation-results-cou
 import { TopBarEquipmentSearchDialog } from './top-bar-equipment-seach-dialog/top-bar-equipment-search-dialog';
 import { fetchAppsMetadata } from '@gridsuite/commons-ui';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
+import StudyView from './study-view';
 
 const styles = {
     currentNodeBox: {

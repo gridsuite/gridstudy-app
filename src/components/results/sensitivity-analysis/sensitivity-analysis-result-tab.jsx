@@ -35,11 +35,7 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_STORE_FILTER,
     SENSITIVITY_ANALYSIS_RESULT_STORE_SORT,
 } from 'utils/store-sort-filter-fields';
-
-export const SensitivityResultTabs = [
-    { id: 'N', label: 'N' },
-    { id: 'N_K', label: 'N-K' },
-];
+import { SensitivityResultTabs } from './sensitivity-result-utils';
 
 function getDisplayedColumns(params) {
     return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);

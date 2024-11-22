@@ -16,6 +16,7 @@ import { isNodeBuilt } from './graph/util/model-functions';
 import TableWrapper from './spreadsheet/table-wrapper';
 import ParametersTabs from './parameters-tabs';
 import MapViewer from './map-viewer';
+import StudyView from './study-view';
 
 const styles = {
     map: {
@@ -41,14 +42,6 @@ const styles = {
         flexDirection: 'column',
         height: '100%',
     },
-};
-
-export const StudyView = {
-    MAP: 'Map',
-    SPREADSHEET: 'Spreadsheet',
-    RESULTS: 'Results',
-    LOGS: 'Logs',
-    PARAMETERS: 'Parameters',
 };
 
 const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {

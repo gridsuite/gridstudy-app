@@ -5,8 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { ColDef, IFilterOptionDef } from 'ag-grid-community';
-import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
+import type { SortPropsType } from '../../hooks/use-aggrid.type';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',

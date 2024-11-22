@@ -7,7 +7,8 @@
 
 import { CustomColDef, FILTER_DATA_TYPES, FilterSelectorType } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { SortWay } from 'hooks/use-aggrid-sort';
+
+import { SortWay } from '../../hooks/use-aggrid.type';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params

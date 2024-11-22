@@ -12,7 +12,6 @@ import { BranchSide } from '../../utils/constants';
 import { convertDuration, formatNAValue } from '../../spreadsheet/utils/cell-renderers';
 import { UNDEFINED_ACCEPTABLE_DURATION } from '../../utils/utils';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
@@ -34,6 +33,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import type { IntRange } from 'type-fest';
+import type { SortPropsType } from '../../../hooks/use-aggrid.type';
 
 export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);

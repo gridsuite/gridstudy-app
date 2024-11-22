@@ -35,13 +35,14 @@ import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-ag
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
-import ResultsGlobalFilter, { Filter, FilterType } from '../common/results-global-filter';
+import ResultsGlobalFilter, { FilterType } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
 import { LOADFLOW_RESULT_STORE_FILTER, LOADFLOW_RESULT_STORE_SORT } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
 import { useNodeData } from '../common/use-node-data';
+import type { Filter } from '../common/types';
 
 const styles = {
     flexWrapper: {

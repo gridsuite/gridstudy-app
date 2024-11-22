@@ -7,7 +7,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useIntl } from 'react-intl';
-import { SecurityAnalysisNmkTableRow } from './security-analysis.type';
+import { type SecurityAnalysisFilterEnumsType, SecurityAnalysisNmkTableRow } from './security-analysis.type';
 import { ColDef, ICellRendererParams } from 'ag-grid-community';
 import { fetchVoltageLevelIdForLineOrTransformerBySide } from 'services/study/network-map';
 import { BranchSide } from 'components/utils/constants';
@@ -19,21 +19,16 @@ import {
     securityAnalysisTableNmKConstraintsColumnsDefinition,
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
-import { SortPropsType } from 'hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterPropsType } from '../../custom-aggrid/custom-aggrid-header.type';
+import { FilterPropsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
+import type { SortPropsType } from '../../../hooks/use-aggrid.type';
 
 const styles = {
     button: {
         color: 'node.background',
     },
 };
-
-export interface SecurityAnalysisFilterEnumsType {
-    n: FilterEnumsType;
-    nmk: FilterEnumsType;
-}
 
 type UseSecurityAnalysisColumnsDefsProps = (
     sortProps: SortPropsType,

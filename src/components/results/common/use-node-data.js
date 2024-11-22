@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import RunningStatus from '../../utils/running-status';
-import { isWorthUpdate } from '../../computing-status/use-computing-status';
+import { isWorthUpdate } from '../../computing-status/is-worth-update';
 
 export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, defaultValue, resultConversion) {
     const [result, setResult] = useState(defaultValue);

@@ -6,12 +6,12 @@
  */
 
 import ComputingType from 'components/computing-status/computing-type';
-import { IService } from 'components/results/result-view-tab';
-import { StudyView } from 'components/study-pane';
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ShortCircuitAnalysisResultTabs } from '../shortcircuit/shortcircuit-analysis-result.type';
+import type { IService } from './types';
+import StudyView from '../../study-view';
 
 export enum ResultsTabsRootLevel {
     LOAD_FLOW = 0,
@@ -36,7 +36,7 @@ export type ResultTabIndexRedirection = ResultsTabsRootLevel | ResultsTabsLevelO
  */
 export const useResultsTab = (
     resultTabIndexRedirection: ResultTabIndexRedirection,
-    setTabIndex: React.Dispatch<React.SetStateAction<number>>,
+    setTabIndex: Dispatch<SetStateAction<number>>,
     view: string
 ): Dispatch<SetStateAction<boolean>> => {
     const [redirectionLock, setRedirectionLock] = useResultsTabRedirectionLock();

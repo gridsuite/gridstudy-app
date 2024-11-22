@@ -240,7 +240,6 @@ import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from 
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
 import { LOGS_STORE_FILTER, SPREADSHEET_STORE_FILTER, SPREADSHEET_STORE_SORT } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
-import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
 import { type Node } from '@xyflow/react';
@@ -261,11 +260,8 @@ import {
     setTableFilter,
     setTableSort,
 } from './redux.tables';
-
-export enum NotificationType {
-    STUDY = 'study',
-    COMPUTATION_PARAMETERS_UPDATED = 'computationParametersUpdated',
-}
+import type { Filter } from '../components/results/common/types';
+import type { StudyUpdated } from './type-notification';
 
 export enum StudyIndexationStatus {
     NOT_INDEXED = 'NOT_INDEXED',
@@ -277,57 +273,6 @@ export interface OneBusShortCircuitAnalysisDiagram {
     diagramId: string;
     nodeId: UUID;
 }
-
-// Headers
-export interface StudyUpdatedEventDataHeader {
-    studyUuid: UUID;
-    parentNode: UUID;
-    timestamp: number;
-    updateType?: string;
-    node?: UUID;
-    nodes?: UUID[];
-    error?: string;
-    userId?: string;
-    computationType?: ComputingType;
-}
-
-// Payloads
-export interface DeletedEquipment {
-    equipmentId: string;
-    equipmentType: string;
-}
-
-export interface NetworkImpactsInfos {
-    impactedSubstationsIds: UUID[];
-    deletedEquipments: DeletedEquipment[];
-    impactedElementTypes: string[];
-}
-// EventData
-export interface StudyUpdatedEventData {
-    headers: StudyUpdatedEventDataHeader;
-    payload: NetworkImpactsInfos;
-}
-
-interface StudyUpdatedEventDataUnknown {
-    headers: StudyUpdatedEventDataHeader;
-    payload: string;
-}
-
-// Notification types
-type StudyUpdatedStudy = {
-    type: NotificationType.STUDY;
-    eventData: StudyUpdatedEventData;
-};
-
-type StudyUpdatedUndefined = {
-    type: undefined;
-    eventData: StudyUpdatedEventDataUnknown;
-};
-
-// Redux state
-export type StudyUpdated = {
-    force: number; //IntRange<0, 1>;
-} & (StudyUpdatedUndefined | StudyUpdatedStudy);
 
 type NodeCommonData = {
     label: string;

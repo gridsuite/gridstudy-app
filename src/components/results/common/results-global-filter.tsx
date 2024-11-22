@@ -5,18 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent, SyntheticEvent, useCallback } from 'react';
-import { Box, FilterOptionsState } from '@mui/material';
-import { Autocomplete, Chip, InputAdornment, TextField } from '@mui/material';
+import { type FunctionComponent, type SyntheticEvent, useCallback } from 'react';
+import { Autocomplete, Box, Chip, type FilterOptionsState, InputAdornment, TextField, type Theme } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../utils/functions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToRecentGlobalFilters } from '../../../redux/actions';
-import { Theme } from '@mui/material';
-import { AppState } from '../../../redux/reducer';
-import { AppDispatch } from '../../../redux/store';
+import { type AppState } from '../../../redux/reducer';
+import { type AppDispatch } from '../../../redux/store';
+import type { Filter } from './types';
 
 const styles = {
     autocomplete: (theme: Theme) => ({
@@ -101,12 +100,6 @@ const styles = {
 export enum FilterType {
     COUNTRY = 'country',
     VOLTAGE_LEVEL = 'voltageLevel',
-}
-
-export interface Filter {
-    label: string;
-    filterType: string;
-    recent?: boolean;
 }
 
 export interface ResultsGlobalFilterProps {

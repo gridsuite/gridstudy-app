@@ -15,7 +15,6 @@ import { useSelector } from 'react-redux';
 import { ComputingType } from '../../computing-status/computing-type';
 import { AppState } from '../../../redux/reducer';
 import { DefaultCellRenderer } from '../../spreadsheet/utils/cell-renderers';
-import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import {
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
@@ -27,6 +26,7 @@ import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-
 import { unitToKiloUnit } from '../../../utils/unit-converter';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
+import type { SortPropsType } from '../../../hooks/use-aggrid.type';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
