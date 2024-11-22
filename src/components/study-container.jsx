@@ -421,7 +421,22 @@ export function StudyContainer({ view, onChangeTab }) {
                 }
             }
         };
-    });
+
+        wsRef.current.onclose = function () {
+            console.error('Unexpected Notification WebSocket closed');
+        };
+        wsRef.current.onerror = function (event) {
+            console.error('Unexpected Notification WebSocket error', event);
+        };
+        // We must save wsRef.current in a variable to make sure that when close is called it refers to the same instance.
+        // That's because wsRef.current could be modify outside of this scope.
+        const wsToClose = wsRef.current;
+        // cleanup at unmount event
+        return () => {
+            wsToClose.close();
+        };
+    }, [dispatch, fetchStudyPath]);
+
     const loadTree = useCallback(
         (initIndexationStatus) => {
             console.info(`Loading network modification tree of study '${studyUuid}'...`);
