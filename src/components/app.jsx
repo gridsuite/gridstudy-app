@@ -278,7 +278,7 @@ const App = () => {
         const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
-            console.log("🚀 QCA :  ~ connectNotificationsUpdateConfig ~ event:", event);
+            console.log('🚀 QCA :  ~ connectNotificationsUpdateConfig ~ event:', event);
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
