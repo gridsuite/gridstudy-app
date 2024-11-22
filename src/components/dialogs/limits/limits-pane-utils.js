@@ -9,8 +9,11 @@ import { sanitizeString } from '../dialog-utils';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
+    ID,
     LIMITS,
     PERMANENT_LIMIT,
+    SELECTED_LIMIT_GROUP_1,
+    SELECTED_LIMIT_GROUP_2,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
@@ -22,6 +25,7 @@ import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const temporaryLimitsTableValidationSchema = () => ({
+    [ID]: yup.string().nullable(),
     [PERMANENT_LIMIT]: yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero'),
     [TEMPORARY_LIMITS]: yup
         .array()
@@ -44,18 +48,26 @@ const temporaryLimitsTableValidationSchema = () => ({
         }),
 });
 
-const limitsValidationSchema = (id) => ({
+const limitsValidationSchema = (id, onlySelectedLimits = true) => (onlySelectedLimits ? {
     [id]: yup.object().shape({
         [CURRENT_LIMITS_1]: yup.object().shape(temporaryLimitsTableValidationSchema()),
         [CURRENT_LIMITS_2]: yup.object().shape(temporaryLimitsTableValidationSchema()),
     }),
+} : {
+    [id]: yup.object().shape({
+        [CURRENT_LIMITS_1]: yup.array(yup.object().shape(temporaryLimitsTableValidationSchema())),
+        [CURRENT_LIMITS_2]: yup.array(yup.object().shape(temporaryLimitsTableValidationSchema())),
+        [SELECTED_LIMIT_GROUP_1]: yup.string(),
+        [SELECTED_LIMIT_GROUP_2]: yup.string(),
+    }),
 });
 
-export const getLimitsValidationSchema = (id = LIMITS) => {
-    return limitsValidationSchema(id);
+export const getLimitsValidationSchema = (id = LIMITS, onlySelectedLimits = true) => {
+    return limitsValidationSchema(id, onlySelectedLimits);
 };
 
-const limitsEmptyFormData = (id) => ({
+const limitsEmptyFormData = (id, onlySelectedLimits = true) => (
+    onlySelectedLimits ? {
     [id]: {
         [CURRENT_LIMITS_1]: {
             [PERMANENT_LIMIT]: null,
@@ -66,13 +78,31 @@ const limitsEmptyFormData = (id) => ({
             [TEMPORARY_LIMITS]: [],
         },
     },
+} : {
+        [id]: {
+            [CURRENT_LIMITS_1]: [{
+                [ID]: 'TODO',
+                [PERMANENT_LIMIT]: null,
+                [TEMPORARY_LIMITS]: [],
+            }],
+            [CURRENT_LIMITS_2]: [{
+                [ID]: 'TODO',
+                [PERMANENT_LIMIT]: null,
+                [TEMPORARY_LIMITS]: [],
+            }],
+            [SELECTED_LIMIT_GROUP_1]: 'TODO',
+            [SELECTED_LIMIT_GROUP_2]: 'TODO',
+        }
 });
 
-export const getLimitsEmptyFormData = (id = LIMITS) => {
-    return limitsEmptyFormData(id);
+export const getLimitsEmptyFormData = (id = LIMITS, onlySelectedLimits = true) => {
+    return limitsEmptyFormData(id, onlySelectedLimits);
 };
 
-export const getLimitsFormData = (
+/**
+ * used when the limit set data only contain the selected limit sets
+ */
+export const getSelectedLimitsFormData = (
     { permanentLimit1 = null, permanentLimit2 = null, temporaryLimits1 = [], temporaryLimits2 = [] },
     id = LIMITS
 ) => ({
@@ -87,6 +117,35 @@ export const getLimitsFormData = (
         },
     },
 });
+
+/**
+ * used when the limit set data contain all the limit sets data, including the not selected
+ */
+export const getAllLimitsFormData = (
+    {
+        currentLimits1 = [{
+            [ID]: 'TODO',
+            [PERMANENT_LIMIT]: null,
+            [TEMPORARY_LIMITS]: [],
+        }],
+        currentLimits2 = [{
+            [ID]: 'TODO',
+            [PERMANENT_LIMIT]: null,
+            [TEMPORARY_LIMITS]: [],
+        }],
+        selectedLimitsGroup1 = 'TODO',
+        selectedLimitsGroup2 = 'TODO'
+    },
+    id = LIMITS
+) => ({
+    [id]: {
+        [CURRENT_LIMITS_1]: currentLimits1,
+        [CURRENT_LIMITS_2]: currentLimits2,
+        [SELECTED_LIMIT_GROUP_1]: selectedLimitsGroup1,
+        [SELECTED_LIMIT_GROUP_2]: selectedLimitsGroup2,
+    },
+});
+
 
 export const sanitizeLimitNames = (temporaryLimitList) =>
     temporaryLimitList.map(({ name, ...temporaryLimit }) => ({

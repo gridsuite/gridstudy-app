@@ -846,6 +846,8 @@ export function createLine(
     permanentCurrentLimit2,
     temporaryCurrentLimits1,
     temporaryCurrentLimits2,
+    selectedLimitGroup1, // TODO : ajouter les operational limit groups sélectionnés et tous les operational limit groups
+    selectedLimitGroup2,
     isUpdate,
     modificationUuid,
     connectionName1,

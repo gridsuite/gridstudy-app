@@ -906,6 +906,7 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
+    "SelectedOperationalLimitGroup": "Limit set sélectionné",
 
     "PermanentCurrentLimitText1": "IST 1",
     "PermanentCurrentLimitText2": "IST 2",
