@@ -30,7 +30,7 @@ const styles = {
 
 interface RenderTableAndExportCsvProps {
     gridRef: RefObject<AgGridReact>;
-    columns: any[];
+    columns: ColDef[];
     defaultColDef: ColDef;
     tableName: string;
     rows: any[];

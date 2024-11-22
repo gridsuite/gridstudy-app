@@ -6,11 +6,9 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { Box, Button, CircularProgress, LinearProgress, Stack, Tab, Tabs, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material';
 import { Lens } from '@mui/icons-material';
 import { useParams } from 'react-router-dom';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -19,7 +17,6 @@ import {
     getVoltageInitModifications,
     getVoltageInitStudyParameters,
 } from '../../../services/study/voltage-init';
-import CircularProgress from '@mui/material/CircularProgress';
 import VoltageInitModificationDialog from '../../dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
 import { FetchStatus } from '../../../services/utils.type';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
@@ -181,6 +178,9 @@ const VoltageInitResult = ({ result, status }) => {
         });
     }, [studyUuid]);
 
+    /**
+     * @type {import('ag-grid-community').ColDef[]}
+     */
     const indicatorsColumnDefs = useMemo(() => {
         return [
             {
@@ -240,8 +240,8 @@ const VoltageInitResult = ({ result, status }) => {
     }, [filterSelector, intl, onSortChanged, sortConfig, updateFilter]);
 
     const csvIndicators = useMemo(
-        () => (result.indicators ? Object.entries(result.indicators).map(([key, value]) => ({ key, value })) : null),
-        [result.indicators]
+        () => (result?.indicators ? Object.entries(result.indicators).map(([key, value]) => ({ key, value })) : null),
+        [result?.indicators]
     );
 
     return (
