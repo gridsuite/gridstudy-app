@@ -18,16 +18,16 @@ import { IntlShape } from 'react-intl';
 import { ColDef, PostSortRowsParams, ValueFormatterParams, ValueGetterParams } from 'ag-grid-community';
 import { ContingencyCellRenderer, convertDuration, formatNAValue } from 'components/spreadsheet/utils/cell-renderers';
 import {
+    FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
-    FILTER_DATA_TYPES,
-    FilterSelectorType,
-    FilterPropsType,
     FilterEnumsType,
+    FilterPropsType,
+    FilterSelectorType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { translateLimitNameFrontToBack, translateLimitNameBackToFront } from '../common/utils';
+import { translateLimitNameBackToFront, translateLimitNameFrontToBack } from '../common/utils';
 import { SECURITY_ANALYSIS_RESULT_N, SECURITY_ANALYSIS_RESULT_N_K } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType, { ComputingType } from '../../computing-status/computing-type';
@@ -35,6 +35,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
+import type { IntRange } from 'type-fest';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -713,25 +714,12 @@ export const convertFilterValues = (intl: IntlShape, filterSelector: FilterSelec
     });
 };
 
-export const PAGE_OPTIONS = [25, 100, 500, 1000];
+export const PAGE_OPTIONS = [25, 100, 500, 1000] as const;
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 
-export const getIdType = (index: number, nmkType: NMK_TYPE): string => {
-    return index === 0 || (index === 1 && nmkType === NMK_TYPE.CONTINGENCIES_FROM_CONSTRAINTS)
-        ? 'subjectId'
-        : 'contingencyId';
-};
+export const MAX_INT32 = 2147483647;
 
-export const MAX_INT32: number = 2147483647;
-
-export const getStoreFields = (index: number): string => {
-    switch (index) {
-        case 0:
-            return SECURITY_ANALYSIS_RESULT_N;
-        case 1:
-            return SECURITY_ANALYSIS_RESULT_N_K;
-        default:
-            return '';
-    }
-};
+export function getStoreFields(index: IntRange<0, 2>) {
+    return index === 0 ? SECURITY_ANALYSIS_RESULT_N : SECURITY_ANALYSIS_RESULT_N_K;
+}

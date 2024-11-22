@@ -31,10 +31,9 @@ import { downloadZipFile } from '../../../services/utils';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { useIntl } from 'react-intl';
 import { ExportButton } from '../../utils/export-button';
-import { setSensitivityAnalysisResultFilter } from 'redux/actions';
 import {
-    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_FILTER,
+    SENSITIVITY_ANALYSIS_RESULT_STORE_SORT,
 } from 'utils/store-sort-filter-fields';
 
 export const SensitivityResultTabs = [
@@ -56,14 +55,12 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
     const [page, setPage] = useState(0);
     const sensitivityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SENSITIVITY_ANALYSIS]);
 
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
-        filterTab: mappingTabs(sensiKind, nOrNkIndex),
-        filterStoreAction: setSensitivityAnalysisResultFilter,
-    });
-
+    const { updateFilter, filterSelector } = useAggridRowFilter(
+        SENSITIVITY_ANALYSIS_RESULT_STORE_FILTER,
+        mappingTabs(sensiKind, nOrNkIndex)
+    );
     const { onSortChanged, sortConfig } = useAgGridSort(
-        SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
+        SENSITIVITY_ANALYSIS_RESULT_STORE_SORT,
         mappingTabs(sensiKind, nOrNkIndex)
     );
 

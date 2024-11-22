@@ -13,6 +13,7 @@ import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import ReportTree from './report-tree';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
+import type { ComputingTypeAndNetworkModificationKeys } from '../../utils/report/report.constant';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -22,7 +23,7 @@ const styles = {
     },
 };
 
-type ReportViewerProps = { report: Report; reportType: string };
+export type ReportViewerProps = { report: Report; reportType: ComputingTypeAndNetworkModificationKeys };
 
 export default function ReportViewer({ report, reportType }: ReportViewerProps) {
     const dispatch = useDispatch();

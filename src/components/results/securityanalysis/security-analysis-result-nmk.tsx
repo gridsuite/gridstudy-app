@@ -22,6 +22,7 @@ import { SecurityAnalysisTable } from './security-analysis-table';
 import { RowClassParams } from 'ag-grid-community';
 import { Box, useTheme } from '@mui/material';
 import CustomTablePagination from '../../utils/custom-table-pagination';
+import type { Writable } from 'type-fest';
 
 const styles = {
     container: {
@@ -82,7 +83,10 @@ export const SecurityAnalysisResultNmk: FunctionComponent<SecurityAnalysisResult
                 />
             </Box>
             <Box>
-                <CustomTablePagination rowsPerPageOptions={PAGE_OPTIONS} {...paginationProps} />
+                <CustomTablePagination
+                    rowsPerPageOptions={PAGE_OPTIONS as Writable<typeof PAGE_OPTIONS>}
+                    {...paginationProps}
+                />
             </Box>
         </Box>
     );

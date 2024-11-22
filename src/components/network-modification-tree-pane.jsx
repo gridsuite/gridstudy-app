@@ -14,8 +14,8 @@ import {
     removeNotificationByNode,
     networkModificationHandleSubtree,
     setSelectionForCopy,
-    resetLogsFilter,
 } from '../redux/actions';
+import { resetLogsFilter } from '../redux/redux.tables';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
 import { Box } from '@mui/material';

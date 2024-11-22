@@ -32,7 +32,8 @@ import {
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
 import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
+import { updateTableDefinition } from '../../../redux/actions';
+import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet } from '../../../redux/redux.tables';
 import { TABLES_DEFINITIONS, TABLES_TYPES, type TablesDefinitionsType } from '../config/config-tables';
 import { AppState } from 'redux/reducer';
 import { FormattedMessage } from 'react-intl';

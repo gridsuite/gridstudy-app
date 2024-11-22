@@ -29,13 +29,9 @@ import {
 } from '@gridsuite/commons-ui';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import {
-    ADD_FILTER_FOR_NEW_SPREADSHEET,
     ADD_NOTIFICATION,
-    ADD_SORT_FOR_NEW_SPREADSHEET,
     ADD_TO_RECENT_GLOBAL_FILTERS,
-    AddFilterForNewSpreadsheetAction,
     AddNotificationAction,
-    AddSortForNewSpreadsheetAction,
     AddToRecentGlobalFiltersAction,
     AppActions,
     CENTER_LABEL,
@@ -66,8 +62,6 @@ import {
     DeleteEquipmentsAction,
     DIAGONAL_LABEL,
     DiagonalLabelAction,
-    DYNAMIC_SIMULATION_RESULT_FILTER,
-    DynamicSimulationResultFilterAction,
     ENABLE_DEVELOPER_MODE,
     EnableDeveloperModeAction,
     FAVORITE_CONTINGENCY_LISTS,
@@ -95,11 +89,7 @@ import {
     LOAD_EQUIPMENTS,
     LOAD_NETWORK_MODIFICATION_TREE_SUCCESS,
     LoadEquipmentsAction,
-    LOADFLOW_RESULT_FILTER,
-    LoadflowResultFilterAction,
     LoadNetworkModificationTreeSuccessAction,
-    LOGS_FILTER,
-    LogsFilterAction,
     MAP_BASEMAP,
     MAP_DATA_LOADING,
     MAP_EQUIPMENTS_CREATED,
@@ -135,17 +125,13 @@ import {
     RESET_EQUIPMENTS,
     RESET_EQUIPMENTS_BY_TYPES,
     RESET_EQUIPMENTS_POST_LOADFLOW,
-    RESET_LOGS_FILTER,
     RESET_MAP_RELOADED,
     RESET_NETWORK_AREA_DIAGRAM_DEPTH,
     ResetEquipmentsAction,
     ResetEquipmentsByTypesAction,
     ResetEquipmentsPostLoadflowAction,
-    ResetLogsFilterAction,
     ResetMapReloadedAction,
     ResetNetworkAreaDiagramDepthAction,
-    SECURITY_ANALYSIS_RESULT_FILTER,
-    SecurityAnalysisResultFilterAction,
     SELECT_COMPUTED_LANGUAGE,
     SELECT_LANGUAGE,
     SELECT_THEME,
@@ -154,8 +140,6 @@ import {
     SelectionForCopyAction,
     SelectLanguageAction,
     SelectThemeAction,
-    SENSITIVITY_ANALYSIS_RESULT_FILTER,
-    SensitivityAnalysisResultFilterAction,
     SET_COMPUTATION_STARTING,
     SET_COMPUTING_STATUS,
     SET_EVENT_SCENARIO_DRAWER_OPEN,
@@ -180,10 +164,6 @@ import {
     SetParamsLoadedAction,
     SetStudyDisplayModeAction,
     SetStudyIndexationStatusAction,
-    SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-    ShortcircuitAnalysisResultFilterAction,
-    SPREADSHEET_FILTER,
-    SpreadsheetFilterAction,
     STOP_DIAGRAM_BLINK,
     StopDiagramBlinkAction,
     STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
@@ -192,8 +172,6 @@ import {
     StudyUpdatedAction,
     SUBSTATION_LAYOUT,
     SubstationLayoutAction,
-    TABLE_SORT,
-    TableSortAction,
     TOGGLE_PIN_DIAGRAM,
     TogglePinDiagramAction,
     UPDATE_EQUIPMENTS,
@@ -260,49 +238,29 @@ import { RunningStatus } from 'components/utils/running-status';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { IOptionalService, OptionalServicesNames, OptionalServicesStatus } from '../components/utils/optional-services';
 import { formatFetchedEquipments } from 'components/spreadsheet/utils/equipment-table-utils';
-import {
-    ALL_BUSES,
-    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    LOADFLOW_CURRENT_LIMIT_VIOLATION,
-    LOADFLOW_RESULT,
-    LOADFLOW_RESULT_SORT_STORE,
-    LOADFLOW_RESULT_STORE_FIELD,
-    LOADFLOW_VOLTAGE_LIMIT_VIOLATION,
-    LOGS_STORE_FIELD,
-    ONE_BUS,
-    SECURITY_ANALYSIS_RESULT_N,
-    SECURITY_ANALYSIS_RESULT_N_K,
-    SECURITY_ANALYSIS_RESULT_SORT_STORE,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
-    SENSITIVITY_ANALYSIS_RESULT_SORT_STORE,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
-    SENSITIVITY_AT_NODE_N,
-    SENSITIVITY_AT_NODE_N_K,
-    SENSITIVITY_IN_DELTA_A_N,
-    SENSITIVITY_IN_DELTA_A_N_K,
-    SENSITIVITY_IN_DELTA_MW_N,
-    SENSITIVITY_IN_DELTA_MW_N_K,
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-    SPREADSHEET_SORT_STORE,
-    SPREADSHEET_STORE_FIELD,
-    TABLE_SORT_STORE,
-    TIMELINE,
-} from '../utils/store-sort-filter-fields';
+import { LOGS_STORE_FILTER, SPREADSHEET_STORE_FILTER, SPREADSHEET_STORE_SORT } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
-import { Node } from '@xyflow/react';
-import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
+import { type Node } from '@xyflow/react';
 import { CopyType, StudyDisplayMode } from '../components/network-modification.type';
 import { CustomEntry } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, NodeType, RootNodeData } from '../components/graph/tree-node.type';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../utils/report/report.constant';
 import { BUILD_STATUS } from '../components/network/constants';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
+import {
+    addFilterForNewSpreadsheet,
+    addSortForNewSpreadsheet,
+    type AppStateTables,
+    initialLogsFilterState,
+    initialTablesAppState,
+    resetLogsFilter,
+    setLogsFilter,
+    setTableFilter,
+    setTableSort,
+} from './redux.tables';
 
 export enum NotificationType {
     STUDY = 'study',
@@ -406,19 +364,6 @@ export interface ComputingStatus {
     [ComputingType.STATE_ESTIMATION]: RunningStatus;
 }
 
-export type TableSortConfig = Record<string, SortConfigType[]>;
-export type TableSort = {
-    [SPREADSHEET_SORT_STORE]: TableSortConfig;
-    [LOADFLOW_RESULT_SORT_STORE]: TableSortConfig;
-    [SECURITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-    [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
-    [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
-};
-export type TableSortKeysType = keyof TableSort;
-
-export type SpreadsheetFilterState = Record<string, UnknownArray>;
-
 export type DiagramState = {
     id: UUID;
     svgType: DiagramType;
@@ -442,7 +387,7 @@ export type SelectionForCopy = {
 
 export type Actions = AppActions | AuthenticationActions;
 
-export interface AppState extends CommonStoreState {
+export type AppState = CommonStoreState & {
     signInCallbackError: Error | null;
     authenticationRouterError: AuthenticationRouterErrorState | null;
     showAuthenticationRouterLogin: boolean;
@@ -463,8 +408,6 @@ export interface AppState extends CommonStoreState {
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
     studyIndexationStatus: StudyIndexationStatus;
-    tableSort: TableSort;
-    tables: TablesState;
 
     limitReductionModified: boolean;
     selectionForCopy: SelectionForCopy;
@@ -477,8 +420,6 @@ export interface AppState extends CommonStoreState {
         id: string;
         svgType?: DiagramType;
     };
-    allLockedColumnsNames: string[];
-    allReorderedTableDefinitionIndexes: string[];
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
@@ -488,7 +429,6 @@ export interface AppState extends CommonStoreState {
     isModificationsInProgress: boolean;
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
-    spreadsheetNetwork: SpreadsheetNetworkState;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -512,49 +452,12 @@ export interface AppState extends CommonStoreState {
     [PARAM_INIT_NAD_WITH_GEO_DATA]: boolean;
     [PARAMS_LOADED]: boolean;
 
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: UnknownArray;
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: UnknownArray;
-        [LOADFLOW_RESULT]: UnknownArray;
-    };
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: UnknownArray;
-        [SECURITY_ANALYSIS_RESULT_N_K]: UnknownArray;
-    };
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_MW_N_K]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_A_N]: UnknownArray;
-        [SENSITIVITY_IN_DELTA_A_N_K]: UnknownArray;
-        [SENSITIVITY_AT_NODE_N]: UnknownArray;
-        [SENSITIVITY_AT_NODE_N_K]: UnknownArray;
-    };
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: UnknownArray;
-        [ALL_BUSES]: UnknownArray;
-    };
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: UnknownArray;
-    };
-
-    [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
-
-    [LOGS_STORE_FIELD]: LogsFilterState;
-}
-
-export type LogsFilterState = Record<string, unknown[]>;
-const initialLogsFilterState: LogsFilterState = {
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NETWORK_MODIFICATION]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.LOAD_FLOW]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SECURITY_ANALYSIS]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SENSITIVITY_ANALYSIS]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.SHORT_CIRCUIT_ONE_BUS]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.DYNAMIC_SIMULATION]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.VOLTAGE_INITIALIZATION]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.STATE_ESTIMATION]: [],
-    [COMPUTING_AND_NETWORK_MODIFICATION_TYPE.NON_EVACUATED_ENERGY_ANALYSIS]: [],
-};
+    // spreadsheet config & data
+    spreadsheetNetwork: SpreadsheetNetworkState;
+    tables: TablesState;
+    allLockedColumnsNames: string[];
+    allReorderedTableDefinitionIndexes: string[];
+} & AppStateTables;
 
 export type SpreadsheetNetworkState = Record<SpreadsheetEquipmentType, Identifiable[] | null>;
 const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
@@ -689,101 +592,7 @@ const initialState: AppState = {
     recentGlobalFilters: [],
     lastCompletedComputation: null,
 
-    // Results filters
-    [LOADFLOW_RESULT_STORE_FIELD]: {
-        [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [],
-        [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [],
-        [LOADFLOW_RESULT]: [],
-    },
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SECURITY_ANALYSIS_RESULT_N]: [],
-        [SECURITY_ANALYSIS_RESULT_N_K]: [],
-    },
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: {
-        [SENSITIVITY_IN_DELTA_MW_N]: [],
-        [SENSITIVITY_IN_DELTA_MW_N_K]: [],
-        [SENSITIVITY_IN_DELTA_A_N]: [],
-        [SENSITIVITY_IN_DELTA_A_N_K]: [],
-        [SENSITIVITY_AT_NODE_N]: [],
-        [SENSITIVITY_AT_NODE_N_K]: [],
-    },
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: {
-        [ONE_BUS]: [],
-        [ALL_BUSES]: [],
-    },
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
-        [TIMELINE]: [],
-    },
-
-    // Spreadsheet filters
-    [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
-        .map((tabDef) => tabDef.name)
-        .reduce((acc, tabName) => ({ ...acc, [tabName]: [] }), {}),
-
-    [LOGS_STORE_FIELD]: { ...initialLogsFilterState },
-
-    [TABLE_SORT_STORE]: {
-        [SPREADSHEET_SORT_STORE]: Object.values(initialTablesState.definitions)
-            .map((tabDef) => tabDef.name)
-            .reduce((acc, tabName) => {
-                acc[tabName] = [
-                    {
-                        colId: 'id',
-                        sort: SortWay.ASC,
-                    },
-                ];
-                return acc;
-            }, {} as TableSortConfig),
-        [LOADFLOW_RESULT_SORT_STORE]: {
-            [LOADFLOW_CURRENT_LIMIT_VIOLATION]: [
-                {
-                    colId: 'overload',
-                    sort: SortWay.DESC,
-                },
-            ],
-            [LOADFLOW_VOLTAGE_LIMIT_VIOLATION]: [
-                {
-                    colId: 'subjectId',
-                    sort: SortWay.DESC,
-                },
-            ],
-            [LOADFLOW_RESULT]: [
-                {
-                    colId: 'connectedComponentNum',
-                    sort: SortWay.DESC,
-                },
-            ],
-        },
-        [SECURITY_ANALYSIS_RESULT_SORT_STORE]: {
-            [SECURITY_ANALYSIS_RESULT_N]: [{ colId: 'subjectId', sort: SortWay.ASC }],
-            [SECURITY_ANALYSIS_RESULT_N_K]: [
-                {
-                    colId: 'contingencyId',
-                    sort: SortWay.ASC,
-                },
-            ],
-        },
-        [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: {
-            [SENSITIVITY_IN_DELTA_MW_N]: [{ colId: 'value', sort: SortWay.ASC }],
-            [SENSITIVITY_IN_DELTA_MW_N_K]: [{ colId: 'valueAfter', sort: SortWay.ASC }],
-            [SENSITIVITY_IN_DELTA_A_N]: [{ colId: 'value', sort: SortWay.ASC }],
-            [SENSITIVITY_IN_DELTA_A_N_K]: [{ colId: 'valueAfter', sort: SortWay.ASC }],
-            [SENSITIVITY_AT_NODE_N]: [{ colId: 'value', sort: SortWay.ASC }],
-            [SENSITIVITY_AT_NODE_N_K]: [{ colId: 'valueAfter', sort: SortWay.ASC }],
-        },
-        [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: {
-            [TIMELINE]: [
-                {
-                    colId: 'time',
-                    sort: SortWay.ASC,
-                },
-            ],
-        },
-        [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: {
-            [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
-            [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
-        },
-    },
+    ...initialTablesAppState,
 
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
@@ -793,7 +602,6 @@ const initialState: AppState = {
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
-
         if (action.studyRef[0] != null) {
             state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
         }
@@ -1615,10 +1423,7 @@ export const reducer = createReducer(initialState, (builder) => {
         SET_ONE_BUS_SHORTCIRCUIT_ANALYSIS_DIAGRAM,
         (state, action: SetOneBusShortcircuitAnalysisDiagramAction) => {
             state.oneBusShortCircuitAnalysisDiagram = action.diagramId
-                ? {
-                      diagramId: action.diagramId,
-                      nodeId: action.nodeId,
-                  }
+                ? { diagramId: action.diagramId, nodeId: action.nodeId }
                 : null;
         }
     );
@@ -1645,60 +1450,38 @@ export const reducer = createReducer(initialState, (builder) => {
         state.lastCompletedComputation = action.lastCompletedComputation;
     });
 
-    builder.addCase(LOADFLOW_RESULT_FILTER, (state, action: LoadflowResultFilterAction) => {
-        state[LOADFLOW_RESULT_STORE_FIELD][action.filterTab] = action[LOADFLOW_RESULT_STORE_FIELD];
+    builder.addCase(setTableFilter, (state, action) => {
+        // @ts-expect-error we don't know at compile time which table tab it is
+        state[action.payload.table][action.payload.tab] = action.payload.filter;
     });
 
-    builder.addCase(SECURITY_ANALYSIS_RESULT_FILTER, (state, action: SecurityAnalysisResultFilterAction) => {
-        state[SECURITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] = action[SECURITY_ANALYSIS_RESULT_STORE_FIELD];
+    builder.addCase(addFilterForNewSpreadsheet, (state, action) => {
+        state[SPREADSHEET_STORE_FILTER][action.payload.newTabName] = action.payload.value;
     });
 
-    builder.addCase(SENSITIVITY_ANALYSIS_RESULT_FILTER, (state, action: SensitivityAnalysisResultFilterAction) => {
-        state[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
+    builder.addCase(setLogsFilter, (state, action) => {
+        state[LOGS_STORE_FILTER][action.payload.filterTab] = action.payload.newConfig;
     });
 
-    builder.addCase(SHORTCIRCUIT_ANALYSIS_RESULT_FILTER, (state, action: ShortcircuitAnalysisResultFilterAction) => {
-        state[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD][action.filterTab] =
-            action[SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
+    builder.addCase(resetLogsFilter, (state, action) => {
+        state[LOGS_STORE_FILTER] = { ...initialLogsFilterState };
     });
 
-    builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
-        state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
+    builder.addCase(setTableSort, (state, action) => {
+        // @ts-expect-error we don't know at compile time which table tab it is
+        state[action.payload.table][action.payload.tab] = action.payload.sort;
     });
 
-    builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
-        state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
-    });
-
-    builder.addCase(ADD_FILTER_FOR_NEW_SPREADSHEET, (state, action: AddFilterForNewSpreadsheetAction) => {
-        const { newTabName, value } = action.payload;
-        state[SPREADSHEET_STORE_FIELD][newTabName] = value;
-    });
-
-    builder.addCase(LOGS_FILTER, (state, action: LogsFilterAction) => {
-        state[LOGS_STORE_FIELD][action.filterTab] = action[LOGS_STORE_FIELD];
-    });
-
-    builder.addCase(RESET_LOGS_FILTER, (state, action: ResetLogsFilterAction) => {
-        state[LOGS_STORE_FIELD] = {
-            ...initialLogsFilterState,
-        };
-    });
-
-    builder.addCase(TABLE_SORT, (state, action: TableSortAction) => {
-        state.tableSort[action.table][action.tab] = action.sort;
-    });
-
-    builder.addCase(ADD_SORT_FOR_NEW_SPREADSHEET, (state, action: AddSortForNewSpreadsheetAction) => {
-        const { newTabName, value } = action.payload;
-        state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
+    builder.addCase(addSortForNewSpreadsheet, (state, action) => {
+        state[SPREADSHEET_STORE_SORT][action.payload.newTabName] = action.payload.value;
     });
 
     builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
         state.tables.allCustomColumnsDefinitions[action.table].columns = action.definitions;
     });
 });
+
+//export type ReducerActions = ActionFromReducer<typeof reducer>;  give UnknownAction ...
 
 function updateSubstationAfterVLDeletion(currentSubstations: Substation[], VLToDeleteId: string): Substation[] {
     const substationToUpdateIndex = currentSubstations.findIndex((sub) =>

@@ -4,16 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { memo, useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { useTheme } from '@mui/material/styles';
-import { setLogsFilter } from '../../redux/actions';
+import { setLogsFilter } from '../../redux/redux.tables';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
+import {
+    FILTER_DATA_TYPES,
+    FILTER_TEXT_COMPARATORS,
+    type FilterSelectorType,
+} from 'components/custom-aggrid/custom-aggrid-header.type';
 import { EllipsisCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
-import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
-import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { useAggridRowFilter } from '../../hooks/use-aggrid-row-filter';
+import { LOGS_STORE_FILTER } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
 import { getDefaultSeverityFilter } from '../../utils/report/report-severity';
@@ -23,31 +27,37 @@ import { Box, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
 import { ReportLog, ReportType } from 'utils/report/report.type';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
+import { type ComputingTypeAndNetworkModificationKeys } from '../../utils/report/report.constant';
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
+export function getColumnFilterValue(array: FilterSelectorType[] | null, columnName: string) {
+    return array?.find((item) => item.column === columnName)?.value ?? null;
+}
+
 type LogTableProps = {
     selectedReportId: string;
-    reportType: string;
+    reportType: ComputingTypeAndNetworkModificationKeys;
     reportNature: ReportType;
     severities: string[];
     onRowClick: (data: ReportLog) => void;
 };
 
-const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }: LogTableProps) => {
+export default function LogTable({
+    selectedReportId,
+    reportType,
+    reportNature,
+    severities,
+    onRowClick,
+}: Readonly<LogTableProps>) {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
 
     const dispatch = useDispatch();
 
-    const [, , fetchReportLogs] = useReportFetcher(reportType as keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE);
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: LOGS_STORE_FIELD,
-        filterTab: reportType,
-        filterStoreAction: setLogsFilter,
-    });
+    const [, , fetchReportLogs] = useReportFetcher(reportType);
+    const { updateFilter, filterSelector } = useAggridRowFilter(LOGS_STORE_FILTER, reportType);
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
     const [rowData, setRowData] = useState<ReportLog[] | null>(null);
@@ -69,20 +79,23 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             resetSearch();
             return;
         }
-        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
-            const transformedLogs = reportLogs.map(
-                (log) =>
-                    ({
-                        severity: log.severity.name,
-                        message: log.message,
-                        parentId: log.parentId,
-                        backgroundColor: log.severity.colorName,
-                    } as unknown as ReportLog)
-            );
-            setSelectedRowIndex(-1);
-            setRowData(transformedLogs);
-            resetSearch();
-        });
+        // TODO manage severityFilter cases string|number and messageFilter cases number|string[]|null
+        fetchReportLogs(selectedReportId, severityFilter as string[], reportNature, messageFilter as string).then(
+            (reportLogs) => {
+                const transformedLogs = reportLogs.map(
+                    (log) =>
+                        ({
+                            severity: log.severity.name,
+                            message: log.message,
+                            parentId: log.parentId,
+                            backgroundColor: log.severity.colorName,
+                        } as unknown as ReportLog)
+                );
+                setSelectedRowIndex(-1);
+                setRowData(transformedLogs);
+                resetSearch();
+            }
+        );
     }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId, resetSearch]);
 
     useEffect(() => {
@@ -116,7 +129,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const shouldDisplayFilterBadge = useMemo(() => {
         const defaultSeverityFilter = getDefaultSeverityFilter(severities);
 
-        const severitySet: Set<string> = new Set(severityFilter);
+        // TODO manage severityFilter cases string|number
+        const severitySet: Set<string> = new Set(severityFilter as string[]);
         const defaultSeveritySet = new Set(defaultSeverityFilter);
 
         if (severitySet.size !== defaultSeveritySet.size) {
@@ -298,7 +312,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             </Box>
         </Box>
     );
-};
+}
 
 LogTable.propTypes = {
     selectedReportId: PropTypes.string,
@@ -307,5 +321,3 @@ LogTable.propTypes = {
     severities: PropTypes.arrayOf(PropTypes.string),
     onRowClick: PropTypes.func,
 };
-
-export default memo(LogTable);

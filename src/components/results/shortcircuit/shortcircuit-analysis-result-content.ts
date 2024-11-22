@@ -10,7 +10,7 @@ import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { kiloUnitToUnit } from '../../../utils/unit-converter';
 
-export const PAGE_OPTIONS = [25, 100, 500, 1000];
+export const PAGE_OPTIONS = [25, 100, 500, 1000] as const;
 
 export const DEFAULT_PAGE_COUNT = PAGE_OPTIONS[0];
 
@@ -36,16 +36,9 @@ export const FROM_COLUMN_TO_FIELD_ONE_BUS: Record<string, string> = {
     side: 'side',
 };
 
-export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
-    switch (analysisType) {
-        case ShortCircuitAnalysisType.ONE_BUS:
-            return ONE_BUS;
-        case ShortCircuitAnalysisType.ALL_BUSES:
-            return ALL_BUSES;
-        default:
-            return '';
-    }
-};
+export function mappingTabs(analysisType: ShortCircuitAnalysisType) {
+    return analysisType === ShortCircuitAnalysisType.ONE_BUS ? ONE_BUS : ALL_BUSES;
+}
 
 export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
     return filterSelector.map((filter) => {

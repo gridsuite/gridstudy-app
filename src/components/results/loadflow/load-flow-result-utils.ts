@@ -33,6 +33,7 @@ import computingType, { ComputingType } from '../../computing-status/computing-t
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
+import type { IntRange } from 'type-fest';
 
 export const convertMillisecondsToMinutesSeconds = (durationInMilliseconds: number): string => {
     const durationInSeconds = Math.floor(durationInMilliseconds / 1000);
@@ -98,25 +99,11 @@ const numericFilterParams = {
     filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
 };
 
-export const getIdType = (index: number): string => {
-    switch (index) {
-        case 0:
-            return 'overload';
-        case 1:
-            return 'subjectId';
-        case 2:
-            return 'connectedComponentNum';
-        default:
-            return '';
-    }
-};
-
 export const mappingFields = (index: number): Record<string, string> => {
     switch (index) {
         case 0:
         case 1:
             return FROM_COLUMN_TO_FIELD_LIMIT_VIOLATION_RESULT;
-
         case 2:
             return FROM_COLUMN_TO_FIELD_LOADFLOW_RESULT;
         default:
@@ -124,7 +111,7 @@ export const mappingFields = (index: number): Record<string, string> => {
     }
 };
 
-export const mappingTabs = (index: number): string => {
+export function mappingTabs(index: IntRange<0, 3>) {
     switch (index) {
         case 0:
             return LOADFLOW_CURRENT_LIMIT_VIOLATION;
@@ -132,10 +119,8 @@ export const mappingTabs = (index: number): string => {
             return LOADFLOW_VOLTAGE_LIMIT_VIOLATION;
         case 2:
             return LOADFLOW_RESULT;
-        default:
-            return '';
     }
-};
+}
 
 export const makeData = (
     overloadedEquipments: OverloadedEquipmentFromBack[],

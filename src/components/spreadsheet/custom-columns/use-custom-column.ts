@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useMemo, useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { AppState } from 'redux/reducer';
-import { create, all, bignumber } from 'mathjs';
+import { all, bignumber, create } from 'mathjs';
 import { useSelector } from 'react-redux';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_STORE_SORT } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 
 export function useCustomColumn(tabIndex: number) {
@@ -21,8 +21,9 @@ export function useCustomColumn(tabIndex: number) {
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
 
     const { onSortChanged, sortConfig } = useAgGridSort(
-        SPREADSHEET_SORT_STORE,
-        tablesDefinitionIndexes.get(tabIndex)!.name
+        SPREADSHEET_STORE_SORT,
+        // @ts-expect-error TODO: manage undefined case
+        tablesDefinitionIndexes.get(tabIndex)?.name
     );
 
     const math = useMemo(() => {

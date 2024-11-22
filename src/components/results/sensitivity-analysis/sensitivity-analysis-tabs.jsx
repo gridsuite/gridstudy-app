@@ -6,7 +6,7 @@
  */
 
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl/lib';
+import { FormattedMessage } from 'react-intl';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useParameterState } from '../../dialogs/parameters/parameters';

@@ -68,9 +68,8 @@ import ComputingType from 'components/computing-status/computing-type';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { setSpreadsheetFilter } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { SPREADSHEET_STORE_FILTER, SPREADSHEET_STORE_SORT } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import CustomColumnsSave from './custom-columns/custom-columns-save';
@@ -262,13 +261,12 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         );
     }, [disabled, selectedColumnsNames, currentTabType, currentColumns]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
-
-    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-        filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: currentTabName(),
-        filterStoreAction: setSpreadsheetFilter,
-    });
+    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_STORE_SORT, currentTabName());
+    const { updateFilter, filterSelector } = useAggridLocalRowFilter(
+        gridRef,
+        SPREADSHEET_STORE_FILTER,
+        currentTabName()
+    );
 
     const equipmentDefinition = useMemo(
         () => ({

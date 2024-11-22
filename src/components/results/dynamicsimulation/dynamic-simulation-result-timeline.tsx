@@ -32,10 +32,9 @@ import {
 import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
-import { setDynamicSimulationResultFilter } from 'redux/actions';
 import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    DYNAMIC_SIMULATION_RESULT_SORT_STORE,
+    DYNAMIC_SIMULATION_RESULT_STORE_FILTER,
+    DYNAMIC_SIMULATION_RESULT_STORE_SORT,
     TIMELINE,
 } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
@@ -77,14 +76,12 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
         dynamicSimulationResultInvalidations
     );
 
-    const { onSortChanged, sortConfig } = useAgGridSort(DYNAMIC_SIMULATION_RESULT_SORT_STORE, TIMELINE);
-
-    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-        filterType: DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-        filterTab: TIMELINE,
-        // @ts-expect-error TODO: found how to have Action type in props type
-        filterStoreAction: setDynamicSimulationResultFilter,
-    });
+    const { onSortChanged, sortConfig } = useAgGridSort(DYNAMIC_SIMULATION_RESULT_STORE_SORT, TIMELINE);
+    const { updateFilter, filterSelector } = useAggridLocalRowFilter(
+        gridRef,
+        DYNAMIC_SIMULATION_RESULT_STORE_FILTER,
+        TIMELINE
+    );
 
     const sortAndFilterProps = useMemo(
         () => ({

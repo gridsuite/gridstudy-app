@@ -13,4 +13,6 @@ export const GLOBAL_REPORT_NODE_LABEL = 'Logs';
 export const COMPUTING_AND_NETWORK_MODIFICATION_TYPE = {
     ...ComputingType,
     NETWORK_MODIFICATION: 'NETWORK_MODIFICATION',
-};
+} as const;
+
+export type ComputingTypeAndNetworkModificationKeys = keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE;

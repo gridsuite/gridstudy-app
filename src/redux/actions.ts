@@ -38,14 +38,12 @@ import NetworkModificationTreeModel from '../components/graph/network-modificati
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
 import {
-    AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
     StudyIndexationStatus,
     StudyUpdatedEventData,
-    TableSortKeysType,
 } from './reducer';
 import { ComputingType } from '../components/computing-status/computing-type';
 import { RunningStatus } from '../components/utils/running-status';
@@ -54,16 +52,14 @@ import { FluxConventions } from '../components/dialogs/parameters/network-parame
 import { DiagramType, SubstationLayout } from '../components/diagrams/diagram-common';
 import { Filter } from '../components/results/common/results-global-filter';
 import {
-    DYNAMIC_SIMULATION_RESULT_STORE_FIELD,
-    LOADFLOW_RESULT_STORE_FIELD,
-    LOGS_STORE_FIELD,
-    SECURITY_ANALYSIS_RESULT_STORE_FIELD,
-    SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-    SPREADSHEET_STORE_FIELD,
-} from '../utils/store-sort-filter-fields';
+    type AddFilterForNewSpreadsheetAction,
+    type AddSortForNewSpreadsheetAction,
+    type LogsFilterAction,
+    type ResetLogsFilterAction,
+    type TableFilterAction,
+    type TableSortAction,
+} from './redux.tables';
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
-import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
 import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
@@ -150,13 +146,12 @@ export type AppActions =
     | SetOneBusShortcircuitAnalysisDiagramAction
     | AddToRecentGlobalFiltersAction
     | SetLastCompletedComputationAction
-    | LoadflowResultFilterAction
-    | SecurityAnalysisResultFilterAction
-    | SensitivityAnalysisResultFilterAction
-    | ShortcircuitAnalysisResultFilterAction
-    | DynamicSimulationResultFilterAction
-    | SpreadsheetFilterAction
+    | TableSortAction
+    | TableFilterAction
+    | AddFilterForNewSpreadsheetAction
+    | AddSortForNewSpreadsheetAction
     | LogsFilterAction
+    | ResetLogsFilterAction
     | CustomColumnsDefinitionsAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
@@ -1047,141 +1042,6 @@ export function setLastCompletedComputation(
     };
 }
 
-export const LOADFLOW_RESULT_FILTER = 'LOADFLOW_RESULT_FILTER';
-export type LoadflowResultFilterAction = Readonly<Action<typeof LOADFLOW_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD];
-    [LOADFLOW_RESULT_STORE_FIELD]: MutableUnknownArray;
-};
-export function setLoadflowResultFilter(
-    filterTab: keyof AppState[typeof LOADFLOW_RESULT_STORE_FIELD],
-    loadflowResultFilter: MutableUnknownArray
-): LoadflowResultFilterAction {
-    return {
-        type: LOADFLOW_RESULT_FILTER,
-        filterTab: filterTab,
-        [LOADFLOW_RESULT_STORE_FIELD]: loadflowResultFilter,
-    };
-}
-
-export const SECURITY_ANALYSIS_RESULT_FILTER = 'SECURITY_ANALYSIS_RESULT_FILTER';
-export type SecurityAnalysisResultFilterAction = Readonly<Action<typeof SECURITY_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: MutableUnknownArray;
-};
-export function setSecurityAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SECURITY_ANALYSIS_RESULT_STORE_FIELD],
-    securityAnalysisResultFilter: MutableUnknownArray
-): SecurityAnalysisResultFilterAction {
-    return {
-        type: SECURITY_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SECURITY_ANALYSIS_RESULT_STORE_FIELD]: securityAnalysisResultFilter,
-    };
-}
-
-export const SENSITIVITY_ANALYSIS_RESULT_FILTER = 'SENSITIVITY_ANALYSIS_RESULT_FILTER';
-export type SensitivityAnalysisResultFilterAction = Readonly<Action<typeof SENSITIVITY_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD];
-    [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: MutableUnknownArray;
-};
-export function setSensitivityAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD],
-    sensitivityAnalysisResultFilter: MutableUnknownArray
-): SensitivityAnalysisResultFilterAction {
-    return {
-        type: SENSITIVITY_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD]: sensitivityAnalysisResultFilter,
-    };
-}
-
-export const SHORTCIRCUIT_ANALYSIS_RESULT_FILTER = 'SHORTCIRCUIT_ANALYSIS_RESULT_FILTER';
-export type ShortcircuitAnalysisResultFilterAction = Readonly<Action<typeof SHORTCIRCUIT_ANALYSIS_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD];
-    [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: MutableUnknownArray;
-};
-export function setShortcircuitAnalysisResultFilter(
-    filterTab: keyof AppState[typeof SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD],
-    shortcircuitAnalysisResultFilter: MutableUnknownArray
-): ShortcircuitAnalysisResultFilterAction {
-    return {
-        type: SHORTCIRCUIT_ANALYSIS_RESULT_FILTER,
-        filterTab: filterTab,
-        [SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD]: shortcircuitAnalysisResultFilter,
-    };
-}
-
-export const DYNAMIC_SIMULATION_RESULT_FILTER = 'DYNAMIC_SIMULATION_RESULT_FILTER';
-export type DynamicSimulationResultFilterAction = Readonly<Action<typeof DYNAMIC_SIMULATION_RESULT_FILTER>> & {
-    filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
-    [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: MutableUnknownArray;
-};
-export function setDynamicSimulationResultFilter(
-    filterTab: keyof AppState[typeof DYNAMIC_SIMULATION_RESULT_STORE_FIELD],
-    dynamicSimulationResultFilter: MutableUnknownArray
-): DynamicSimulationResultFilterAction {
-    return {
-        type: DYNAMIC_SIMULATION_RESULT_FILTER,
-        filterTab: filterTab,
-        [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: dynamicSimulationResultFilter,
-    };
-}
-
-export const SPREADSHEET_FILTER = 'SPREADSHEET_FILTER';
-export type SpreadsheetFilterAction = Readonly<Action<typeof SPREADSHEET_FILTER>> & {
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD];
-    [SPREADSHEET_STORE_FIELD]: MutableUnknownArray;
-};
-export function setSpreadsheetFilter(
-    filterTab: keyof AppState[typeof SPREADSHEET_STORE_FIELD],
-    spreadsheetFilter: MutableUnknownArray
-): SpreadsheetFilterAction {
-    return {
-        type: SPREADSHEET_FILTER,
-        filterTab: filterTab,
-        [SPREADSHEET_STORE_FIELD]: spreadsheetFilter,
-    };
-}
-
-export const LOGS_FILTER = 'LOGS_FILTER';
-export type LogsFilterAction = Readonly<Action<typeof LOGS_FILTER>> & {
-    filterTab: keyof AppState[typeof LOGS_STORE_FIELD];
-    [LOGS_STORE_FIELD]: MutableUnknownArray;
-};
-export function setLogsFilter(
-    filterTab: keyof AppState[typeof LOGS_STORE_FIELD],
-    logsFilter: MutableUnknownArray
-): LogsFilterAction {
-    return {
-        type: LOGS_FILTER,
-        filterTab: filterTab,
-        [LOGS_STORE_FIELD]: logsFilter,
-    };
-}
-
-export const RESET_LOGS_FILTER = 'RESET_LOGS_FILTER';
-export type ResetLogsFilterAction = Readonly<Action<typeof RESET_LOGS_FILTER>>;
-export function resetLogsFilter(): ResetLogsFilterAction {
-    return {
-        type: RESET_LOGS_FILTER,
-    };
-}
-
-export const TABLE_SORT = 'TABLE_SORT';
-export type TableSortAction = Readonly<Action<typeof TABLE_SORT>> & {
-    table: TableSortKeysType;
-    tab: string; //AppState['tableSort'][T];
-    sort: SortConfigType[];
-};
-export function setTableSort(table: TableSortKeysType, tab: string, sort: SortConfigType[]): TableSortAction {
-    return {
-        type: TABLE_SORT,
-        table,
-        tab,
-        sort,
-    };
-}
-
 export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
 export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
     table: LiteralUnion<TablesDefinitionsNames, string>;
@@ -1214,40 +1074,4 @@ export const updateTableDefinition = (
 ): UpdateTableDefinitionAction => ({
     type: UPDATE_TABLE_DEFINITION,
     payload: { newTableDefinition, customColumns },
-});
-
-export const ADD_FILTER_FOR_NEW_SPREADSHEET = 'ADD_FILTER_FOR_NEW_SPREADSHEET';
-
-export type AddFilterForNewSpreadsheetAction = {
-    type: typeof ADD_FILTER_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: MutableUnknownArray };
-};
-
-export const addFilterForNewSpreadsheet = (
-    newTabName: string,
-    value: MutableUnknownArray
-): AddFilterForNewSpreadsheetAction => ({
-    type: ADD_FILTER_FOR_NEW_SPREADSHEET,
-    payload: {
-        newTabName,
-        value,
-    },
-});
-
-export const ADD_SORT_FOR_NEW_SPREADSHEET = 'ADD_SORT_FOR_NEW_SPREADSHEET';
-
-export type AddSortForNewSpreadsheetAction = {
-    type: typeof ADD_SORT_FOR_NEW_SPREADSHEET;
-    payload: { newTabName: string; value: SortConfigType[] };
-};
-
-export const addSortForNewSpreadsheet = (
-    newTabName: string,
-    value: SortConfigType[]
-): AddSortForNewSpreadsheetAction => ({
-    type: ADD_SORT_FOR_NEW_SPREADSHEET,
-    payload: {
-        newTabName,
-        value,
-    },
 });

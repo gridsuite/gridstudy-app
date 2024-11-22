@@ -13,7 +13,10 @@ import { useSnackMessage } from '@gridsuite/commons-ui';
 import { Log, Report, ReportLog, ReportType } from '../utils/report/report.type';
 import { getContainerDefaultSeverityList } from '../utils/report/report-severity';
 import { mapReportLogs } from '../utils/report/report-log.mapper';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE, GLOBAL_REPORT_NODE_LABEL } from '../utils/report/report.constant';
+import {
+    type ComputingTypeAndNetworkModificationKeys,
+    GLOBAL_REPORT_NODE_LABEL,
+} from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
 
 function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<string, string>): Report {
@@ -51,7 +54,7 @@ function prettifyReportLogMessage(reports: ReportLog[], nodesNames: Map<string, 
 }
 
 export const useReportFetcher = (
-    computingAndNetworkModificationType: keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
+    computingAndNetworkModificationType: ComputingTypeAndNetworkModificationKeys
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,

@@ -6,7 +6,6 @@
  */
 import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
-import { AnyAction } from 'redux';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 
 export enum FILTER_DATA_TYPES {
@@ -20,6 +19,7 @@ export enum FILTER_TEXT_COMPARATORS {
     CONTAINS = 'contains',
     STARTS_WITH = 'startsWith',
 }
+
 export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
@@ -50,12 +50,6 @@ export type FilterDataType = {
 
 export type FilterSelectorType = FilterDataType & {
     column: string;
-};
-
-export type FilterStorePropsType = {
-    filterType: string;
-    filterTab: string;
-    filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
 
 export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {

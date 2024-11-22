@@ -9,7 +9,7 @@ import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, use
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { FormattedMessage, useIntl } from 'react-intl/lib';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
 import { useNodeData } from '../../study-container';
@@ -35,12 +35,11 @@ import {
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { LimitViolationResult } from './limit-violation-result';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { setLoadflowResultFilter } from 'redux/actions';
 import { NumberCellRenderer, StatusCellRender } from '../common/result-cell-renderers';
 import ResultsGlobalFilter, { Filter, FilterType } from '../common/results-global-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/study/network-map';
-import { LOADFLOW_RESULT_SORT_STORE, LOADFLOW_RESULT_STORE_FIELD } from 'utils/store-sort-filter-fields';
+import { LOADFLOW_RESULT_STORE_FILTER, LOADFLOW_RESULT_STORE_SORT } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
 
@@ -68,22 +67,19 @@ export interface GlobalFilter {
     limitViolationsTypes?: LimitTypes[];
 }
 
+const loadflowResultInvalidations = ['loadflowResult'];
+
 export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUuid, nodeUuid }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
-    const loadflowResultInvalidations = ['loadflowResult'];
 
     const [tabIndex, setTabIndex] = useState(0);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(LOADFLOW_RESULT_SORT_STORE, mappingTabs(tabIndex));
-
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: LOADFLOW_RESULT_STORE_FIELD,
-        filterTab: mappingTabs(tabIndex),
-        // @ts-expect-error TODO: found how to have Action type in props type
-        filterStoreAction: setLoadflowResultFilter,
-    });
+    // @ts-expect-error TODO: split component between results and logs to explictly limit tabIndex possible values
+    const { onSortChanged, sortConfig } = useAgGridSort(LOADFLOW_RESULT_STORE_SORT, mappingTabs(tabIndex));
+    // @ts-expect-error TODO: split component between results and logs to explictly limit tabIndex possible values
+    const { updateFilter, filterSelector } = useAggridRowFilter(LOADFLOW_RESULT_STORE_FILTER, mappingTabs(tabIndex));
 
     const [countriesFilter, setCountriesFilter] = useState<Filter[]>([]);
     const [voltageLevelsFilter, setVoltageLevelsFilter] = useState<Filter[]>([]);
@@ -95,9 +91,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
     // load countries
     useEffect(() => {
         fetchAllCountries(studyUuid, nodeUuid)
-            .then((countryCodes) => {
+            .then((countryCodes: string[]) => {
                 setCountriesFilter(
-                    countryCodes.map((countryCode: string) => ({
+                    countryCodes.map((countryCode) => ({
                         label: countryCode,
                         filterType: FilterType.COUNTRY,
                     }))
@@ -110,9 +106,9 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                 });
             });
         fetchAllNominalVoltages(studyUuid, nodeUuid)
-            .then((nominalVoltages) => {
+            .then((nominalVoltages: number[]) => {
                 setVoltageLevelsFilter(
-                    nominalVoltages.map((nominalV: number) => ({
+                    nominalVoltages.map((nominalV) => ({
                         label: nominalV.toString(),
                         filterType: FilterType.VOLTAGE_LEVEL,
                     }))
@@ -290,9 +286,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
                         columnDefs={loadFlowLimitViolationsColumns}
-                        tableName={intl.formatMessage({
-                            id: 'LoadFlowResultsCurrentViolations',
-                        })}
+                        tableName={intl.formatMessage({ id: 'LoadFlowResultsCurrentViolations' })}
                     />
                 </GlassPane>
             )}
@@ -302,9 +296,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                         result={result}
                         isLoadingResult={isLoadingResult || filterEnumsLoading}
                         columnDefs={loadFlowLimitViolationsColumns}
-                        tableName={intl.formatMessage({
-                            id: 'LoadFlowResultsVoltageViolations',
-                        })}
+                        tableName={intl.formatMessage({ id: 'LoadFlowResultsVoltageViolations' })}
                     />
                 </GlassPane>
             )}
@@ -313,9 +305,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                     result={result}
                     isLoadingResult={isLoadingResult || filterEnumsLoading}
                     columnDefs={loadFlowLimitViolationsColumns}
-                    tableName={intl.formatMessage({
-                        id: 'LoadFlowResultsStatus',
-                    })}
+                    tableName={intl.formatMessage({ id: 'LoadFlowResultsStatus' })}
                 />
             )}
             {tabIndex === 3 &&

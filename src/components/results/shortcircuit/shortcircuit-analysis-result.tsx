@@ -18,12 +18,12 @@ import { RunningStatus } from 'components/utils/running-status';
 import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { fetchShortCircuitAnalysisPagedResults } from '../../../services/study/short-circuit-analysis';
 import {
-    PAGE_OPTIONS,
+    convertFilterValues,
     DEFAULT_PAGE_COUNT,
     FROM_COLUMN_TO_FIELD,
     FROM_COLUMN_TO_FIELD_ONE_BUS,
     mappingTabs,
-    convertFilterValues,
+    PAGE_OPTIONS,
 } from './shortcircuit-analysis-result-content';
 import CustomTablePagination from '../../utils/custom-table-pagination';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -35,11 +35,10 @@ import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { FilterEnumsType } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { GridReadyEvent } from 'ag-grid-community';
-import { setShortcircuitAnalysisResultFilter } from 'redux/actions';
 import { mapFieldsToColumnsFilter } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import {
-    SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
-    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FILTER,
+    SHORTCIRCUIT_ANALYSIS_RESULT_STORE_SORT,
 } from 'utils/store-sort-filter-fields';
 import { fetchAvailableFilterEnumValues } from '../../../services/study';
 import computingType from '../../computing-status/computing-type';
@@ -66,10 +65,10 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
-    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT as number);
-    const [count, setCount] = useState<number>(0);
-    const [page, setPage] = useState<number>(0);
-    const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [rowsPerPage, setRowsPerPage] = useState<number>(DEFAULT_PAGE_COUNT);
+    const [count, setCount] = useState(0);
+    const [page, setPage] = useState(0);
+    const [isFetching, setIsFetching] = useState(false);
     const [filterEnums, setFilterEnums] = useState<FilterEnumsType>({});
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -82,21 +81,13 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         : FROM_COLUMN_TO_FIELD;
 
     const { onSortChanged, sortConfig } = useAgGridSort(
-        SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE,
+        SHORTCIRCUIT_ANALYSIS_RESULT_STORE_SORT,
         mappingTabs(analysisType)
     );
-    const memoizedSetPageCallback = useCallback(() => {
-        setPage(0);
-    }, []);
-
     const { updateFilter, filterSelector } = useAggridRowFilter(
-        {
-            filterType: SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
-            filterTab: mappingTabs(analysisType),
-            // @ts-expect-error TODO: found how to have Action type in props type
-            filterStoreAction: setShortcircuitAnalysisResultFilter,
-        },
-        memoizedSetPageCallback
+        SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FILTER,
+        mappingTabs(analysisType),
+        useCallback(() => setPage(0), [])
     );
 
     const handleChangePage = useCallback(

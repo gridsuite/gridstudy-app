@@ -7,23 +7,19 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
-
-import { setComputingStatus, setComputationStarting, setLogsFilter } from '../redux/actions';
+import { setComputingStatus, setComputationStarting } from '../redux/actions';
+import { setLogsFilter } from '../redux/redux.tables';
 import { useDispatch, useSelector } from 'react-redux';
-
 import RunningStatus from './utils/running-status';
 import ComputingType from './computing-status/computing-type';
-
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../utils/config-params';
 import { useParameterState } from './dialogs/parameters/parameters';
-
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import RunButton from './run-button';
 import ContingencyListSelector from './dialogs/contingency-list-selector';
 import DynamicSimulationParametersSelector, {
     checkDynamicSimulationParameters,
 } from './dialogs/dynamicsimulation/dynamic-simulation-parameters-selector';
-
 import { startSensitivityAnalysis, stopSensitivityAnalysis } from '../services/study/sensitivity-analysis';
 import { startNonEvacuatedEnergy, stopNonEvacuatedEnergy } from '../services/study/non-evacuated-energy';
 import { startDynamicSimulation, stopDynamicSimulation } from '../services/study/dynamic-simulation';

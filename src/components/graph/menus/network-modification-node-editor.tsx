@@ -7,10 +7,10 @@
 
 import {
     CheckBoxList,
-    useSnackMessage,
-    useModificationLabelComputer,
-    MODIFICATION_TYPES,
     ElementType,
+    MODIFICATION_TYPES,
+    useModificationLabelComputer,
+    useSnackMessage,
 } from '@gridsuite/commons-ui';
 import AddIcon from '@mui/icons-material/Add';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -56,12 +56,8 @@ import { UPDATE_TYPE } from 'components/network/constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    addNotification,
-    removeNotificationByNode,
-    resetLogsFilter,
-    setModificationsInProgress,
-} from '../../../redux/actions';
+import { addNotification, removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
+import { resetLogsFilter } from '../../../redux/redux.tables';
 import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 

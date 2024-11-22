@@ -50,7 +50,8 @@ import { fetchNetworkElementInfos } from '../../../services/study/network';
 import { mergeSx } from '../../utils/functions';
 import { useOneBusShortcircuitAnalysisLoader } from '../use-one-bus-shortcircuit-analysis-loader';
 import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/event/dynamic-simulation-event-dialog';
-import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
+import { setComputationStarting, setComputingStatus } from '../../../redux/actions';
+import { setLogsFilter } from '../../../redux/redux.tables';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
 
