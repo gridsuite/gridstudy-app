@@ -51,11 +51,9 @@ export const stateEstimationQualityCriterionColumnsDefinition = (
             headerName: intl.formatMessage({ id: 'CriterionType' }),
             id: 'type',
             field: 'type',
-            numeric: true,
-            fractionDigits: 0,
             sortProps,
             filterProps,
-            filterParams: numericFilterParams,
+            filterParams: textFilterParams,
         }),
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'Validity' }),

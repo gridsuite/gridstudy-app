@@ -9,7 +9,7 @@ import { ColDef } from 'ag-grid-community';
 import { UUID } from 'crypto';
 
 export interface QualityCriterionResult {
-    type: number;
+    type: string;
     validity: number;
     value: number;
     threshold: number;
