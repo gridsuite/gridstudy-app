@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -18,18 +18,18 @@ import {
     cloneVoltageInitModifications,
     getVoltageInitModifications,
     getVoltageInitStudyParameters,
-} from '../services/study/voltage-init';
+} from '../../../services/study/voltage-init';
 import CircularProgress from '@mui/material/CircularProgress';
-import VoltageInitModificationDialog from './dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
-import { FetchStatus } from '../services/utils.type';
-import { ComputationReportViewer } from './results/common/computation-report-viewer';
-import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
-import { RunningStatus } from './utils/running-status';
-import { RESULTS_LOADING_DELAY } from './network/constants';
-import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import { useParameterState } from './dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import ComputingType from './computing-status/computing-type';
+import VoltageInitModificationDialog from '../../dialogs/network-modifications/voltage-init-modification/voltage-init-modification-dialog';
+import { FetchStatus } from '../../../services/utils.type';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
+import { RunningStatus } from '../../utils/running-status';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { RenderTableAndExportCsv } from '../../utils/renderTable-ExportCsv';
+import { useParameterState } from '../../dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../../../utils/config-params';
+import ComputingType from '../../computing-status/computing-type';
 
 const styles = {
     container: {

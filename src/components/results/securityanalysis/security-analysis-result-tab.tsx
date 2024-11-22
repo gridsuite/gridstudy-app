@@ -30,7 +30,6 @@ import {
     SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
     useFetchFiltersEnums,
 } from './security-analysis-result-utils';
-import { useNodeData } from '../../study-container';
 import { useAgGridSort } from '../../../hooks/use-aggrid-sort';
 import { useAggridRowFilter } from '../../../hooks/use-aggrid-row-filter';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
@@ -44,6 +43,7 @@ import {
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 import { PARAM_DEVELOPER_MODE } from 'utils/config-params';
 import { usePrevious } from 'components/utils/utils';
+import { useNodeData } from '../common/use-node-data';
 
 const styles = {
     tabsAndToolboxContainer: {

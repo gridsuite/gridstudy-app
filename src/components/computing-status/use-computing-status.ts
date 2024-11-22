@@ -34,7 +34,7 @@ interface LastUpdateProps {
     fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>;
 }
 
-function isWorthUpdate(
+export function isWorthUpdate(
     studyUpdatedForce: StudyUpdated,
     fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
     lastUpdateRef: RefObject<LastUpdateProps>,

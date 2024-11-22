@@ -4,7 +4,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useNodeData } from '../../../study-container';
 import { fetchDynamicSimulationResultTimeSeries } from '../../../../services/study/dynamic-simulation';
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -13,6 +12,7 @@ import { UUID } from 'crypto';
 import { TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
 import { dynamicSimulationResultInvalidations } from '../utils/dynamic-simulation-result-utils';
 import { fetchDynamicSimulationTimeSeriesMetadata } from '../../../../services/dynamic-simulation';
+import { useNodeData } from '../../common/use-node-data';
 
 const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
     const [result, isLoading] = useNodeData(

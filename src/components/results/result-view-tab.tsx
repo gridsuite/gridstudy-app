@@ -1,5 +1,5 @@
-/**
- * Copyright (c) 2022, RTE (http://www.rte-france.com)
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -7,26 +7,26 @@
 
 import { useIntl } from 'react-intl';
 import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ShortCircuitAnalysisResultTab } from './results/shortcircuit/shortcircuit-analysis-result-tab';
-import AlertCustomMessageNode from './utils/alert-custom-message-node';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
-import { useParameterState } from './dialogs/parameters/parameters';
-import DynamicSimulationResultTab from './results/dynamicsimulation/dynamic-simulation-result-tab';
-import TabPanelLazy from './results/common/tab-panel-lazy';
-import { VoltageInitResultTab } from './voltage-init-result-tab';
-import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './results/use-results-tab';
-import SensitivityAnalysisResultTab from './results/sensitivity-analysis/sensitivity-analysis-result-tab';
-import { NonEvacuatedEnergyResultTab } from './results/sensitivity-analysis/non-evacuated-energy/non-evacuated-energy-result-tab';
-import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
-import { CurrentTreeNode, AppState } from '../redux/reducer';
+import { ShortCircuitAnalysisResultTab } from './shortcircuit/shortcircuit-analysis-result-tab';
+import AlertCustomMessageNode from '../utils/alert-custom-message-node';
+import { PARAM_DEVELOPER_MODE } from '../../utils/config-params';
+import { useParameterState } from '../dialogs/parameters/parameters';
+import DynamicSimulationResultTab from './dynamicsimulation/dynamic-simulation-result-tab';
+import TabPanelLazy from './common/tab-panel-lazy';
+import { VoltageInitResultTab } from './voltage-init/voltage-init-result-tab';
+import { computingTypeToRootTabRedirection, ResultTabIndexRedirection, useResultsTab } from './common/use-results-tab';
+import SensitivityAnalysisResultTab from './sensitivity-analysis/sensitivity-analysis-result-tab';
+import { NonEvacuatedEnergyResultTab } from './non-evacuated-energy/non-evacuated-energy-result-tab';
+import { OptionalServicesNames, OptionalServicesStatus } from '../utils/optional-services';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { UUID } from 'crypto';
-import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
-import { SecurityAnalysisResultTab } from './results/securityanalysis/security-analysis-result-tab';
-import { LoadFlowResultTab } from './results/loadflow/load-flow-result-tab';
-import ComputingType from './computing-status/computing-type';
+import { useOptionalServiceStatus } from '../../hooks/use-optional-service-status';
+import { SecurityAnalysisResultTab } from './securityanalysis/security-analysis-result-tab';
+import { LoadFlowResultTab } from './loadflow/load-flow-result-tab';
+import ComputingType from '../computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { usePrevious } from './utils/utils';
-import { Box, Tabs, Tab, Paper } from '@mui/material';
+import { usePrevious } from '../utils/utils';
+import { Box, Paper, Tab, Tabs } from '@mui/material';
 
 const styles = {
     table: {

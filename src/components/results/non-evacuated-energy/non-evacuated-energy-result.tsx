@@ -8,7 +8,7 @@ import { FunctionComponent, useCallback } from 'react';
 
 import { NonEvacuatedEnergyResultProps } from './non-evacuated-energy-result.type';
 import { FormattedMessage } from 'react-intl';
-import { RunningStatus } from '../../../utils/running-status';
+import { RunningStatus } from '../../utils/running-status';
 import fileSaver from 'file-saver';
 import { Box, Button } from '@mui/material';
 

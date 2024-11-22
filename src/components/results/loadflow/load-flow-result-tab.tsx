@@ -12,7 +12,6 @@ import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { LimitTypes, LoadFlowTabProps } from './load-flow-result.type';
 import { LoadFlowResult } from './load-flow-result';
-import { useNodeData } from '../../study-container';
 import { fetchLimitViolations, fetchLoadFlowResult } from '../../../services/study/loadflow';
 import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
@@ -42,6 +41,7 @@ import { fetchAllCountries, fetchAllNominalVoltages } from '../../../services/st
 import { LOADFLOW_RESULT_STORE_FILTER, LOADFLOW_RESULT_STORE_SORT } from 'utils/store-sort-filter-fields';
 import GlassPane from '../common/glass-pane';
 import { mergeSx } from '../../utils/functions';
+import { useNodeData } from '../common/use-node-data';
 
 const styles = {
     flexWrapper: {

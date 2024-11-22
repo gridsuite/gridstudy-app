@@ -8,18 +8,18 @@
 import { FunctionComponent, SyntheticEvent, useState } from 'react';
 import { NonEvacuatedEnergyTabProps } from './non-evacuated-energy-result.type';
 import { NonEvacuatedEnergyResult } from './non-evacuated-energy-result';
-import { useNodeData } from '../../../study-container';
-import { fetchNonEvacuatedEnergyResult } from '../../../../services/study/non-evacuated-energy';
+import { fetchNonEvacuatedEnergyResult } from '../../../services/study/non-evacuated-energy';
 
-import { useOpenLoaderShortWait } from '../../../dialogs/commons/handle-loader';
+import { useOpenLoaderShortWait } from '../../dialogs/commons/handle-loader';
 import { Box, LinearProgress, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { RunningStatus } from '../../../utils/running-status';
-import { ComputationReportViewer } from '../../common/computation-report-viewer';
+import { RunningStatus } from '../../utils/running-status';
+import { ComputationReportViewer } from '../common/computation-report-viewer';
 import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
-import { ComputingType } from '../../../computing-status/computing-type';
-import { RESULTS_LOADING_DELAY } from '../../../network/constants';
+import { AppState } from '../../../redux/reducer';
+import { ComputingType } from '../../computing-status/computing-type';
+import { RESULTS_LOADING_DELAY } from '../../network/constants';
+import { useNodeData } from '../common/use-node-data';
 
 const styles = {
     container: {

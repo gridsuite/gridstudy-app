@@ -29,7 +29,6 @@ import {
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
 } from './utils/dynamic-simulation-result-utils';
-import { useNodeData } from '../../study-container';
 import { fetchDynamicSimulationResultTimeline } from '../../../services/dynamic-simulation';
 import { NumberCellRenderer } from '../common/result-cell-renderers';
 import {
@@ -38,6 +37,7 @@ import {
     TIMELINE,
 } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { useNodeData } from '../common/use-node-data';
 
 const styles = {
     loader: {

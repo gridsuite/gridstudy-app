@@ -12,7 +12,7 @@ import {
     computingTypeToShortcircuitTabRedirection,
     ResultTabIndexRedirection,
     useResultsTab,
-} from '../use-results-tab';
+} from '../common/use-results-tab';
 import { FormattedMessage } from 'react-intl';
 import { ComputationReportViewer } from '../common/computation-report-viewer';
 

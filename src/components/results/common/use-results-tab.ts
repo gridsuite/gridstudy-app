@@ -1,17 +1,17 @@
-/**
- * Copyright (c) 2023, RTE (http://www.rte-france.com)
+/*
+ * Copyright © 2024, RTE (http://www.rte-france.com)
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
 import ComputingType from 'components/computing-status/computing-type';
-import { IService } from 'components/result-view-tab';
+import { IService } from 'components/results/result-view-tab';
 import { StudyView } from 'components/study-pane';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
-import { ShortCircuitAnalysisResultTabs } from './shortcircuit/shortcircuit-analysis-result.type';
+import { ShortCircuitAnalysisResultTabs } from '../shortcircuit/shortcircuit-analysis-result.type';
 
 export enum ResultsTabsRootLevel {
     LOAD_FLOW = 0,

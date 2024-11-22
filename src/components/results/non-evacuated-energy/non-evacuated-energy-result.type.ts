@@ -6,7 +6,7 @@
  */
 
 import { UUID } from 'crypto';
-import { RunningStatus } from '../../../utils/running-status';
+import { RunningStatus } from '../../utils/running-status';
 
 export interface NonEvacuatedEnergyTabProps {
     studyUuid: UUID;
