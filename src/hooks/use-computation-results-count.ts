@@ -45,6 +45,10 @@ export const useComputationResultsCount = () => {
         (state: AppState) => state.computingStatus[ComputingType.VOLTAGE_INITIALIZATION]
     );
 
+    const stateEstimationStatus = useSelector(
+        (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
+    );
+
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     // we dont distinguish between technical errors and computation errors
     // TODO FIX : separate technical errors from computation errors
@@ -64,6 +68,9 @@ export const useComputationResultsCount = () => {
     const dynamicSimulationResultPresent =
         dynamicSimulationStatus === RunningStatus.SUCCEED || dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
+    const stateEstimationResultPresent =
+        stateEstimationStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+
     return [
         loadflowResultPresent,
         saResutPresent,
@@ -73,5 +80,6 @@ export const useComputationResultsCount = () => {
         oneBusShortCircuitResultPresent,
         voltageInitResultPresent,
         dynamicSimulationResultPresent,
+        stateEstimationResultPresent,
     ].filter(Boolean).length;
 };
