@@ -33,6 +33,17 @@ const backend_locale_fr = {
 
     // Voltage init results
     REACTIVE_SLACKS_OVER_THRESHOLD: `L'investissement réactif pour au moins un noeud électrique dépasse {threshold} MVar`,
+
+    // State estimation results
+    TAUX_OBS: "Taux d'observabilité",
+    REDONDANCE_ACT: 'Redondance en actif',
+    REDONDANCE_REA: 'Redondance en réactif',
+    INJ_PERDUES: 'Injections perdues',
+    TELEMESURES_INV: 'Télémesures invalidées',
+    TELEMESURES_CRIT: 'Télémesures critiques',
+    ECARTS_HN: 'Ecarts hors-normes',
+    NB_ITER: "Nombre d'itérations",
+    TRANSITS_PERDUS: 'Transits perdus',
 };
 
 export default backend_locale_fr;
