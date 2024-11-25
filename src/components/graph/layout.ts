@@ -106,62 +106,6 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     return [...newNodes];
 }
 
-/**
- * Check if nodeId has at least one sibling, meaning its parent has multiple children.
- */
-export function isNodeASibling(nodes: CurrentTreeNode[], nodeId: string) {
-    const parentNodeId = nodes.find((node) => node.id === nodeId)?.parentId;
-    if (parentNodeId) {
-        return nodes.filter((node) => node.parentId === parentNodeId).length > 1;
-    }
-    return false;
-}
-
-/**
- * Traverse the tree node hierarchy to find the first node that is an ancestor of nodeId and has a sibling.
- * This function is used to find the starting point of a branch in the tree.
- */
-export function getFirstAncestorIdWithSibling(nodes: CurrentTreeNode[], nodeId: string): string | null {
-    const node = nodes.find((node) => node.id === nodeId);
-    if (node && node.parentId) {
-        if (isNodeASibling(nodes, node.id)) {
-            return nodeId;
-        }
-        return getFirstAncestorIdWithSibling(nodes, node.parentId);
-    }
-    return null;
-}
-
-/**
- * Will find the sibling node whose X position is closer to xDestination in the X range provided.
- */
-export function findClosestSiblingInRange(
-    nodes: CurrentTreeNode[],
-    movedNode: CurrentTreeNode,
-    xOrigin: number,
-    xDestination: number
-): CurrentTreeNode | null {
-    const minX = Math.min(xOrigin, xDestination);
-    const maxX = Math.max(xOrigin, xDestination);
-    const siblingNodes = findSiblings(nodes, movedNode);
-    const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
-    if (nodesBetween.length > 0) {
-        const closestNode = nodesBetween.reduce(
-            (closest, current) =>
-                Math.abs(current.position.x - xDestination) < Math.abs(closest.position.x - xDestination)
-                    ? current
-                    : closest,
-            nodesBetween[0]
-        );
-        return closestNode;
-    }
-    return null;
-}
-
-export function findSiblings(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
-    return nodes.filter((n) => n.parentId === node.parentId && n.id !== node.id);
-}
-
 export function getAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
     let current: CurrentTreeNode | undefined = node;
     let absolutePosition = { x: 0, y: 0 };

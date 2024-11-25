@@ -118,14 +118,12 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    NETWORK_MODIFICATION_TREE_SWITCH_NODES,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
-    NetworkModificationTreeSwitchNodesAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
@@ -871,24 +869,6 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: LoadNetworkModificationTreeSuccessAction) => {
             state.networkModificationTreeModel = action.networkModificationTreeModel;
             state.networkModificationTreeModel.setBuildingStatus();
-        }
-    );
-
-    builder.addCase(
-        NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        (state, action: NetworkModificationTreeSwitchNodesAction) => {
-            if (state.networkModificationTreeModel) {
-                let newModel = state.networkModificationTreeModel.newSharedForUpdate();
-
-                const draggedNode = newModel.treeNodes.find((n: CurrentTreeNode) => n.id === action.draggedNodeId);
-                const destinationNode = newModel.treeNodes.find(
-                    (n: CurrentTreeNode) => n.id === action.destinationNodeId
-                );
-                if (draggedNode && destinationNode) {
-                    newModel.switchBranches(draggedNode, destinationNode);
-                }
-                state.networkModificationTreeModel = newModel;
-            }
         }
     );
 

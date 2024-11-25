@@ -59,7 +59,7 @@ export function convertNodetoReactFlowModelNode(
         data: isRootNode(node)
             ? convertRootNodeToReactFlowModelNode(node)
             : convertModificationNodeToReactFlowModelNode(node),
-        draggable: isModificationNode(node),
+        draggable: false,
     };
 }
 

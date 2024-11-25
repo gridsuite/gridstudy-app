@@ -91,7 +91,6 @@ export type AppActions =
     | NetworkModificationHandleSubtreeAction
     | NetworkModificationTreeNodesRemovedAction
     | NetworkModificationTreeNodesUpdatedAction
-    | NetworkModificationTreeSwitchNodesAction
     | SelectThemeAction
     | SelectLanguageAction
     | SelectComputedLanguageAction
@@ -311,24 +310,6 @@ export function networkModificationTreeNodeMoved(
         parentNodeId,
         insertMode,
         referenceNodeId,
-    };
-}
-
-export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE_SWITCH_NODES';
-export type NetworkModificationTreeSwitchNodesAction = Readonly<
-    Action<typeof NETWORK_MODIFICATION_TREE_SWITCH_NODES>
-> & {
-    draggedNodeId: string;
-    destinationNodeId: string;
-};
-export function networkModificationTreeSwitchNodes(
-    draggedNodeId: string,
-    destinationNodeId: string
-): NetworkModificationTreeSwitchNodesAction {
-    return {
-        type: NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        draggedNodeId,
-        destinationNodeId,
     };
 }
 
