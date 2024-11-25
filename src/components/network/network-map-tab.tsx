@@ -815,12 +815,12 @@ export const NetworkMapTab = ({
             // this reloads the mapEquipments when, in manual refresh mode, the current node is built.
             if (
                 isSameNode(previousCurrentNode, currentNode) && // must be the same node
-                !previousNodeStatus && // must pass from unbuilt ...
-                isCurrentNodeBuiltRef.current // to built
+                !previousNodeStatus && // must change from unbuilt ...
+                isCurrentNodeBuiltRef.current // ... to built
             ) {
                 updateMapEquipmentsAndGeoData();
             }
-            // return to avoid update in manual reload or to avoid double upate
+            // return to avoid update in manual reload or to avoid double update
             return;
         }
         // auto reload
