@@ -6,7 +6,7 @@
  */
 
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { Button, Checkbox, IconButton, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import { Theme } from '@mui/material/styles';
 import { FunctionComponent, useCallback, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -26,6 +26,7 @@ import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { updateConfigParameter } from '../../services/config';
 import { AppState } from '../../redux/reducer';
 import { changeDisplayedColumns, changeLockedColumns, changeReorderedColumns } from 'redux/actions';
+import { spreadsheetStyles } from './utils/style';
 
 const MAX_LOCKS_PER_TAB = 5;
 
@@ -253,7 +254,7 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
                 <ListItem sx={styles.checkboxSelectAll}>
                     <ListItemButton role={undefined} onClick={handleToggleAll} dense>
                         <Checkbox style={{ marginLeft: '21px' }} checked={isAllChecked} indeterminate={isSomeChecked} />
-                        <FormattedMessage id="CheckAll" />
+                        <FormattedMessage id="spreadsheet/column/dialog/check_all" />
                     </ListItemButton>
                 </ListItem>
 
@@ -313,19 +314,22 @@ export const ColumnsConfig: FunctionComponent<ColumnsConfigProps> = ({
 
     return (
         <>
-            <span>
-                <FormattedMessage id="LabelSelectList" />
-            </span>
-            <IconButton disabled={disabled} aria-label="dialog" onClick={handleOpenPopupSelectColumnNames}>
+            <Button
+                sx={spreadsheetStyles.spreadsheetButton}
+                disabled={disabled}
+                size={'small'}
+                onClick={handleOpenPopupSelectColumnNames}
+            >
                 <ViewColumnIcon />
-            </IconButton>
+                <FormattedMessage id="spreadsheet/column/button" />
+            </Button>
 
             <SelectOptionsDialog
                 open={popupSelectColumnNames}
                 onClose={handleCancelPopupSelectColumnNames}
                 onClick={handleSaveSelectedColumnNames}
                 title={intl.formatMessage({
-                    id: 'ColumnsList',
+                    id: 'spreadsheet/column/dialog/title',
                 })}
                 child={checkListColumnsNames()}
                 //Replacing overflow default value 'auto' by 'visible' in order to prevent a react-beautiful-dnd warning related to nested scroll containers
