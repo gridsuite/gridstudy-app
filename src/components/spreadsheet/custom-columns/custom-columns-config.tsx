@@ -6,12 +6,13 @@
  */
 
 import { FormattedMessage } from 'react-intl';
-import { Badge, IconButton } from '@mui/material';
+import { Badge, Button } from '@mui/material';
 import { Calculate as CalculateIcon } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
+import { spreadsheetStyles } from '../utils/style';
 
 export type CustomColumnsConfigProps = {
     indexTab: number;
@@ -26,21 +27,19 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
 
     return (
         <>
-            <span>
-                <FormattedMessage id="spreadsheet/custom_column/add_columns" />
-            </span>
-            <IconButton aria-label="dialog" onClick={dialogOpen.setTrue}>
-                <Badge
-                    color="secondary"
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'left',
-                    }}
-                    badgeContent={customColumnsDefinitions.length}
-                >
+            <Badge
+                color="secondary"
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                badgeContent={customColumnsDefinitions.length}
+            >
+                <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
                     <CalculateIcon />
-                </Badge>
-            </IconButton>
+                    <FormattedMessage id="spreadsheet/custom_column/add_columns" />
+                </Button>
+            </Badge>
 
             <CustomColumnDialog
                 indexTab={indexTab}

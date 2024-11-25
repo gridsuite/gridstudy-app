@@ -34,7 +34,7 @@ const SensitivityAnalysisTabs = ({ sensiKind, setSensiKind }) => {
             onChange={(_, newTabIndex) => setSensiKind(sensiKindTabs[newTabIndex])}
         >
             {sensiKindTabs.map((sensiKind) => (
-                <Tab label={<FormattedMessage id={sensiKind} />} />
+                <Tab label={<FormattedMessage id={sensiKind} />} key={sensiKind} />
             ))}
         </Tabs>
     );
