@@ -7,7 +7,7 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Badge, IconButton } from '@mui/material';
-import { Calculate as CalculateIcon } from '@mui/icons-material';
+import AddColumnRight from 'images/add_column_right.svg?react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
 import { useStateBoolean } from '@gridsuite/commons-ui';
@@ -38,7 +38,7 @@ export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumns
                     }}
                     badgeContent={customColumnsDefinitions.length}
                 >
-                    <CalculateIcon />
+                    <AddColumnRight />
                 </Badge>
             </IconButton>
 
