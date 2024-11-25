@@ -1733,6 +1733,47 @@ export enum EquipmentUpdateType {
     BUSBAR_SECTIONS = 'busbarSections',
 }
 
+export function getUpdateTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES): EquipmentUpdateType | undefined {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.LINE:
+            return EquipmentUpdateType.LINES;
+        case EQUIPMENT_TYPES.TIE_LINE:
+            return EquipmentUpdateType.TIE_LINES;
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+            return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
+        case EQUIPMENT_TYPES.GENERATOR:
+            return EquipmentUpdateType.GENERATORS;
+        case EQUIPMENT_TYPES.LOAD:
+            return EquipmentUpdateType.LOADS;
+        case EQUIPMENT_TYPES.BATTERY:
+            return EquipmentUpdateType.BATTERIES;
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+            return EquipmentUpdateType.DANGLING_LINES;
+        case EQUIPMENT_TYPES.HVDC_LINE:
+            return EquipmentUpdateType.HVDC_LINES;
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+            return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+            return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return EquipmentUpdateType.SHUNT_COMPENSATORS;
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+            return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            return EquipmentUpdateType.VOLTAGE_LEVELS;
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return EquipmentUpdateType.SUBSTATIONS;
+        case EQUIPMENT_TYPES.BUS:
+            return EquipmentUpdateType.BUSES;
+        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+            return EquipmentUpdateType.BUSBAR_SECTIONS;
+        default:
+            return;
+    }
+}
+
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
     switch (updateType) {
         case 'lines':
