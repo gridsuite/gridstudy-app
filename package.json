@@ -46,6 +46,7 @@
         "react-resizable": "^3.0.5",
         "react-router-dom": "^6.22.3",
         "react-virtualized": "^9.22.5",
+        "react-virtualized-auto-sizer": "^1.0.20",
         "react-window": "^1.8.10",
         "reconnecting-websocket": "^4.4.0",
         "redux": "^5.0.1",

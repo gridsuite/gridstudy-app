@@ -4,22 +4,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ReactElement, SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
-import ReportTreeViewContext from './report-tree-view-context';
-import ReportItem from './report-item';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
-import ReportTree from './report-tree';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
-
-// WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
+import { VirtualizedTreeView } from '../custom-treeview/VirtualizedTreeView';
+import Label from '@mui/icons-material/Label';
+import { ReportItem } from '../custom-treeview/TreeViewItem';
+import { Theme } from '@mui/system';
 
 const styles = {
     treeItem: {
         whiteSpace: 'nowrap',
     },
+    labelIcon: (theme: Theme) => ({
+        marginRight: theme.spacing(1),
+    }),
 };
 
 type ReportViewerProps = { report: Report; reportType: string };
@@ -36,49 +38,49 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
     const reportTreeData = useRef<Record<string, ReportTreeType>>({});
-    const treeView = useRef<ReactElement>();
+    const treeView = useRef<ReportItem[]>();
 
-    /**
-     * Build the tree view (left pane) creating all ReportItem from json data
-     * @type {Function}
-     */
-    const initializeTreeDataAndComponent = useCallback((report: ReportTreeType) => {
-        reportTreeData.current[report.id] = report;
-        return (
-            <ReportItem
-                labelText={report.message}
-                labelIconColor={report.highestSeverity.colorName}
-                key={report.id}
-                sx={styles.treeItem}
-                nodeId={report.id}
-            >
-                {report.subReports.map((value: ReportTreeType) => initializeTreeDataAndComponent(value))}
-            </ReportItem>
-        );
-    }, []);
+    const toTreeNodes = useCallback(
+        (item: ReportTreeType, depth: number): ReportItem[] => {
+            const result: ReportItem[] = [];
+            const collapsed = !expandedTreeReports.includes(item.id);
+            if (item.id) {
+                reportTreeData.current[item.id] = item;
+                result.push({
+                    collapsed: collapsed,
+                    depth: depth,
+                    label: item.message,
+                    id: item.id,
+                    isLeaf: !item.subReports.find((subReports) => subReports.id !== null),
+                    icon: <Label htmlColor={item.highestSeverity.colorName} sx={styles.labelIcon} />,
+                    isSelected: item.id === selectedReportId,
+                });
+                if (item.subReports.length > 0 && !collapsed) {
+                    for (let subReports of item.subReports) {
+                        result.push(...toTreeNodes(subReports, depth + 1));
+                    }
+                }
+            }
+            return result;
+        },
+        [expandedTreeReports, selectedReportId]
+    );
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
-        treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
         setSeverities([...new Set(reportTree.severities)]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
-    }, [report, initializeTreeDataAndComponent, dispatch]);
+    }, [report, dispatch]);
+
+    treeView.current = toTreeNodes(mapReportsTree(report), 0);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
     }, []);
 
-    const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
-        if (selectedReportId !== reportId) {
-            setSelectedReportId(reportId);
-            setSeverities([...new Set(reportTreeData.current[reportId].severities)]);
-            setSelectedReportType(reportTreeData.current[reportId].type);
-        }
-    };
-
-    // The MUI TreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
+    // The MUI VirtualizedTreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
     const isHighlighted = useMemo(
         () => ({
             isHighlighted: (reportId: string) => highlightedReportId === reportId,
@@ -113,14 +115,14 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 }}
             >
                 {/*Passing a ref to isHighlighted to all children (here
-                    TreeItems) wouldn't work since TreeView children are
-                    memoized and would then be rerendered only when TreeView is
+                    TreeItems) wouldn't work since VirtualizedTreeView children are
+                    memoized and would then be rerendered only when VirtualizedTreeView is
                     rerendered. That's why we pass the isHighlighted callback in
                     a new context, to which all children subscribe and as soon
                     as the context is modified, children will be rerendered
                     accordingly */}
-                <ReportTreeViewContext.Provider value={isHighlighted}>
-                    {/*TODO do we need to useMemo/useCallback these props to avoid rerenders ?*/}
+                {/*<ReportTreeViewContext.Provider value={isHighlighted}>
+                    TODO do we need to useMemo/useCallback these props to avoid rerenders ?
                     <ReportTree
                         selectedReportId={selectedReportId}
                         expandedTreeReports={expandedTreeReports}
@@ -129,8 +131,35 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                     >
                         {treeView.current}
                     </ReportTree>
-                </ReportTreeViewContext.Provider>
-                <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
+                </ReportTreeViewContext.Provider>*/}
+                <Grid item sm={3}>
+                    <Fragment>
+                        {treeView.current && (
+                            <VirtualizedTreeView
+                                nodes={treeView.current}
+                                itemSize={32}
+                                style={styles.treeItem}
+                                onSelectedItem={(report: ReportItem) => {
+                                    if (selectedReportId !== report.id) {
+                                        setSelectedReportId(report.id);
+                                        setSeverities([...new Set(reportTreeData.current[report.id].severities)]);
+                                        setSelectedReportType(reportTreeData.current[report.id].type);
+                                    }
+                                }}
+                                onExpandItem={(node: ReportItem) => {
+                                    if (node.collapsed) {
+                                        return setExpandedTreeReports([...expandedTreeReports, node.id]);
+                                    } else {
+                                        return setExpandedTreeReports(
+                                            expandedTreeReports.filter((id) => id !== node.id)
+                                        );
+                                    }
+                                }}
+                            />
+                        )}
+                    </Fragment>
+                </Grid>
+                <Grid item xs={12} sm={9}>
                     {selectedReportId && selectedReportType && (
                         <LogTable
                             selectedReportId={selectedReportId}
