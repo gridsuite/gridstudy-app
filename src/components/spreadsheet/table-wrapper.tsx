@@ -24,7 +24,6 @@ import {
 } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
-import { CsvExport } from './export-csv';
 import { GlobalFilter } from './global-filter';
 import { EquipmentTabs } from './equipment-tabs';
 import { EquipmentProps, useSpreadsheetEquipments } from './use-spreadsheet-equipments';
@@ -73,7 +72,7 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
-import CustomColumnsSave from './custom-columns/custom-columns-save';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -88,6 +87,7 @@ import { mergeSx } from '../utils/functions';
 import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import SpreadsheetSave from './spreadsheet-save';
 import { useDispatch } from 'react-redux';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
@@ -138,6 +138,9 @@ const styles = {
     }),
     selectColumns: (theme: Theme) => ({
         marginLeft: theme.spacing(4),
+    }),
+    save: (theme: Theme) => ({
+        marginRight: theme.spacing(1),
     }),
 };
 
@@ -1267,18 +1270,14 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         />
                     </Grid>
                     {developerMode && (
-                        <>
-                            <Grid item>
-                                <CustomColumnsConfig indexTab={tabIndex} />
-                            </Grid>
-                            <Grid item>
-                                <CustomColumnsSave indexTab={tabIndex} />
-                            </Grid>
-                        </>
+                        <Grid item>
+                            <CustomColumnsConfig indexTab={tabIndex} />
+                        </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
-                    <Grid item>
-                        <CsvExport
+                    <Grid item sx={styles.save}>
+                        <SpreadsheetSave
+                            indexTab={tabIndex}
                             gridRef={gridRef}
                             columns={columnData}
                             tableName={currentTabName()}
