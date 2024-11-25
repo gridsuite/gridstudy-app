@@ -144,8 +144,6 @@ export const NetworkMapTab = ({
     const intlRef = useIntlRef();
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
-    const isInitializedRef = useRef<boolean>();
-    isInitializedRef.current = isInitialized;
     const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
