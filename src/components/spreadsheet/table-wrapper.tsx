@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Alert, Box, Grid } from '@mui/material';
@@ -72,7 +72,6 @@ import { useLocalizedCountries } from 'components/utils/localized-countries-hook
 import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 import {
@@ -88,7 +87,6 @@ import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
-import { useDispatch } from 'react-redux';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
