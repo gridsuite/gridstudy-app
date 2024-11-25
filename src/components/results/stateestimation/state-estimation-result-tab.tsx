@@ -10,7 +10,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl/lib';
-import { StateEstimationTabProps } from './state-estimation-result.type';
+import { QualityCriterionResult, StateEstimationTabProps } from './state-estimation-result.type';
 import { StateEstimationStatusResult } from './state-estimation-status-result';
 import { useNodeData } from '../../study-container';
 import { fetchStateEstimationResult } from '../../../services/study/state-estimation';
@@ -112,8 +112,20 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         if (stateEstimationStatus === RunningStatus.FAILED || !stateEstimationResult) {
             return {};
         }
-        return stateEstimationResult;
-    }, [stateEstimationStatus, stateEstimationResult]);
+        return {
+            ...stateEstimationResult,
+            qualityCriterionResults: stateEstimationResult.qualityCriterionResults.map(
+                (qCrit: QualityCriterionResult) => {
+                    return {
+                        type: intl.formatMessage({ id: qCrit.type }),
+                        validity: qCrit.validity,
+                        value: qCrit.value,
+                        threshold: qCrit.threshold,
+                    };
+                }
+            ),
+        };
+    }, [stateEstimationStatus, stateEstimationResult, intl]);
 
     return (
         <>

@@ -37,11 +37,11 @@ const backend_locale_en = {
     // State estimation results
     TAUX_OBS: 'Observability rate',
     REDONDANCE_ACT: 'Active redundancy',
-    REDONDANCE_REA: 'Rective redundancy',
+    REDONDANCE_REA: 'Reactive redundancy',
     INJ_PERDUES: 'Lost injections',
     TELEMESURES_INV: 'Invalidated measurements',
     TELEMESURES_CRIT: 'Critical measurements',
-    ECARTS_HN: 'Out of bounds',
+    ECARTS_HN: 'Out of bounds deviations',
     NB_ITER: 'Iterations number',
     TRANSITS_PERDUS: 'Lost flows',
 };
