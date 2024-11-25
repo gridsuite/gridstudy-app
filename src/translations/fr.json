@@ -683,6 +683,7 @@
     "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
+    "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -764,6 +765,7 @@
     "CreateVsc": "Création d'une HVDC (VSC)",
     "CreateLcc": "Création d'une HVDC (LCC)",
     "Characteristics": "Caractéristiques",
+    "Filters": "Filtres",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
     "Side": "Côté",
@@ -1281,6 +1283,7 @@
     "side1InverterSide2Rectifier": "Flux (2->1)",
     "shuntCompensatorId": "ID de la station",
     "shuntCompensatorName": "Nom de la station",
+    "connectedToHvdc": "Connecté à Hvdc",
     "g": "Conductance magnétisante (μS)",
     "b": "Susceptance magnétisante (μS)",
     "ratedNominalPower": "Puissance nominale (MVA)",

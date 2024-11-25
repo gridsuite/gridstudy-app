@@ -1702,7 +1702,22 @@ export function updateSwitchState(studyUuid, nodeUuid, switchId, open) {
     });
 }
 
-export function createLcc({ studyUuid, nodeUuid, id, name, isUpdate = false, modificationUuid }) {
+export function createLcc({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    convertersMode,
+    activePowerSetpoint,
+    converterStation1,
+    converterStation2,
+    properties,
+    isUpdate = false,
+    modificationUuid,
+}) {
     let createLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (isUpdate) {
@@ -1722,6 +1737,14 @@ export function createLcc({ studyUuid, nodeUuid, id, name, isUpdate = false, mod
             type: MODIFICATION_TYPES.LCC_CREATION.type,
             equipmentId: id,
             equipmentName: name,
+            nominalV: nominalV,
+            r: r,
+            maxP: maxP,
+            convertersMode: convertersMode,
+            activePowerSetpoint: activePowerSetpoint,
+            converterStation1: converterStation1,
+            converterStation2: converterStation2,
+            properties: properties,
         }),
     });
 }

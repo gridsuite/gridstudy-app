@@ -684,6 +684,7 @@
     "ShuntCompensatorNonlinearError": "It is currently not possible to modify non-linear shunt compensator",
     "HVDCLineConverterStationError": "Error while getting HVDC line converter stations",
     "StaticVarCompensatorCreationError": "Error while creating static var compensator",
+    "LccCreationError": "Error while creating HVDC (LCC)",
 
     "CreateBattery": "Create battery",
     "ModifyBattery": "Modify battery",
@@ -766,6 +767,7 @@
     "CreateVsc": "Create HVDC (VSC)",
     "CreateLcc": "Create HVDC (LCC)",
     "Characteristics": "Characteristics",
+    "Filters": "Filters",
     "Side": "Side",
     "Side1": "Side 1",
     "Side2": "Side 2",
@@ -796,6 +798,7 @@
     "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
     "shuntCompensatorId": "Converter station ID",
     "shuntCompensatorName": "Converter station name",
+    "connectedToHvdc": "Connected To Hvdc",
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",

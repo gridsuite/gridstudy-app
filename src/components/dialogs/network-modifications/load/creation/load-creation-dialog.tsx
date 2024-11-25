@@ -149,7 +149,7 @@ export function LoadCreationDialog({
             reset(data, { keepDefaultValues: true });
         },
         elementType: EQUIPMENT_TYPES.LOAD,
-        operation: undefined,
+        optionalParameters: undefined,
     });
 
     useEffect(() => {

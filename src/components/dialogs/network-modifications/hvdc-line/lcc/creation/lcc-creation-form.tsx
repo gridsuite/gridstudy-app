@@ -10,7 +10,7 @@ import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
 import LccHvdcLinePane from './lcc-hvdc-line';
 import { LccCreationDialogTab } from './lcc-creation.type';
-import LccConverterStation from './converter-station';
+import LccConverterStation from './lcc-converter-station';
 
 interface LccCreationFormProps {
     tabIndex: number;

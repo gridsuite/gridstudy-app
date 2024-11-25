@@ -18,35 +18,79 @@ export interface LccCreationInfos {
     equipmentType: EQUIPMENT_TYPES;
     equipmentId: string;
     equipmentName: string;
-    loadType: string;
-    p0: number;
-    q0: number;
+    nominalV: number;
+    r: number;
+    maxP: number;
+    convertersMode: string;
+    activePowerSetpoint: number;
+    converterStation1: LccConverterStationInfos;
+    converterStation2: LccConverterStationInfos;
+    properties?: Property[];
+}
+
+export interface LccConverterStationInfos {
+    equipmentId: string;
+    equipmentName: string | null;
+    lossFactor: number;
+    powerFactor: number;
     voltageLevelId: string;
     busOrBusbarSectionId: string;
-    busbarSectionName?: string;
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
-    properties?: Property[];
+    terminalConnected: boolean;
+    connectablePosition: ConnectablePositionInfos;
+    mcsOnSide: McsOnSide[];
 }
 
 interface ConnectablePositionInfos {
     connectionDirection: string | null;
     connectionName?: string | null;
     connectionPosition?: string | null;
+    terminalConnected?: boolean | null;
+}
+
+export interface FilterMcsTable {
+    shuntCompensatorName?: string | null;
+    shuntCompensatorId: string;
+    maxQAtNominalV: number;
+    connectedToHvdc: boolean;
+}
+
+export interface Connectivity {
+    voltageLevel: { id?: string };
+    busOrBusbarSection: { id?: string; name?: string };
+    connectionDirection?: string;
+    connectionName?: string;
+    connectionPosition?: number;
+    terminalConnected?: boolean;
+}
+
+export interface McsOnSide {
+    shuntCompensatorId: string;
+    shuntCompensatorName?: string | null;
+    maxQAtNominalV: number;
+    connectedToHvdc: boolean;
+}
+
+export interface LccConverterStationFormInfos {
+    id: string;
+    name: string | null;
+    lossFactor: number;
+    powerFactor: number;
+    voltageLevelId: string;
+    busOrBusbarSectionId: string;
+    terminalConnected: boolean;
+    connectablePosition: ConnectablePositionInfos;
+    mcsOnSide: McsOnSide[];
 }
 
 export interface LccFormInfos {
     id: string;
     name: string;
-    type: string;
-    p0: number;
-    q0: number;
-    voltageLevelId: string;
-    connectablePosition: ConnectablePositionInfos;
-    busOrBusbarSectionId: string;
-    busbarSectionName: string;
-    terminalConnected?: boolean | null;
+    nominalV: number;
+    r: number;
+    maxP: number;
+    convertersMode: string;
+    activePowerSetpoint: number;
+    lccConverterStation1: LccConverterStationFormInfos;
+    lccConverterStation2: LccConverterStationFormInfos;
     properties: Record<string, string> | undefined;
 }

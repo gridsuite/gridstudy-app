@@ -138,7 +138,7 @@ export const SWITCHED_ON_SUSCEPTANCE = 'switchedOnSusceptance';
 export const MAX_SUSCEPTANCE = 'maxSusceptance';
 export const MIN_SUSCEPTANCE = 'minSusceptance';
 export const MAX_Q_AT_NOMINAL_V = 'maxQAtNominalV';
-export const SHUNT_COMPENSATOR_ID = 'shuntCompensatorID';
+export const SHUNT_COMPENSATOR_ID = 'shuntCompensatorId';
 export const SHUNT_COMPENSATOR_NAME = 'shuntCompensatorName';
 export const MIN_Q_AT_NOMINAL_V = 'minQAtNominalV';
 //line

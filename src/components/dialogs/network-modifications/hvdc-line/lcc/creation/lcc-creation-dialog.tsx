@@ -7,6 +7,12 @@
 import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
+    BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
+    CONNECTION_DIRECTION,
+    CONNECTION_NAME,
+    CONNECTION_POSITION,
+    CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
     CONVERTER_STATION_ID,
@@ -14,12 +20,16 @@ import {
     CONVERTERS_MODE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
+    FILTERS_MCS_TABLE,
     HVDC_LINE_TAB,
+    ID,
     LOSS_FACTOR,
     MAX_P,
+    NAME,
     NOMINAL_V,
     POWER_FACTOR,
     R,
+    VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
@@ -29,16 +39,27 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccCreationDialogTab, LccCreationInfos, LccFormInfos } from './lcc-creation.type';
-import { getLccHvdcLineEmptyFormData, getLccHvdcLineSchema } from './lcc-hvdc-line';
-import { getLccConverterStationEmptyFormData, getLccConverterStationSchema } from './converter-station';
-import { Property } from '../../../common/properties/property-utils';
+import { FilterMcsTable, LccCreationDialogTab, LccCreationInfos, LccFormInfos } from './lcc-creation.type';
+import {
+    getLccHvdcLineEmptyFormData,
+    getLccHvdcLineFromEditData,
+    getLccHvdcLineFromSearchCopy,
+    getLccHvdcLineSchema,
+} from './lcc-hvdc-line';
+import {
+    getLccConverterStationCreationData,
+    getLccConverterStationEmptyFormData,
+    getLccConverterStationFromEditData,
+    getLccConverterStationFromSearchCopy,
+    getLccConverterStationSchema,
+} from './lcc-converter-station';
+import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../form-search-copy-hook';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import ModificationDialog from '../../../../commons/modificationDialog';
 import EquipmentSearchDialog from '../../../../equipment-search-dialog';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FORM_LOADING_DELAY } from '../../../../../network/constants';
 import { createLcc } from '../../../../../../services/study/network-modifications';
 import { sanitizeString } from '../../../../dialog-utils';
@@ -64,12 +85,30 @@ export type LccCreationSchemaForm = {
         [CONVERTER_STATION_NAME]?: string;
         [LOSS_FACTOR]: number;
         [POWER_FACTOR]: number;
+        [CONNECTIVITY]: {
+            [VOLTAGE_LEVEL]: { [ID]?: string };
+            [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+            [CONNECTION_DIRECTION]?: string;
+            [CONNECTION_NAME]?: string;
+            [CONNECTION_POSITION]?: number;
+            [CONNECTED]?: boolean;
+        };
+        [FILTERS_MCS_TABLE]?: FilterMcsTable[];
     };
     [CONVERTER_STATION_2]: {
         [CONVERTER_STATION_ID]: string;
         [CONVERTER_STATION_NAME]?: string;
         [LOSS_FACTOR]: number;
         [POWER_FACTOR]: number;
+        [CONNECTIVITY]: {
+            [VOLTAGE_LEVEL]: { [ID]?: string };
+            [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
+            [CONNECTION_DIRECTION]?: string;
+            [CONNECTION_NAME]?: string;
+            [CONNECTION_POSITION]?: number;
+            [CONNECTED]?: boolean;
+        };
+        [FILTERS_MCS_TABLE]?: FilterMcsTable[];
     };
 };
 
@@ -120,7 +159,24 @@ export function LccCreationDialog({
     const fromSearchCopyToFormValues = (lccHvdcLine: LccFormInfos) => ({
         [EQUIPMENT_ID]: lccHvdcLine.id + '(1)',
         [EQUIPMENT_NAME]: lccHvdcLine.name ?? '',
+        [HVDC_LINE_TAB]: getLccHvdcLineFromSearchCopy(lccHvdcLine),
+        [CONVERTER_STATION_1]: getLccConverterStationFromSearchCopy(lccHvdcLine.lccConverterStation1),
+        [CONVERTER_STATION_2]: getLccConverterStationFromSearchCopy(lccHvdcLine.lccConverterStation2),
     });
+
+    const fromEditDataToFormValues = useCallback(
+        (lccCreationInfos: LccCreationInfos) => {
+            console.log('==============================================lccCreationInfos', lccCreationInfos);
+            reset({
+                [EQUIPMENT_ID]: lccCreationInfos.equipmentId,
+                [EQUIPMENT_NAME]: lccCreationInfos.equipmentName ?? '',
+                [HVDC_LINE_TAB]: getLccHvdcLineFromEditData(lccCreationInfos),
+                [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccCreationInfos.converterStation1),
+                [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccCreationInfos.converterStation2),
+            });
+        },
+        [reset]
+    );
 
     const searchCopy = useFormSearchCopy({
         studyUuid,
@@ -129,23 +185,40 @@ export function LccCreationDialog({
         setFormValues: (data: LccCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });
         },
-        elementType: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
-        operation: undefined,
+        elementType: EQUIPMENT_TYPES.HVDC_LINE,
+        optionalParameters: 'LCC',
     });
+
+    useEffect(() => {
+        if (editData) {
+            fromEditDataToFormValues(editData);
+        }
+    }, [fromEditDataToFormValues, editData]);
 
     const onSubmit = useCallback(
         (lccHvdcLine: LccCreationSchemaForm) => {
+            const hvdcLineTab = lccHvdcLine[HVDC_LINE_TAB];
+            const lccConverterStation1 = getLccConverterStationCreationData(lccHvdcLine[CONVERTER_STATION_1]);
+            const lccConverterStation2 = getLccConverterStationCreationData(lccHvdcLine[CONVERTER_STATION_2]);
             createLcc({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 id: lccHvdcLine[EQUIPMENT_ID],
                 name: sanitizeString(lccHvdcLine[EQUIPMENT_NAME]),
+                nominalV: hvdcLineTab[NOMINAL_V],
+                r: hvdcLineTab[R],
+                maxP: hvdcLineTab[MAX_P],
+                convertersMode: hvdcLineTab[CONVERTERS_MODE],
+                activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
+                converterStation1: lccConverterStation1,
+                converterStation2: lccConverterStation2,
+                properties: toModificationProperties(hvdcLineTab),
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'LoadCreationError',
+                    headerId: 'LccCreationError',
                 });
             });
         },
@@ -168,7 +241,7 @@ export function LccCreationDialog({
                 tabsInError.push(LccCreationDialogTab.CONVERTER_STATION_1);
             }
             if (errors?.[CONVERTER_STATION_2]) {
-                tabsInError.push(LccCreationDialogTab.CONVERTER_STATION_1);
+                tabsInError.push(LccCreationDialogTab.CONVERTER_STATION_2);
             }
 
             if (tabsInError.includes(tabIndex)) {
@@ -210,7 +283,7 @@ export function LccCreationDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 PaperProps={{
                     sx: {
-                        height: '75vh',
+                        height: '95vh',
                     },
                 }}
                 {...dialogProps}
@@ -220,7 +293,7 @@ export function LccCreationDialog({
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
-                    equipmentType={EquipmentType.LCC_CONVERTER_STATION}
+                    equipmentType={EquipmentType.HVDC_LINE}
                     currentNodeUuid={currentNodeUuid}
                 />
             </ModificationDialog>

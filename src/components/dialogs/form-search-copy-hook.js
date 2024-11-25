@@ -17,7 +17,7 @@ export const useFormSearchCopy = ({
     toFormValues,
     setFormValues,
     elementType,
-    operation,
+    optionalParameters,
 }) => {
     const intl = useIntl();
 
@@ -34,7 +34,7 @@ export const useFormSearchCopy = ({
             EQUIPMENT_INFOS_TYPES.FORM.type,
             element.id,
             true,
-            operation
+            optionalParameters
         );
         return fetchElementPromise
             .then((response) => {
