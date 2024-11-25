@@ -27,8 +27,6 @@ import { useOpenLoaderShortWait } from './dialogs/commons/handle-loader';
 import { RunningStatus } from './utils/running-status';
 import { RESULTS_LOADING_DELAY } from './network/constants';
 import { RenderTableAndExportCsv } from './utils/renderTable-ExportCsv';
-import { useParameterState } from './dialogs/parameters/parameters';
-import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 import ComputingType from './computing-status/computing-type';
 
 const styles = {
@@ -86,7 +84,6 @@ const VoltageInitResult = ({ result, status }) => {
     const studyUuid = decodeURIComponent(useParams().studyUuid);
     const currentNode = useSelector((state) => state.currentTreeNode);
     const { snackError } = useSnackMessage();
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
 
     const [disabledApplyModifications, setDisableApplyModifications] = useState(
         !result || !result.modificationsGroupUuid
@@ -344,20 +341,10 @@ const VoltageInitResult = ({ result, status }) => {
                 <Box sx={styles.container}>
                     <Box sx={styles.tabs}>
                         <Tabs value={tabIndex} onChange={(event, newTabIndex) => setTabIndex(newTabIndex)}>
-                            <Tab
-                                label={intl.formatMessage({
-                                    id: 'ReactiveSlacks',
-                                })}
-                            />
+                            <Tab label={intl.formatMessage({ id: 'ReactiveSlacks' })} />
                             <Tab label={intl.formatMessage({ id: 'Indicators' })} />
-                            {enableDeveloperMode && (
-                                <Tab
-                                    label={intl.formatMessage({
-                                        id: 'BusVoltages',
-                                    })}
-                                />
-                            )}
-                            <Tab label={<FormattedMessage id={'ComputationResultsLogs'} />} />
+                            <Tab label={intl.formatMessage({ id: 'BusVoltages' })} />
+                            <Tab label={intl.formatMessage({ id: 'ComputationResultsLogs' })} />
                         </Tabs>
                     </Box>
 
@@ -381,9 +368,8 @@ const VoltageInitResult = ({ result, status }) => {
                 <div style={{ flexGrow: 1 }}>
                     {result && tabIndex === 0 && renderReactiveSlacksTable(result)}
                     {result && tabIndex === 1 && renderIndicatorsTable(result.indicators)}
-                    {result && tabIndex === 2 && enableDeveloperMode && renderBusVoltagesTable(result.busVoltages)}
-                    {((tabIndex === 3 && enableDeveloperMode) || (tabIndex === 2 && !enableDeveloperMode)) &&
-                        renderReportViewer()}
+                    {result && tabIndex === 2 && renderBusVoltagesTable(result.busVoltages)}
+                    {tabIndex === 3 && renderReportViewer()}
                 </div>
             </>
         );
