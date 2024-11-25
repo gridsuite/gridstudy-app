@@ -8,6 +8,8 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import RunningStatus from 'components/utils/running-status';
+import { useParameterState } from '../components/dialogs/parameters/parameters';
+import { PARAM_DEVELOPER_MODE } from '../utils/config-params';
 
 /**
  * Custom hook that calculates the number of computation notifications.
@@ -49,6 +51,8 @@ export const useComputationResultsCount = () => {
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
 
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+
     // Can be failed for technical reasons (e.g., server not responding or computation divergence)
     // we dont distinguish between technical errors and computation errors
     // TODO FIX : separate technical errors from computation errors
@@ -69,7 +73,8 @@ export const useComputationResultsCount = () => {
         dynamicSimulationStatus === RunningStatus.SUCCEED || dynamicSimulationStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     const stateEstimationResultPresent =
-        stateEstimationStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED; // Can be failed for technical reasons (e.g., server not responding or computation divergence)
+        enableDeveloperMode &&
+        (stateEstimationStatus === RunningStatus.SUCCEED || voltageInitStatus === RunningStatus.FAILED); // Can be failed for technical reasons (e.g., server not responding or computation divergence)
 
     return [
         loadflowResultPresent,

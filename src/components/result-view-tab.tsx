@@ -204,7 +204,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
             {
                 id: 'StateEstimation',
                 computingType: [ComputingType.STATE_ESTIMATION],
-                displayed: stateEstimationAvailability === OptionalServicesStatus.Up,
+                displayed: enableDeveloperMode && stateEstimationAvailability === OptionalServicesStatus.Up,
                 renderResult: renderStateEstimationResult,
             },
         ].filter(({ displayed }: IService) => displayed);
