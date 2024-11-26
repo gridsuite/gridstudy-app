@@ -270,6 +270,8 @@ const NetworkModificationTree = ({
                 minZoom={0.1} // Lower value allows for more zoom out
                 //maxZoom={2} // Higher value allows for more zoom in
                 onNodeDragStop={handleNodeDragStop}
+                disableKeyboardA11y
+                deleteKeyCode={null}
                 defaultEdgeOptions={{
                     type: 'smoothstep',
                     pathOptions: {
