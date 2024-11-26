@@ -150,8 +150,8 @@ import {
     SELECT_LANGUAGE,
     SELECT_THEME,
     SelectComputedLanguageAction,
-    SELECTION_FOR_COPY,
-    SelectionForCopyAction,
+    NODE_SELECTION_FOR_COPY,
+    NodeSelectionForCopyAction,
     SelectLanguageAction,
     SelectThemeAction,
     SENSITIVITY_ANALYSIS_RESULT_FILTER,
@@ -433,7 +433,10 @@ export type NadNodeMovement = {
     y: number;
 };
 
-export type SelectionForCopy = {
+/**
+ * Represent a node in the network modifications tree that is selected.
+ */
+export type NodeSelectionForCopy = {
     sourceStudyUuid: UUID | null;
     nodeId: UUID | null;
     copyType: ValueOf<typeof CopyType> | null;
@@ -467,7 +470,7 @@ export interface AppState extends CommonStoreState {
     tables: TablesState;
 
     limitReductionModified: boolean;
-    selectionForCopy: SelectionForCopy;
+    nodeSelectionForCopy: NodeSelectionForCopy;
     geoData: null;
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
@@ -609,7 +612,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
-    selectionForCopy: {
+    nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
         copyType: null,
@@ -1164,19 +1167,20 @@ export const reducer = createReducer(initialState, (builder) => {
         state.reloadMap = true;
     });
 
-    builder.addCase(SELECTION_FOR_COPY, (state, action: SelectionForCopyAction) => {
-        const selectionForCopy = action.selectionForCopy;
+    builder.addCase(NODE_SELECTION_FOR_COPY, (state, action: NodeSelectionForCopyAction) => {
+        const nodeSelectionForCopy = action.nodeSelectionForCopy;
         if (
-            selectionForCopy.sourceStudyUuid === state.studyUuid &&
-            selectionForCopy.nodeId &&
-            (selectionForCopy.copyType === CopyType.SUBTREE_COPY || selectionForCopy.copyType === CopyType.SUBTREE_CUT)
+            nodeSelectionForCopy.sourceStudyUuid === state.studyUuid &&
+            nodeSelectionForCopy.nodeId &&
+            (nodeSelectionForCopy.copyType === CopyType.SUBTREE_COPY ||
+                nodeSelectionForCopy.copyType === CopyType.SUBTREE_CUT)
         ) {
-            selectionForCopy.allChildrenIds = getAllChildren(
+            nodeSelectionForCopy.allChildrenIds = getAllChildren(
                 state.networkModificationTreeModel,
-                selectionForCopy.nodeId
+                nodeSelectionForCopy.nodeId
             ).map((child) => child.id);
         }
-        state.selectionForCopy = selectionForCopy;
+        state.nodeSelectionForCopy = nodeSelectionForCopy;
     });
 
     builder.addCase(SET_MODIFICATIONS_DRAWER_OPEN, (state, action: SetModificationsDrawerOpenAction) => {

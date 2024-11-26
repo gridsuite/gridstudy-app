@@ -42,7 +42,7 @@ import {
     CurrentTreeNode,
     EquipmentUpdateType,
     OneBusShortCircuitAnalysisDiagram,
-    SelectionForCopy,
+    NodeSelectionForCopy,
     StudyIndexationStatus,
     StudyUpdatedEventData,
     TableSortKeysType,
@@ -124,7 +124,7 @@ export type AppActions =
     | ChangeReorderedColumnsAction
     | FavoriteContingencyListsAction
     | CurrentTreeNodeAction
-    | SelectionForCopyAction
+    | NodeSelectionForCopyAction
     | SetModificationsDrawerOpenAction
     | SetEventScenarioDrawerOpenAction
     | CenterOnSubstationAction
@@ -719,14 +719,16 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
-export const SELECTION_FOR_COPY = 'SELECTION_FOR_COPY';
-export type SelectionForCopyAction = Readonly<Action<typeof SELECTION_FOR_COPY>> & {
-    selectionForCopy: NonNullable<SelectionForCopy>;
+export const NODE_SELECTION_FOR_COPY = 'NODE_SELECTION_FOR_COPY';
+export type NodeSelectionForCopyAction = Readonly<Action<typeof NODE_SELECTION_FOR_COPY>> & {
+    nodeSelectionForCopy: NonNullable<NodeSelectionForCopy>;
 };
-export function setSelectionForCopy(selectionForCopy: NonNullable<SelectionForCopy>): SelectionForCopyAction {
+export function setNodeSelectionForCopy(
+    nodeSelectionForCopy: NonNullable<NodeSelectionForCopy>
+): NodeSelectionForCopyAction {
     return {
-        type: SELECTION_FOR_COPY,
-        selectionForCopy: selectionForCopy,
+        type: NODE_SELECTION_FOR_COPY,
+        nodeSelectionForCopy: nodeSelectionForCopy,
     };
 }
 
