@@ -8,9 +8,10 @@ import { Box, Paper } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import DndTable from '../../utils/dnd-table/dnd-table.jsx';
 import { FloatInput } from '@gridsuite/commons-ui';
-import { PERMANENT_LIMIT, TEMPORARY_LIMITS } from 'components/utils/field-constants';
+import { PERMANENT_LIMIT, TEMPORARY_LIMITS} from 'components/utils/field-constants';
 import { AmpereAdornment } from '../dialog-utils';
 import { useMemo } from "react";
+import { useFieldArray } from "react-hook-form";
 
 const styles = {
     limitsBackground: {
@@ -25,7 +26,6 @@ const styles = {
 export const LimitsSidePane = ({
     indexLimitSet,
     arrayFormName,
-    useFieldArrayOutput,
     createRows,
     columnsDefinition,
     permanentCurrentLimitPreviousValue,
@@ -35,6 +35,10 @@ export const LimitsSidePane = ({
     disableTableCell,
     clearableFields,
 }) => {
+    const useFieldArrayOutputTemporaryLimits = useFieldArray({
+        name: `${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`,
+    });
+
     const permanentCurrentLimitField = useMemo(() => (
         <Box sx={{ maxWidth: 200 }}>
             <FloatInput
@@ -45,7 +49,8 @@ export const LimitsSidePane = ({
                 clearable={clearableFields}
             />
         </Box>
-    ), [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]);
+        ),
+        [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]);
 
     return (
         <Paper sx={styles.limitsBackground}>
@@ -55,7 +60,7 @@ export const LimitsSidePane = ({
             </Box>
             <DndTable
                 arrayFormName={`${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
-                useFieldArrayOutput={useFieldArrayOutput}
+                useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
                 createRows={createRows}
                 columnsDefinition={columnsDefinition}
                 withLeftButtons={false}

@@ -20,7 +20,7 @@ import {
 import { FormattedMessage, useIntl } from 'react-intl';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { SelectInput} from '@gridsuite/commons-ui';
+import { SelectInput } from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import IconButton from '@mui/material/IconButton';
@@ -70,14 +70,6 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             label: intl.formatMessage({ id: column.label }),
         }));
     }, [intl]);
-
-    const useFieldArrayOutputTemporaryLimits1 = (index) => useFieldArray({
-        name: `${id}.${CURRENT_LIMITS_1}[${index}].${TEMPORARY_LIMITS}`,
-    });
-
-    const useFieldArrayOutputTemporaryLimits2 = (index) => useFieldArray({
-        name: `${id}.${CURRENT_LIMITS_2}[${index}].${TEMPORARY_LIMITS}`,
-    });
 
     const newRowData = useMemo(() => {
         const newRowData = {};
@@ -254,7 +246,6 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         arrayFormName={`${id}.${CURRENT_LIMITS_1}`}
                         clearableFields={clearableFields}
                         indexLimitSet={0}
-                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1(0)}
                         createRows={createLimitRows}
                         columnsDefinition={columnsDefinition}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
@@ -269,7 +260,6 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         arrayFormName={`${id}.${CURRENT_LIMITS_2}`}
                         clearableFields={clearableFields}
                         indexLimitSet={0}
-                        useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2(0)}
                         createRows={createLimitRows}
                         columnsDefinition={columnsDefinition}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
