@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Box,
     Dialog,
@@ -14,6 +14,7 @@ import {
     DialogContent,
     DialogTitle,
     Grid,
+    Link,
     SxProps,
     Theme,
     Typography,
@@ -26,7 +27,7 @@ import {
     TextInput,
     UseStateBooleanReturn,
 } from '@gridsuite/commons-ui';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import {
     COLUMN_NAME,
     CustomColumnForm,
@@ -40,8 +41,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { AppState } from 'redux/reducer';
-import { filledTextField } from '../constants';
 import { setUpdateCustomColumDefinitions } from 'redux/actions';
+import { MATHJS_LINK } from '../constants';
 
 export type CustomColumnDialogProps = {
     open: UseStateBooleanReturn;
@@ -54,10 +55,12 @@ export type CustomColumnDialogProps = {
 const styles = {
     dialogContent: {
         width: '40%',
-        height: '50%',
+        height: '55%',
         maxWidth: 'none',
         margin: 'auto',
     },
+    columnDescription: { width: '95%', marginTop: '20px', marginBottom: '20px' },
+    field: { width: '70%' },
     actionButtons: { display: 'flex', gap: 2, justifyContent: 'end' },
 } as const satisfies Record<string, SxProps<Theme>>;
 
@@ -73,7 +76,9 @@ export default function CustomColumnDialog({
         resolver: yupResolver(customColumnFormSchema),
     });
 
-    const { setError } = formMethods;
+    const { setError, control } = formMethods;
+    const columnName = useWatch({ control, name: COLUMN_NAME });
+    const hasColumnNameChanged = columnName !== customColumnsDefinition?.[COLUMN_NAME];
 
     const { handleSubmit, reset } = formMethods;
     const dispatch = useDispatch<AppDispatch>();
@@ -83,11 +88,7 @@ export default function CustomColumnDialog({
     const tablesNames = useSelector((state: AppState) => state.tables.names);
 
     const columnNameField = (
-        <TextInput
-            name={COLUMN_NAME}
-            label={'spreadsheet/custom_column/column_name'}
-            formProps={{ autoFocus: true, ...filledTextField }}
-        />
+        <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
     );
 
     const formulaField = (
@@ -102,12 +103,16 @@ export default function CustomColumnDialog({
 
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
-            if (customColumnsDefinitions?.find((column) => column.name === newParams.name)) {
-                setError(COLUMN_NAME, {
-                    type: 'validate',
-                    message: 'spreadsheet/custom_column/column_name_already_exist',
-                });
-                return;
+            const existingColumn = customColumnsDefinitions?.find((column) => column.name === newParams.name);
+
+            if (existingColumn) {
+                if (isCreate || hasColumnNameChanged) {
+                    setError(COLUMN_NAME, {
+                        type: 'validate',
+                        message: 'spreadsheet/custom_column/column_name_already_exist',
+                    });
+                    return;
+                }
             }
             dispatch(
                 setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
@@ -119,7 +124,18 @@ export default function CustomColumnDialog({
             reset(initialCustomColumnForm);
             open.setFalse();
         },
-        [customColumnsDefinitions, dispatch, tablesNames, tabIndex, customColumnsDefinition?.id, reset, open, setError]
+        [
+            customColumnsDefinitions,
+            dispatch,
+            tablesNames,
+            tabIndex,
+            customColumnsDefinition?.id,
+            reset,
+            open,
+            isCreate,
+            hasColumnNameChanged,
+            setError,
+        ]
     );
 
     useEffect(() => {
@@ -151,13 +167,27 @@ export default function CustomColumnDialog({
                 </DialogTitle>
                 <DialogContent dividers>
                     <Grid container spacing={2} direction="column" alignItems="center">
-                        <Typography align={'justify'} sx={{ width: '95%', marginTop: '20px', marginBottom: '20px' }}>
-                            {intl.formatMessage({ id: 'spreadsheet/custom_column/column_content_description' })}
+                        <Typography align={'justify'} sx={styles.columnDescription}>
+                            <FormattedMessage
+                                id="spreadsheet/custom_column/column_content_description"
+                                values={{
+                                    Link: (mathJS) => (
+                                        <Link
+                                            href={MATHJS_LINK}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            underline="hover"
+                                        >
+                                            {mathJS}
+                                        </Link>
+                                    ),
+                                }}
+                            />
                         </Typography>
-                        <Grid item sx={{ width: '70%' }}>
+                        <Grid item sx={styles.field}>
                             {columnNameField}
                         </Grid>
-                        <Grid item sx={{ width: '70%' }}>
+                        <Grid item sx={styles.field}>
                             {formulaField}
                         </Grid>
                     </Grid>

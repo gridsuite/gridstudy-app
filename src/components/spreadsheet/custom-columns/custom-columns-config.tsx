@@ -7,10 +7,11 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Badge, Button } from '@mui/material';
-import AddColumnRight from 'images/add_column_right.svg?react';
+import AddColumnRightLight from 'images/add_column_right_light.svg?react';
+import AddColumnRightDark from 'images/add_column_right_dark.svg?react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
 import { spreadsheetStyles } from '../utils/style';
 
@@ -24,6 +25,7 @@ export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumns
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
+    const theme = useSelector((state: AppState) => state.theme);
 
     return (
         <>
@@ -36,7 +38,7 @@ export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumns
                 badgeContent={customColumnsDefinitions.length}
             >
                 <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
-                    <AddColumnRight />
+                    {theme === LIGHT_THEME ? <AddColumnRightLight /> : <AddColumnRightDark />}
                     <FormattedMessage id="spreadsheet/custom_column/add_columns" />
                 </Button>
             </Badge>
