@@ -65,7 +65,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 2500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '.nad-label-box', // tooltips linked to nodes
@@ -73,7 +72,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 3500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '.nad-text-edges', // visual link between nodes and their tooltip
@@ -81,7 +79,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 3500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '[class^="nad-vl0to30"], [class*=" nad-vl0to30"]',
@@ -89,7 +86,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 12000,
         thresholdStatus: THRESHOLD_STATUS.BELOW,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '[class^="nad-vl30to50"], [class*=" nad-vl30to50"]',
@@ -97,7 +93,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 12000,
         thresholdStatus: THRESHOLD_STATUS.BELOW,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '[class^="nad-vl50to70"], [class*=" nad-vl50to70"]',
@@ -105,7 +100,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 27000,
         thresholdStatus: THRESHOLD_STATUS.BELOW,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '[class^="nad-vl70to120"], [class*=" nad-vl70to120"]',
@@ -113,7 +107,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 27000,
         thresholdStatus: THRESHOLD_STATUS.BELOW,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '[class^="nad-vl120to180"], [class*=" nad-vl120to180"]',
@@ -121,7 +114,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 36000,
         thresholdStatus: THRESHOLD_STATUS.BELOW,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '[class^="nad-vl180to300"], [class*=" nad-vl180to300"]',
@@ -129,7 +121,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { display: 'none' },
         threshold: 80000,
         thresholdStatus: THRESHOLD_STATUS.BELOW,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '.nad-disconnected .nad-edge-path',
@@ -137,13 +128,11 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { 'stroke-dasharray': '0.5%, 0.5%' },
         threshold: 2500,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
         cssDeclaration: { 'stroke-width': (value: number) => getBranchStrokeWidth(value) },
         currentValue: { 'stroke-width': '40' },
-        type: CSS_RULE_TYPE.FUNCTION_DRIVEN,
     },
     {
         cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
@@ -151,7 +140,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
         threshold: 1000,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
     {
         cssSelector: '.nad-vl-nodes circle.nad-unknown-busnode',
@@ -159,7 +147,6 @@ const dynamicCssRules: CSS_RULE[] = [
         aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
         threshold: 1000,
         thresholdStatus: THRESHOLD_STATUS.ABOVE,
-        type: CSS_RULE_TYPE.THRESHOLD_DRIVEN,
     },
 ];
 
