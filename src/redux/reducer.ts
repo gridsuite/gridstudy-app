@@ -204,6 +204,8 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    STATEESTIMATION_RESULT_FILTER,
+    StateEstimationResultFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -291,6 +293,10 @@ import {
     SPREADSHEET_STORE_FIELD,
     TABLE_SORT_STORE,
     TIMELINE,
+    STATEESTIMATION_RESULT_STORE_FIELD,
+    STATEESTIMATION_RESULT_SORT_STORE,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
@@ -415,6 +421,7 @@ export type TableSort = {
     [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
     [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
 };
 export type TableSortKeysType = keyof TableSort;
 
@@ -537,7 +544,10 @@ export interface AppState extends CommonStoreState {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: UnknownArray;
     };
-
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: UnknownArray;
+        [STATEESTIMATION_QUALITY_PER_REGION]: UnknownArray;
+    };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -715,6 +725,10 @@ const initialState: AppState = {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: [],
+        [STATEESTIMATION_QUALITY_PER_REGION]: [],
+    },
 
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
@@ -784,8 +798,21 @@ const initialState: AppState = {
             [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
+        [STATEESTIMATION_RESULT_SORT_STORE]: {
+            [STATEESTIMATION_QUALITY_CRITERION]: [
+                {
+                    colId: 'type',
+                    sort: SortWay.ASC,
+                },
+            ],
+            [STATEESTIMATION_QUALITY_PER_REGION]: [
+                {
+                    colId: 'name',
+                    sort: SortWay.ASC,
+                },
+            ],
+        },
     },
-
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -1679,6 +1706,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(DYNAMIC_SIMULATION_RESULT_FILTER, (state, action: DynamicSimulationResultFilterAction) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
+    });
+
+    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
+        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
     });
 
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
