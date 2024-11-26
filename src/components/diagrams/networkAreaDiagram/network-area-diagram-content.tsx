@@ -22,7 +22,6 @@ import {
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
     THRESHOLD_STATUS,
-    CSS_RULE_TYPE,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
