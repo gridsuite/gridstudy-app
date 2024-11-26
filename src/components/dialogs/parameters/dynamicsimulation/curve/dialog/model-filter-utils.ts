@@ -50,7 +50,7 @@ const modelsToVariablesTree = (models: DynamicSimulationModelInfos[]) => {
 
 const variablesTreeToVariablesArray = (variablesTree: VariableTree | string, parentId?: string) => {
     let result: ModelVariable[] = [];
-    Object.entries(variablesTree).map(([key, value]) => {
+    Object.entries(variablesTree).forEach(([key, value]) => {
         const id = parentId ? `${parentId}/${key}` : key;
         if (typeof value === 'object') {
             // make container element
