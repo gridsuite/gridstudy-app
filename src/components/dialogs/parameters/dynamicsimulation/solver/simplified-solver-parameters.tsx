@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { makeComponents, TYPES } from '../../util/make-component-utils';
+import { ParamList, TYPES } from '../../util/param-list';
 import yup from '../../../../utils/yup-config';
 import { commonDefParams, getFormSchema as getCommonSolverFormSchema } from './common-solver-parameters';
 
@@ -130,8 +130,12 @@ const defParams = {
     ...commonDefParams,
 };
 
-const SimplifiedSolverParameters = ({ path }: { path: string }) => {
-    return <>{makeComponents(defParams, path)}</>;
-};
+interface SimplifiedSolverParametersProps {
+    path: string;
+}
+
+function SimplifiedSolverParameters({ path }: Readonly<SimplifiedSolverParametersProps>) {
+    return <ParamList defParams={defParams} path={path} />;
+}
 
 export default SimplifiedSolverParameters;

@@ -9,7 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid, SelectChangeEvent, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
+import { SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
     emptyFormData as timeDelayEmptyFormData,
     formSchema as timeDelayFormSchema,
@@ -79,12 +79,9 @@ const formSchema = yup.object().shape({
     [TAB_VALUES.CURVE]: curveFormSchema,
 });
 
-export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
+export type DynamicSimulationParametersSchemaForm = yup.InferType<typeof formSchema>;
 
-const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
-    user,
-    setHaveDirtyFields,
-}) => {
+function DynamicSimulationParameters({ user, setHaveDirtyFields }: Readonly<DynamicSimulationParametersProps>) {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
 
     const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
@@ -105,7 +102,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleUpdateProvider = useCallback(
-        (evt: SelectChangeEvent<string>) => {
+        (evt: SelectChangeEvent) => {
             updateProvider(evt.target.value);
         },
         [updateProvider]
@@ -126,7 +123,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         };
     }, []);
 
-    const formMethods = useForm<DynamicSimulationForm>({
+    const formMethods = useForm<DynamicSimulationParametersSchemaForm>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -165,7 +162,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
     }, [errorsJSON, onError]);
 
     const onSubmit = useCallback(
-        (newParams: DynamicSimulationForm) => {
+        (newParams: DynamicSimulationParametersSchemaForm) => {
             // use updater to set with new parameters
             updateParameters({
                 ...parameters,
@@ -214,7 +211,7 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
         }
     }, [reset, parameters]);
 
-    const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
+    const handleTabChange = useCallback((event: SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabValue(newValue);
     }, []);
 
@@ -293,8 +290,8 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
                                 solver={
                                     parameters
                                         ? {
-                                              solverId: parameters.solverId as string,
-                                              solvers: parameters.solvers as Record<string, any>[],
+                                              solverId: parameters.solverId,
+                                              solvers: parameters.solvers,
                                           }
                                         : undefined
                                 }
@@ -331,6 +328,6 @@ const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParameters
             </Grid>
         </CustomFormProvider>
     );
-};
+}
 
 export default DynamicSimulationParameters;

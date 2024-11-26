@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, InputAdornment } from '@mui/material';
+import { Grid } from '@mui/material';
 import { styles } from '../parameters';
 import { FormattedMessage } from 'react-intl';
 import { FloatInput, IntegerInput, MuiSelectInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
@@ -21,14 +21,25 @@ export enum TYPES {
     STRING = 'STRING',
 }
 
+export type Option = {
+    id: string;
+    label: string;
+};
+
 export type DefParam = {
     type: TYPES;
     label: string;
-    options?: { id: string; label: string }[];
-    render?: (defParam: DefParam, path: string, key: string) => ReactElement;
+    options?: Option[];
+    render?: (props: ParamProps) => ReactElement;
 };
 
-const defaultParamRender = (defParam: DefParam, path: string, key: string) => {
+export interface ParamProps {
+    defParam: DefParam;
+    path: string;
+    key: string;
+}
+
+function InputRender({ defParam, path, key }: Readonly<ParamProps>) {
     switch (defParam.type) {
         case TYPES.ENUM:
             return (
@@ -51,31 +62,32 @@ const defaultParamRender = (defParam: DefParam, path: string, key: string) => {
         default:
             return <></>;
     }
-};
+}
 
-export const makeComponents = (defParams: Record<string, DefParam>, path: string) => {
-    return Object.keys(defParams).map((key) => (
-        <Grid container spacing={1} paddingTop={1} key={key}>
-            {makeComponent(defParams[key], path, key)}
-            <LineSeparator />
-        </Grid>
-    ));
-};
-
-export const makeComponent = (defParam: DefParam, path: string, key: string) => {
-    const render = defParam?.render ?? defaultParamRender;
+function Param({ defParam, path, key }: Readonly<ParamProps>) {
+    const InputRenderCom = defParam?.render ?? InputRender;
     return (
         <>
             <Grid item xs={8} sx={styles.parameterName}>
                 <FormattedMessage id={defParam.label} />
             </Grid>
             <Grid item container xs={4} sx={styles.controlItem}>
-                {render(defParam, path, key)}
+                <InputRenderCom defParam={defParam} path={path} key={key} />
             </Grid>
         </>
     );
-};
+}
 
-export const inputAdornment = (content: ReactElement) => ({
-    endAdornment: <InputAdornment position="end">{content}</InputAdornment>,
-});
+interface ParamListProps {
+    defParams: Record<string, DefParam>;
+    path: string;
+}
+
+export function ParamList({ defParams, path }: Readonly<ParamListProps>) {
+    return Object.keys(defParams).map((key) => (
+        <Grid container spacing={1} paddingTop={1} key={key}>
+            <Param defParam={defParams[key]} path={path} key={key} />
+            <LineSeparator />
+        </Grid>
+    ));
+}

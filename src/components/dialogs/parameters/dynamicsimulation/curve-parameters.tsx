@@ -6,7 +6,7 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { Grid, Typography, Box, useTheme } from '@mui/material';
+import { Box, Grid, Typography, useTheme } from '@mui/material';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import GridButtons from './curve/grid-buttons';
 import { useIntl } from 'react-intl';
@@ -15,8 +15,8 @@ import { GlobalFilter } from '../../../spreadsheet/global-filter';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
-import { Curve } from './curve/dialog/curve-preview';
 import { ValueFormatterParams } from 'ag-grid-community';
+import { Curve } from './curve/curve.type';
 
 const styles = {
     grid: {
@@ -47,7 +47,11 @@ export const emptyFormData = {
     [CURVES]: [],
 };
 
-const CurveParameters = ({ path }: { path: string }) => {
+interface CurveParametersProps {
+    path: string;
+}
+
+function CurveParameters({ path }: Readonly<CurveParametersProps>) {
     const intl = useIntl();
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
 
@@ -57,7 +61,9 @@ const CurveParameters = ({ path }: { path: string }) => {
         name: `${path}.${CURVES}`,
     });
 
-    const rowData = fields as unknown as Curve[]; //TODO fix in a better way if possible
+    // cannot do typing by useFieldArray<Curve[], `${path}.${CURVES}`, 'id'> due to the dynamic path
+    // TODO fix in a better way if possible
+    const rowData = fields as unknown as Curve[];
 
     // handle open/close/append curve selector dialog
     const [open, setOpen] = useState(false);
@@ -195,6 +201,6 @@ const CurveParameters = ({ path }: { path: string }) => {
             {open && <CurveSelectorDialog open={open} onClose={handleClose} onSave={handleAppend} />}
         </>
     );
-};
+}
 
 export default CurveParameters;

@@ -6,7 +6,7 @@
  */
 
 import { Grid } from '@mui/material';
-import { makeComponents, TYPES } from '../util/make-component-utils';
+import { ParamList, TYPES } from '../util/param-list';
 import yup from '../../../utils/yup-config';
 
 export const NETWORK = 'network';
@@ -161,12 +161,16 @@ const defParams = {
     },
 };
 
-const NetworkParameters = ({ path }: { path: string }) => {
+interface NetworkParametersProps {
+    path: string;
+}
+
+function NetworkParameters({ path }: Readonly<NetworkParametersProps>) {
     return (
         <Grid sx={{ height: '100%' }} xl={6} container>
-            {makeComponents(defParams, path)}
+            <ParamList defParams={defParams} path={path} />
         </Grid>
     );
-};
+}
 
 export default NetworkParameters;

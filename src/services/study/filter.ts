@@ -8,20 +8,19 @@
 import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
-import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { EquipmentType, FilterType, RuleGroupTypeExport } from '@gridsuite/commons-ui';
 
 export interface ExpertFilter {
     id?: UUID;
-    type: 'EXPERT';
-    equipmentType: string; // TODO must be EquipmentType enum
+    type: typeof FilterType.EXPERT.id;
+    equipmentType: EquipmentType;
     rules: RuleGroupTypeExport;
     topologyKind?: string; // TODO must be TopologyKind enum
 }
 
 export interface IdentifiableAttributes {
     id: string;
-    type: EQUIPMENT_TYPES;
+    type: EquipmentType;
     distributionKey: number;
 }
 

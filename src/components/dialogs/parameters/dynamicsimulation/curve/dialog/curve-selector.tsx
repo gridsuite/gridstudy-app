@@ -6,13 +6,14 @@
  */
 
 import { Grid, Theme, Typography } from '@mui/material';
-import EquipmentFilter, { GetSelectedEquipmentsHandle } from './equipment-filter';
-import ModelFilter, { GetSelectedVariablesHandle, ModelVariable } from './model-filter';
+import EquipmentFilter, { EquipmentFilterApi } from './equipment-filter';
+import ModelFilter, { ModelFilterApi } from './model-filter';
 import { FormattedMessage } from 'react-intl';
 import { forwardRef, useCallback, useImperativeHandle, useRef, useState } from 'react';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { getReferencedEquipmentTypeForModel } from './curve-selector-utils';
 import { IdentifiableAttributes } from 'services/study/filter';
+import { ModelVariable } from '../curve.type';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 const styles = {
     h6: (theme: Theme) => ({
@@ -21,20 +22,18 @@ const styles = {
     }),
 };
 
-export interface GetSelectedItemsHandler {
-    api: {
-        getSelectedEquipments: () => IdentifiableAttributes[];
-        getSelectedVariables: () => ModelVariable[];
-    };
+export interface CurveSelectorApi {
+    getSelectedEquipments: () => IdentifiableAttributes[];
+    getSelectedVariables: () => ModelVariable[];
 }
 
-const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
-    const equipmentFilterRef = useRef<GetSelectedEquipmentsHandle>(null);
-    const modelFilterRef = useRef<GetSelectedVariablesHandle>(null);
+const CurveSelector = forwardRef<CurveSelectorApi>(function (_, ref) {
+    const equipmentFilterRef = useRef<EquipmentFilterApi>(null);
+    const modelFilterRef = useRef<ModelFilterApi>(null);
 
-    const [equipmentType, setEquipmentType] = useState(EQUIPMENT_TYPES.GENERATOR);
+    const [equipmentType, setEquipmentType] = useState(EquipmentType.GENERATOR);
 
-    const handleChangeEquipmentType = useCallback((newEquipmentType: EQUIPMENT_TYPES) => {
+    const handleChangeEquipmentType = useCallback((newEquipmentType: EquipmentType) => {
         setEquipmentType(newEquipmentType);
     }, []);
 
@@ -42,19 +41,17 @@ const CurveSelector = forwardRef<GetSelectedItemsHandler>((props, ref) => {
     useImperativeHandle(
         ref,
         () => ({
-            api: {
-                getSelectedEquipments: () => {
-                    if (!equipmentFilterRef.current) {
-                        return [];
-                    }
-                    return equipmentFilterRef.current.api.getSelectedEquipments();
-                },
-                getSelectedVariables: () => {
-                    if (!modelFilterRef.current) {
-                        return [];
-                    }
-                    return modelFilterRef.current.api.getSelectedVariables();
-                },
+            getSelectedEquipments: () => {
+                if (!equipmentFilterRef.current) {
+                    return [];
+                }
+                return equipmentFilterRef.current.getSelectedEquipments();
+            },
+            getSelectedVariables: () => {
+                if (!modelFilterRef.current) {
+                    return [];
+                }
+                return modelFilterRef.current.getSelectedVariables();
             },
         }),
         []

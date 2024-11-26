@@ -6,25 +6,33 @@
  */
 
 import { ExpertFilter } from 'services/study/filter';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
-import { CombinatorType, DataType, FieldType, OperatorType } from '../../../../filter/expert/expert-filter.type';
+import {
+    CombinatorType,
+    DataType,
+    EquipmentType,
+    FieldType,
+    FilterType,
+    OperatorType,
+    RuleGroupTypeExport,
+    RuleTypeExport,
+} from '@gridsuite/commons-ui';
 
 export const CURVE_EQUIPMENT_TYPES = [
-    EQUIPMENT_TYPES.GENERATOR,
-    EQUIPMENT_TYPES.LOAD,
-    EQUIPMENT_TYPES.BUS,
-    EQUIPMENT_TYPES.BUSBAR_SECTION,
+    EquipmentType.GENERATOR,
+    EquipmentType.LOAD,
+    EquipmentType.BUS,
+    EquipmentType.BUSBAR_SECTION,
 ];
 
 // this function is used to redirect an equipment type to the referenced equipment type which is used in the default model.
-export const getReferencedEquipmentTypeForModel = (equipmentType: EQUIPMENT_TYPES) => {
+export const getReferencedEquipmentTypeForModel = (equipmentType: EquipmentType) => {
     // particular case, BUSBAR_SECTION and BUS use the same default model for Bus
-    return equipmentType === EQUIPMENT_TYPES.BUSBAR_SECTION ? EQUIPMENT_TYPES.BUS : equipmentType;
+    return equipmentType === EquipmentType.BUSBAR_SECTION ? EquipmentType.BUS : equipmentType;
 };
 
 // this function is used to provide topologyKind, particularly 'BUS_BREAKER' for EQUIPMENT_TYPES.BUS
 export const getTopologyKindIfNecessary = (equipmentType: string) => {
-    return equipmentType === EQUIPMENT_TYPES.BUS
+    return equipmentType === EquipmentType.BUS
         ? {
               topologyKind: 'BUS_BREAKER',
           }
@@ -35,14 +43,15 @@ export const buildExpertRules = (
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined
-) => {
-    const rules: any[] = []; // TODO: confusion between RuleGroupTypeExport, RuleTypeExport and expected values...
+): RuleGroupTypeExport => {
+    const rules: RuleTypeExport[] = [];
 
     // create rule IN for voltageLevelIds
     if (voltageLevelIds?.length) {
         const voltageLevelIdsRule = {
             field: FieldType.VOLTAGE_LEVEL_ID,
             operator: OperatorType.IN,
+            value: undefined, // TODO refactor in commons-ui with '?' instead of undefined
             values: voltageLevelIds,
             dataType: DataType.STRING,
         };
@@ -54,6 +63,7 @@ export const buildExpertRules = (
         const countriesRule = {
             field: FieldType.COUNTRY,
             operator: OperatorType.IN,
+            value: undefined, // TODO refactor in commons-ui with '?' instead of undefined
             values: countries,
             dataType: DataType.ENUM,
         };
@@ -65,6 +75,7 @@ export const buildExpertRules = (
         const nominalVoltagesRule = {
             field: FieldType.NOMINAL_VOLTAGE,
             operator: OperatorType.IN,
+            value: undefined, // TODO refactor in commons-ui with '?' instead of undefined
             values: nominalVoltages,
             dataType: DataType.NUMBER,
         };
@@ -79,14 +90,14 @@ export const buildExpertRules = (
 };
 
 export const buildExpertFilter = (
-    equipmentType: string,
+    equipmentType: EquipmentType,
     voltageLevelIds: string[] | undefined,
     countries: string[] | undefined,
     nominalVoltages: number[] | undefined
 ): ExpertFilter => {
     return {
         ...getTopologyKindIfNecessary(equipmentType), // for optimizing 'search bus' in filter-server
-        type: 'EXPERT',
+        type: FilterType.EXPERT.id,
         equipmentType: equipmentType,
         rules: buildExpertRules(voltageLevelIds, countries, nominalVoltages),
     };

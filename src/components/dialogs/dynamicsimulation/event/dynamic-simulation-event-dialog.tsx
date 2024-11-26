@@ -32,9 +32,14 @@ export type DynamicSimulationEventDialogProps = {
     open?: boolean;
 } & Omit<DialogProps, 'open'>;
 
-export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialogProps) => {
-    const { equipmentId, equipmentType, onClose, title, open: defaultOpen, ...dialogProps } = props;
-
+export function DynamicSimulationEventDialog({
+    equipmentId,
+    equipmentType,
+    onClose,
+    title,
+    open: defaultOpen,
+    ...dialogProps
+}: Readonly<DynamicSimulationEventDialogProps>) {
     const { snackError } = useSnackMessage();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -202,4 +207,4 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
             </ModificationDialog>
         </CustomFormProvider>
     );
-};
+}

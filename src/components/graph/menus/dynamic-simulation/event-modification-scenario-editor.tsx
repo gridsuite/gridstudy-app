@@ -27,7 +27,7 @@ import { AppState, StudyUpdated } from '../../../../redux/reducer';
 import { AppDispatch } from '../../../../redux/store';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 
-const EventModificationScenarioEditor = () => {
+function EventModificationScenarioEditor() {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -355,6 +355,6 @@ const EventModificationScenarioEditor = () => {
             )}
         </>
     );
-};
+}
 
 export default EventModificationScenarioEditor;

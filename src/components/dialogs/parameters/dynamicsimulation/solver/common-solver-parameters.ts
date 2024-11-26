@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { TYPES } from '../../util/make-component-utils';
+import { TYPES } from '../../util/param-list';
 import yup from '../../../../utils/yup-config';
 
 const COMMON_F_NORM_TOL_ALG = 'fNormTolAlg';
