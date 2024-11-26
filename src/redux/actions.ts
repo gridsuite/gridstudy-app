@@ -61,6 +61,7 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
+    STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
@@ -157,7 +158,8 @@ export type AppActions =
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | LogsFilterAction
-    | CustomColumnsDefinitionsAction;
+    | CustomColumnsDefinitionsAction
+    | StateEstimationResultFilterAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -1251,3 +1253,19 @@ export const addSortForNewSpreadsheet = (
         value,
     },
 });
+
+export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
+export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
+    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
+    [STATEESTIMATION_RESULT_STORE_FIELD]: MutableUnknownArray;
+};
+export function setStateEstimationResultFilter(
+    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
+    stateEstimationResultFilter: MutableUnknownArray
+): StateEstimationResultFilterAction {
+    return {
+        type: STATEESTIMATION_RESULT_FILTER,
+        filterTab: filterTab,
+        [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
+    };
+}

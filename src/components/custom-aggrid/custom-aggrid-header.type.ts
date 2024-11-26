@@ -26,6 +26,12 @@ export enum FILTER_NUMBER_COMPARATORS {
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
 }
 
+// not visible in the base interface :
+export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
+    GREATER_THAN = 'greaterThan',
+    LESS_THAN = 'lessThan',
+}
+
 export type FilterEnumsType = Record<string, string[] | null>;
 
 export type FilterPropsType = {
@@ -46,6 +52,7 @@ export type FilterDataType = {
     dataType: string;
     type: string;
     value: undefined | null | number | string | string[];
+    tolerance?: number; // tolerance when comparing values. Only useful for the number type
 };
 
 export type FilterSelectorType = FilterDataType & {
