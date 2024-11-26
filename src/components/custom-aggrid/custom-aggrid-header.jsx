@@ -10,9 +10,11 @@ import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
+    Box,
     Autocomplete,
     Badge,
     debounce,
+    FormHelperText,
     Grid,
     IconButton,
     InputAdornment,
@@ -29,8 +31,16 @@ import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
+import { countDecimalPlaces } from '../../utils/rounding.js';
+import { computeTolerance } from '../../hooks/use-aggrid-local-row-filter';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
+    exponent: {
+        position: 'relative',
+        bottom: '1ex',
+        fontSize: '80%',
+    },
     iconSize: {
         fontSize: '1rem',
     },
@@ -54,6 +64,35 @@ const styles = {
         },
     },
 };
+
+/**
+ * displays a rounding precision like this : 'Rounded to 10^decimalAfterDot' or as a decimal number if decimalAfterDot <= 4
+ */
+export function DisplayRounding({ decimalAfterDot }) {
+    const intl = useIntl();
+    const displayAsPower10 = decimalAfterDot > 4;
+    const baseMessage =
+        intl.formatMessage({
+            id: 'filter.rounded',
+        }) + ' ';
+
+    const decimalAfterDotStr = -decimalAfterDot;
+    return (
+        <FormHelperText>
+            {baseMessage}
+            {displayAsPower10 ? (
+                <>
+                    10
+                    <Box component="span" sx={styles.exponent}>
+                        {decimalAfterDotStr}
+                    </Box>
+                </>
+            ) : (
+                1 / Math.pow(10, decimalAfterDot)
+            )}
+        </FormHelperText>
+    );
+}
 
 const CustomHeaderComponent = ({
     field,
@@ -90,6 +129,7 @@ const CustomHeaderComponent = ({
     const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const columnSort = sortConfig?.find((value) => value.colId === field);
     const isColumnSorted = !!columnSort;
+    const { snackWarning } = useSnackMessage();
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -105,6 +145,7 @@ const CustomHeaderComponent = ({
     const [selectedFilterData, setSelectedFilterData] = useState();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuButtonRef = useRef(null);
+    const [decimalAfterDot, setDecimalAfterDot] = useState(0);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -117,6 +158,7 @@ const CustomHeaderComponent = ({
             value: undefined,
             type: selectedFilterComparator,
             dataType: filterDataType,
+            tolerance: undefined,
         });
     };
 
@@ -143,7 +185,17 @@ const CustomHeaderComponent = ({
             value: value,
             type: selectedFilterComparator,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(value) : undefined,
         });
+        if (isNumberInput) {
+            let decimalAfterDot = countDecimalPlaces(value);
+            if (decimalAfterDot >= 13) {
+                snackWarning({
+                    headerId: 'filter.warnRounding',
+                });
+            }
+            setDecimalAfterDot(decimalAfterDot);
+        }
     };
 
     const handleFilterDurationChange = (value) => {
@@ -152,6 +204,7 @@ const CustomHeaderComponent = ({
             value: value,
             type: selectedFilterComparator,
             dataType: FILTER_DATA_TYPES.NUMBER,
+            tolerance: undefined,
         });
     };
 
@@ -165,6 +218,7 @@ const CustomHeaderComponent = ({
             value: data,
             type: FILTER_TEXT_COMPARATORS.EQUALS,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(data) : undefined,
         });
     };
 
@@ -175,6 +229,7 @@ const CustomHeaderComponent = ({
             value: selectedFilterData,
             type: newType,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(selectedFilterData) : undefined,
         });
     };
 
@@ -407,33 +462,42 @@ const CustomHeaderComponent = ({
                                     onChange={handleFilterDurationChange}
                                 />
                             ) : (
-                                <TextField
-                                    size={'small'}
-                                    fullWidth
-                                    value={selectedFilterData || ''}
-                                    onChange={handleFilterTextChange}
-                                    placeholder={intl.formatMessage({
-                                        id: 'filter.filterOoo',
-                                    })}
-                                    inputProps={{
-                                        type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
-                                    }}
-                                    sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
-                                    InputProps={{
-                                        endAdornment: selectedFilterData ? (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="clear filter"
-                                                    onClick={handleClearFilter}
-                                                    edge="end"
-                                                    size="small"
-                                                >
-                                                    <ClearIcon />
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
-                                    }}
-                                />
+                                <Grid container item direction={'column'} gap={0.2}>
+                                    <Grid item>
+                                        <TextField
+                                            size={'small'}
+                                            fullWidth
+                                            value={selectedFilterData || ''}
+                                            onChange={handleFilterTextChange}
+                                            placeholder={intl.formatMessage({
+                                                id: 'filter.filterOoo',
+                                            })}
+                                            inputProps={{
+                                                type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
+                                            }}
+                                            sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                                            InputProps={{
+                                                endAdornment: selectedFilterData ? (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="clear filter"
+                                                            onClick={handleClearFilter}
+                                                            edge="end"
+                                                            size="small"
+                                                        >
+                                                            <ClearIcon />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ) : null,
+                                            }}
+                                        />
+                                    </Grid>
+                                    {isNumberInput && decimalAfterDot > 0 ? (
+                                        <Grid item>
+                                            <DisplayRounding decimalAfterDot={decimalAfterDot} />
+                                        </Grid>
+                                    ) : null}
+                                </Grid>
                             )}
                         </Grid>
                     )}
