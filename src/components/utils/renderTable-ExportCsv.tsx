@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CsvExport } from '../spreadsheet/export-csv';
+import { CsvExport } from '../spreadsheet/csv-export/csv-export';
 import { FunctionComponent, RefObject } from 'react';
 import { ColDef, GridReadyEvent, RowClassParams, RowDataUpdatedEvent, RowStyle } from 'ag-grid-community';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
