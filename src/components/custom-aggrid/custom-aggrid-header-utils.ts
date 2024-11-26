@@ -14,7 +14,7 @@ export const makeAgGridCustomHeaderColumn = ({
     filterProps, // filterProps: contains useAgGridRowFilter params
     filterParams, // filterParams: Parameters for the column's filtering functionality
     filterTab,
-    shouldDisplayFilterBadge,
+    forceDisplayFilterIcon,
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
@@ -64,7 +64,7 @@ export const makeAgGridCustomHeaderColumn = ({
             },
             getEnumLabel: props?.getEnumLabel,
             isCountry: props?.isCountry,
-            shouldDisplayFilterBadge,
+            forceDisplayFilterIcon,
         },
         filterParams: props?.agGridFilterParams || undefined,
         ...props,

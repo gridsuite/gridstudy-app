@@ -63,7 +63,7 @@ const CustomHeaderComponent = ({
     filterParams = {},
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
-    shouldDisplayFilterBadge,
+    forceDisplayFilterIcon = false,
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -288,32 +288,46 @@ const CustomHeaderComponent = ({
                                 )}
                             </Grid>
                         )}
+                        {forceDisplayFilterIcon && shouldActivateFilter && (
+                            <Grid
+                                item
+                                sx={{
+                                    overflow: 'visible',
+                                }}
+                            >
+                                {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
+                                    <Grid item>
+                                        <IconButton size={'small'} onClick={handleShowFilter}>
+                                            <Badge
+                                                color="secondary"
+                                                variant={selectedFilterData?.length ? 'dot' : null}
+                                                invisible={!selectedFilterData}
+                                            >
+                                                <FilterAlt sx={styles.iconSize} />
+                                            </Badge>
+                                        </IconButton>
+                                    </Grid>
+                                )}
+                            </Grid>
+                        )}
                     </Grid>
-                    {shouldActivateFilter && (
+                    {!forceDisplayFilterIcon && shouldActivateFilter && (
                         <Grid
                             item
                             sx={{
                                 overflow: 'visible',
                             }}
                         >
-                            {(shouldDisplayFilterIcon || shouldDisplayFilterBadge) && (
+                            {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
                                 <Grid item>
                                     <IconButton size={'small'} onClick={handleShowFilter}>
-                                        {shouldDisplayFilterBadge ?? true ? (
-                                            <Badge
-                                                color="secondary"
-                                                variant={
-                                                    selectedFilterData?.length || shouldDisplayFilterBadge
-                                                        ? 'dot'
-                                                        : null
-                                                }
-                                                invisible={!selectedFilterData}
-                                            >
-                                                <FilterAlt sx={styles.iconSize} />
-                                            </Badge>
-                                        ) : (
+                                        <Badge
+                                            color="secondary"
+                                            variant={selectedFilterData?.length ? 'dot' : null}
+                                            invisible={!selectedFilterData}
+                                        >
                                             <FilterAlt sx={styles.iconSize} />
-                                        )}
+                                        </Badge>
                                     </IconButton>
                                 </Grid>
                             )}

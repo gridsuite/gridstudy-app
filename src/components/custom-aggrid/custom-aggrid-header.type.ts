@@ -81,7 +81,7 @@ export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, T
     isDefaultSort?: boolean;
     isEnum?: boolean;
     numeric?: boolean;
-    shouldDisplayFilterBadge?: boolean;
     sortProps?: SortPropsType;
     withFluxConvention?: boolean;
+    forceDisplayFilterIcon?: boolean;
 }

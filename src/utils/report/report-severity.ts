@@ -80,6 +80,10 @@ export const getDefaultSeverityFilter = (severityList: string[]): string[] => {
     return severityFilter;
 };
 
+export function orderSeverityList(severityList: SeverityLevel[]): SeverityLevel[] {
+    return severityList.sort((a, b) => REPORT_SEVERITY[a].level - REPORT_SEVERITY[b].level);
+}
+
 export function getContainerDefaultSeverityList(): string[] {
     // return name list like ['WARN', 'INFO']
     return Object.values(REPORT_SEVERITY)
