@@ -35,6 +35,7 @@ const backend_locale_en = {
     REACTIVE_SLACKS_OVER_THRESHOLD: `Reactive slack exceeds {threshold} MVar for at least one bus`,
 
     // State estimation results
+    UNKNOWN: 'Unknown',
     TAUX_OBS: 'Observability rate',
     REDONDANCE_ACT: 'Active redundancy',
     REDONDANCE_REA: 'Reactive redundancy',

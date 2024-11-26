@@ -18,20 +18,12 @@ import RunningStatus from 'components/utils/running-status';
 import { AppState } from 'redux/reducer';
 import ComputingType from 'components/computing-status/computing-type';
 import { useSelector } from 'react-redux';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { StateEstimationQualityResult } from './state-estimation-quality-result';
 import GlassPane from '../common/glass-pane';
 import {
-    mappingTabs,
     stateEstimationQualityCriterionColumnsDefinition,
     stateEstimationQualityPerRegionColumnsDefinition,
 } from './state-estimation-result-utils';
-import {
-    STATEESTIMATION_RESULT_SORT_STORE,
-    STATEESTIMATION_RESULT_STORE_FIELD,
-} from '../../../utils/store-sort-filter-fields';
-import { setStateEstimationResultFilter } from '../../../redux/actions';
 
 const styles = {
     flexWrapper: {
@@ -60,15 +52,6 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
 
-    const { onSortChanged, sortConfig } = useAgGridSort(STATEESTIMATION_RESULT_SORT_STORE, mappingTabs(tabIndex));
-
-    const { updateFilter, filterSelector } = useAggridRowFilter({
-        filterType: STATEESTIMATION_RESULT_STORE_FIELD,
-        filterTab: mappingTabs(tabIndex),
-        // @ts-expect-error TODO: found how to have Action type in props type
-        filterStoreAction: setStateEstimationResultFilter,
-    });
-
     const fetchEstimResults = useCallback(() => {
         return fetchStateEstimationResult(studyUuid, nodeUuid);
     }, [studyUuid, nodeUuid]);
@@ -87,22 +70,14 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     const stateEstimationQualityColumns = useMemo(() => {
         switch (tabIndex) {
             case 1:
-                return stateEstimationQualityCriterionColumnsDefinition(
-                    intl,
-                    { onSortChanged, sortConfig },
-                    { updateFilter, filterSelector }
-                );
+                return stateEstimationQualityCriterionColumnsDefinition(intl);
             case 2:
-                return stateEstimationQualityPerRegionColumnsDefinition(
-                    intl,
-                    { onSortChanged, sortConfig },
-                    { updateFilter, filterSelector }
-                );
+                return stateEstimationQualityPerRegionColumnsDefinition(intl);
 
             default:
                 return [];
         }
-    }, [filterSelector, intl, onSortChanged, sortConfig, updateFilter, tabIndex]);
+    }, [intl, tabIndex]);
 
     const handleTabChange = (_event: SyntheticEvent, newTabIndex: number) => {
         setTabIndex(newTabIndex);

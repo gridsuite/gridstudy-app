@@ -46,5 +46,5 @@ export const StateEstimationStatusResult: FunctionComponent<StateEstimationResul
         );
     };
 
-    return <>{renderStateEstimationStatusResult()}</>;
+    return renderStateEstimationStatusResult();
 };

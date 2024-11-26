@@ -35,6 +35,7 @@ const backend_locale_fr = {
     REACTIVE_SLACKS_OVER_THRESHOLD: `L'investissement réactif pour au moins un noeud électrique dépasse {threshold} MVar`,
 
     // State estimation results
+    UNKNOWN: 'Inconnu',
     TAUX_OBS: "Taux d'observabilité",
     REDONDANCE_ACT: 'Redondance en actif',
     REDONDANCE_REA: 'Redondance en réactif',

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 
 import { useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
@@ -41,8 +41,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
         (state: AppState) => state.computingStatus[ComputingType.STATE_ESTIMATION]
     );
 
-    const [isQualityReady, setIsQualityReady] = useState(false);
-
     //We give each tab its own loader, so we don't have a loader spinning because another tab is still doing some work
     const openLoaderTab = useOpenLoaderShortWait({
         isLoading:
@@ -50,7 +48,7 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             stateEstimationStatus === RunningStatus.RUNNING ||
             // We still want the loader to be displayed for the remaining time there is between "the state estimation is over"
             // and "the data is post processed and can be displayed"
-            (!isQualityReady && stateEstimationStatus === RunningStatus.SUCCEED) ||
+            stateEstimationStatus === RunningStatus.SUCCEED ||
             isLoadingResult,
         delay: RESULTS_LOADING_DELAY,
     });
@@ -79,8 +77,8 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
 
     const defaultColDef = useMemo(
         () => ({
-            filter: true,
-            sortable: true,
+            filter: false,
+            sortable: false,
             resizable: true,
             lockPinned: true,
             suppressMovable: true,
@@ -122,13 +120,6 @@ export const StateEstimationQualityResult: FunctionComponent<StateEstimationResu
             </>
         );
     };
-
-    useEffect(() => {
-        //reset everything at initial state
-        if (stateEstimationStatus === RunningStatus.FAILED || stateEstimationStatus === RunningStatus.IDLE) {
-            setIsQualityReady(false);
-        }
-    }, [stateEstimationStatus]);
 
     return renderStateEstimationQualities();
 };
