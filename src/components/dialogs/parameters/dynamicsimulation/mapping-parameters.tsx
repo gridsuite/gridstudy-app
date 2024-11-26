@@ -34,12 +34,7 @@ function MappingParameters({ mapping, path }: Readonly<MappingParametersProps>) 
     const { mappings } = mapping ?? {};
 
     const mappingOptions = useMemo(() => {
-        return (
-            mappings?.map((elem) => ({
-                id: elem.name,
-                label: elem.name,
-            })) ?? []
-        );
+        return mappings?.map((elem) => elem.name) ?? [];
     }, [mappings]);
 
     const defParams: Record<string, DefParam> = {
@@ -47,10 +42,10 @@ function MappingParameters({ mapping, path }: Readonly<MappingParametersProps>) 
             type: TYPES.ENUM,
             label: 'DynamicSimulationMapping',
             options: mappingOptions,
-            render: ({ defParam, path, key }: ParamProps) => {
+            render: ({ defParam, path, name }: ParamProps) => {
                 return (
                     <AutocompleteInput
-                        name={`${path}.${key}`}
+                        name={`${path}.${name}`}
                         label={''}
                         options={defParam.options ?? []}
                         fullWidth

@@ -9,7 +9,7 @@ import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
 import { useEffect, useMemo } from 'react';
 import { UseFormClearErrors, useWatch } from 'react-hook-form';
-import { Option, ParamList, TYPES } from '../util/param-list';
+import { DefParam, ParamList, TYPES } from '../util/param-list';
 import IdaSolverParameters, { getFormSchema as getIdaFormSchema } from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters, {
     getFormSchema as getSimplifiedFormSchema,
@@ -17,6 +17,7 @@ import SimplifiedSolverParameters, {
 import { TabPanel } from '../parameters';
 import { DynamicSimulationParametersSchemaForm } from './dynamic-simulation-parameters';
 import { SolverInfos, SolverTypeInfos } from 'services/study/dynamic-simulation.type';
+import { Option } from '@gridsuite/commons-ui';
 
 export const SOLVER_ID = 'solverId';
 
@@ -81,7 +82,7 @@ function SolverParameters({ solver, path, clearErrors }: Readonly<SolverParamete
         clearErrors(path);
     }, [solverId, clearErrors, path]);
 
-    const defParams = {
+    const defParams: Record<string, DefParam> = {
         [SOLVER_ID]: {
             type: TYPES.ENUM,
             label: 'DynamicSimulationSolverType',
