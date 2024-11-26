@@ -76,6 +76,8 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
+import {formatTemporaryLimits} from "../../../../utils/utils.js";
+import {addSelectedFieldToRows} from "../../../../utils/dnd-table/dnd-table.jsx";
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -139,8 +141,22 @@ const LineCreationDialog = ({
 
     const { reset, setValue } = formMethods;
 
+    const formatCompleteCurrentLimit = (completeCurrentLimits) => {
+        let formattedCompleteCurrentLimit = [];
+        completeCurrentLimits.forEach((elt) =>
+            formattedCompleteCurrentLimit.push( {
+                    id: elt.id,
+                    permanentLimit: elt.permanentLimit,
+                    temporaryLimits : addSelectedFieldToRows(
+                    formatTemporaryLimits(elt?.temporaryLimits)
+                )
+            }
+        ));
+        return formattedCompleteCurrentLimit;
+    }
+
     const fromSearchCopyToFormValues = (line) => {
-        console.log(JSON.stringify(line, null, 4)); // TODO : remove
+        // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
         reset(
             {
                 ...getHeaderFormData({
@@ -176,16 +192,8 @@ const LineCreationDialog = ({
                         )),
                 }),
                 ...getAllLimitsFormData({
-                    /*
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                    ),
-                     */
-                    currentLimits1: line.currentLimits1,
-                    currentLimits2: line.currentLimits2,
+                    currentLimits1: formatCompleteCurrentLimit(line.currentLimits1),
+                    currentLimits2: formatCompleteCurrentLimit(line.currentLimits2),
                     selectedLimitsGroup1: line.selectedLimitsGroup1,
                     selectedLimitsGroup2: line.selectedLimitsGroup2,
                 }),

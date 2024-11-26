@@ -7,6 +7,10 @@
 import { Box, Paper } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import DndTable from '../../utils/dnd-table/dnd-table.jsx';
+import { FloatInput } from '@gridsuite/commons-ui';
+import { PERMANENT_LIMIT, TEMPORARY_LIMITS } from 'components/utils/field-constants';
+import { AmpereAdornment } from '../dialog-utils';
+import { useMemo } from "react";
 
 const styles = {
     limitsBackground: {
@@ -19,16 +23,30 @@ const styles = {
 };
 
 export const LimitsSidePane = ({
+    indexLimitSet,
     arrayFormName,
     useFieldArrayOutput,
     createRows,
     columnsDefinition,
+    permanentCurrentLimitPreviousValue,
     previousValues,
     getPreviousValue,
     isValueModified,
-    permanentCurrentLimitField,
     disableTableCell,
+    clearableFields,
 }) => {
+    const permanentCurrentLimitField = useMemo(() => (
+        <Box sx={{ maxWidth: 200 }}>
+            <FloatInput
+                name={`${arrayFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
+                label="PermanentCurrentLimitText"
+                adornment={AmpereAdornment}
+                previousValue={permanentCurrentLimitPreviousValue}
+                clearable={clearableFields}
+            />
+        </Box>
+    ), [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]);
+
     return (
         <Paper sx={styles.limitsBackground}>
             {permanentCurrentLimitField}
@@ -36,7 +54,7 @@ export const LimitsSidePane = ({
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
             <DndTable
-                arrayFormName={arrayFormName}
+                arrayFormName={`${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
                 useFieldArrayOutput={useFieldArrayOutput}
                 createRows={createRows}
                 columnsDefinition={columnsDefinition}

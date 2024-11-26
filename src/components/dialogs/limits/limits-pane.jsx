@@ -10,7 +10,7 @@ import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     LIMITS,
-    PERMANENT_LIMIT,
+    SELECTED_LIMIT_GROUP_1,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
@@ -18,15 +18,14 @@ import {
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useCallback, useMemo } from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
-import { FloatInput } from '@gridsuite/commons-ui';
-import { AmpereAdornment } from 'components/dialogs/dialog-utils';
+import { SelectInput} from '@gridsuite/commons-ui';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import { LimitsSidePane } from './limits-side-pane.jsx';
+import { LimitsSidePane } from './limits-side-pane';
 
 const styles = {
     limitsBackground: {
@@ -41,6 +40,7 @@ const styles = {
 const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
+    // const [ limitSets1, setLimitSets1 ] = useState([]);
 
     const columnsDefinition = useMemo(() => {
         return [
@@ -168,56 +168,31 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
         [currentNode, getValues]
     );
 
-    const permanentCurrentLimit1Field  = (index) => (
-        <Box sx={{ maxWidth: 200 }}>
-            <FloatInput
-                name={`${id}.${CURRENT_LIMITS_1}[${index}].${PERMANENT_LIMIT}`}
-                label="PermanentCurrentLimitText"
-                adornment={AmpereAdornment}
-                previousValue={equipmentToModify?.currentLimits1?.permanentLimit}
-                clearable={clearableFields}
-            />
-        </Box>
-    );
+    /*useEffect(() => {
+        let allLimitSets = [];
+        console.log("Mathieu getValues(`${id}.${CURRENT_LIMITS_1}`) : " + JSON.stringify(getValues(`${id}.${CURRENT_LIMITS_1}`), null, 4));
+        if (getValues(`${id}.${CURRENT_LIMITS_1}`).length > 0) {
+            console.log("Mathieu getValues(`${id}.${CURRENT_LIMITS_1}`).length : " + JSON.stringify(getValues(`${id}.${CURRENT_LIMITS_1}`).length));
+            let val = getValues(`${id}.${CURRENT_LIMITS_1}`)[0].id;
+            console.log("Mathieu getValues val : " + val);
+            allLimitSets.push(val)
+        }
 
-    const permanentCurrentLimit2Field = (index) => (
-        <Box sx={{ maxWidth: 200 }}>
-            <FloatInput
-                name={`${id}.${CURRENT_LIMITS_2}[${index}].${PERMANENT_LIMIT}`}
-                label="PermanentCurrentLimitText"
-                adornment={AmpereAdornment}
-                previousValue={equipmentToModify?.currentLimits2?.permanentLimit}
-                clearable={clearableFields}
-            />
-        </Box>
-    );
+        setLimitSets1(allLimitSets);
+    }, [getValues]);*/
 
-    const getAllLimitSets1 = useCallback(
-        () => {
-            let allLimitSets = [];
-            /*if (getValues(`${id}.${CURRENT_LIMITS_1}`).length > 0) {
-                let val = getValues(`${id}.${CURRENT_LIMITS_1}[0].${ID}`);
-                console.log(val, null, 4);
-                allLimitSets.push(val)
-            }*/
-
-            return allLimitSets;
-
-        }, [getValues]
-    );
-
-/*
+    /*
     const selectedOperationalLimitGroup1 = useMemo(() => (
         <Box sx={{ maxWidth: 300 }}>
             <SelectInput
                 name={`${id}.${SELECTED_LIMIT_GROUP_1}`}
-                options={[getAllLimitSets1]}
+                options={limitSets1}
                 label={'SelectedOperationalLimitGroup'}
                 size={'small'}
                 onChangeCallback={{/!** TODO !*!/}}
             />
         </Box>
-    ), [getAllLimitSets1]);
+    ), [id, limitSets1]);
 
     const selectedOperationalLimitGroup2 = (
         <Box sx={{ maxWidth: 300 }}>
@@ -276,28 +251,32 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                 </Grid>
                 <Grid item xs={5}>
                     <LimitsSidePane
-                        arrayFormName={`${id}.${CURRENT_LIMITS_1}[0].${TEMPORARY_LIMITS}`}
+                        arrayFormName={`${id}.${CURRENT_LIMITS_1}`}
+                        clearableFields={clearableFields}
+                        indexLimitSet={0}
                         useFieldArrayOutput={useFieldArrayOutputTemporaryLimits1(0)}
                         createRows={createLimitRows}
                         columnsDefinition={columnsDefinition}
+                        permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
                         disableTableCell={disableTableCell}
                         getPreviousValue={getTemporaryLimitPreviousValue}
                         isValueModified={isTemporaryLimitModified}
-                        permanentCurrentLimitField={permanentCurrentLimit1Field(0)}
                     />
                 </Grid>
                 <Grid item xs={5}>
                     <LimitsSidePane
-                        arrayFormName={`${id}.${CURRENT_LIMITS_2}[0].${TEMPORARY_LIMITS}`}
+                        arrayFormName={`${id}.${CURRENT_LIMITS_2}`}
+                        clearableFields={clearableFields}
+                        indexLimitSet={0}
                         useFieldArrayOutput={useFieldArrayOutputTemporaryLimits2(0)}
                         createRows={createLimitRows}
                         columnsDefinition={columnsDefinition}
+                        permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
                         disableTableCell={disableTableCell}
                         getPreviousValue={getTemporaryLimitPreviousValue}
                         isValueModified={isTemporaryLimitModified}
-                        permanentCurrentLimitField={permanentCurrentLimit2Field(0)}
                     />
                 </Grid>
             </Grid>
