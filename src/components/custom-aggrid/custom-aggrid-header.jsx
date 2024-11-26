@@ -539,6 +539,9 @@ CustomHeaderComponent.propTypes = {
         customFilterOptions: PropTypes.arrayOf(PropTypes.string),
         filterSelector: PropTypes.array,
     }),
+    tabIndex: PropTypes.number,
+    isCustomColumn: PropTypes.bool,
+    Menu: PropTypes.elementType,
 };
 
 export default CustomHeaderComponent;

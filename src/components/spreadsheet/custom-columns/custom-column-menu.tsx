@@ -11,11 +11,10 @@ import { PopupConfirmationDialog, useStateBoolean } from '@gridsuite/commons-ui'
 import { CUSTOM_COLUMNS_MENU_DEFINITION, DELETE, UPDATE } from '../constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CustomColumnDialog from './custom-columns-dialog';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import { ColumnWithFormula } from 'types/custom-columns.types';
 import { setRemoveCustomColumDefinitions } from 'redux/actions';
-import { useDispatch } from 'react-redux';
 import { AppDispatch } from 'redux/store';
 
 export interface CustomColumnConfigProps {
