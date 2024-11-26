@@ -814,18 +814,22 @@ export const reducer = createReducer(initialState, (builder) => {
             newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
         }
         if (action.newLines) {
+            // @ts-expect-error TODO: find how to convert MutableUnknownArray to proper type
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos([]);
         }
         if (action.newTieLines) {
+            // @ts-expect-error TODO: find how to convert MutableUnknownArray to proper type
             newMapEquipments.tieLines = action.newTieLines;
             newMapEquipments.completeTieLinesInfos([]);
         }
         if (action.newSubstations) {
+            // @ts-expect-error TODO: find how to convert MutableUnknownArray to proper type
             newMapEquipments.substations = action.newSubstations;
             newMapEquipments.completeSubstationsInfos([]);
         }
         if (action.newHvdcLines) {
+            // @ts-expect-error TODO: find how to convert MutableUnknownArray to proper type
             newMapEquipments.hvdcLines = action.newHvdcLines;
             newMapEquipments.completeHvdcLinesInfos([]);
         }

@@ -21,7 +21,7 @@ import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_BASEMAP, PARAM_MAP_MANUAL_REFRESH, PARAM_USE_NAME } from '../../utils/config-params';
-import { Equipment, EquipmentType, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
@@ -55,6 +55,11 @@ import {
     Line as LineMap,
     VoltageLevel as VoltageLevelMap,
 } from '@powsybl/network-viewer/dist/components/network-map-viewer/network/map-equipments';
+import {
+    Substation as SubstationEq,
+    Equipment as EquipmentEq,
+    Line as LineEq,
+} from '@powsybl/network-viewer/dist/components/network-map-viewer/utils/equipment-types';
 import { Box, useTheme } from '@mui/material';
 const INITIAL_POSITION = [0, 0] as [number, number];
 const INITIAL_ZOOM = 9;
@@ -141,14 +146,13 @@ export const NetworkMapTab = ({
 
     const dispatch = useDispatch();
 
-    const intlRef = useIntlRef();
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
     const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<unknown[]>();
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>([]);
     const [geoData, setGeoData] = useState<GeoData>();
     const geoDataRef = useRef<any>();
 
@@ -339,7 +343,7 @@ export const NetworkMapTab = ({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
-            const equipment = mapEquipments?.hvdcLinesById?.get(equipmentId) as Equipment;
+            const equipment = mapEquipments?.hvdcLinesById?.get(equipmentId) as LineEq;
             if (
                 equipmentType === EquipmentType.HVDC_LINE &&
                 equipment &&
@@ -494,11 +498,11 @@ export const NetworkMapTab = ({
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoDataRef.current.substationPositionsById,
-            mapEquipments?.substations as Substation[]
+            mapEquipments?.substations as SubstationEq[]
         );
 
         const notFoundLineIds = lineFullPath
-            ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as Line[])
+            ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as EquipmentGeoData[])
             : [];
 
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
@@ -649,11 +653,11 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        const gSMapEquipments = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
+        const gSMapEquipments = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch);
         if (gSMapEquipments) {
             dispatch(resetMapReloaded());
         }
-    }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
+    }, [currentNode, dispatch, snackError, studyUuid]);
 
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
@@ -674,24 +678,36 @@ export const NetworkMapTab = ({
 
             updatedSubstations.then((values) => {
                 if (currentNodeAtReloadCalling?.id === currentNodeRef.current?.id) {
-                    mapEquipments.updateSubstations(mapEquipments.checkAndGetValues(values), isFullReload);
+                    mapEquipments.updateSubstations(
+                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as SubstationEq[],
+                        isFullReload
+                    );
                 }
             });
             updatedLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                    mapEquipments.updateLines(
+                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as LineEq[],
+                        isFullReload
+                    );
                     setUpdatedLines(values);
                 }
             });
             updatedTieLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                    mapEquipments.updateTieLines(
+                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as LineEq[],
+                        isFullReload
+                    );
                     setUpdatedTieLines(values);
                 }
             });
             updatedHvdcLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
+                    mapEquipments.updateHvdcLines(
+                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as LineEq[],
+                        isFullReload
+                    );
                     setUpdatedHvdcLines(values);
                 }
             });
@@ -775,6 +791,7 @@ export const NetworkMapTab = ({
         }
         if (deletedEquipments?.length > 0 && mapEquipments) {
             deletedEquipments.forEach((deletedEquipment) => {
+                // @ts-expect-error TODO type conversion string to enum
                 mapEquipments.removeEquipment(deletedEquipment?.equipmentType, deletedEquipment?.equipmentId);
             });
             resetDeletedEquipments();
@@ -948,6 +965,7 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
+            // @ts-expect-error TODO type conversion
             centerOnSubstation={centerOnSubstation}
             isManualRefreshBackdropDisplayed={mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)}
             // only 2 things need this to ensure the map keeps the correct size:
@@ -957,6 +975,7 @@ export const NetworkMapTab = ({
             //   it causes a render with the map container having display:none
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
             triggerMapResizeOnChange={[studyDisplayMode, visible]}
+            // @ts-expect-error TODO type conversion
             renderPopover={renderLinePopover}
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
@@ -974,7 +993,7 @@ export const NetworkMapTab = ({
         />
     );
 
-    function handleChange(newValues: unknown[]) {
+    function handleChange(newValues: number[]) {
         setFilteredNominalVoltages(newValues);
         onNominalVoltagesChange(newValues);
     }
@@ -984,7 +1003,7 @@ export const NetworkMapTab = ({
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments?.getNominalVoltages() as number[]}
-                    filteredNominalVoltages={filteredNominalVoltages as number[]}
+                    filteredNominalVoltages={filteredNominalVoltages}
                     onChange={handleChange}
                 />
             </Box>

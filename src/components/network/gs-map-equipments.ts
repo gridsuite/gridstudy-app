@@ -6,8 +6,6 @@
  */
 
 import { UUID } from 'crypto';
-import { RefObject } from 'react';
-import { IntlShape } from 'react-intl';
 import { Dispatch } from 'redux';
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
@@ -22,7 +20,6 @@ import { MapEquipments } from '@powsybl/network-viewer';
 export default class GSMapEquipments extends MapEquipments {
     dispatch: Dispatch;
     errHandler?: UseSnackMessageReturn['snackError'];
-    intlRef: RefObject<IntlShape>;
 
     initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
         const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false);
@@ -102,13 +99,11 @@ export default class GSMapEquipments extends MapEquipments {
         studyUuid: UUID,
         currentNodeUuid: UUID,
         errHandler: UseSnackMessageReturn['snackError'],
-        dispatch: Dispatch,
-        intlRef: RefObject<IntlShape>
+        dispatch: Dispatch
     ) {
         super();
         this.dispatch = dispatch;
         this.errHandler = errHandler;
-        this.intlRef = intlRef;
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
