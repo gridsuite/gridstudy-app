@@ -90,7 +90,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
         const placement = getPlacement(nodePlacements, node.id);
 
         if (node.parentId) {
-            // Reactflow draws it's node with a position relative to the node's parent (the parent is in the node's parentId field).
+            // Reactflow draws its nodes with a position relative to the node's parent (the parent is in the node's parentId field).
             // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
             // the parent's position from the current node's position, this gives us the relative position to the parent.
             const parentPlacement = getPlacement(nodePlacements, node.parentId);
