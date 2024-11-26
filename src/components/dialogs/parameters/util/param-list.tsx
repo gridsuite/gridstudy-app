@@ -35,7 +35,6 @@ export interface ParamProps {
 }
 
 function InputRender({ defParam, path, name }: Readonly<ParamProps>) {
-    console.log('param', { defParam, path, name });
     switch (defParam.type) {
         case TYPES.ENUM:
             return (
