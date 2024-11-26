@@ -176,7 +176,7 @@ export const MessageLogCellRenderer = ({
     currentResultIndex?: number;
     searchResults?: number[];
 }) => {
-    const textRef = useRef<any>(null);
+    const textRef = useRef<HTMLDivElement>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
 
     const checkEllipsis = () => {
@@ -213,10 +213,10 @@ export const MessageLogCellRenderer = ({
         const parts = value.split(new RegExp(`(${escapedSearchTerm})`, 'gi'));
         return (
             <span>
-                {parts.map((part: string, index: any) =>
+                {parts.map((part: string, index: number) =>
                     part.toLowerCase() === searchTerm.toLowerCase() ? (
                         <span
-                            key={index}
+                            key={`${part}-${index}`}
                             style={{
                                 backgroundColor:
                                     searchResults &&

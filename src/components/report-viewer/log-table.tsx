@@ -28,7 +28,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 
 const styles = {
-    chip: (severity: string, severityFilter: string[], theme: any) => ({
+    chip: (severity: string, severityFilter: string[], theme: Theme) => ({
         backgroundColor: severityFilter.includes(severity)
             ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
             : theme.severityChip.disabledColor,
@@ -172,16 +172,15 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                     filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 },
                 flex: 1,
-                cellRenderer: (param: ICellRendererParams) => (
-                    <MessageLogCellRenderer
-                        param={param}
-                        highlightColor={theme.searchedText.highlightColor}
-                        currentHighlightColor={theme.searchedText.currentHighlightColor}
-                        searchTerm={searchTerm}
-                        currentResultIndex={currentResultIndex}
-                        searchResults={searchResults}
-                    />
-                ),
+                cellRenderer: (param: ICellRendererParams) =>
+                    MessageLogCellRenderer({
+                        param: param,
+                        highlightColor: theme.searchedText.highlightColor,
+                        currentHighlightColor: theme.searchedText.currentHighlightColor,
+                        searchTerm: searchTerm,
+                        currentResultIndex: currentResultIndex,
+                        searchResults: searchResults,
+                    }),
                 forceDisplayFilterIcon: true,
             }),
         ],
@@ -334,7 +333,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             <Box sx={styles.chipContainer}>
                 {orderedSeverities.map((severity, index) => (
                     <Chip
-                        key={index}
+                        key={severity}
                         label={severity}
                         deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
                         onClick={() => handleChipClick(severity)}
