@@ -8,7 +8,7 @@ import { CSSProperties, FunctionComponent, RefObject, useEffect } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import memoizeOne from 'memoize-one';
-import { ReportItem, TreeViewItem } from './TreeViewItem';
+import { ReportItem, TreeviewItem } from './treeview-item';
 
 const getItemData = memoizeOne(
     (
@@ -34,7 +34,7 @@ export interface TreeViewProps {
     style?: CSSProperties | undefined;
 }
 
-export const VirtualizedTreeView: FunctionComponent<TreeViewProps> = (props) => {
+export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = (props) => {
     const { listRef, onSelectedItem, onExpandItem, highlightedReportId, nodes } = props;
     const itemData = getItemData(nodes, onSelectedItem, onExpandItem, highlightedReportId);
 
@@ -51,7 +51,7 @@ export const VirtualizedTreeView: FunctionComponent<TreeViewProps> = (props) => 
                     itemKey={(index) => nodes[index].id}
                     itemData={itemData}
                 >
-                    {TreeViewItem}
+                    {TreeviewItem}
                 </FixedSizeList>
             )}
         </AutoSizer>

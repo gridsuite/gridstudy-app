@@ -10,11 +10,12 @@ import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
-import { VirtualizedTreeView } from '../custom-treeview/VirtualizedTreeView';
+import { VirtualizedTreeview } from '../custom-treeview/virtualized-treeview';
 import Label from '@mui/icons-material/Label';
-import { ReportItem } from '../custom-treeview/TreeViewItem';
+import { ReportItem } from '../custom-treeview/treeview-item';
 import { Theme } from '@mui/system';
 import { FixedSizeList } from 'react-window';
+import { useTreeViewScroll } from '../custom-treeview/use-treeview-scroll';
 
 const styles = {
     treeItem: {
@@ -78,8 +79,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, dispatch]);
 
-    treeView.current = toTreeNodes(mapReportsTree(report), 0);
-
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
     }, []);
@@ -97,21 +96,20 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         setHighlightedReportId(data.parentId);
     };
 
-    //TODO Needs to be encapsulated in a custom hook in order to implement a mechanism to triger it only once per highlightedReportId change
-    const handleScrollEvent = useCallback(
-        (nodes: ReportItem[]) => {
-            if (listRef.current && highlightedReportId) {
-                listRef.current.scrollToItem(
-                    nodes
-                        .filter((node) => node.isDisplayed)
-                        .map((node) => node.id)
-                        .indexOf(highlightedReportId),
-                    'center'
-                );
+    treeView.current = toTreeNodes(mapReportsTree(report), 0);
+    const areParentsExpanded = useCallback((node: ReportItem): boolean => {
+        if (node.parentId) {
+            const parent = treeView.current?.find((nodeParent) => nodeParent.id === node.parentId);
+            if (!parent) {
+                return true;
             }
-        },
-        [highlightedReportId]
-    );
+            return parent.isDisplayed && areParentsExpanded(parent);
+        } else {
+            return true;
+        }
+    }, []);
+    const reportsToDisplay = treeView.current?.filter((node) => node.isDisplayed && areParentsExpanded(node)) ?? [];
+    useTreeViewScroll(highlightedReportId, reportsToDisplay, listRef);
 
     return (
         report && (
@@ -129,9 +127,9 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 <Grid item sm={3}>
                     <Fragment>
                         {treeView.current && (
-                            <VirtualizedTreeView
+                            <VirtualizedTreeview
                                 listRef={listRef}
-                                nodes={treeView.current?.filter((node) => node.isDisplayed)}
+                                nodes={reportsToDisplay}
                                 itemSize={32}
                                 style={styles.treeItem}
                                 onSelectedItem={(report: ReportItem) => {

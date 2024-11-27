@@ -93,7 +93,7 @@ export interface TreeViewItemProps {
     style: CSSProperties;
 }
 
-export const TreeViewItem: FunctionComponent<TreeViewItemProps> = (props) => {
+export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     const { data, index } = props;
     const { nodes, onSelectedItem, onExpandItem, highlightedReportId } = data;
     const currentNode = nodes[index];
