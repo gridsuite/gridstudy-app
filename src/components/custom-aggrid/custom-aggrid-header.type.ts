@@ -8,6 +8,7 @@ import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
+import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -91,4 +92,7 @@ export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, T
     sortProps?: SortPropsType;
     withFluxConvention?: boolean;
     forceDisplayFilterIcon?: boolean;
+    tabIndex?: number;
+    isCustomColumn?: boolean;
+    Menu?: React.FC<CustomColumnConfigProps>;
 }
