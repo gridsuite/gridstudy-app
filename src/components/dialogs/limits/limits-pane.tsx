@@ -18,6 +18,7 @@ import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
+import { CurrentTreeNode } from '../../../redux/reducer';
 
 const styles = {
     limitsBackground: {
@@ -28,9 +29,19 @@ const styles = {
         backgroundColor: '#1a1919', // TODO : may be found in the theme ??
     },
 };
+export interface LimitsPaneProps {
+    id?: string;
+    currentNode?: CurrentTreeNode;
+    equipmentToModify?: any;
+    clearableFields?: any;
+}
 
-const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
-
+export function LimitsPane({
+    id = LIMITS,
+    currentNode,
+    equipmentToModify,
+    clearableFields,
+}: Readonly<LimitsPaneProps>) {
     function handleAddLimitSetButton() {
         // TODO (cf dnd-table.jsx)
     }
@@ -102,6 +113,4 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             </Grid>
         </Grid>
     );
-};
-
-export default LimitsPane;
+}

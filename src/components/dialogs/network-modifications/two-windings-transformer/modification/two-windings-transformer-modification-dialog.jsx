@@ -72,7 +72,7 @@ import {
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import LimitsPane from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
