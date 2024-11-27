@@ -266,7 +266,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                     diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                 });
             }
-            // Repositioning the previously moved nodes
+            // Repositioning the previously moved text nodes
             const correspondingTextMovements = nadTextNodeMovements.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
             );
