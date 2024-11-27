@@ -6,14 +6,20 @@
  */
 
 const spreadsheetEn = {
+    'spreadsheet/custom_column/edit_columns': 'Edit a column',
     'spreadsheet/column/button': 'Show / hide columns',
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',
-    'spreadsheet/custom_column/add_columns': 'Add custom columns',
+    'spreadsheet/custom_column/add_columns': 'Add a column',
     'spreadsheet/custom_column/column_name': 'Column name',
-    'spreadsheet/custom_column/column_content': 'Column content',
-    'spreadsheet/custom_column/column_content_tooltip': `Column content is described with variable names (in order to reference grid data) and operators provided by MathJS library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
+    'spreadsheet/custom_column/column_content': 'Enter the formula',
+    'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data) and operators provided by <a>MathJS</a> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
     'spreadsheet/custom_column/error/not_unique': 'Column names must be unique',
+    'spreadsheet/custom_column/update_custom_column': 'Update column',
+    'spreadsheet/custom_column/delete_custom_column': 'Delete column',
+    'spreadsheet/custom_column/delete_custom_column_confirmation':
+        'Are you sure you want to delete the column "{columnName}"?',
+    'spreadsheet/custom_column/column_name_already_exist': 'Column name already exist',
     'spreadsheet/save/button': 'Save',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/csv': 'Export CSV',

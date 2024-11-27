@@ -5,9 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
     Box,
     Autocomplete,
@@ -103,6 +104,9 @@ const CustomHeaderComponent = ({
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
     shouldDisplayFilterBadge,
+    tabIndex,
+    isCustomColumn = false,
+    Menu,
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -139,6 +143,8 @@ const CustomHeaderComponent = ({
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuButtonRef = useRef(null);
     const [decimalAfterDot, setDecimalAfterDot] = useState(0);
 
     const shouldDisplayFilterIcon =
@@ -344,6 +350,7 @@ const CustomHeaderComponent = ({
                             </Grid>
                         )}
                     </Grid>
+
                     {shouldActivateFilter && (
                         <Grid
                             item
@@ -375,7 +382,17 @@ const CustomHeaderComponent = ({
                         </Grid>
                     )}
                 </Grid>
+                {isCustomColumn && (
+                    <Grid item direction={'row'}>
+                        <IconButton ref={menuButtonRef} size={'small'} onClick={() => setMenuOpen(true)}>
+                            <Badge color="secondary">
+                                <MoreVertIcon sx={styles.iconSize} />
+                            </Badge>
+                        </IconButton>
+                    </Grid>
+                )}
             </Grid>
+
             {shouldActivateFilter && (
                 <Popover
                     id={`${field}-filter-popover`}
@@ -486,6 +503,15 @@ const CustomHeaderComponent = ({
                     )}
                 </Popover>
             )}
+            {Menu && (
+                <Menu
+                    open={menuOpen}
+                    tabIndex={tabIndex}
+                    customColumnName={field}
+                    onClose={() => setMenuOpen(false)}
+                    anchorEl={menuButtonRef.current}
+                />
+            )}
         </Grid>
     );
 };
@@ -513,6 +539,9 @@ CustomHeaderComponent.propTypes = {
         customFilterOptions: PropTypes.arrayOf(PropTypes.string),
         filterSelector: PropTypes.array,
     }),
+    tabIndex: PropTypes.number,
+    isCustomColumn: PropTypes.bool,
+    Menu: PropTypes.elementType,
 };
 
 export default CustomHeaderComponent;
