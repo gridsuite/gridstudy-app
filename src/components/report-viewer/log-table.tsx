@@ -283,31 +283,20 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     const handleChipClick = useCallback(
         (severity: string) => {
-            if (severityFilter.includes(severity)) {
-                const updatedFilter = severityFilter.filter((s: any) => s !== severity);
-                dispatch(
-                    setLogsFilter(reportType, [
-                        {
-                            column: 'severity',
-                            dataType: FILTER_DATA_TYPES.TEXT,
-                            type: FILTER_TEXT_COMPARATORS.EQUALS,
-                            value: updatedFilter,
-                        },
-                    ])
-                );
-            } else {
-                const updatedFilter = [...severityFilter, severity];
-                dispatch(
-                    setLogsFilter(reportType, [
-                        {
-                            column: 'severity',
-                            dataType: FILTER_DATA_TYPES.TEXT,
-                            type: FILTER_TEXT_COMPARATORS.EQUALS,
-                            value: updatedFilter,
-                        },
-                    ])
-                );
-            }
+            const updatedFilter = severityFilter.includes(severity)
+                ? severityFilter.filter((s: any) => s !== severity)
+                : [...severityFilter, severity];
+
+            dispatch(
+                setLogsFilter(reportType, [
+                    {
+                        column: 'severity',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.EQUALS,
+                        value: updatedFilter,
+                    },
+                ])
+            );
         },
         [dispatch, reportType, severityFilter]
     );

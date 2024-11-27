@@ -288,6 +288,29 @@ const CustomHeaderComponent = ({
         [isCountry, intl, translate, getEnumLabel]
     );
 
+    const renderFilterIcon = (shouldDisplayFilterIcon, handleShowFilter, selectedFilterData) => (
+        <Grid
+            item
+            sx={{
+                overflow: 'visible',
+            }}
+        >
+            {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
+                <Grid item>
+                    <IconButton size={'small'} onClick={handleShowFilter}>
+                        <Badge
+                            color="secondary"
+                            variant={selectedFilterData?.length ? 'dot' : null}
+                            invisible={!selectedFilterData}
+                        >
+                            <FilterAlt sx={styles.iconSize} />
+                        </Badge>
+                    </IconButton>
+                </Grid>
+            )}
+        </Grid>
+    );
+
     return (
         <Grid
             container
@@ -349,52 +372,14 @@ const CustomHeaderComponent = ({
                                 )}
                             </Grid>
                         )}
-                        {forceDisplayFilterIcon && shouldActivateFilter && (
-                            <Grid
-                                item
-                                sx={{
-                                    overflow: 'visible',
-                                }}
-                            >
-                                {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
-                                    <Grid item>
-                                        <IconButton size={'small'} onClick={handleShowFilter}>
-                                            <Badge
-                                                color="secondary"
-                                                variant={selectedFilterData?.length ? 'dot' : null}
-                                                invisible={!selectedFilterData}
-                                            >
-                                                <FilterAlt sx={styles.iconSize} />
-                                            </Badge>
-                                        </IconButton>
-                                    </Grid>
-                                )}
-                            </Grid>
-                        )}
+                        {forceDisplayFilterIcon &&
+                            shouldActivateFilter &&
+                            renderFilterIcon(true, handleShowFilter, selectedFilterData)}
                     </Grid>
 
-                    {!forceDisplayFilterIcon && shouldActivateFilter && (
-                        <Grid
-                            item
-                            sx={{
-                                overflow: 'visible',
-                            }}
-                        >
-                            {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
-                                <Grid item>
-                                    <IconButton size={'small'} onClick={handleShowFilter}>
-                                        <Badge
-                                            color="secondary"
-                                            variant={selectedFilterData?.length ? 'dot' : null}
-                                            invisible={!selectedFilterData}
-                                        >
-                                            <FilterAlt sx={styles.iconSize} />
-                                        </Badge>
-                                    </IconButton>
-                                </Grid>
-                            )}
-                        </Grid>
-                    )}
+                    {!forceDisplayFilterIcon &&
+                        shouldActivateFilter &&
+                        renderFilterIcon(shouldDisplayFilterIcon, handleShowFilter, selectedFilterData)}
                 </Grid>
                 {isCustomColumn && (
                     <Grid item direction={'row'}>
