@@ -204,6 +204,8 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    STATEESTIMATION_RESULT_FILTER,
+    StateEstimationResultFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -291,6 +293,10 @@ import {
     SPREADSHEET_STORE_FIELD,
     TABLE_SORT_STORE,
     TIMELINE,
+    STATEESTIMATION_RESULT_STORE_FIELD,
+    STATEESTIMATION_RESULT_SORT_STORE,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
@@ -416,6 +422,7 @@ export type TableSort = {
     [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
     [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
 };
 export type TableSortKeysType = keyof TableSort;
 
@@ -539,7 +546,10 @@ export interface AppState extends CommonStoreState {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: UnknownArray;
     };
-
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: UnknownArray;
+        [STATEESTIMATION_QUALITY_PER_REGION]: UnknownArray;
+    };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -718,6 +728,10 @@ const initialState: AppState = {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: [],
+        [STATEESTIMATION_QUALITY_PER_REGION]: [],
+    },
 
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
@@ -787,8 +801,21 @@ const initialState: AppState = {
             [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
+        [STATEESTIMATION_RESULT_SORT_STORE]: {
+            [STATEESTIMATION_QUALITY_CRITERION]: [
+                {
+                    colId: 'type',
+                    sort: SortWay.ASC,
+                },
+            ],
+            [STATEESTIMATION_QUALITY_PER_REGION]: [
+                {
+                    colId: 'name',
+                    sort: SortWay.ASC,
+                },
+            ],
+        },
     },
-
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -1692,6 +1719,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     });
 
+    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
+        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
+    });
+
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
@@ -1756,6 +1787,47 @@ export enum EquipmentUpdateType {
     SUBSTATIONS = 'substations',
     BUSES = 'buses',
     BUSBAR_SECTIONS = 'busbarSections',
+}
+
+export function getUpdateTypeFromEquipmentType(equipmentType: EQUIPMENT_TYPES): EquipmentUpdateType | undefined {
+    switch (equipmentType) {
+        case EQUIPMENT_TYPES.LINE:
+            return EquipmentUpdateType.LINES;
+        case EQUIPMENT_TYPES.TIE_LINE:
+            return EquipmentUpdateType.TIE_LINES;
+        case EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER:
+            return EquipmentUpdateType.TWO_WINDINGS_TRANSFORMERS;
+        case EQUIPMENT_TYPES.THREE_WINDINGS_TRANSFORMER:
+            return EquipmentUpdateType.THREE_WINDINGS_TRANSFORMERS;
+        case EQUIPMENT_TYPES.GENERATOR:
+            return EquipmentUpdateType.GENERATORS;
+        case EQUIPMENT_TYPES.LOAD:
+            return EquipmentUpdateType.LOADS;
+        case EQUIPMENT_TYPES.BATTERY:
+            return EquipmentUpdateType.BATTERIES;
+        case EQUIPMENT_TYPES.DANGLING_LINE:
+            return EquipmentUpdateType.DANGLING_LINES;
+        case EQUIPMENT_TYPES.HVDC_LINE:
+            return EquipmentUpdateType.HVDC_LINES;
+        case EQUIPMENT_TYPES.LCC_CONVERTER_STATION:
+            return EquipmentUpdateType.LCC_CONVERTER_STATIONS;
+        case EQUIPMENT_TYPES.VSC_CONVERTER_STATION:
+            return EquipmentUpdateType.VSC_CONVERTER_STATIONS;
+        case EQUIPMENT_TYPES.SHUNT_COMPENSATOR:
+            return EquipmentUpdateType.SHUNT_COMPENSATORS;
+        case EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR:
+            return EquipmentUpdateType.STATIC_VAR_COMPENSATORS;
+        case EQUIPMENT_TYPES.VOLTAGE_LEVEL:
+            return EquipmentUpdateType.VOLTAGE_LEVELS;
+        case EQUIPMENT_TYPES.SUBSTATION:
+            return EquipmentUpdateType.SUBSTATIONS;
+        case EQUIPMENT_TYPES.BUS:
+            return EquipmentUpdateType.BUSES;
+        case EQUIPMENT_TYPES.BUSBAR_SECTION:
+            return EquipmentUpdateType.BUSBAR_SECTIONS;
+        default:
+            return;
+    }
 }
 
 function getEquipmentTypeFromUpdateType(updateType: EquipmentUpdateType): EQUIPMENT_TYPES | undefined {
