@@ -184,15 +184,13 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                 <Grid item xs={1} />
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
-                        indexLimitSet={0}
-                        formName={`${id}.${SELECTED_LIMIT_GROUP_1}`}
+                        selectedName={`${id}.${SELECTED_LIMIT_GROUP_1}`}
                         optionsFormName={`${id}.${CURRENT_LIMITS_1}`}
                     />
                 </Grid>
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
-                        indexLimitSet={0}
-                        formName={`${id}.${SELECTED_LIMIT_GROUP_2}`}
+                        selectedName={`${id}.${SELECTED_LIMIT_GROUP_2}`}
                         optionsFormName={`${id}.${CURRENT_LIMITS_2}`}
                     />
                 </Grid>

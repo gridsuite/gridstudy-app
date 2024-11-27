@@ -4,42 +4,41 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useEffect, useState} from 'react';
+import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
 
 // TODO passer ça en typescript
 export const SelectedOperationalLimitGroup = ({
-                                                  indexLimitSet, // TODO rendre ça dynamique et déclencheur
-                                                  formName,
+                                                  selectedName,
                                                   optionsFormName,
                                               }) => {
-    const { getValues } = useFormContext();
-    const [ limitSets, setLimitSets ] = useState(["nimp"]);
+    const [limitSets, setLimitSets] = useState([]);
+
+    const optionsValues = useWatch({
+        name: optionsFormName,
+    });
 
     useEffect(() => {
-        let allLimitSets = [];
-        console.log("Mathieu optionsFormName : " + optionsFormName);
-        console.log("Mathieu getValues(optionsFormName) : " + JSON.stringify(getValues(optionsFormName), null, 4));
-        if (getValues(optionsFormName).length > 0) {
-            console.log("Mathieu getValues(optionsFormName).length : " + JSON.stringify(getValues(optionsFormName).length));
-            let val = getValues(optionsFormName)[0].id;
-            console.log("Mathieu getValues val : " + val);
-            allLimitSets.push(val);
+        if (optionsValues.length > 0) {
+            let allLimitSets = [];
+            optionsValues.forEach((optionObj) => {
+                allLimitSets.push({
+                    id: optionObj.id,
+                });
+            });
+            setLimitSets(allLimitSets);
         }
-
-        setLimitSets(allLimitSets);
-    }, [getValues, optionsFormName]);
+    }, [optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
             <SelectInput
-                name={formName}
+                name={selectedName}
                 options={limitSets}
                 label={'SelectedOperationalLimitGroup'}
                 size={'small'}
-                onChangeCallback={{}}
             />
         </Box>
     );

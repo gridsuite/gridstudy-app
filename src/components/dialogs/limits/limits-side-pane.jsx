@@ -40,7 +40,7 @@ export const LimitsSidePane = ({
     });
 
     const permanentCurrentLimitField = useMemo(() => (
-        <Box sx={{ maxWidth: 200 }}>
+        <Box sx={{ maxWidth: 300 }}>
             <FloatInput
                 name={`${arrayFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
                 label="PermanentCurrentLimitText"
