@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createRef, Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
@@ -14,6 +14,7 @@ import { VirtualizedTreeView } from '../custom-treeview/VirtualizedTreeView';
 import Label from '@mui/icons-material/Label';
 import { ReportItem } from '../custom-treeview/TreeViewItem';
 import { Theme } from '@mui/system';
+import { FixedSizeList } from 'react-window';
 
 const styles = {
     treeItem: {
@@ -39,9 +40,10 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
 
     const reportTreeData = useRef<Record<string, ReportTreeType>>({});
     const treeView = useRef<ReportItem[]>();
+    const listRef = useRef<FixedSizeList>(null);
 
     const toTreeNodes = useCallback(
-        (item: ReportTreeType, depth: number): ReportItem[] => {
+        (item: ReportTreeType, depth: number, parentId?: string): ReportItem[] => {
             const result: ReportItem[] = [];
             const collapsed = !expandedTreeReports.includes(item.id);
             if (item.id) {
@@ -51,13 +53,15 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                     depth: depth,
                     label: item.message,
                     id: item.id,
+                    parentId: parentId,
                     isLeaf: !item.subReports.find((subReports) => subReports.id !== null),
                     icon: <Label htmlColor={item.highestSeverity.colorName} sx={styles.labelIcon} />,
                     isSelected: item.id === selectedReportId,
+                    isDisplayed: (parentId && expandedTreeReports.includes(parentId)) || depth === 0,
                 });
-                if (item.subReports.length > 0 && !collapsed) {
+                if (item.subReports.length > 0) {
                     for (let subReports of item.subReports) {
-                        result.push(...toTreeNodes(subReports, depth + 1));
+                        result.push(...toTreeNodes(subReports, depth + 1, item.id));
                     }
                 }
             }
@@ -80,14 +84,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
     }, []);
 
-    // The MUI VirtualizedTreeView/TreeItems use useMemo on our items, so it's important to avoid changing the context
-    const isHighlighted = useMemo(
-        () => ({
-            isHighlighted: (reportId: string) => highlightedReportId === reportId,
-        }),
-        [highlightedReportId]
-    );
-
     const onLogRowClick = (data: ReportLog) => {
         setExpandedTreeReports((previouslyExpandedTreeReports) => {
             let treeReportsToExpand = new Set(previouslyExpandedTreeReports);
@@ -100,6 +96,22 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         });
         setHighlightedReportId(data.parentId);
     };
+
+    //TODO Needs to be encapsulated in a custom hook in order to implement a mechanism to triger it only once per highlightedReportId change
+    const handleScrollEvent = useCallback(
+        (nodes: ReportItem[]) => {
+            if (listRef.current && highlightedReportId) {
+                listRef.current.scrollToItem(
+                    nodes
+                        .filter((node) => node.isDisplayed)
+                        .map((node) => node.id)
+                        .indexOf(highlightedReportId),
+                    'center'
+                );
+            }
+        },
+        [highlightedReportId]
+    );
 
     return (
         report && (
@@ -114,29 +126,12 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                         'px)',
                 }}
             >
-                {/*Passing a ref to isHighlighted to all children (here
-                    TreeItems) wouldn't work since VirtualizedTreeView children are
-                    memoized and would then be rerendered only when VirtualizedTreeView is
-                    rerendered. That's why we pass the isHighlighted callback in
-                    a new context, to which all children subscribe and as soon
-                    as the context is modified, children will be rerendered
-                    accordingly */}
-                {/*<ReportTreeViewContext.Provider value={isHighlighted}>
-                    TODO do we need to useMemo/useCallback these props to avoid rerenders ?
-                    <ReportTree
-                        selectedReportId={selectedReportId}
-                        expandedTreeReports={expandedTreeReports}
-                        setExpandedTreeReports={setExpandedTreeReports}
-                        handleSelectNode={handleSelectNode}
-                    >
-                        {treeView.current}
-                    </ReportTree>
-                </ReportTreeViewContext.Provider>*/}
                 <Grid item sm={3}>
                     <Fragment>
                         {treeView.current && (
                             <VirtualizedTreeView
-                                nodes={treeView.current}
+                                listRef={listRef}
+                                nodes={treeView.current?.filter((node) => node.isDisplayed)}
                                 itemSize={32}
                                 style={styles.treeItem}
                                 onSelectedItem={(report: ReportItem) => {
@@ -155,6 +150,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                                         );
                                     }
                                 }}
+                                highlightedReportId={highlightedReportId ?? ''}
                             />
                         )}
                     </Fragment>

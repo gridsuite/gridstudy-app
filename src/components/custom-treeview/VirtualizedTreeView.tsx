@@ -4,36 +4,45 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CSSProperties, FunctionComponent } from 'react';
+import { CSSProperties, FunctionComponent, RefObject, useEffect } from 'react';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import memoizeOne from 'memoize-one';
 import { ReportItem, TreeViewItem } from './TreeViewItem';
 
 const getItemData = memoizeOne(
-    (nodes: ReportItem[], onSelectedItem: (node: ReportItem) => void, onExpandItem: (node: ReportItem) => void) => ({
+    (
+        nodes: ReportItem[],
+        onSelectedItem: (node: ReportItem) => void,
+        onExpandItem: (node: ReportItem) => void,
+        highlightedReportId: string
+    ) => ({
         nodes,
         onSelectedItem,
         onExpandItem,
+        highlightedReportId,
     })
 );
 
 export interface TreeViewProps {
+    listRef: RefObject<FixedSizeList>;
     nodes: ReportItem[];
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
+    highlightedReportId: string;
     itemSize: number;
     style?: CSSProperties | undefined;
 }
 
 export const VirtualizedTreeView: FunctionComponent<TreeViewProps> = (props) => {
-    const { onSelectedItem, onExpandItem, nodes } = props;
-    const itemData = getItemData(nodes, onSelectedItem, onExpandItem);
+    const { listRef, onSelectedItem, onExpandItem, highlightedReportId, nodes } = props;
+    const itemData = getItemData(nodes, onSelectedItem, onExpandItem, highlightedReportId);
 
     return (
         <AutoSizer>
             {({ height, width }: { height: string | number; width: string | number }) => (
                 <FixedSizeList
+                    ref={listRef}
                     height={height}
                     width={width}
                     style={props.style}

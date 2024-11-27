@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CSSProperties, FunctionComponent, ReactNode } from 'react';
-import { Box, Stack, Typography, styled, useTheme, Theme, Collapse } from '@mui/material';
+import { Box, Stack, Typography, styled, Theme } from '@mui/material';
 import * as React from 'react';
 import { mergeSx } from '@gridsuite/commons-ui';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -16,10 +16,12 @@ export interface ReportItem {
     icon?: ReactNode | undefined;
     label: string;
     depth: number;
+    parentId: string | undefined;
     collapsed?: boolean;
     isCollapsable?: boolean;
     isLeaf?: boolean;
     isSelected?: boolean;
+    isDisplayed: boolean;
 }
 
 const styles = {
@@ -38,6 +40,14 @@ const styles = {
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0.5, 0),
+    }),
+    root: (theme: Theme) => ({
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+        },
+    }),
+    highlighted: (theme: Theme) => ({
+        backgroundColor: theme.palette.action.hover,
     }),
 };
 
@@ -74,6 +84,7 @@ export interface TreeViewItemData {
     nodes: ReportItem[];
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
+    highlightedReportId: string;
 }
 
 export interface TreeViewItemProps {
@@ -84,18 +95,22 @@ export interface TreeViewItemProps {
 
 export const TreeViewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     const { data, index } = props;
-    const { nodes, onSelectedItem, onExpandItem } = data;
+    const { nodes, onSelectedItem, onExpandItem, highlightedReportId } = data;
     const currentNode = nodes[index];
     const left = currentNode.depth * 12;
     const isCollapsable = currentNode.isCollapsable === undefined ? true : currentNode.isCollapsable;
-
     return (
         <TreeViewItemBox
             sx={mergeSx(styles.content, styles.labelRoot)}
             style={props.style}
             onClick={() => onSelectedItem(currentNode)}
         >
-            <TreeViewItemStack direction="row" left={left} node={currentNode}>
+            <TreeViewItemStack
+                direction="row"
+                left={left}
+                node={currentNode}
+                sx={mergeSx(styles.root, highlightedReportId === currentNode.id ? styles.highlighted : undefined)}
+            >
                 {isCollapsable && (
                     <Box
                         component={currentNode.collapsed ? ArrowRightIcon : ArrowDropDownIcon}
