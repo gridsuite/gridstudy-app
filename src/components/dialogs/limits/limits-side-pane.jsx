@@ -50,7 +50,8 @@ export const LimitsSidePane = ({
             />
         </Box>
         ),
-        [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]);
+        [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]
+    );
 
     return (
         <Paper sx={styles.limitsBackground}>

@@ -11,21 +11,21 @@ import {
     CURRENT_LIMITS_2,
     LIMITS,
     SELECTED_LIMIT_GROUP_1,
+    SELECTED_LIMIT_GROUP_2,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
-    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import { useFieldArray, useFormContext } from 'react-hook-form';
-import { SelectInput } from '@gridsuite/commons-ui';
+import { useCallback, useMemo } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
 import { formatTemporaryLimits } from 'components/utils/utils';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
+import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 
 const styles = {
     limitsBackground: {
@@ -40,7 +40,6 @@ const styles = {
 const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
-    // const [ limitSets1, setLimitSets1 ] = useState([]);
 
     const columnsDefinition = useMemo(() => {
         return [
@@ -160,45 +159,6 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
         [currentNode, getValues]
     );
 
-    /*useEffect(() => {
-        let allLimitSets = [];
-        console.log("Mathieu getValues(`${id}.${CURRENT_LIMITS_1}`) : " + JSON.stringify(getValues(`${id}.${CURRENT_LIMITS_1}`), null, 4));
-        if (getValues(`${id}.${CURRENT_LIMITS_1}`).length > 0) {
-            console.log("Mathieu getValues(`${id}.${CURRENT_LIMITS_1}`).length : " + JSON.stringify(getValues(`${id}.${CURRENT_LIMITS_1}`).length));
-            let val = getValues(`${id}.${CURRENT_LIMITS_1}`)[0].id;
-            console.log("Mathieu getValues val : " + val);
-            allLimitSets.push(val)
-        }
-
-        setLimitSets1(allLimitSets);
-    }, [getValues]);*/
-
-    /*
-    const selectedOperationalLimitGroup1 = useMemo(() => (
-        <Box sx={{ maxWidth: 300 }}>
-            <SelectInput
-                name={`${id}.${SELECTED_LIMIT_GROUP_1}`}
-                options={limitSets1}
-                label={'SelectedOperationalLimitGroup'}
-                size={'small'}
-                onChangeCallback={{/!** TODO !*!/}}
-            />
-        </Box>
-    ), [id, limitSets1]);
-
-    const selectedOperationalLimitGroup2 = (
-        <Box sx={{ maxWidth: 300 }}>
-            <SelectInput
-                name={`${id}.${SELECTED_LIMIT_GROUP_2}`}
-                options={getAllLimitSets1}
-                label={'SelectedOperationalLimitGroup'}
-                size={'small'}
-                onChangeCallback={{/!** TODO !*!/}}
-            />
-        </Box>
-    );
-*/
-
     function handleAddLimitSetButton() {
         // TODO (cf dnd-table.jsx)
     }
@@ -223,10 +183,18 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
             <Grid container item xs={12} columns={11} spacing={2}>
                 <Grid item xs={1} />
                 <Grid item xs={5}>
-                    {/*{selectedOperationalLimitGroup1}*/}
+                    <SelectedOperationalLimitGroup
+                        indexLimitSet={0}
+                        formName={`${id}.${SELECTED_LIMIT_GROUP_1}`}
+                        optionsFormName={`${id}.${CURRENT_LIMITS_1}`}
+                    />
                 </Grid>
                 <Grid item xs={5}>
-                    {/*{selectedOperationalLimitGroup2}*/}
+                    <SelectedOperationalLimitGroup
+                        indexLimitSet={0}
+                        formName={`${id}.${SELECTED_LIMIT_GROUP_2}`}
+                        optionsFormName={`${id}.${CURRENT_LIMITS_2}`}
+                    />
                 </Grid>
             </Grid>
             {/* limits */}
