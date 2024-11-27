@@ -9,15 +9,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import DndTable from '../../utils/dnd-table/dnd-table.jsx';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
-    PERMANENT_LIMIT, TEMPORARY_LIMIT_DURATION,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE, TEMPORARY_LIMIT_NAME,
+    PERMANENT_LIMIT,
+    TEMPORARY_LIMIT_DURATION,
+    TEMPORARY_LIMIT_MODIFICATION_TYPE,
+    TEMPORARY_LIMIT_NAME,
     TEMPORARY_LIMIT_VALUE,
-    TEMPORARY_LIMITS
+    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { AmpereAdornment } from '../dialog-utils';
 import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
+import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const styles = {
     limitsBackground: {
@@ -34,8 +37,8 @@ export const LimitsSidePane = ({
     arrayFormName,
     permanentCurrentLimitPreviousValue,
     previousValues,
-    isValueModified,
     clearableFields,
+    currentNode,
 }) => {
     const intl = useIntl();
     const { getValues } = useFormContext();
@@ -141,23 +144,39 @@ export const LimitsSidePane = ({
             return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
                 ? false
                 : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                column.dataKey !== TEMPORARY_LIMIT_VALUE;
+                      column.dataKey !== TEMPORARY_LIMIT_VALUE;
         },
         [getValues, temporaryLimitHasPreviousValue]
     );
 
-    const permanentCurrentLimitField = useMemo(() => (
-        <Box sx={{ maxWidth: 300 }}>
-            <FloatInput
-                name={`${arrayFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
-                label="PermanentCurrentLimitText"
-                adornment={AmpereAdornment}
-                previousValue={permanentCurrentLimitPreviousValue}
-                clearable={clearableFields}
-            />
-        </Box>
+    const permanentCurrentLimitField = useMemo(
+        () => (
+            <Box sx={{ maxWidth: 300 }}>
+                <FloatInput
+                    name={`${arrayFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
+                    label="PermanentCurrentLimitText"
+                    adornment={AmpereAdornment}
+                    previousValue={permanentCurrentLimitPreviousValue}
+                    clearable={clearableFields}
+                />
+            </Box>
         ),
         [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]
+    );
+
+    const isValueModified = useCallback(
+        (rowIndex, arrayFormName) => {
+            const temporaryLimit = getValues(arrayFormName)[rowIndex];
+            if (
+                temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
+                !isNodeBuilt(currentNode)
+            ) {
+                return false;
+            } else {
+                return temporaryLimit?.modificationType !== null;
+            }
+        },
+        [currentNode, getValues]
     );
 
     return (

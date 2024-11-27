@@ -12,12 +12,8 @@ import {
     LIMITS,
     SELECTED_LIMIT_GROUP_1,
     SELECTED_LIMIT_GROUP_2,
-    TEMPORARY_LIMIT_MODIFICATION_TYPE,
 } from 'components/utils/field-constants';
-import { FormattedMessage, useIntl } from 'react-intl';
-import { useCallback, useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { isNodeBuilt } from 'components/graph/util/model-functions';
+import { FormattedMessage } from 'react-intl';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
@@ -34,22 +30,6 @@ const styles = {
 };
 
 const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
-    const { getValues } = useFormContext();
-
-    const isTemporaryLimitModified = useCallback(
-        (rowIndex, arrayFormName) => {
-            const temporaryLimit = getValues(arrayFormName)[rowIndex];
-            if (
-                temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
-                !isNodeBuilt(currentNode)
-            ) {
-                return false;
-            } else {
-                return temporaryLimit?.modificationType !== null;
-            }
-        },
-        [currentNode, getValues]
-    );
 
     function handleAddLimitSetButton() {
         // TODO (cf dnd-table.jsx)
@@ -106,7 +86,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         indexLimitSet={0}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                        isValueModified={isTemporaryLimitModified}
+                        currentNode={currentNode}
                     />
                 </Grid>
                 <Grid item xs={5}>
@@ -116,7 +96,7 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         indexLimitSet={0}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                        isValueModified={isTemporaryLimitModified}
+                        currentNode={currentNode}
                     />
                 </Grid>
             </Grid>

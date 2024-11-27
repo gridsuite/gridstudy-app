@@ -76,8 +76,8 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
-import {formatTemporaryLimits} from "../../../../utils/utils.js";
-import {addSelectedFieldToRows} from "../../../../utils/dnd-table/dnd-table.jsx";
+import { formatTemporaryLimits } from '../../../../utils/utils.js';
+import { addSelectedFieldToRows } from '../../../../utils/dnd-table/dnd-table.jsx';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -147,13 +147,12 @@ const LineCreationDialog = ({
             formattedCompleteCurrentLimit.push( {
                     id: elt.id,
                     permanentLimit: elt.permanentLimit,
-                    temporaryLimits : addSelectedFieldToRows(
-                    formatTemporaryLimits(elt?.temporaryLimits)
+                    temporaryLimits : addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits),
                 )
             }
         ));
         return formattedCompleteCurrentLimit;
-    }
+    };
 
     const fromSearchCopyToFormValues = (line) => {
         // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
