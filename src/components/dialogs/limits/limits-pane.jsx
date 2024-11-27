@@ -12,16 +12,12 @@ import {
     LIMITS,
     SELECTED_LIMIT_GROUP_1,
     SELECTED_LIMIT_GROUP_2,
-    TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
-    TEMPORARY_LIMIT_NAME,
-    TEMPORARY_LIMIT_VALUE,
 } from 'components/utils/field-constants';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useCallback, useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { isNodeBuilt } from 'components/graph/util/model-functions';
-import { formatTemporaryLimits } from 'components/utils/utils';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
@@ -38,111 +34,7 @@ const styles = {
 };
 
 const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFields }) => {
-    const intl = useIntl();
     const { getValues } = useFormContext();
-
-    const columnsDefinition = useMemo(() => {
-        return [
-            {
-                label: 'TemporaryLimitName',
-                dataKey: TEMPORARY_LIMIT_NAME,
-                initialValue: '',
-                editable: true,
-                numeric: false,
-            },
-            {
-                label: 'TemporaryLimitDuration',
-                dataKey: TEMPORARY_LIMIT_DURATION,
-                initialValue: null,
-                editable: true,
-                numeric: true,
-            },
-            {
-                label: 'TemporaryLimitValue',
-                dataKey: TEMPORARY_LIMIT_VALUE,
-                initialValue: null,
-                editable: true,
-                numeric: true,
-            },
-        ].map((column) => ({
-            ...column,
-            label: intl.formatMessage({ id: column.label }),
-        }));
-    }, [intl]);
-
-    const newRowData = useMemo(() => {
-        const newRowData = {};
-        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
-        return newRowData;
-    }, [columnsDefinition]);
-    const createLimitRows = () => [newRowData];
-
-    const temporaryLimitHasPreviousValue = useCallback(
-        (rowIndex, arrayFormName, temporaryLimits) => {
-            return (
-                formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l) =>
-                        l.name === getValues(arrayFormName)[rowIndex]?.name &&
-                        l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
-                )?.length > 0
-            );
-        },
-        [getValues]
-    );
-
-    const findTemporaryLimit = useCallback(
-        (rowIndex, arrayFormName, temporaryLimits) => {
-            return temporaryLimits?.find(
-                (e) =>
-                    e.name === getValues(arrayFormName)[rowIndex]?.name &&
-                    e.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
-            );
-        },
-        [getValues]
-    );
-
-    const disableTableCell = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
-            // If the temporary limit is added, all fields are editable
-            // otherwise, only the value field is editable
-            return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
-                ? false
-                : temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                      column.dataKey !== TEMPORARY_LIMIT_VALUE;
-        },
-        [getValues, temporaryLimitHasPreviousValue]
-    );
-
-    const shouldReturnPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
-            return (
-                (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
-                    column.dataKey === TEMPORARY_LIMIT_VALUE) ||
-                getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
-            );
-        },
-        [getValues, temporaryLimitHasPreviousValue]
-    );
-
-    const getTemporaryLimitPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
-            const formattedTemporaryLimits = formatTemporaryLimits(temporaryLimits);
-            if (shouldReturnPreviousValue(rowIndex, column, arrayFormName, formattedTemporaryLimits)) {
-                const temporaryLimit = findTemporaryLimit(rowIndex, arrayFormName, formattedTemporaryLimits);
-                if (temporaryLimit === undefined) {
-                    return undefined;
-                }
-                if (column.dataKey === TEMPORARY_LIMIT_VALUE) {
-                    return temporaryLimit?.value ?? Number.MAX_VALUE;
-                } else if (column.dataKey === TEMPORARY_LIMIT_DURATION) {
-                    return temporaryLimit?.acceptableDuration ?? Number.MAX_VALUE;
-                }
-            } else {
-                return undefined;
-            }
-        },
-        [findTemporaryLimit, shouldReturnPreviousValue]
-    );
 
     const isTemporaryLimitModified = useCallback(
         (rowIndex, arrayFormName) => {
@@ -212,12 +104,8 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         arrayFormName={`${id}.${CURRENT_LIMITS_1}`}
                         clearableFields={clearableFields}
                         indexLimitSet={0}
-                        createRows={createLimitRows}
-                        columnsDefinition={columnsDefinition}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                        disableTableCell={disableTableCell}
-                        getPreviousValue={getTemporaryLimitPreviousValue}
                         isValueModified={isTemporaryLimitModified}
                     />
                 </Grid>
@@ -226,12 +114,8 @@ const LimitsPane = ({ id = LIMITS, currentNode, equipmentToModify, clearableFiel
                         arrayFormName={`${id}.${CURRENT_LIMITS_2}`}
                         clearableFields={clearableFields}
                         indexLimitSet={0}
-                        createRows={createLimitRows}
-                        columnsDefinition={columnsDefinition}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                        disableTableCell={disableTableCell}
-                        getPreviousValue={getTemporaryLimitPreviousValue}
                         isValueModified={isTemporaryLimitModified}
                     />
                 </Grid>
