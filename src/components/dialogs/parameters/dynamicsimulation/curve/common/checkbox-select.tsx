@@ -35,7 +35,7 @@ interface CheckBoxSelectProps {
 
 function CheckboxSelect({
     options,
-    getOptionLabel: defaultGetOptionLabel,
+    getOptionLabel,
     onChange,
     value: initialSelectedOptions,
     disabled,
@@ -76,13 +76,6 @@ function CheckboxSelect({
             onChange && onChange(newSelectedOptions);
         },
         [options, onChange]
-    );
-
-    const getOptionLabel = useCallback(
-        (option: string) => {
-            return defaultGetOptionLabel(option);
-        },
-        [defaultGetOptionLabel]
     );
 
     return (

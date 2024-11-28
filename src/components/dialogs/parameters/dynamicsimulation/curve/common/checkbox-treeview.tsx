@@ -61,21 +61,14 @@ interface CheckBoxTreeViewProps<TData extends ItemData = ItemData> {
     sx: SxProps<Theme>;
 }
 
-interface ItemState {
-    id: string;
-    state: CheckState;
-}
-
 function CheckboxTreeview<TData extends ItemData>(
     { data: items, checkAll, onSelectionChanged, getLabel, ...rest }: Readonly<CheckBoxTreeViewProps<TData>>,
     ref: Ref<CheckboxTreeviewApi<TData>>
 ) {
-    const initialItemStates = useMemo<ItemState[]>(() => {
-        return items.map((elem) => ({
-            id: elem.id,
-            state: checkAll ? CheckState.CHECKED : CheckState.UNCHECKED,
-        }));
-    }, [items, checkAll]);
+    const initialItemStates = useMemo<Record<string, CheckState>>(
+        () => Object.fromEntries(items.map((elem) => [elem.id, checkAll ? CheckState.CHECKED : CheckState.UNCHECKED])),
+        [items, checkAll]
+    );
 
     const [itemStates, setItemStates] = useState(initialItemStates);
 
@@ -86,71 +79,70 @@ function CheckboxTreeview<TData extends ItemData>(
         setItemStates(initialItemStates);
     }
 
-    const updateItemState = useCallback((itemStates: ItemState[], items: TData[], onClickedId: string) => {
-        const getState = (itemStates: ItemState[], id: string) => {
-            return itemStates.find((elem) => elem.id === id);
-        };
+    const updateItemState = useCallback(
+        (itemStates: Record<string, CheckState>, items: TData[], onClickedId: string) => {
+            // recursive algo
+            const updateStateParent = (itemStates: Record<string, CheckState>, items: TData[], childId: string) => {
+                const child = items.find((elem) => elem.id === childId);
+                const parent = items.find((elem) => elem.id === child?.parentId);
 
-        // recursive algo
-        const updateStateParent = (itemStates: ItemState[], items: TData[], childId: string) => {
-            const child = items.find((elem) => elem.id === childId);
-            const parent = items.find((elem) => elem.id === child?.parentId);
+                if (!parent) {
+                    // at root item
+                    return;
+                }
 
-            if (!parent) {
-                // at root item
-                return;
-            }
+                const childrenIds = items.filter((elem) => elem.parentId === parent.id).map((elem) => elem.id);
 
-            const childrenIds = items.filter((elem) => elem.parentId === parent.id).map((elem) => elem.id);
+                const childrenStates = childrenIds.map((id) => itemStates[id]);
 
-            const childrenStates = childrenIds.map((id) => getState(itemStates, id));
-
-            // recompute state of parent
-            const parentState = itemStates.find((elem) => elem.id === parent.id);
-            if (parentState) {
-                // initial default state
-                parentState.state = CheckState.INDETERMINATE;
+                // recompute state of parent
+                // default state
+                itemStates[parent.id] = CheckState.INDETERMINATE;
                 // all children checked => parent must be checked
-                if (childrenStates.every((elem) => elem?.state === CheckState.CHECKED)) {
-                    parentState.state = CheckState.CHECKED;
+                if (childrenStates.every((state) => state === CheckState.CHECKED)) {
+                    itemStates[parent.id] = CheckState.CHECKED;
                 }
                 // all children unchecked => parent must be unchecked
-                if (childrenStates.every((elem) => elem?.state === CheckState.UNCHECKED)) {
-                    parentState.state = CheckState.UNCHECKED;
+                if (childrenStates.every((state) => state === CheckState.UNCHECKED)) {
+                    itemStates[parent.id] = CheckState.UNCHECKED;
                 }
-            }
 
-            // recursive visit
-            updateStateParent(itemStates, items, parent.id);
-        };
+                // recursive visit
+                updateStateParent(itemStates, items, parent.id);
+            };
 
-        // recursive algo
-        const setState = (itemStates: ItemState[], items: TData[], id: string, newState: CheckState) => {
-            const itemToModify = itemStates.find((elem) => elem.id === id);
-            if (itemToModify) {
-                itemToModify.state = newState;
-            }
-            // set all children the same state of current element
-            const children = items.filter((elem) => elem.parentId === id);
-            children.forEach((elem) => setState(itemStates, items, elem.id, newState));
+            // recursive algo
+            const setState = (
+                itemStates: Record<string, CheckState>,
+                items: TData[],
+                id: string,
+                newState: CheckState
+            ) => {
+                itemStates[id] = newState;
 
-            // update parent's state of the current element
-            updateStateParent(itemStates, items, id);
-        };
+                // set all children the same state of current element
+                const children = items.filter((elem) => elem.parentId === id);
+                children.forEach((elem) => setState(itemStates, items, elem.id, newState));
 
-        // update item's state
-        const newItemStates = itemStates.map((elem) => ({ ...elem }));
-        // get current state
-        const currentState = getState(itemStates, onClickedId);
-        setState(
-            newItemStates,
-            items,
-            onClickedId,
-            currentState?.state === CheckState.CHECKED ? CheckState.UNCHECKED : CheckState.CHECKED
-        );
+                // update parent's state of the current element
+                updateStateParent(itemStates, items, id);
+            };
 
-        return newItemStates;
-    }, []);
+            // update item's state
+            const newItemStates = Object.assign({}, itemStates);
+            // get current state
+            const currentState = itemStates[onClickedId];
+            setState(
+                newItemStates,
+                items,
+                onClickedId,
+                currentState === CheckState.CHECKED ? CheckState.UNCHECKED : CheckState.CHECKED
+            );
+
+            return newItemStates;
+        },
+        []
+    );
 
     const handleItemSelect = useCallback(
         (event: MouseEvent, id: string) => {
@@ -161,7 +153,7 @@ function CheckboxTreeview<TData extends ItemData>(
                 // compute selected items on newItemStates
                 const selectedItems = items.filter(
                     (item) =>
-                        newItemStates.find((elem) => elem.id === item.id)?.state === CheckState.CHECKED &&
+                        newItemStates[item.id] === CheckState.CHECKED &&
                         !items.find((elem) => elem.parentId === item.id) // no children
                 );
                 onSelectionChanged(selectedItems);
@@ -174,13 +166,6 @@ function CheckboxTreeview<TData extends ItemData>(
         event.stopPropagation();
     };
 
-    const getState = useCallback(
-        (id: string) => {
-            return itemStates.find((elem) => elem.id === id)?.state;
-        },
-        [itemStates]
-    );
-
     // expose some api for the component by using ref
     useImperativeHandle(
         ref,
@@ -188,10 +173,10 @@ function CheckboxTreeview<TData extends ItemData>(
             getSelectedItems: () =>
                 items.filter(
                     (item) =>
-                        getState(item.id) === CheckState.CHECKED && !items.find((elem) => elem.parentId === item.id) // no children
+                        itemStates[item.id] === CheckState.CHECKED && !items.find((elem) => elem.parentId === item.id) // no children
                 ),
         }),
-        [items, getState]
+        [items]
     );
 
     // render functions (recursive rendering)
@@ -215,8 +200,8 @@ function CheckboxTreeview<TData extends ItemData>(
                 label={
                     <>
                         <Checkbox
-                            checked={CheckState.CHECKED === getState(elem.id)}
-                            indeterminate={CheckState.INDETERMINATE === getState(elem.id)}
+                            checked={CheckState.CHECKED === itemStates[elem.id]}
+                            indeterminate={CheckState.INDETERMINATE === itemStates[elem.id]}
                             onClick={(event) => handleItemSelect(event, elem.id)}
                         />
                         {getLabel ? getLabel(elem) : elem.name}
