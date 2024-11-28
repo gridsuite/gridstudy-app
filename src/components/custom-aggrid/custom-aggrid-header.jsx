@@ -103,7 +103,7 @@ const CustomHeaderComponent = ({
     filterParams = {},
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
-    shouldDisplayFilterBadge,
+    forceDisplayFilterIcon = false,
     tabIndex,
     isCustomColumn = false,
     Menu,
@@ -288,6 +288,29 @@ const CustomHeaderComponent = ({
         [isCountry, intl, translate, getEnumLabel]
     );
 
+    const renderFilterIcon = (shouldDisplayFilterIcon, handleShowFilter, selectedFilterData) => (
+        <Grid
+            item
+            sx={{
+                overflow: 'visible',
+            }}
+        >
+            {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
+                <Grid item>
+                    <IconButton size={'small'} onClick={handleShowFilter}>
+                        <Badge
+                            color="secondary"
+                            variant={selectedFilterData?.length ? 'dot' : null}
+                            invisible={!selectedFilterData}
+                        >
+                            <FilterAlt sx={styles.iconSize} />
+                        </Badge>
+                    </IconButton>
+                </Grid>
+            )}
+        </Grid>
+    );
+
     return (
         <Grid
             container
@@ -349,38 +372,14 @@ const CustomHeaderComponent = ({
                                 )}
                             </Grid>
                         )}
+                        {forceDisplayFilterIcon &&
+                            shouldActivateFilter &&
+                            renderFilterIcon(true, handleShowFilter, selectedFilterData)}
                     </Grid>
 
-                    {shouldActivateFilter && (
-                        <Grid
-                            item
-                            sx={{
-                                overflow: 'visible',
-                            }}
-                        >
-                            {(shouldDisplayFilterIcon || shouldDisplayFilterBadge) && (
-                                <Grid item>
-                                    <IconButton size={'small'} onClick={handleShowFilter}>
-                                        {shouldDisplayFilterBadge ?? true ? (
-                                            <Badge
-                                                color="secondary"
-                                                variant={
-                                                    selectedFilterData?.length || shouldDisplayFilterBadge
-                                                        ? 'dot'
-                                                        : null
-                                                }
-                                                invisible={!selectedFilterData}
-                                            >
-                                                <FilterAlt sx={styles.iconSize} />
-                                            </Badge>
-                                        ) : (
-                                            <FilterAlt sx={styles.iconSize} />
-                                        )}
-                                    </IconButton>
-                                </Grid>
-                            )}
-                        </Grid>
-                    )}
+                    {!forceDisplayFilterIcon &&
+                        shouldActivateFilter &&
+                        renderFilterIcon(shouldDisplayFilterIcon, handleShowFilter, selectedFilterData)}
                 </Grid>
                 {isCustomColumn && (
                     <Grid item direction={'row'}>
