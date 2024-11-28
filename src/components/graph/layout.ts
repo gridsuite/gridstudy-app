@@ -20,8 +20,8 @@ type NodePlacement = {
  * Bidirectional map to match a node ID to a NodePlacement.
  */
 class IdPlacementBiMap {
-    private idToPlacement = new Map<string, string>();
-    private placementToId = new Map<string, string>();
+    private readonly idToPlacement = new Map<string, string>();
+    private readonly placementToId = new Map<string, string>();
 
     stringToNodePlacement(placementString: string): NodePlacement {
         const [row, column] = placementString.split('_').map(Number);
@@ -113,8 +113,8 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
                 // the parent's position from the current node's position, this gives us the relative position to the parent.
                 const parentPlacement = nodePlacements.getPlacement(node.parentId);
                 if (parentPlacement) {
-                    placement.row -= parentPlacement!.row;
-                    placement.column -= parentPlacement!.column;
+                    placement.row -= parentPlacement.row;
+                    placement.column -= parentPlacement.column;
                 }
             }
 
