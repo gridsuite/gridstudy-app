@@ -50,7 +50,7 @@ export function LimitsPane({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    const [limitSets, setLimitSets] = useState<LimitSet[]>([]);
+    const [limitSets, setLimitSets] = useState<LimitSet[]>([]); // TODO ?? devrait probablement seulement contenir les string des ids des deux côtés mélangés mais avec un seul visible à la fois
     const [selectedSet, setSelectedSet] = useState<LimitSet | null>(limitSets[0] || null);
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -58,9 +58,6 @@ export function LimitsPane({
         setSelectedSet(limitSets[newValue] || null);
     };
 
-    const toutesLimitesTmp = useWatch({
-        name: `${id}`,
-    });
     const limitSets1 = useWatch({
         name: `${id}.${CURRENT_LIMITS_1}`,
     });
@@ -70,7 +67,6 @@ export function LimitsPane({
 
     useEffect(() => {
         let allLimitSets: LimitSet[] = [];
-        console.log("Mathieu toutesLimitesTmp : " + JSON.stringify(toutesLimitesTmp, null, 4));
         console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
         console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
         if (limitSets1) {
@@ -81,7 +77,7 @@ export function LimitsPane({
         }
         console.log("Mathieu allLimitSets : " + JSON.stringify(allLimitSets, null, 4));
         setLimitSets(allLimitSets);
-    }, [limitSets1, limitSets2, toutesLimitesTmp]);
+    }, [limitSets1, limitSets2]);
 
     /*
     const handleCopy = (direction: 'toRight' | 'toLeft') => {
@@ -105,14 +101,12 @@ export function LimitsPane({
      */
 
     const addNewLimitSet = () => {
-        // TODO : plein de trucs à revoir ici
-    const newId = (parseInt(limitSets[limitSets.length - 1].id) + 1).toString();
     const newLimitSet: LimitSet = {
-        id: `New Limit Set ${newId}`,
+        id: `New Limit Set ${limitSets.length - 1}`,
         temporaryLimits: [],
         permanentLimit: undefined,
     };
-    setLimitSets([...limitSets, newLimitSet]);
+    setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ?
     setTabValue(limitSets.length);
     setSelectedSet(newLimitSet);
   };
