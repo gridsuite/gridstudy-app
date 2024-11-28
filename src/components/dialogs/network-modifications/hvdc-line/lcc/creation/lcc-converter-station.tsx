@@ -90,12 +90,22 @@ export function getLccConverterStationEmptyFormData() {
     };
 }
 
-export const getMcsOnSideFormData = (mcsOnSideFormDataInfos: McsOnSide[] | undefined) => {
-    console.log('============================mcsOnSideFormDataInfos', mcsOnSideFormDataInfos);
+export const getMcsOnSideFormData = (mcsOnSideFormDataInfos: FilterMcsTable[] | undefined) => {
     return (
         mcsOnSideFormDataInfos?.map((mcs) => ({
             [SHUNT_COMPENSATOR_ID]: mcs.shuntCompensatorId ?? null,
             [SHUNT_COMPENSATOR_NAME]: mcs.shuntCompensatorName ?? '',
+            [MAX_Q_AT_NOMINAL_V]: mcs.maxQAtNominalV ?? null,
+            [MCS_SELECTED]: mcs.connectedToHvdc ?? false,
+        })) ?? []
+    );
+};
+
+export const getMcsOnSideFromSearchCopy = (mcsOnSideFormDataInfos: McsOnSide[] | undefined) => {
+    return (
+        mcsOnSideFormDataInfos?.map((mcs) => ({
+            [SHUNT_COMPENSATOR_ID]: mcs.id ?? null,
+            [SHUNT_COMPENSATOR_NAME]: mcs.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: mcs.maxQAtNominalV ?? null,
             [MCS_SELECTED]: mcs.connectedToHvdc ?? false,
         })) ?? []
@@ -108,7 +118,7 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
         [CONVERTER_STATION_NAME]: lccConverterStationFormInfos?.name ?? '',
         [LOSS_FACTOR]: lccConverterStationFormInfos.lossFactor,
         [POWER_FACTOR]: lccConverterStationFormInfos.powerFactor,
-        [FILTERS_MCS_TABLE]: getMcsOnSideFormData(lccConverterStationFormInfos?.mcsOnSide),
+        [FILTERS_MCS_TABLE]: getMcsOnSideFromSearchCopy(lccConverterStationFormInfos?.mcsOnSide),
         ...getConnectivityFormData({
             voltageLevelId: lccConverterStationFormInfos?.voltageLevelId,
             busbarSectionId: lccConverterStationFormInfos?.busOrBusbarSectionId,
@@ -122,11 +132,6 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
 }
 
 export function getLccConverterStationFromEditData(lccConverterStationFormInfos: LccConverterStationInfos) {
-    console.log(
-        '==============================================lccConverterStationFormInfos',
-        lccConverterStationFormInfos
-    );
-
     return {
         [CONVERTER_STATION_ID]: lccConverterStationFormInfos.equipmentId,
         [CONVERTER_STATION_NAME]: lccConverterStationFormInfos?.equipmentName ?? '',

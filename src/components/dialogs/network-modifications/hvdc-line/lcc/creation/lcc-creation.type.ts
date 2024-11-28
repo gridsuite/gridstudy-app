@@ -37,7 +37,7 @@ export interface LccConverterStationInfos {
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    mcsOnSide: McsOnSide[];
+    mcsOnSide: FilterMcsTable[];
 }
 
 interface ConnectablePositionInfos {
@@ -64,8 +64,8 @@ export interface Connectivity {
 }
 
 export interface McsOnSide {
-    shuntCompensatorId: string;
-    shuntCompensatorName?: string | null;
+    id: string;
+    name?: string | null;
     maxQAtNominalV: number;
     connectedToHvdc: boolean;
 }

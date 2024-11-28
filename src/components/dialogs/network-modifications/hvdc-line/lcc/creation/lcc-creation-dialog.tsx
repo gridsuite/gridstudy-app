@@ -166,7 +166,6 @@ export function LccCreationDialog({
 
     const fromEditDataToFormValues = useCallback(
         (lccCreationInfos: LccCreationInfos) => {
-            console.log('==============================================lccCreationInfos', lccCreationInfos);
             reset({
                 [EQUIPMENT_ID]: lccCreationInfos.equipmentId,
                 [EQUIPMENT_NAME]: lccCreationInfos.equipmentName ?? '',
