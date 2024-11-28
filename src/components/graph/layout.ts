@@ -16,20 +16,24 @@ type NodePlacement = {
     column: number;
 };
 
-function nodePlacementToString(placement: NodePlacement): string {
-    return placement.row + '_' + placement.column;
-}
-
-function stringToNodePlacement(placementString: string): NodePlacement {
-    const [row, column] = placementString.split('_').map(Number);
-    return { row: row, column: column };
-}
-
-class IdPlacementBiMap<string, string> {
+class IdPlacementBiMap {
     private idToPlacement = new Map<string, string>();
     private placementToId = new Map<string, string>();
 
-    set(id: string, placement: string): void {
+    stringToNodePlacement(placementString: string): NodePlacement {
+        const [row, column] = placementString.split('_').map(Number);
+        return { row, column };
+    }
+
+    nodePlacementToString(placement: NodePlacement): string {
+        return placement.row + '_' + placement.column;
+    }
+
+    put(id: string, placement: NodePlacement) {
+        this.internalSet(id, placement.row + '_' + placement.column);
+    }
+
+    internalSet(id: string, placement: string): void {
         // Remove any existing mappings to ensure bidirectionality
         if (this.idToPlacement.has(id)) {
             const oldPlacement = this.idToPlacement.get(id)!;
@@ -44,28 +48,12 @@ class IdPlacementBiMap<string, string> {
         this.placementToId.set(placement, id);
     }
 
-    getPlacement(id: string): string | undefined {
-        return this.idToPlacement.get(id);
+    getPlacement(id: string): NodePlacement {
+        return this.stringToNodePlacement(this.idToPlacement.get(id));
     }
 
     getId(placement: string): string | undefined {
         return this.placementToId.get(placement);
-    }
-
-    deleteId(id: string): void {
-        if (this.idToPlacement.has(id)) {
-            const placement = this.idToPlacement.get(id)!;
-            this.idToPlacement.delete(id);
-            this.placementToId.delete(placement);
-        }
-    }
-
-    deletePlacement(placement: string): void {
-        if (this.placementToId.has(placement)) {
-            const id = this.placementToId.get(placement)!;
-            this.placementToId.delete(placement);
-            this.idToPlacement.delete(id);
-        }
     }
 
     hasId(id: string): boolean {
@@ -75,14 +63,10 @@ class IdPlacementBiMap<string, string> {
     hasPlacement(placement: string): boolean {
         return this.placementToId.has(placement);
     }
-}
 
-function isSpaceEmpty(placementBiMap: IdPlacementBiMap, row: number, column: number) {
-    return !placementBiMap.hasPlacement(nodePlacementToString({ row: row, column: column } as NodePlacement));
-}
-
-function getPlacement(placementBiMap: IdPlacementBiMap, id: string) {
-    return stringToNodePlacement(placementBiMap.getPlacement(id));
+    isSpaceEmpty(placement: NodePlacement): boolean {
+        return !this.hasPlacement(this.nodePlacementToString(placement));
+    }
 }
 
 /**
@@ -90,33 +74,27 @@ function getPlacement(placementBiMap: IdPlacementBiMap, id: string) {
  * This array is then used to compute each node's position before being used by ReactFlow.
  */
 function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
-    const newPlacements = new IdPlacementBiMap<string, string>();
+    const newPlacements = new IdPlacementBiMap();
     let currentMaxColumn = 0;
 
     nodes.forEach((node) => {
         if (!node.parentId) {
             // ROOT NODE
-            //addValueAtPlacement(newPlacements, 0, 0, node.id);
-            newPlacements.set(node.id, nodePlacementToString({ row: 0, column: 0 } as NodePlacement));
+            newPlacements.put(node.id, { row: 0, column: 0 } as NodePlacement);
         } else {
             // CHILDREN NODE
-            const parentPlacement = getPlacement(newPlacements, node.parentId);
+            const parentPlacement = newPlacements.getPlacement(node.parentId);
             // Check if there is an empty space below the parent
             const tryRow = parentPlacement.row + 1;
             const tryColumn = parentPlacement.column;
-            if (isSpaceEmpty(newPlacements, tryRow, tryColumn)) {
-                newPlacements.set(node.id, nodePlacementToString({ row: tryRow, column: tryColumn } as NodePlacement));
-                //addIdAtPlacement(newPlacements, tryRow, tryColumn, node.id);
+            if (newPlacements.isSpaceEmpty({ row: tryRow, column: tryColumn } as NodePlacement)) {
+                newPlacements.put(node.id, { row: tryRow, column: tryColumn } as NodePlacement);
             } else {
                 // We check if there is an empty space on the right of the used space
                 do {
                     currentMaxColumn++;
-                } while (!isSpaceEmpty(newPlacements, tryRow, currentMaxColumn));
-                //addIdAtPlacement(newPlacements, tryRow, currentMaxColumn, node.id);
-                newPlacements.set(
-                    node.id,
-                    nodePlacementToString({ row: tryRow, column: currentMaxColumn } as NodePlacement)
-                );
+                } while (!newPlacements.isSpaceEmpty({ row: tryRow, column: currentMaxColumn } as NodePlacement));
+                newPlacements.put(node.id, { row: tryRow, column: currentMaxColumn } as NodePlacement);
             }
         }
     });
@@ -131,13 +109,13 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const nodePlacements = getNodePlacementsFromTreeNodes(newNodes);
 
     newNodes.forEach((node) => {
-        const placement = getPlacement(nodePlacements, node.id);
+        const placement = nodePlacements.getPlacement(node.id);
 
         if (node.parentId) {
             // Reactflow draws its nodes with a position relative to the node's parent (the parent is in the node's parentId field).
             // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
             // the parent's position from the current node's position, this gives us the relative position to the parent.
-            const parentPlacement = getPlacement(nodePlacements, node.parentId);
+            const parentPlacement = nodePlacements.getPlacement(node.parentId);
             placement.row -= parentPlacement.row;
             placement.column -= parentPlacement.column;
         }
