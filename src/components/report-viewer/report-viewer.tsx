@@ -156,7 +156,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                                 style={styles.treeItem}
                                 onSelectedItem={handleSelectedItem}
                                 onExpandItem={handleExpandItem}
-                                highlightedReportId={highlightedReportId ?? ''}
+                                highlightedReportId={highlightedReportId}
                             />
                         )}
                     </Fragment>

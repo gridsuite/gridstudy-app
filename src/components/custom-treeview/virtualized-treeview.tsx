@@ -15,7 +15,7 @@ const getItemData = memoizeOne(
         nodes: ReportItem[],
         onSelectedItem: (node: ReportItem) => void,
         onExpandItem: (node: ReportItem) => void,
-        highlightedReportId: string
+        highlightedReportId?: string
     ) => ({
         nodes,
         onSelectedItem,
@@ -29,7 +29,7 @@ export interface TreeViewProps {
     nodes: ReportItem[];
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
-    highlightedReportId: string;
+    highlightedReportId?: string;
     itemSize: number;
     style?: CSSProperties | undefined;
 }

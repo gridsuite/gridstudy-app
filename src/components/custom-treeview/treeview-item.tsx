@@ -84,7 +84,7 @@ export interface TreeViewItemData {
     nodes: ReportItem[];
     onSelectedItem: (node: ReportItem) => void;
     onExpandItem: (node: ReportItem) => void;
-    highlightedReportId: string;
+    highlightedReportId?: string;
 }
 
 export interface TreeViewItemProps {
