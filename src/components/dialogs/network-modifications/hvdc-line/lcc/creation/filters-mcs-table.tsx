@@ -41,28 +41,24 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
                 label: 'shuntCompensatorId',
                 dataKey: SHUNT_COMPENSATOR_ID,
                 initialValue: '',
-                text1Items: true,
                 width: '30%',
             },
             {
                 label: 'shuntCompensatorName',
                 dataKey: SHUNT_COMPENSATOR_NAME,
                 initialValue: '',
-                text2Items: true,
                 width: '30%',
             },
             {
                 label: 'maxQAtNominalV',
                 dataKey: MAX_Q_AT_NOMINAL_V,
                 initialValue: null,
-                floatItems: true,
                 width: '30%',
             },
             {
                 label: 'connectedToHvdc',
                 dataKey: MCS_SELECTED,
                 initialValue: false,
-                checkboxItems: true,
                 width: '10%',
             },
         ].map((column) => ({
@@ -127,25 +123,25 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
                         >
                             {columnsDefinition.map((column) => (
                                 <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
-                                    {column.text1Items && (
+                                    {column.dataKey === SHUNT_COMPENSATOR_ID && (
                                         <TextInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
                                             label={'shuntCompensatorId'}
                                         />
                                     )}
-                                    {column.text2Items && (
+                                    {column.dataKey === SHUNT_COMPENSATOR_NAME && (
                                         <TextInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}
                                             label={'shuntCompensatorName'}
                                         />
                                     )}
-                                    {column.floatItems && (
+                                    {column.dataKey === MAX_Q_AT_NOMINAL_V && (
                                         <FloatInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
                                             label={'maxQAtNominalV'}
                                         />
                                     )}
-                                    {column.checkboxItems && (
+                                    {column.dataKey === MCS_SELECTED && (
                                         <SwitchInput name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MCS_SELECTED}`} />
                                     )}
                                 </TableCell>
