@@ -185,7 +185,7 @@ export function LccCreationDialog({
             reset(data, { keepDefaultValues: true });
         },
         elementType: EQUIPMENT_TYPES.HVDC_LINE,
-        optionalParameters: 'LCC',
+        optionalParameters: EQUIPMENT_TYPES.LCC_CONVERTER_STATION,
     });
 
     useEffect(() => {
