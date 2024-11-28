@@ -124,17 +124,17 @@ export const getSelectedLimitsFormData = (
 export const getAllLimitsFormData = (
     {
         currentLimits1 = [{
-            [ID]: 'TODO',
+            [ID]: '',
             [PERMANENT_LIMIT]: null,
             [TEMPORARY_LIMITS]: [],
         }],
         currentLimits2 = [{
-            [ID]: 'TODO',
+            [ID]: '',
             [PERMANENT_LIMIT]: null,
             [TEMPORARY_LIMITS]: [],
         }],
-        selectedLimitsGroup1 = 'TODO',
-        selectedLimitsGroup2 = 'TODO'
+        selectedLimitsGroup1 = null,
+        selectedLimitsGroup2 = null,
     },
     id = LIMITS
 ) => ({

@@ -65,17 +65,17 @@ export function LimitsPane({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
 
-    useEffect(() => {
+    useEffect(() => { // TODO : plutôt un useMemo
         let allLimitSets: LimitSet[] = [];
-        console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
-        console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
+        // console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
+        // console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
         if (limitSets1) {
             allLimitSets = [...limitSets1];
         }
         if (limitSets2) {
             allLimitSets = [...limitSets2];
         }
-        console.log("Mathieu allLimitSets : " + JSON.stringify(allLimitSets, null, 4));
+        // console.log("Mathieu allLimitSets : " + JSON.stringify(allLimitSets, null, 4));
         setLimitSets(allLimitSets);
     }, [limitSets1, limitSets2]);
 
