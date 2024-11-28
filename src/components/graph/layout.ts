@@ -63,7 +63,7 @@ class IdPlacementBiMap {
 
 /**
  * Builds a bidirectional map representing the placements of nodes for the tree.
- * This map is then used to compute each node's position before being used by ReactFlow.
+ * This map is then used to compute each node's x and y position before being used by ReactFlow.
  */
 function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
     const nodePlacements = new IdPlacementBiMap();

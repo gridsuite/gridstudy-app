@@ -252,6 +252,72 @@ const NetworkModificationTree = ({
         setCenter(x, y, { zoom: getZoom() });
     };
 
+    const DisplayWholeTreeButton = () => {
+        return (
+            <Tooltip
+                placement="left"
+                title={intl.formatMessage({
+                    id: 'DisplayTheWholeTree',
+                })}
+                arrow
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
+            >
+                <span>
+                    <ControlButton onClick={fitView}>
+                        <CropFreeIcon />
+                    </ControlButton>
+                </span>
+            </Tooltip>
+        );
+    };
+
+    const CenterSelectedNodeButton = () => {
+        return (
+            <Tooltip
+                placement="left"
+                title={intl.formatMessage({ id: 'CenterSelectedNode' })}
+                arrow
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
+            >
+                <span>
+                    <ControlButton
+                        onClick={() => {
+                            handleFocusNode();
+                        }}
+                    >
+                        <CenterFocusIcon />
+                    </ControlButton>
+                </span>
+            </Tooltip>
+        );
+    };
+
+    const ToggleMinimapButton = () => {
+        return (
+            <Tooltip
+                placement="left"
+                title={
+                    isMinimapOpen
+                        ? intl.formatMessage({ id: 'HideMinimap' })
+                        : intl.formatMessage({
+                              id: 'DisplayMinimap',
+                          })
+                }
+                arrow
+                enterDelay={TOOLTIP_DELAY}
+                enterNextDelay={TOOLTIP_DELAY}
+            >
+                <span>
+                    <ControlButton onClick={() => toggleMinimap()}>
+                        <MapIcon />
+                    </ControlButton>
+                </span>
+            </Tooltip>
+        );
+    };
+
     return (
         <Box flexGrow={1}>
             <ReactFlow
@@ -291,61 +357,11 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                     showFitView={false}
                 >
-                    <Tooltip
-                        placement="left"
-                        title={intl.formatMessage({
-                            id: 'DisplayTheWholeTree',
-                        })}
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                    >
-                        <span>
-                            <ControlButton onClick={fitView}>
-                                <CropFreeIcon />
-                            </ControlButton>
-                        </span>
-                    </Tooltip>
-                    <Tooltip
-                        placement="left"
-                        title={intl.formatMessage({ id: 'CenterSelectedNode' })}
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                    >
-                        <span>
-                            <ControlButton
-                                onClick={() => {
-                                    handleFocusNode();
-                                }}
-                            >
-                                <CenterFocusIcon />
-                            </ControlButton>
-                        </span>
-                    </Tooltip>
-                    <Tooltip
-                        placement="left"
-                        title={
-                            isMinimapOpen
-                                ? intl.formatMessage({ id: 'HideMinimap' })
-                                : intl.formatMessage({
-                                      id: 'DisplayMinimap',
-                                  })
-                        }
-                        arrow
-                        enterDelay={TOOLTIP_DELAY}
-                        enterNextDelay={TOOLTIP_DELAY}
-                    >
-                        <span>
-                            <ControlButton onClick={() => toggleMinimap()}>
-                                <MapIcon />
-                            </ControlButton>
-                        </span>
-                    </Tooltip>
+                    <DisplayWholeTreeButton />
+                    <CenterSelectedNodeButton />
+                    <ToggleMinimapButton />
                 </Controls>
-                {isMinimapOpen && (
-                    <MiniMap nodeColor={nodeColor} pannable inversePan zoomable zoomStep={1} nodeStrokeWidth={0} />
-                )}
+                {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
             </ReactFlow>
         </Box>
     );
