@@ -7,8 +7,8 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { DefParam, makeComponents, TYPES } from '../util/make-component-utils';
-import { FunctionComponent, useMemo } from 'react';
+import { DefParam, ParamList, ParamProps, TYPES } from '../util/param-list';
+import { useMemo } from 'react';
 import { getIdOrSelf } from '../../dialog-utils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { MappingInfos } from 'services/study/dynamic-simulation.type';
@@ -30,16 +30,11 @@ interface MappingParametersProps {
     path: string;
 }
 
-const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping, path }) => {
+function MappingParameters({ mapping, path }: Readonly<MappingParametersProps>) {
     const { mappings } = mapping ?? {};
 
     const mappingOptions = useMemo(() => {
-        return (
-            mappings?.map((elem) => ({
-                id: elem.name,
-                label: elem.name,
-            })) ?? []
-        );
+        return mappings?.map((elem) => elem.name) ?? [];
     }, [mappings]);
 
     const defParams: Record<string, DefParam> = {
@@ -47,10 +42,10 @@ const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping,
             type: TYPES.ENUM,
             label: 'DynamicSimulationMapping',
             options: mappingOptions,
-            render: (defParam, path, key) => {
+            render: ({ defParam, path, name }: ParamProps) => {
                 return (
                     <AutocompleteInput
-                        name={`${path}.${key}`}
+                        name={`${path}.${name}`}
                         label={''}
                         options={defParam.options ?? []}
                         fullWidth
@@ -64,9 +59,9 @@ const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping,
 
     return (
         <Grid xl={6} container>
-            {makeComponents(defParams, path)}
+            <ParamList defParams={defParams} path={path} />
         </Grid>
     );
-};
+}
 
 export default MappingParameters;

@@ -5,30 +5,28 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Grid, Box, MenuItem, Select, Typography, Theme, SelectChangeEvent } from '@mui/material';
+import { Box, Grid, MenuItem, Select, SelectChangeEvent, Theme, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { CustomAGGrid, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomAGGrid, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { fetchAllCountries } from '../../../../../../services/study/network-map';
-import { IdentifiableAttributes, evaluateJsonFilter } from '../../../../../../services/study/filter';
+import { evaluateJsonFilter, IdentifiableAttributes } from '../../../../../../services/study/filter';
 import { fetchVoltageLevelsMapInfos } from '../../../../../../services/study/network';
 import CheckboxAutocomplete from '../../../../../utils/checkbox-autocomplete';
 import { useLocalizedCountries } from '../../../../../utils/localized-countries-hook';
 import { buildExpertFilter, CURVE_EQUIPMENT_TYPES, NOMINAL_VOLTAGE_UNIT } from './curve-selector-utils';
-import { EQUIPMENT_TYPES, VoltageLevel } from 'components/utils/equipment-types';
+import { VoltageLevel } from 'components/utils/equipment-types';
 import { AppState } from 'redux/reducer';
 import { AgGridReact } from 'ag-grid-react';
 
-export interface GetSelectedEquipmentsHandle {
-    api: {
-        getSelectedEquipments: () => IdentifiableAttributes[];
-    };
+export interface EquipmentFilterApi {
+    getSelectedEquipments: () => IdentifiableAttributes[];
 }
 
 interface EquipmentFilterProps {
-    equipmentType: EQUIPMENT_TYPES;
-    onChangeEquipmentType: (newEquipmentType: EQUIPMENT_TYPES) => void;
+    equipmentType: EquipmentType;
+    onChangeEquipmentType: (newEquipmentType: EquipmentType) => void;
 }
 
 const styles = {
@@ -49,7 +47,7 @@ const styles = {
     }),
 };
 
-const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterProps>(
+const EquipmentFilter = forwardRef<EquipmentFilterApi, Readonly<EquipmentFilterProps>>(
     ({ equipmentType: initialEquipmentType, onChangeEquipmentType }, ref) => {
         const { snackError } = useSnackMessage();
         const [gridReady, setGridReady] = useState(false);
@@ -65,7 +63,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         const handleEquipmentTypeChange = useCallback(
             (event: SelectChangeEvent) => {
-                const selectedEquipmentType = event.target.value as EQUIPMENT_TYPES;
+                const selectedEquipmentType = event.target.value as EquipmentType;
                 setEquipmentType(selectedEquipmentType);
                 onChangeEquipmentType(selectedEquipmentType);
             },
@@ -215,10 +213,8 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
         useImperativeHandle(
             ref,
             () => ({
-                api: {
-                    getSelectedEquipments: () => {
-                        return equipmentsRef.current?.api.getSelectedRows() ?? [];
-                    },
+                getSelectedEquipments: () => {
+                    return equipmentsRef.current?.api.getSelectedRows() ?? [];
                 },
             }),
             []

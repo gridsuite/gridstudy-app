@@ -7,7 +7,7 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponents, TYPES } from '../util/make-component-utils';
+import { ParamList, TYPES } from '../util/param-list';
 
 export const START_TIME = 'startTime';
 export const STOP_TIME = 'stopTime';
@@ -41,12 +41,16 @@ const defParams = {
     },
 };
 
-const TimeDelayParameters = ({ path }: { path: string }) => {
+interface TimeDelayParametersProps {
+    path: string;
+}
+
+function TimeDelayParameters({ path }: Readonly<TimeDelayParametersProps>) {
     return (
         <Grid xl={6} container>
-            {makeComponents(defParams, path)}
+            <ParamList defParams={defParams} path={path} />
         </Grid>
     );
-};
+}
 
 export default TimeDelayParameters;

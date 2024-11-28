@@ -5,13 +5,14 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { UUID } from 'crypto';
+import { EquipmentType } from '@gridsuite/commons-ui';
 
 export enum SolverTypeInfos {
     IDA = 'IDA',
     SIM = 'SIM',
 }
 
-type CommonSolverInfos = {
+export type CommonSolverInfos = {
     id: string;
     name: string;
     type: SolverTypeInfos;
@@ -125,4 +126,23 @@ export type DynamicSimulationParametersInfos = {
 
 export type DynamicSimulationParametersFetchReturn = DynamicSimulationParametersInfos & {
     mappings?: MappingInfos[];
+};
+
+// --- Types related to model/variables --- //
+
+export type ModelVariableDefinitionInfos = {
+    name: string;
+    unit: string;
+};
+
+export type VariablesSetInfos = {
+    name: string;
+    variableDefinitions: ModelVariableDefinitionInfos[];
+};
+
+export type DynamicSimulationModelInfos = {
+    modelName: string;
+    equipmentType: EquipmentType;
+    variableDefinitions: ModelVariableDefinitionInfos[];
+    variablesSets: VariablesSetInfos[];
 };

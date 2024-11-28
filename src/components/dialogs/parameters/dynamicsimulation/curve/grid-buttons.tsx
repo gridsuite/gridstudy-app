@@ -8,7 +8,7 @@
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { FunctionComponent, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
 interface GridButtonsProps {
@@ -17,7 +17,7 @@ interface GridButtonsProps {
     disabled?: boolean;
 }
 
-const GridButtons: FunctionComponent<GridButtonsProps> = ({ onAddButton, onDeleteButton, disabled }) => {
+function GridButtons({ onAddButton, onDeleteButton, disabled }: Readonly<GridButtonsProps>) {
     const intl = useIntl();
 
     const handleAddButton = useCallback(() => {
@@ -65,6 +65,6 @@ const GridButtons: FunctionComponent<GridButtonsProps> = ({ onAddButton, onDelet
             </Grid>
         </Grid>
     );
-};
+}
 
 export default GridButtons;

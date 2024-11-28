@@ -7,113 +7,25 @@
 
 import { FormattedMessage, IntlShape, useIntl } from 'react-intl';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { Grid, Box, Typography, Theme } from '@mui/material';
+import { Box, Grid, Theme, Typography } from '@mui/material';
 import CheckboxSelect from '../common/checkbox-select';
-import CheckboxTreeview, { GetSelectedItemsHandle } from '../common/checkbox-treeview';
+import CheckboxTreeview, { CheckboxTreeviewApi } from '../common/checkbox-treeview';
 import { lighten } from '@mui/material/styles';
 import { useSelector } from 'react-redux';
 
 import { fetchDynamicSimulationModels } from '../../../../../../services/study/dynamic-simulation';
-import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { AppState } from 'redux/reducer';
+import { DynamicSimulationModel, ModelVariable } from '../curve.type';
+import { modelsToVariables } from './model-filter-utils';
+import { EquipmentType } from '@gridsuite/commons-ui';
+import { DynamicSimulationModelInfos } from '../../../../../../services/study/dynamic-simulation.type';
 
-interface ModelVariableDefinitionInfos {
-    name: string;
-    unit: string;
+export interface ModelFilterApi {
+    getSelectedVariables: () => ModelVariable[];
 }
-
-interface DynamicSimulationModelBack {
-    modelName: string;
-    equipmentType: EQUIPMENT_TYPES;
-    variableDefinitions: ModelVariableDefinitionInfos[];
-    variablesSets: { name: string; variableDefinitions: ModelVariableDefinitionInfos[] }[];
-}
-
-interface DynamicSimulationModel {
-    name: string;
-    equipmentType: EQUIPMENT_TYPES;
-}
-
-export interface GetSelectedVariablesHandle {
-    api: {
-        getSelectedVariables: () => ModelVariable[];
-    };
-}
-
 interface ModelFilterProps {
-    equipmentType: EQUIPMENT_TYPES;
+    equipmentType: EquipmentType;
 }
-export type ModelVariable = {
-    id: string;
-    name: string;
-    parentId?: string;
-    variableId?: string;
-};
-
-const modelsToVariablesTree = (models: DynamicSimulationModelBack[]) => {
-    return models.reduce<Record<string, Record<string, string | Record<string, string>>>>(
-        (obj, model) => ({
-            ...obj,
-            [model.modelName]: {
-                ...model.variableDefinitions.reduce(
-                    (obj, variable) => ({
-                        ...obj,
-                        [variable.name]: variable.name,
-                    }),
-                    {}
-                ),
-                ...model.variablesSets.reduce(
-                    (obj, variablesSet) => ({
-                        ...obj,
-                        [variablesSet.name]: variablesSet.variableDefinitions.reduce(
-                            (obj, variable) => ({
-                                ...obj,
-                                [variable.name]: variable.name,
-                            }),
-                            {}
-                        ),
-                    }),
-                    {}
-                ),
-            },
-        }),
-        {}
-    );
-};
-
-const variablesTreeToVariablesArray = (variablesTree: Record<string, any>, parentId?: string) => {
-    let result: ModelVariable[] = [];
-    Object.entries(variablesTree).map(([key, value]) => {
-        const id = parentId ? `${parentId}/${key}` : key;
-        if (typeof value === 'object') {
-            // make container element
-            result = [
-                ...result,
-                {
-                    id: id,
-                    name: key,
-                    parentId: parentId,
-                },
-            ];
-            // make contained elements
-            result = [...result, ...variablesTreeToVariablesArray(value, id)];
-        }
-        if (typeof value === 'string') {
-            result = [
-                ...result,
-                {
-                    id: id,
-                    name: value,
-                    parentId: parentId,
-                    variableId: key,
-                },
-            ];
-        }
-        return result;
-    });
-
-    return result;
-};
 
 const makeGetModelLabel = (intl: IntlShape) => (value: string) =>
     intl.formatMessage({
@@ -165,18 +77,16 @@ const styles = {
     },
 };
 
-const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
-    ({ equipmentType = EQUIPMENT_TYPES.GENERATOR }, ref) => {
+const ModelFilter = forwardRef<ModelFilterApi, Readonly<ModelFilterProps>>(
+    ({ equipmentType = EquipmentType.GENERATOR }, ref) => {
         const intl = useIntl();
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
         const [allModels, setAllModels] = useState<DynamicSimulationModel[]>([]);
-        const [allVariables, setAllVariables] = useState<
-            Record<string, Record<string, string | Record<string, string>>>
-        >({}); // a variables tree
-        const variablesRef = useRef<GetSelectedItemsHandle>(null);
+        const [variables, setVariables] = useState<ModelVariable[]>([]);
+        const variablesRef = useRef<CheckboxTreeviewApi<ModelVariable>>(null);
 
         // --- models CheckboxSelect --- //
         const associatedModels: Record<string, string> = useMemo(() => {
@@ -203,9 +113,6 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
             setSelectedModels(initialSelectedModels);
         }, [initialSelectedModels]);
 
-        // --- variables array CheckboxTreeview --- //
-        const variables = useMemo(() => variablesTreeToVariablesArray(allVariables), [allVariables]);
-
         const filteredVariables = useMemo(
             () =>
                 variables.filter((elem) =>
@@ -221,7 +128,7 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
             if (!currentNode?.id) {
                 return;
             }
-            fetchDynamicSimulationModels(studyUuid, currentNode.id).then((models: DynamicSimulationModelBack[]) => {
+            fetchDynamicSimulationModels(studyUuid, currentNode.id).then((models: DynamicSimulationModelInfos[]) => {
                 setAllModels(
                     models.map((model) => ({
                         name: model.modelName,
@@ -229,9 +136,9 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
                     }))
                 );
 
-                // transform models to variables tree representation
-                const variablesTree = modelsToVariablesTree(models);
-                setAllVariables(variablesTree);
+                // transform models to variables
+                const variables = modelsToVariables(models);
+                setVariables(variables);
             });
         }, [studyUuid, currentNode?.id]);
 
@@ -239,18 +146,16 @@ const ModelFilter = forwardRef<GetSelectedVariablesHandle, ModelFilterProps>(
         useImperativeHandle(
             ref,
             () => ({
-                api: {
-                    getSelectedVariables: () => {
-                        return (
-                            variablesRef.current?.api
-                                .getSelectedItems()
-                                .filter((item) => item.variableId) // filter to keep only variable item
-                                .filter(
-                                    (item, index, arr) =>
-                                        arr.findIndex((elem) => elem.variableId === item.variableId) === index
-                                ) ?? []
-                        ); // remove duplicated by variableId
-                    },
+                getSelectedVariables: () => {
+                    return (
+                        variablesRef.current
+                            ?.getSelectedItems()
+                            .filter((item) => item.variableId) // filter to keep only variable item
+                            .filter(
+                                (item, index, arr) =>
+                                    arr.findIndex((elem) => elem.variableId === item.variableId) === index
+                            ) ?? []
+                    ); // remove duplicated by variableId
                 },
             }),
             []

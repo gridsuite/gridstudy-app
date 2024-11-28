@@ -16,15 +16,16 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
-import { FunctionComponent, useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';
-import CurveSelector, { GetSelectedItemsHandler } from './curve-selector';
-import CurvePreview, { Curve, CurveHandler } from './curve-preview';
+import CurveSelector, { CurveSelectorApi } from './curve-selector';
+import CurvePreview, { CurvePreviewApi } from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { mergeSx } from '../../../../../utils/functions';
+import { Curve } from '../curve.type';
 
 interface CurveSelectorDialogProps {
     open: boolean;
@@ -32,11 +33,11 @@ interface CurveSelectorDialogProps {
     onSave: (curves: Curve[]) => void;
 }
 
-const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open, onClose, onSave }) => {
+function CurveSelectorDialog({ open, onClose, onSave }: Readonly<CurveSelectorDialogProps>) {
     const theme = useTheme();
 
-    const selectorRef = useRef<GetSelectedItemsHandler>(null);
-    const previewRef = useRef<CurveHandler>(null);
+    const selectorRef = useRef<CurveSelectorApi>(null);
+    const previewRef = useRef<CurvePreviewApi>(null);
 
     const handleClose = useCallback(() => {
         onClose();
@@ -46,7 +47,7 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
         if (!previewRef.current) {
             return;
         }
-        onSave(previewRef.current.api.getCurves());
+        onSave(previewRef.current.getCurves());
     }, [onSave]);
 
     const intl = useIntl();
@@ -55,25 +56,25 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
         if (!selectorRef.current || !previewRef.current) {
             return;
         }
-        const selectedEquipments = selectorRef.current.api.getSelectedEquipments();
+        const selectedEquipments = selectorRef.current.getSelectedEquipments();
 
-        const selectedVariables = selectorRef.current.api.getSelectedVariables();
+        const selectedVariables = selectorRef.current.getSelectedVariables();
 
         // combine between equipments and variables
-        const curves = selectedEquipments.flatMap((equipment) =>
+        const curves: Curve[] = selectedEquipments.flatMap((equipment) =>
             selectedVariables.map((variable) => ({
                 equipmentType: equipment.type,
                 equipmentId: equipment.id,
                 variableId: variable.variableId,
             }))
         );
-        previewRef.current.api.addCurves(curves);
+        previewRef.current.addCurves(curves);
     }, []);
     const handleDeleteButton = useCallback(() => {
         if (!previewRef.current) {
             return;
         }
-        previewRef.current.api.removeCurves();
+        previewRef.current.removeCurves();
     }, []);
 
     const hasSelectedRow = false;
@@ -150,6 +151,6 @@ const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open
             </DialogActions>
         </Dialog>
     );
-};
+}
 
 export default CurveSelectorDialog;

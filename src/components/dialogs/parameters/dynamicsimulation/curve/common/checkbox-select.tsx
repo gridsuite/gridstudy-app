@@ -7,7 +7,7 @@
 
 import { Checkbox, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
-import { FunctionComponent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 const ITEM_HEIGHT = 48;
@@ -33,13 +33,13 @@ interface CheckBoxSelectProps {
     disabled: boolean;
 }
 
-const CheckboxSelect: FunctionComponent<CheckBoxSelectProps> = ({
+function CheckboxSelect({
     options,
-    getOptionLabel: defaultGetOptionLabel,
+    getOptionLabel,
     onChange,
     value: initialSelectedOptions,
     disabled,
-}) => {
+}: Readonly<CheckBoxSelectProps>) {
     const intl = useIntl();
     const [selectedOptions, setSelectedOptions] = useState(initialSelectedOptions ?? []);
 
@@ -53,11 +53,12 @@ const CheckboxSelect: FunctionComponent<CheckBoxSelectProps> = ({
     const handleChange = useCallback(
         (event: SelectChangeEvent<string[]>) => {
             const {
-                target: { value: values },
+                target: { value },
             } = event;
-            if (!Array.isArray(values)) {
-                return; //TODO: check is ok
-            }
+
+            // On autofill we get a stringified value.
+            const values = typeof value === 'string' ? value.split(',') : value;
+
             let newSelectedOptions: string[];
             if (values.find((elem) => elem === CHECK_ALL.value)) {
                 // must check all items
@@ -77,17 +78,10 @@ const CheckboxSelect: FunctionComponent<CheckBoxSelectProps> = ({
         [options, onChange]
     );
 
-    const getOptionLabel = useCallback(
-        (option: string) => {
-            return defaultGetOptionLabel(option);
-        },
-        [defaultGetOptionLabel]
-    );
-
     return (
         <Select
             id="multiple-checkbox"
-            size={'small'}
+            size="small"
             multiple
             value={selectedOptions}
             onChange={handleChange}
@@ -119,6 +113,6 @@ const CheckboxSelect: FunctionComponent<CheckBoxSelectProps> = ({
             ))}
         </Select>
     );
-};
+}
 
 export default CheckboxSelect;

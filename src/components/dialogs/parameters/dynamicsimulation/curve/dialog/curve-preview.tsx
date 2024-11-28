@@ -7,11 +7,11 @@
 
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Box, Typography, Theme } from '@mui/material';
+import { Box, Grid, Theme, Typography } from '@mui/material';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { ValueFormatterParams } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
+import { Curve } from '../curve.type';
 
 const styles = {
     grid: {
@@ -23,23 +23,15 @@ const styles = {
     }),
 };
 
-export interface Curve {
-    equipmentType: EQUIPMENT_TYPES;
-    equipmentId: string;
-    variableId: string | undefined;
+export interface CurvePreviewApi {
+    addCurves: (curves: Curve[]) => void;
+    removeCurves: () => void;
+    getCurves: () => Curve[];
 }
 
-export interface CurveHandler {
-    api: {
-        addCurves: (curves: Curve[]) => void;
-        removeCurves: () => void;
-        getCurves: () => Curve[];
-    };
-}
-
-const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
+const CurvePreview = forwardRef<CurvePreviewApi>(function (_, ref) {
     const intl = useIntl();
-    const gridRef = useRef<AgGridReact<any>>(null);
+    const gridRef = useRef<AgGridReact<Curve>>(null);
 
     const [rowData, setRowData] = useState<Curve[]>([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
@@ -91,43 +83,40 @@ const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
     useImperativeHandle(
         ref,
         () => ({
-            api: {
-                addCurves: (curves) => {
-                    setRowData((prev) => {
-                        const notYetAddedCurves = curves.filter(
-                            (curve) =>
-                                !prev.find(
-                                    (elem) =>
-                                        elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId
-                                )
-                        );
-                        return [...prev, ...notYetAddedCurves];
-                    });
-                },
-                removeCurves: () => {
-                    if (!gridRef.current) {
-                        return;
-                    }
-                    const selectedRows = gridRef.current.api.getSelectedRows();
+            addCurves: (curves) => {
+                setRowData((prev) => {
+                    const notYetAddedCurves = curves.filter(
+                        (curve) =>
+                            !prev.find(
+                                (elem) => elem.equipmentId === curve.equipmentId && elem.variableId === curve.variableId
+                            )
+                    );
+                    return [...prev, ...notYetAddedCurves];
+                });
+            },
+            removeCurves: () => {
+                if (!gridRef.current) {
+                    return;
+                }
+                const selectedRows = gridRef.current.api.getSelectedRows();
 
-                    // reset selected rows length
-                    setSelectedRowsLength(0);
+                // reset selected rows length
+                setSelectedRowsLength(0);
 
-                    setRowData((prev) => {
-                        const remainingRows = prev.filter(
-                            (elem) =>
-                                !selectedRows.find(
-                                    (selectedElem) =>
-                                        elem.equipmentId === selectedElem.equipmentId &&
-                                        elem.variableId === selectedElem.variableId
-                                )
-                        );
-                        return remainingRows;
-                    });
-                },
-                getCurves: () => {
-                    return rowData;
-                },
+                setRowData((prev) => {
+                    const remainingRows = prev.filter(
+                        (elem) =>
+                            !selectedRows.find(
+                                (selectedElem) =>
+                                    elem.equipmentId === selectedElem.equipmentId &&
+                                    elem.variableId === selectedElem.variableId
+                            )
+                    );
+                    return remainingRows;
+                });
+            },
+            getCurves: () => {
+                return rowData;
             },
         }),
         [rowData]
