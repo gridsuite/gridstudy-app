@@ -24,7 +24,7 @@ import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
-const temporaryLimitsTableValidationSchema = () => ({
+const limitGroupValidationSchema = () => ({
     [ID]: yup.string().nullable(),
     [PERMANENT_LIMIT]: yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero'),
     [TEMPORARY_LIMITS]: yup
@@ -50,13 +50,13 @@ const temporaryLimitsTableValidationSchema = () => ({
 
 const limitsValidationSchema = (id, onlySelectedLimits = true) => (onlySelectedLimits ? {
     [id]: yup.object().shape({
-        [CURRENT_LIMITS_1]: yup.object().shape(temporaryLimitsTableValidationSchema()),
-        [CURRENT_LIMITS_2]: yup.object().shape(temporaryLimitsTableValidationSchema()),
+        [CURRENT_LIMITS_1]: yup.object().shape(limitGroupValidationSchema()),
+        [CURRENT_LIMITS_2]: yup.object().shape(limitGroupValidationSchema()),
     }),
 } : {
     [id]: yup.object().shape({
-        [CURRENT_LIMITS_1]: yup.array(yup.object().shape(temporaryLimitsTableValidationSchema())),
-        [CURRENT_LIMITS_2]: yup.array(yup.object().shape(temporaryLimitsTableValidationSchema())),
+        [CURRENT_LIMITS_1]: yup.array(yup.object().shape(limitGroupValidationSchema())),
+        [CURRENT_LIMITS_2]: yup.array(yup.object().shape(limitGroupValidationSchema())),
         [SELECTED_LIMIT_GROUP_1]: yup.string(),
         [SELECTED_LIMIT_GROUP_2]: yup.string(),
     }),
@@ -81,17 +81,17 @@ const limitsEmptyFormData = (id, onlySelectedLimits = true) => (
 } : {
         [id]: {
             [CURRENT_LIMITS_1]: [{
-                [ID]: 'TODO',
+                [ID]: '',
                 [PERMANENT_LIMIT]: null,
                 [TEMPORARY_LIMITS]: [],
             }],
             [CURRENT_LIMITS_2]: [{
-                [ID]: 'TODO',
+                [ID]: '',
                 [PERMANENT_LIMIT]: null,
                 [TEMPORARY_LIMITS]: [],
             }],
-            [SELECTED_LIMIT_GROUP_1]: 'TODO',
-            [SELECTED_LIMIT_GROUP_2]: 'TODO',
+            [SELECTED_LIMIT_GROUP_1]: '',
+            [SELECTED_LIMIT_GROUP_2]: '',
         }
 });
 

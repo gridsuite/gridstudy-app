@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Grid, Paper } from '@mui/material';
+import { Box, Grid, Tab, Tabs } from '@mui/material';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
@@ -19,6 +19,8 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
+import { useEffect, useState } from "react";
+import { useWatch } from "react-hook-form";
 
 const styles = {
     limitsBackground: {
@@ -35,6 +37,12 @@ export interface LimitsPaneProps {
     equipmentToModify?: any;
     clearableFields?: any;
 }
+interface LimitSet {
+    id: string;
+    temporaryLimits: Object[];
+    permanentLimit?: number;
+}
+
 
 export function LimitsPane({
     id = LIMITS,
@@ -42,9 +50,72 @@ export function LimitsPane({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    function handleAddLimitSetButton() {
-        // TODO (cf dnd-table.jsx)
+    const [limitSets, setLimitSets] = useState<LimitSet[]>([]);
+    const [selectedSet, setSelectedSet] = useState<LimitSet | null>(limitSets[0] || null);
+    const [tabValue, setTabValue] = useState(0);
+    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+        setSelectedSet(limitSets[newValue] || null);
+    };
+
+    const toutesLimitesTmp = useWatch({
+        name: `${id}`,
+    });
+    const limitSets1 = useWatch({
+        name: `${id}.${CURRENT_LIMITS_1}`,
+    });
+    const limitSets2 = useWatch({
+        name: `${id}.${CURRENT_LIMITS_2}`,
+    });
+
+    useEffect(() => {
+        let allLimitSets: LimitSet[] = [];
+        console.log("Mathieu toutesLimitesTmp : " + JSON.stringify(toutesLimitesTmp, null, 4));
+        console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
+        console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
+        if (limitSets1) {
+            allLimitSets = [...limitSets1];
+        }
+        if (limitSets2) {
+            allLimitSets = [...limitSets2];
+        }
+        console.log("Mathieu allLimitSets : " + JSON.stringify(allLimitSets, null, 4));
+        setLimitSets(allLimitSets);
+    }, [limitSets1, limitSets2, toutesLimitesTmp]);
+
+    /*
+    const handleCopy = (direction: 'toRight' | 'toLeft') => {
+    if (selectedSet) {
+      const updatedSets = limitSets.map(set => {
+        if (set.id === selectedSet.id) {
+          const updatedSet = { ...set };
+          if (direction === 'toRight') {
+            updatedSet.side_2 = [...set.side_1];
+          } else {
+            updatedSet.side_1 = [...set.side_2];
+          }
+          return updatedSet;
+        }
+        return set;
+      });
+      setLimitSets(updatedSets);
+      setSelectedSet(updatedSets[tabValue]);
     }
+  };
+     */
+
+    const addNewLimitSet = () => {
+        // TODO : plein de trucs à revoir ici
+    const newId = (parseInt(limitSets[limitSets.length - 1].id) + 1).toString();
+    const newLimitSet: LimitSet = {
+        id: `New Limit Set ${newId}`,
+        temporaryLimits: [],
+        permanentLimit: undefined,
+    };
+    setLimitSets([...limitSets, newLimitSet]);
+    setTabValue(limitSets.length);
+    setSelectedSet(newLimitSet);
+  };
 
     return (
         <Grid container spacing={2}>
@@ -81,14 +152,27 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={11}>
                 <Grid item xs={1}>
-                    <IconButton color="primary" onClick={() => handleAddLimitSetButton()} disabled>
-                        [TODO]
+                    <IconButton color="primary" onClick={() => addNewLimitSet()}>
                         <AddCircleIcon />
                     </IconButton>
-                    <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 0]</Paper>
-                    <Paper sx={styles.limitsBackground}>[TODO Sélectionné]</Paper>
-                    <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 1]</Paper>
-                    <Paper sx={styles.limitsBackgroundUnselected}>[TODO pas sélectionné 2]</Paper>
+                    <Tabs
+                        orientation="vertical"
+                        variant="scrollable"
+                        value={tabValue}
+                        onChange={handleTabChange}
+                        sx={{ flexGrow: 1 }}
+                    >
+                        {limitSets.map((set, index) => (
+                            <Tab
+                                key={set.id}
+                                label={set.id}
+                                sx={{
+                                    backgroundColor: index === tabValue ? styles.limitsBackground.backgroundColor : styles.limitsBackgroundUnselected.backgroundColor,
+                                    '&.Mui-selected': { backgroundColor: styles.limitsBackground.backgroundColor },
+                                }}
+                            />
+                        ))}
+                    </Tabs>
                 </Grid>
                 <Grid item xs={5}>
                     <LimitsSidePane

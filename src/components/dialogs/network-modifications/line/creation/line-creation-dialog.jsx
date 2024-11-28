@@ -82,7 +82,7 @@ import { addSelectedFieldToRows } from '../../../../utils/dnd-table/dnd-table.js
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(LIMITS, false),
     ...emptyProperties,
 };
 

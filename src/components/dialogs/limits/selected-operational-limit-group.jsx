@@ -4,16 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
 
 // TODO passer ça en typescript
-export const SelectedOperationalLimitGroup = ({
-                                                  selectedName,
-                                                  optionsFormName,
-                                              }) => {
+export const SelectedOperationalLimitGroup = ({ selectedName, optionsFormName }) => {
     const [limitSets, setLimitSets] = useState([]);
 
     const optionsValues = useWatch({
