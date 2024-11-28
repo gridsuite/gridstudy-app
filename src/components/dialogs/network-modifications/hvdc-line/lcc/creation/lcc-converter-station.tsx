@@ -61,7 +61,11 @@ export const getLccConverterStationSchema = () =>
                 yup.object().shape({
                     [SHUNT_COMPENSATOR_ID]: yup.string().nullable().required(),
                     [SHUNT_COMPENSATOR_NAME]: yup.string().nullable(),
-                    [MAX_Q_AT_NOMINAL_V]: yup.number().nullable().required(),
+                    [MAX_Q_AT_NOMINAL_V]: yup
+                        .number()
+                        .nullable()
+                        .positive('qMaxAtNominalVMustBeGreaterThanZero')
+                        .required(),
                     [MCS_SELECTED]: yup.boolean().nullable().required(),
                 })
             )

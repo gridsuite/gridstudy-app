@@ -21,6 +21,7 @@ import {
     SHUNT_COMPENSATOR_NAME,
 } from '../../../../../utils/field-constants';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
+import { ReactivePowerAdornment } from '../../../../dialog-utils';
 
 interface FiltersMcsTableProps {
     id: string;
@@ -138,6 +139,7 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
                                     {column.dataKey === MAX_Q_AT_NOMINAL_V && (
                                         <FloatInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
+                                            adornment={ReactivePowerAdornment}
                                             label={'maxQAtNominalV'}
                                         />
                                     )}
