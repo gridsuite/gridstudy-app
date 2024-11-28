@@ -8,6 +8,7 @@ import { ColDef, IFilterOptionDef } from 'ag-grid-community';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
+import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -24,6 +25,12 @@ export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
     GREATER_THAN_OR_EQUAL = 'greaterThanOrEqual',
+}
+
+// not visible in the base interface :
+export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
+    GREATER_THAN = 'greaterThan',
+    LESS_THAN = 'lessThan',
 }
 
 export type FilterEnumsType = Record<string, string[] | null>;
@@ -46,6 +53,7 @@ export type FilterDataType = {
     dataType: string;
     type: string;
     value: undefined | null | number | string | string[];
+    tolerance?: number; // tolerance when comparing values. Only useful for the number type
 };
 
 export type FilterSelectorType = FilterDataType & {
@@ -84,4 +92,7 @@ export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, T
     shouldDisplayFilterBadge?: boolean;
     sortProps?: SortPropsType;
     withFluxConvention?: boolean;
+    tabIndex?: number;
+    isCustomColumn?: boolean;
+    Menu?: React.FC<CustomColumnConfigProps>;
 }

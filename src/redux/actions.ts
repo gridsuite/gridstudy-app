@@ -66,7 +66,7 @@ import {
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
+import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
@@ -159,7 +159,8 @@ export type AppActions =
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | LogsFilterAction
-    | CustomColumnsDefinitionsAction
+    | UpdateCustomColumnsDefinitionsAction
+    | RemoveCustomColumnsDefinitionsAction
     | StateEstimationResultFilterAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
@@ -1203,22 +1204,35 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
     };
 }
 
-export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
-export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
+export const UPDATE_CUSTOM_COLUMNS_DEFINITION = 'UPDATE_CUSTOM_COLUMNS_DEFINITION';
+export type UpdateCustomColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_DEFINITION>> & {
     table: LiteralUnion<TablesDefinitionsNames, string>;
-    definitions: ColumnWithFormula[];
-    filter?: FormulaFilter;
+    definition: ColumnWithFormula;
 };
-export function setCustomColumDefinitions(
+export function setUpdateCustomColumDefinitions(
     table: LiteralUnion<TablesDefinitionsNames, string>,
-    customColumns: ColumnWithFormula[],
-    filter?: FormulaFilter
-): CustomColumnsDefinitionsAction {
+    customColumn: ColumnWithFormula
+): UpdateCustomColumnsDefinitionsAction {
     return {
-        type: CUSTOM_COLUMNS_DEFINITIONS,
+        type: UPDATE_CUSTOM_COLUMNS_DEFINITION,
         table,
-        definitions: customColumns,
-        filter: filter,
+        definition: customColumn,
+    };
+}
+
+export const REMOVE_CUSTOM_COLUMNS_DEFINITION = 'REMOVE_CUSTOM_COLUMNS_DEFINITION';
+export type RemoveCustomColumnsDefinitionsAction = Readonly<Action<typeof REMOVE_CUSTOM_COLUMNS_DEFINITION>> & {
+    table: LiteralUnion<TablesDefinitionsNames, string>;
+    definitionId: string;
+};
+export function setRemoveCustomColumDefinitions(
+    table: LiteralUnion<TablesDefinitionsNames, string>,
+    definitionId: string
+): RemoveCustomColumnsDefinitionsAction {
+    return {
+        type: REMOVE_CUSTOM_COLUMNS_DEFINITION,
+        table,
+        definitionId: definitionId,
     };
 }
 
