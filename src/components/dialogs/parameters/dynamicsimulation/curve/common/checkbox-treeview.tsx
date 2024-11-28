@@ -176,7 +176,7 @@ function CheckboxTreeview<TData extends ItemData>(
                         itemStates[item.id] === CheckState.CHECKED && !items.find((elem) => elem.parentId === item.id) // no children
                 ),
         }),
-        [items]
+        [items, itemStates]
     );
 
     // render functions (recursive rendering)
