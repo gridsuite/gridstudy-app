@@ -5,26 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Box, Tooltip } from '@mui/material';
-import {
-    ReactFlow,
-    Controls,
-    useStore,
-    useReactFlow,
-    ControlButton,
-    MiniMap,
-    useEdgesState,
-    useNodesState,
-} from '@xyflow/react';
+import { Box } from '@mui/material';
+import { ReactFlow, Controls, useStore, useReactFlow, MiniMap, useEdgesState, useNodesState } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode, networkModificationTreeSwitchNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
-import { DRAWER_NODE_EDITOR_WIDTH, TOOLTIP_DELAY } from '../utils/UIconstants';
+import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
 import PropTypes from 'prop-types';
-import { useIntl } from 'react-intl';
 import CropFreeIcon from '@mui/icons-material/CropFree';
 import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
@@ -38,6 +28,7 @@ import {
     nodeWidth,
     snapGrid,
 } from './graph/layout';
+import TreeControlButton from './graph/util/tree-control-button';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -124,7 +115,6 @@ const NetworkModificationTree = ({
         setViewport,
         prevTreeDisplay,
     };
-    const intl = useIntl();
 
     useEffect(() => {
         const nodeEditorShift = isStudyDrawerOpen ? DRAWER_NODE_EDITOR_WIDTH : 0;
@@ -252,72 +242,6 @@ const NetworkModificationTree = ({
         setCenter(x, y, { zoom: getZoom() });
     };
 
-    const DisplayWholeTreeButton = () => {
-        return (
-            <Tooltip
-                placement="left"
-                title={intl.formatMessage({
-                    id: 'DisplayTheWholeTree',
-                })}
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-            >
-                <span>
-                    <ControlButton onClick={fitView}>
-                        <CropFreeIcon />
-                    </ControlButton>
-                </span>
-            </Tooltip>
-        );
-    };
-
-    const CenterSelectedNodeButton = () => {
-        return (
-            <Tooltip
-                placement="left"
-                title={intl.formatMessage({ id: 'CenterSelectedNode' })}
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-            >
-                <span>
-                    <ControlButton
-                        onClick={() => {
-                            handleFocusNode();
-                        }}
-                    >
-                        <CenterFocusIcon />
-                    </ControlButton>
-                </span>
-            </Tooltip>
-        );
-    };
-
-    const ToggleMinimapButton = () => {
-        return (
-            <Tooltip
-                placement="left"
-                title={
-                    isMinimapOpen
-                        ? intl.formatMessage({ id: 'HideMinimap' })
-                        : intl.formatMessage({
-                              id: 'DisplayMinimap',
-                          })
-                }
-                arrow
-                enterDelay={TOOLTIP_DELAY}
-                enterNextDelay={TOOLTIP_DELAY}
-            >
-                <span>
-                    <ControlButton onClick={() => toggleMinimap()}>
-                        <MapIcon />
-                    </ControlButton>
-                </span>
-            </Tooltip>
-        );
-    };
-
     return (
         <Box flexGrow={1}>
             <ReactFlow
@@ -357,9 +281,18 @@ const NetworkModificationTree = ({
                     showInteractive={false}
                     showFitView={false}
                 >
-                    <DisplayWholeTreeButton />
-                    <CenterSelectedNodeButton />
-                    <ToggleMinimapButton />
+                    <TreeControlButton titleId="DisplayTheWholeTree" onClick={fitView}>
+                        <CropFreeIcon />
+                    </TreeControlButton>
+                    <TreeControlButton titleId="CenterSelectedNode" onClick={handleFocusNode}>
+                        <CenterFocusIcon />
+                    </TreeControlButton>
+                    <TreeControlButton
+                        titleId={isMinimapOpen ? 'HideMinimap' : 'DisplayMinimap'}
+                        onClick={toggleMinimap}
+                    >
+                        <MapIcon />
+                    </TreeControlButton>
                 </Controls>
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
             </ReactFlow>
