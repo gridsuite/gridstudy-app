@@ -11,40 +11,78 @@ export const nodeWidth = 230;
 export const nodeHeight = 110;
 export const snapGrid = [1, nodeHeight];
 
-type PlacementArray = string[][];
+type NodePlacement = {
+    row: number;
+    column: number;
+};
 
-function getPlacement(placementArray: PlacementArray, id: string) {
-    for (let row = 0; row < placementArray.length; row++) {
-        for (let column = 0; column < placementArray[row].length; column++) {
-            if (placementArray[row][column] === id) {
-                return { row: row, column: column };
-            }
+function nodePlacementToString(placement: NodePlacement): string {
+    return placement.row + '_' + placement.column;
+}
+
+function stringToNodePlacement(placementString: string): NodePlacement {
+    const [row, column] = placementString.split('_').map(Number);
+    return { row: row, column: column };
+}
+
+class IdPlacementBiMap<string, string> {
+    private idToPlacement = new Map<string, string>();
+    private placementToId = new Map<string, string>();
+
+    set(id: string, placement: string): void {
+        // Remove any existing mappings to ensure bidirectionality
+        if (this.idToPlacement.has(id)) {
+            const oldPlacement = this.idToPlacement.get(id)!;
+            this.placementToId.delete(oldPlacement);
+        }
+        if (this.placementToId.has(placement)) {
+            const oldId = this.placementToId.get(placement)!;
+            this.idToPlacement.delete(oldId);
+        }
+
+        this.idToPlacement.set(id, placement);
+        this.placementToId.set(placement, id);
+    }
+
+    getPlacement(id: string): string | undefined {
+        return this.idToPlacement.get(id);
+    }
+
+    getId(placement: string): string | undefined {
+        return this.placementToId.get(placement);
+    }
+
+    deleteId(id: string): void {
+        if (this.idToPlacement.has(id)) {
+            const placement = this.idToPlacement.get(id)!;
+            this.idToPlacement.delete(id);
+            this.placementToId.delete(placement);
         }
     }
-    return { row: -1, column: -1 };
+
+    deletePlacement(placement: string): void {
+        if (this.placementToId.has(placement)) {
+            const id = this.placementToId.get(placement)!;
+            this.placementToId.delete(placement);
+            this.idToPlacement.delete(id);
+        }
+    }
+
+    hasId(id: string): boolean {
+        return this.idToPlacement.has(id);
+    }
+
+    hasPlacement(placement: string): boolean {
+        return this.placementToId.has(placement);
+    }
 }
 
-function addValueAtPlacement(placementArray: PlacementArray, row: number, column: number, value: string) {
-    while (placementArray.length <= row) {
-        placementArray.push(['']);
-    }
-    while (placementArray[row].length <= column) {
-        placementArray[row].push('');
-    }
-    placementArray[row][column] = value;
+function isSpaceEmpty(placementBiMap: IdPlacementBiMap, row: number, column: number) {
+    return !placementBiMap.hasPlacement(nodePlacementToString({ row: row, column: column } as NodePlacement));
 }
 
-function isSpaceEmpty(placementArray: PlacementArray, row: number, column: number) {
-    if (placementArray.length <= row) {
-        return true;
-    }
-    if (placementArray[row].length <= column) {
-        return true;
-    }
-    if (placementArray[row][column]?.length > 0) {
-        return false;
-    }
-    return true;
+function getPlacement(placementBiMap: IdPlacementBiMap, id: string) {
+    return stringToNodePlacement(placementBiMap.getPlacement(id));
 }
 
 /**
@@ -52,13 +90,14 @@ function isSpaceEmpty(placementArray: PlacementArray, row: number, column: numbe
  * This array is then used to compute each node's position before being used by ReactFlow.
  */
 function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
-    const newPlacements: PlacementArray = [];
+    const newPlacements = new IdPlacementBiMap<string, string>();
     let currentMaxColumn = 0;
 
     nodes.forEach((node) => {
         if (!node.parentId) {
             // ROOT NODE
-            addValueAtPlacement(newPlacements, 0, 0, node.id);
+            //addValueAtPlacement(newPlacements, 0, 0, node.id);
+            newPlacements.set(node.id, nodePlacementToString({ row: 0, column: 0 } as NodePlacement));
         } else {
             // CHILDREN NODE
             const parentPlacement = getPlacement(newPlacements, node.parentId);
@@ -66,13 +105,18 @@ function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
             const tryRow = parentPlacement.row + 1;
             const tryColumn = parentPlacement.column;
             if (isSpaceEmpty(newPlacements, tryRow, tryColumn)) {
-                addValueAtPlacement(newPlacements, tryRow, tryColumn, node.id);
+                newPlacements.set(node.id, nodePlacementToString({ row: tryRow, column: tryColumn } as NodePlacement));
+                //addIdAtPlacement(newPlacements, tryRow, tryColumn, node.id);
             } else {
                 // We check if there is an empty space on the right of the used space
                 do {
                     currentMaxColumn++;
                 } while (!isSpaceEmpty(newPlacements, tryRow, currentMaxColumn));
-                addValueAtPlacement(newPlacements, tryRow, currentMaxColumn, node.id);
+                //addIdAtPlacement(newPlacements, tryRow, currentMaxColumn, node.id);
+                newPlacements.set(
+                    node.id,
+                    nodePlacementToString({ row: tryRow, column: currentMaxColumn } as NodePlacement)
+                );
             }
         }
     });
