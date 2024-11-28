@@ -43,19 +43,20 @@ interface LimitSet {
     permanentLimit?: number;
 }
 
-
 export function LimitsPane({
     id = LIMITS,
     currentNode,
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    const [limitSets, setLimitSets] = useState<LimitSet[]>([]); // TODO ?? devrait probablement seulement contenir les string des ids des deux côtés mélangés mais avec un seul visible à la fois
-    const [selectedSet, setSelectedSet] = useState<LimitSet | null>(limitSets[0] || null);
+    const [limitSets, setLimitSets] = useState<string[]>([]);
+    const [selectedSetStr, setSelectedSetStr] = useState<string | null>(limitSets[0] || null);
+    const [ indexSelectedLimitSet1, setIndexSelectedLimitSet1 ] = useState<number|undefined>(undefined); // in the currentLimit1 array
+    const [ indexSelectedLimitSet2, setIndexSelectedLimitSet2 ] = useState<number|undefined>(undefined); // in the currentLimit2 array
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
-        setSelectedSet(limitSets[newValue] || null);
+        setSelectedSetStr(limitSets[newValue] || null);
     };
 
     const limitSets1 = useWatch({
@@ -65,15 +66,34 @@ export function LimitsPane({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
 
+    useEffect(() => {
+        console.log("Mathieu selectedSetStr : " + selectedSetStr);
+        console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
+        console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
+        for (let i=0; i < limitSets1.length;++i) {
+            if (limitSets1[i].id === selectedSetStr) {
+                console.log("Mathieu limitSets1 index : " + i);
+                setIndexSelectedLimitSet1(i);
+            }
+        }
+        for (let i=0; i < limitSets2.length;++i) {
+            if (limitSets2[i].id === selectedSetStr) {
+                console.log("Mathieu limitSets2 index : " + i);
+                setIndexSelectedLimitSet2(i);
+            }
+        }
+
+    }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
+
     useEffect(() => { // TODO : plutôt un useMemo
-        let allLimitSets: LimitSet[] = [];
-        // console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
-        // console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
+        let allLimitSets: string[] = [];
+        //console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
+        //console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
         if (limitSets1) {
-            allLimitSets = [...limitSets1];
+            allLimitSets = [...limitSets1.map((limitSet: { id: any }) => limitSet.id)];
         }
         if (limitSets2) {
-            allLimitSets = [...limitSets2];
+            allLimitSets = [...limitSets2.map((limitSet: { id: any }) => limitSet.id)];
         }
         // console.log("Mathieu allLimitSets : " + JSON.stringify(allLimitSets, null, 4));
         setLimitSets(allLimitSets);
@@ -101,14 +121,15 @@ export function LimitsPane({
      */
 
     const addNewLimitSet = () => {
-    const newLimitSet: LimitSet = {
+    /*const newLimitSet: LimitSet = {
         id: `New Limit Set ${limitSets.length - 1}`,
         temporaryLimits: [],
         permanentLimit: undefined,
-    };
+    };*/
+    const newLimitSet: string = `New Limit Set ${limitSets.length - 1}`;
     setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ?
     setTabValue(limitSets.length);
-    setSelectedSet(newLimitSet);
+    setSelectedSetStr(newLimitSet);
   };
 
     return (
@@ -158,8 +179,8 @@ export function LimitsPane({
                     >
                         {limitSets.map((set, index) => (
                             <Tab
-                                key={set.id}
-                                label={set.id}
+                                key={set}
+                                label={set}
                                 sx={{
                                     backgroundColor: index === tabValue ? styles.limitsBackground.backgroundColor : styles.limitsBackgroundUnselected.backgroundColor,
                                     '&.Mui-selected': { backgroundColor: styles.limitsBackground.backgroundColor },
@@ -172,7 +193,7 @@ export function LimitsPane({
                     <LimitsSidePane
                         arrayFormName={`${id}.${CURRENT_LIMITS_1}`}
                         clearableFields={clearableFields}
-                        indexLimitSet={0}
+                        indexLimitSet={indexSelectedLimitSet1}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
                         currentNode={currentNode}
@@ -182,7 +203,7 @@ export function LimitsPane({
                     <LimitsSidePane
                         arrayFormName={`${id}.${CURRENT_LIMITS_2}`}
                         clearableFields={clearableFields}
-                        indexLimitSet={0}
+                        indexLimitSet={indexSelectedLimitSet2}
                         permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
                         previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
                         currentNode={currentNode}

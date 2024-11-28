@@ -181,26 +181,28 @@ export const LimitsSidePane = ({
 
     return (
         <Paper sx={styles.limitsBackground}>
-            {permanentCurrentLimitField}
+                {(indexLimitSet !== undefined) && permanentCurrentLimitField}
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            <DndTable
-                arrayFormName={`${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
-                useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
-                createRows={createRows}
-                columnsDefinition={columnsDefinition}
-                withLeftButtons={false}
-                withAddRowsDialog={false}
-                withBottomButtons={false}
-                withCheckboxes={false}
-                withTopRightAddButton
-                previousValues={previousValues}
-                disableTableCell={disableTableCell}
-                getPreviousValue={getPreviousValue}
-                isValueModified={isValueModified}
-                minRowsNumber={5}
-            />
+            {(indexLimitSet !== undefined) && (
+                <DndTable
+                    arrayFormName={`${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
+                    useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
+                    createRows={createRows}
+                    columnsDefinition={columnsDefinition}
+                    withLeftButtons={false}
+                    withAddRowsDialog={false}
+                    withBottomButtons={false}
+                    withCheckboxes={false}
+                    withTopRightAddButton
+                    previousValues={previousValues}
+                    disableTableCell={disableTableCell}
+                    getPreviousValue={getPreviousValue}
+                    isValueModified={isValueModified}
+                    minRowsNumber={5}
+                />
+                )}
         </Paper>
     );
 };
