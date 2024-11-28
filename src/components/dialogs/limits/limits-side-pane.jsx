@@ -34,7 +34,7 @@ const styles = {
 
 export const LimitsSidePane = ({
     indexLimitSet,
-    arrayFormName,
+    limitSetFormName,
     permanentCurrentLimitPreviousValue,
     previousValues,
     clearableFields,
@@ -43,7 +43,7 @@ export const LimitsSidePane = ({
     const intl = useIntl();
     const { getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
-        name: `${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`,
+        name: `${limitSetFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`,
     });
 
     const columnsDefinition = useMemo(() => {
@@ -153,7 +153,7 @@ export const LimitsSidePane = ({
         () => (
             <Box sx={{ maxWidth: 300 }}>
                 <FloatInput
-                    name={`${arrayFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
+                    name={`${limitSetFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
                     label="PermanentCurrentLimitText"
                     adornment={AmpereAdornment}
                     previousValue={permanentCurrentLimitPreviousValue}
@@ -161,7 +161,7 @@ export const LimitsSidePane = ({
                 />
             </Box>
         ),
-        [arrayFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]
+        [limitSetFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]
     );
 
     const isValueModified = useCallback(
@@ -187,7 +187,7 @@ export const LimitsSidePane = ({
             </Box>
             {(indexLimitSet !== undefined) && (
                 <DndTable
-                    arrayFormName={`${arrayFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
+                    arrayFormName={`${limitSetFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
                     useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
                     createRows={createRows}
                     columnsDefinition={columnsDefinition}

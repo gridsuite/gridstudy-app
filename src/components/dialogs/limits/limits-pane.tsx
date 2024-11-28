@@ -37,7 +37,7 @@ export interface LimitsPaneProps {
     equipmentToModify?: any;
     clearableFields?: any;
 }
-interface LimitSet {
+interface LimitSet { // TODO : voir avec les boss si je fais des trucs comme ça ?
     id: string;
     temporaryLimits: Object[];
     permanentLimit?: number;
@@ -66,19 +66,14 @@ export function LimitsPane({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
 
-    useEffect(() => {
-        console.log("Mathieu selectedSetStr : " + selectedSetStr);
-        console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
-        console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
+    useEffect(() => { // TODO faire ça avec des beaux streams
         for (let i=0; i < limitSets1.length;++i) {
             if (limitSets1[i].id === selectedSetStr) {
-                console.log("Mathieu limitSets1 index : " + i);
                 setIndexSelectedLimitSet1(i);
             }
         }
         for (let i=0; i < limitSets2.length;++i) {
             if (limitSets2[i].id === selectedSetStr) {
-                console.log("Mathieu limitSets2 index : " + i);
                 setIndexSelectedLimitSet2(i);
             }
         }
@@ -190,24 +185,32 @@ export function LimitsPane({
                     </Tabs>
                 </Grid>
                 <Grid item xs={5}>
-                    <LimitsSidePane
-                        arrayFormName={`${id}.${CURRENT_LIMITS_1}`}
-                        clearableFields={clearableFields}
-                        indexLimitSet={indexSelectedLimitSet1}
-                        permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
-                        previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                        currentNode={currentNode}
-                    />
+                    {limitSets1.map((item: any, index: number) =>
+                        (index === indexSelectedLimitSet1 &&
+                            <LimitsSidePane
+                                limitSetFormName={`${id}.${CURRENT_LIMITS_1}`}
+                                clearableFields={clearableFields}
+                                indexLimitSet={index}
+                                permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
+                                previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
+                                currentNode={currentNode}
+                            />
+                        )
+                    )}
                 </Grid>
                 <Grid item xs={5}>
-                    <LimitsSidePane
-                        arrayFormName={`${id}.${CURRENT_LIMITS_2}`}
-                        clearableFields={clearableFields}
-                        indexLimitSet={indexSelectedLimitSet2}
-                        permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
-                        previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                        currentNode={currentNode}
-                    />
+                    {limitSets2.map((item: any, index: number) =>
+                        (index === indexSelectedLimitSet2 &&
+                            <LimitsSidePane
+                                limitSetFormName={`${id}.${CURRENT_LIMITS_2}`}
+                                clearableFields={clearableFields}
+                                indexLimitSet={index}
+                                permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
+                                previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
+                                currentNode={currentNode}
+                            />
+                        )
+                    )}
                 </Grid>
             </Grid>
         </Grid>
