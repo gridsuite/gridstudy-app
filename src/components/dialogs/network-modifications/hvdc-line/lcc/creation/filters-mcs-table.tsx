@@ -131,21 +131,18 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
                                         <TextInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
                                             label={'shuntCompensatorId'}
-                                            clearable={true}
                                         />
                                     )}
                                     {column.text2Items && (
                                         <TextInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}
                                             label={'shuntCompensatorName'}
-                                            clearable={true}
                                         />
                                     )}
                                     {column.floatItems && (
                                         <FloatInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
                                             label={'maxQAtNominalV'}
-                                            clearable={true}
                                         />
                                     )}
                                     {column.checkboxItems && (
