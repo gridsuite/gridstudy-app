@@ -9,13 +9,16 @@ import { CurrentTreeNode } from 'redux/reducer';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
-export const snapGrid = [1, nodeHeight];
+export const snapGrid = [1, nodeHeight]; // Used for drag and drop
 
 type NodePlacement = {
     row: number;
     column: number;
 };
 
+/**
+ * Bidirectional map to match a node ID to a NodePlacement.
+ */
 class IdPlacementBiMap {
     private idToPlacement = new Map<string, string>();
     private placementToId = new Map<string, string>();
@@ -29,76 +32,69 @@ class IdPlacementBiMap {
         return placement.row + '_' + placement.column;
     }
 
-    put(id: string, placement: NodePlacement) {
-        this.internalSet(id, placement.row + '_' + placement.column);
-    }
-
-    internalSet(id: string, placement: string): void {
+    setPlacement(id: string, placement: NodePlacement) {
+        const placementString = this.nodePlacementToString(placement);
         // Remove any existing mappings to ensure bidirectionality
         if (this.idToPlacement.has(id)) {
             const oldPlacement = this.idToPlacement.get(id)!;
             this.placementToId.delete(oldPlacement);
         }
-        if (this.placementToId.has(placement)) {
-            const oldId = this.placementToId.get(placement)!;
+        if (this.placementToId.has(placementString)) {
+            const oldId = this.placementToId.get(placementString)!;
             this.idToPlacement.delete(oldId);
         }
 
-        this.idToPlacement.set(id, placement);
-        this.placementToId.set(placement, id);
+        this.idToPlacement.set(id, placementString);
+        this.placementToId.set(placementString, id);
     }
 
-    getPlacement(id: string): NodePlacement {
-        return this.stringToNodePlacement(this.idToPlacement.get(id));
+    getPlacement(id: string): NodePlacement | undefined {
+        const placementString = this.idToPlacement.get(id);
+        if (placementString) {
+            return this.stringToNodePlacement(placementString);
+        }
+        return undefined;
     }
 
-    getId(placement: string): string | undefined {
-        return this.placementToId.get(placement);
-    }
-
-    hasId(id: string): boolean {
-        return this.idToPlacement.has(id);
-    }
-
-    hasPlacement(placement: string): boolean {
-        return this.placementToId.has(placement);
-    }
-
-    isSpaceEmpty(placement: NodePlacement): boolean {
-        return !this.hasPlacement(this.nodePlacementToString(placement));
+    isPlacementTaken(placement: NodePlacement): boolean {
+        return this.placementToId.has(this.nodePlacementToString(placement));
     }
 }
 
 /**
- * Builds an array representing the placements of nodes for the tree.
- * This array is then used to compute each node's position before being used by ReactFlow.
+ * Builds a bidirectional map representing the placements of nodes for the tree.
+ * This map is then used to compute each node's position before being used by ReactFlow.
  */
 function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
-    const newPlacements = new IdPlacementBiMap();
+    const nodePlacements = new IdPlacementBiMap();
     let currentMaxColumn = 0;
 
     nodes.forEach((node) => {
         if (!node.parentId) {
-            // ROOT NODE
-            newPlacements.put(node.id, { row: 0, column: 0 } as NodePlacement);
+            // First node, top left.
+            nodePlacements.setPlacement(node.id, { row: 0, column: 0 } as NodePlacement);
         } else {
-            // CHILDREN NODE
-            const parentPlacement = newPlacements.getPlacement(node.parentId);
-            // Check if there is an empty space below the parent
-            const tryRow = parentPlacement.row + 1;
-            const tryColumn = parentPlacement.column;
-            if (newPlacements.isSpaceEmpty({ row: tryRow, column: tryColumn } as NodePlacement)) {
-                newPlacements.put(node.id, { row: tryRow, column: tryColumn } as NodePlacement);
-            } else {
-                // We check if there is an empty space on the right of the used space
-                do {
+            const parentPlacement = nodePlacements.getPlacement(node.parentId);
+            if (parentPlacement) {
+                const potentialChildPlacement = {
+                    // We try a placement just below the parent node
+                    row: parentPlacement.row + 1,
+                    column: parentPlacement.column,
+                };
+                if (nodePlacements.isPlacementTaken(potentialChildPlacement)) {
+                    // The space directly below the parent is already taken. We will try a different columns to find an
+                    // empty space. To do so, we use currentMaxColumn as it tracks the most-right used (yet) column of
+                    // children (if any) of the current node's siblings.
+                    // By incrementing currentMaxColumn and using it, we ensure the current node's placement is not
+                    // above any other node.
                     currentMaxColumn++;
-                } while (!newPlacements.isSpaceEmpty({ row: tryRow, column: currentMaxColumn } as NodePlacement));
-                newPlacements.put(node.id, { row: tryRow, column: currentMaxColumn } as NodePlacement);
+                    potentialChildPlacement.column = currentMaxColumn;
+                }
+                nodePlacements.setPlacement(node.id, potentialChildPlacement);
             }
         }
     });
-    return newPlacements;
+    return nodePlacements;
 }
 
 /**
@@ -110,20 +106,23 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
 
     newNodes.forEach((node) => {
         const placement = nodePlacements.getPlacement(node.id);
+        if (placement) {
+            if (node.parentId) {
+                // Reactflow draws its nodes with a position relative to the node's parent (the parent is in the node's parentId field).
+                // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
+                // the parent's position from the current node's position, this gives us the relative position to the parent.
+                const parentPlacement = nodePlacements.getPlacement(node.parentId);
+                if (parentPlacement) {
+                    placement.row -= parentPlacement!.row;
+                    placement.column -= parentPlacement!.column;
+                }
+            }
 
-        if (node.parentId) {
-            // Reactflow draws its nodes with a position relative to the node's parent (the parent is in the node's parentId field).
-            // To find the node's correct relative position using the absolute positions from nodePlacements, we need to substract
-            // the parent's position from the current node's position, this gives us the relative position to the parent.
-            const parentPlacement = nodePlacements.getPlacement(node.parentId);
-            placement.row -= parentPlacement.row;
-            placement.column -= parentPlacement.column;
+            node.position = {
+                x: placement.column * nodeWidth,
+                y: placement.row * nodeHeight,
+            };
         }
-
-        node.position = {
-            x: placement.column * nodeWidth,
-            y: placement.row * nodeHeight,
-        };
     });
     return [...newNodes];
 }
@@ -180,10 +179,17 @@ export function findClosestSiblingInRange(
     return null;
 }
 
+/**
+ * Will find the siblings of a provided node (all siblings have the same parent).
+ */
 export function findSiblings(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
     return nodes.filter((n) => n.parentId === node.parentId && n.id !== node.id);
 }
 
+/**
+ * Computes the absolute position of a node by calculating the sum of all the relative positions of
+ * the node's lineage.
+ */
 export function getAbsolutePosition(nodes: CurrentTreeNode[], node: CurrentTreeNode) {
     let current: CurrentTreeNode | undefined = node;
     let absolutePosition = { x: 0, y: 0 };
