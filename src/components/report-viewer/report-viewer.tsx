@@ -96,6 +96,28 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         setHighlightedReportId(data.parentId);
     };
 
+    const handleSelectedItem = useCallback(
+        (report: ReportItem) => {
+            if (selectedReportId !== report.id) {
+                setSelectedReportId(report.id);
+                setSeverities([...new Set(reportTreeData.current[report.id].severities)]);
+                setSelectedReportType(reportTreeData.current[report.id].type);
+            }
+        },
+        [selectedReportId]
+    );
+
+    const handleExpandItem = useCallback(
+        (node: ReportItem) => {
+            if (node.collapsed) {
+                return setExpandedTreeReports([...expandedTreeReports, node.id]);
+            } else {
+                return setExpandedTreeReports(expandedTreeReports.filter((id) => id !== node.id));
+            }
+        },
+        [expandedTreeReports]
+    );
+
     treeView.current = toTreeNodes(mapReportsTree(report), 0);
     const areParentsExpanded = useCallback((node: ReportItem): boolean => {
         if (node.parentId) {
@@ -132,22 +154,8 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                                 nodes={reportsToDisplay}
                                 itemSize={32}
                                 style={styles.treeItem}
-                                onSelectedItem={(report: ReportItem) => {
-                                    if (selectedReportId !== report.id) {
-                                        setSelectedReportId(report.id);
-                                        setSeverities([...new Set(reportTreeData.current[report.id].severities)]);
-                                        setSelectedReportType(reportTreeData.current[report.id].type);
-                                    }
-                                }}
-                                onExpandItem={(node: ReportItem) => {
-                                    if (node.collapsed) {
-                                        return setExpandedTreeReports([...expandedTreeReports, node.id]);
-                                    } else {
-                                        return setExpandedTreeReports(
-                                            expandedTreeReports.filter((id) => id !== node.id)
-                                        );
-                                    }
-                                }}
+                                onSelectedItem={handleSelectedItem}
+                                onExpandItem={handleExpandItem}
                                 highlightedReportId={highlightedReportId ?? ''}
                             />
                         )}
