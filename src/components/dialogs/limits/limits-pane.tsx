@@ -51,8 +51,6 @@ export function LimitsPane({
 }: Readonly<LimitsPaneProps>) {
     const [limitSets, setLimitSets] = useState<string[]>([]);
     const [selectedSetStr, setSelectedSetStr] = useState<string | null>(limitSets[0] || null);
-    const [ indexSelectedLimitSet1, setIndexSelectedLimitSet1 ] = useState<number|undefined>(undefined); // in the currentLimit1 array
-    const [ indexSelectedLimitSet2, setIndexSelectedLimitSet2 ] = useState<number|undefined>(undefined); // in the currentLimit2 array
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
@@ -65,6 +63,8 @@ export function LimitsPane({
     const limitSets2 = useWatch({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
+    const [ indexSelectedLimitSet1, setIndexSelectedLimitSet1 ] = useState<number|undefined>(undefined); // in the limitSets1 array
+    const [ indexSelectedLimitSet2, setIndexSelectedLimitSet2 ] = useState<number|undefined>(undefined); // in the limitSets2 array
 
     useEffect(() => { // TODO faire ça avec des beaux streams
         for (let i=0; i < limitSets1.length;++i) {
@@ -82,15 +82,12 @@ export function LimitsPane({
 
     useEffect(() => { // TODO : plutôt un useMemo
         let allLimitSets: string[] = [];
-        //console.log("Mathieu limitSets1 : " + JSON.stringify(limitSets1, null, 4));
-        //console.log("Mathieu limitSets2 : " + JSON.stringify(limitSets2, null, 4));
         if (limitSets1) {
             allLimitSets = [...limitSets1.map((limitSet: { id: any }) => limitSet.id)];
         }
         if (limitSets2) {
             allLimitSets = [...limitSets2.map((limitSet: { id: any }) => limitSet.id)];
         }
-        // console.log("Mathieu allLimitSets : " + JSON.stringify(allLimitSets, null, 4));
         setLimitSets(allLimitSets);
     }, [limitSets1, limitSets2]);
 
@@ -122,7 +119,7 @@ export function LimitsPane({
         permanentLimit: undefined,
     };*/
     const newLimitSet: string = `New Limit Set ${limitSets.length - 1}`;
-    setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ?
+    setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
     setTabValue(limitSets.length);
     setSelectedSetStr(newLimitSet);
   };
