@@ -146,7 +146,8 @@ export function getFirstAncestorWithSibling(
         if (isNodeASibling(nodes, descendantNode)) {
             return descendantNode;
         }
-        return getFirstAncestorWithSibling(nodes, descendantNode);
+        const parentOfDescendantNode = nodes.find((node) => node.id === descendantNode.parentId);
+        return getFirstAncestorWithSibling(nodes, parentOfDescendantNode);
     }
     return null;
 }

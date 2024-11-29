@@ -177,11 +177,11 @@ const NetworkModificationTree = ({
 
             // We test if the dragged node is the start of a branch. If this is not the case, we should find
             // the start of the branch and move this ancestor node instead.
-            const firstAncestorIdWithSibling = getFirstAncestorWithSibling(nodes, draggedNode);
-            if (firstAncestorIdWithSibling && firstAncestorIdWithSibling.id !== currentChange.id) {
+            const firstAncestorWithSibling = getFirstAncestorWithSibling(nodes, draggedNode);
+            if (firstAncestorWithSibling && firstAncestorWithSibling.id !== currentChange.id) {
                 // We calculate the movement of the dragged node and apply it to its ancestor instead.
-                const initialAncestorXPosition = firstAncestorIdWithSibling.position.x;
-                const initialAncestorYPosition = firstAncestorIdWithSibling.position.y;
+                const initialAncestorXPosition = firstAncestorWithSibling.position.x;
+                const initialAncestorYPosition = firstAncestorWithSibling.position.y;
                 const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
 
                 // We will move the ancestor instead of the dragged node, so we force the dragged node's X value
@@ -189,7 +189,7 @@ const NetworkModificationTree = ({
                 currentChange.position.x = initialDraggedNodeXPosition;
 
                 const newChangeForAncestor = {
-                    id: firstAncestorIdWithSibling.id,
+                    id: firstAncestorWithSibling.id,
                     type: currentChange.type,
                     dragging: currentChange.dragging,
                     position: {
@@ -201,7 +201,7 @@ const NetworkModificationTree = ({
                 // processed by ReactFlow.
                 changes.push(newChangeForAncestor);
 
-                movedNode = firstAncestorIdWithSibling;
+                movedNode = firstAncestorWithSibling;
             } else {
                 movedNode = draggedNode;
             }
