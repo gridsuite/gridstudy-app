@@ -20,15 +20,20 @@ import { SelectedOperationalLimitGroup } from './selected-operational-limit-grou
 import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
+import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 
 const styles = {
     limitsBackground: {
         backgroundColor: '#1a1919', // TODO : may be found in the theme ??
-        paddingBottom: 1,
         alignItems: 'self-start',
         justifyContent: 'flex-start',
         '&.Mui-selected': { backgroundColor: '#383838' }, // TODO : may be found in the theme ??
     },
+    limitsBackgroundUnselected: {
+        backgroundColor: '#1a1919', // TODO : may be found in the theme ??
+        alignItems: 'self-start',
+        justifyContent: 'flex-start',
+    }
 };
 export interface LimitsPaneProps {
     id?: string;
@@ -167,8 +172,11 @@ export function LimitsPane({
                         onChange={handleTabChange}
                         sx={{ flexGrow: 1 }}
                     >
-                        {limitSets.map((set) => (
-                            <Tab key={set} label={set} sx={styles.limitsBackground} />
+                        {limitSets.map((set, index) => (
+                            // <Box sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} > TODO : bloque le clic sur tab => à arranger pour avoir l'icone comme bouton séparé
+                                <Tab key={set} label={set} sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} />
+                                // <DensityMediumIcon fontSize={'small'} />
+                            //</Box>
                         ))}
                     </Tabs>
                 </Grid>
