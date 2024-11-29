@@ -37,7 +37,7 @@ export interface LimitsPaneProps {
     equipmentToModify?: any;
     clearableFields?: any;
 }
-interface LimitSet { // TODO : voir avec les boss si je fais des trucs comme ça ?
+export interface LimitSet { // TODO : => faire toute une structure là dessus sur le modèle de ce qu'il y a en back. Cf création des load pour un bn exemple ts
     id: string;
     temporaryLimits: Object[];
     permanentLimit?: number;
@@ -145,13 +145,13 @@ export function LimitsPane({
                 <Grid item xs={1} />
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
-                        selectedName={`${id}.${SELECTED_LIMIT_GROUP_1}`}
+                        selectedFormName={`${id}.${SELECTED_LIMIT_GROUP_1}`}
                         optionsFormName={`${id}.${CURRENT_LIMITS_1}`}
                     />
                 </Grid>
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
-                        selectedName={`${id}.${SELECTED_LIMIT_GROUP_2}`}
+                        selectedFormName={`${id}.${SELECTED_LIMIT_GROUP_2}`}
                         optionsFormName={`${id}.${CURRENT_LIMITS_2}`}
                     />
                 </Grid>

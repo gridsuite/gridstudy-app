@@ -8,22 +8,33 @@ import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
+import { LimitSet } from './limits-pane';
+import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
 
-// TODO passer ça en typescript
-export const SelectedOperationalLimitGroup = ({ selectedName, optionsFormName }) => {
-    const [limitSets, setLimitSets] = useState([]);
+export interface SelectedOperationalLimitGroupProps {
+    selectedFormName: string;
+    optionsFormName: string;
+}
 
-    const optionsValues = useWatch({
+export const SelectedOperationalLimitGroup = ({
+    selectedFormName,
+    optionsFormName,
+}: Readonly<SelectedOperationalLimitGroupProps>) => {
+    const [limitSets, setLimitSets] = useState<Option[]>([]);
+
+    const optionsValues: LimitSet[] = useWatch({
         name: optionsFormName,
     });
 
-    useEffect(() => {
+    useEffect(() => { // TODO : faire un genre de affectation useMemo ici ?
         if (optionsValues.length > 0) {
-            let allLimitSets = [];
-            optionsValues.forEach((optionObj) => {
-                allLimitSets.push({
+            let allLimitSets: Option[] = [];
+            optionsValues.forEach((optionObj: LimitSet) => {
+                const option: Option = {
                     id: optionObj.id,
-                });
+                    label: '',
+                };
+                allLimitSets.push(option);
             });
             setLimitSets(allLimitSets);
         }
@@ -32,7 +43,7 @@ export const SelectedOperationalLimitGroup = ({ selectedName, optionsFormName })
     return (
         <Box sx={{ maxWidth: 300 }}>
             <SelectInput
-                name={selectedName}
+                name={selectedFormName}
                 options={limitSets}
                 label={'SelectedOperationalLimitGroup'}
                 size={'small'}
