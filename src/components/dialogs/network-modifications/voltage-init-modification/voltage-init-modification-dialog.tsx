@@ -24,7 +24,7 @@ import {
     V,
     VOLTAGE_SET_POINT,
 } from '../../../utils/field-constants';
-import { CsvExport } from '../../../spreadsheet/export-csv';
+import { CsvExport } from '../../../spreadsheet/csv-export/csv-export';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { AgGridReact } from 'ag-grid-react';
 import { FetchStatus } from '../../../../services/utils.type';
