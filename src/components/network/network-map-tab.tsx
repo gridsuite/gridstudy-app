@@ -957,7 +957,7 @@ export const NetworkMapTab = ({
             //   it causes a render with the map container having display:none
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
             triggerMapResizeOnChange={[studyDisplayMode, visible]}
-            renderPopover={renderLinePopover}
+            renderPopover={visible && renderLinePopover}
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}

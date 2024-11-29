@@ -70,6 +70,7 @@ interface SingleLineDiagramContentProps {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
+    readonly visible: boolean;
 }
 
 type EquipmentToModify = {
@@ -100,7 +101,7 @@ const defaultBusMenuState: BusMenuState = {
 };
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
-    const { diagramSizeSetter, studyUuid } = props;
+    const { diagramSizeSetter, studyUuid, visible } = props;
     const theme = useTheme();
     const dispatch = useDispatch();
     const MenuBranch = withOperatingStatusMenu(BaseEquipmentMenu);
@@ -624,7 +625,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 )}
                 style={{ height: '100%' }}
             />
-            {shouldDisplayTooltip && displayTooltip()}
+            {visible && shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
             {displayBusMenu()}
             {displayMenu(EQUIPMENT_TYPES.LOAD, 'load-menus')}
