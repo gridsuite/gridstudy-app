@@ -134,7 +134,6 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.HVDC_LINE,
-        optionalParameters: EQUIPMENT_TYPES.VSC_CONVERTER_STATION,
     });
 
     const generatorIdField = (
