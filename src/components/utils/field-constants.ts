@@ -348,7 +348,7 @@ export const GENERATION_STAGES_KIND = 'energySource';
 export const GENERATION_STAGES_PERCENT_MAXP_1 = 'percentMaxP1';
 export const GENERATION_STAGES_PERCENT_MAXP_2 = 'percentMaxP2';
 export const GENERATION_STAGES_PERCENT_MAXP_3 = 'percentMaxP3';
-export const STAGES_DEFINITION_INDEX = 'stagesDefinitonIndex';
+export const STAGES_DEFINITION_INDEX = 'stagesDefinitionIndex';
 export const PMAX_PERCENTS_INDEX = 'pMaxPercentsIndex';
 
 export const SENSITIVITY_THRESHOLD = 'sensitivityThreshold';

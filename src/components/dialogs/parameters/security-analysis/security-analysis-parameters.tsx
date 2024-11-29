@@ -5,17 +5,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    ChangeEvent,
-    Dispatch,
-    FunctionComponent,
-    SetStateAction,
-    useCallback,
-    useEffect,
-    useMemo,
-    useState,
-} from 'react';
-import { Box, Grid } from '@mui/material';
+import { Dispatch, FunctionComponent, SetStateAction, useCallback, useEffect, useMemo, useState } from 'react';
+import { Box, Grid, SelectChangeEvent } from '@mui/material';
 import { DropDown, LabelledButton, styles } from '../parameters';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { mergeSx } from '../../../utils/functions';
@@ -47,15 +38,16 @@ import {
 } from 'utils/config-params';
 import { toFormValueSaParameters } from '../common/limitreductions/limit-reductions-form-util';
 import LineSeparator from '../../commons/line-separator';
+import { UseParametersBackendReturnProps } from '../parameters.type';
+import ComputingType from 'components/computing-status/computing-type';
 export const SecurityAnalysisParameters: FunctionComponent<{
-    parametersBackend: any[];
+    parametersBackend: UseParametersBackendReturnProps<ComputingType.SECURITY_ANALYSIS>;
     setHaveDirtyFields: Dispatch<SetStateAction<boolean>>;
 }> = ({ parametersBackend, setHaveDirtyFields }) => {
     const [providers, provider, updateProvider, resetProvider, params, updateParameters, resetParameters] =
         parametersBackend;
 
-    const handleUpdateProvider = (evt: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-        updateProvider(evt.target.value);
+    const handleUpdateProvider = (evt: SelectChangeEvent<string>) => updateProvider(evt.target.value);
 
     const updateProviderCallback = useCallback(handleUpdateProvider, [updateProvider]);
     const intl = useIntl();
@@ -100,8 +92,8 @@ export const SecurityAnalysisParameters: FunctionComponent<{
         [snackError, updateParameters]
     );
     const formSchema = useMemo(() => {
-        return getSAParametersFromSchema(params.limitReductions);
-    }, [params.limitReductions]);
+        return getSAParametersFromSchema(params?.limitReductions);
+    }, [params?.limitReductions]);
 
     const formMethods = useForm({
         defaultValues: {
@@ -118,7 +110,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     const toLimitReductions = useCallback(
         (formLimits: Record<string, any>[]) => {
             if (!params?.limitReductions) {
-                return null;
+                return [];
             }
             return params?.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
                 let vlLNewLimits: ILimitReductionsByVoltageLevel = {
@@ -162,6 +154,9 @@ export const SecurityAnalysisParameters: FunctionComponent<{
     }, [formState, setHaveDirtyFields]);
 
     useEffect(() => {
+        if (!params) {
+            return;
+        }
         reset(toFormValueSaParameters(params));
     }, [params, reset]);
 
@@ -188,7 +183,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
                             justifyContent={'space-between'}
                         >
                             <DropDown
-                                value={provider}
+                                value={provider ?? ''}
                                 label="Provider"
                                 values={securityAnalysisProvider}
                                 callback={updateProviderCallback}

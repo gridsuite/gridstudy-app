@@ -103,7 +103,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             resetSearch();
             return;
         }
-        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
+        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter)?.then((reportLogs) => {
             const transformedLogs = reportLogs.map(
                 (log) =>
                     ({

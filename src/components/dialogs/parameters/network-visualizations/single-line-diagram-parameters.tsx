@@ -16,13 +16,14 @@ import {
     PARAM_SUBSTATION_LAYOUT,
 } from '../../../../utils/config-params';
 import { styles } from '../parameters';
-import { SubstationLayout } from '../../../diagrams/diagram-common';
-import ParameterLineDropdown from '../widget/parameter-line-dropdown';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
-import LineSeparator from '../../commons/line-separator';
+import { SubstationLayout } from '../../../diagrams/diagram-common.js';
+import ParameterLineDropdown from '../widget/parameter-line-dropdown.js';
+import ParameterLineSwitch from '../widget/parameter-line-switch.js';
+import { User } from 'oidc-client';
+import LineSeparator from 'components/dialogs/commons/line-separator';
 
-export const useGetAvailableComponentLibraries = (user) => {
-    const [componentLibraries, setComponentLibraries] = useState([]);
+export const useGetAvailableComponentLibraries = (user: User | null) => {
+    const [componentLibraries, setComponentLibraries] = useState<string[]>([]);
 
     useEffect(() => {
         if (user !== null) {
@@ -37,7 +38,7 @@ export const useGetAvailableComponentLibraries = (user) => {
     return componentLibraries;
 };
 
-export const SingleLineDiagramParameters = ({ componentLibraries }) => {
+export const SingleLineDiagramParameters = ({ componentLibraries }: { componentLibraries: string[] }) => {
     const componentLibsRenderCache = useMemo(
         () => Object.fromEntries(componentLibraries.filter(Boolean).map((libLabel) => [libLabel, libLabel])),
         [componentLibraries]

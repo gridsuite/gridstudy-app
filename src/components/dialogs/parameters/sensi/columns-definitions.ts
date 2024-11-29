@@ -71,7 +71,7 @@ export interface IColumnsDef {
     textItems?: boolean;
     width?: string;
 }
-export const COLUMNS_DEFINITIONS_INJECTIONS_SET = [
+export const COLUMNS_DEFINITIONS_INJECTIONS_SET: IColumnsDef[] = [
     {
         label: 'SupervisedBranches',
         dataKey: MONITORED_BRANCHES,

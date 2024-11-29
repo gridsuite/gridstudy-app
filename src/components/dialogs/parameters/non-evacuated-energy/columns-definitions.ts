@@ -242,7 +242,7 @@ export const NonEvacuatedEnergyStagesSelection: ISensiParameters = {
 
 export const NonEvacuatedEnergyGeneratorsCappings: ISensiParameters = {
     columnsDef: COLUMNS_DEFINITIONS_GENERATORS_CAPPINGS,
-    name: GENERATORS_CAPPINGS,
+    name: `${GENERATORS_CAPPINGS}.${GENERATORS_CAPPINGS}`,
 };
 
 export const NonEvacuatedEnergyMonitoredBranches: ISensiParameters = {

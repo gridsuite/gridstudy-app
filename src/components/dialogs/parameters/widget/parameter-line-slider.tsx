@@ -10,10 +10,10 @@ import { Mark } from '@mui/base/useSlider';
 import { Grid, Slider } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
-import { styles, useParameterState } from '../parameters';
+import { UseParameterStateParamName, styles, useParameterState } from '../parameters';
 
 type SliderParameterLineProps = {
-    readonly paramNameId: string;
+    readonly paramNameId: UseParameterStateParamName;
     disabled?: boolean;
     label: string;
     marks: boolean | Mark[];

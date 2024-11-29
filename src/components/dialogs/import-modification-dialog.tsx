@@ -38,8 +38,8 @@ const ImportModificationDialog: FunctionComponent<ImportModificationDialogProps>
         };
         const modificationUuidList = selectedElements.map((e) => e.id);
         // import selected modifications
-        if (modificationUuidList.length > 0) {
-            copyOrMoveModifications(studyUuid, currentNode?.id, modificationUuidList, copyInfos).catch((errmsg) => {
+        if (modificationUuidList.length > 0 && studyUuid && currentNode) {
+            copyOrMoveModifications(studyUuid, currentNode.id, modificationUuidList, copyInfos).catch((errmsg) => {
                 snackError({
                     messageTxt: errmsg,
                     headerId: 'errDuplicateModificationMsg',

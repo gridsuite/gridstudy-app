@@ -17,5 +17,5 @@ export function fetchSensitivityAnalysisProviders() {
     console.info('fetch sensitivity analysis providers');
     const url = getSensiUrl() + 'providers';
     console.debug(url);
-    return backendFetchJson(url);
+    return backendFetchJson(url) as Promise<string[]>;
 }

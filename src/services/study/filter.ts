@@ -9,13 +9,20 @@ import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
-interface ExpertFilter {
+export interface ExpertFilter {
     id?: UUID;
     type: 'EXPERT';
     equipmentType: string; // TODO must be EquipmentType enum
     rules: RuleGroupTypeExport;
     topologyKind?: string; // TODO must be TopologyKind enum
+}
+
+export interface IdentifiableAttributes {
+    id: string;
+    type: EQUIPMENT_TYPES;
+    distributionKey: number;
 }
 
 export function evaluateJsonFilter(
@@ -32,5 +39,5 @@ export function evaluateJsonFilter(
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
-    });
+    }) as Promise<IdentifiableAttributes[]>;
 }

@@ -7,19 +7,16 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { useEffect, useMemo } from 'react';
-import { useWatch } from 'react-hook-form';
+import { FunctionComponent, useEffect, useMemo } from 'react';
+import { UseFormClearErrors, useWatch } from 'react-hook-form';
 import { makeComponents, TYPES } from '../util/make-component-utils';
 import IdaSolverParameters, { getFormSchema as getIdaFormSchema } from './solver/ida-solver-parameters';
 import SimplifiedSolverParameters, {
     getFormSchema as getSimplifiedFormSchema,
 } from './solver/simplified-solver-parameters';
 import { TabPanel } from '../parameters';
-
-const SOLVER_TYPES = {
-    IDA: 'IDA',
-    SIM: 'SIM',
-};
+import { DynamicSimulationForm } from './dynamic-simulation-parameters';
+import { SolverTypeInfos } from 'services/study/dynamic-simulation.type';
 
 export const SOLVER_ID = 'solverId';
 
@@ -38,9 +35,9 @@ export const formSchema = yup.object().shape({
                 }
 
                 // chose the right schema for each type of solver
-                if (type === SOLVER_TYPES.IDA) {
+                if (type === SolverTypeInfos.IDA) {
                     return getIdaFormSchema();
-                } else if (type === SOLVER_TYPES.SIM) {
+                } else {
                     return getSimplifiedFormSchema();
                 }
             })
@@ -53,7 +50,13 @@ export const emptyFormData = {
     [SOLVERS]: [],
 };
 
-const SolverParameters = ({ solver, path, clearErrors }) => {
+interface SolverParametersProps {
+    solver?: { solverId: string; solvers: Record<string, any>[] };
+    path: keyof DynamicSimulationForm;
+    clearErrors: UseFormClearErrors<DynamicSimulationForm>;
+}
+
+const SolverParameters: FunctionComponent<SolverParametersProps> = ({ solver, path, clearErrors }) => {
     const { solvers } = solver ?? {};
 
     const solverId = useWatch({ name: `${path}.${SOLVER_ID}` });
@@ -63,7 +66,7 @@ const SolverParameters = ({ solver, path, clearErrors }) => {
     }, [solvers, solverId]);
 
     const solverOptions = useMemo(() => {
-        return solvers?.reduce((arr, curr) => {
+        return solvers?.reduce<{ id: string; label: string }[]>((arr, curr) => {
             return [
                 ...arr,
                 {
@@ -89,10 +92,10 @@ const SolverParameters = ({ solver, path, clearErrors }) => {
     return (
         <Grid xl={6} container>
             {makeComponents(defParams, path)}
-            <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.IDA}>
+            <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.IDA}>
                 <IdaSolverParameters path={`${path}.${SOLVERS}[0]`} />
             </TabPanel>
-            <TabPanel value={selectedSolver?.type} index={SOLVER_TYPES.SIM}>
+            <TabPanel value={selectedSolver?.type} index={SolverTypeInfos.SIM}>
                 <SimplifiedSolverParameters path={`${path}.${SOLVERS}[1]`} />
             </TabPanel>
         </Grid>
