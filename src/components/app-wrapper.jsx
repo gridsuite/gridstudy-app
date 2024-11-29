@@ -330,7 +330,6 @@ const AppWrapperWithRedux = () => {
     const theme = useSelector((state) => state[PARAM_THEME]);
 
     const urlMapper = useNotificationsUrlGenerator();
-    console.log('SBO urlMapper', urlMapper);
 
     return (
         <IntlProvider locale={computedLanguage} messages={messages[computedLanguage]}>

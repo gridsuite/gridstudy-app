@@ -273,7 +273,6 @@ const App = () => {
 
     useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
         listenerCallbackMessage: (event) => {
-            console.log('SBO this is consummed');
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
