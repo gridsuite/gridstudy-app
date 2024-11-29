@@ -957,7 +957,7 @@ export const NetworkMapTab = ({
             //   it causes a render with the map container having display:none
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
             triggerMapResizeOnChange={[studyDisplayMode, visible]}
-            renderPopover={visible && renderLinePopover}
+            renderPopover={renderLinePopover}
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
             areFlowsValid={loadFlowStatus === RunningStatus.SUCCEED}
@@ -970,7 +970,7 @@ export const NetworkMapTab = ({
             onDrawEvent={(event) => {
                 onDrawEvent(event);
             }}
-            shouldDisableToolTip={isInDrawingMode}
+            shouldDisableToolTip={visible && isInDrawingMode}
         />
     );
 
