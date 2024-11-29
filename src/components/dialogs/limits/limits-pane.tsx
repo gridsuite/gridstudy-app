@@ -14,7 +14,6 @@ import {
     SELECTED_LIMIT_GROUP_2,
 } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
-import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
@@ -24,12 +23,11 @@ import { useWatch } from 'react-hook-form';
 
 const styles = {
     limitsBackground: {
-        backgroundColor: '#383838', // TODO : may be found in the theme ??
-        padding: 2,
-        '&.Mui-selected': { backgroundColor: '#383838' },
-    },
-    limitsBackgroundUnselected: {
         backgroundColor: '#1a1919', // TODO : may be found in the theme ??
+        paddingBottom: 1,
+        alignItems: 'self-start',
+        justifyContent: 'flex-start',
+        '&.Mui-selected': { backgroundColor: '#383838' }, // TODO : may be found in the theme ??
     },
 };
 export interface LimitsPaneProps {
@@ -161,9 +159,7 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={11}>
                 <Grid item xs={1}>
-                    <IconButton color="primary" onClick={() => addNewLimitSet()}>
-                        <AddCircleIcon />
-                    </IconButton>
+                    <Tab icon={<AddCircleIcon />} onClick={() => addNewLimitSet()} />
                     <Tabs
                         orientation="vertical"
                         variant="scrollable"
@@ -171,12 +167,8 @@ export function LimitsPane({
                         onChange={handleTabChange}
                         sx={{ flexGrow: 1 }}
                     >
-                        {limitSets.map((set, index) => (
-                            <Tab
-                                key={set}
-                                label={set}
-                                sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected}
-                            />
+                        {limitSets.map((set) => (
+                            <Tab key={set} label={set} sx={styles.limitsBackground} />
                         ))}
                     </Tabs>
                 </Grid>
