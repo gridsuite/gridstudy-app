@@ -54,7 +54,7 @@ export const getLccConverterStationSchema = () =>
         [CONVERTER_STATION_ID]: yup.string().nullable().required(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
         [LOSS_FACTOR]: yup.number().nullable().required(),
-        [POWER_FACTOR]: yup.number().nullable().required(),
+        [POWER_FACTOR]: yup.number().nullable().max(1, 'powerFactorNormalizedPercentage').required(),
         [FILTERS_MCS_TABLE]: yup
             .array()
             .of(
@@ -64,7 +64,7 @@ export const getLccConverterStationSchema = () =>
                     [MAX_Q_AT_NOMINAL_V]: yup
                         .number()
                         .nullable()
-                        .positive('qMaxAtNominalVMustBeGreaterThanZero')
+                        .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
                         .required(),
                     [MCS_SELECTED]: yup.boolean().nullable().required(),
                 })
