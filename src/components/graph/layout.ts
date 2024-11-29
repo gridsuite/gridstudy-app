@@ -23,7 +23,7 @@ class IdPlacementBiMap {
     private readonly idToPlacement = new Map<string, NodePlacement>();
     private readonly placementToId = new Map<string, string>();
 
-    nodePlacementToString(placement: NodePlacement): string {
+    private nodePlacementToString(placement: NodePlacement): string {
         return `${placement.row}_${placement.column}`;
     }
 
