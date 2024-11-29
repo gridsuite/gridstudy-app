@@ -536,9 +536,6 @@
     "PowerFactor": "Power Factor",
     "LossFactor": "Loss Factor",
     "StopComputation": "Stop computation",
-    "ColumnsList": "Column list",
-    "LabelSelectList": "Show / hide columns",
-    "CheckAll": "Select all / none",
     "genericConfirmQuestion": "You are about to leave without saving your current modifications.",
 
     "ViewOnSpreadsheet": "View in spreadsheet",
@@ -1423,5 +1420,18 @@
     "networkModificationActivationError": "An error occurred while enabling / disabling modification",
     "AddAutomaton": "Add an automaton",
     "BusBarCountMustBeGreaterThanOrEqualToOne" : "Number of busbars must be greater than or equal to 1",
-    "SectionCountMustBeGreaterThanOrEqualToOne" : "Number of sections must be greater than or equal to 1"
+    "SectionCountMustBeGreaterThanOrEqualToOne" : "Number of sections must be greater than or equal to 1",
+
+    "StateEstimationQualityCriterionResults": "Criterion quality",
+    "StateEstimationQualityPerRegionResults": "Quality per region",
+    "StateEstimationStatusResults": "Status",
+    "CriterionType": "Type",
+    "Validity": "Validity",
+    "Threshold": "Threshold",
+    "QualityRegion": "Region",
+    "QualityLevel": "Quality",
+    "qualityCriterionResults": "Quality criterion",
+    "qualityPerRegionResults": "Quality region",
+    "StateEstimationStatus": "Status : ",
+    "StateEstimationQuality": "Quality : "
 }

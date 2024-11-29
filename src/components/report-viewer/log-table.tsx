@@ -4,26 +4,57 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { memo, useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
-import { useTheme } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import { setLogsFilter } from '../../redux/actions';
 import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
 import { FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { EllipsisCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
 import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-filter';
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import { getDefaultSeverityFilter } from '../../utils/report/report-severity';
+import { getDefaultSeverityFilter, orderSeverityList, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
-import { Box, Theme } from '@mui/material';
+import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { ReportLog, ReportType } from 'utils/report/report.type';
+import { ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+
+const styles = {
+    chip: (severity: string, severityFilter: string[], theme: Theme) => ({
+        backgroundColor: severityFilter.includes(severity)
+            ? REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode
+            : theme.severityChip.disabledColor,
+        cursor: 'pointer',
+        border: `1px solid ${theme.palette.divider}`,
+        '&:hover': {
+            backgroundColor: alpha(REPORT_SEVERITY[severity as keyof typeof REPORT_SEVERITY].colorHexCode, 0.5),
+        },
+        '& .MuiChip-deleteIcon': {
+            color: theme.palette.text.primary,
+            fontSize: '1rem',
+        },
+        '& .MuiChip-deleteIcon:hover': {
+            color: theme.palette.text.primary,
+        },
+        padding: 0.5,
+    }),
+    chipContainer: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 1,
+        p: 1,
+        marginBottom: 3,
+    },
+    quickSearch: { width: '100%', flexShrink: 0 },
+};
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
@@ -31,7 +62,7 @@ type LogTableProps = {
     selectedReportId: string;
     reportType: string;
     reportNature: ReportType;
-    severities: string[];
+    severities: SeverityLevel[];
     onRowClick: (data: ReportLog) => void;
 };
 
@@ -53,18 +84,21 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const [rowData, setRowData] = useState<ReportLog[] | null>(null);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
+    const [searchTerm, setSearchTerm] = useState<string>('');
     const gridRef = useRef<AgGridReact>(null);
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
+    const orderedSeverities = useMemo(() => orderSeverityList(severities), [severities]);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
         setCurrentResultIndex(-1);
+        setSearchTerm('');
     }, []);
 
     const refreshLogsOnSelectedReport = useCallback(() => {
-        if (severityFilter === 0) {
+        if (severityFilter.length === 0) {
             setRowData([]);
             resetSearch();
             return;
@@ -113,19 +147,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         updateFilter,
     ]);
 
-    const shouldDisplayFilterBadge = useMemo(() => {
-        const defaultSeverityFilter = getDefaultSeverityFilter(severities);
-
-        const severitySet: Set<string> = new Set(severityFilter);
-        const defaultSeveritySet = new Set(defaultSeverityFilter);
-
-        if (severitySet.size !== defaultSeveritySet.size) {
-            return true;
-        }
-
-        return ![...severitySet].every((severity: string) => defaultSeveritySet.has(severity));
-    }, [severityFilter, severities]);
-
     const COLUMNS_DEFINITIONS = useMemo(
         () => [
             makeAgGridCustomHeaderColumn({
@@ -133,17 +154,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 width: SEVERITY_COLUMN_FIXED_WIDTH,
                 id: 'severity',
                 field: 'severity',
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterEnums: {
-                        severity: severities,
-                    },
-                },
-                shouldDisplayFilterBadge: shouldDisplayFilterBadge,
                 cellStyle: (params) => ({
                     backgroundColor: params.data.backgroundColor,
                     textAlign: 'center',
@@ -163,21 +173,25 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>
-                    EllipsisCellRenderer({
+                    MessageLogCellRenderer({
                         param: param,
-                        indexTextToHighlight: searchResults[currentResultIndex],
                         highlightColor: theme.searchedText.highlightColor,
+                        currentHighlightColor: theme.searchedText.currentHighlightColor,
+                        searchTerm: searchTerm,
+                        currentResultIndex: currentResultIndex,
+                        searchResults: searchResults,
                     }),
+                forceDisplayFilterIcon: true,
             }),
         ],
         [
             intl,
             updateFilter,
             filterSelector,
-            severities,
-            shouldDisplayFilterBadge,
+            searchTerm,
             searchResults,
             currentResultIndex,
+            theme.searchedText.currentHighlightColor,
             theme.searchedText.highlightColor,
         ]
     );
@@ -227,7 +241,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 resetSearch();
                 return;
             }
-
+            setSearchTerm(searchTerm);
             const api = gridRef.current.api;
             const matches: number[] = [];
             const searchTermLower = searchTerm.toLowerCase();
@@ -267,6 +281,26 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
         [currentResultIndex, searchResults, highlightAndScrollToMatch]
     );
 
+    const handleChipClick = useCallback(
+        (severity: string) => {
+            const updatedFilter = severityFilter.includes(severity)
+                ? severityFilter.filter((s: any) => s !== severity)
+                : [...severityFilter, severity];
+
+            dispatch(
+                setLogsFilter(reportType, [
+                    {
+                        column: 'severity',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.EQUALS,
+                        value: updatedFilter,
+                    },
+                ])
+            );
+        },
+        [dispatch, reportType, severityFilter]
+    );
+
     return (
         <Box
             sx={{
@@ -275,15 +309,27 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                 height: '100%',
             }}
         >
-            <Box sx={{ flexShrink: 0 }}>
+            <Box sx={styles.quickSearch}>
                 <QuickSearch
                     currentResultIndex={currentResultIndex}
                     selectedReportId={selectedReportId}
                     onSearch={handleSearch}
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
-                    setSearchResults={setSearchResults}
+                    resetSearch={resetSearch}
                 />
+            </Box>
+            <Box sx={styles.chipContainer}>
+                {orderedSeverities.map((severity, index) => (
+                    <Chip
+                        key={severity}
+                        label={severity}
+                        deleteIcon={severityFilter.includes(severity) ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                        onClick={() => handleChipClick(severity)}
+                        onDelete={() => handleChipClick(severity)}
+                        sx={styles.chip(severity, severityFilter, theme)}
+                    />
+                ))}
             </Box>
             <Box sx={{ flexGrow: 1, minHeight: 0 }}>
                 <CustomAGGrid

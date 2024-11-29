@@ -537,9 +537,6 @@
     "PowerFactor": "Facteur de puissance",
     "LossFactor": "Facteur de perte",
     "StopComputation": "Arrêter le calcul",
-    "ColumnsList": "Liste des colonnes",
-    "LabelSelectList": "Afficher / masquer colonnes",
-    "CheckAll": "Sélectionner tout / aucun",
     "genericConfirmQuestion": "Vous êtes sur le point de quitter sans sauvegarder vos modifications.",
 
     "ViewOnSpreadsheet": "Visualiser dans le tableur",
@@ -1422,5 +1419,18 @@
     "networkModificationActivationError": "Une erreur est survenue lors de l'activation / désactivation de la modification",
     "AddAutomaton": "Ajouter un automate",
     "BusBarCountMustBeGreaterThanOrEqualToOne" : "Un nombre de barres doit être supérieur ou égal à 1",
-    "SectionCountMustBeGreaterThanOrEqualToOne" : "Un nombre de sections doit être supérieur ou égal à 1"
+    "SectionCountMustBeGreaterThanOrEqualToOne" : "Un nombre de sections doit être supérieur ou égal à 1",
+
+    "StateEstimationQualityCriterionResults": "Qualité critères",
+    "StateEstimationQualityPerRegionResults": "Qualité régions",
+    "StateEstimationStatusResults": "Statut",
+    "CriterionType": "Critère",
+    "Validity": "Validité",
+    "Threshold": "Seuil",
+    "QualityRegion": "Région",
+    "QualityLevel": "Qualité",
+    "qualityCriterionResults": "Critères qualité",
+    "qualityPerRegionResults": "Qualité par région",
+    "StateEstimationStatus": "Statut : ",
+    "StateEstimationQuality": "Qualité: "
 }
