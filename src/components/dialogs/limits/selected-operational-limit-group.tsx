@@ -18,7 +18,7 @@ export interface SelectedOperationalLimitGroupProps {
 
 export const SelectedOperationalLimitGroup = ({
     selectedFormName,
-    optionsFormName,
+    optionsFormName,// TODO : passer direct le tableau en props ?
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const [limitSets, setLimitSets] = useState<Option[]>([]);
 

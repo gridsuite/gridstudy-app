@@ -19,13 +19,14 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
-import { useEffect, useState } from "react";
-import { useWatch } from "react-hook-form";
+import { useEffect, useState } from 'react';
+import { useWatch } from 'react-hook-form';
 
 const styles = {
     limitsBackground: {
         backgroundColor: '#383838', // TODO : may be found in the theme ??
         padding: 2,
+        '&.Mui-selected': { backgroundColor: '#383838' },
     },
     limitsBackgroundUnselected: {
         backgroundColor: '#1a1919', // TODO : may be found in the theme ??
@@ -63,21 +64,22 @@ export function LimitsPane({
     const limitSets2 = useWatch({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
-    const [ indexSelectedLimitSet1, setIndexSelectedLimitSet1 ] = useState<number|undefined>(undefined); // in the limitSets1 array
-    const [ indexSelectedLimitSet2, setIndexSelectedLimitSet2 ] = useState<number|undefined>(undefined); // in the limitSets2 array
+    // in the limitSets1 array
+    const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number | undefined>(undefined);
+    // in the limitSets2 array
+    const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
     useEffect(() => { // TODO faire ça avec des beaux streams
-        for (let i=0; i < limitSets1.length;++i) {
+        for (let i = 0; i < limitSets1.length; ++i) {
             if (limitSets1[i].id === selectedSetStr) {
                 setIndexSelectedLimitSet1(i);
             }
         }
-        for (let i=0; i < limitSets2.length;++i) {
+        for (let i = 0; i < limitSets2.length; ++i) {
             if (limitSets2[i].id === selectedSetStr) {
                 setIndexSelectedLimitSet2(i);
             }
         }
-
     }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
 
     useEffect(() => { // TODO : plutôt un useMemo
@@ -113,16 +115,16 @@ export function LimitsPane({
      */
 
     const addNewLimitSet = () => {
-    /*const newLimitSet: LimitSet = {
-        id: `New Limit Set ${limitSets.length - 1}`,
-        temporaryLimits: [],
-        permanentLimit: undefined,
-    };*/
-    const newLimitSet: string = `New Limit Set ${limitSets.length - 1}`;
-    setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
-    setTabValue(limitSets.length);
-    setSelectedSetStr(newLimitSet);
-  };
+        /*const newLimitSet: LimitSet = {
+            id: `New Limit Set ${limitSets.length - 1}`,
+            temporaryLimits: [],
+            permanentLimit: undefined,
+        };*/
+        const newLimitSet: string = `DEFAUT ${limitSets.length > 0 ? limitSets.length - 1 : null}`;
+        setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
+        setTabValue(limitSets.length);
+        setSelectedSetStr(newLimitSet);
+    };
 
     return (
         <Grid container spacing={2}>
@@ -173,40 +175,43 @@ export function LimitsPane({
                             <Tab
                                 key={set}
                                 label={set}
-                                sx={{
-                                    backgroundColor: index === tabValue ? styles.limitsBackground.backgroundColor : styles.limitsBackgroundUnselected.backgroundColor,
-                                    '&.Mui-selected': { backgroundColor: styles.limitsBackground.backgroundColor },
-                                }}
+                                sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected}
                             />
                         ))}
                     </Tabs>
                 </Grid>
                 <Grid item xs={5}>
-                    {limitSets1.map((item: any, index: number) =>
-                        (index === indexSelectedLimitSet1 &&
-                            <LimitsSidePane
-                                limitSetFormName={`${id}.${CURRENT_LIMITS_1}`}
-                                clearableFields={clearableFields}
-                                indexLimitSet={index}
-                                permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits1?.permanentLimit}
-                                previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
-                                currentNode={currentNode}
-                            />
-                        )
+                    {limitSets1.map(
+                        (item: any, index: number) =>
+                            index === indexSelectedLimitSet1 && (
+                                <LimitsSidePane
+                                    limitSetFormName={`${id}.${CURRENT_LIMITS_1}`}
+                                    clearableFields={clearableFields}
+                                    indexLimitSet={index}
+                                    permanentCurrentLimitPreviousValue={
+                                        equipmentToModify?.currentLimits1?.permanentLimit
+                                    }
+                                    previousValues={equipmentToModify?.currentLimits1?.temporaryLimits}
+                                    currentNode={currentNode}
+                                />
+                            )
                     )}
                 </Grid>
                 <Grid item xs={5}>
-                    {limitSets2.map((item: any, index: number) =>
-                        (index === indexSelectedLimitSet2 &&
-                            <LimitsSidePane
-                                limitSetFormName={`${id}.${CURRENT_LIMITS_2}`}
-                                clearableFields={clearableFields}
-                                indexLimitSet={index}
-                                permanentCurrentLimitPreviousValue={equipmentToModify?.currentLimits2?.permanentLimit}
-                                previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
-                                currentNode={currentNode}
-                            />
-                        )
+                    {limitSets2.map(
+                        (item: any, index: number) =>
+                            index === indexSelectedLimitSet2 && (
+                                <LimitsSidePane
+                                    limitSetFormName={`${id}.${CURRENT_LIMITS_2}`}
+                                    clearableFields={clearableFields}
+                                    indexLimitSet={index}
+                                    permanentCurrentLimitPreviousValue={
+                                        equipmentToModify?.currentLimits2?.permanentLimit
+                                    }
+                                    previousValues={equipmentToModify?.currentLimits2?.temporaryLimits}
+                                    currentNode={currentNode}
+                                />
+                            )
                     )}
                 </Grid>
             </Grid>
