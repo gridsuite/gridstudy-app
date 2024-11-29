@@ -91,12 +91,35 @@ function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]): IdPlacementBi
     return nodePlacements;
 }
 
+function compressTree(nodes: CurrentTreeNode[], placements: IdPlacementBiMap) {
+
+    // On doit identifier les noeuds qui ont de l'espace à leur gauche.
+    // Ces noeuds doivent être des frères, mais pas des ainés.
+    // Il doit y avoir au moins une case de libre entre le frère et son frère de gauche.
+    // La liste de ces noeuds identifiés est le point de départ de la boucle d'algo : on va tourner sur chacun de ces noeuds.
+
+    // Pour chaque noeud identifié de la sorte :
+
+    // On regarde pour chaque ligne de la famille courante : combien de cases vides on a a gauche.
+    // A chaque ligne, on test les X cases à gauche, X est le plus petit des espaces qu'on a trouvé jusque là.
+    // Si on arrive à zero, on stop et on peut pas se déplacer.
+    // Si on est arrivé en bas de la famille (on s'arrête quand le parent du prochain noeud est le même parent que le noeud
+    // de début de branche (donc un de ses fères) et on skip le calcul si le numéro de ligne a déjà été traité),
+    // alors on a X le nombre de cases qu'on peut déplacer à gauche pour toute cette famille.
+
+    // On déplace de ce nombre de cases la famille courante vers la gauche, et on marque l'index de colonne comme déjà traité.
+
+    return placements;
+}
+
 /**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
  */
 export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
-    const nodePlacements = getNodePlacementsFromTreeNodes(newNodes);
+    const uncompressedNodePlacements = getNodePlacementsFromTreeNodes(newNodes);
+
+    const nodePlacements = compressTree(newNodes, uncompressedNodePlacements);
 
     newNodes.forEach((node) => {
         const placement = nodePlacements.getPlacement(node.id);
