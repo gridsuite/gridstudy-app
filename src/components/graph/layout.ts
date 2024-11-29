@@ -65,7 +65,7 @@ class IdPlacementBiMap {
  * Builds a bidirectional map representing the placements of nodes for the tree.
  * This map is then used to compute each node's x and y position before being used by ReactFlow.
  */
-function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]) {
+function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]): IdPlacementBiMap {
     const nodePlacements = new IdPlacementBiMap();
     let currentMaxColumn = 0;
 
@@ -140,8 +140,8 @@ function isNodeASibling(nodes: CurrentTreeNode[], node: CurrentTreeNode): boolea
  */
 export function getFirstAncestorWithSibling(
     nodes: CurrentTreeNode[],
-    descendantNode: CurrentTreeNode
-): CurrentTreeNode | null {
+    descendantNode: CurrentTreeNode | undefined
+): CurrentTreeNode | undefined {
     if (descendantNode && descendantNode.parentId) {
         if (isNodeASibling(nodes, descendantNode)) {
             return descendantNode;
@@ -149,7 +149,7 @@ export function getFirstAncestorWithSibling(
         const parentOfDescendantNode = nodes.find((node) => node.id === descendantNode.parentId);
         return getFirstAncestorWithSibling(nodes, parentOfDescendantNode);
     }
-    return null;
+    return undefined;
 }
 
 /**
