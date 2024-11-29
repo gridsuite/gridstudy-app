@@ -22,7 +22,7 @@ import { StudyDisplayMode } from './network-modification.type';
 import {
     findClosestSiblingInRange,
     getAbsolutePosition,
-    getFirstAncestorIdWithSibling,
+    getFirstAncestorWithSibling,
     getTreeNodesWithUpdatedPositions,
     nodeHeight,
     nodeWidth,
@@ -177,12 +177,11 @@ const NetworkModificationTree = ({
 
             // We test if the dragged node is the start of a branch. If this is not the case, we should find
             // the start of the branch and move this ancestor node instead.
-            const firstAncestorIdWithSibling = getFirstAncestorIdWithSibling(nodes, draggedNode.id);
-            if (firstAncestorIdWithSibling && firstAncestorIdWithSibling !== currentChange.id) {
+            const firstAncestorIdWithSibling = getFirstAncestorWithSibling(nodes, draggedNode);
+            if (firstAncestorIdWithSibling && firstAncestorIdWithSibling.id !== currentChange.id) {
                 // We calculate the movement of the dragged node and apply it to its ancestor instead.
-                const ancestorNode = nodes.find((node) => node.id === firstAncestorIdWithSibling);
-                const initialAncestorXPosition = ancestorNode.position.x;
-                const initialAncestorYPosition = ancestorNode.position.y;
+                const initialAncestorXPosition = firstAncestorIdWithSibling.position.x;
+                const initialAncestorYPosition = firstAncestorIdWithSibling.position.y;
                 const draggedNodeDeltaX = currentChange.position.x - initialDraggedNodeXPosition;
 
                 // We will move the ancestor instead of the dragged node, so we force the dragged node's X value
@@ -190,7 +189,7 @@ const NetworkModificationTree = ({
                 currentChange.position.x = initialDraggedNodeXPosition;
 
                 const newChangeForAncestor = {
-                    id: firstAncestorIdWithSibling,
+                    id: firstAncestorIdWithSibling.id,
                     type: currentChange.type,
                     dragging: currentChange.dragging,
                     position: {
@@ -202,7 +201,7 @@ const NetworkModificationTree = ({
                 // processed by ReactFlow.
                 changes.push(newChangeForAncestor);
 
-                movedNode = ancestorNode;
+                movedNode = firstAncestorIdWithSibling;
             } else {
                 movedNode = draggedNode;
             }
