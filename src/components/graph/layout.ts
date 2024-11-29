@@ -20,40 +20,34 @@ type NodePlacement = {
  * Bidirectional map to match a node ID to a NodePlacement.
  */
 class IdPlacementBiMap {
-    private readonly idToPlacement = new Map<string, string>();
+    private readonly idToPlacement = new Map<string, NodePlacement>();
     private readonly placementToId = new Map<string, string>();
 
-    stringToNodePlacement(placementString: string): NodePlacement {
-        const [row, column] = placementString.split('_').map(Number);
-        return { row, column };
-    }
-
     nodePlacementToString(placement: NodePlacement): string {
-        return placement.row + '_' + placement.column;
+        return `${placement.row}_${placement.column}`;
     }
 
     setPlacement(id: string, placement: NodePlacement) {
-        const placementString = this.nodePlacementToString(placement);
         // Remove any existing mappings to ensure bidirectionality
         if (this.idToPlacement.has(id)) {
             const oldPlacement = this.idToPlacement.get(id)!;
-            this.placementToId.delete(oldPlacement);
+            this.placementToId.delete(this.nodePlacementToString(oldPlacement));
         }
+        const placementString = this.nodePlacementToString(placement);
         if (this.placementToId.has(placementString)) {
             const oldId = this.placementToId.get(placementString)!;
             this.idToPlacement.delete(oldId);
         }
-
-        this.idToPlacement.set(id, placementString);
+        // Add the new mappings
+        this.idToPlacement.set(id, placement);
         this.placementToId.set(placementString, id);
     }
 
     getPlacement(id: string): NodePlacement | undefined {
-        const placementString = this.idToPlacement.get(id);
-        if (placementString) {
-            return this.stringToNodePlacement(placementString);
-        }
-        return undefined;
+        const placement = this.idToPlacement.get(id);
+        // This ensure immutability to prevent external modifications on the returned value
+        // from modifying this object's internal values.
+        return placement ? { ...placement } : undefined;
     }
 
     isPlacementTaken(placement: NodePlacement): boolean {
