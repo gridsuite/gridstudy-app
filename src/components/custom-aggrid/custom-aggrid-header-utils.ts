@@ -14,7 +14,7 @@ export const makeAgGridCustomHeaderColumn = ({
     filterProps, // filterProps: contains useAgGridRowFilter params
     filterParams, // filterParams: Parameters for the column's filtering functionality
     filterTab,
-    shouldDisplayFilterBadge,
+    forceDisplayFilterIcon,
     tabIndex,
     isCustomColumn,
     Menu,
@@ -67,7 +67,7 @@ export const makeAgGridCustomHeaderColumn = ({
             },
             getEnumLabel: props?.getEnumLabel,
             isCountry: props?.isCountry,
-            shouldDisplayFilterBadge,
+            forceDisplayFilterIcon,
             tabIndex: tabIndex,
             isCustomColumn: isCustomColumn,
             Menu: Menu,
