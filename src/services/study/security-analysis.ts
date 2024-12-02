@@ -7,8 +7,11 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
+import { UUID } from 'crypto';
+import { ISAParameters } from '../../components/dialogs/parameters/common/limitreductions/columns-definitions';
+import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
 
-export function startSecurityAnalysis(studyUuid, currentNodeUuid, contingencyListNames) {
+export function startSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, contingencyListNames: string[]) {
     console.info(`Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
 
     // Add params to Url
@@ -21,14 +24,14 @@ export function startSecurityAnalysis(studyUuid, currentNodeUuid, contingencyLis
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
+export function stopSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info('Stopping security analysis on ' + studyUuid + ' and node ' + currentNodeUuid + ' ...');
     const stopSecurityAnalysisUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, queryParams) {
+export function fetchSecurityAnalysisResult(studyUuid: string, currentNodeUuid: string, queryParams: any) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result`;
 
@@ -36,14 +39,14 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, queryPar
 
     const params = new URLSearchParams({ resultType });
 
-    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
+    sort?.map((value: any) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }
 
     if (typeof page === 'number') {
-        params.append('page', page);
+        params.append('page', String(page));
         params.append('size', size);
     }
 
@@ -53,11 +56,11 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, queryPar
 }
 
 export function downloadSecurityAnalysisResultZippedCsv(
-    studyUuid,
-    currentNodeUuid,
-    queryParams,
-    headers,
-    enumValueTranslations
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    queryParams: { resultType: RESULT_TYPE },
+    headers: string[] | undefined,
+    enumValueTranslations: Record<string, string>
 ) {
     console.info(`Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/security-analysis/result/csv`;
@@ -81,7 +84,7 @@ export function downloadSecurityAnalysisResultZippedCsv(
     });
 }
 
-export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
+export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Fetching security analysis status on ${studyUuid} and node ${currentNodeUuid} ...`);
 
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/security-analysis/status';
@@ -89,7 +92,7 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid) {
     return backendFetchText(url);
 }
 
-export function updateSecurityAnalysisProvider(studyUuid, newProvider) {
+export function updateSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
     console.info('update security analysis provider');
     const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
     console.debug(url);
@@ -110,14 +113,14 @@ export function fetchDefaultSecurityAnalysisProvider() {
     return backendFetchText(url);
 }
 
-export function getSecurityAnalysisParameters(studyUuid) {
+export function getSecurityAnalysisParameters(studyUuid: UUID) {
     console.info('get security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function setSecurityAnalysisParameters(studyUuid, newParams) {
+export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: ISAParameters) {
     console.info('set security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
     console.debug(url);

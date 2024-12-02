@@ -127,17 +127,17 @@ const GenerationDispatchDialog = ({
 
     const onSubmit = useCallback(
         (generation) => {
-            generationDispatch(
-                studyUuid,
-                currentNodeUuid,
-                editData?.uuid ?? undefined,
-                generation?.lossCoefficient,
-                generation?.defaultOutageRate,
-                generation[GENERATORS_WITHOUT_OUTAGE],
-                generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
-                generation[GENERATORS_FREQUENCY_RESERVES],
-                generation[SUBSTATIONS_GENERATORS_ORDERING]
-            ).catch((error) => {
+            generationDispatch({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData?.uuid ?? undefined,
+                lossCoefficient: generation?.lossCoefficient,
+                defaultOutageRate: generation?.defaultOutageRate,
+                generatorsWithoutOutage: generation[GENERATORS_WITHOUT_OUTAGE],
+                generatorsWithFixedActivePower: generation[GENERATORS_WITH_FIXED_ACTIVE_POWER],
+                generatorsFrequencyReserve: generation[GENERATORS_FREQUENCY_RESERVES],
+                substationsGeneratorsOrdering: generation[SUBSTATIONS_GENERATORS_ORDERING],
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'GenerationDispatchError',

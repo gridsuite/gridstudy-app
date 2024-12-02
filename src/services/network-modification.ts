@@ -6,10 +6,11 @@
  */
 
 import { backendFetch, backendFetchJson } from './utils';
+import { UUID } from 'crypto';
 
 const PREFIX_NETWORK_MODIFICATION_QUERIES = import.meta.env.VITE_API_GATEWAY + '/network-modification';
 
-export function fetchNetworkModification(modificationUuid) {
+export function fetchNetworkModification(modificationUuid: UUID) {
     const modificationFetchUrl = `${PREFIX_NETWORK_MODIFICATION_QUERIES}/v1/network-modifications/${encodeURIComponent(
         modificationUuid
     )}`;

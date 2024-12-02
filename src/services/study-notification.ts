@@ -8,10 +8,14 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 import { getUrlWithToken, getWsBase } from './utils';
+import { UUID } from 'crypto';
 
 const PREFIX_STUDY_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/study-notification';
 
-export function connectNotificationsWebsocket(studyUuid, options) {
+interface WebSocketOptions {
+    minUptime: number;
+}
+export function connectNotificationsWebsocket(studyUuid: UUID, options: WebSocketOptions) {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
     const wsAdress = `${wsBase}${PREFIX_STUDY_NOTIFICATION_WS}/notify?studyUuid=${encodeURIComponent(studyUuid)}`;

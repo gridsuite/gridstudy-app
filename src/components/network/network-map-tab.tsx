@@ -506,6 +506,7 @@ export const NetworkMapTab = ({
                 `Loading geo data of study '${studyUuid}' of missing substations '${notFoundSubstationIds}' and missing lines '${notFoundLineIds}'...`
             );
             dispatch(setMapDataLoading(true));
+            console.log(' notFoundSubstationIds: ', notFoundSubstationIds);
             const missingSubstationPositions = getMissingEquipmentsPositions(
                 notFoundSubstationIds,
                 fetchSubstationPositions
