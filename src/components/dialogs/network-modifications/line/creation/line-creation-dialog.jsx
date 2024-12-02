@@ -143,14 +143,16 @@ const LineCreationDialog = ({
 
     const formatCompleteCurrentLimit = (completeCurrentLimits) => {
         let formattedCompleteCurrentLimit = [];
-        completeCurrentLimits.forEach((elt) =>
-            formattedCompleteCurrentLimit.push( {
-                    id: elt.id,
-                    permanentLimit: elt.permanentLimit,
-                    temporaryLimits : addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits),
-                )
-            }
-        ));
+        if (completeCurrentLimits.length > 0) {
+            completeCurrentLimits.forEach((elt) =>
+                formattedCompleteCurrentLimit.push( {
+                        id: elt.id,
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits : addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits),
+                        )
+                    }
+                ));
+        }
         return formattedCompleteCurrentLimit;
     };
 

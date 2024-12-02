@@ -41,11 +41,6 @@ export interface LimitsPaneProps {
     equipmentToModify?: any;
     clearableFields?: any;
 }
-export interface LimitSet { // TODO : => faire toute une structure là dessus sur le modèle de ce qu'il y a en back. Cf création des load pour un bn exemple ts
-    id: string;
-    temporaryLimits: Object[];
-    permanentLimit?: number;
-}
 
 export function LimitsPane({
     id = LIMITS,

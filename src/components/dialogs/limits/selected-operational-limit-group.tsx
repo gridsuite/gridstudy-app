@@ -8,8 +8,8 @@ import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
-import { LimitSet } from './limits-pane';
 import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
+import { LimitSet } from '../network-modifications/line/creation/load-creation-type';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
