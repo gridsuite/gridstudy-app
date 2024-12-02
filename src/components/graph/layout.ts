@@ -6,6 +6,7 @@
  */
 
 import { CurrentTreeNode } from 'redux/reducer';
+import { countNodes } from './network-modification-tree-model';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -91,24 +92,119 @@ function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]): IdPlacementBi
     return nodePlacements;
 }
 
+// TODO Comment
+function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]) {
+    const seenNodes = [];
+    const nonEldestSiblings = [];
+    nodes.forEach((node) => {
+        if (node.parentId) {
+            if (seenNodes.includes(node.parentId)) {
+                nonEldestSiblings.push(node.id);
+            }
+            seenNodes.push(node.parentId);
+        }
+    });
+    return nonEldestSiblings;
+}
+
+// TODO Comment
+function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacementBiMap): Map<number, number> {
+    const minColumnByRow: Map<number, number> = new Map();
+    nodes.forEach((node) => {
+        const nodePlacement = placements.getPlacement(node.id);
+        if (nodePlacement) {
+            if (
+                !minColumnByRow.has(nodePlacement.row) ||
+                nodePlacement.column < minColumnByRow.get(nodePlacement.row)
+            ) {
+                minColumnByRow.set(nodePlacement.row, nodePlacement.column);
+            }
+        }
+    });
+    return minColumnByRow;
+}
+
+// TODO Comment
+function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacementBiMap): Map<number, number> {
+    const maxColumnByRow: Map<number, number> = new Map();
+    nodes.forEach((node) => {
+        const nodePlacement = placements.getPlacement(node.id);
+        if (nodePlacement) {
+            if (
+                !maxColumnByRow.has(nodePlacement.row) ||
+                nodePlacement.column > maxColumnByRow.get(nodePlacement.row)
+            ) {
+                maxColumnByRow.set(nodePlacement.row, nodePlacement.column);
+            }
+        }
+    });
+    return maxColumnByRow;
+}
+
+// TODO Comment
+function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns: Map<number, number>): number {
+    let availableSpace = Infinity;
+    rightColumns.forEach((rightColumn, row) => {
+        const leftColumnSameRow = leftColumns.get(row);
+        if (leftColumnSameRow !== undefined) {
+            const space = rightColumn - (leftColumnSameRow + 1);
+            if (space < availableSpace) {
+                availableSpace = space;
+            }
+        }
+        // TODO Comment to explain why this test on the row below
+        const leftColumnRowBelow = leftColumns.get(row + 1);
+        if (leftColumnRowBelow !== undefined) {
+            const space = rightColumn - (leftColumnRowBelow + 1);
+            if (space < availableSpace) {
+                availableSpace = space;
+            }
+        }
+    });
+    return availableSpace;
+}
+
+// TODO Comment
+function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: IdPlacementBiMap, shiftValue: number) {
+    nodes.forEach((node) => {
+        const oldPlacement = placements.getPlacement(node.id);
+        if (oldPlacement) {
+            placements.setPlacement(node.id, { row: oldPlacement.row, column: oldPlacement.column - shiftValue });
+        }
+    });
+}
+
+// TODO Comment
 function compressTree(nodes: CurrentTreeNode[], placements: IdPlacementBiMap) {
+    // We will try to compress the tree, using the following rules :
+    // We try to move branches to the left if the branch's first node has a sibling to its left.
+    // We can move a branch above another branch, on the same column, only if there is at least
+    // one space vertically between the two branches and no edge crosses.
 
-    // On doit identifier les noeuds qui ont de l'espace à leur gauche.
-    // Ces noeuds doivent être des frères, mais pas des ainés.
-    // Il doit y avoir au moins une case de libre entre le frère et son frère de gauche.
-    // La liste de ces noeuds identifiés est le point de départ de la boucle d'algo : on va tourner sur chacun de ces noeuds.
+    // First, we find all the nodes that start a branch and that have a sibling to their left.
+    const nonEldestSiblingsIds = getNonEldestSiblingsIds(nodes);
 
-    // Pour chaque noeud identifié de la sorte :
+    // For each of those nodes's branches, we will calculate how much space available there is to
+    // the left.
+    nonEldestSiblingsIds.forEach((currentNodeId) => {
+        // We have to find the minimum column placement values (per row) for the current branch, and compare them
+        // to the maximum column placement values (per row) of the nodes on the left.
 
-    // On regarde pour chaque ligne de la famille courante : combien de cases vides on a a gauche.
-    // A chaque ligne, on test les X cases à gauche, X est le plus petit des espaces qu'on a trouvé jusque là.
-    // Si on arrive à zero, on stop et on peut pas se déplacer.
-    // Si on est arrivé en bas de la famille (on s'arrête quand le parent du prochain noeud est le même parent que le noeud
-    // de début de branche (donc un de ses fères) et on skip le calcul si le numéro de ligne a déjà été traité),
-    // alors on a X le nombre de cases qu'on peut déplacer à gauche pour toute cette famille.
+        // TODO Rename variables and comment
+        const numberOfNodesInTheBranch = 1 + countNodes(nodes, currentNodeId);
+        const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNodeId);
+        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + numberOfNodesInTheBranch);
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
 
-    // On déplace de ce nombre de cases la famille courante vers la gauche, et on marque l'index de colonne comme déjà traité.
+        const nodesOnTheLeft = nodes.slice(0, indexOfCurrentNode);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(nodesOnTheLeft, placements);
 
+        const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
+
+        if (availableSpace > 0) {
+            shiftPlacementsToTheLeft(nodesOfTheCurrentBranch, placements, availableSpace);
+        }
+    });
     return placements;
 }
 
