@@ -6,14 +6,7 @@
  */
 
 import { FloatInput, SelectInput } from '@gridsuite/commons-ui';
-import {
-    ACTIVE_POWER_SETPOINT,
-    ADDITIONAL_PROPERTIES,
-    CONVERTERS_MODE,
-    MAX_P,
-    NOMINAL_V,
-    R,
-} from '../../../../../utils/field-constants';
+import { ACTIVE_POWER_SETPOINT, CONVERTERS_MODE, MAX_P, NOMINAL_V, R } from '../../../../../utils/field-constants';
 import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import { Grid } from '@mui/material';
@@ -21,12 +14,6 @@ import PropertiesForm from 'components/dialogs/network-modifications/common/prop
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import yup from '../../../../../utils/yup-config';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    getPropertiesFromModification,
-    Property,
-} from '../../../common/properties/property-utils';
 import { LccCreationInfos, LccFormInfos } from './lcc-creation.type';
 
 export const getLccHvdcLineSchema = () =>
@@ -36,7 +23,6 @@ export const getLccHvdcLineSchema = () =>
         [MAX_P]: yup.number().nullable().required(),
         [CONVERTERS_MODE]: yup.string().required(),
         [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
-        creationPropertiesSchema,
     });
 
 export function getLccHvdcLineEmptyFormData() {
@@ -46,7 +32,6 @@ export function getLccHvdcLineEmptyFormData() {
         [MAX_P]: null,
         [CONVERTERS_MODE]: null,
         [ACTIVE_POWER_SETPOINT]: null,
-        [ADDITIONAL_PROPERTIES]: [] as Property[],
     };
 }
 
@@ -57,7 +42,6 @@ export function getLccHvdcLineFromSearchCopy(hvdcLine: LccFormInfos) {
         [MAX_P]: hvdcLine.maxP,
         [CONVERTERS_MODE]: hvdcLine.convertersMode,
         [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-        ...copyEquipmentPropertiesForCreation({ properties: hvdcLine.properties }),
     };
 }
 
@@ -68,7 +52,6 @@ export function getLccHvdcLineFromEditData(hvdcLine: LccCreationInfos) {
         [MAX_P]: hvdcLine.maxP,
         [CONVERTERS_MODE]: hvdcLine.convertersMode,
         [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
-        ...getPropertiesFromModification(hvdcLine.properties),
     };
 }
 interface LccHvdcLinePaneProps {

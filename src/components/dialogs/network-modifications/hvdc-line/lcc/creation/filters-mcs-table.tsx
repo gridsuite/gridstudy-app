@@ -127,20 +127,17 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
                                     {column.dataKey === SHUNT_COMPENSATOR_ID && (
                                         <TextInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
-                                            label={'shuntCompensatorId'}
                                         />
                                     )}
                                     {column.dataKey === SHUNT_COMPENSATOR_NAME && (
                                         <TextInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}
-                                            label={'shuntCompensatorName'}
                                         />
                                     )}
                                     {column.dataKey === MAX_Q_AT_NOMINAL_V && (
                                         <FloatInput
                                             name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
                                             adornment={ReactivePowerAdornment}
-                                            label={'maxQAtNominalV'}
                                         />
                                     )}
                                     {column.dataKey === MCS_SELECTED && (
