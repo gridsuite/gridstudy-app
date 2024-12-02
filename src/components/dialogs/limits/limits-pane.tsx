@@ -21,6 +21,7 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
+import { LimitSet } from "../network-modifications/line/creation/load-creation-type";
 
 const styles = {
     limitsBackground: {
@@ -33,7 +34,7 @@ const styles = {
         backgroundColor: '#1a1919', // TODO : may be found in the theme ??
         alignItems: 'self-start',
         justifyContent: 'flex-start',
-    }
+    },
 };
 export interface LimitsPaneProps {
     id?: string;
@@ -49,6 +50,7 @@ export function LimitsPane({
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
     const [allLimitSetsStr, setAllLimitSetsStr] = useState<string[]>([]);
+    // selected set in the tab interface
     const [selectedSetStr, setSelectedSetStr] = useState<string | null>(allLimitSetsStr[0] || null);
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -56,10 +58,10 @@ export function LimitsPane({
         setSelectedSetStr(allLimitSetsStr[newValue] || null);
     };
 
-    const limitSets1 = useWatch({
+    const limitSets1: LimitSet[] = useWatch({
         name: `${id}.${CURRENT_LIMITS_1}`,
     });
-    const limitSets2 = useWatch({
+    const limitSets2: LimitSet[] = useWatch({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
     // in the limitSets1 array
@@ -67,19 +69,13 @@ export function LimitsPane({
     // in the limitSets2 array
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
-    useEffect(() => { // TODO faire ça avec des beaux streams
-        setIndexSelectedLimitSet1(undefined);
-        setIndexSelectedLimitSet2(undefined);
-        for (let i = 0; i < limitSets1.length; ++i) {
-            if (limitSets1[i].id === selectedSetStr) {
-                setIndexSelectedLimitSet1(i);
-            }
-        }
-        for (let i = 0; i < limitSets2.length; ++i) {
-            if (limitSets2[i].id === selectedSetStr) {
-                setIndexSelectedLimitSet2(i);
-            }
-        }
+    useEffect(() => {
+        setIndexSelectedLimitSet1(
+            limitSets1.findIndex((limitSet: LimitSet) => limitSet.id === selectedSetStr)
+        );
+        setIndexSelectedLimitSet2(
+            limitSets2.findIndex((limitSet: LimitSet) => limitSet.id === selectedSetStr)
+        );
     }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
 
     useEffect(() => {
