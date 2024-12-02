@@ -92,22 +92,27 @@ function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]): IdPlacementBi
     return nodePlacements;
 }
 
-// TODO Comment
-function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]) {
-    const seenNodes = [];
-    const nonEldestSiblings = [];
+/**
+ * Finds the IDs of nodes that have a sibling but are not the first child of their parent.
+ */
+function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]): string[] {
+    const seenParentIds: string[] = [];
+    const nonEldestSiblingsIds: string[] = [];
     nodes.forEach((node) => {
         if (node.parentId) {
-            if (seenNodes.includes(node.parentId)) {
-                nonEldestSiblings.push(node.id);
+            if (seenParentIds.includes(node.parentId)) {
+                nonEldestSiblingsIds.push(node.id);
             }
-            seenNodes.push(node.parentId);
+            seenParentIds.push(node.parentId);
         }
     });
-    return nonEldestSiblings;
+    return nonEldestSiblingsIds;
 }
 
-// TODO Comment
+/**
+ * Create a Map using row number as keys and column number as value. The column value
+ * for each row is the lowest value among column values of the same row, for the provided nodes.
+ */
 function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacementBiMap): Map<number, number> {
     const minColumnByRow: Map<number, number> = new Map();
     nodes.forEach((node) => {
@@ -124,7 +129,10 @@ function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacemen
     return minColumnByRow;
 }
 
-// TODO Comment
+/**
+ * Create a Map using row number as keys and column number as value. The column value
+ * for each row is the highest value among column values of the same row, for the provided nodes.
+ */
 function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacementBiMap): Map<number, number> {
     const maxColumnByRow: Map<number, number> = new Map();
     nodes.forEach((node) => {
