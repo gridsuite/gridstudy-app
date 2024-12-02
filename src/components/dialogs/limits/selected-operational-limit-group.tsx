@@ -18,7 +18,7 @@ export interface SelectedOperationalLimitGroupProps {
 
 export const SelectedOperationalLimitGroup = ({
     selectedFormName,
-    optionsFormName,// TODO : passer direct le tableau en props ?
+    optionsFormName,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
     const optionsValues: LimitSet[] = useWatch({
         name: optionsFormName,
@@ -46,6 +46,8 @@ export const SelectedOperationalLimitGroup = ({
                 options={limitSets}
                 label={'SelectedOperationalLimitGroup'}
                 size={'small'}
+                allowNewValue={false}
+                disableClearable={true}
             />
         </Box>
     );

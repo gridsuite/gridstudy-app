@@ -90,6 +90,7 @@ export function LimitsPane({
         if (limitSets2) {
             allLimitSets.push(...limitSets2.map((limitSet: { id: any }) => limitSet.id));
         }
+        // TODO : do this with a stream system et filtrer les doublons de limit sets dans les deux tableaux
         setAllLimitSetsStr(allLimitSets);
     }, [limitSets1, limitSets2]);
 

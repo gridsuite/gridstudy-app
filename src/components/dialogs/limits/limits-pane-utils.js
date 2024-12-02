@@ -133,16 +133,16 @@ export const getAllLimitsFormData = (
             [PERMANENT_LIMIT]: null,
             [TEMPORARY_LIMITS]: [],
         }],
-        selectedLimitsGroup1 = null,
-        selectedLimitsGroup2 = null,
+        selectedOperationalLimitsGroupId1 = null,
+        selectedOperationalLimitsGroupId2 = null,
     },
     id = LIMITS
 ) => ({
     [id]: {
         [CURRENT_LIMITS_1]: currentLimits1,
         [CURRENT_LIMITS_2]: currentLimits2,
-        [SELECTED_LIMIT_GROUP_1]: selectedLimitsGroup1,
-        [SELECTED_LIMIT_GROUP_2]: selectedLimitsGroup2,
+        [SELECTED_LIMIT_GROUP_1]: selectedOperationalLimitsGroupId1,
+        [SELECTED_LIMIT_GROUP_2]: selectedOperationalLimitsGroupId2,
     },
 });
 
