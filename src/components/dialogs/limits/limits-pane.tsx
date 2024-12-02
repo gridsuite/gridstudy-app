@@ -48,12 +48,12 @@ export function LimitsPane({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    const [limitSets, setLimitSets] = useState<string[]>([]);
-    const [selectedSetStr, setSelectedSetStr] = useState<string | null>(limitSets[0] || null);
+    const [allLimitSetsStr, setAllLimitSetsStr] = useState<string[]>([]);
+    const [selectedSetStr, setSelectedSetStr] = useState<string | null>(allLimitSetsStr[0] || null);
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
-        setSelectedSetStr(limitSets[newValue] || null);
+        setSelectedSetStr(allLimitSetsStr[newValue] || null);
     };
 
     const limitSets1 = useWatch({
@@ -68,6 +68,8 @@ export function LimitsPane({
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
     useEffect(() => { // TODO faire ça avec des beaux streams
+        setIndexSelectedLimitSet1(undefined);
+        setIndexSelectedLimitSet2(undefined);
         for (let i = 0; i < limitSets1.length; ++i) {
             if (limitSets1[i].id === selectedSetStr) {
                 setIndexSelectedLimitSet1(i);
@@ -80,15 +82,15 @@ export function LimitsPane({
         }
     }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
 
-    useEffect(() => { // TODO : plutôt un useMemo
+    useEffect(() => {
         let allLimitSets: string[] = [];
         if (limitSets1) {
-            allLimitSets = [...limitSets1.map((limitSet: { id: any }) => limitSet.id)];
+            allLimitSets.push(...limitSets1.map((limitSet: { id: any }) => limitSet.id));
         }
         if (limitSets2) {
-            allLimitSets = [...limitSets2.map((limitSet: { id: any }) => limitSet.id)];
+            allLimitSets.push(...limitSets2.map((limitSet: { id: any }) => limitSet.id));
         }
-        setLimitSets(allLimitSets);
+        setAllLimitSetsStr(allLimitSets);
     }, [limitSets1, limitSets2]);
 
     /*
@@ -118,9 +120,9 @@ export function LimitsPane({
             temporaryLimits: [],
             permanentLimit: undefined,
         };*/
-        const newLimitSet: string = `DEFAUT ${limitSets.length > 0 ? limitSets.length - 1 : null}`;
-        setLimitSets([...limitSets, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
-        setTabValue(limitSets.length);
+        const newLimitSet: string = `DEFAUT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : null}`;
+        setAllLimitSetsStr([...allLimitSetsStr, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
+        setTabValue(allLimitSetsStr.length);
         setSelectedSetStr(newLimitSet);
     };
 
@@ -167,7 +169,7 @@ export function LimitsPane({
                         onChange={handleTabChange}
                         sx={{ flexGrow: 1 }}
                     >
-                        {limitSets.map((set, index) => (
+                        {allLimitSetsStr.map((set, index) => (
                             // <Box sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} > TODO : bloque le clic sur tab => à arranger pour avoir l'icone comme bouton séparé
                                 <Tab key={set} label={set} sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} />
                                 // <DensityMediumIcon fontSize={'small'} />

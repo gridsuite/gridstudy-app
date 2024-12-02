@@ -157,12 +157,12 @@ const LineCreationDialog = ({
     };
 
     const fromSearchCopyToFormValues = (line) => {
-        // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
+         // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
         reset(
             {
                 ...getHeaderFormData({
-                    equipmentId: line.id + '(1)',
-                    equipmentName: line.name ?? '',
+                    [EQUIPMENT_ID]: line.id + '(1)',
+                    [EQUIPMENT_NAME]: line.name ?? '',
                 }),
                 ...getCharacteristicsFormData({
                     r: line.r,
@@ -208,8 +208,8 @@ const LineCreationDialog = ({
         (line) => {
             reset({
                 ...getHeaderFormData({
-                    equipmentId: line.equipmentId,
-                    equipmentName: line.equipmentName,
+                    [EQUIPMENT_ID]: line.equipmentId,
+                    [EQUIPMENT_NAME]: line.equipmentName,
                 }),
                 ...getCharacteristicsFormData({
                     r: line.r,

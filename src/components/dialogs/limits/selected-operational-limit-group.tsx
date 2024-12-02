@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
@@ -20,14 +20,12 @@ export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,// TODO : passer direct le tableau en props ?
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
-    const [limitSets, setLimitSets] = useState<Option[]>([]);
-
     const optionsValues: LimitSet[] = useWatch({
         name: optionsFormName,
     });
 
-    useEffect(() => { // TODO : faire un genre de affectation useMemo ici ?
-        if (optionsValues.length > 0) {
+    const limitSets: Option[] = useMemo(() => {
+        if (optionsValues.length > 0) { // TODO  faire ça avec un stream
             let allLimitSets: Option[] = [];
             optionsValues.forEach((optionObj: LimitSet) => {
                 const option: Option = {
@@ -36,8 +34,9 @@ export const SelectedOperationalLimitGroup = ({
                 };
                 allLimitSets.push(option);
             });
-            setLimitSets(allLimitSets);
+            return allLimitSets;
         }
+        return [];
     }, [optionsValues]);
 
     return (
