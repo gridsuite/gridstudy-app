@@ -1215,7 +1215,7 @@ export const reducer = createReducer(initialState, (builder) => {
             (selectionForCopy.copyType === CopyType.SUBTREE_COPY || selectionForCopy.copyType === CopyType.SUBTREE_CUT)
         ) {
             selectionForCopy.allChildrenIds = getAllChildren(
-                state.networkModificationTreeModel as NetworkModificationTreeModel,
+                state.networkModificationTreeModel,
                 selectionForCopy.nodeId
             ).map((child) => child.id);
         }

@@ -17,9 +17,9 @@ type NodePlacement = {
 };
 
 /**
- * Bidirectional map to match a node ID to a NodePlacement.
+ * Uses a bidirectional map to match a node ID to a NodePlacement.
  */
-class IdPlacementBiMap {
+class PlacementGrid {
     private readonly idToPlacement = new Map<string, NodePlacement>();
     private readonly placementToId = new Map<string, string>();
 
@@ -27,10 +27,10 @@ class IdPlacementBiMap {
         return `${placement.row}_${placement.column}`;
     }
 
-    setPlacement(id: string, placement: NodePlacement) {
+    setPlacement(nodeId: string, placement: NodePlacement) {
         // Remove any existing mappings to ensure bidirectionality
-        if (this.idToPlacement.has(id)) {
-            const oldPlacement = this.idToPlacement.get(id)!;
+        if (this.idToPlacement.has(nodeId)) {
+            const oldPlacement = this.idToPlacement.get(nodeId)!;
             this.placementToId.delete(this.nodePlacementToString(oldPlacement));
         }
         const placementString = this.nodePlacementToString(placement);
@@ -39,12 +39,12 @@ class IdPlacementBiMap {
             this.idToPlacement.delete(oldId);
         }
         // Add the new mappings
-        this.idToPlacement.set(id, placement);
-        this.placementToId.set(placementString, id);
+        this.idToPlacement.set(nodeId, placement);
+        this.placementToId.set(placementString, nodeId);
     }
 
-    getPlacement(id: string): NodePlacement | undefined {
-        const placement = this.idToPlacement.get(id);
+    getPlacement(nodeId: string): NodePlacement | undefined {
+        const placement = this.idToPlacement.get(nodeId);
         // This ensure immutability to prevent external modifications on the returned value
         // from modifying this object's internal values.
         return placement ? { ...placement } : undefined;
@@ -58,15 +58,35 @@ class IdPlacementBiMap {
 /**
  * Builds a bidirectional map representing the placements of nodes for the tree.
  * This map is then used to compute each node's x and y position before being used by ReactFlow.
+ *
+ * This algorithm relies on the fact that the nodes are ordered. Children nodes will always be
+ * after their parents.
+ *
+ * Example tree :
+ *     A
+ *    / \
+ *   B   D
+ *  /   / \
+ * C   E   F
+ *
+ * This tree should have its nodes in the array in this order : [A, B, C, D, E, F]
+ *
+ * For this tree, the returned PlacementGrid would be like this :
+ * A = {row: 0, column: 0}
+ * B = {row: 1, column: 0}
+ * C = {row: 2, column: 0}
+ * D = {row: 1, column: 1}
+ * E = {row: 2, column: 1}
+ * F = {row: 2, column: 2}
  */
-function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]): IdPlacementBiMap {
-    const nodePlacements = new IdPlacementBiMap();
+function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
+    const nodePlacements = new PlacementGrid();
     let currentMaxColumn = 0;
 
     nodes.forEach((node) => {
         if (!node.parentId) {
             // First node, top left.
-            nodePlacements.setPlacement(node.id, { row: 0, column: 0 } as NodePlacement);
+            nodePlacements.setPlacement(node.id, { row: 0, column: 0 });
         } else {
             const parentPlacement = nodePlacements.getPlacement(node.parentId);
             if (parentPlacement) {
@@ -96,7 +116,7 @@ function getNodePlacementsFromTreeNodes(nodes: CurrentTreeNode[]): IdPlacementBi
  */
 export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
-    const nodePlacements = getNodePlacementsFromTreeNodes(newNodes);
+    const nodePlacements = getNodePlacements(newNodes);
 
     newNodes.forEach((node) => {
         const placement = nodePlacements.getPlacement(node.id);
