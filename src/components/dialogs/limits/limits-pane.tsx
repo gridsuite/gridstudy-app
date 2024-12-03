@@ -21,7 +21,7 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { LimitSet } from "../network-modifications/line/creation/load-creation-type";
+import { CurrentLimitsData } from "../network-modifications/line/creation/line-creation-type";
 
 const styles = {
     limitsBackground: {
@@ -58,10 +58,10 @@ export function LimitsPane({
         setSelectedSetStr(allLimitSetsStr[newValue] || null);
     };
 
-    const limitSets1: LimitSet[] = useWatch({
+    const limitSets1: CurrentLimitsData[] = useWatch({
         name: `${id}.${CURRENT_LIMITS_1}`,
     });
-    const limitSets2: LimitSet[] = useWatch({
+    const limitSets2: CurrentLimitsData[] = useWatch({
         name: `${id}.${CURRENT_LIMITS_2}`,
     });
     // in the limitSets1 array
@@ -71,10 +71,10 @@ export function LimitsPane({
 
     useEffect(() => {
         setIndexSelectedLimitSet1(
-            limitSets1.findIndex((limitSet: LimitSet) => limitSet.id === selectedSetStr)
+            limitSets1.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
         );
         setIndexSelectedLimitSet2(
-            limitSets2.findIndex((limitSet: LimitSet) => limitSet.id === selectedSetStr)
+            limitSets2.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
         );
     }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
 
@@ -82,7 +82,7 @@ export function LimitsPane({
         let allLimitSets: string[] = [];
         allLimitSets.push(...limitSets1.map((limitSet: { id: any }) => limitSet.id));
         allLimitSets.push(...limitSets2
-            .filter((limitSet: LimitSet) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.id))
+            .filter((limitSet: CurrentLimitsData) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.id))
             .map((limitSet: { id: any }) => limitSet.id));
         setAllLimitSetsStr(allLimitSets);
     }, [limitSets1, limitSets2]);
@@ -109,7 +109,7 @@ export function LimitsPane({
      */
 
     const addNewLimitSet = () => {
-        /*const newLimitSet: LimitSet = {
+        /*const newLimitSet: CurrentLimitsData = {
             id: `New Limit Set ${limitSets.length - 1}`,
             temporaryLimits: [],
             permanentLimit: undefined,

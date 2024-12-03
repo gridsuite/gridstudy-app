@@ -9,7 +9,7 @@ import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
-import { LimitSet } from '../network-modifications/line/creation/load-creation-type';
+import { CurrentLimitsData } from '../network-modifications/line/creation/line-creation-type';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
@@ -20,14 +20,14 @@ export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
-    const optionsValues: LimitSet[] = useWatch({
+    const optionsValues: CurrentLimitsData[] = useWatch({
         name: optionsFormName,
     });
 
     const limitSets: Option[] = useMemo(() => {
         if (optionsValues.length > 0) { // TODO  faire ça avec un stream
             let allLimitSets: Option[] = [];
-            optionsValues.forEach((optionObj: LimitSet) => {
+            optionsValues.forEach((optionObj: CurrentLimitsData) => {
                 const option: Option = {
                     id: optionObj.id,
                     label: '',

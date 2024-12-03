@@ -143,7 +143,7 @@ const LineCreationDialog = ({
 
     const formatCompleteCurrentLimit = (completeCurrentLimits) => {
         let formattedCompleteCurrentLimit = [];
-        if (completeCurrentLimits.length > 0) {
+        // if (completeCurrentLimits.length > 0) {
             completeCurrentLimits.forEach((elt) =>
                 formattedCompleteCurrentLimit.push( {
                         id: elt.id,
@@ -152,7 +152,7 @@ const LineCreationDialog = ({
                         )
                     }
                 ));
-        }
+        // }
         return formattedCompleteCurrentLimit;
     };
 
@@ -242,14 +242,15 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    /*
-                    temporaryLimits1: addSelectedFieldToRows(
+
+                    /*temporaryLimits1: addSelectedFieldToRows(
                         formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                     ),
                     temporaryLimits2: addSelectedFieldToRows(
                         formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                    ),
-                    */
+                    ),*/
+
+
                     currentLimits1: line.currentLimits1,
                     currentLimits2: line.currentLimits2,
                     selectedOperationalLimitsGroupId1: line.selectedOperationalLimitsGroupId1,

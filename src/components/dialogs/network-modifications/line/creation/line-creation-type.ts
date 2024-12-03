@@ -7,8 +7,14 @@
 
 import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
 
-export interface LimitSet { // TODO : => faire toute une structure là dessus sur le modèle de ce qu'il y a en back, cf load creation
+export interface CurrentLimitsData {
     id: string;
-    temporaryLimits: Object[];
+    temporaryLimits: TemporaryLimitData[];
     permanentLimit?: number;
+}
+
+export interface TemporaryLimitData {
+    name: string;
+    acceptableDuration?: number;
+    value?: number;
 }
