@@ -7,11 +7,6 @@
 import {
     ACTIVE_POWER_SETPOINT,
     ADDITIONAL_PROPERTIES,
-    BUS_OR_BUSBAR_SECTION,
-    CONNECTED,
-    CONNECTION_DIRECTION,
-    CONNECTION_NAME,
-    CONNECTION_POSITION,
     CONNECTIVITY,
     CONVERTER_STATION_1,
     CONVERTER_STATION_2,
@@ -20,16 +15,13 @@ import {
     CONVERTERS_MODE,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    FILTERS_MCS_TABLE,
+    FILTERS_SHUNT_COMPENSATOR_TABLE,
     HVDC_LINE_TAB,
-    ID,
     LOSS_FACTOR,
     MAX_P,
-    NAME,
     NOMINAL_V,
     POWER_FACTOR,
     R,
-    VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
 import yup from '../../../../../utils/yup-config';
 import { DialogProps } from '@mui/material/Dialog/Dialog';
@@ -39,7 +31,7 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FilterMcsTable, LccCreationDialogTab, LccCreationInfos, LccFormInfos } from './lcc-creation.type';
+import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormInfos } from './lcc-creation.type';
 import {
     getLccHvdcLineEmptyFormData,
     getLccHvdcLineFromEditData,
@@ -68,6 +60,7 @@ import { Grid } from '@mui/material';
 import LccCreationDialogHeader from './lcc-creation-dialog-header';
 import LccCreationDialogTabs from './lcc-creation-dialog-tabs';
 import LccCreationForm from './lcc-creation-form';
+import { Connectivity } from '../../../../connectivity/connectivity.type';
 
 export type LccCreationSchemaForm = {
     [EQUIPMENT_ID]: string;
@@ -85,30 +78,16 @@ export type LccCreationSchemaForm = {
         [CONVERTER_STATION_NAME]?: string;
         [LOSS_FACTOR]: number;
         [POWER_FACTOR]: number;
-        [CONNECTIVITY]: {
-            [VOLTAGE_LEVEL]: { [ID]?: string };
-            [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
-            [CONNECTION_DIRECTION]?: string;
-            [CONNECTION_NAME]?: string;
-            [CONNECTION_POSITION]?: number;
-            [CONNECTED]?: boolean;
-        };
-        [FILTERS_MCS_TABLE]?: FilterMcsTable[];
+        [CONNECTIVITY]: Connectivity;
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormInfos[];
     };
     [CONVERTER_STATION_2]: {
         [CONVERTER_STATION_ID]: string;
         [CONVERTER_STATION_NAME]?: string;
         [LOSS_FACTOR]: number;
         [POWER_FACTOR]: number;
-        [CONNECTIVITY]: {
-            [VOLTAGE_LEVEL]: { [ID]?: string };
-            [BUS_OR_BUSBAR_SECTION]: { [ID]?: string; [NAME]?: string };
-            [CONNECTION_DIRECTION]?: string;
-            [CONNECTION_NAME]?: string;
-            [CONNECTION_POSITION]?: number;
-            [CONNECTED]?: boolean;
-        };
-        [FILTERS_MCS_TABLE]?: FilterMcsTable[];
+        [CONNECTIVITY]: Connectivity;
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormInfos[];
     };
 };
 
@@ -243,8 +222,10 @@ export function LccCreationDialog({
             }
 
             if (tabsInError.includes(tabIndex)) {
+                // error in current tab => do not change tab systematically but remove current tab in error list
                 setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
             } else if (tabsInError.length > 0) {
+                // switch to the first tab in the list then remove the tab in the error list
                 setTabIndex(tabsInError[0]);
                 setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
             }
@@ -268,7 +249,7 @@ export function LccCreationDialog({
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
             <ModificationDialog
                 fullWidth
-                maxWidth={'md'}
+                maxWidth="md"
                 onClose={clear}
                 onClear={clear}
                 onSave={onSubmit}

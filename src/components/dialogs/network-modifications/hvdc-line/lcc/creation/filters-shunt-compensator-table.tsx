@@ -14,21 +14,21 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useFieldArray } from 'react-hook-form';
 import {
     COUNT,
-    FILTERS_MCS_TABLE,
+    FILTERS_SHUNT_COMPENSATOR_TABLE,
     MAX_Q_AT_NOMINAL_V,
-    MCS_SELECTED,
+    SHUNT_COMPENSATOR_SELECTED,
     SHUNT_COMPENSATOR_ID,
     SHUNT_COMPENSATOR_NAME,
 } from '../../../../../utils/field-constants';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment } from '../../../../dialog-utils';
 
-interface FiltersMcsTableProps {
+interface FiltersShuntCompensatorTableProps {
     id: string;
 }
-export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) {
+export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShuntCompensatorTableProps>) {
     const intl = useIntl();
-    const { fields: rows, append, remove } = useFieldArray({ name: `${id}.${FILTERS_MCS_TABLE}` });
+    const { fields: rows, append, remove } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
     const [isHover, setIsHover] = useState<Record<number, boolean>>({});
     const handleHover = (rowIndex: number, hoverState: boolean) => {
         setIsHover((prev) => ({
@@ -58,7 +58,7 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
             },
             {
                 label: 'connectedToHvdc',
-                dataKey: MCS_SELECTED,
+                dataKey: SHUNT_COMPENSATOR_SELECTED,
                 initialValue: false,
                 width: '10%',
             },
@@ -126,22 +126,24 @@ export default function FiltersMcsTable({ id }: Readonly<FiltersMcsTableProps>) 
                                 <TableCell key={column.dataKey} sx={{ width: column.width, textAlign: 'center' }}>
                                     {column.dataKey === SHUNT_COMPENSATOR_ID && (
                                         <TextInput
-                                            name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
+                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_ID}`}
                                         />
                                     )}
                                     {column.dataKey === SHUNT_COMPENSATOR_NAME && (
                                         <TextInput
-                                            name={`${id}.${FILTERS_MCS_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}
+                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_NAME}`}
                                         />
                                     )}
                                     {column.dataKey === MAX_Q_AT_NOMINAL_V && (
                                         <FloatInput
-                                            name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
+                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${MAX_Q_AT_NOMINAL_V}`}
                                             adornment={ReactivePowerAdornment}
                                         />
                                     )}
-                                    {column.dataKey === MCS_SELECTED && (
-                                        <SwitchInput name={`${id}.${FILTERS_MCS_TABLE}[${index}].${MCS_SELECTED}`} />
+                                    {column.dataKey === SHUNT_COMPENSATOR_SELECTED && (
+                                        <SwitchInput
+                                            name={`${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                                        />
                                     )}
                                 </TableCell>
                             ))}

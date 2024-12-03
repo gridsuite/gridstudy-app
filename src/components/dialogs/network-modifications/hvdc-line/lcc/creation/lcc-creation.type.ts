@@ -6,6 +6,7 @@
  */
 import { Property } from '../../../common/properties/property-utils';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import { ConnectablePositionInfos } from '../../../../connectivity/connectivity.type';
 
 export const LccCreationDialogTab = {
     HVDC_LINE_TAB: 0,
@@ -23,12 +24,12 @@ export interface LccCreationInfos {
     maxP: number;
     convertersMode: string;
     activePowerSetpoint: number;
-    converterStation1: LccConverterStationInfos;
-    converterStation2: LccConverterStationInfos;
+    converterStation1: LccConverterStationCreationInfos;
+    converterStation2: LccConverterStationCreationInfos;
     properties?: Property[];
 }
 
-export interface LccConverterStationInfos {
+export interface LccConverterStationCreationInfos {
     equipmentId: string;
     equipmentName: string | null;
     lossFactor: number;
@@ -37,33 +38,17 @@ export interface LccConverterStationInfos {
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    mcsOnSide: FilterMcsTable[];
+    mcsOnSide: ShuntCompensatorFormInfos[];
 }
 
-interface ConnectablePositionInfos {
-    connectionDirection: string | null;
-    connectionName?: string | null;
-    connectionPosition?: string | null;
-    terminalConnected?: boolean | null;
-}
-
-export interface FilterMcsTable {
+export interface ShuntCompensatorFormInfos {
     shuntCompensatorName?: string | null;
     shuntCompensatorId: string;
     maxQAtNominalV: number;
     connectedToHvdc: boolean;
 }
 
-export interface Connectivity {
-    voltageLevel: { id?: string };
-    busOrBusbarSection: { id?: string; name?: string };
-    connectionDirection?: string;
-    connectionName?: string;
-    connectionPosition?: number;
-    terminalConnected?: boolean;
-}
-
-export interface McsOnSide {
+export interface ShuntCompensatorOnSide {
     id: string;
     name?: string | null;
     maxQAtNominalV: number;
@@ -79,7 +64,7 @@ export interface LccConverterStationFormInfos {
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    mcsOnSide: McsOnSide[];
+    mcsOnSide: ShuntCompensatorOnSide[];
 }
 
 export interface LccFormInfos {

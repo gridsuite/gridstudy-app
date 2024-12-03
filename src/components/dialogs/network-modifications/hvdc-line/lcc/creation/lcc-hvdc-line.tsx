@@ -66,11 +66,11 @@ export function getLccHvdcLineFromEditData(hvdcLine: LccCreationInfos) {
         ...getPropertiesFromModification(hvdcLine.properties),
     };
 }
-interface LccHvdcLinePaneProps {
+interface LccHvdcLineProps {
     id: string;
 }
 
-export default function LccHvdcLinePane({ id }: Readonly<LccHvdcLinePaneProps>) {
+export default function LccHvdcLine({ id }: Readonly<LccHvdcLineProps>) {
     const dcNominalVoltageField = (
         <FloatInput name={`${id}.${NOMINAL_V}`} adornment={VoltageAdornment} label={'dcNominalVoltageLabel'} />
     );

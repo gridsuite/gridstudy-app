@@ -8,7 +8,7 @@ import { UUID } from 'crypto';
 import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { Box } from '@mui/material';
 import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
-import LccHvdcLinePane from './lcc-hvdc-line';
+import LccHvdcLine from './lcc-hvdc-line';
 import { LccCreationDialogTab } from './lcc-creation.type';
 import LccConverterStation from './lcc-converter-station';
 
@@ -21,7 +21,7 @@ export default function LccCreationForm({ tabIndex, studyUuid, currentNode }: Re
     return (
         <>
             <Box hidden={tabIndex !== LccCreationDialogTab.HVDC_LINE_TAB} p={1}>
-                <LccHvdcLinePane id={HVDC_LINE_TAB} />
+                <LccHvdcLine id={HVDC_LINE_TAB} />
             </Box>
             <Box hidden={tabIndex !== LccCreationDialogTab.CONVERTER_STATION_1} p={1}>
                 <LccConverterStation

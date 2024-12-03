@@ -795,7 +795,7 @@
     "TemporaryLimitDurationUnicityError": "Temporary limit acceptable durations must be unique in the table",
     "shuntCompensatorId": "Shunt compensator ID",
     "shuntCompensatorName": "Shunt compensator name",
-    "connectedToHvdc": "Connected To Hvdc",
+    "connectedToHvdc": "Connected To HVDC",
     "ShuntSusceptancePerSection": "Susceptance per section",
     "ShuntIdenticalSections": "Identical sections",
     "ShuntCurrentNumberOfSections": "Current number of sections",
@@ -914,7 +914,7 @@
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
     "qMaxAtNominalVMustBeGreaterThanZero": "The Qmax available at nominal voltage value must be greater than 0",
-    "powerFactorNormalizedPercentage": "The power factor value must be greater than 1 %",
+    "powerFactorNormalizedPercentage": "The power factor value must be less than 1 %",
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
 
