@@ -52,9 +52,11 @@ export function LimitsPane({
     const [allLimitSetsStr, setAllLimitSetsStr] = useState<string[]>([]);
     // selected set in the tab interface
     const [selectedSetStr, setSelectedSetStr] = useState<string | null>(allLimitSetsStr[0] || null);
-    const [tabValue, setTabValue] = useState(0);
+    const [selectedLimitSetTabIndex, setSelectedLimitSetTabIndex] = useState<number>(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setTabValue(newValue);
+        // console.log("Mathieu handleTabChange newValue : " + newValue);
+        // console.log("Mathieu handleTabChange allLimitSetsStr[newValue] : " + allLimitSetsStr[newValue]);
+        setSelectedLimitSetTabIndex(newValue);
         setSelectedSetStr(allLimitSetsStr[newValue] || null);
     };
 
@@ -116,7 +118,7 @@ export function LimitsPane({
         };*/
         const newLimitSet: string = `DEFAUT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : null}`;
         setAllLimitSetsStr([...allLimitSetsStr, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
-        setTabValue(allLimitSetsStr.length);
+        setSelectedLimitSetTabIndex(allLimitSetsStr.length - 1);
         setSelectedSetStr(newLimitSet);
     };
 
@@ -159,13 +161,13 @@ export function LimitsPane({
                     <Tabs
                         orientation="vertical"
                         variant="scrollable"
-                        value={tabValue}
+                        value={selectedLimitSetTabIndex}
                         onChange={handleTabChange}
                         sx={{ flexGrow: 1 }}
                     >
                         {allLimitSetsStr.map((set, index) => (
                             // <Box sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} > TODO : bloque le clic sur tab => à arranger pour avoir l'icone comme bouton séparé
-                                <Tab key={set} label={set} sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} />
+                                <Tab key={set} label={set} sx={index === selectedLimitSetTabIndex ? styles.limitsBackground : styles.limitsBackgroundUnselected} />
                                 // <DensityMediumIcon fontSize={'small'} />
                             //</Box>
                         ))}
