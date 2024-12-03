@@ -24,7 +24,7 @@ import {
     CENTER_LABEL,
     COMPONENT_LIBRARY,
     DIAGONAL_LABEL,
-    intlSubstationLayoutOptions,
+    INTL_SUBSTATION_LAYOUT_OPTIONS,
     SUBSTATION_LAYOUT,
     TabValue,
 } from './network-visualizations-utils';
@@ -53,7 +53,7 @@ export const SingleLineDiagramParameters = ({ componentLibraries }: { componentL
 
     // the translation of values
     const substationLayoutOptions = useMemo(() => {
-        return intlSubstationLayoutOptions();
+        return INTL_SUBSTATION_LAYOUT_OPTIONS;
     }, []);
 
     const labelPosition = (name: string, label: string) => (

@@ -60,7 +60,7 @@ export interface NestedObject {
     [key: string]: NestedObject | string | number | boolean;
 }
 
-export const intlLineFlowModeOptions = () => [
+export const INTL_LINE_FLOW_MODE_OPTIONS = [
     {
         id: LineFlowMode.STATIC_ARROWS,
         label: 'StaticArrows',
@@ -75,7 +75,7 @@ export const intlLineFlowModeOptions = () => [
     },
 ];
 
-export const intlLineFlowColorModeOptions = () => [
+export const INTL_LINE_FLOW_COLOR_MODE_OPTIONS = [
     {
         id: LineFlowColorMode.NOMINAL_VOLTAGE,
         label: 'NominalVoltage',
@@ -85,7 +85,7 @@ export const intlLineFlowColorModeOptions = () => [
         label: 'Overloads',
     },
 ];
-export const intlMapBaseMapOptions = () => [
+export const INTL_MAP_BASE_MAP_OPTIONS = [
     {
         id: MAP_BASEMAP_MAPBOX,
         label: 'Mapbox',
@@ -123,7 +123,7 @@ export const fromNetworkVisualizationsParamsDataToFormValues = (parameters: Netw
     };
 };
 
-export const intlSubstationLayoutOptions = () => [
+export const INTL_SUBSTATION_LAYOUT_OPTIONS = [
     {
         id: SubstationLayout.HORIZONTAL,
         label: 'HorizontalSubstationLayout',

@@ -22,9 +22,9 @@ import { mergeSx, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
 import { FormattedMessage } from 'react-intl';
 import {
     ALERT_THRESHOLD_LABEL,
-    intlLineFlowColorModeOptions,
-    intlLineFlowModeOptions,
-    intlMapBaseMapOptions,
+    INTL_LINE_FLOW_COLOR_MODE_OPTIONS,
+    INTL_LINE_FLOW_MODE_OPTIONS,
+    INTL_MAP_BASE_MAP_OPTIONS,
     LINE_FLOW_COLOR_MODE,
     LINE_FLOW_MODE,
     MAP_BASE_MAP,
@@ -49,23 +49,23 @@ export const MapParameters = () => {
         name: `${TabValue.MAP}.${PARAM_LINE_FLOW_COLOR_MODE}`,
     });
 
-    const onSliderChange = (value: any) => {
-        setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, Number(value), {
+    const onSliderChange = (value: number) => {
+        setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, value, {
             shouldValidate: true,
         });
     };
 
     // the translation of values
     const lineFlowModeOptions = useMemo(() => {
-        return intlLineFlowModeOptions();
+        return INTL_LINE_FLOW_MODE_OPTIONS;
     }, []);
 
     const lineFlowColorModeOptions = useMemo(() => {
-        return intlLineFlowColorModeOptions();
+        return INTL_LINE_FLOW_COLOR_MODE_OPTIONS;
     }, []);
 
     const mapBaseMapOptions = useMemo(() => {
-        return intlMapBaseMapOptions();
+        return INTL_MAP_BASE_MAP_OPTIONS;
     }, []);
 
     // fields definition
