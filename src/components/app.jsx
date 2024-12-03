@@ -124,8 +124,6 @@ const App = () => {
             let dispatchReorderedColumns = false;
 
             params.forEach((param) => {
-                console.table(param);
-                console.table(param.name);
                 switch (param.name) {
                     case PARAM_THEME:
                         dispatch(selectTheme(param.value));
