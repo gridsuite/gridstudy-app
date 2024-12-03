@@ -80,13 +80,10 @@ export function LimitsPane({
 
     useEffect(() => {
         let allLimitSets: string[] = [];
-        if (limitSets1) {
-            allLimitSets.push(...limitSets1.map((limitSet: { id: any }) => limitSet.id));
-        }
-        if (limitSets2) {
-            allLimitSets.push(...limitSets2.map((limitSet: { id: any }) => limitSet.id));
-        }
-        // TODO : do this with a stream system et filtrer les doublons de limit sets dans les deux tableaux
+        allLimitSets.push(...limitSets1.map((limitSet: { id: any }) => limitSet.id));
+        allLimitSets.push(...limitSets2
+            .filter((limitSet: LimitSet) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.id))
+            .map((limitSet: { id: any }) => limitSet.id));
         setAllLimitSetsStr(allLimitSets);
     }, [limitSets1, limitSets2]);
 
