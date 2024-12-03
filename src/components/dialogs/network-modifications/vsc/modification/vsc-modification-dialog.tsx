@@ -69,6 +69,7 @@ import {
     modificationPropertiesSchema,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { isNodeBuilt } from '../../../../graph/util/model-functions';
 
 const formSchema = yup
     .object()
@@ -179,7 +180,8 @@ const VscModificationDialog: React.FC<any> = ({
                                     previousReactiveCapabilityCurveTable1,
                                     `${CONVERTER_STATION_1}.${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
-                                    setValue
+                                    setValue,
+                                    isNodeBuilt(currentNodeUuid)
                                 );
                             }
 
