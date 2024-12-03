@@ -30,7 +30,7 @@ import {
     SPREADSHEET_NAME,
 } from './custom-spreadsheet-form';
 import { EQUIPMENT_TYPE_FIELD } from 'components/utils/field-constants';
-import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
+import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFilterForNewSpreadsheet, addSortForNewSpreadsheet, updateTableDefinition } from 'redux/actions';
 import { TABLES_DEFINITIONS, TABLES_TYPES, type TablesDefinitionsType } from '../config/config-tables';
