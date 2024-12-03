@@ -53,14 +53,7 @@ import {
     getLccConverterStationFromSearchCopy,
     getLccConverterStationSchema,
 } from './lcc-converter-station';
-import {
-    copyEquipmentPropertiesForCreation,
-    creationPropertiesSchema,
-    emptyProperties,
-    getPropertiesFromModification,
-    Property,
-    toModificationProperties,
-} from '../../../common/properties/property-utils';
+import { Property, toModificationProperties } from '../../../common/properties/property-utils';
 import { useFormSearchCopy } from '../../../../form-search-copy-hook';
 import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
 import { CustomFormProvider, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -85,8 +78,8 @@ export type LccCreationSchemaForm = {
         [MAX_P]: number;
         [CONVERTERS_MODE]: string;
         [ACTIVE_POWER_SETPOINT]: number;
+        [ADDITIONAL_PROPERTIES]?: Property[];
     };
-    [ADDITIONAL_PROPERTIES]?: Property[];
     [CONVERTER_STATION_1]: {
         [CONVERTER_STATION_ID]: string;
         [CONVERTER_STATION_NAME]?: string;
@@ -125,7 +118,6 @@ const emptyFormData = {
     [HVDC_LINE_TAB]: getLccHvdcLineEmptyFormData(),
     [CONVERTER_STATION_1]: getLccConverterStationEmptyFormData(),
     [CONVERTER_STATION_2]: getLccConverterStationEmptyFormData(),
-    ...emptyProperties,
 };
 
 const formSchema = yup
@@ -137,7 +129,6 @@ const formSchema = yup
         [CONVERTER_STATION_1]: getLccConverterStationSchema(),
         [CONVERTER_STATION_2]: getLccConverterStationSchema(),
     })
-    .concat(creationPropertiesSchema)
     .required();
 
 export interface LccCreationDialogProps extends Partial<DialogProps> {
@@ -171,7 +162,6 @@ export function LccCreationDialog({
         [HVDC_LINE_TAB]: getLccHvdcLineFromSearchCopy(lccHvdcLine),
         [CONVERTER_STATION_1]: getLccConverterStationFromSearchCopy(lccHvdcLine.lccConverterStation1),
         [CONVERTER_STATION_2]: getLccConverterStationFromSearchCopy(lccHvdcLine.lccConverterStation2),
-        ...copyEquipmentPropertiesForCreation(lccHvdcLine),
     });
 
     const fromEditDataToFormValues = useCallback(
@@ -182,7 +172,6 @@ export function LccCreationDialog({
                 [HVDC_LINE_TAB]: getLccHvdcLineFromEditData(lccCreationInfos),
                 [CONVERTER_STATION_1]: getLccConverterStationFromEditData(lccCreationInfos.converterStation1),
                 [CONVERTER_STATION_2]: getLccConverterStationFromEditData(lccCreationInfos.converterStation2),
-                ...getPropertiesFromModification(lccCreationInfos.properties),
             });
         },
         [reset]
@@ -221,7 +210,7 @@ export function LccCreationDialog({
                 activePowerSetpoint: hvdcLineTab[ACTIVE_POWER_SETPOINT],
                 converterStation1: lccConverterStation1,
                 converterStation2: lccConverterStation2,
-                properties: toModificationProperties(lccHvdcLine),
+                properties: toModificationProperties(hvdcLineTab),
                 isUpdate: !!editData,
                 modificationUuid: editData ? editData.uuid : undefined,
             }).catch((error) => {

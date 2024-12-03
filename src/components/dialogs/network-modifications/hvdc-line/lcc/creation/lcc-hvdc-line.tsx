@@ -15,15 +15,24 @@ import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
 import yup from '../../../../../utils/yup-config';
 import { LccCreationInfos, LccFormInfos } from './lcc-creation.type';
+import {
+    copyEquipmentPropertiesForCreation,
+    creationPropertiesSchema,
+    emptyProperties,
+    getPropertiesFromModification,
+} from '../../../common/properties/property-utils';
 
 export const getLccHvdcLineSchema = () =>
-    yup.object().shape({
-        [NOMINAL_V]: yup.number().nullable().required(),
-        [R]: yup.number().nullable().required(),
-        [MAX_P]: yup.number().nullable().required(),
-        [CONVERTERS_MODE]: yup.string().required(),
-        [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
-    });
+    yup
+        .object()
+        .shape({
+            [NOMINAL_V]: yup.number().nullable().required(),
+            [R]: yup.number().nullable().required(),
+            [MAX_P]: yup.number().nullable().required(),
+            [CONVERTERS_MODE]: yup.string().required(),
+            [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
+        })
+        .concat(creationPropertiesSchema);
 
 export function getLccHvdcLineEmptyFormData() {
     return {
@@ -32,6 +41,7 @@ export function getLccHvdcLineEmptyFormData() {
         [MAX_P]: null,
         [CONVERTERS_MODE]: null,
         [ACTIVE_POWER_SETPOINT]: null,
+        ...emptyProperties,
     };
 }
 
@@ -42,6 +52,7 @@ export function getLccHvdcLineFromSearchCopy(hvdcLine: LccFormInfos) {
         [MAX_P]: hvdcLine.maxP,
         [CONVERTERS_MODE]: hvdcLine.convertersMode,
         [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
+        ...copyEquipmentPropertiesForCreation(hvdcLine),
     };
 }
 
@@ -52,6 +63,7 @@ export function getLccHvdcLineFromEditData(hvdcLine: LccCreationInfos) {
         [MAX_P]: hvdcLine.maxP,
         [CONVERTERS_MODE]: hvdcLine.convertersMode,
         [ACTIVE_POWER_SETPOINT]: hvdcLine.activePowerSetpoint,
+        ...getPropertiesFromModification(hvdcLine.properties),
     };
 }
 interface LccHvdcLinePaneProps {
@@ -101,7 +113,7 @@ export default function LccHvdcLinePane({ id }: Readonly<LccHvdcLinePaneProps>) 
                 <GridItem>{activePowerField}</GridItem>
             </Grid>
 
-            <PropertiesForm />
+            <PropertiesForm id={id} />
         </Grid>
     );
 }
