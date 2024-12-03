@@ -25,7 +25,8 @@ export const SelectedOperationalLimitGroup = ({
     });
 
     const limitSets: Option[] = useMemo(() => {
-        if (optionsValues.length > 0) { // TODO  faire ça avec un stream
+        if (optionsValues.length > 0) {
+            // TODO  faire ça avec un stream
             let allLimitSets: Option[] = [];
             optionsValues.forEach((optionObj: CurrentLimitsData) => {
                 const option: Option = {

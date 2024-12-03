@@ -48,52 +48,61 @@ const limitGroupValidationSchema = () => ({
         }),
 });
 
-const limitsValidationSchema = (id, onlySelectedLimits = true) => (onlySelectedLimits ? {
-    [id]: yup.object().shape({
-        [CURRENT_LIMITS_1]: yup.object().shape(limitGroupValidationSchema()),
-        [CURRENT_LIMITS_2]: yup.object().shape(limitGroupValidationSchema()),
-    }),
-} : {
-    [id]: yup.object().shape({
-        [CURRENT_LIMITS_1]: yup.array(yup.object().shape(limitGroupValidationSchema())),
-        [CURRENT_LIMITS_2]: yup.array(yup.object().shape(limitGroupValidationSchema())),
-        [SELECTED_LIMIT_GROUP_1]: yup.string(),
-        [SELECTED_LIMIT_GROUP_2]: yup.string(),
-    }),
-});
+const limitsValidationSchema = (id, onlySelectedLimits = true) =>
+    onlySelectedLimits
+        ? {
+              [id]: yup.object().shape({
+                  [CURRENT_LIMITS_1]: yup.object().shape(limitGroupValidationSchema()),
+                  [CURRENT_LIMITS_2]: yup.object().shape(limitGroupValidationSchema()),
+              }),
+          }
+        : {
+              [id]: yup.object().shape({
+                  [CURRENT_LIMITS_1]: yup.array(yup.object().shape(limitGroupValidationSchema())),
+                  [CURRENT_LIMITS_2]: yup.array(yup.object().shape(limitGroupValidationSchema())),
+                  [SELECTED_LIMIT_GROUP_1]: yup.string(),
+                  [SELECTED_LIMIT_GROUP_2]: yup.string(),
+              }),
+          };
 
 export const getLimitsValidationSchema = (id = LIMITS, onlySelectedLimits = true) => {
     return limitsValidationSchema(id, onlySelectedLimits);
 };
 
-const limitsEmptyFormData = (id, onlySelectedLimits = true) => (
-    onlySelectedLimits ? {
-    [id]: {
-        [CURRENT_LIMITS_1]: {
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        },
-        [CURRENT_LIMITS_2]: {
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        },
-    },
-} : {
-        [id]: {
-            [CURRENT_LIMITS_1]: [{
-                [ID]: '',
-                [PERMANENT_LIMIT]: null,
-                [TEMPORARY_LIMITS]: [],
-            }],
-            [CURRENT_LIMITS_2]: [{
-                [ID]: '',
-                [PERMANENT_LIMIT]: null,
-                [TEMPORARY_LIMITS]: [],
-            }],
-            [SELECTED_LIMIT_GROUP_1]: '',
-            [SELECTED_LIMIT_GROUP_2]: '',
-        }
-});
+const limitsEmptyFormData = (id, onlySelectedLimits = true) =>
+    onlySelectedLimits
+        ? {
+              [id]: {
+                  [CURRENT_LIMITS_1]: {
+                      [PERMANENT_LIMIT]: null,
+                      [TEMPORARY_LIMITS]: [],
+                  },
+                  [CURRENT_LIMITS_2]: {
+                      [PERMANENT_LIMIT]: null,
+                      [TEMPORARY_LIMITS]: [],
+                  },
+              },
+          }
+        : {
+              [id]: {
+                  [CURRENT_LIMITS_1]: [
+                      {
+                          [ID]: '',
+                          [PERMANENT_LIMIT]: null,
+                          [TEMPORARY_LIMITS]: [],
+                      },
+                  ],
+                  [CURRENT_LIMITS_2]: [
+                      {
+                          [ID]: '',
+                          [PERMANENT_LIMIT]: null,
+                          [TEMPORARY_LIMITS]: [],
+                      },
+                  ],
+                  [SELECTED_LIMIT_GROUP_1]: '',
+                  [SELECTED_LIMIT_GROUP_2]: '',
+              },
+          };
 
 export const getLimitsEmptyFormData = (id = LIMITS, onlySelectedLimits = true) => {
     return limitsEmptyFormData(id, onlySelectedLimits);
@@ -123,16 +132,20 @@ export const getSelectedLimitsFormData = (
  */
 export const getAllLimitsFormData = (
     {
-        currentLimits1 = [{
-            [ID]: '',
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        }],
-        currentLimits2 = [{
-            [ID]: '',
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        }],
+        currentLimits1 = [
+            {
+                [ID]: '',
+                [PERMANENT_LIMIT]: null,
+                [TEMPORARY_LIMITS]: [],
+            },
+        ],
+        currentLimits2 = [
+            {
+                [ID]: '',
+                [PERMANENT_LIMIT]: null,
+                [TEMPORARY_LIMITS]: [],
+            },
+        ],
         selectedOperationalLimitsGroupId1 = null,
         selectedOperationalLimitsGroupId2 = null,
     },
@@ -145,7 +158,6 @@ export const getAllLimitsFormData = (
         [SELECTED_LIMIT_GROUP_2]: selectedOperationalLimitsGroupId2,
     },
 });
-
 
 export const sanitizeLimitNames = (temporaryLimitList) =>
     temporaryLimitList.map(({ name, ...temporaryLimit }) => ({

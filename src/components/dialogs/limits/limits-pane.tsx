@@ -21,7 +21,7 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useWatch } from 'react-hook-form';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { CurrentLimitsData } from "../network-modifications/line/creation/line-creation-type";
+import { CurrentLimitsData } from '../network-modifications/line/creation/line-creation-type';
 
 const styles = {
     limitsBackground: {
@@ -83,9 +83,13 @@ export function LimitsPane({
     useEffect(() => {
         let allLimitSets: string[] = [];
         allLimitSets.push(...limitSets1.map((limitSet: { id: any }) => limitSet.id));
-        allLimitSets.push(...limitSets2
-            .filter((limitSet: CurrentLimitsData) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.id))
-            .map((limitSet: { id: any }) => limitSet.id));
+        allLimitSets.push(
+            ...limitSets2
+                .filter(
+                    (limitSet: CurrentLimitsData) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.id)
+                )
+                .map((limitSet: { id: any }) => limitSet.id)
+        );
         setAllLimitSetsStr(allLimitSets);
     }, [limitSets1, limitSets2]);
 
@@ -166,10 +170,24 @@ export function LimitsPane({
                         sx={{ flexGrow: 1 }}
                     >
                         {allLimitSetsStr.map((set, index) => (
-                            // <Box sx={index === tabValue ? styles.limitsBackground : styles.limitsBackgroundUnselected} > TODO : bloque le clic sur tab => à arranger pour avoir l'icone comme bouton séparé
-                                <Tab key={set} label={set} sx={index === selectedLimitSetTabIndex ? styles.limitsBackground : styles.limitsBackgroundUnselected} />
-                                // <DensityMediumIcon fontSize={'small'} />
-                            //</Box>
+                            <Box
+                                sx={
+                                    index === selectedLimitSetTabIndex
+                                        ? styles.limitsBackground
+                                        : styles.limitsBackgroundUnselected
+                                }
+                            >
+                                <Tab
+                                    key={set}
+                                    label={set}
+                                    sx={
+                                        index === selectedLimitSetTabIndex
+                                            ? styles.limitsBackground
+                                            : styles.limitsBackgroundUnselected
+                                    }
+                                />
+                                <DensityMediumIcon fontSize={'small'} />
+                            </Box>
                         ))}
                     </Tabs>
                 </Grid>

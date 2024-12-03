@@ -141,23 +141,22 @@ const LineCreationDialog = ({
 
     const { reset, setValue } = formMethods;
 
-    const formatCompleteCurrentLimit = (completeCurrentLimits/*: CurrentLimitsData[]*/) => {
-        let formattedCompleteCurrentLimit/*: CurrentLimitsData[]*/ = [];
-        // if (completeCurrentLimits.length > 0) {
+    const formatCompleteCurrentLimit = (completeCurrentLimits /*: CurrentLimitsData[]*/) => {
+        let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
+        if (completeCurrentLimits.length > 0) {
             completeCurrentLimits.forEach((elt) =>
-                formattedCompleteCurrentLimit.push( {
-                        id: elt.id,
-                        permanentLimit: elt.permanentLimit,
-                        temporaryLimits : addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits),
-                        )
-                    }
-                ));
-        // }
+                formattedCompleteCurrentLimit.push({
+                    id: elt.id,
+                    permanentLimit: elt.permanentLimit,
+                    temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                })
+            );
+        }
         return formattedCompleteCurrentLimit;
     };
 
     const fromSearchCopyToFormValues = (line) => {
-         // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
+        // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
         reset(
             {
                 ...getHeaderFormData({

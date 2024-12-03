@@ -5,8 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-
 export interface CurrentLimitsData {
     id: string;
     temporaryLimits: TemporaryLimitData[];

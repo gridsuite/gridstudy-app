@@ -181,11 +181,11 @@ export const LimitsSidePane = ({
 
     return (
         <Paper sx={styles.limitsBackground}>
-                {(indexLimitSet !== undefined) && permanentCurrentLimitField}
+            {indexLimitSet !== undefined && permanentCurrentLimitField}
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            {(indexLimitSet !== undefined) && (
+            {indexLimitSet !== undefined && (
                 <DndTable
                     arrayFormName={`${limitSetFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
                     useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
@@ -202,7 +202,7 @@ export const LimitsSidePane = ({
                     isValueModified={isValueModified}
                     minRowsNumber={5}
                 />
-                )}
+            )}
         </Paper>
     );
 };
