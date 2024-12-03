@@ -36,7 +36,7 @@ export default class NetworkModificationTreeModel {
      * on their initial positions.
      * Both nodes should have the same parent.
      */
-    private switchSiblingsOrder(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+    switchSiblingsOrder(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
         if (!draggedNode.parentId || draggedNode.parentId !== destinationNode.parentId) {
             console.error('Both nodes should have the same parent to switch their order');
             return;
@@ -75,7 +75,7 @@ export default class NetworkModificationTreeModel {
      * - getCommonAncestor(B, E) will return A
      * - getCommonAncestor(E, F) will return D
      */
-    private getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
+    getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
         const getAncestors = (node: CurrentTreeNode) => {
             const ancestors = [];
             let current: CurrentTreeNode | undefined = node;
@@ -120,10 +120,7 @@ export default class NetworkModificationTreeModel {
      * @returns The child of the ancestor node in the lineage or null if not found.
      * @private
      */
-    private getChildOfAncestorInLineage(
-        ancestor: CurrentTreeNode,
-        descendant: CurrentTreeNode
-    ): CurrentTreeNode | null {
+    getChildOfAncestorInLineage(ancestor: CurrentTreeNode, descendant: CurrentTreeNode): CurrentTreeNode | null {
         let current: CurrentTreeNode | undefined = descendant;
         while (current && current.parentId) {
             const parentId: string = current.parentId;
