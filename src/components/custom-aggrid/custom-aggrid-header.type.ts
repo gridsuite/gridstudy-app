@@ -65,6 +65,10 @@ export type CustomHeaderMenuParams = {
     Menu: React.FC<CustomColumnConfigProps>;
 };
 
+export type CustomHeaderSortParams = {
+    isSortable?: boolean;
+} & SortPropsType;
+
 export type FilterDataType = {
     dataType: string;
     type: string;

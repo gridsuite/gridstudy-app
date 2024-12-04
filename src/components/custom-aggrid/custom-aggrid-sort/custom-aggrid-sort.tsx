@@ -9,6 +9,7 @@ import { SortPropsType, SortWay } from '../../../hooks/use-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
 import { useCustomAggridSort } from './use-custom-aggrid-sort';
+import { CustomHeaderSortParams } from '../custom-aggrid-header.type';
 
 const styles = {
     iconSize: {
@@ -18,17 +19,19 @@ const styles = {
 
 interface CustomAggridSortProps {
     field: string;
-    sortParams: SortPropsType;
+    sortParams: CustomHeaderSortParams;
 }
 
 export const CustomAggridSort = ({ field, sortParams }: CustomAggridSortProps) => {
     const { columnSort, handleSortChange } = useCustomAggridSort(field, sortParams);
+    const { isSortable } = sortParams;
     const handleClick = () => {
         handleSortChange();
     };
     const isColumnSorted = !!columnSort;
 
     return (
+        isSortable &&
         isColumnSorted && (
             <IconButton onClick={handleClick}>
                 {columnSort.sort === SortWay.ASC ? (
