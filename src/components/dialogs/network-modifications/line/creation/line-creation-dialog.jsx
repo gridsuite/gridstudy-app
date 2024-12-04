@@ -26,7 +26,6 @@ import {
     G1,
     G2,
     LIMITS,
-    PERMANENT_LIMIT,
     R,
     SELECTED_LIMIT_GROUP_1,
     SELECTED_LIMIT_GROUP_2,
@@ -143,15 +142,13 @@ const LineCreationDialog = ({
 
     const formatCompleteCurrentLimit = (completeCurrentLimits /*: CurrentLimitsData[]*/) => {
         let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
-        if (completeCurrentLimits.length > 0) {
-            completeCurrentLimits.forEach((elt) =>
-                formattedCompleteCurrentLimit.push({
-                    id: elt.id,
-                    permanentLimit: elt.permanentLimit,
-                    temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
-                })
-            );
-        }
+        completeCurrentLimits.forEach((elt) =>
+            formattedCompleteCurrentLimit.push({
+                id: elt.id,
+                permanentLimit: elt.permanentLimit,
+                temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+            })
+        );
         return formattedCompleteCurrentLimit;
     };
 
@@ -266,11 +263,21 @@ const LineCreationDialog = ({
         }
     }, [fromEditDataToFormValues, editData]);
 
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
+    /**
+     * delete the empty temporary limits lines
+     */
+    const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) => {
+        const finalCurrentLimitsData = currentLimitsData.map((currentLimits) /*: CurrentLimitsData*/ =>
+            currentLimits[TEMPORARY_LIMITS].filter(
+                (limit) =>
+                    // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                    limit.name !== undefined && limit.name !== null && limit.name !== ''
+            ).map(({ name, ...temporaryLimit }) => ({
+                ...temporaryLimit,
+                name: sanitizeString(name),
+            })));
+        return finalCurrentLimitsData;
+    };
 
     const handleLineSegmentsBuildSubmit = (data) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
@@ -307,10 +314,8 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-                sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
+                sanitizeCurrentLimits(limits[CURRENT_LIMITS_1]),
+                sanitizeCurrentLimits(limits[CURRENT_LIMITS_2]),
                 limits[SELECTED_LIMIT_GROUP_1],
                 limits[SELECTED_LIMIT_GROUP_2],
                 !!editData,

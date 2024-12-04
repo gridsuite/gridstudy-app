@@ -73,10 +73,14 @@ export function LimitsPane({
 
     useEffect(() => {
         setIndexSelectedLimitSet1(
-            limitSets1.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
+            selectedSetStr
+                ? limitSets1.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
+                : undefined
         );
         setIndexSelectedLimitSet2(
-            limitSets2.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
+            selectedSetStr
+                ? limitSets2.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
+                : undefined
         );
     }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
 
@@ -120,7 +124,7 @@ export function LimitsPane({
             temporaryLimits: [],
             permanentLimit: undefined,
         };*/
-        const newLimitSet: string = `DEFAUT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : null}`;
+        const newLimitSet: string = `DEFAUT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : ''}`;
         setAllLimitSetsStr([...allLimitSetsStr, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
         setSelectedLimitSetTabIndex(allLimitSetsStr.length - 1);
         setSelectedSetStr(newLimitSet);
@@ -161,7 +165,7 @@ export function LimitsPane({
             {/* limits */}
             <Grid container item xs={12} columns={11}>
                 <Grid item xs={1}>
-                    <Tab icon={<AddCircleIcon />} onClick={() => addNewLimitSet()} />
+                    <Tab icon={<AddCircleIcon />} onClick={() => addNewLimitSet()} iconPosition="end" />
                     <Tabs
                         orientation="vertical"
                         variant="scrollable"
@@ -170,24 +174,17 @@ export function LimitsPane({
                         sx={{ flexGrow: 1 }}
                     >
                         {allLimitSetsStr.map((set, index) => (
-                            <Box
+                            <Tab
+                                key={set}
+                                label={set}
                                 sx={
                                     index === selectedLimitSetTabIndex
                                         ? styles.limitsBackground
                                         : styles.limitsBackgroundUnselected
                                 }
-                            >
-                                <Tab
-                                    key={set}
-                                    label={set}
-                                    sx={
-                                        index === selectedLimitSetTabIndex
-                                            ? styles.limitsBackground
-                                            : styles.limitsBackgroundUnselected
-                                    }
-                                />
-                                <DensityMediumIcon fontSize={'small'} />
-                            </Box>
+                                icon={<DensityMediumIcon fontSize={'small'} />}
+                                iconPosition="end"
+                            />
                         ))}
                     </Tabs>
                 </Grid>

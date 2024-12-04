@@ -30,10 +30,21 @@ const limitGroupValidationSchema = () => ({
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(
-            yup.object().shape({
-                [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
-                [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+            yup.lazy( (item) => {
+                if (item[TEMPORARY_LIMIT_NAME]) {
+                    return yup.object().shape({
+                        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+                        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
+                        [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+                    })
+                }
+                // totally empty lines are fine : they will be ignored later
+                // TODO : how to force the case when all are empty ? Or should I drop them before ??
+                return yup.object().shape({
+                    [TEMPORARY_LIMIT_NAME]: yup.string().nullable(),
+                    [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
+                    [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+            })
             })
         )
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
@@ -42,10 +53,10 @@ const limitGroupValidationSchema = () => ({
                 .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
         })
-        .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
+        /*.test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
             const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]);
-            return areArrayElementsUnique(durationsArray);
-        }),
+            return areArrayElementsUnique(durationsArray); // TODO ignorer les lignes vides et réactiver ça
+        }),*/
 });
 
 const limitsValidationSchema = (id, onlySelectedLimits = true) =>
@@ -85,22 +96,10 @@ const limitsEmptyFormData = (id, onlySelectedLimits = true) =>
           }
         : {
               [id]: {
-                  [CURRENT_LIMITS_1]: [
-                      {
-                          [ID]: '',
-                          [PERMANENT_LIMIT]: null,
-                          [TEMPORARY_LIMITS]: [],
-                      },
-                  ],
-                  [CURRENT_LIMITS_2]: [
-                      {
-                          [ID]: '',
-                          [PERMANENT_LIMIT]: null,
-                          [TEMPORARY_LIMITS]: [],
-                      },
-                  ],
-                  [SELECTED_LIMIT_GROUP_1]: '',
-                  [SELECTED_LIMIT_GROUP_2]: '',
+                  [CURRENT_LIMITS_1]: [],
+                  [CURRENT_LIMITS_2]: [],
+                  [SELECTED_LIMIT_GROUP_1]: null,
+                  [SELECTED_LIMIT_GROUP_2]: null,
               },
           };
 
