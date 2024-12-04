@@ -43,7 +43,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
     return (
         <Autocomplete
             multiple
-            value={value || []}
+            value={value ?? []}
             options={filterOptions}
             getOptionLabel={getOptionLabel}
             onChange={onChange}

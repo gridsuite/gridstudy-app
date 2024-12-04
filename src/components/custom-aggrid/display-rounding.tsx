@@ -23,7 +23,7 @@ interface DisplayRoundingProps {
     decimalAfterDot: number;
 }
 
-export function DisplayRounding({ decimalAfterDot }: DisplayRoundingProps) {
+export function DisplayRounding({ decimalAfterDot }: Readonly<DisplayRoundingProps>) {
     const intl = useIntl();
     const displayAsPower10 = decimalAfterDot > 4;
     const baseMessage =

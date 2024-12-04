@@ -20,13 +20,12 @@ export const useCustomAggridSort = (field: string, sortParams: SortPropsType) =>
         let newSort;
         if (!isColumnSorted) {
             newSort = SortWay.ASC;
+        } else if (columnSort.sort === SortWay.DESC) {
+            newSort = SortWay.ASC;
         } else {
-            if (columnSort.sort === SortWay.DESC) {
-                newSort = SortWay.ASC;
-            } else {
-                newSort = SortWay.DESC;
-            }
+            newSort = SortWay.DESC;
         }
+
         if (typeof onSortChanged === 'function') {
             onSortChanged({ colId: field, sort: newSort, children: columnSort?.children });
         }
