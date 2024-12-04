@@ -7,7 +7,6 @@
 
 import { CustomColDef, FILTER_DATA_TYPES, FilterSelectorType } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -21,11 +20,11 @@ export const makeAgGridCustomHeaderColumn = ({
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig, children } = sortProps || {};
+    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
 
-    const customFilterOptions = filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
+    const filterOptions = filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
@@ -50,19 +49,13 @@ export const makeAgGridCustomHeaderColumn = ({
             isSortable,
             sortParams: {
                 sortConfig,
-                onSortChanged: (newSortValue: SortWay) => {
-                    onSortChanged({
-                        colId: field,
-                        sort: newSortValue,
-                        children: children,
-                    });
-                },
+                onSortChanged: onSortChanged,
             },
             isFilterable,
             filterParams: {
                 ...filterParams,
                 filterSelector,
-                customFilterOptions,
+                filterOptions,
                 updateFilter,
             },
             getEnumLabel: props?.getEnumLabel,
