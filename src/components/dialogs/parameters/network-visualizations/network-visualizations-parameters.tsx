@@ -7,7 +7,7 @@
 import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { TabPanel } from '../parameters';
+import { styles, TabPanel } from '../parameters';
 import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
@@ -118,7 +118,14 @@ export const NetworkVisualizationsParameters: FunctionComponent = () => {
     return (
         <CustomFormProvider validationSchema={networkVisualizationParametersSchema} {...formMethods}>
             <Grid container sx={{ height: '100%' }} direction="column" justifyContent="space-between">
-                <Grid>
+                <Grid
+                    xs
+                    item
+                    container
+                    sx={mergeSx(styles.scrollableGrid, {
+                        display: 'unset',
+                    })}
+                >
                     <Tabs value={tabValue} variant="scrollable" onChange={handleTabChange}>
                         <Tab label={<FormattedMessage id={'Map'} />} value={TabValue.MAP} />
                         <Tab
@@ -141,11 +148,12 @@ export const NetworkVisualizationsParameters: FunctionComponent = () => {
                     </TabPanel>
                 </Grid>
                 <Grid
-                    sx={mergeSx({
+                    item
+                    container
+                    sx={{
                         paddingTop: 4,
                         paddingBottom: 2,
-                        paddingLeft: 0,
-                    })}
+                    }}
                 >
                     <SubmitButton variant="outlined" onClick={handleSubmit(onSubmit)} />
                 </Grid>
