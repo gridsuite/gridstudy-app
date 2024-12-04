@@ -16,7 +16,7 @@ const styles = {
 
 interface CustomFilterIconProps {
     handleShowFilter: MouseEventHandler<HTMLButtonElement> | undefined;
-    selectedFilterData: string | any[];
+    selectedFilterData: unknown;
 }
 
 export const CustomFilterIcon = ({ handleShowFilter, selectedFilterData }: CustomFilterIconProps) => (
@@ -30,7 +30,7 @@ export const CustomFilterIcon = ({ handleShowFilter, selectedFilterData }: Custo
             <IconButton size={'small'} onClick={handleShowFilter}>
                 <Badge
                     color="secondary"
-                    variant={selectedFilterData?.length ? 'dot' : undefined}
+                    variant={Array.isArray(selectedFilterData) && selectedFilterData?.length ? 'dot' : undefined}
                     invisible={!selectedFilterData}
                 >
                     <FilterAlt sx={styles.iconSize} />

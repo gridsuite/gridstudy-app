@@ -15,7 +15,7 @@ import { countDecimalPlaces } from '../../../utils/rounding';
 export const useCustomAggridFilter = (field: string, filterParams: CustomHeaderFilterParams) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [decimalAfterDot, setDecimalAfterDot] = useState(0);
-    const [selectedFilterData, setSelectedFilterData] = useState<any>();
+    const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
 
     const { snackWarning } = useSnackMessage();
 
