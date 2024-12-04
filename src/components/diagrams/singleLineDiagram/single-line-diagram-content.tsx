@@ -53,6 +53,7 @@ import { DynamicSimulationEventDialog } from '../../dialogs/dynamicsimulation/ev
 import { setComputationStarting, setComputingStatus, setLogsFilter } from '../../../redux/actions';
 import { AppState } from 'redux/reducer';
 import { UUID } from 'crypto';
+import { INVALID_LOADFLOW_OPACITY } from '../../../utils/colors';
 
 type EquipmentMenuState = {
     position: [number, number];
@@ -99,6 +100,32 @@ const defaultBusMenuState: BusMenuState = {
     svgId: null,
     display: false,
 };
+
+// Helper function to apply invalid styles
+function applyInvalidStyles(svgContainer: HTMLElement) {
+    // Ensure the animation styles are disabled
+    const invalidStyles = {
+        '--sld-active-power-opacity': INVALID_LOADFLOW_OPACITY,
+        animation: 'none', // Disable animations
+    };
+
+    for (const [key, value] of Object.entries(invalidStyles)) {
+        svgContainer.style.setProperty(key, value as string);
+    }
+
+    // Add other styles as required, such as opacity for specific classes
+    const invalidElements = svgContainer.querySelectorAll(
+        '.sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle'
+    );
+    invalidElements.forEach((element) => {
+        (element as HTMLElement).style.opacity = String(INVALID_LOADFLOW_OPACITY);
+    });
+
+    const animatedElements = svgContainer.querySelectorAll('.sld-overload, .sld-vl-overvoltage, .sld-vl-undervoltage');
+    animatedElements.forEach((element) => {
+        (element as HTMLElement).style.animation = 'none';
+    });
+}
 
 function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { diagramSizeSetter, studyUuid, visible } = props;
@@ -568,6 +595,11 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             }
 
             diagramViewerRef.current = diagramViewer;
+
+            // Reapply invalid styles directly on the SVG
+            if (loadFlowStatus !== RunningStatus.SUCCEED && svgRef.current) {
+                applyInvalidStyles(svgRef.current);
+            }
         }
     }, [
         props.svg,
@@ -589,6 +621,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
         diagramSizeSetter,
         handleTogglePopover,
         computationStarting,
+        loadFlowStatus,
     ]);
 
     // When the loading is finished, we always reset these two states
@@ -616,15 +649,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 {oneBusShortcircuitAnalysisLoaderMessage}
             </Box>
             {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-            <Box
-                ref={svgRef}
-                sx={mergeSx(
-                    styles.divDiagram,
-                    styles.divSingleLineDiagram,
-                    loadFlowStatus !== RunningStatus.SUCCEED && styles.divDiagramInvalid
-                )}
-                style={{ height: '100%' }}
-            />
+            <Box ref={svgRef} sx={mergeSx(styles.divDiagram, styles.divSingleLineDiagram)} style={{ height: '100%' }} />
             {visible && shouldDisplayTooltip && displayTooltip()}
             {displayBranchMenu()}
             {displayBusMenu()}
