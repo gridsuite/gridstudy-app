@@ -6,13 +6,13 @@
  */
 import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
-import { FilterParams, FilterPropsType } from '../custom-aggrid-header.type';
+import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { useIntl } from 'react-intl';
 
 interface CustomAggridAutocompleteFilterProps {
     value: string[] | undefined;
-    filterParams: FilterParams & FilterPropsType;
+    filterParams: CustomHeaderFilterParams;
     getEnumLabel: (value: string) => string | undefined;
     isCountry: boolean;
     onChange: (_: SyntheticEvent, data: string[]) => void;

@@ -8,7 +8,7 @@
 import React, { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
 import { SortPropsType } from '../../hooks/use-aggrid-sort';
-import { FilterParams, FilterPropsType } from './custom-aggrid-header.type';
+import { CustomHeaderFilterParams } from './custom-aggrid-header.type';
 import { CustomColumnConfigProps } from '../spreadsheet/custom-columns/custom-column-menu';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort/custom-aggrid-sort';
@@ -28,7 +28,7 @@ interface CustomHeaderComponentProps {
     isSortable: boolean;
     sortParams: SortPropsType;
     isFilterable: boolean;
-    filterParams: FilterParams & FilterPropsType;
+    filterParams: CustomHeaderFilterParams;
     getEnumLabel: (value: string) => string | undefined;
     isCountry: boolean;
     forceDisplayFilterIcon: boolean;

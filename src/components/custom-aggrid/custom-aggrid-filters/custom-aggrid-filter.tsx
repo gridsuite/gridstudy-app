@@ -8,7 +8,7 @@ import React, { FunctionComponent, MouseEvent, useState } from 'react';
 import { Popover } from '@mui/material';
 import { CustomAggridAutocompleteFilter } from './custom-aggrid-autocomplete-filter';
 import CustomAggridBooleanFilter from './custom-aggrid-boolean-filter';
-import { FILTER_DATA_TYPES, FilterParams, FilterPropsType } from '../custom-aggrid-header.type';
+import { CustomHeaderFilterParams, FILTER_DATA_TYPES } from '../custom-aggrid-header.type';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { CustomAggridComparatorFilter } from './custom-aggrid-comparator-filter';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
@@ -27,7 +27,7 @@ interface CustomAggridFilterWrapperProps {
     field: string;
     handleCloseFilter: () => void;
     getEnumLabel: (value: string) => string | undefined;
-    filterParams: FilterParams & FilterPropsType;
+    filterParams: CustomHeaderFilterParams;
     isCountry: boolean;
     isFilterable: boolean;
     isHoveringColumnHeader: boolean;

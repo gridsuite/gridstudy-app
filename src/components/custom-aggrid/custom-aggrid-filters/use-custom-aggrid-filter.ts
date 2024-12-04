@@ -5,10 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import {
+    CustomHeaderFilterParams,
     FILTER_DATA_TYPES,
     FILTER_TEXT_COMPARATORS,
-    FilterParams,
-    FilterPropsType,
 } from '../custom-aggrid-header.type';
 import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
@@ -17,7 +16,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { computeTolerance } from '../../../hooks/use-aggrid-local-row-filter';
 import { countDecimalPlaces } from '../../../utils/rounding';
 
-export const useCustomAggridFilter = (field: string, filterParams: FilterParams & FilterPropsType) => {
+export const useCustomAggridFilter = (field: string, filterParams: CustomHeaderFilterParams) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [decimalAfterDot, setDecimalAfterDot] = useState(0);
     const [selectedFilterData, setSelectedFilterData] = useState<any>();

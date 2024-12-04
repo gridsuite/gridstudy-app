@@ -8,12 +8,12 @@ import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selec
 import CustomAggridDurationFilter from './custom-aggrid-duration-filter';
 import CustomAggridTextFilter from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
-import { FilterParams, FilterPropsType } from '../custom-aggrid-header.type';
+import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 
 interface CustomAggridComparatorFilterProps {
     field: string;
-    filterParams: FilterParams & FilterPropsType;
+    filterParams: CustomHeaderFilterParams;
 }
 
 export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggridComparatorFilterProps) => {

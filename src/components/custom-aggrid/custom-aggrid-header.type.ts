@@ -49,6 +49,8 @@ export type FilterParams = {
     filterOptions?: any;
 };
 
+export type CustomHeaderFilterParams = FilterParams & FilterPropsType;
+
 export type FilterDataType = {
     dataType: string;
     type: string;
