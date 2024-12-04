@@ -64,8 +64,8 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
     const isComparatorFilter = !isBooleanFilter && !isAutoCompleteFilter;
 
     /* Filter should be activated for current column and
-Filter dataType should be defined and
-filter is an autocomplete (have options) or filter have comparators */
+    Filter dataType should be defined and
+    filter is an autocomplete (have options) or filter have comparators */
     const shouldActivateFilter =
         isFilterable && !!filterDataType && (isAutoCompleteFilter || !!filterComparators.length || isBooleanFilter);
 
