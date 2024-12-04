@@ -265,8 +265,8 @@ function compressTree(nodes: CurrentTreeNode[], placements: PlacementGrid) {
         const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentNodeFamilySize);
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
 
-        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some cases,
-        // other branches could go under the left neighbor and make edges cross.
+        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
+        // cases other branches could go under the left neighbor and make edges cross.
         const nodesOnTheLeft = nodes.slice(0, indexOfCurrentNode);
         const leftBranchMaximumColumnByRow = getMaximumColumnByRows(nodesOnTheLeft, placements);
 
