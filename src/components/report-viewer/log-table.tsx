@@ -53,7 +53,7 @@ const styles = {
         p: 1,
         marginBottom: 3,
     },
-    quickSearch: { width: '100%', flexShrink: 0 },
+    quickSearch: { width: '100%', flexShrink: 0, marginLeft: 1 },
 };
 
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
@@ -295,10 +295,16 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                         type: FILTER_TEXT_COMPARATORS.EQUALS,
                         value: updatedFilter,
                     },
+                    {
+                        column: 'message',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.CONTAINS,
+                        value: messageFilter,
+                    },
                 ])
             );
         },
-        [dispatch, reportType, severityFilter]
+        [dispatch, reportType, severityFilter, messageFilter]
     );
 
     return (
