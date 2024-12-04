@@ -22,6 +22,10 @@ export type SortPropsType = {
     children?: boolean;
 };
 
+export type CustomHeaderSortParams = {
+    isSortable?: boolean;
+} & SortPropsType;
+
 export enum SortWay {
     ASC = 'asc',
     DESC = 'desc',

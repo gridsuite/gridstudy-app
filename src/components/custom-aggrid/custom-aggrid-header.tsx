@@ -7,9 +7,8 @@
 
 import React, { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { SortPropsType } from '../../hooks/use-aggrid-sort';
-import { CustomHeaderFilterParams } from './custom-aggrid-header.type';
-import { CustomColumnConfigProps } from '../spreadsheet/custom-columns/custom-column-menu';
+import { CustomHeaderSortParams } from '../../hooks/use-aggrid-sort';
+import { CustomHeaderFilterParams, CustomHeaderMenuParams } from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort/custom-aggrid-sort';
 import { useCustomAggridSort } from './custom-aggrid-sort/use-custom-aggrid-sort';
@@ -25,35 +24,23 @@ const styles = {
 interface CustomHeaderComponentProps {
     field: string;
     displayName: string;
-    isSortable: boolean;
-    sortParams: SortPropsType;
-    isFilterable: boolean;
+    sortParams: CustomHeaderSortParams;
     filterParams: CustomHeaderFilterParams;
-    getEnumLabel: (value: string) => string | undefined;
-    isCountry: boolean;
-    forceDisplayFilterIcon: boolean;
-    tabIndex: number;
-    isCustomColumn: boolean;
-    Menu: React.FC<CustomColumnConfigProps>;
+    customMenuParams: CustomHeaderMenuParams;
 }
 
 const CustomHeaderComponent = ({
     field,
     displayName,
-    isSortable = false,
     sortParams,
-    isFilterable = false,
     filterParams,
-    getEnumLabel, // Used for translation of enum values in the filter
-    isCountry, // Used for translation of the countries options in the filter
-    forceDisplayFilterIcon = false,
-    tabIndex,
-    isCustomColumn = false,
-    Menu,
+    customMenuParams,
 }: CustomHeaderComponentProps) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
     const { handleSortChange } = useCustomAggridSort(field, sortParams);
+    const { forceDisplayFilterIcon = false } = filterParams;
+    const { isSortable = false } = sortParams;
     const handleClickHeader = () => {
         if (isSortable) {
             handleSortChange();
@@ -92,26 +79,20 @@ const CustomHeaderComponent = ({
                     >
                         <Grid container sx={styles.displayName} alignItems={'center'} wrap="nowrap">
                             <Grid item>{displayName}</Grid>
-                            {isSortable && (
-                                <Grid item>
-                                    <CustomAggridSort field={field} sortParams={sortParams} />
-                                </Grid>
-                            )}
+                            <Grid item>
+                                <CustomAggridSort field={field} sortParams={sortParams} />
+                            </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
                 <Grid container item flex="1">
                     <CustomAggridFilter
                         field={field}
-                        handleCloseFilter={handleCloseFilter}
-                        getEnumLabel={getEnumLabel}
                         filterParams={filterParams}
-                        isCountry={isCountry}
-                        isFilterable={isFilterable}
+                        handleCloseFilter={handleCloseFilter}
                         isHoveringColumnHeader={isHoveringColumnHeader}
-                        forceDisplayFilterIcon={forceDisplayFilterIcon}
                     />
-                    {isCustomColumn && <CustomMenu field={field} tabIndex={tabIndex} Menu={Menu} />}
+                    <CustomMenu field={field} customMenuParams={customMenuParams} />
                 </Grid>
             </Grid>
         </Grid>

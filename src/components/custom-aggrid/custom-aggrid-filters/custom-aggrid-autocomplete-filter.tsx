@@ -4,30 +4,28 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, SyntheticEvent, useCallback } from 'react';
+import React, { FunctionComponent, useCallback } from 'react';
 import { Autocomplete, TextField } from '@mui/material';
 import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { useIntl } from 'react-intl';
+import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 
 interface CustomAggridAutocompleteFilterProps {
-    value: string[] | undefined;
+    field: string;
     filterParams: CustomHeaderFilterParams;
-    getEnumLabel: (value: string) => string | undefined;
-    isCountry: boolean;
-    onChange: (_: SyntheticEvent, data: string[]) => void;
 }
 
 export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutocompleteFilterProps> = ({
-    value,
-    onChange,
+    field,
     filterParams,
-    getEnumLabel,
-    isCountry,
 }) => {
     const { translate } = useLocalizedCountries();
     const intl = useIntl();
-    const { filterOptions } = filterParams;
+    const { filterOptions, isCountry, getEnumLabel } = filterParams;
+
+    const { selectedFilterData, autocompleteFilterParams } = useCustomAggridFilter(field, filterParams);
+    const { handleFilterAutoCompleteChange } = autocompleteFilterParams;
 
     const getOptionLabel = useCallback(
         (option: string) =>
@@ -43,17 +41,17 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
     return (
         <Autocomplete
             multiple
-            value={value ?? []}
+            value={selectedFilterData ?? []}
             options={filterOptions}
             getOptionLabel={getOptionLabel}
-            onChange={onChange}
+            onChange={handleFilterAutoCompleteChange}
             size="small"
             disableCloseOnSelect
             renderInput={(params) => (
                 <TextField
                     {...params}
                     placeholder={
-                        !value?.length
+                        !selectedFilterData?.length
                             ? intl.formatMessage({
                                   id: 'filter.filterOoo',
                               })

@@ -11,6 +11,8 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
+import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
+import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -27,32 +29,35 @@ const styles = {
 };
 
 interface ICustomAggridBooleanFilter {
-    value: string;
-    onChange: (value: string) => void;
+    field: string;
+    filterParams: CustomHeaderFilterParams;
 }
 
-const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> = ({ value, onChange }) => {
+const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> = ({ field, filterParams }) => {
     const intl = useIntl();
+
+    const { selectedFilterData, booleanFilterParams } = useCustomAggridFilter(field, filterParams);
+    const { handleSelectedFilterDataChange } = booleanFilterParams;
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
-        onChange && onChange(newValue);
+        handleSelectedFilterDataChange && handleSelectedFilterDataChange(newValue);
     };
 
     return (
         <Select
             fullWidth
             size={'small'}
-            value={value || ''}
+            value={selectedFilterData ?? ''}
             onChange={handleValueChange}
             sx={mergeSx(styles.input, {
                 '& .MuiSelect-iconOutlined': {
-                    display: value ? 'none' : '',
+                    display: selectedFilterData ? 'none' : '',
                 },
             })}
             endAdornment={
-                value && (
-                    <IconButton onClick={() => onChange('')}>
+                selectedFilterData && (
+                    <IconButton onClick={() => selectedFilterData('')}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>
                 )

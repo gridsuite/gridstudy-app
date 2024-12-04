@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { FunctionComponent, MouseEvent, useState } from 'react';
+import React, { FunctionComponent, MouseEvent, useMemo, useState } from 'react';
 import { Popover } from '@mui/material';
 import { CustomAggridAutocompleteFilter } from './custom-aggrid-autocomplete-filter';
 import CustomAggridBooleanFilter from './custom-aggrid-boolean-filter';
@@ -25,51 +25,66 @@ const styles = {
 
 interface CustomAggridFilterWrapperProps {
     field: string;
-    handleCloseFilter: () => void;
-    getEnumLabel: (value: string) => string | undefined;
     filterParams: CustomHeaderFilterParams;
-    isCountry: boolean;
-    isFilterable: boolean;
+    handleCloseFilter: () => void;
     isHoveringColumnHeader: boolean;
-    forceDisplayFilterIcon: boolean;
+}
+
+const enum FilterTypes {
+    'BOOLEAN',
+    'AUTOCOMPLETE',
+    'COMPARATOR',
 }
 
 export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProps> = ({
     field,
-    handleCloseFilter,
-    getEnumLabel,
     filterParams,
-    isCountry,
-    isFilterable,
+    handleCloseFilter,
     isHoveringColumnHeader,
-    forceDisplayFilterIcon,
 }) => {
     const [filterAnchorElement, setFilterAnchorElement] = useState<HTMLElement | null>(null);
+    const { selectedFilterData } = useCustomAggridFilter(field, filterParams);
 
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
         filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
         filterOptions = [], // used for autoComplete filter as a UI type (list of possible filters)he value is a duration, we need to handle that special case, because it's a number filter but with text input
+        isFilterable = false,
+        forceDisplayFilterIcon = false,
     } = filterParams;
 
-    const { selectedFilterData, autocompleteFilterParams, booleanFilterParams } = useCustomAggridFilter(
-        field,
-        filterParams
-    );
-    const { handleFilterAutoCompleteChange } = autocompleteFilterParams;
-    const { handleSelectedFilterDataChange } = booleanFilterParams;
+    const filterType = useMemo(() => {
+        if (filterDataType === FILTER_DATA_TYPES.BOOLEAN) {
+            return FilterTypes.BOOLEAN;
+        }
+        if (filterDataType === FILTER_DATA_TYPES.TEXT && filterOptions?.length) {
+            return FilterTypes.AUTOCOMPLETE;
+        }
+        return FilterTypes.COMPARATOR;
+    }, [filterDataType, filterOptions]);
 
-    const isBooleanFilter = filterDataType === FILTER_DATA_TYPES.BOOLEAN;
-    const isAutoCompleteFilter = filterDataType === FILTER_DATA_TYPES.TEXT && !!filterOptions?.length;
-    const isComparatorFilter = !isBooleanFilter && !isAutoCompleteFilter;
+    const CustomFilter = useMemo(() => {
+        switch (filterType) {
+            case FilterTypes.BOOLEAN:
+                return CustomAggridBooleanFilter;
+            case FilterTypes.AUTOCOMPLETE:
+                return CustomAggridAutocompleteFilter;
+            case FilterTypes.COMPARATOR:
+            default:
+                return CustomAggridComparatorFilter;
+        }
+    }, [filterType]);
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
     filter is an autocomplete (have options) or filter have comparators */
     const shouldActivateFilter =
-        isFilterable && !!filterDataType && (isAutoCompleteFilter || !!filterComparators.length || isBooleanFilter);
+        isFilterable &&
+        !!filterDataType &&
+        ([FilterTypes.AUTOCOMPLETE, FilterTypes.BOOLEAN].includes(filterType) || !!filterComparators.length);
 
     const shouldDisplayFilterIcon =
+        forceDisplayFilterIcon ||
         isHoveringColumnHeader || // user is hovering column header
         !!selectedFilterData?.length || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
@@ -86,7 +101,7 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
     return (
         shouldActivateFilter && (
             <>
-                {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
+                {shouldDisplayFilterIcon && (
                     <CustomFilterIcon selectedFilterData={selectedFilterData} handleShowFilter={handleShowFilter} />
                 )}
                 <Popover
@@ -103,25 +118,10 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
                         horizontal: 'left',
                     }}
                     slotProps={{
-                        paper: { sx: styles[isAutoCompleteFilter ? 'autoCompleteInput' : 'input'] },
+                        paper: { sx: styles[filterType === FilterTypes.AUTOCOMPLETE ? 'autoCompleteInput' : 'input'] },
                     }}
                 >
-                    {isAutoCompleteFilter && (
-                        <CustomAggridAutocompleteFilter
-                            value={selectedFilterData}
-                            filterParams={filterParams}
-                            getEnumLabel={getEnumLabel}
-                            onChange={handleFilterAutoCompleteChange}
-                            isCountry={isCountry}
-                        />
-                    )}
-                    {isBooleanFilter && (
-                        <CustomAggridBooleanFilter
-                            value={selectedFilterData}
-                            onChange={handleSelectedFilterDataChange}
-                        />
-                    )}
-                    {isComparatorFilter && <CustomAggridComparatorFilter field={field} filterParams={filterParams} />}
+                    <CustomFilter field={field} filterParams={filterParams} />
                 </Popover>
             </>
         )
