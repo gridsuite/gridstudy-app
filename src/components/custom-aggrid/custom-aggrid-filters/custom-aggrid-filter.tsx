@@ -76,8 +76,8 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
     }, [filterType]);
 
     /* Filter should be activated for current column and
-    Filter dataType should be defined and
-    filter is an autocomplete (have options) or filter have comparators */
+  Filter dataType should be defined and
+  filter is an autocomplete (have options) or filter have comparators */
     const shouldActivateFilter =
         isFilterable &&
         !!filterDataType &&
@@ -86,7 +86,7 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
     const shouldDisplayFilterIcon =
         forceDisplayFilterIcon ||
         isHoveringColumnHeader || // user is hovering column header
-        !!selectedFilterData?.length || // user filtered data on current column
+        (Array.isArray(selectedFilterData) && !!selectedFilterData?.length) || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
 
     const handleShowFilter = (event: MouseEvent<HTMLElement>) => {
