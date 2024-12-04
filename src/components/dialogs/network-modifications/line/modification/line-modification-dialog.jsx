@@ -47,7 +47,7 @@ import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getSelectedLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
@@ -166,7 +166,7 @@ const LineModificationDialog = ({
                     g2: unitToMicroUnit(line.g2?.value ?? null),
                     b2: unitToMicroUnit(line.b2?.value ?? null),
                 }),
-                ...getLimitsFormData({
+                ...getSelectedLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
                     permanentLimit2: line.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
@@ -306,7 +306,7 @@ const LineModificationDialog = ({
                             if (editData?.equipmentId !== selectedId) {
                                 reset((formValues) => ({
                                     ...formValues,
-                                    ...getLimitsFormData({
+                                    ...getSelectedLimitsFormData({
                                         temporaryLimits1: addSelectedFieldToRows(
                                             formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
                                         ),
