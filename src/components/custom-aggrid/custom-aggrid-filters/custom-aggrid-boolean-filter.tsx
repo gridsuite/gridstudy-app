@@ -13,6 +13,7 @@ import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
 import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -48,7 +49,7 @@ const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> =
         <Select
             fullWidth
             size={'small'}
-            value={selectedFilterData ?? ''}
+            value={typeof selectedFilterData === 'string' ? selectedFilterData : ''}
             onChange={handleValueChange}
             sx={mergeSx(styles.input, {
                 '& .MuiSelect-iconOutlined': {
@@ -56,8 +57,8 @@ const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> =
                 },
             })}
             endAdornment={
-                selectedFilterData && (
-                    <IconButton onClick={() => selectedFilterData('')}>
+                isStringOrNonEmptyArray(selectedFilterData) && (
+                    <IconButton onClick={() => handleSelectedFilterDataChange('')}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>
                 )

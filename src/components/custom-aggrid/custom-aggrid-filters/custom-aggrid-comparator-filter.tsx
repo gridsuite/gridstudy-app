@@ -6,7 +6,7 @@
  */
 import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selecter';
 import CustomAggridDurationFilter from './custom-aggrid-duration-filter';
-import CustomAggridTextFilter from './custom-aggrid-text-filter';
+import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
 import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';

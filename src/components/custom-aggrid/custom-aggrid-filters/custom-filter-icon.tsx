@@ -7,6 +7,7 @@
 import React, { MouseEventHandler } from 'react';
 import { Badge, Grid, IconButton } from '@mui/material';
 import { FilterAlt } from '@mui/icons-material';
+import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 
 const styles = {
     iconSize: {
@@ -30,7 +31,7 @@ export const CustomFilterIcon = ({ handleShowFilter, selectedFilterData }: Custo
             <IconButton size={'small'} onClick={handleShowFilter}>
                 <Badge
                     color="secondary"
-                    variant={Array.isArray(selectedFilterData) && selectedFilterData?.length ? 'dot' : undefined}
+                    variant={isStringOrNonEmptyArray(selectedFilterData) ? 'dot' : undefined}
                     invisible={!selectedFilterData}
                 >
                     <FilterAlt sx={styles.iconSize} />

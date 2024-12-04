@@ -32,7 +32,7 @@ const styles = {
 };
 
 interface ICustomAggridDurationFilter {
-    value?: string; // duration in seconds as a string
+    value?: unknown; // duration in seconds as a string
     onChange: (value?: string) => void;
 }
 

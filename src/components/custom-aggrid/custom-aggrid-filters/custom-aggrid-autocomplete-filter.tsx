@@ -10,6 +10,7 @@ import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useLocalizedCountries } from '../../utils/localized-countries-hook';
 import { useIntl } from 'react-intl';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 
 interface CustomAggridAutocompleteFilterProps {
     field: string;
@@ -41,7 +42,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
     return (
         <Autocomplete
             multiple
-            value={selectedFilterData ?? []}
+            value={Array.isArray(selectedFilterData) ? selectedFilterData : []}
             options={filterOptions}
             getOptionLabel={getOptionLabel}
             onChange={handleFilterAutoCompleteChange}
@@ -51,7 +52,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
                 <TextField
                     {...params}
                     placeholder={
-                        !selectedFilterData?.length
+                        !isStringOrNonEmptyArray(selectedFilterData)
                             ? intl.formatMessage({
                                   id: 'filter.filterOoo',
                               })

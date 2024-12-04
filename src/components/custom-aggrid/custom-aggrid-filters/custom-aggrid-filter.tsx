@@ -12,6 +12,7 @@ import { CustomHeaderFilterParams, FILTER_DATA_TYPES } from '../custom-aggrid-he
 import { CustomFilterIcon } from './custom-filter-icon';
 import { CustomAggridComparatorFilter } from './custom-aggrid-comparator-filter';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 
 const styles = {
     input: {
@@ -86,7 +87,7 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
     const shouldDisplayFilterIcon =
         forceDisplayFilterIcon ||
         isHoveringColumnHeader || // user is hovering column header
-        (Array.isArray(selectedFilterData) && !!selectedFilterData?.length) || // user filtered data on current column
+        isStringOrNonEmptyArray(selectedFilterData) || // user filtered data on current column
         !!filterAnchorElement; // filter popped-over but user is not hovering current column header
 
     const handleShowFilter = (event: MouseEvent<HTMLElement>) => {

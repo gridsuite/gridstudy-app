@@ -27,15 +27,15 @@ const styles = {
     },
 };
 
-interface TextFilterProps {
-    value: string;
+interface CustomAggridTextFilterProps {
+    value: unknown;
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onClear: () => void;
     isNumberInput: boolean;
     decimalAfterDot: number;
 }
 
-const TextFilter: React.FC<TextFilterProps> = ({ value, onChange, onClear, isNumberInput, decimalAfterDot = 0 }) => {
+export const CustomAggridTextFilter: React.FC<CustomAggridTextFilterProps> = ({ value, onChange, onClear, isNumberInput, decimalAfterDot = 0 }) => {
     const intl = useIntl();
 
     return (
@@ -72,5 +72,3 @@ const TextFilter: React.FC<TextFilterProps> = ({ value, onChange, onClear, isNum
         </Grid>
     );
 };
-
-export default TextFilter;
