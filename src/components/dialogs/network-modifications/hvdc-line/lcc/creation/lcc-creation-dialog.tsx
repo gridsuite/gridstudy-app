@@ -31,7 +31,7 @@ import { FetchStatus } from '../../../../../../services/utils.type';
 import { useForm } from 'react-hook-form';
 import { DeepNullable } from '../../../../../utils/ts-utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorFormInfos } from './lcc-creation.type';
+import { LccCreationDialogTab, LccCreationInfos, LccFormInfos, ShuntCompensatorInfos } from './lcc-creation.type';
 import {
     getLccHvdcLineEmptyFormData,
     getLccHvdcLineFromEditData,
@@ -79,7 +79,7 @@ export type LccCreationSchemaForm = {
         [LOSS_FACTOR]: number;
         [POWER_FACTOR]: number;
         [CONNECTIVITY]: Connectivity;
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormInfos[];
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorInfos[];
     };
     [CONVERTER_STATION_2]: {
         [CONVERTER_STATION_ID]: string;
@@ -87,7 +87,7 @@ export type LccCreationSchemaForm = {
         [LOSS_FACTOR]: number;
         [POWER_FACTOR]: number;
         [CONNECTIVITY]: Connectivity;
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorFormInfos[];
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]?: ShuntCompensatorInfos[];
     };
 };
 

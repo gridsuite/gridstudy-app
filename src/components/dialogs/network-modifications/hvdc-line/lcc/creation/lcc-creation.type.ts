@@ -38,17 +38,10 @@ export interface LccConverterStationCreationInfos {
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    mcsOnSide: ShuntCompensatorFormInfos[];
+    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
-export interface ShuntCompensatorFormInfos {
-    shuntCompensatorName?: string | null;
-    shuntCompensatorId: string;
-    maxQAtNominalV: number;
-    connectedToHvdc: boolean;
-}
-
-export interface ShuntCompensatorOnSide {
+export interface ShuntCompensatorInfos {
     id: string;
     name?: string | null;
     maxQAtNominalV: number;
@@ -64,7 +57,7 @@ export interface LccConverterStationFormInfos {
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
     connectablePosition: ConnectablePositionInfos;
-    mcsOnSide: ShuntCompensatorOnSide[];
+    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
 export interface LccFormInfos {

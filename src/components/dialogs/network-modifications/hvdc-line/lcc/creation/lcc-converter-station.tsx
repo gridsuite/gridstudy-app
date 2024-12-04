@@ -19,10 +19,10 @@ import {
     ID,
     LOSS_FACTOR,
     MAX_Q_AT_NOMINAL_V,
-    SHUNT_COMPENSATOR_SELECTED,
     POWER_FACTOR,
     SHUNT_COMPENSATOR_ID,
     SHUNT_COMPENSATOR_NAME,
+    SHUNT_COMPENSATOR_SELECTED,
     VOLTAGE_LEVEL,
 } from '../../../../../utils/field-constants';
 import { percentageTextField, sanitizeString } from '../../../../dialog-utils';
@@ -43,8 +43,7 @@ import FiltersShuntCompensatorTable from './filters-shunt-compensator-table';
 import {
     LccConverterStationCreationInfos,
     LccConverterStationFormInfos,
-    ShuntCompensatorFormInfos,
-    ShuntCompensatorOnSide,
+    ShuntCompensatorInfos,
 } from './lcc-creation.type';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
 import { Connectivity } from '../../../../connectivity/connectivity.type';
@@ -94,24 +93,20 @@ export function getLccConverterStationEmptyFormData() {
     };
 }
 
-export const getShuntCompensatorOnSideFormData = (
-    shuntCompensatorOnSideFormDataInfos: ShuntCompensatorFormInfos[] | undefined
-) => {
+export const getShuntCompensatorOnSideFormData = (shuntCompensatorInfos: ShuntCompensatorInfos[] | undefined) => {
     return (
-        shuntCompensatorOnSideFormDataInfos?.map((shuntCp) => ({
-            [SHUNT_COMPENSATOR_ID]: shuntCp.shuntCompensatorId ?? null,
-            [SHUNT_COMPENSATOR_NAME]: shuntCp.shuntCompensatorName ?? '',
+        shuntCompensatorInfos?.map((shuntCp) => ({
+            [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
+            [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? false,
         })) ?? []
     );
 };
 
-export const getShuntCompensatorOnSideFromSearchCopy = (
-    shuntCompensatorOnSideFormDataInfos: ShuntCompensatorOnSide[] | undefined
-) => {
+export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos: ShuntCompensatorInfos[] | undefined) => {
     return (
-        shuntCompensatorOnSideFormDataInfos?.map((shuntCp) => ({
+        shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
@@ -127,7 +122,7 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
         [LOSS_FACTOR]: lccConverterStationFormInfos.lossFactor,
         [POWER_FACTOR]: lccConverterStationFormInfos.powerFactor,
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFromSearchCopy(
-            lccConverterStationFormInfos?.mcsOnSide
+            lccConverterStationFormInfos?.shuntCompensatorsOnSide
         ),
         ...getConnectivityFormData({
             voltageLevelId: lccConverterStationFormInfos?.voltageLevelId,
@@ -147,7 +142,9 @@ export function getLccConverterStationFromEditData(lccConverterStationFormInfos:
         [CONVERTER_STATION_NAME]: lccConverterStationFormInfos?.equipmentName ?? '',
         [LOSS_FACTOR]: lccConverterStationFormInfos.lossFactor,
         [POWER_FACTOR]: lccConverterStationFormInfos.powerFactor,
-        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(lccConverterStationFormInfos?.mcsOnSide),
+        [FILTERS_SHUNT_COMPENSATOR_TABLE]: getShuntCompensatorOnSideFormData(
+            lccConverterStationFormInfos?.shuntCompensatorsOnSide
+        ),
         ...getConnectivityFormData({
             voltageLevelId: lccConverterStationFormInfos?.voltageLevelId,
             busbarSectionId: lccConverterStationFormInfos?.busOrBusbarSectionId,
@@ -166,7 +163,7 @@ export function getLccConverterStationCreationData(converterStation: {
     lossFactor: number;
     powerFactor: number;
     connectivity: Connectivity;
-    filtersShuntCompensatorTable?: ShuntCompensatorFormInfos[] | undefined;
+    shuntCompensatorInfos?: ShuntCompensatorInfos[] | undefined;
 }) {
     return {
         type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_CREATION.type,
@@ -180,7 +177,7 @@ export function getLccConverterStationCreationData(converterStation: {
         connectionDirection: converterStation[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
         connectionPosition: converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
         terminalConnected: converterStation[CONNECTIVITY]?.[CONNECTED],
-        mcsOnSide: converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE] ?? [],
+        shuntCompensatorsInfos: converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE] ?? [],
     };
 }
 
