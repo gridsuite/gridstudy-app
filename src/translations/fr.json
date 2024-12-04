@@ -659,6 +659,8 @@
     "TabularModificationError": "Erreur lors de la modification tabulaire",
     "TabularModificationShuntWarning": "La modification tabulaire contient des valeurs pour la puissance réactive installée (et/ou le type) et la susceptance installée d'un même MCS. La susceptance installée sera donc ignorée.",
     "equipmentId": "ID",
+    "equipmentSubstationId": "ID du site",
+    "equipmentSubstationName": "Nom du site",
     "activePower": "p (MW)",
     "maxActivePower": "P max (MW)",
     "maxP": "P max (MW)",
