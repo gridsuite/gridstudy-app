@@ -7,6 +7,7 @@
 
 import { CurrentTreeNode } from 'redux/reducer';
 import { countNodes } from './network-modification-tree-model';
+import { UUID } from 'crypto';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -133,14 +134,14 @@ function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]): string[] {
  * Create a Map using row number as keys and column number as value. The column value
  * for each row is the lowest value among column values of the same row, for the provided nodes.
  */
-function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacementBiMap): Map<number, number> {
+function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
     const minColumnByRow: Map<number, number> = new Map();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (nodePlacement) {
             if (
                 !minColumnByRow.has(nodePlacement.row) ||
-                nodePlacement.column < minColumnByRow.get(nodePlacement.row)
+                nodePlacement.column < minColumnByRow.get(nodePlacement.row)!
             ) {
                 minColumnByRow.set(nodePlacement.row, nodePlacement.column);
             }
@@ -153,14 +154,14 @@ function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacemen
  * Create a Map using row number as keys and column number as value. The column value
  * for each row is the highest value among column values of the same row, for the provided nodes.
  */
-function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: IdPlacementBiMap): Map<number, number> {
+function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
     const maxColumnByRow: Map<number, number> = new Map();
     nodes.forEach((node) => {
         const nodePlacement = placements.getPlacement(node.id);
         if (nodePlacement) {
             if (
                 !maxColumnByRow.has(nodePlacement.row) ||
-                nodePlacement.column > maxColumnByRow.get(nodePlacement.row)
+                nodePlacement.column > maxColumnByRow.get(nodePlacement.row)!
             ) {
                 maxColumnByRow.set(nodePlacement.row, nodePlacement.column);
             }
@@ -193,7 +194,7 @@ function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns:
 }
 
 // TODO Comment
-function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: IdPlacementBiMap, shiftValue: number) {
+function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: PlacementGrid, shiftValue: number) {
     nodes.forEach((node) => {
         const oldPlacement = placements.getPlacement(node.id);
         if (oldPlacement) {
@@ -203,7 +204,7 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: IdPlacem
 }
 
 // TODO Comment
-function compressTree(nodes: CurrentTreeNode[], placements: IdPlacementBiMap) {
+function compressTree(nodes: CurrentTreeNode[], placements: PlacementGrid) {
     // We will try to compress the tree, using the following rules :
     // We try to move branches to the left if the branch's first node has a sibling to its left.
     // We can move a branch above another branch, on the same column, only if there is at least
@@ -219,7 +220,7 @@ function compressTree(nodes: CurrentTreeNode[], placements: IdPlacementBiMap) {
         // to the maximum column placement values (per row) of the nodes on the left.
 
         // TODO Rename variables and comment
-        const numberOfNodesInTheBranch = 1 + countNodes(nodes, currentNodeId);
+        const numberOfNodesInTheBranch = 1 + countNodes(nodes, currentNodeId as UUID);
         const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNodeId);
         const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + numberOfNodesInTheBranch);
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
