@@ -177,7 +177,7 @@ export function getLccConverterStationCreationData(converterStation: {
         connectionDirection: converterStation[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
         connectionPosition: converterStation[CONNECTIVITY]?.[CONNECTION_POSITION],
         terminalConnected: converterStation[CONNECTIVITY]?.[CONNECTED],
-        shuntCompensatorsInfos: converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE] ?? [],
+        shuntCompensatorsOnSide: converterStation[FILTERS_SHUNT_COMPENSATOR_TABLE] ?? [],
     };
 }
 
