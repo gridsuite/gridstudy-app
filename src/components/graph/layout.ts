@@ -9,7 +9,7 @@ import { CurrentTreeNode } from 'redux/reducer';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
-export const snapGrid = [1, nodeHeight]; // Used for drag and drop
+export const snapGrid = [10, nodeHeight]; // Used for drag and drop
 
 type NodePlacement = {
     row: number;
