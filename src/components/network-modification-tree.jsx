@@ -182,7 +182,8 @@ const NetworkModificationTree = ({
 
         // We test if the dragged node is the start of a branch. If this is not the case, we should find
         // the start of the branch and move this ancestor node instead.
-        const firstAncestorWithSibling = !!draggedBranchIdRef.current
+        // If we already put a node ID in the ref, we use it and skip the ancestor testing part.
+        const firstAncestorWithSibling = draggedBranchIdRef.current
             ? nodes.find((node) => node.id === draggedBranchIdRef.current)
             : getFirstAncestorWithSibling(nodes, draggedNode);
 
