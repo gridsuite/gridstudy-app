@@ -138,7 +138,7 @@ export const formatParametersToSend = (
     parameters: NetworkVisualizationParametersForm,
     changedParameters: Partial<NetworkVisualizationParametersForm>
 ) => {
-    const getFlattenedObject = (nestedObject: NestedObject) =>
+    const getFlattenedObject = (nestedObject: NestedObject): Record<string, string | number | boolean> =>
         Object.values(nestedObject)
             .flatMap((obj) => Object.entries(obj))
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
@@ -147,7 +147,7 @@ export const formatParametersToSend = (
     const flattenedChangedParameters = getFlattenedObject(changedParameters);
 
     return Object.keys(flattenedChangedParameters).reduce((acc, field) => {
-        (acc as any)[field] = (flattenedParameters as any)[field];
+        (acc as any)[field] = flattenedParameters[field];
         return acc;
     }, {});
 };

@@ -34,7 +34,7 @@ import {
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 export const MapParameters = () => {
-    const { setValue, getValues } = useFormContext();
+    const { setValue, getValues, control } = useFormContext();
     const alertThresholdMarks = [
         {
             value: 0,
@@ -50,11 +50,9 @@ export const MapParameters = () => {
     });
 
     const onSliderChange = (value: number) => {
-        setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, value, {
-            shouldValidate: true,
-        });
+        const dirty = { shouldDirty: true };
+        setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, value, dirty);
     };
-
     // the translation of values
     const lineFlowModeOptions = useMemo(() => {
         return INTL_LINE_FLOW_MODE_OPTIONS;
@@ -124,6 +122,7 @@ export const MapParameters = () => {
             <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
                 <Controller
                     name={`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`}
+                    control={control}
                     render={() => (
                         <Slider
                             name={`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`}
