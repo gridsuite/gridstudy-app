@@ -53,18 +53,6 @@ export const MapParameters = () => {
         const dirty = { shouldDirty: true };
         setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, value, dirty);
     };
-    // the translation of values
-    const lineFlowModeOptions = useMemo(() => {
-        return INTL_LINE_FLOW_MODE_OPTIONS;
-    }, []);
-
-    const lineFlowColorModeOptions = useMemo(() => {
-        return INTL_LINE_FLOW_COLOR_MODE_OPTIONS;
-    }, []);
-
-    const mapBaseMapOptions = useMemo(() => {
-        return INTL_MAP_BASE_MAP_OPTIONS;
-    }, []);
 
     // fields definition
     const lineSwitch = (name: string, label: string) => (
@@ -108,7 +96,7 @@ export const MapParameters = () => {
                     fullWidth
                     name={`${TabValue.MAP}.${PARAM_MAP_BASEMAP}`}
                     size="small"
-                    options={Object.values(mapBaseMapOptions)?.map((option) => option)}
+                    options={Object.values(INTL_MAP_BASE_MAP_OPTIONS)?.map((option) => option)}
                 />
             </Grid>
         </>
@@ -158,10 +146,10 @@ export const MapParameters = () => {
             {lineSwitch(PARAM_LINE_PARALLEL_PATH, PARAM_LINE_PARALLEL_PATH)}
             <LineSeparator />
 
-            {lineFlow(PARAM_LINE_FLOW_MODE, LINE_FLOW_MODE, lineFlowModeOptions)}
+            {lineFlow(PARAM_LINE_FLOW_MODE, LINE_FLOW_MODE, INTL_LINE_FLOW_MODE_OPTIONS)}
             <LineSeparator />
 
-            {lineFlow(PARAM_LINE_FLOW_COLOR_MODE, LINE_FLOW_COLOR_MODE, lineFlowColorModeOptions)}
+            {lineFlow(PARAM_LINE_FLOW_COLOR_MODE, LINE_FLOW_COLOR_MODE, INTL_LINE_FLOW_COLOR_MODE_OPTIONS)}
             <LineSeparator />
 
             {slider}
