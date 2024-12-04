@@ -103,16 +103,6 @@ const defaultBusMenuState: BusMenuState = {
 
 // Helper function to apply invalid styles
 function applyInvalidStyles(svgContainer: HTMLElement) {
-    // Ensure the animation styles are disabled
-    const invalidStyles = {
-        '--sld-active-power-opacity': INVALID_LOADFLOW_OPACITY,
-        animation: 'none', // Disable animations
-    };
-
-    for (const [key, value] of Object.entries(invalidStyles)) {
-        svgContainer.style.setProperty(key, value as string);
-    }
-
     // Add other styles as required, such as opacity for specific classes
     const invalidElements = svgContainer.querySelectorAll(
         '.sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle'
