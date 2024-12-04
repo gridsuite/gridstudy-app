@@ -35,7 +35,13 @@ interface CustomAggridTextFilterProps {
     decimalAfterDot: number;
 }
 
-export const CustomAggridTextFilter: React.FC<CustomAggridTextFilterProps> = ({ value, onChange, onClear, isNumberInput, decimalAfterDot = 0 }) => {
+export const CustomAggridTextFilter: React.FC<CustomAggridTextFilterProps> = ({
+    value,
+    onChange,
+    onClear,
+    isNumberInput,
+    decimalAfterDot = 0,
+}) => {
     const intl = useIntl();
 
     return (
