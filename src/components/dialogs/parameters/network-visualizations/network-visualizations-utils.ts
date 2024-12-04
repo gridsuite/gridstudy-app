@@ -143,8 +143,8 @@ export const formatParametersToSend = (
             .flatMap((obj) => Object.entries(obj))
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
 
-    const flattenedParameters = getFlattenedObject(parameters);
-    const flattenedChangedParameters = getFlattenedObject(changedParameters);
+    const flattenedParameters = getFlattenedObject(parameters as NestedObject);
+    const flattenedChangedParameters = getFlattenedObject(changedParameters as NestedObject);
 
     return Object.keys(flattenedChangedParameters).reduce((acc, field) => {
         (acc as any)[field] = flattenedParameters[field];

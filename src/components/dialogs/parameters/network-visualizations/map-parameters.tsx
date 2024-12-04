@@ -6,7 +6,6 @@
  */
 import { Grid, Slider } from '@mui/material';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
-import { useMemo } from 'react';
 import {
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
