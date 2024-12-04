@@ -47,6 +47,8 @@ const NetworkModificationTree = ({
 
     const { setViewport, fitView, setCenter, getZoom } = useReactFlow();
 
+    const draggedBranchIdRef = useRef(null);
+
     const nodeColor = useCallback(
         (node) => {
             if (!node) {
@@ -169,8 +171,6 @@ const NetworkModificationTree = ({
      * @return the node that will move, either the original dragged node, or its ancestor.
      */
     const handleNodeDragging = (changes) => {
-        let movedNode; // Will be initialized either with the dragged node or its ancestor
-
         const currentChange = changes[0]; // corresponds to a list of changes affecting the dragged node
 
         const draggedNode = nodes.find((node) => node.id === currentChange.id);
@@ -182,9 +182,13 @@ const NetworkModificationTree = ({
 
         // We test if the dragged node is the start of a branch. If this is not the case, we should find
         // the start of the branch and move this ancestor node instead.
-        const firstAncestorWithSibling = getFirstAncestorWithSibling(nodes, draggedNode);
+        // If we already put a node ID in the ref, we use it and skip the ancestor testing part.
+        const firstAncestorWithSibling = draggedBranchIdRef.current
+            ? nodes.find((node) => node.id === draggedBranchIdRef.current)
+            : getFirstAncestorWithSibling(nodes, draggedNode);
+
         if (!firstAncestorWithSibling || firstAncestorWithSibling.id === currentChange.id) {
-            movedNode = draggedNode;
+            draggedBranchIdRef.current = draggedNode.id;
         } else {
             // We calculate the movement of the dragged node and apply it to its ancestor instead.
             const initialAncestorXPosition = firstAncestorWithSibling.position.x;
@@ -208,43 +212,44 @@ const NetworkModificationTree = ({
             // processed by ReactFlow.
             changes.push(newChangeForAncestor);
 
-            movedNode = firstAncestorWithSibling;
+            draggedBranchIdRef.current = firstAncestorWithSibling.id;
         }
-        return movedNode;
     };
 
     /**
      * When the user stops dragging a node and releases it to its new position, we check if we need
      * to switch the order of the moved branch with a neighboring branch.
      */
-    const handleEndOfNodeDragging = (movedNode) => {
-        // In the treeModel.treeNodes variable we can find the positions of the nodes before the user started
-        // dragging something, whereas in the movedNode variable (which comes from the nodes variable), we can
-        // find the position of the node which has been updated by ReactFlow's onNodesChanges function as the
-        // user kept on dragging the node.
-        const movedNodeXPositionBeforeDrag = treeModel.treeNodes.find((n) => n.id === movedNode.id).position.x;
-        const movedNodeXPositionAfterDrag = movedNode.position.x;
+    const handleEndNodeDragging = () => {
+        let movedNode = nodes.find((node) => node.id === draggedBranchIdRef.current);
+        draggedBranchIdRef.current = null;
+        if (movedNode) {
+            // In the treeModel.treeNodes variable we can find the positions of the nodes before the user started
+            // dragging something, whereas in the movedNode variable (which comes from the nodes variable), we can
+            // find the position of the node which has been updated by ReactFlow's onNodesChanges function as the
+            // user kept on dragging the node.
+            const movedNodeXPositionBeforeDrag = treeModel.treeNodes.find((n) => n.id === movedNode.id).position.x;
+            const movedNodeXPositionAfterDrag = movedNode.position.x;
 
-        const nodeToSwitchWith = findClosestSiblingInRange(
-            nodes,
-            movedNode,
-            movedNodeXPositionBeforeDrag,
-            movedNodeXPositionAfterDrag
-        );
-        if (nodeToSwitchWith) {
-            dispatch(networkModificationTreeSwitchNodes(movedNode.id, nodeToSwitchWith.id));
+            const nodeToSwitchWith = findClosestSiblingInRange(
+                nodes,
+                movedNode,
+                movedNodeXPositionBeforeDrag,
+                movedNodeXPositionAfterDrag
+            );
+            if (nodeToSwitchWith) {
+                dispatch(networkModificationTreeSwitchNodes(movedNode.id, nodeToSwitchWith.id));
+            }
         }
     };
 
     const handleNodesChange = (changes) => {
         // Is the user dragging a node ?
-        if (changes.length === 1 && changes[0].type === 'position') {
-            // Here we will replace the original changes with our own.
-            const movedNode = handleNodeDragging(changes);
-
-            // Has the user just stopped dragging the node ?
-            if (changes[0].dragging !== undefined && !changes[0].dragging) {
-                handleEndOfNodeDragging(movedNode);
+        if (changes.length === 1 && changes[0].dragging !== undefined) {
+            if (changes[0].dragging) {
+                handleNodeDragging(changes);
+            } else {
+                handleEndNodeDragging();
             }
         }
         onNodesChange(changes);
