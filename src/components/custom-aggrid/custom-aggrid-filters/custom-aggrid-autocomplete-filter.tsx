@@ -34,7 +34,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
             isCountry
                 ? translate(option)
                 : intl.formatMessage({
-                      id: getEnumLabel?.(option) || option,
+                      id: getEnumLabel?.(option) ?? option,
                       defaultMessage: option,
                   }),
         [isCountry, intl, translate, getEnumLabel]

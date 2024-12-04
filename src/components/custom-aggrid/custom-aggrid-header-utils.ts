@@ -49,7 +49,7 @@ export const makeAgGridCustomHeaderColumn = ({
             isSortable,
             sortParams: {
                 sortConfig,
-                onSortChanged: onSortChanged,
+                onSortChanged,
             },
             isFilterable,
             filterParams: {
