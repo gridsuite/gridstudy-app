@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { IconButton } from '@mui/material';
-import { SortPropsType, SortWay } from '../../../hooks/use-aggrid-sort';
+import { SortWay } from '../../../hooks/use-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
 import { useCustomAggridSort } from './use-custom-aggrid-sort';
