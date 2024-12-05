@@ -981,7 +981,7 @@ export const NetworkMapTab = ({
             onDrawEvent={(event) => {
                 onDrawEvent(event);
             }}
-            shouldDisableToolTip={isInDrawingMode}
+            shouldDisableToolTip={!visible || isInDrawingMode}
         />
     );
 

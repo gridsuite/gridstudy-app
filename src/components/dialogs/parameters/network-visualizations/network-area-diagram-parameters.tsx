@@ -7,7 +7,9 @@
 import { Grid } from '@mui/material';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../../utils/config-params';
 import { styles } from '../parameters';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
+import { FormattedMessage } from 'react-intl';
+import { INIT_NAD_WITH_GEO_DATA, TabValue } from './network-visualizations-utils';
+import { SwitchInput } from '@gridsuite/commons-ui';
 
 export const NetworkAreaDiagramParameters = () => {
     return (
@@ -20,7 +22,12 @@ export const NetworkAreaDiagramParameters = () => {
             marginTop={-3}
             justifyContent={'space-between'}
         >
-            <ParameterLineSwitch paramNameId={PARAM_INIT_NAD_WITH_GEO_DATA} label="initNadWithGeoData" />
+            <Grid item xs={8} sx={styles.parameterName}>
+                <FormattedMessage id={INIT_NAD_WITH_GEO_DATA} />
+            </Grid>
+            <Grid item container xs={4} sx={styles.controlItem}>
+                <SwitchInput name={`${TabValue.NETWORK_AREA_DIAGRAM}.${PARAM_INIT_NAD_WITH_GEO_DATA}`} />
+            </Grid>
         </Grid>
     );
 };
