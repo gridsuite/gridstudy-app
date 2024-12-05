@@ -462,7 +462,7 @@ export interface AppState extends CommonStoreState {
     notificationIdList: UUID[];
     nonEvacuatedEnergyNotif: boolean;
     recentGlobalFilters: Filter[];
-    mapEquipments: GSMapEquipments | null;
+    mapEquipments: GSMapEquipments | undefined;
     networkAreaDiagramNbVoltageLevels: number;
     networkAreaDiagramDepth: number;
     studyDisplayMode: StudyDisplayMode;
@@ -486,9 +486,11 @@ export interface AppState extends CommonStoreState {
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
-    centerOnSubstation: null | {
-        to: unknown;
-    };
+    centerOnSubstation:
+        | undefined
+        | {
+              to: string;
+          };
     isModificationsInProgress: boolean;
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
@@ -620,7 +622,7 @@ const initialState: AppState = {
         allChildrenIds: null,
     },
     tables: initialTablesState,
-    mapEquipments: null,
+    mapEquipments: undefined,
     geoData: null,
     networkModificationTreeModel: new NetworkModificationTreeModel(),
     computedLanguage: getLocalStorageComputedLanguage(),
@@ -637,7 +639,7 @@ const initialState: AppState = {
     isExplorerDrawerOpen: true,
     isModificationsDrawerOpen: false,
     isEventScenarioDrawerOpen: false,
-    centerOnSubstation: null,
+    centerOnSubstation: undefined,
     notificationIdList: [],
     isModificationsInProgress: false,
     studyDisplayMode: StudyDisplayMode.HYBRID,
@@ -810,13 +812,8 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
-        let newMapEquipments: GSMapEquipments;
         //if it's not initialised yet we take the empty one given in action
-        if (!state.mapEquipments) {
-            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
-        } else {
-            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
-        }
+        const newMapEquipments = (state.mapEquipments ?? action.mapEquipments).newMapEquipmentForUpdate();
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
             newMapEquipments.completeLinesInfos([]);

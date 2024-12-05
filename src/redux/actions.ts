@@ -761,9 +761,9 @@ export function setEventScenarioDrawerOpen(isEventScenarioDrawerOpen: boolean): 
 
 export const CENTER_ON_SUBSTATION = 'CENTER_ON_SUBSTATION';
 export type CenterOnSubstationAction = Readonly<Action<typeof CENTER_ON_SUBSTATION>> & {
-    centerOnSubstation: { to: unknown };
+    centerOnSubstation: { to: string };
 };
-export function centerOnSubstation(substationId: unknown): CenterOnSubstationAction {
+export function centerOnSubstation(substationId: string): CenterOnSubstationAction {
     return {
         type: CENTER_ON_SUBSTATION,
         centerOnSubstation: { to: substationId },

@@ -21,6 +21,7 @@ import {
     type MapTieLine,
     type MapVoltageLevel,
     NetworkMap,
+    type NetworkMapProps,
     type NetworkMapRef,
 } from '@powsybl/network-viewer';
 import { type FunctionComponent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -902,14 +903,17 @@ export const NetworkMapTab = ({
         );
     }
 
-    const renderLinePopover = (elementId: string, ref: RefObject<HTMLDivElement>) => (
-        <EquipmentPopover
-            studyUuid={studyUuid}
-            anchorEl={ref}
-            equipmentId={elementId}
-            equipmentType={EQUIPMENT_TYPES.LINE}
-            loadFlowStatus={loadFlowStatus}
-        />
+    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
+        (elementId, ref) => (
+            <EquipmentPopover
+                studyUuid={studyUuid}
+                anchorEl={ref.current}
+                equipmentId={elementId}
+                equipmentType={EQUIPMENT_TYPES.LINE}
+                loadFlowStatus={loadFlowStatus}
+            />
+        ),
+        [loadFlowStatus, studyUuid]
     );
 
     const renderMap = () => (
