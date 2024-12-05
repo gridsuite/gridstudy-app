@@ -37,7 +37,9 @@ export interface LccConverterStationCreationInfos {
     voltageLevelId: string;
     busOrBusbarSectionId: string;
     terminalConnected: boolean;
-    connectablePosition: ConnectablePositionInfos;
+    connectionDirection: string | null;
+    connectionName: string | null;
+    connectionPosition: string | null;
     shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
@@ -71,4 +73,12 @@ export interface LccFormInfos {
     lccConverterStation1: LccConverterStationFormInfos;
     lccConverterStation2: LccConverterStationFormInfos;
     properties: Record<string, string> | undefined;
+}
+
+// this type used instead of ShuntCompensatorInfos because RHF uses 'id' to manage array, see useFieldArray
+export interface ShuntCompensatorFormSchema {
+    shuntCompensatorId: string;
+    shuntCompensatorName?: string | null;
+    maxQAtNominalV: number;
+    connectedToHvdc?: boolean;
 }

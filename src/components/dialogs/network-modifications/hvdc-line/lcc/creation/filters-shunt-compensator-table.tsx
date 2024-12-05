@@ -9,16 +9,15 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useIntl } from 'react-intl';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useFieldArray } from 'react-hook-form';
 import {
-    COUNT,
     FILTERS_SHUNT_COMPENSATOR_TABLE,
     MAX_Q_AT_NOMINAL_V,
-    SHUNT_COMPENSATOR_SELECTED,
     SHUNT_COMPENSATOR_ID,
     SHUNT_COMPENSATOR_NAME,
+    SHUNT_COMPENSATOR_SELECTED,
 } from '../../../../../utils/field-constants';
 import { FloatInput, SwitchInput, TextInput } from '@gridsuite/commons-ui';
 import { ReactivePowerAdornment } from '../../../../dialog-utils';
@@ -28,7 +27,11 @@ interface FiltersShuntCompensatorTableProps {
 }
 export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShuntCompensatorTableProps>) {
     const intl = useIntl();
-    const { fields: rows, append, remove } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
+    const {
+        fields: rows,
+        append: handleAddRow,
+        remove: handleRemoveRow,
+    } = useFieldArray({ name: `${id}.${FILTERS_SHUNT_COMPENSATOR_TABLE}` });
     const [isHover, setIsHover] = useState<Record<number, boolean>>({});
     const handleHover = (rowIndex: number, hoverState: boolean) => {
         setIsHover((prev) => ({
@@ -69,20 +72,12 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
     }, [intl]);
 
     const newRowData = useMemo(() => {
-        const newRowData: { [key: string]: any } = { [COUNT]: 0 };
+        const newRowData: { [key: string]: null | string | boolean } = {};
         columnsDefinition.forEach((column) => {
             newRowData[column.dataKey] = column.initialValue;
         });
         return newRowData;
     }, [columnsDefinition]);
-
-    const handleAddRowsButton = useCallback(() => {
-        append(() => [newRowData]);
-    }, [append, newRowData]);
-
-    const handleRemoveRow = (index: number) => {
-        remove(index);
-    };
 
     return (
         <TableContainer
@@ -106,7 +101,7 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                                 })}
                             >
                                 <span>
-                                    <IconButton onClick={handleAddRowsButton}>
+                                    <IconButton onClick={() => handleAddRow(newRowData)}>
                                         <AddCircleIcon />
                                     </IconButton>
                                 </span>
