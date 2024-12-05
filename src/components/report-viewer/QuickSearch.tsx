@@ -6,7 +6,7 @@
  */
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { TextField, InputAdornment, IconButton, Box } from '@mui/material';
-import { Search, Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
+import { Clear, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 
 interface QuickSearchProps {
@@ -106,7 +106,7 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
                             <>
                                 <Box sx={styles.adornmentItem}>
                                     <span>
-                                        {currentResultIndex + 1}/{resultCount} {intl.formatMessage({ id: 'Results' })}
+                                        {currentResultIndex + 1}/{resultCount}
                                     </span>
                                 </Box>
                                 <Box>
@@ -127,9 +127,6 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
                                 </Box>
                             </>
                         )}
-                        <IconButton sx={styles.adornmentItem} onClick={handleSearch}>
-                            <Search />
-                        </IconButton>
                     </InputAdornment>
                 ),
             }}
