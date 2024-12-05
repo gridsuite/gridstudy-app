@@ -10,11 +10,16 @@ import {
     type Coordinate,
     DRAW_MODES,
     GeoData,
+    type GeoDataEquipment,
+    type GeoDataLine,
+    type GeoDataSubstation,
     LineFlowColorMode,
     LineFlowMode,
     type MapEquipment,
+    type MapHvdcLine,
     type MapLine,
     type MapSubstation,
+    type MapTieLine,
     type MapVoltageLevel,
     NetworkMap,
     type NetworkMapRef,
@@ -48,11 +53,6 @@ import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
-import {
-    Equipment as EquipmentGeoData,
-    Line,
-    Substation,
-} from '@powsybl/network-viewer/dist/components/network-map-viewer/network/geo-data';
 
 const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
@@ -188,9 +188,9 @@ export const NetworkMapTab = ({
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef<CurrentTreeNode | null>(null);
-    const [updatedLines, setUpdatedLines] = useState<Line[]>([]);
-    const [updatedTieLines, setUpdatedTieLines] = useState<Line[]>([]);
-    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<Line[]>([]);
+    const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
+    const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
     const [equipmentToModify, setEquipmentToModify] = useState<Equipment | null>();
     const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
     const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
@@ -387,7 +387,7 @@ export const NetworkMapTab = ({
     );
 
     const getEquipmentsNotFoundIds = useCallback(
-        (foundEquipmentPositions: Map<string, number>, allEquipments: EquipmentGeoData[]) => {
+        (foundEquipmentPositions: Map<string, number>, allEquipments: GeoDataEquipment[]) => {
             return allEquipments
                 .filter((s) => !foundEquipmentPositions.has(s.id) || temporaryGeoDataIdsRef?.current?.has(s.id))
                 .map((s) => s.id);
@@ -399,14 +399,17 @@ export const NetworkMapTab = ({
         return coordinate1?.lat === coordinate2?.lat && coordinate1?.lon === coordinate2?.lon;
     };
 
-    const substationPositionsAreEqual = useCallback((substationPos1: Substation, substationPos2: Substation) => {
-        return (
-            latLonEqual(substationPos1?.coordinate, substationPos2?.coordinate) &&
-            substationPos1?.country === substationPos2?.country
-        );
-    }, []);
+    const substationPositionsAreEqual = useCallback(
+        (substationPos1: GeoDataSubstation, substationPos2: GeoDataSubstation) => {
+            return (
+                latLonEqual(substationPos1?.coordinate, substationPos2?.coordinate) &&
+                substationPos1?.country === substationPos2?.country
+            );
+        },
+        []
+    );
 
-    const linePositionsAreEqual = useCallback((linePos1: Line, linePos2: Line) => {
+    const linePositionsAreEqual = useCallback((linePos1: GeoDataLine, linePos2: GeoDataLine) => {
         return (
             latLonEqual(linePos1?.coordinates?.[0], linePos2?.coordinates?.[0]) &&
             latLonEqual(linePos1?.coordinates?.[1], linePos2?.coordinates?.[1]) &&
@@ -432,7 +435,7 @@ export const NetworkMapTab = ({
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
-        (requestedPositions: string[], fetchedPositions: Substation[]) => {
+        (requestedPositions: string[], fetchedPositions: GeoDataSubstation[]) => {
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
@@ -458,7 +461,7 @@ export const NetworkMapTab = ({
     );
 
     const updateLinesTemporaryGeoData = useCallback(
-        (requestedPositions: string[], fetchedPositions: Line[]) => {
+        (requestedPositions: string[], fetchedPositions: GeoDataLine[]) => {
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
@@ -498,7 +501,7 @@ export const NetworkMapTab = ({
         );
 
         const notFoundLineIds = lineFullPath
-            ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as EquipmentGeoData[])
+            ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as GeoDataEquipment[])
             : [];
 
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
