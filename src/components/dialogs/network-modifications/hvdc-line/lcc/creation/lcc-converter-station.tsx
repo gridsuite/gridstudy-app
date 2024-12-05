@@ -95,7 +95,7 @@ export function getLccConverterStationEmptyFormData() {
 }
 
 const getShuntCompensatorOnSideFormData = (
-    shuntCompensatorInfos: ShuntCompensatorInfos[] | undefined
+    shuntCompensatorInfos?: ShuntCompensatorInfos[]
 ): ShuntCompensatorFormSchema[] => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
@@ -108,7 +108,7 @@ const getShuntCompensatorOnSideFormData = (
 };
 
 const getShuntCompensatorOnSideCreateData = (
-    shuntCompensatorInfos: ShuntCompensatorFormSchema[] | undefined
+    shuntCompensatorInfos?: ShuntCompensatorFormSchema[]
 ): ShuntCompensatorInfos[] => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
@@ -120,7 +120,7 @@ const getShuntCompensatorOnSideCreateData = (
     );
 };
 
-export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos: ShuntCompensatorInfos[] | undefined) => {
+export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: ShuntCompensatorInfos[]) => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
@@ -175,11 +175,11 @@ export function getLccConverterStationFromEditData(lccConverterStationCreationIn
 
 export function getLccConverterStationCreationData(converterStation: {
     converterStationId: string;
-    converterStationName?: string | undefined;
+    converterStationName?: string;
     lossFactor: number;
     powerFactor: number;
     connectivity: Connectivity;
-    shuntCompensatorInfos?: ShuntCompensatorFormSchema[] | undefined;
+    shuntCompensatorInfos?: ShuntCompensatorFormSchema[];
 }) {
     return {
         type: MODIFICATION_TYPES.LCC_CONVERTER_STATION_CREATION.type,

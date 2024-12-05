@@ -72,7 +72,7 @@ export interface LccFormInfos {
     activePowerSetpoint: number;
     lccConverterStation1: LccConverterStationFormInfos;
     lccConverterStation2: LccConverterStationFormInfos;
-    properties: Record<string, string> | undefined;
+    properties?: Record<string, string>;
 }
 
 // this type used instead of ShuntCompensatorInfos because RHF uses 'id' to manage array, see useFieldArray

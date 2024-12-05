@@ -133,7 +133,7 @@ export function LccCreationDialog({
         resolver: yupResolver<DeepNullable<LccCreationSchemaForm>>(formSchema),
     });
     const { reset } = formMethods;
-    const [tabIndex, setTabIndex] = useState(LccCreationDialogTab.HVDC_LINE_TAB);
+    const [tabIndex, setTabIndex] = useState<number>(LccCreationDialogTab.HVDC_LINE_TAB);
     const [tabIndexesWithError, setTabIndexesWithError] = useState<number[]>([]);
     const fromSearchCopyToFormValues = (lccHvdcLine: LccFormInfos) => ({
         [EQUIPMENT_ID]: lccHvdcLine.id + '(1)',

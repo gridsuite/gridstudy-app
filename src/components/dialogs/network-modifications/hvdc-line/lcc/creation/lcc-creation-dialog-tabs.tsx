@@ -9,10 +9,11 @@ import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { getTabStyle } from '../../../../../utils/tab-utils';
 import { LccCreationDialogTab } from './lcc-creation.type';
+
 export interface LccCreationDialogTabsProps {
     tabIndex: number;
-    tabIndexesWithError: any[];
-    setTabIndex: (newValue: any) => void;
+    tabIndexesWithError: number[];
+    setTabIndex: (newValue: number) => void;
 }
 
 export default function LccCreationDialogTabs({
