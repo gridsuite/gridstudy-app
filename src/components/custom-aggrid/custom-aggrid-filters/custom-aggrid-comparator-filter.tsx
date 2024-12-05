@@ -8,15 +8,10 @@ import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selec
 import CustomAggridDurationFilter from './custom-aggrid-duration-filter';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
-import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { CustomAggridFilterProps } from './custom-aggrid-filter';
 
-interface CustomAggridComparatorFilterProps {
-    field: string;
-    filterParams: CustomHeaderFilterParams;
-}
-
-export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggridComparatorFilterProps) => {
+export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggridFilterProps) => {
     const { selectedFilterData, comparatorFilterParams } = useCustomAggridFilter(field, filterParams);
     const {
         selectedFilterComparator,

@@ -31,6 +31,11 @@ interface CustomAggridFilterWrapperProps {
     isHoveringColumnHeader: boolean;
 }
 
+export interface CustomAggridFilterProps {
+    field: string;
+    filterParams: CustomHeaderFilterParams;
+}
+
 const enum FilterTypes {
     'BOOLEAN',
     'AUTOCOMPLETE',
@@ -77,8 +82,8 @@ export const CustomAggridFilter: FunctionComponent<CustomAggridFilterWrapperProp
     }, [filterType]);
 
     /* Filter should be activated for current column and
-  Filter dataType should be defined and
-  filter is an autocomplete (have options) or filter have comparators */
+Filter dataType should be defined and
+filter is an autocomplete (have options) or filter have comparators */
     const shouldActivateFilter =
         isFilterable &&
         !!filterDataType &&

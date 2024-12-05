@@ -11,9 +11,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
-import { CustomHeaderFilterParams } from '../custom-aggrid-header.type';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
+import { CustomAggridFilterProps } from './custom-aggrid-filter';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -29,12 +29,7 @@ const styles = {
     },
 };
 
-interface ICustomAggridBooleanFilter {
-    field: string;
-    filterParams: CustomHeaderFilterParams;
-}
-
-const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> = ({ field, filterParams }) => {
+const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterProps> = ({ field, filterParams }) => {
     const intl = useIntl();
 
     const { selectedFilterData, booleanFilterParams } = useCustomAggridFilter(field, filterParams);
