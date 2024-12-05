@@ -101,7 +101,7 @@ const defaultBusMenuState: BusMenuState = {
     display: false,
 };
 
-// Helper function to apply invalid styles
+// Function to apply invalid styles for sld
 function applyInvalidStyles(svgContainer: HTMLElement) {
     // Add invalid loadflow opacity for specific classes
     const invalidElements = svgContainer.querySelectorAll(
