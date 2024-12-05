@@ -103,7 +103,7 @@ const defaultBusMenuState: BusMenuState = {
 
 // Helper function to apply invalid styles
 function applyInvalidStyles(svgContainer: HTMLElement) {
-    // Add other styles as required, such as opacity for specific classes
+    // Add invalid loadflow opacity for specific classes
     const invalidElements = svgContainer.querySelectorAll(
         '.sld-active-power, .sld-reactive-power, .sld-voltage, .sld-angle'
     );
@@ -111,6 +111,7 @@ function applyInvalidStyles(svgContainer: HTMLElement) {
         (element as HTMLElement).style.opacity = String(INVALID_LOADFLOW_OPACITY);
     });
 
+    // Remove animation for specific classes
     const animatedElements = svgContainer.querySelectorAll('.sld-overload, .sld-vl-overvoltage, .sld-vl-undervoltage');
     animatedElements.forEach((element) => {
         (element as HTMLElement).style.animation = 'none';
