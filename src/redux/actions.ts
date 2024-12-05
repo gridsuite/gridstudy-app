@@ -321,16 +321,16 @@ export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE
 export type NetworkModificationTreeSwitchNodesAction = Readonly<
     Action<typeof NETWORK_MODIFICATION_TREE_SWITCH_NODES>
 > & {
-    draggedNodeId: string;
+    nodeToMoveId: string;
     destinationNodeId: string;
 };
 export function networkModificationTreeSwitchNodes(
-    draggedNodeId: string,
+    nodeToMoveId: string,
     destinationNodeId: string
 ): NetworkModificationTreeSwitchNodesAction {
     return {
         type: NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        draggedNodeId,
+        nodeToMoveId,
         destinationNodeId,
     };
 }

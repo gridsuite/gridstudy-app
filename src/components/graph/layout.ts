@@ -324,14 +324,14 @@ function isNodeASibling(nodes: CurrentTreeNode[], node: CurrentTreeNode): boolea
  */
 export function getFirstAncestorWithSibling(
     nodes: CurrentTreeNode[],
+    nodesMap: Map<string, CurrentTreeNode>,
     descendantNode: CurrentTreeNode | undefined
 ): CurrentTreeNode | undefined {
     if (descendantNode && descendantNode.parentId) {
         if (isNodeASibling(nodes, descendantNode)) {
             return descendantNode;
         }
-        const parentOfDescendantNode = nodes.find((node) => node.id === descendantNode.parentId);
-        return getFirstAncestorWithSibling(nodes, parentOfDescendantNode);
+        return getFirstAncestorWithSibling(nodes, nodesMap, nodesMap.get(descendantNode.parentId));
     }
     return undefined;
 }
@@ -341,13 +341,13 @@ export function getFirstAncestorWithSibling(
  */
 export function findClosestSiblingInRange(
     nodes: CurrentTreeNode[],
-    movedNode: CurrentTreeNode,
+    node: CurrentTreeNode,
     xOrigin: number,
     xDestination: number
 ): CurrentTreeNode | null {
     const minX = Math.min(xOrigin, xDestination);
     const maxX = Math.max(xOrigin, xDestination);
-    const siblingNodes = findSiblings(nodes, movedNode);
+    const siblingNodes = findSiblings(nodes, node);
     const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
     if (nodesBetween.length > 0) {
         const closestNode = nodesBetween.reduce(

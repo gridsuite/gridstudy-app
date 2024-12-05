@@ -32,26 +32,26 @@ export default class NetworkModificationTreeModel {
 
     /**
      * Will switch the order of two nodes in the tree.
-     * The draggedNode will be moved, either to the left or right of the destinationNode, depending
+     * The nodeToMove will be moved, either to the left or right of the destinationNode, depending
      * on their initial positions.
      * Both nodes should have the same parent.
      */
-    switchSiblingsOrder(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
-        if (!draggedNode.parentId || draggedNode.parentId !== destinationNode.parentId) {
+    switchSiblingsOrder(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+        if (!nodeToMove.parentId || nodeToMove.parentId !== destinationNode.parentId) {
             console.error('Both nodes should have the same parent to switch their order');
             return;
         }
-        const draggedNodeIndex = this.treeNodes.findIndex((node) => node.id === draggedNode.id);
+        const nodeToMoveIndex = this.treeNodes.findIndex((node) => node.id === nodeToMove.id);
         const destinationNodeIndex = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
 
-        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, draggedNode.id);
-        const nodesToMove = this.treeNodes.splice(draggedNodeIndex, numberOfNodesToMove);
+        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, nodeToMove.id);
+        const nodesToMove = this.treeNodes.splice(nodeToMoveIndex, numberOfNodesToMove);
 
-        if (draggedNodeIndex > destinationNodeIndex) {
+        if (nodeToMoveIndex > destinationNodeIndex) {
             this.treeNodes.splice(destinationNodeIndex, 0, ...nodesToMove);
         } else {
-            // When moving the draggedNode to the right, we have to take into account the splice that changed the nodes' indexes.
-            // We also need to find the correct position of the dragged node, to the right of the destination node, meaning we need to find
+            // When moving nodeToMove to the right, we have to take into account the splice function that changed the nodes' indexes.
+            // We also need to find the correct position of nodeToMove, to the right of the destination node, meaning we need to find
             // how many children the destination node has and add all of them to the new index.
             const destinationNodeIndexAfterSplice = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
             const destinationNodeFamilySize: number = 1 + countNodes(this.treeNodes, destinationNode.id);
@@ -133,14 +133,14 @@ export default class NetworkModificationTreeModel {
         return null;
     }
 
-    switchBranches(draggedNode: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+    switchBranches(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
         // We find the nodes from the two branches that share the same parent
-        const commonAncestor = this.getCommonAncestor(draggedNode, destinationNode);
+        const commonAncestor = this.getCommonAncestor(nodeToMove, destinationNode);
         if (commonAncestor) {
-            const siblingFromDraggedNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, draggedNode);
+            const siblingFromNodeToMoveBranch = this.getChildOfAncestorInLineage(commonAncestor, nodeToMove);
             const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
-            if (siblingFromDraggedNodeBranch && siblingFromDestinationNodeBranch) {
-                this.switchSiblingsOrder(siblingFromDraggedNodeBranch, siblingFromDestinationNodeBranch);
+            if (siblingFromNodeToMoveBranch && siblingFromDestinationNodeBranch) {
+                this.switchSiblingsOrder(siblingFromNodeToMoveBranch, siblingFromDestinationNodeBranch);
             }
         }
     }
