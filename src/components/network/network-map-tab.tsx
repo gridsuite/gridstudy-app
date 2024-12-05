@@ -5,17 +5,23 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { Writable } from 'type-fest';
 import {
-    NetworkMap,
-    GeoData,
-    NetworkMapRef,
-    LineFlowMode,
-    LineFlowColorMode,
+    type Coordinate,
     DRAW_MODES,
+    GeoData,
+    LineFlowColorMode,
+    LineFlowMode,
+    type MapEquipment,
+    type MapLine,
+    type MapSubstation,
+    type MapVoltageLevel,
+    NetworkMap,
+    type NetworkMapRef,
 } from '@powsybl/network-viewer';
-import { useCallback, useEffect, useState, useRef, useMemo, RefObject } from 'react';
+import { type FunctionComponent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import withOperatingStatusMenu, { MenuBranchProps } from '../menus/operating-status-menu';
-import BaseEquipmentMenu, { MapEquipment } from '../menus/base-equipment-menu';
+import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter from './nominal-voltage-filter';
@@ -25,7 +31,7 @@ import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
-import LinearProgress from '@mui/material/LinearProgress';
+import { Box, LinearProgress, useTheme } from '@mui/material';
 import { UPDATE_TYPE_HEADER } from '../study-container';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
@@ -34,7 +40,6 @@ import LineModificationDialog from '../dialogs/network-modifications/line/modifi
 import { deleteEquipment } from '../../services/study/network-modifications';
 import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
-
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
@@ -44,19 +49,12 @@ import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
 import {
-    Coordinate,
+    Equipment as EquipmentGeoData,
     Line,
     Substation,
-    Equipment as EquipmentGeoData,
 } from '@powsybl/network-viewer/dist/components/network-map-viewer/network/geo-data';
-import {
-    Equipment as EquipmentMap,
-    Substation as SubstationMap,
-    Line as LineMap,
-    VoltageLevel as VoltageLevelMap,
-} from '@powsybl/network-viewer/dist/components/network-map-viewer/network/map-equipments';
-import { Box, useTheme } from '@mui/material';
-const INITIAL_POSITION = [0, 0] as [number, number];
+
+const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -81,7 +79,7 @@ const styles = {
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 
 type NetworkMapTabProps = {
-    networkMapRef: React.RefObject<NetworkMapRef>;
+    networkMapRef: RefObject<NetworkMapRef>;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     visible: boolean;
@@ -179,7 +177,7 @@ export const NetworkMapTab = ({
 
     type EquipmentMenuProps = {
         position?: [number, number] | null;
-        equipment?: MapEquipment;
+        equipment?: BaseEquipment;
         equipmentType?: EquipmentType;
         display: boolean;
     };
@@ -288,7 +286,7 @@ export const NetworkMapTab = ({
         studyUuid: UUID;
         equipmentType: EquipmentType;
     };
-    function withEquipment(Menu: React.FC<MenuBranchProps>, props: MenuProps | null) {
+    function withEquipment(Menu: FunctionComponent<MenuBranchProps>, props: MenuProps | null) {
         return (
             equipmentMenu?.equipment &&
             equipmentMenu.position &&
@@ -313,7 +311,7 @@ export const NetworkMapTab = ({
 
     const MenuVoltageLevel = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus');
 
-    function showEquipmentMenu(equipment: MapEquipment, x: number, y: number, type: EquipmentType) {
+    function showEquipmentMenu(equipment: BaseEquipment, x: number, y: number, type: EquipmentType) {
         setEquipmentMenu({
             position: [x, y],
             equipment: equipment,
@@ -371,10 +369,10 @@ export const NetworkMapTab = ({
         closeChoiceVoltageLevelMenu();
     }
 
-    const voltageLevelMenuClick = (equipment: VoltageLevelMap, x: number, y: number) => {
+    const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
-            showEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
+            showEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
         }
     };
 
@@ -860,13 +858,12 @@ export const NetworkMapTab = ({
         }
     }, [isInitialized, lineFullPath, loadGeoData]);
 
-    let choiceVoltageLevelsSubstation: EquipmentMap | null = null;
-    if (choiceVoltageLevelsSubstationId) {
-        choiceVoltageLevelsSubstation = mapEquipments?.getSubstation(choiceVoltageLevelsSubstationId);
-    }
+    const choiceVoltageLevelsSubstation = choiceVoltageLevelsSubstationId
+        ? mapEquipments?.getSubstation(choiceVoltageLevelsSubstationId)
+        : null;
 
     const displayEquipmentMenu = (
-        equipment: MapEquipment,
+        equipment: BaseEquipment,
         x: number,
         y: number,
         equipmentType: EquipmentType,
@@ -927,7 +924,7 @@ export const NetworkMapTab = ({
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
             arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-            initialPosition={INITIAL_POSITION}
+            initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
             initialZoom={INITIAL_ZOOM}
             lineFullPath={lineFullPath}
             lineParallelPath={lineParallelPath}
@@ -939,15 +936,31 @@ export const NetworkMapTab = ({
             disabled={disabled}
             onSubstationClick={openVoltageLevel}
             onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
-            onSubstationMenuClick={(equipment: SubstationMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.SUBSTATION, isInDrawingMode)
+            // @ts-expect-error TODO tmp
+            onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
+                displayEquipmentMenu(
+                    equipment as unknown as BaseEquipment,
+                    x,
+                    y,
+                    EquipmentType.SUBSTATION,
+                    isInDrawingMode
+                )
             }
-            onLineMenuClick={(equipment: LineMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
+            // @ts-expect-error TODO tmp
+            onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
+                displayEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
             }
-            onHvdcLineMenuClick={(equipment: EquipmentMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.HVDC_LINE, isInDrawingMode)
+            // @ts-expect-error TODO tmp
+            onHvdcLineMenuClick={(equipment: MapEquipment, x: number, y: number) =>
+                displayEquipmentMenu(
+                    equipment as unknown as BaseEquipment,
+                    x,
+                    y,
+                    EquipmentType.HVDC_LINE,
+                    isInDrawingMode
+                )
             }
+            // @ts-expect-error TODO tmp
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
             centerOnSubstation={centerOnSubstation}
