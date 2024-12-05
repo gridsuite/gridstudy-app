@@ -45,7 +45,7 @@ export interface ShuntCompensatorInfos {
     id: string;
     name?: string | null;
     maxQAtNominalV: number;
-    connectedToHvdc: boolean;
+    connectedToHvdc?: boolean;
 }
 
 export interface LccConverterStationFormInfos {

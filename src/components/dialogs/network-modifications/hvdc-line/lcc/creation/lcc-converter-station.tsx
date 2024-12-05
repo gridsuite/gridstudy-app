@@ -65,7 +65,7 @@ export const getLccConverterStationSchema = () =>
                         .nullable()
                         .min(0, 'qMaxAtNominalVMustBeGreaterThanZero')
                         .required(),
-                    [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable().required(),
+                    [SHUNT_COMPENSATOR_SELECTED]: yup.boolean().nullable(),
                 })
             )
             .nullable(),
