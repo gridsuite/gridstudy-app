@@ -15,7 +15,6 @@ import {
     type GeoDataSubstation,
     LineFlowColorMode,
     LineFlowMode,
-    type MapEquipment,
     type MapHvdcLine,
     type MapLine,
     type MapSubstation,
@@ -286,6 +285,7 @@ export const NetworkMapTab = ({
         studyUuid: UUID;
         equipmentType: EquipmentType;
     };
+
     function withEquipment(Menu: FunctionComponent<MenuBranchProps>, props: MenuProps | null) {
         return (
             equipmentMenu?.equipment &&
@@ -336,14 +336,9 @@ export const NetworkMapTab = ({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
-            const equipment = mapEquipments?.hvdcLinesById?.get(equipmentId);
             if (
                 equipmentType === EquipmentType.HVDC_LINE &&
-                // mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
-                equipment &&
-                // @ts-expect-error TODO: ???
-                'hvdcType' in equipment &&
-                equipment.hvdcType === 'LCC'
+                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
             ) {
                 // only hvdc line with LCC requires a Dialog (to select MCS)
                 handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
@@ -939,7 +934,6 @@ export const NetworkMapTab = ({
             disabled={disabled}
             onSubstationClick={openVoltageLevel}
             onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
-            // @ts-expect-error TODO tmp
             onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
                 displayEquipmentMenu(
                     equipment as unknown as BaseEquipment,
@@ -949,12 +943,10 @@ export const NetworkMapTab = ({
                     isInDrawingMode
                 )
             }
-            // @ts-expect-error TODO tmp
             onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
                 displayEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
             }
-            // @ts-expect-error TODO tmp
-            onHvdcLineMenuClick={(equipment: MapEquipment, x: number, y: number) =>
+            onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
                 displayEquipmentMenu(
                     equipment as unknown as BaseEquipment,
                     x,
@@ -963,7 +955,6 @@ export const NetworkMapTab = ({
                     isInDrawingMode
                 )
             }
-            // @ts-expect-error TODO tmp
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
             centerOnSubstation={centerOnSubstation}

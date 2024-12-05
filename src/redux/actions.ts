@@ -36,7 +36,14 @@ import { UUID } from 'crypto';
 import type { LiteralUnion, UnknownArray } from 'type-fest';
 import NetworkModificationTreeModel from '../components/graph/network-modification-tree-model';
 import { NodeInsertModes } from '../components/graph/nodes/node-insert-modes';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
+import {
+    LineFlowColorMode,
+    LineFlowMode,
+    type MapHvdcLine,
+    type MapLine,
+    type MapSubstation,
+    type MapTieLine,
+} from '@powsybl/network-viewer';
 import {
     AppState,
     CurrentTreeNode,
@@ -232,17 +239,17 @@ export function resetEquipmentsPostLoadflow(): ResetEquipmentsPostLoadflowAction
 export const MAP_EQUIPMENTS_CREATED = 'MAP_EQUIPMENTS_CREATED';
 export type MapEquipmentsCreatedAction = Readonly<Action<typeof MAP_EQUIPMENTS_CREATED>> & {
     mapEquipments: GSMapEquipments;
-    newLines?: MutableUnknownArray;
-    newTieLines?: MutableUnknownArray;
-    newSubstations?: MutableUnknownArray;
-    newHvdcLines?: MutableUnknownArray;
+    newLines?: MapLine[];
+    newTieLines?: MapTieLine[];
+    newSubstations?: MapSubstation[];
+    newHvdcLines?: MapHvdcLine[];
 };
 export function mapEquipmentsCreated(
     mapEquipments: GSMapEquipments,
-    newLines?: MutableUnknownArray,
-    newTieLines?: MutableUnknownArray,
-    newSubstations?: MutableUnknownArray,
-    newHvdcLines?: MutableUnknownArray
+    newLines?: MapLine[],
+    newTieLines?: MapTieLine[],
+    newSubstations?: MapSubstation[],
+    newHvdcLines?: MapHvdcLine[]
 ): MapEquipmentsCreatedAction {
     return {
         type: MAP_EQUIPMENTS_CREATED,

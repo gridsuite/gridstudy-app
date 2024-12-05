@@ -292,7 +292,11 @@ import {
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
-import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
+import {
+    LineFlowColorMode,
+    LineFlowMode,
+    EQUIPMENT_TYPES as NetworkViewerEquipmentType,
+} from '@powsybl/network-viewer';
 import type { UnknownArray, ValueOf, WritableDeep } from 'type-fest';
 import { Node } from '@xyflow/react';
 import { SortConfigType, SortWay } from '../hooks/use-aggrid-sort';
@@ -336,7 +340,7 @@ export interface StudyUpdatedEventDataHeader {
 // Payloads
 export interface DeletedEquipment {
     equipmentId: string;
-    equipmentType: string;
+    equipmentType: NetworkViewerEquipmentType;
 }
 
 export interface NetworkImpactsInfos {
@@ -806,12 +810,12 @@ export const reducer = createReducer(initialState, (builder) => {
     });
 
     builder.addCase(MAP_EQUIPMENTS_CREATED, (state, action: MapEquipmentsCreatedAction) => {
-        let newMapEquipments;
+        let newMapEquipments: GSMapEquipments;
         //if it's not initialised yet we take the empty one given in action
         if (!state.mapEquipments) {
-            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
+            newMapEquipments = action.mapEquipments.newMapEquipmentForUpdate();
         } else {
-            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate() as GSMapEquipments;
+            newMapEquipments = state.mapEquipments.newMapEquipmentForUpdate();
         }
         if (action.newLines) {
             newMapEquipments.lines = action.newLines;
