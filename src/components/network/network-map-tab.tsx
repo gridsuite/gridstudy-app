@@ -90,7 +90,6 @@ type NetworkMapTabProps = {
     lineFlowAlertThreshold: number;
     openVoltageLevel: (idVoltageLevel: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
-    setErrorMessage: (message: string) => void;
     onDrawPolygonModeActive: (active: DRAW_MODES) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     onDrawEvent: (drawEvent: number) => void;
@@ -113,7 +112,6 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     showInSpreadsheet,
-    setErrorMessage,
     onDrawPolygonModeActive,
     onPolygonChanged,
     onDrawEvent,

@@ -738,13 +738,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 } // we wait for the user params to be loaded because it can cause some bugs (e.g. with lineFullPath for the map)
                 message={'LoadingRemoteData'}
             >
-                <StudyPane
-                    studyUuid={studyUuid}
-                    currentNode={currentNode}
-                    view={view}
-                    onChangeTab={onChangeTab}
-                    setErrorMessage={setErrorMessage}
-                />
+                <StudyPane studyUuid={studyUuid} currentNode={currentNode} view={view} onChangeTab={onChangeTab} />
             </WaitingLoader>
         </>
     );
