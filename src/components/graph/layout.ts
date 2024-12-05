@@ -117,14 +117,15 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
  * Finds the IDs of nodes that have a sibling but are not the first child of their parent.
  */
 function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]): string[] {
-    const seenParentIds: string[] = [];
+    const seenParentIds = new Set<string>();
     const nonEldestSiblingsIds: string[] = [];
     nodes.forEach((node) => {
         if (node.parentId) {
-            if (seenParentIds.includes(node.parentId)) {
+            if (seenParentIds.has(node.parentId)) {
                 nonEldestSiblingsIds.push(node.id);
+            } else {
+                seenParentIds.add(node.parentId);
             }
-            seenParentIds.push(node.parentId);
         }
     });
     return nonEldestSiblingsIds;
