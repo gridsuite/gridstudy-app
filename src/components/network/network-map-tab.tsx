@@ -55,11 +55,6 @@ import {
     Line as LineMap,
     VoltageLevel as VoltageLevelMap,
 } from '@powsybl/network-viewer/dist/components/network-map-viewer/network/map-equipments';
-import {
-    Substation as SubstationEq,
-    Equipment as EquipmentEq,
-    Line as LineEq,
-} from '@powsybl/network-viewer/dist/components/network-map-viewer/utils/equipment-types';
 import { Box, useTheme } from '@mui/material';
 const INITIAL_POSITION = [0, 0] as [number, number];
 const INITIAL_ZOOM = 9;
@@ -343,10 +338,12 @@ export const NetworkMapTab = ({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
-            const equipment = mapEquipments?.hvdcLinesById?.get(equipmentId) as LineEq;
+            const equipment = mapEquipments?.hvdcLinesById?.get(equipmentId);
             if (
                 equipmentType === EquipmentType.HVDC_LINE &&
+                // mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
                 equipment &&
+                // @ts-expect-error TODO: ???
                 'hvdcType' in equipment &&
                 equipment.hvdcType === 'LCC'
             ) {
@@ -498,7 +495,8 @@ export const NetworkMapTab = ({
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoDataRef.current.substationPositionsById,
-            mapEquipments?.substations as SubstationEq[]
+            //@ts-expect-error TODO: manage undefined case
+            mapEquipments?.substations
         );
 
         const notFoundLineIds = lineFullPath
@@ -678,36 +676,24 @@ export const NetworkMapTab = ({
 
             updatedSubstations.then((values) => {
                 if (currentNodeAtReloadCalling?.id === currentNodeRef.current?.id) {
-                    mapEquipments.updateSubstations(
-                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as SubstationEq[],
-                        isFullReload
-                    );
+                    mapEquipments.updateSubstations(mapEquipments.checkAndGetValues(values), isFullReload);
                 }
             });
             updatedLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateLines(
-                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as LineEq[],
-                        isFullReload
-                    );
+                    mapEquipments.updateLines(mapEquipments.checkAndGetValues(values), isFullReload);
                     setUpdatedLines(values);
                 }
             });
             updatedTieLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateTieLines(
-                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as LineEq[],
-                        isFullReload
-                    );
+                    mapEquipments.updateTieLines(mapEquipments.checkAndGetValues(values), isFullReload);
                     setUpdatedTieLines(values);
                 }
             });
             updatedHvdcLines.then((values) => {
                 if (checkNodeConsistency(currentNodeAtReloadCalling)) {
-                    mapEquipments.updateHvdcLines(
-                        mapEquipments.checkAndGetValues(values as EquipmentEq[]) as LineEq[],
-                        isFullReload
-                    );
+                    mapEquipments.updateHvdcLines(mapEquipments.checkAndGetValues(values), isFullReload);
                     setUpdatedHvdcLines(values);
                 }
             });
@@ -790,10 +776,9 @@ export const NetworkMapTab = ({
             return;
         }
         if (deletedEquipments?.length > 0 && mapEquipments) {
-            deletedEquipments.forEach((deletedEquipment) => {
-                // @ts-expect-error TODO type conversion string to enum
-                mapEquipments.removeEquipment(deletedEquipment?.equipmentType, deletedEquipment?.equipmentId);
-            });
+            deletedEquipments.forEach((deletedEquipment) =>
+                mapEquipments.removeEquipment(deletedEquipment?.equipmentType, deletedEquipment?.equipmentId)
+            );
             resetDeletedEquipments();
         }
     }, [deletedEquipments, mapEquipments, resetDeletedEquipments]);
@@ -965,7 +950,6 @@ export const NetworkMapTab = ({
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
-            // @ts-expect-error TODO type conversion
             centerOnSubstation={centerOnSubstation}
             isManualRefreshBackdropDisplayed={mapManualRefresh && reloadMapNeeded && isNodeBuilt(currentNode)}
             // only 2 things need this to ensure the map keeps the correct size:
@@ -975,7 +959,6 @@ export const NetworkMapTab = ({
             //   it causes a render with the map container having display:none
             onManualRefreshClick={updateMapEquipmentsAndGeoData}
             triggerMapResizeOnChange={[studyDisplayMode, visible]}
-            // @ts-expect-error TODO type conversion
             renderPopover={renderLinePopover}
             mapLibrary={basemap}
             mapTheme={theme?.palette.mode}
