@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CustomHeaderFilterParams, FILTER_DATA_TYPES, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
-import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { debounce } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
@@ -14,7 +14,6 @@ import { countDecimalPlaces } from '../../../utils/rounding';
 
 export const useCustomAggridFilter = (field: string, filterParams: CustomHeaderFilterParams) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
-    const [decimalAfterDot, setDecimalAfterDot] = useState(0);
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
 
     const { snackWarning } = useSnackMessage();
@@ -83,23 +82,26 @@ export const useCustomAggridFilter = (field: string, filterParams: CustomHeaderF
     const handleFilterTextChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.toUpperCase();
         setSelectedFilterData(value);
-
         debouncedUpdateFilter(field, {
             value: value,
             type: selectedFilterComparator,
             dataType: filterDataType,
             tolerance: isNumberInput ? computeTolerance(value) : undefined,
         });
+    };
+
+    const decimalAfterDot = useMemo(() => {
         if (isNumberInput) {
-            let decimalAfterDot = countDecimalPlaces(Number(value));
+            let decimalAfterDot = countDecimalPlaces(Number(selectedFilterData));
             if (decimalAfterDot >= 13) {
                 snackWarning({
                     headerId: 'filter.warnRounding',
                 });
             }
-            setDecimalAfterDot(decimalAfterDot);
+            return decimalAfterDot;
         }
-    };
+        return 0;
+    }, [isNumberInput, selectedFilterData, snackWarning]);
 
     useEffect(() => {
         if (!selectedFilterComparator) {

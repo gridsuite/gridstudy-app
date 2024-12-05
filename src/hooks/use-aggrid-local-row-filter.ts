@@ -26,7 +26,7 @@ interface FilterModel {
  * Compute the tolerance that should be applied when comparing filter values to database values
  * @param value value entered in the filter
  */
-export const computeTolerance = (value: undefined | null | unknown | number | string | string[]) => {
+export const computeTolerance = (value: unknown) => {
     if (!value) {
         return 0;
     }
