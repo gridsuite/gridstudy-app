@@ -97,7 +97,7 @@ export const getShuntCompensatorOnSideFormData = (shuntCompensatorInfos: ShuntCo
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
-            [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
+            [SHUNT_COMPENSATOR_NAME]: shuntCp?.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? false,
         })) ?? []
@@ -107,8 +107,8 @@ export const getShuntCompensatorOnSideFormData = (shuntCompensatorInfos: ShuntCo
 export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos: ShuntCompensatorInfos[] | undefined) => {
     return (
         shuntCompensatorInfos?.map((shuntCp) => ({
-            [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
-            [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
+            [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
+            [SHUNT_COMPENSATOR_NAME]: shuntCp?.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
             [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? false,
         })) ?? []
