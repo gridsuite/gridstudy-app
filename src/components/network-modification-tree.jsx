@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import { ReactFlow, Controls, useStore, useReactFlow, MiniMap, useEdgesState, useNodesState } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { setModificationsDrawerOpen, setCurrentTreeNode, networkModificationTreeSwitchNodes } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
@@ -75,6 +75,8 @@ const NetworkModificationTree = ({
     );
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+    const nodesMap = useMemo(() => new Map(nodes.map((n) => [n.id, n])), [nodes]);
 
     const updateNodePositions = useCallback(
         (model) => {
@@ -173,7 +175,7 @@ const NetworkModificationTree = ({
     const handleNodeDragging = (changes) => {
         const currentChange = changes[0]; // corresponds to a list of changes affecting the dragged node
 
-        const draggedNode = nodes.find((node) => node.id === currentChange.id);
+        const draggedNode = nodesMap.get(currentChange.id);
         const initialDraggedNodeXPosition = draggedNode.position.x;
         const initialDraggedNodeYPosition = draggedNode.position.y;
 
@@ -184,8 +186,8 @@ const NetworkModificationTree = ({
         // the start of the branch and move this ancestor node instead.
         // If we already put a node ID in the ref, we use it and skip the ancestor testing part.
         const firstAncestorWithSibling = draggedBranchIdRef.current
-            ? nodes.find((node) => node.id === draggedBranchIdRef.current)
-            : getFirstAncestorWithSibling(nodes, draggedNode);
+            ? nodesMap.get(draggedBranchIdRef.current)
+            : getFirstAncestorWithSibling(nodes, nodesMap, draggedNode);
 
         if (!firstAncestorWithSibling || firstAncestorWithSibling.id === currentChange.id) {
             draggedBranchIdRef.current = draggedNode.id;
@@ -221,7 +223,7 @@ const NetworkModificationTree = ({
      * to switch the order of the moved branch with a neighboring branch.
      */
     const handleEndNodeDragging = () => {
-        let movedNode = nodes.find((node) => node.id === draggedBranchIdRef.current);
+        let movedNode = nodesMap.get(draggedBranchIdRef.current);
         draggedBranchIdRef.current = null;
         if (movedNode) {
             // In the treeModel.treeNodes variable we can find the positions of the nodes before the user started
