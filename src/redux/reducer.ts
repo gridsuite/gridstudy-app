@@ -120,12 +120,14 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+    NETWORK_MODIFICATION_TREE_SWITCH_NODES,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
+    NetworkModificationTreeSwitchNodesAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
@@ -381,7 +383,6 @@ export type StudyUpdated = {
 
 type NodeCommonData = {
     label: string;
-    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
@@ -902,6 +903,24 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
+    builder.addCase(
+        NETWORK_MODIFICATION_TREE_SWITCH_NODES,
+        (state, action: NetworkModificationTreeSwitchNodesAction) => {
+            if (state.networkModificationTreeModel) {
+                let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+
+                const nodeToMove = newModel.treeNodes.find((n: CurrentTreeNode) => n.id === action.nodeToMoveId);
+                const destinationNode = newModel.treeNodes.find(
+                    (n: CurrentTreeNode) => n.id === action.destinationNodeId
+                );
+                if (nodeToMove && destinationNode) {
+                    newModel.switchBranches(nodeToMove, destinationNode);
+                }
+                state.networkModificationTreeModel = newModel;
+            }
+        }
+    );
+
     builder.addCase(NETWORK_MODIFICATION_TREE_NODE_ADDED, (state, action: NetworkModificationTreeNodeAddedAction) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
@@ -911,14 +930,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -934,14 +952,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -951,8 +968,6 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
-
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
         }
     });
@@ -967,11 +982,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
-                    .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
+                    .map((node) => node.parentId)
+                    .find((parentId) => !action.networkModificationTreeNodes.includes(parentId as UUID));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
-                newModel.updateLayout();
                 state.networkModificationTreeModel = newModel;
 
                 // check if current node is in the nodes deleted list
@@ -981,15 +995,15 @@ export const reducer = createReducer(initialState, (builder) => {
                         state.currentTreeNode?.id
                     )
                 ) {
-                    synchCurrentTreeNode(state, nextCurrentNodeUuid);
+                    synchCurrentTreeNode(state, nextCurrentNodeUuid as UUID);
                 } // check if parent node of the current node is in the nodes deleted list
                 else if (
                     action.networkModificationTreeNodes.includes(
                         // @ts-expect-error TODO: what to do if current node null?
-                        state.currentTreeNode?.data?.parentNodeUuid
+                        state.currentTreeNode?.parentId
                     )
                 ) {
-                    // Then must overwrite currentTreeNode to get new parentNodeUuid
+                    // Then must overwrite currentTreeNode to get new parentId
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }
