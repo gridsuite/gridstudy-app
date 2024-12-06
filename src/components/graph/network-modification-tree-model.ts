@@ -36,7 +36,7 @@ export default class NetworkModificationTreeModel {
      * on their initial positions.
      * Both nodes should have the same parent.
      */
-    switchSiblingsOrder(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+    private switchSiblingsOrder(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
         if (!nodeToMove.parentId || nodeToMove.parentId !== destinationNode.parentId) {
             console.error('Both nodes should have the same parent to switch their order');
             return;
@@ -75,7 +75,7 @@ export default class NetworkModificationTreeModel {
      * - getCommonAncestor(B, E) will return A
      * - getCommonAncestor(E, F) will return D
      */
-    getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
+    private getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
         const getAncestors = (node: CurrentTreeNode) => {
             const ancestors = [];
             let current: CurrentTreeNode | undefined = node;
@@ -120,7 +120,7 @@ export default class NetworkModificationTreeModel {
      * @returns The child of the ancestor node in the lineage or null if not found.
      * @private
      */
-    getChildOfAncestorInLineage(ancestor: CurrentTreeNode, descendant: CurrentTreeNode): CurrentTreeNode | null {
+    private getChildOfAncestorInLineage(ancestor: CurrentTreeNode, descendant: CurrentTreeNode): CurrentTreeNode | null {
         let current: CurrentTreeNode | undefined = descendant;
         while (current && current.parentId) {
             const parentId: string = current.parentId;
@@ -149,7 +149,8 @@ export default class NetworkModificationTreeModel {
         newNode: NetworkModificationNodeData | RootNodeData,
         parentId: UUID,
         insertMode?: NodeInsertModes,
-        referenceNodeId?: UUID
+        referenceNodeId?: UUID,
+        skipChildren: boolean = false
     ) {
         /**
          * The layout algorithm used to draw the graph is dependant on the order of nodes in the array.
@@ -237,11 +238,13 @@ export default class NetworkModificationTreeModel {
             this.treeEdges = filteredEdges;
         }
 
-        // Add children of this node recursively
-        if (newNode.children) {
-            newNode.children.forEach((child) => {
-                this.addChild(child, newNode.id);
-            });
+        if (!skipChildren) {
+            // Add children of this node recursively
+            if (newNode.children) {
+                newNode.children.forEach((child) => {
+                    this.addChild(child, newNode.id, undefined, undefined);
+                });
+            }
         }
     }
 
