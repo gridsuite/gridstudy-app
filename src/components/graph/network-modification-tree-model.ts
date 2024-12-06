@@ -149,7 +149,8 @@ export default class NetworkModificationTreeModel {
         newNode: NetworkModificationNodeData | RootNodeData,
         parentId: UUID,
         insertMode?: NodeInsertModes,
-        referenceNodeId?: UUID
+        referenceNodeId?: UUID,
+        skipChildren: boolean = false
     ) {
         /**
          * The layout algorithm used to draw the graph is dependant on the order of nodes in the array.
@@ -237,11 +238,13 @@ export default class NetworkModificationTreeModel {
             this.treeEdges = filteredEdges;
         }
 
-        // Add children of this node recursively
-        if (newNode.children) {
-            newNode.children.forEach((child) => {
-                this.addChild(child, newNode.id);
-            });
+        if (!skipChildren) {
+            // Add children of this node recursively
+            if (newNode.children) {
+                newNode.children.forEach((child) => {
+                    this.addChild(child, newNode.id, undefined, undefined);
+                });
+            }
         }
     }
 
