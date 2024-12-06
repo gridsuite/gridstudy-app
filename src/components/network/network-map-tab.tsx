@@ -5,27 +5,38 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import type { Writable } from 'type-fest';
 import {
-    NetworkMap,
-    GeoData,
-    NetworkMapRef,
-    LineFlowMode,
-    LineFlowColorMode,
+    type Coordinate,
     DRAW_MODES,
+    GeoData,
+    type GeoDataEquipment,
+    type GeoDataLine,
+    type GeoDataSubstation,
+    LineFlowColorMode,
+    LineFlowMode,
+    type MapHvdcLine,
+    type MapLine,
+    type MapSubstation,
+    type MapTieLine,
+    type MapVoltageLevel,
+    NetworkMap,
+    type NetworkMapProps,
+    type NetworkMapRef,
 } from '@powsybl/network-viewer';
-import { useCallback, useEffect, useState, useRef, useMemo, RefObject } from 'react';
+import { type FunctionComponent, type RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import withOperatingStatusMenu, { MenuBranchProps } from '../menus/operating-status-menu';
-import BaseEquipmentMenu, { MapEquipment } from '../menus/base-equipment-menu';
+import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
 import NominalVoltageFilter from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_BASEMAP, PARAM_MAP_MANUAL_REFRESH, PARAM_USE_NAME } from '../../utils/config-params';
-import { Equipment, EquipmentType, useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
+import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
 import { isNodeBuilt, isNodeRenamed, isSameNode, isSameNodeAndBuilt } from '../graph/util/model-functions';
 import { resetMapReloaded, setMapDataLoading } from '../../redux/actions';
 import GSMapEquipments from './gs-map-equipments';
-import LinearProgress from '@mui/material/LinearProgress';
+import { Box, LinearProgress, useTheme } from '@mui/material';
 import { UPDATE_TYPE_HEADER } from '../study-container';
 import SubstationModificationDialog from '../dialogs/network-modifications/substation/modification/substation-modification-dialog';
 import VoltageLevelModificationDialog from '../dialogs/network-modifications/voltage-level/modification/voltage-level-modification-dialog';
@@ -34,7 +45,6 @@ import LineModificationDialog from '../dialogs/network-modifications/line/modifi
 import { deleteEquipment } from '../../services/study/network-modifications';
 import EquipmentDeletionDialog from '../dialogs/network-modifications/equipment-deletion/equipment-deletion-dialog';
 import { fetchLinePositions, fetchSubstationPositions } from '../../services/study/geo-data';
-
 import { useMapBoxToken } from './network-map/use-mapbox-token';
 import EquipmentPopover from '../tooltips/equipment-popover';
 import RunningStatus from 'components/utils/running-status';
@@ -43,20 +53,8 @@ import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { ROOT_NODE_LABEL } from '../../constants/node.constant';
 import { UUID } from 'crypto';
 import { AppState, CurrentTreeNode } from 'redux/reducer';
-import {
-    Coordinate,
-    Line,
-    Substation,
-    Equipment as EquipmentGeoData,
-} from '@powsybl/network-viewer/dist/components/network-map-viewer/network/geo-data';
-import {
-    Equipment as EquipmentMap,
-    Substation as SubstationMap,
-    Line as LineMap,
-    VoltageLevel as VoltageLevelMap,
-} from '@powsybl/network-viewer/dist/components/network-map-viewer/network/map-equipments';
-import { Box, useTheme } from '@mui/material';
-const INITIAL_POSITION = [0, 0] as [number, number];
+
+const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
@@ -81,7 +79,7 @@ const styles = {
 const NODE_CHANGED_ERROR = 'Node has changed or is not built anymore. The Promise is rejected.';
 
 type NetworkMapTabProps = {
-    networkMapRef: React.RefObject<NetworkMapRef>;
+    networkMapRef: RefObject<NetworkMapRef>;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
     visible: boolean;
@@ -92,7 +90,6 @@ type NetworkMapTabProps = {
     lineFlowAlertThreshold: number;
     openVoltageLevel: (idVoltageLevel: string) => void;
     showInSpreadsheet: (equipment: { equipmentType: EquipmentType; equipmentId: string }) => void;
-    setErrorMessage: (message: string) => void;
     onDrawPolygonModeActive: (active: DRAW_MODES) => void;
     onPolygonChanged: (polygoneFeature: any) => void;
     onDrawEvent: (drawEvent: number) => void;
@@ -115,7 +112,6 @@ export const NetworkMapTab = ({
     /* callbacks */
     openVoltageLevel,
     showInSpreadsheet,
-    setErrorMessage,
     onDrawPolygonModeActive,
     onPolygonChanged,
     onDrawEvent,
@@ -141,14 +137,13 @@ export const NetworkMapTab = ({
 
     const dispatch = useDispatch();
 
-    const intlRef = useIntlRef();
     const [isRootNodeGeoDataLoaded, setIsRootNodeGeoDataLoaded] = useState(false);
     const [isInitialized, setInitialized] = useState(false);
     const mapBoxToken = useMapBoxToken();
 
     const { snackError } = useSnackMessage();
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<unknown[]>();
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>([]);
     const [geoData, setGeoData] = useState<GeoData>();
     const geoDataRef = useRef<any>();
 
@@ -180,7 +175,7 @@ export const NetworkMapTab = ({
 
     type EquipmentMenuProps = {
         position?: [number, number] | null;
-        equipment?: MapEquipment;
+        equipment?: BaseEquipment;
         equipmentType?: EquipmentType;
         display: boolean;
     };
@@ -191,9 +186,9 @@ export const NetworkMapTab = ({
 
     const [position, setPosition] = useState([-1, -1]);
     const currentNodeRef = useRef<CurrentTreeNode | null>(null);
-    const [updatedLines, setUpdatedLines] = useState<Line[]>([]);
-    const [updatedTieLines, setUpdatedTieLines] = useState<Line[]>([]);
-    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<Line[]>([]);
+    const [updatedLines, setUpdatedLines] = useState<MapLine[]>([]);
+    const [updatedTieLines, setUpdatedTieLines] = useState<MapTieLine[]>([]);
+    const [updatedHvdcLines, setUpdatedHvdcLines] = useState<MapHvdcLine[]>([]);
     const [equipmentToModify, setEquipmentToModify] = useState<Equipment | null>();
     const [modificationDialogOpen, setModificationDialogOpen] = useState(false);
     const [deletionDialogOpen, setDeletionDialogOpen] = useState(false);
@@ -289,7 +284,8 @@ export const NetworkMapTab = ({
         studyUuid: UUID;
         equipmentType: EquipmentType;
     };
-    function withEquipment(Menu: React.FC<MenuBranchProps>, props: MenuProps | null) {
+
+    function withEquipment(Menu: FunctionComponent<MenuBranchProps>, props: MenuProps | null) {
         return (
             equipmentMenu?.equipment &&
             equipmentMenu.position &&
@@ -314,7 +310,7 @@ export const NetworkMapTab = ({
 
     const MenuVoltageLevel = withEquipmentMenu(BaseEquipmentMenu, EquipmentType.VOLTAGE_LEVEL, 'voltage-level-menus');
 
-    function showEquipmentMenu(equipment: MapEquipment, x: number, y: number, type: EquipmentType) {
+    function showEquipmentMenu(equipment: BaseEquipment, x: number, y: number, type: EquipmentType) {
         setEquipmentMenu({
             position: [x, y],
             equipment: equipment,
@@ -339,12 +335,9 @@ export const NetworkMapTab = ({
 
     const handleDeleteEquipment = useCallback(
         (equipmentType: EquipmentType | null, equipmentId: string) => {
-            const equipment = mapEquipments?.hvdcLinesById?.get(equipmentId) as Equipment;
             if (
                 equipmentType === EquipmentType.HVDC_LINE &&
-                equipment &&
-                'hvdcType' in equipment &&
-                equipment.hvdcType === 'LCC'
+                mapEquipments?.hvdcLinesById?.get(equipmentId)?.hvdcType === 'LCC'
             ) {
                 // only hvdc line with LCC requires a Dialog (to select MCS)
                 handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
@@ -370,10 +363,10 @@ export const NetworkMapTab = ({
         closeChoiceVoltageLevelMenu();
     }
 
-    const voltageLevelMenuClick = (equipment: VoltageLevelMap, x: number, y: number) => {
+    const voltageLevelMenuClick = (equipment: MapVoltageLevel, x: number, y: number) => {
         // don't display the voltage level menu in drawing mode.
         if (!isInDrawingMode) {
-            showEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
+            showEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.VOLTAGE_LEVEL);
         }
     };
 
@@ -388,7 +381,7 @@ export const NetworkMapTab = ({
     );
 
     const getEquipmentsNotFoundIds = useCallback(
-        (foundEquipmentPositions: Map<string, number>, allEquipments: EquipmentGeoData[]) => {
+        (foundEquipmentPositions: Map<string, number>, allEquipments: GeoDataEquipment[]) => {
             return allEquipments
                 .filter((s) => !foundEquipmentPositions.has(s.id) || temporaryGeoDataIdsRef?.current?.has(s.id))
                 .map((s) => s.id);
@@ -400,14 +393,17 @@ export const NetworkMapTab = ({
         return coordinate1?.lat === coordinate2?.lat && coordinate1?.lon === coordinate2?.lon;
     };
 
-    const substationPositionsAreEqual = useCallback((substationPos1: Substation, substationPos2: Substation) => {
-        return (
-            latLonEqual(substationPos1?.coordinate, substationPos2?.coordinate) &&
-            substationPos1?.country === substationPos2?.country
-        );
-    }, []);
+    const substationPositionsAreEqual = useCallback(
+        (substationPos1: GeoDataSubstation, substationPos2: GeoDataSubstation) => {
+            return (
+                latLonEqual(substationPos1?.coordinate, substationPos2?.coordinate) &&
+                substationPos1?.country === substationPos2?.country
+            );
+        },
+        []
+    );
 
-    const linePositionsAreEqual = useCallback((linePos1: Line, linePos2: Line) => {
+    const linePositionsAreEqual = useCallback((linePos1: GeoDataLine, linePos2: GeoDataLine) => {
         return (
             latLonEqual(linePos1?.coordinates?.[0], linePos2?.coordinates?.[0]) &&
             latLonEqual(linePos1?.coordinates?.[1], linePos2?.coordinates?.[1]) &&
@@ -433,7 +429,7 @@ export const NetworkMapTab = ({
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
-        (requestedPositions: string[], fetchedPositions: Substation[]) => {
+        (requestedPositions: string[], fetchedPositions: GeoDataSubstation[]) => {
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
@@ -459,7 +455,7 @@ export const NetworkMapTab = ({
     );
 
     const updateLinesTemporaryGeoData = useCallback(
-        (requestedPositions: string[], fetchedPositions: Line[]) => {
+        (requestedPositions: string[], fetchedPositions: GeoDataLine[]) => {
             let someDataHasChanged = false;
             fetchedPositions.forEach((pos) => {
                 // If the geo data is the same in the geoData and in the server response, it's not updated
@@ -494,11 +490,12 @@ export const NetworkMapTab = ({
     const loadMissingGeoData = useCallback(() => {
         const notFoundSubstationIds = getEquipmentsNotFoundIds(
             geoDataRef.current.substationPositionsById,
-            mapEquipments?.substations as Substation[]
+            //@ts-expect-error TODO: manage undefined case
+            mapEquipments?.substations
         );
 
         const notFoundLineIds = lineFullPath
-            ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as Line[])
+            ? getEquipmentsNotFoundIds(geoDataRef.current.linePositionsById, mapEquipments?.lines as GeoDataEquipment[])
             : [];
 
         if (notFoundSubstationIds.length > 0 || notFoundLineIds.length > 0) {
@@ -649,11 +646,11 @@ export const NetworkMapTab = ({
         if (!isNodeBuilt(currentNode) || !studyUuid) {
             return;
         }
-        const gSMapEquipments = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch, intlRef);
+        const gSMapEquipments = new GSMapEquipments(studyUuid, currentNode?.id, snackError, dispatch);
         if (gSMapEquipments) {
             dispatch(resetMapReloaded());
         }
-    }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
+    }, [currentNode, dispatch, snackError, studyUuid]);
 
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
@@ -774,9 +771,9 @@ export const NetworkMapTab = ({
             return;
         }
         if (deletedEquipments?.length > 0 && mapEquipments) {
-            deletedEquipments.forEach((deletedEquipment) => {
-                mapEquipments.removeEquipment(deletedEquipment?.equipmentType, deletedEquipment?.equipmentId);
-            });
+            deletedEquipments.forEach((deletedEquipment) =>
+                mapEquipments.removeEquipment(deletedEquipment?.equipmentType, deletedEquipment?.equipmentId)
+            );
             resetDeletedEquipments();
         }
     }, [deletedEquipments, mapEquipments, resetDeletedEquipments]);
@@ -858,13 +855,12 @@ export const NetworkMapTab = ({
         }
     }, [isInitialized, lineFullPath, loadGeoData]);
 
-    let choiceVoltageLevelsSubstation: EquipmentMap | null = null;
-    if (choiceVoltageLevelsSubstationId) {
-        choiceVoltageLevelsSubstation = mapEquipments?.getSubstation(choiceVoltageLevelsSubstationId);
-    }
+    const choiceVoltageLevelsSubstation = choiceVoltageLevelsSubstationId
+        ? mapEquipments?.getSubstation(choiceVoltageLevelsSubstationId)
+        : null;
 
     const displayEquipmentMenu = (
-        equipment: MapEquipment,
+        equipment: BaseEquipment,
         x: number,
         y: number,
         equipmentType: EquipmentType,
@@ -905,14 +901,17 @@ export const NetworkMapTab = ({
         );
     }
 
-    const renderLinePopover = (elementId: string, ref: RefObject<HTMLDivElement>) => (
-        <EquipmentPopover
-            studyUuid={studyUuid}
-            anchorEl={ref}
-            equipmentId={elementId}
-            equipmentType={EQUIPMENT_TYPES.LINE}
-            loadFlowStatus={loadFlowStatus}
-        />
+    const renderLinePopover = useCallback<NonNullable<NetworkMapProps['renderPopover']>>(
+        (elementId, ref) => (
+            <EquipmentPopover
+                studyUuid={studyUuid}
+                anchorEl={ref.current}
+                equipmentId={elementId}
+                equipmentType={EQUIPMENT_TYPES.LINE}
+                loadFlowStatus={loadFlowStatus}
+            />
+        ),
+        [loadFlowStatus, studyUuid]
     );
 
     const renderMap = () => (
@@ -925,7 +924,7 @@ export const NetworkMapTab = ({
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}
             arrowsZoomThreshold={ARROWS_ZOOM_THRESHOLD}
-            initialPosition={INITIAL_POSITION}
+            initialPosition={INITIAL_POSITION as Writable<typeof INITIAL_POSITION>}
             initialZoom={INITIAL_ZOOM}
             lineFullPath={lineFullPath}
             lineParallelPath={lineParallelPath}
@@ -937,14 +936,26 @@ export const NetworkMapTab = ({
             disabled={disabled}
             onSubstationClick={openVoltageLevel}
             onSubstationClickChooseVoltageLevel={chooseVoltageLevelForSubstation}
-            onSubstationMenuClick={(equipment: SubstationMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.SUBSTATION, isInDrawingMode)
+            onSubstationMenuClick={(equipment: MapSubstation, x: number, y: number) =>
+                displayEquipmentMenu(
+                    equipment as unknown as BaseEquipment,
+                    x,
+                    y,
+                    EquipmentType.SUBSTATION,
+                    isInDrawingMode
+                )
             }
-            onLineMenuClick={(equipment: LineMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
+            onLineMenuClick={(equipment: MapLine, x: number, y: number) =>
+                displayEquipmentMenu(equipment as unknown as BaseEquipment, x, y, EquipmentType.LINE, isInDrawingMode)
             }
-            onHvdcLineMenuClick={(equipment: EquipmentMap, x: number, y: number) =>
-                displayEquipmentMenu(equipment as MapEquipment, x, y, EquipmentType.HVDC_LINE, isInDrawingMode)
+            onHvdcLineMenuClick={(equipment: MapHvdcLine, x: number, y: number) =>
+                displayEquipmentMenu(
+                    equipment as unknown as BaseEquipment,
+                    x,
+                    y,
+                    EquipmentType.HVDC_LINE,
+                    isInDrawingMode
+                )
             }
             onVoltageLevelMenuClick={voltageLevelMenuClick}
             mapBoxToken={mapBoxToken}
@@ -974,7 +985,7 @@ export const NetworkMapTab = ({
         />
     );
 
-    function handleChange(newValues: unknown[]) {
+    function handleChange(newValues: number[]) {
         setFilteredNominalVoltages(newValues);
         onNominalVoltagesChange(newValues);
     }
@@ -984,7 +995,7 @@ export const NetworkMapTab = ({
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
                     nominalVoltages={mapEquipments?.getNominalVoltages() as number[]}
-                    filteredNominalVoltages={filteredNominalVoltages as number[]}
+                    filteredNominalVoltages={filteredNominalVoltages}
                     onChange={handleChange}
                 />
             </Box>
