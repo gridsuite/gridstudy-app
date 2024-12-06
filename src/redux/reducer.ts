@@ -951,7 +951,7 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
-
+            console.log('SBO unravelSubTree', state.networkModificationTreeModel, newModel);
             newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
         }
@@ -1925,14 +1925,16 @@ function unravelSubTree(
 ) {
     if (node) {
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
-            treeModel.removeNodes([node.id]);
+            // its a move remove previous subtree
+            treeModel.removeSubTree(node);
         }
-        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
+        // then add node and its children
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.NewBranch, subtreeParentId);
 
-        if (node.children.length > 0) {
-            node.children.forEach((child) => {
-                unravelSubTree(treeModel, node.id, child);
-            });
-        }
+        // if (node.children.length > 0) {
+        //     node.children.forEach((child) => {
+        //         unravelSubTree(treeModel, node.id, child);
+        //     });
+        // }
     }
 }
