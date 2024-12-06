@@ -17,18 +17,18 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
     R,
-} from '../../../../utils/field-constants';
-import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
+} from '../../../../../utils/field-constants';
+import { ActivePowerAdornment, OhmAdornment, VoltageAdornment } from '../../../../dialog-utils';
 import { VSC_CONVERTER_MODE } from 'components/network/constants';
 import { FunctionComponent, useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { VscModificationInfo } from 'services/network-modification-types';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
 import PropertiesForm from 'components/dialogs/network-modifications/common/properties/properties-form';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
+import GridSection from '../../../../commons/grid-section';
+import GridItem from '../../../../commons/grid-item';
 
 interface VscHvdcLinePaneProps {
     id: string;

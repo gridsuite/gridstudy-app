@@ -25,20 +25,20 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
     R,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 import { Box, Grid } from '@mui/material';
-import { filledTextField, sanitizeString } from '../../../dialog-utils';
+import { filledTextField, sanitizeString } from '../../../../dialog-utils';
 import VscTabs from '../vsc-tabs';
 import yup from 'components/utils/yup-config';
-import ModificationDialog from '../../../commons/modificationDialog';
-import { FORM_LOADING_DELAY } from '../../../../network/constants';
-import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
+import ModificationDialog from '../../../../commons/modificationDialog';
+import { FORM_LOADING_DELAY } from '../../../../../network/constants';
+import { useOpenShortWaitFetching } from '../../../../commons/handle-modification-form';
 import {
     getVscHvdcLinePaneEmptyFormData,
     getVscHvdcLinePaneSchema,
     getVscHvdcLineTabFormData,
 } from '../hvdc-line-pane/vsc-hvdc-line-pane-utils';
-import { FetchStatus } from '../../../../../services/utils';
+import { FetchStatus } from '../../../../../../services/utils';
 import {
     getConverterStationCreationData,
     getConverterStationFormEditData,
@@ -47,18 +47,18 @@ import {
     getVscConverterStationSchema,
 } from '../converter-station/converter-station-utils';
 import VscCreationForm from './vsc-creation-form';
-import { createVsc } from '../../../../../services/study/network-modifications';
-import { useFormSearchCopy } from '../../../form-search-copy-hook';
-import { EQUIPMENT_TYPES } from '../../../../utils/equipment-types';
-import EquipmentSearchDialog from '../../../equipment-search-dialog';
+import { createVsc } from '../../../../../../services/study/network-modifications';
+import { useFormSearchCopy } from '../../../../form-search-copy-hook';
+import { EQUIPMENT_TYPES } from '../../../../../utils/equipment-types';
+import EquipmentSearchDialog from '../../../../equipment-search-dialog';
 import {
     copyEquipmentPropertiesForCreation,
     creationPropertiesSchema,
     emptyProperties,
     getPropertiesFromModification,
     toModificationProperties,
-} from '../../common/properties/property-utils';
-import GridItem from '../../../commons/grid-item';
+} from '../../../common/properties/property-utils';
+import GridItem from '../../../../commons/grid-item';
 
 const formSchema = yup
     .object()
