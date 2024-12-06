@@ -11,6 +11,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
+import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
+import { CustomAggridFilterProps } from './custom-aggrid-filter';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -26,33 +29,31 @@ const styles = {
     },
 };
 
-interface ICustomAggridBooleanFilter {
-    value: string;
-    onChange: (value: string) => void;
-}
-
-const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> = ({ value, onChange }) => {
+const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterProps> = ({ field, filterParams }) => {
     const intl = useIntl();
+
+    const { selectedFilterData, booleanFilterParams } = useCustomAggridFilter(field, filterParams);
+    const { handleSelectedFilterDataChange } = booleanFilterParams;
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
-        onChange && onChange(newValue);
+        handleSelectedFilterDataChange && handleSelectedFilterDataChange(newValue);
     };
 
     return (
         <Select
             fullWidth
             size={'small'}
-            value={value || ''}
+            value={typeof selectedFilterData === 'string' ? selectedFilterData : ''}
             onChange={handleValueChange}
             sx={mergeSx(styles.input, {
                 '& .MuiSelect-iconOutlined': {
-                    display: value ? 'none' : '',
+                    display: selectedFilterData ? 'none' : '',
                 },
             })}
             endAdornment={
-                value && (
-                    <IconButton onClick={() => onChange('')}>
+                isStringOrNonEmptyArray(selectedFilterData) && (
+                    <IconButton onClick={() => handleSelectedFilterDataChange('')}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>
                 )

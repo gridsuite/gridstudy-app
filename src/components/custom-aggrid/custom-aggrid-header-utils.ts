@@ -7,7 +7,6 @@
 
 import { CustomColDef, FILTER_DATA_TYPES, FilterSelectorType } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const makeAgGridCustomHeaderColumn = ({
     sortProps, // sortProps: contains useAgGridSort params
@@ -21,11 +20,11 @@ export const makeAgGridCustomHeaderColumn = ({
     ...props // agGrid column props
 }: CustomColDef) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig, children } = sortProps || {};
+    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const { updateFilter, filterSelector } = filterProps || {};
     const { filterDataType, filterEnums = {} } = filterParams || {};
 
-    const customFilterOptions = filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
+    const filterOptions = filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
 
     const isSortable = !!sortProps;
     const isFilterable = !!filterProps;
@@ -47,30 +46,26 @@ export const makeAgGridCustomHeaderColumn = ({
         headerComponentParams: {
             field,
             displayName: headerName,
-            isSortable,
             sortParams: {
+                isSortable,
                 sortConfig,
-                onSortChanged: (newSortValue: SortWay) => {
-                    onSortChanged({
-                        colId: field,
-                        sort: newSortValue,
-                        children: children,
-                    });
-                },
+                onSortChanged,
             },
-            isFilterable,
             filterParams: {
+                isFilterable,
                 ...filterParams,
                 filterSelector,
-                customFilterOptions,
+                filterOptions,
                 updateFilter,
+                forceDisplayFilterIcon,
+                isCountry: props?.isCountry,
+                getEnumLabel: props?.getEnumLabel,
             },
-            getEnumLabel: props?.getEnumLabel,
-            isCountry: props?.isCountry,
-            forceDisplayFilterIcon,
-            tabIndex: tabIndex,
-            isCustomColumn: isCustomColumn,
-            Menu: Menu,
+            customMenuParams: {
+                tabIndex: tabIndex,
+                isCustomColumn: isCustomColumn,
+                Menu: Menu,
+            },
         },
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
@@ -85,4 +80,11 @@ export const mapFieldsToColumnsFilter = (
         ...filter,
         column: columnToFieldMapping[filter.column],
     }));
+};
+
+export const isStringOrNonEmptyArray = (value: unknown): value is string | unknown[] => {
+    if (typeof value === 'string' && value.length > 0) {
+        return true;
+    }
+    return Array.isArray(value) && value.length > 0;
 };
