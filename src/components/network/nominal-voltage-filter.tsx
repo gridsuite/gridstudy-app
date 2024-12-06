@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useEffect } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Checkbox from '@mui/material/Checkbox';
@@ -43,83 +43,88 @@ const styles = {
     },
 };
 
-type NominalVoltageFilterProps = {
+export type NominalVoltageFilterProps = {
     nominalVoltages: number[];
     filteredNominalVoltages: number[];
     onChange: (filteredNominalVoltages: number[]) => void;
 };
 
-const NominalVoltageFilter = ({ nominalVoltages, filteredNominalVoltages, onChange }: NominalVoltageFilterProps) => {
+export default function NominalVoltageFilter({
+    nominalVoltages,
+    filteredNominalVoltages,
+    onChange,
+}: Readonly<NominalVoltageFilterProps>) {
     // Set up filteredNominalVoltages
     useEffect(() => {
-        if (nominalVoltages && !filteredNominalVoltages) {
-            onChange(nominalVoltages as number[]);
+        if (nominalVoltages.length > 0 && filteredNominalVoltages.length <= 0) {
+            onChange(nominalVoltages);
         }
     }, [nominalVoltages, filteredNominalVoltages, onChange]);
 
-    const handleToggle = (vnoms: number[], isToggle: boolean) => () => {
-        // filter on nominal voltage
-        let newFiltered = [...filteredNominalVoltages];
-        if (isToggle) {
-            vnoms.forEach((vnom) => {
-                const currentIndex = filteredNominalVoltages.indexOf(vnom);
-                if (currentIndex === -1) {
-                    newFiltered.push(vnom);
-                } else {
-                    newFiltered.splice(currentIndex, 1);
-                }
-            });
-        } else {
-            newFiltered = [...vnoms];
-        }
-        onChange(newFiltered);
-    };
+    const handleToggle = useCallback(
+        (vnoms: number[], isToggle: boolean) => {
+            let newFiltered: number[];
+            if (isToggle) {
+                // we "inverse" the selection for vnoms values
+                newFiltered = [...filteredNominalVoltages];
+                vnoms.forEach((vnom) => {
+                    const currentIndex = filteredNominalVoltages.indexOf(vnom);
+                    if (currentIndex === -1) {
+                        newFiltered.push(vnom); //not previously present, we add it
+                    } else {
+                        newFiltered.splice(currentIndex, 1); // previously present, we remove it
+                    }
+                });
+            } else {
+                // it's just the new selection
+                newFiltered = [...vnoms];
+            }
+            onChange(newFiltered);
+        },
+        [filteredNominalVoltages, onChange]
+    );
+    const handleSelectAll = useCallback(() => handleToggle(nominalVoltages, false), [handleToggle, nominalVoltages]);
+    const handleSelectNone = useCallback(() => handleToggle([], false), [handleToggle]);
 
-    if (!(nominalVoltages?.length > 0)) {
+    const nominalVoltagesList = useMemo(
+        () =>
+            nominalVoltages.map((value) => (
+                <ListItem sx={styles.nominalVoltageItem} key={value}>
+                    <ListItemButton
+                        role={undefined}
+                        dense
+                        onClick={() => handleToggle([value], true)}
+                        disabled={!filteredNominalVoltages}
+                    >
+                        <Checkbox
+                            color="default"
+                            sx={styles.nominalVoltageCheck}
+                            checked={!filteredNominalVoltages || filteredNominalVoltages.indexOf(value) !== -1}
+                        />
+                        <ListItemText sx={styles.nominalVoltageText} disableTypography primary={`${value} kV`} />
+                    </ListItemButton>
+                </ListItem>
+            )),
+        [filteredNominalVoltages, handleToggle, nominalVoltages]
+    );
+
+    if (nominalVoltages.length <= 0) {
         return false;
     }
     return (
         <Paper>
             <List sx={styles.nominalVoltageZone}>
                 <ListItem sx={styles.nominalVoltageItem}>
-                    <Button
-                        size={'small'}
-                        sx={styles.nominalVoltageSelectionControl}
-                        onClick={handleToggle(nominalVoltages, false)}
-                    >
+                    <Button size={'small'} sx={styles.nominalVoltageSelectionControl} onClick={handleSelectAll}>
                         <FormattedMessage id="CBAll" />
                     </Button>
                     <ListItemText sx={styles.nominalVoltageText} secondary={'/'} />
-                    <Button size={'small'} sx={styles.nominalVoltageSelectionControl} onClick={handleToggle([], false)}>
+                    <Button size={'small'} sx={styles.nominalVoltageSelectionControl} onClick={handleSelectNone}>
                         <FormattedMessage id="CBNone" />
                     </Button>
                 </ListItem>
-                {nominalVoltages.map((value) => {
-                    return (
-                        <ListItem sx={styles.nominalVoltageItem} key={value}>
-                            <ListItemButton
-                                role={undefined}
-                                dense
-                                onClick={handleToggle([value], true)}
-                                disabled={!filteredNominalVoltages}
-                            >
-                                <Checkbox
-                                    color="default"
-                                    sx={styles.nominalVoltageCheck}
-                                    checked={!filteredNominalVoltages || filteredNominalVoltages.indexOf(value) !== -1}
-                                />
-                                <ListItemText
-                                    sx={styles.nominalVoltageText}
-                                    disableTypography
-                                    primary={`${value} kV`}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    );
-                })}
+                {nominalVoltagesList}
             </List>
         </Paper>
     );
-};
-
-export default NominalVoltageFilter;
+}

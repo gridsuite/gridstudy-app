@@ -29,7 +29,7 @@ import withOperatingStatusMenu, { MenuBranchProps } from '../menus/operating-sta
 import BaseEquipmentMenu, { MapEquipment as BaseEquipment } from '../menus/base-equipment-menu';
 import withEquipmentMenu from '../menus/equipment-menu';
 import VoltageLevelChoice from '../voltage-level-choice';
-import NominalVoltageFilter from './nominal-voltage-filter';
+import NominalVoltageFilter, { type NominalVoltageFilterProps } from './nominal-voltage-filter';
 import { useDispatch, useSelector } from 'react-redux';
 import { PARAM_MAP_BASEMAP, PARAM_MAP_MANUAL_REFRESH, PARAM_USE_NAME } from '../../utils/config-params';
 import { Equipment, EquipmentType, useSnackMessage } from '@gridsuite/commons-ui';
@@ -58,6 +58,7 @@ const INITIAL_POSITION = [0, 0] as const;
 const INITIAL_ZOOM = 9;
 const LABELS_ZOOM_THRESHOLD = 9;
 const ARROWS_ZOOM_THRESHOLD = 7;
+const EMPTY_ARRAY: any[] = [];
 
 const styles = {
     divNominalVoltageFilter: {
@@ -94,7 +95,7 @@ type NetworkMapTabProps = {
     onPolygonChanged: (polygoneFeature: any) => void;
     onDrawEvent: (drawEvent: number) => void;
     isInDrawingMode: boolean;
-    onNominalVoltagesChange: (nominalVoltages: unknown[]) => void;
+    onNominalVoltagesChange: (nominalVoltages: number[]) => void;
 };
 
 export const NetworkMapTab = ({
@@ -987,16 +988,19 @@ export const NetworkMapTab = ({
         />
     );
 
-    function handleChange(newValues: number[]) {
-        setFilteredNominalVoltages(newValues);
-        onNominalVoltagesChange(newValues);
-    }
+    const handleChange = useCallback<NominalVoltageFilterProps['onChange']>(
+        (newValues) => {
+            setFilteredNominalVoltages(newValues);
+            onNominalVoltagesChange(newValues);
+        },
+        [onNominalVoltagesChange]
+    );
 
     function renderNominalVoltageFilter() {
         return (
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
-                    nominalVoltages={mapEquipments?.getNominalVoltages() as number[]}
+                    nominalVoltages={mapEquipments?.getNominalVoltages() ?? EMPTY_ARRAY}
                     filteredNominalVoltages={filteredNominalVoltages}
                     onChange={handleChange}
                 />
