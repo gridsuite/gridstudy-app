@@ -10,6 +10,7 @@ import { Dispatch } from 'redux';
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
 import { MapEquipments } from '@powsybl/network-viewer';
+import type { AppDispatch } from '../../redux/store';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
@@ -18,7 +19,7 @@ import {
 } from '../../services/study/network-ts';
 
 export default class GSMapEquipments extends MapEquipments {
-    dispatch: Dispatch;
+    dispatch: AppDispatch;
     errHandler?: UseSnackMessageReturn['snackError'];
 
     initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {

@@ -495,11 +495,7 @@ export interface AppState extends CommonStoreState {
     isExplorerDrawerOpen: boolean;
     isModificationsDrawerOpen: boolean;
     isEventScenarioDrawerOpen: boolean;
-    centerOnSubstation:
-        | undefined
-        | {
-              to: string;
-          };
+    centerOnSubstation: undefined | { to: string };
     isModificationsInProgress: boolean;
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
