@@ -146,8 +146,8 @@ export function getLccConverterStationFromSearchCopy(lccConverterStationFormInfo
             connectionDirection: lccConverterStationFormInfos.connectablePosition?.connectionDirection,
             connectionName: lccConverterStationFormInfos.connectablePosition?.connectionName,
             terminalConnected: lccConverterStationFormInfos?.terminalConnected,
-            connectionPosition: null,
-            busbarSectionName: null,
+            connectionPosition: undefined,
+            busbarSectionName: undefined,
         }),
     };
 }
@@ -168,7 +168,7 @@ export function getLccConverterStationFromEditData(lccConverterStationCreationIn
             connectionName: lccConverterStationCreationInfos?.connectionName,
             terminalConnected: lccConverterStationCreationInfos?.terminalConnected,
             connectionPosition: lccConverterStationCreationInfos?.connectionPosition,
-            busbarSectionName: null,
+            busbarSectionName: undefined,
         }),
     };
 }
