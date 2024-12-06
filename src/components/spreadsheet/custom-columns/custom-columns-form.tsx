@@ -18,8 +18,12 @@ export const initialCustomColumnForm: CustomColumnForm = {
 };
 
 export const customColumnFormSchema = yup.object().shape({
-    [COLUMN_ID]: yup.string(),
-    [COLUMN_NAME]: yup.string().required().max(60, 'Column name must be at most 60 characters'),
+    [COLUMN_ID]: yup
+        .string()
+        .required()
+        .max(60, 'spreadsheet/custom_column/error/id_le_60')
+        .matches(/^[^\s$]+$/, 'spreadsheet/custom_column/error/id_not_conform'),
+    [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_le_60'),
     [FORMULA]: yup.string().required(),
 });
 
