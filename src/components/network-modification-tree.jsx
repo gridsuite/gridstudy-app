@@ -47,7 +47,7 @@ const NetworkModificationTree = ({
 
     const { setViewport, fitView, setCenter, getZoom } = useReactFlow();
 
-    const draggedBranchRef = useRef(null);
+    const draggedBranchIdRef = useRef(null);
 
     const nodeColor = useCallback(
         (node) => {
@@ -185,12 +185,12 @@ const NetworkModificationTree = ({
         // We test if the dragged node is the start of a branch. If this is not the case, we should find
         // the start of the branch and move this ancestor node instead.
         // If we already put a node ID in the ref, we use it and skip the ancestor testing part.
-        const firstAncestorWithSibling = draggedBranchRef.current
-            ? nodesMap.get(draggedBranchRef.current.id)
+        const firstAncestorWithSibling = draggedBranchIdRef.current
+            ? nodesMap.get(draggedBranchIdRef.current)
             : getFirstAncestorWithSibling(nodes, nodesMap, draggedNode);
 
         if (!firstAncestorWithSibling || firstAncestorWithSibling.id === currentChange.id) {
-            draggedBranchRef.current = draggedNode;
+            draggedBranchIdRef.current = draggedNode.id;
         } else {
             // We calculate the movement of the dragged node and apply it to its ancestor instead.
             const initialAncestorXPosition = firstAncestorWithSibling.position.x;
@@ -214,7 +214,7 @@ const NetworkModificationTree = ({
             // processed by ReactFlow.
             changes.push(newChangeForAncestor);
 
-            draggedBranchRef.current = firstAncestorWithSibling;
+            draggedBranchIdRef.current = firstAncestorWithSibling.id;
         }
     };
 
@@ -223,8 +223,8 @@ const NetworkModificationTree = ({
      * to switch the order of the moved branch with a neighboring branch.
      */
     const handleEndNodeDragging = () => {
-        let movedNode = draggedBranchRef.current;
-        draggedBranchRef.current = null;
+        let movedNode = nodesMap.get(draggedBranchIdRef.current);
+        draggedBranchIdRef.current = null;
         if (movedNode) {
             // In the treeModel.treeNodes variable we can find the positions of the nodes before the user started
             // dragging something, whereas in the movedNode variable (which comes from the nodes variable), we can
