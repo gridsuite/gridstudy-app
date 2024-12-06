@@ -1304,6 +1304,7 @@ export function createVoltageLevel({
     isUpdate,
     modificationUuid,
     properties,
+    substationCreation,
 }) {
     let createVoltageLevelUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1328,6 +1329,7 @@ export function createVoltageLevel({
         sectionCount: sectionCount,
         switchKinds: switchKinds,
         couplingDevices: couplingDevices,
+        substationCreation: substationCreation,
         properties,
     });
 
