@@ -6,6 +6,8 @@
  */
 
 import { CurrentTreeNode } from 'redux/reducer';
+import { countNodes } from './network-modification-tree-model';
+import { UUID } from 'crypto';
 
 export const nodeWidth = 230;
 export const nodeHeight = 110;
@@ -112,11 +114,180 @@ function getNodePlacements(nodes: CurrentTreeNode[]): PlacementGrid {
 }
 
 /**
+ * Finds the IDs of nodes that have a sibling but are not the first child of their parent.
+ */
+function getNonEldestSiblingsIds(nodes: CurrentTreeNode[]): string[] {
+    const seenParentIds = new Set<string>();
+    const nonEldestSiblingsIds: string[] = [];
+    nodes.forEach((node) => {
+        if (node.parentId) {
+            if (seenParentIds.has(node.parentId)) {
+                nonEldestSiblingsIds.push(node.id);
+            } else {
+                seenParentIds.add(node.parentId);
+            }
+        }
+    });
+    return nonEldestSiblingsIds;
+}
+
+/**
+ * Create a Map using row number as keys and column number as value. The column value
+ * for each row is the lowest value among column values of the same row, for the provided nodes.
+ *
+ * Example nodes and placements :
+ * - NodeA {row:0, column:30}
+ * - NodeB {row:1, column:10}
+ * - NodeC {row:1, column:50}
+ * - NodeD {row:2, column:40}
+ * - NodeE {row:2, column:80}
+ *
+ * For these placements, the returned Map would be like this : {0 => 30, 1 => 10, 2 => 40}
+ */
+function getMinimumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
+    const minColumnByRow: Map<number, number> = new Map();
+    nodes.forEach((node) => {
+        const nodePlacement = placements.getPlacement(node.id);
+        if (nodePlacement) {
+            if (
+                !minColumnByRow.has(nodePlacement.row) ||
+                nodePlacement.column < minColumnByRow.get(nodePlacement.row)!
+            ) {
+                minColumnByRow.set(nodePlacement.row, nodePlacement.column);
+            }
+        }
+    });
+    return minColumnByRow;
+}
+
+/**
+ * Create a Map using row number as keys and column number as value. The column value
+ * for each row is the highest value among column values of the same row, for the provided nodes.
+ *
+ * Example nodes and placements :
+ * - NodeA {row:0, column:30}
+ * - NodeB {row:1, column:10}
+ * - NodeC {row:1, column:50}
+ * - NodeD {row:2, column:40}
+ * - NodeE {row:2, column:80}
+ *
+ * For these placements, the returned Map would be like this : {0 => 30, 1 => 50, 2 => 80}
+ */
+function getMaximumColumnByRows(nodes: CurrentTreeNode[], placements: PlacementGrid): Map<number, number> {
+    const maxColumnByRow: Map<number, number> = new Map();
+    nodes.forEach((node) => {
+        const nodePlacement = placements.getPlacement(node.id);
+        if (nodePlacement) {
+            if (
+                !maxColumnByRow.has(nodePlacement.row) ||
+                nodePlacement.column > maxColumnByRow.get(nodePlacement.row)!
+            ) {
+                maxColumnByRow.set(nodePlacement.row, nodePlacement.column);
+            }
+        }
+    });
+    return maxColumnByRow;
+}
+
+/**
+ * For each matching rows in the two provided maps, we compare their column values to calculate
+ * the empty usable space between them.
+ *
+ * @param leftColumns Map produced by the getMaximumColumnByRows function
+ * @param rightColumns Map produced by the getMinimumColumnByRows function
+ */
+function calculateAvailableSpace(leftColumns: Map<number, number>, rightColumns: Map<number, number>): number {
+    if (leftColumns.size === 0 || rightColumns.size === 0) {
+        return 0;
+    }
+
+    let availableSpace = Infinity;
+
+    for (const [row, rightColumn] of rightColumns) {
+        const leftColumnSameRow = leftColumns.get(row);
+        if (leftColumnSameRow !== undefined) {
+            const space = rightColumn - (leftColumnSameRow + 1);
+            if (space < availableSpace) {
+                availableSpace = space;
+            }
+        }
+        // We want to keep an open space vertically between two different branches, so we also test the space
+        // for the next row.
+        const leftColumnRowBelow = leftColumns.get(row + 1);
+        if (leftColumnRowBelow !== undefined) {
+            const space = rightColumn - (leftColumnRowBelow + 1);
+            if (space < availableSpace) {
+                availableSpace = space;
+            }
+        }
+        if (availableSpace <= 0) {
+            return 0;
+        }
+    }
+
+    return availableSpace;
+}
+
+/**
+ * Will move the provided nodes' placements to the left by shiftValue amount.
+ */
+function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: PlacementGrid, shiftValue: number) {
+    nodes.forEach((node) => {
+        const oldPlacement = placements.getPlacement(node.id);
+        if (oldPlacement) {
+            placements.setPlacement(node.id, { row: oldPlacement.row, column: oldPlacement.column - shiftValue });
+        }
+    });
+}
+
+/**
+ * We will try to compress the tree, using the following rules :
+ * - We move a branch to the left if the branch's starting node has a sibling to its left.
+ * - We can move a branch above another branch if, for each nodes of those two branches, there is at least
+ *   one empty space separating the branches vertically, for each overlaping columns.
+ * - Edge should never cross each other.
+ *
+ * @param nodes
+ * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
+ */
+function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementGrid) {
+    // First, we find all the nodes that start a branch and that have a sibling to their left.
+    const nonEldestSiblingsIds = getNonEldestSiblingsIds(nodes);
+
+    // For each of those nodes's branches, we will calculate how much space available there is to
+    // the left, for each row of the branch.
+    nonEldestSiblingsIds.forEach((currentNodeId) => {
+        // We have to find the minimum column placement values (per row) for the current branch, and compare them
+        // to the maximum column placement values (per row) of the nodes on the left.
+        // The resulting space we find represents how much we can shift the current column to the left.
+
+        const currentNodeFamilySize = 1 + countNodes(nodes, currentNodeId as UUID);
+        const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNodeId);
+        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentNodeFamilySize);
+        const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
+
+        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
+        // cases other branches could go under the left neighbor and make edges cross.
+        const nodesOnTheLeft = nodes.slice(0, indexOfCurrentNode);
+        const leftBranchMaximumColumnByRow = getMaximumColumnByRows(nodesOnTheLeft, placements);
+
+        const availableSpace = calculateAvailableSpace(leftBranchMaximumColumnByRow, currentBranchMinimumColumnByRow);
+
+        if (availableSpace > 0) {
+            shiftPlacementsToTheLeft(nodesOfTheCurrentBranch, placements, availableSpace);
+        }
+    });
+    return placements;
+}
+
+/**
  * Updates the tree nodes' x and y positions for ReactFlow display in the tree
  */
 export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
-    const nodePlacements = getNodePlacements(newNodes);
+    const uncompressedNodePlacements = getNodePlacements(newNodes);
+
+    const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements);
 
     newNodes.forEach((node) => {
         const placement = nodePlacements.getPlacement(node.id);
