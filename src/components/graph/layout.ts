@@ -250,7 +250,7 @@ function shiftPlacementsToTheLeft(nodes: CurrentTreeNode[], placements: Placemen
  * @param nodes
  * @param placements represents the nodes's placements in a grid after the algorithm's first pass, without compression
  */
-function compressTree(nodes: CurrentTreeNode[], placements: PlacementGrid) {
+function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementGrid) {
     // First, we find all the nodes that start a branch and that have a sibling to their left.
     const nonEldestSiblingsIds = getNonEldestSiblingsIds(nodes);
 
@@ -287,7 +287,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
     const newNodes = [...nodes];
     const uncompressedNodePlacements = getNodePlacements(newNodes);
 
-    const nodePlacements = compressTree(newNodes, uncompressedNodePlacements);
+    const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements);
 
     newNodes.forEach((node) => {
         const placement = nodePlacements.getPlacement(node.id);
