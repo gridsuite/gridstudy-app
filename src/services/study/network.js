@@ -7,7 +7,8 @@
 
 import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
-import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
+import { backendFetch, backendFetchJson, backendFetchText, getUrlWithToken } from '../utils';
+import { fetchNetworkElementsInfos } from './network-ts';
 
 /* voltage-levels */
 export function getVoltageLevelSingleLineDiagram(
@@ -117,49 +118,6 @@ export function getSubstationSingleLineDiagram(
     );
 }
 
-/* elements */
-export function fetchNetworkElementsInfos(
-    studyUuid,
-    currentNodeUuid,
-    substationsIds,
-    elementType,
-    infoType,
-    inUpstreamBuiltParentNode,
-    nominalVoltages
-) {
-    const substationsCount = substationsIds ? substationsIds.length : 0;
-    const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
-
-    console.info(
-        `Fetching network '${elementType}' elements '${infoType}' infos of study '${studyUuid}' and node '${currentNodeUuid}' with ${substationsCount} substations ids and ${nominalVoltagesStr} nominal voltages.`
-    );
-
-    const nominalVoltagesParams = getQueryParamsList(nominalVoltages, 'nominalVoltages');
-
-    const nominalVoltagesParamsList = nominalVoltages && nominalVoltages?.length > 0 ? '&' + nominalVoltagesParams : '';
-
-    const urlSearchParams = new URLSearchParams();
-    if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode);
-    }
-    urlSearchParams.append('infoType', infoType);
-    urlSearchParams.append('elementType', elementType);
-
-    const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
-        '/network/elements' +
-        '?' +
-        urlSearchParams +
-        nominalVoltagesParamsList;
-    console.debug(fetchElementsUrl);
-
-    return backendFetchJson(fetchElementsUrl, {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(substationsIds ?? null),
-    });
-}
-
 export function fetchNetworkElementInfos(
     studyUuid,
     currentNodeUuid,
@@ -189,50 +147,6 @@ export function fetchNetworkElementInfos(
     console.debug(fetchElementsUrl);
 
     return backendFetchJson(fetchElementsUrl);
-}
-
-export function fetchSubstationsMapInfos(studyUuid, currentNodeUuid, substationsIds, inUpstreamBuiltParentNode) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.SUBSTATION,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
-        inUpstreamBuiltParentNode
-    );
-}
-
-export function fetchLinesMapInfos(studyUuid, currentNodeUuid, substationsIds, inUpstreamBuiltParentNode) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.LINE,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
-        inUpstreamBuiltParentNode
-    );
-}
-
-export function fetchTieLinesMapInfos(studyUuid, currentNodeUuid, substationsIds, inUpstreamBuiltParentNode) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.TIE_LINE,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
-        inUpstreamBuiltParentNode
-    );
-}
-
-export function fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, substationsIds, inUpstreamBuiltParentNode) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.HVDC_LINE,
-        EQUIPMENT_INFOS_TYPES.MAP.type,
-        inUpstreamBuiltParentNode
-    );
 }
 
 export function fetchSubstations(studyUuid, currentNodeUuid, substationsIds) {

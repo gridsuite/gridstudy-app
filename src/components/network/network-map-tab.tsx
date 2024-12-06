@@ -578,6 +578,7 @@ export const NetworkMapTab = ({
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
 
+        // @ts-expect-error TODO: manage rootNodeId undefined case
         const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId).then((data) => {
             console.info(`Received substations of study '${studyUuid}'...`);
             const newGeoData = new GeoData(new Map(), geoDataRef.current?.linePositionsById || new Map());
@@ -588,7 +589,8 @@ export const NetworkMapTab = ({
 
         const linePositionsDone = !lineFullPath
             ? Promise.resolve()
-            : fetchLinePositions(studyUuid, rootNodeId).then((data) => {
+            : // @ts-expect-error TODO: manage rootNodeId undefined case
+              fetchLinePositions(studyUuid, rootNodeId).then((data) => {
                   console.info(`Received lines of study '${studyUuid}'...`);
                   const newGeoData = new GeoData(geoDataRef.current?.substationPositionsById || new Map(), new Map());
                   newGeoData.setLinePositions(data);
@@ -659,7 +661,7 @@ export const NetworkMapTab = ({
             }
 
             const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = mapEquipments
-                ? mapEquipments.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds ?? null)
+                ? mapEquipments.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds)
                 : {
                       updatedSubstations: Promise.resolve([]),
                       updatedLines: Promise.resolve([]),

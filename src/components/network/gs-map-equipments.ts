@@ -9,13 +9,13 @@ import { UUID } from 'crypto';
 import { Dispatch } from 'redux';
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
+import { MapEquipments } from '@powsybl/network-viewer';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
-} from '../../services/study/network';
-import { MapEquipments } from '@powsybl/network-viewer';
+} from '../../services/study/network-ts';
 
 export default class GSMapEquipments extends MapEquipments {
     dispatch: Dispatch;
@@ -107,7 +107,7 @@ export default class GSMapEquipments extends MapEquipments {
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
-    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | null) {
+    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | undefined) {
         const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);

@@ -13,7 +13,7 @@ export default function useVoltageLevelsListInfos(studyUuid: UUID, nodeUuid: UUI
     const [voltageLevelsListInfos, setVoltageLevelsListInfos] = useState([]);
     useEffect(() => {
         if (studyUuid && nodeUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, nodeUuid).then((values) => {
+            fetchVoltageLevelsListInfos(studyUuid, nodeUuid).then((values: any) => {
                 setVoltageLevelsListInfos(
                     values.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id))
                 );
