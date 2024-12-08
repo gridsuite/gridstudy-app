@@ -7,8 +7,7 @@
 
 export const EQUIPMENT_ID = 'equipmentId';
 export const EQUIPMENT_NAME = 'equipmentName';
-export const EQUIPMENT_SUBSTATION_ID = 'equipmentSubstationId';
-export const EQUIPMENT_SUBSTATION_NAME = 'equipmentSubstationName';
+export const SUBSTATION_NAME = 'substationName';
 export const LOAD_TYPE = 'loadType';
 export const CONNECTIVITY = 'connectivity';
 export const SETPOINTS_LIMITS = 'setpointsLimits';

@@ -18,8 +18,6 @@ import {
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    EQUIPMENT_SUBSTATION_ID,
-    EQUIPMENT_SUBSTATION_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     ID,
@@ -29,6 +27,7 @@ import {
     NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
+    SUBSTATION_NAME,
     SWITCH_KIND,
     SWITCH_KINDS,
     SWITCHES_BETWEEN_SECTIONS,
@@ -36,7 +35,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
@@ -82,8 +81,7 @@ const emptyFormData = {
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [COUPLING_OMNIBUS]: [],
     [SWITCH_KINDS]: [],
-    [EQUIPMENT_SUBSTATION_ID]: '',
-    [EQUIPMENT_SUBSTATION_NAME]: '',
+    [SUBSTATION_NAME]: null,
     [COUNTRY]: null,
     ...emptyProperties,
 };
@@ -130,8 +128,7 @@ const formSchema = yup
             .test('coupling-omnibus-between-sections', (values) =>
                 controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
             ),
-        [EQUIPMENT_SUBSTATION_ID]: yup.string().required(),
-        [EQUIPMENT_SUBSTATION_NAME]: yup.string(),
+        [SUBSTATION_NAME]: yup.string(),
         [COUNTRY]: yup.string().nullable(),
     })
     .concat(creationPropertiesSchema);
@@ -154,7 +151,7 @@ const VoltageLevelCreationDialog = ({
 
     const { reset } = formMethods;
     const intl = useIntl();
-
+    const [isSubstationCreation, setIsSubstationCreation] = useState(false);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             const properties = fromCopy
@@ -164,7 +161,7 @@ const VoltageLevelCreationDialog = ({
                 [EQUIPMENT_ID]: (voltageLevel[EQUIPMENT_ID] ?? voltageLevel[ID]) + (fromCopy ? '(1)' : ''),
                 [EQUIPMENT_NAME]: voltageLevel[EQUIPMENT_NAME] ?? voltageLevel[NAME],
                 [TOPOLOGY_KIND]: voltageLevel[TOPOLOGY_KIND],
-                [SUBSTATION_ID]: fromCopy ? voltageLevel[SUBSTATION_ID] : voltageLevel.substationCreation.equipmentId,
+                [SUBSTATION_ID]: voltageLevel[SUBSTATION_ID],
                 [NOMINAL_V]: voltageLevel[NOMINAL_V],
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
@@ -217,8 +214,8 @@ const VoltageLevelCreationDialog = ({
         (voltageLevel) => {
             const substationCreation = {
                 type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-                equipmentId: voltageLevel[EQUIPMENT_SUBSTATION_ID],
-                equipmentName: voltageLevel[EQUIPMENT_SUBSTATION_NAME],
+                equipmentId: voltageLevel[SUBSTATION_ID],
+                equipmentName: voltageLevel[SUBSTATION_NAME],
                 country: voltageLevel[COUNTRY],
             };
             onCreateVoltageLevel({
@@ -226,7 +223,9 @@ const VoltageLevelCreationDialog = ({
                 nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
-                substationId: substationCreation.equipmentId === null ? voltageLevel[SUBSTATION_ID] : null,
+                substationId: voltageLevel[SUBSTATION_ID],
+                isSubstationCreation: isSubstationCreation,
+                substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
@@ -242,7 +241,6 @@ const VoltageLevelCreationDialog = ({
                 modificationUuid: editData?.uuid,
                 topologyKind: voltageLevel[TOPOLOGY_KIND],
                 properties: toModificationProperties(voltageLevel),
-                substationCreation,
             }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
@@ -250,8 +248,12 @@ const VoltageLevelCreationDialog = ({
                 });
             });
         },
-        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
+        [onCreateVoltageLevel, isSubstationCreation, studyUuid, currentNodeUuid, editData, snackError]
     );
+
+    const handleSubstationCreation = (isWithSubstationCreation) => {
+        setIsSubstationCreation(isWithSubstationCreation);
+    };
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -277,7 +279,11 @@ const VoltageLevelCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VoltageLevelCreationForm currentNode={currentNode} studyUuid={studyUuid} />
+                <VoltageLevelCreationForm
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    handleSubstationCreation={handleSubstationCreation}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

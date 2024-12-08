@@ -10,8 +10,6 @@ import {
     COUNTRY,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
-    EQUIPMENT_SUBSTATION_ID,
-    EQUIPMENT_SUBSTATION_NAME,
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
     HIGH_VOLTAGE_LIMIT,
     LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
@@ -19,18 +17,19 @@ import {
     NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
+    SUBSTATION_NAME,
 } from 'components/utils/field-constants';
 import { useCallback, useEffect, useState } from 'react';
 import { filledTextField, KiloAmpereAdornment, VoltageAdornment } from 'components/dialogs/dialog-utils';
 import { AutocompleteInput, FloatInput, IntegerInput, TextInput } from '@gridsuite/commons-ui';
 import { getObjectId } from 'components/utils/utils';
-import { Box, Divider, Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 
 import { CouplingOmnibusForm } from '../coupling-omnibus/coupling-omnibus-form';
 import { SwitchesBetweenSections } from '../switches-between-sections/switches-between-sections';
 import { fetchEquipmentsIds } from '../../../../../services/study/network-map';
 import PropertiesForm from '../../common/properties/properties-form';
-import { useWatch } from 'react-hook-form';
+import { useFormContext, useWatch } from 'react-hook-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 import IconButton from '@mui/material/IconButton';
@@ -39,12 +38,14 @@ import Typography from '@mui/material/Typography';
 import { useIntl } from 'react-intl';
 import CountrySelectionInput from '../../../../utils/rhf-inputs/country-selection-input.jsx';
 import DeleteIcon from '@mui/icons-material/Delete.js';
+import LineSeparator from '../../../commons/line-separator';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, handleSubstationCreation }) => {
     const currentNodeUuid = currentNode?.id;
     const intl = useIntl();
+    const { setValue } = useFormContext();
     const [substations, setSubstations] = useState([]);
-    const [showForm, setShowForm] = useState(false);
+    const [isWithSubstationCreation, setIsWithSubstationCreation] = useState(false);
 
     const watchBusBarCount = useWatch({ name: BUS_BAR_COUNT });
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
@@ -114,12 +115,10 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
 
     const couplingOmnibusForm = <CouplingOmnibusForm />;
 
-    const substationIdField = (
-        <TextInput name={EQUIPMENT_SUBSTATION_ID} label={'equipmentSubstationId'} formProps={filledTextField} />
-    );
+    const substationIdField = <TextInput name={SUBSTATION_ID} label={'SubstationId'} formProps={filledTextField} />;
 
     const substationNameField = (
-        <TextInput name={EQUIPMENT_SUBSTATION_NAME} label={'equipmentSubstationName'} formProps={filledTextField} />
+        <TextInput name={SUBSTATION_NAME} label={'substationName'} formProps={filledTextField} />
     );
 
     const substationCountryField = (
@@ -127,12 +126,16 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     );
 
     const handleAddButton = useCallback(() => {
-        setShowForm(true);
-    }, []);
+        handleSubstationCreation(true);
+        setIsWithSubstationCreation(true);
+        setValue(SUBSTATION_ID, null);
+    }, [handleSubstationCreation, setValue]);
 
     const handleCloseButton = useCallback(() => {
-        setShowForm(false);
-    }, []);
+        handleSubstationCreation(false);
+        setIsWithSubstationCreation(false);
+        setValue(SUBSTATION_ID, null);
+    }, [handleSubstationCreation, setValue]);
 
     return (
         <>
@@ -140,19 +143,32 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
                 <GridItem>{voltageLevelIdField}</GridItem>
                 <GridItem>{voltageLevelNameField}</GridItem>
             </Grid>
-            {showForm ? (
-                <Grid container spacing={2}>
-                    <Divider></Divider>
-                    <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
-                    <Grid item>
-                        <IconButton onClick={handleCloseButton}>
-                            <DeleteIcon />
-                        </IconButton>
+
+            {isWithSubstationCreation ? (
+                <Grid>
+                    <Grid item xs={12} paddingTop={2}>
+                        <LineSeparator />
+                    </Grid>
+                    <Grid item xs={12} container spacing={2}>
+                        <Grid item xs={11}>
+                            <GridSection title={intl.formatMessage({ id: 'CreateSubstation' })} />
+                        </Grid>
+                        <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'right' }}>
+                            <IconButton onClick={handleCloseButton}>
+                                <DeleteIcon />
+                            </IconButton>
+                        </Grid>
                     </Grid>
                     <Grid container spacing={2}>
-                        <GridItem size={4}>{substationIdField}</GridItem>
-                        <GridItem size={4}>{substationNameField}</GridItem>
-                        <GridItem size={4}>{substationCountryField}</GridItem>
+                        <Grid item xs={4}>
+                            {substationIdField}
+                        </Grid>
+                        <Grid item xs={4}>
+                            {substationNameField}
+                        </Grid>
+                        <Grid item xs={4}>
+                            {substationCountryField}
+                        </Grid>
                     </Grid>
                 </Grid>
             ) : (

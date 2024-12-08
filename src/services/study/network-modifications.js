@@ -1292,6 +1292,8 @@ export function createVoltageLevel({
     voltageLevelId,
     voltageLevelName,
     substationId,
+    isSubstationCreation,
+    substationCreation,
     nominalV,
     lowVoltageLimit,
     highVoltageLimit,
@@ -1304,7 +1306,6 @@ export function createVoltageLevel({
     isUpdate,
     modificationUuid,
     properties,
-    substationCreation,
 }) {
     let createVoltageLevelUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
@@ -1320,6 +1321,8 @@ export function createVoltageLevel({
         equipmentId: voltageLevelId,
         equipmentName: voltageLevelName,
         substationId: substationId,
+        withSubstationCreation: isSubstationCreation,
+        substationCreation: substationCreation,
         nominalV: nominalV,
         lowVoltageLimit: lowVoltageLimit,
         highVoltageLimit: highVoltageLimit,
@@ -1329,7 +1332,6 @@ export function createVoltageLevel({
         sectionCount: sectionCount,
         switchKinds: switchKinds,
         couplingDevices: couplingDevices,
-        substationCreation: substationCreation,
         properties,
     });
 
