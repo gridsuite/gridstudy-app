@@ -6,15 +6,16 @@
  */
 
 const spreadsheetEn = {
-    'spreadsheet/custom_column/edit_columns': 'Edit a column',
     'spreadsheet/column/button': 'Show / hide columns',
     'spreadsheet/column/dialog/title': 'Column list',
     'spreadsheet/column/dialog/check_all': 'Select all / none',
     'spreadsheet/custom_column/add_columns': 'Add a column',
+    'spreadsheet/custom_column/edit_columns': 'Edit a column',
     'spreadsheet/custom_column/column_name': 'Column name',
     'spreadsheet/custom_column/column_content': 'Enter the formula',
     'spreadsheet/custom_column/column_content_description': `Column content is described with variable names (in order to reference grid data) and operators provided by <Link>MathJS</Link> library (in order to transform grid data). Example: maxP - p in order to display active power reserve within the generator spreadsheet`,
     'spreadsheet/custom_column/error/not_unique': 'Column names must be unique',
+    'spreadsheet/custom_column/error/name_exceeds_length': 'Column name must be at most 60 characters',
     'spreadsheet/custom_column/update_custom_column': 'Update column',
     'spreadsheet/custom_column/delete_custom_column': 'Delete column',
     'spreadsheet/custom_column/delete_custom_column_confirmation':

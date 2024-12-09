@@ -19,7 +19,7 @@ export const initialCustomColumnForm: CustomColumnForm = {
 
 export const customColumnFormSchema = yup.object().shape({
     [COLUMN_ID]: yup.string(),
-    [COLUMN_NAME]: yup.string().required().max(60, 'Column name must be at most 60 characters'),
+    [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_exceeds_length'),
     [FORMULA]: yup.string().required(),
 });
 
