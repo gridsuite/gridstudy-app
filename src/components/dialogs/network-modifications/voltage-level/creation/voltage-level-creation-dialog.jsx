@@ -212,19 +212,20 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
-            const substationCreation = {
-                type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
-                equipmentId: voltageLevel[SUBSTATION_ID],
-                equipmentName: voltageLevel[SUBSTATION_NAME],
-                country: voltageLevel[COUNTRY],
-            };
+            const substationCreation = isSubstationCreation
+                ? {
+                      type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
+                      equipmentId: voltageLevel[SUBSTATION_ID],
+                      equipmentName: voltageLevel[SUBSTATION_NAME],
+                      country: voltageLevel[COUNTRY],
+                  }
+                : null;
             onCreateVoltageLevel({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: voltageLevel[SUBSTATION_ID],
-                isSubstationCreation: isSubstationCreation,
                 substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
