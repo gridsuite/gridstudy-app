@@ -19,9 +19,9 @@ import {
 import {
     CSS_RULE,
     NetworkAreaDiagramViewer,
-    THRESHOLD_STATUS,
     DiagramMetadata,
     OnToggleNadHoverCallbackType,
+    THRESHOLD_STATUS,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
@@ -36,6 +36,26 @@ import { UUID } from 'crypto';
 import { Point } from '@svgdotjs/svg.js';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { FEEDER_TYPES } from 'components/utils/feederType';
+
+function between(x, min, max) {
+    return x >= min && x <= max;
+}
+
+function getBranchStrokeWidth(value: number) {
+    if (between(value, 0, 1000)) {
+        return '3';
+    }
+    if (between(value, 1000, 3000)) {
+        return '10';
+    }
+    if (between(value, 3000, 6000)) {
+        return '20';
+    }
+    if (between(value, 6000, 9000)) {
+        return '30';
+    }
+    return '40';
+}
 
 const dynamicCssRules: CSS_RULE[] = [
     {
@@ -110,10 +130,8 @@ const dynamicCssRules: CSS_RULE[] = [
     },
     {
         cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssDeclaration: { 'stroke-width': (value: number) => getBranchStrokeWidth(value) },
+        currentValue: { 'stroke-width': '40' },
     },
     {
         cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
