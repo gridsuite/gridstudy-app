@@ -127,7 +127,7 @@ const styles = {
 
 const NetworkModificationNode = (props: NodeProps<ModificationNode>) => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-    const selectionForCopy = useSelector((state: AppState) => state.selectionForCopy);
+    const selectionForCopy = useSelector((state: AppState) => state.nodeSelectionForCopy);
 
     const isSelectedNode = () => {
         return props.id === currentNode?.id;
