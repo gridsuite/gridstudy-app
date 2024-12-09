@@ -40,11 +40,7 @@ import {
 } from '../../../reactive-limits/reactive-limits-utils';
 import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
 import { sanitizeString } from '../../../dialog-utils';
-import {
-    calculateCurvePointsToStore,
-    completeReactiveCapabilityCurvePointsData,
-    getRowEmptyFormData,
-} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { getRowEmptyFormData } from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
 import { toModificationOperation } from '../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
@@ -230,10 +226,6 @@ export function getConverterStationModificationData(
     converterStationToModify: ConverterStationElementModificationInfos | undefined
 ) {
     const reactiveLimits = converterStation[REACTIVE_LIMITS];
-    const buildCurvePointsToStore = calculateCurvePointsToStore(
-        reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE],
-        converterStationToModify
-    );
     const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
 
     return {
@@ -249,7 +241,9 @@ export function getConverterStationModificationData(
         reactiveCapabilityCurve: toModificationOperation(isReactiveCapabilityCurveOn),
         minQ: toModificationOperation(isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER]),
         maxQ: toModificationOperation(isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER]),
-        reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn ? buildCurvePointsToStore : null,
+        reactiveCapabilityCurvePoints: isReactiveCapabilityCurveOn
+            ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+            : null,
     };
 }
 
@@ -327,10 +321,7 @@ function getConverterStationModificationReactiveLimits(
                 : 'MINMAX',
             maximumReactivePower: converterStationEditData?.maxQ?.value ?? null,
             minimumReactivePower: converterStationEditData?.minQ?.value ?? null,
-            reactiveCapabilityCurveTable:
-                converterStationEditData?.reactiveCapabilityCurvePoints?.length > 0
-                    ? completeReactiveCapabilityCurvePointsData(converterStationEditData?.reactiveCapabilityCurvePoints)
-                    : [getRowEmptyFormData(), getRowEmptyFormData()],
+            reactiveCapabilityCurveTable: converterStationEditData?.reactiveCapabilityCurvePoints ?? null,
         }),
     };
 }
