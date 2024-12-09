@@ -33,7 +33,7 @@ export type PredefinedProperties = {
 };
 
 type Equipment = {
-    properties: Record<string, string> | undefined;
+    properties?: Record<string, string>;
 };
 
 export const fetchPredefinedProperties = (networkElementType: string): Promise<PredefinedProperties | undefined> => {

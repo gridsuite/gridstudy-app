@@ -16,24 +16,24 @@ import {
     REACTIVE_POWER,
     VOLTAGE,
     VOLTAGE_REGULATION_ON,
-} from '../../../../utils/field-constants';
-import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../dialog-utils';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+} from '../../../../../utils/field-constants';
+import { percentageTextField, ReactivePowerAdornment, VoltageAdornment } from '../../../../dialog-utils';
+import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { UUID } from 'crypto';
-import { ConnectivityForm } from '../../../connectivity/connectivity-form';
+import { ConnectivityForm } from '../../../../connectivity/connectivity-form';
 import { Grid } from '@mui/material';
-import ReactiveLimitsForm from '../../../reactive-limits/reactive-limits-form';
+import ReactiveLimitsForm from '../../../../reactive-limits/reactive-limits-form';
 import { useFormContext, useWatch } from 'react-hook-form';
 import { TextField } from '@mui/material';
 import {
     ConverterStationElementModificationInfos,
     UpdateReactiveCapabilityCurveTable,
 } from './converter-station-utils';
-import CheckboxNullableInput from '../../../../utils/rhf-inputs/boolean-nullable-input';
+import CheckboxNullableInput from '../../../../../utils/rhf-inputs/boolean-nullable-input';
 import { useIntl } from 'react-intl';
-import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
-import GridSection from '../../../commons/grid-section';
-import GridItem from '../../../commons/grid-item';
+import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
+import GridSection from '../../../../commons/grid-section';
+import GridItem from '../../../../commons/grid-item';
 
 interface VscConverterStationPaneProps {
     id: string;

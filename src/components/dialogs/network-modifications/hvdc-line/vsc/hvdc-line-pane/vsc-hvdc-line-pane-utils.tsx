@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import yup from '../../../../utils/yup-config';
+import yup from '../../../../../utils/yup-config';
 import {
     ACTIVE_POWER_SETPOINT,
     ANGLE_DROOP_ACTIVE_POWER_CONTROL,
@@ -17,7 +17,7 @@ import {
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE1,
     OPERATOR_ACTIVE_POWER_LIMIT_SIDE2,
     P0,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 
 export function getVscHvdcLinePaneSchema(id: string) {
     return {

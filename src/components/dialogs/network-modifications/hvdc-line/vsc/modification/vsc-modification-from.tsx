@@ -10,19 +10,19 @@ import {
     CONVERTER_STATION_2,
     EQUIPMENT_NAME,
     HVDC_LINE_TAB,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 import { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { VscModificationInfo } from 'services/network-modification-types';
 import { TextInput } from '@gridsuite/commons-ui';
 import { Box, Grid, TextField } from '@mui/material';
 import { VSC_CREATION_TABS } from '../creation/vsc-creation-dialog';
 import VscTabs from '../vsc-tabs';
 import { UpdateReactiveCapabilityCurveTableConverterStation } from '../converter-station/converter-station-utils';
-import GridItem from '../../../commons/grid-item';
+import GridItem from '../../../../commons/grid-item';
 
 interface VscModificationFormProps {
     tabIndex: number;
