@@ -72,11 +72,11 @@ import {
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/two-windings-transformer-characteristics-pane-utils';
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import LimitsPane from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/limits-pane';
 import {
     addModificationTypeToTemporaryLimits,
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getSelectedLimitsFormData,
     getLimitsValidationSchema,
     sanitizeLimitNames,
     updateTemporaryLimits,
@@ -242,7 +242,7 @@ const TwoWindingsTransformerModificationDialog = ({
                     ratedU2: twt.ratedU2?.value,
                     ratedS: twt.ratedS?.value,
                 }),
-                ...getLimitsFormData({
+                ...getSelectedLimitsFormData({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
@@ -596,7 +596,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             if (editData?.equipmentId !== selectedId) {
                                 reset((formValues) => ({
                                     ...formValues,
-                                    ...getLimitsFormData({
+                                    ...getSelectedLimitsFormData({
                                         temporaryLimits1: addSelectedFieldToRows(
                                             formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
                                         ),
