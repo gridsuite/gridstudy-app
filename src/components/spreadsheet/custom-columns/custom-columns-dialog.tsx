@@ -29,6 +29,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { useForm, useWatch } from 'react-hook-form';
 import {
+    COLUMN_ID,
     COLUMN_NAME,
     CustomColumnForm,
     customColumnFormSchema,
@@ -91,6 +92,10 @@ export default function CustomColumnDialog({
         <TextInput name={COLUMN_NAME} label={'spreadsheet/custom_column/column_name'} formProps={{ autoFocus: true }} />
     );
 
+    const columnIdField = (
+      <TextInput name={COLUMN_ID} label={'spreadsheet/custom_column/column_id'} />
+    );
+
     const formulaField = (
         <ExpandingTextField
             name={FORMULA}
@@ -104,7 +109,6 @@ export default function CustomColumnDialog({
     const onSubmit = useCallback(
         (newParams: CustomColumnForm) => {
             const existingColumn = customColumnsDefinitions?.find((column) => column.name === newParams.name);
-
             if (existingColumn) {
                 if (isCreate || hasColumnNameChanged) {
                     setError(COLUMN_NAME, {
@@ -116,7 +120,7 @@ export default function CustomColumnDialog({
             }
             dispatch(
                 setUpdateCustomColumDefinitions(tablesNames[tabIndex], {
-                    id: customColumnsDefinition?.id || crypto.randomUUID(),
+                    id: newParams.id,
                     name: newParams.name,
                     formula: newParams.formula,
                 })
@@ -142,6 +146,7 @@ export default function CustomColumnDialog({
         if (open.value && customColumnsDefinition) {
             reset({
                 [COLUMN_NAME]: customColumnsDefinition.name,
+                [COLUMN_ID]: customColumnsDefinition.id,
                 [FORMULA]: customColumnsDefinition.formula,
             });
         } else {
@@ -186,6 +191,9 @@ export default function CustomColumnDialog({
                         </Typography>
                         <Grid item sx={styles.field}>
                             {columnNameField}
+                        </Grid>
+                        <Grid item sx={styles.field}>
+                            {columnIdField}
                         </Grid>
                         <Grid item sx={styles.field}>
                             {formulaField}
