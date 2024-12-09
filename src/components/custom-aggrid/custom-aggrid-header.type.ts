@@ -9,6 +9,7 @@ import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
+import React from 'react';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -21,6 +22,7 @@ export enum FILTER_TEXT_COMPARATORS {
     CONTAINS = 'contains',
     STARTS_WITH = 'startsWith',
 }
+
 export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
@@ -48,6 +50,24 @@ export type FilterParams = {
     filterEnums?: FilterEnumsType;
     filterOptions?: any;
 };
+
+export type CustomHeaderFilterParams = {
+    forceDisplayFilterIcon: boolean;
+    isFilterable: boolean;
+    isCountry?: boolean;
+    getEnumLabel?: (value: string) => string | undefined; // Used for translation of enum values in the filter
+} & FilterParams &
+    FilterPropsType;
+
+export type CustomHeaderMenuParams = {
+    tabIndex: number;
+    isCustomColumn: boolean;
+    Menu: React.FC<CustomColumnConfigProps>;
+};
+
+export type CustomHeaderSortParams = {
+    isSortable?: boolean;
+} & SortPropsType;
 
 export type FilterDataType = {
     dataType: string;
