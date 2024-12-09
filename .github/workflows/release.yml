@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseVersion:
+        description: Release version (vX.X)
+        required: true
+        type: string
+      gitReference:
+        description: SHA of the commit from where to release or branch name
+        required: true
+        type: string
+
+jobs:
+  run-release:
+    uses: powsybl/github-ci/.github/workflows/release-frontend-app-generic.yml@859a4effdaa9c5e79684378f39778fd8d06df3c5
+    with:
+      releaseVersion: ${{ github.event.inputs.releaseVersion }}
+      commitSha: ${{ github.event.inputs.gitReference }}
+      dockerImage: docker.io/gridsuite/gridstudy-app
+      dockerUsername: gridsuiteci
+      githubappId: ${{ vars.GRIDSUITE_ACTIONS_APPID }}
+    secrets:
+      githubappPrivateKey: ${{ secrets.GRIDSUITE_ACTIONS_SECRET }}
+      docker-token: ${{ secrets.DOCKERHUB_TOKEN }}
+      sonar-token: ${{ secrets.SONAR_TOKEN }}

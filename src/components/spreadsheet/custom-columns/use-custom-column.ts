@@ -12,6 +12,7 @@ import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-ag
 import { useAgGridSort } from 'hooks/use-aggrid-sort';
 import { SPREADSHEET_SORT_STORE } from 'utils/store-sort-filter-fields';
 import { ColumnWithFormula } from 'types/custom-columns.types';
+import CustomColumnMenu from './custom-column-menu';
 
 export function useCustomColumn(tabIndex: number) {
     const tablesNames = useSelector((state: AppState) => state.tables.names);
@@ -94,9 +95,12 @@ export function useCustomColumn(tabIndex: number) {
                 valueGetter: createValueGetter(colWithFormula),
                 editable: false,
                 suppressMovable: true,
+                tabIndex,
+                isCustomColumn: true,
+                Menu: CustomColumnMenu,
             });
         });
-    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter]);
+    }, [customColumnsDefinitions, onSortChanged, sortConfig, createValueGetter, tabIndex]);
 
     return { createCustomColumn };
 }

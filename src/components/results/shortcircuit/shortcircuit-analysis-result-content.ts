@@ -58,6 +58,7 @@ export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
                 return {
                     ...filter,
                     value: kiloUnitToUnit(filter.value),
+                    tolerance: kiloUnitToUnit(filter.tolerance),
                 };
             default:
                 return filter;

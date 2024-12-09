@@ -21,6 +21,7 @@ export enum ResultsTabsRootLevel {
     SHORTCIRCUIT_ANALYSIS = 4,
     DYNAMIC_SIMULATION = 5,
     VOLTAGE_INITIALIZATION = 6,
+    STATE_ESTIMATION = 7,
 }
 
 // to fill with other first level tabs when needed (ex : ShortcircuitAnalysisResultTabs | SensitivityAnalysisResultTabs | ...)

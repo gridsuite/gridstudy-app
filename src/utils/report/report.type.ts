@@ -29,7 +29,7 @@ export type ReportTree = Report & {
 
 export type Report = {
     message: string;
-    severities: string[];
+    severities: SeverityLevel[];
     parentId: string | null;
     id: string;
     subReports: Report[];
@@ -43,7 +43,7 @@ export type Log = {
 
 export type ReportLog = {
     message: string;
-    severity: string[];
+    severity: SeverityLevel[];
     parentId: string;
     backgroundColor?: string;
 };

@@ -268,14 +268,6 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
                     sx={{
                         pointerEvents: 'none',
                     }}
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                    transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                    }}
                     onClose={handlePopoverClose}
                     open={Boolean(localAnchorPosition || localAnchorEl)}
                     disableRestoreFocus

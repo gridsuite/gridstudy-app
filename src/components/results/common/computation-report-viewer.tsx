@@ -14,6 +14,7 @@ import WaitingLoader from '../../utils/waiting-loader';
 import { useReportFetcher } from '../../../hooks/use-report-fetcher';
 import { Report } from '../../../utils/report/report.type';
 import { BUILD_STATUS } from 'components/network/constants';
+import { Box } from '@mui/material';
 
 interface ComputationReportViewerProps {
     reportType: ComputingType;
@@ -45,7 +46,9 @@ export const ComputationReportViewer: FunctionComponent<ComputationReportViewerP
 
     return (
         <WaitingLoader loading={isReportLoading} message={'loadingReport'}>
-            {shouldFetchReport && report && <ReportViewer report={report} reportType={reportType} />}
+            <Box sx={{ marginTop: 1 }}>
+                {shouldFetchReport && report && <ReportViewer report={report} reportType={reportType} />}
+            </Box>
         </WaitingLoader>
     );
 };

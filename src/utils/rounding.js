@@ -39,7 +39,10 @@ export const roundToDefaultPrecision = (num) => roundToPrecision(num, GRIDSUITE_
 export const countDecimalPlaces = (number) => {
     // Convert the number to a string for easier manipulation
     const numberAsString = number.toString();
+    return countDecimalPlacesFromString(numberAsString);
+};
 
+export const countDecimalPlacesFromString = (numberAsString) => {
     // Check if the number has a decimal part
     if (numberAsString.includes('.')) {
         // Return the length of the part after the decimal point

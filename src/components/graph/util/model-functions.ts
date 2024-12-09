@@ -28,26 +28,18 @@ export function isRootNode(node: NetworkModificationNodeData | RootNodeData): no
     return node.type === NodeType.ROOT;
 }
 
-function convertRootNodeToReactFlowModelNode(
-    node: NetworkModificationNodeData | RootNodeData,
-    parentNodeUuid?: UUID
-): ReactFlowRootNodeData {
+function convertRootNodeToReactFlowModelNode(node: NetworkModificationNodeData | RootNodeData): ReactFlowRootNodeData {
     return {
-        parentNodeUuid: parentNodeUuid,
         label: node.name,
         description: node.description ?? undefined,
     };
 }
 
-function convertModificationNodeToReactFlowModelNode(
-    node: NetworkModificationNodeData,
-    parentNodeUuid?: UUID
-): ReactFlowModificationNodeData {
+function convertModificationNodeToReactFlowModelNode(node: NetworkModificationNodeData): ReactFlowModificationNodeData {
     const networkModificationNodeData = getModificationNodeDataOrUndefined(node);
     const globalBuildStatus = networkModificationNodeData?.nodeBuildStatus?.globalBuildStatus;
     const localBuildStatus = networkModificationNodeData?.nodeBuildStatus?.localBuildStatus;
     return {
-        parentNodeUuid: parentNodeUuid,
         label: node.name,
         description: node.description ?? undefined,
         globalBuildStatus: globalBuildStatus,
@@ -57,15 +49,17 @@ function convertModificationNodeToReactFlowModelNode(
 
 export function convertNodetoReactFlowModelNode(
     node: NetworkModificationNodeData | RootNodeData,
-    parentNodeUuid?: UUID
+    parentId?: UUID
 ): CurrentTreeNode {
     return {
         id: node.id,
         type: node.type,
         position: { x: 0, y: 0 },
+        parentId: parentId,
         data: isRootNode(node)
-            ? convertRootNodeToReactFlowModelNode(node, parentNodeUuid)
-            : convertModificationNodeToReactFlowModelNode(node, parentNodeUuid),
+            ? convertRootNodeToReactFlowModelNode(node)
+            : convertModificationNodeToReactFlowModelNode(node),
+        draggable: isModificationNode(node),
     };
 }
 
@@ -92,7 +86,7 @@ export function isNetworkModificationNode(n: NetworkModificationNodeData | RootN
 export function recursiveSearchFirstNodeOfType(
     element: NetworkModificationNodeData | RootNodeData,
     nodeType: string,
-    parentNodeUuid?: UUID,
+    parentId?: UUID,
     buildStatusList?: string[]
 ): CurrentTreeNode | null {
     const modificationNode = getModificationNodeDataOrUndefined(element);
@@ -103,7 +97,7 @@ export function recursiveSearchFirstNodeOfType(
         (buildStatusList === undefined ||
             (globalBuildStatus !== undefined && buildStatusList.includes(globalBuildStatus)))
     ) {
-        return convertNodetoReactFlowModelNode(element, parentNodeUuid);
+        return convertNodetoReactFlowModelNode(element, parentId);
     }
 
     for (const child of element.children ?? []) {
@@ -162,7 +156,7 @@ export function getAllChildren(elements: NetworkModificationTreeModel | null, no
     if (!selectedNode) {
         return [];
     }
-    const directChildren = elements.treeNodes.filter((node) => node.data.parentNodeUuid === selectedNode.id);
+    const directChildren = elements.treeNodes.filter((node) => node.parentId === selectedNode.id);
     let allChildren = [...directChildren];
     directChildren.forEach((child) => {
         allChildren = allChildren.concat(getAllChildren(elements, child.id));

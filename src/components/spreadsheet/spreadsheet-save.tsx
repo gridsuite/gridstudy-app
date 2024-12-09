@@ -32,11 +32,11 @@ interface SpreadsheetSaveOption {
 }
 
 interface SpreadsheetSaveProps extends CsvExportProps {
-    indexTab: number;
+    tabIndex: number;
 }
 
 export default function SpreadsheetSave({
-    indexTab,
+    tabIndex,
     gridRef,
     columns,
     tableName,
@@ -104,7 +104,7 @@ export default function SpreadsheetSave({
             <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                 {Object.values(spreadsheetOptions).map(renderMenuItem)}
             </Menu>
-            <CustomSpreadsheetSaveDialog indexTab={indexTab} open={customSaveDialogOpen} />
+            <CustomSpreadsheetSaveDialog tabIndex={tabIndex} open={customSaveDialogOpen} />
         </>
     );
 }

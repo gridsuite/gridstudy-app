@@ -61,11 +61,12 @@ import {
     SENSITIVITY_ANALYSIS_RESULT_STORE_FIELD,
     SHORTCIRCUIT_ANALYSIS_RESULT_STORE_FIELD,
     SPREADSHEET_STORE_FIELD,
+    STATEESTIMATION_RESULT_STORE_FIELD,
 } from '../utils/store-sort-filter-fields';
 import type { TablesDefinitionsNames } from '../components/spreadsheet/config/config-tables';
 import { SortConfigType } from '../hooks/use-aggrid-sort';
 import { StudyDisplayMode } from '../components/network-modification.type';
-import { ColumnWithFormula, FormulaFilter } from 'types/custom-columns.types';
+import { ColumnWithFormula } from 'types/custom-columns.types';
 import { NetworkModificationNodeData, RootNodeData } from '../components/graph/tree-node.type';
 import GSMapEquipments from 'components/network/gs-map-equipments';
 import { SpreadsheetEquipmentType, SpreadsheetTabDefinition } from '../components/spreadsheet/config/spreadsheet.type';
@@ -91,6 +92,7 @@ export type AppActions =
     | NetworkModificationHandleSubtreeAction
     | NetworkModificationTreeNodesRemovedAction
     | NetworkModificationTreeNodesUpdatedAction
+    | NetworkModificationTreeSwitchNodesAction
     | SelectThemeAction
     | SelectLanguageAction
     | SelectComputedLanguageAction
@@ -157,7 +159,9 @@ export type AppActions =
     | DynamicSimulationResultFilterAction
     | SpreadsheetFilterAction
     | LogsFilterAction
-    | CustomColumnsDefinitionsAction;
+    | UpdateCustomColumnsDefinitionsAction
+    | RemoveCustomColumnsDefinitionsAction
+    | StateEstimationResultFilterAction;
 
 export const LOAD_EQUIPMENTS = 'LOAD_EQUIPMENTS';
 export type LoadEquipmentsAction = Readonly<Action<typeof LOAD_EQUIPMENTS>> & {
@@ -310,6 +314,24 @@ export function networkModificationTreeNodeMoved(
         parentNodeId,
         insertMode,
         referenceNodeId,
+    };
+}
+
+export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE_SWITCH_NODES';
+export type NetworkModificationTreeSwitchNodesAction = Readonly<
+    Action<typeof NETWORK_MODIFICATION_TREE_SWITCH_NODES>
+> & {
+    nodeToMoveId: string;
+    destinationNodeId: string;
+};
+export function networkModificationTreeSwitchNodes(
+    nodeToMoveId: string,
+    destinationNodeId: string
+): NetworkModificationTreeSwitchNodesAction {
+    return {
+        type: NETWORK_MODIFICATION_TREE_SWITCH_NODES,
+        nodeToMoveId,
+        destinationNodeId,
     };
 }
 
@@ -1182,22 +1204,35 @@ export function setTableSort(table: TableSortKeysType, tab: string, sort: SortCo
     };
 }
 
-export const CUSTOM_COLUMNS_DEFINITIONS = 'CUSTOM_COLUMNS_DEFINITIONS';
-export type CustomColumnsDefinitionsAction = Readonly<Action<typeof CUSTOM_COLUMNS_DEFINITIONS>> & {
+export const UPDATE_CUSTOM_COLUMNS_DEFINITION = 'UPDATE_CUSTOM_COLUMNS_DEFINITION';
+export type UpdateCustomColumnsDefinitionsAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_DEFINITION>> & {
     table: LiteralUnion<TablesDefinitionsNames, string>;
-    definitions: ColumnWithFormula[];
-    filter?: FormulaFilter;
+    definition: ColumnWithFormula;
 };
-export function setCustomColumDefinitions(
+export function setUpdateCustomColumDefinitions(
     table: LiteralUnion<TablesDefinitionsNames, string>,
-    customColumns: ColumnWithFormula[],
-    filter?: FormulaFilter
-): CustomColumnsDefinitionsAction {
+    customColumn: ColumnWithFormula
+): UpdateCustomColumnsDefinitionsAction {
     return {
-        type: CUSTOM_COLUMNS_DEFINITIONS,
+        type: UPDATE_CUSTOM_COLUMNS_DEFINITION,
         table,
-        definitions: customColumns,
-        filter: filter,
+        definition: customColumn,
+    };
+}
+
+export const REMOVE_CUSTOM_COLUMNS_DEFINITION = 'REMOVE_CUSTOM_COLUMNS_DEFINITION';
+export type RemoveCustomColumnsDefinitionsAction = Readonly<Action<typeof REMOVE_CUSTOM_COLUMNS_DEFINITION>> & {
+    table: LiteralUnion<TablesDefinitionsNames, string>;
+    definitionId: string;
+};
+export function setRemoveCustomColumDefinitions(
+    table: LiteralUnion<TablesDefinitionsNames, string>,
+    definitionId: string
+): RemoveCustomColumnsDefinitionsAction {
+    return {
+        type: REMOVE_CUSTOM_COLUMNS_DEFINITION,
+        table,
+        definitionId: definitionId,
     };
 }
 
@@ -1251,3 +1286,19 @@ export const addSortForNewSpreadsheet = (
         value,
     },
 });
+
+export const STATEESTIMATION_RESULT_FILTER = 'STATEESTIMATION_RESULT_FILTER';
+export type StateEstimationResultFilterAction = Readonly<Action<typeof STATEESTIMATION_RESULT_FILTER>> & {
+    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD];
+    [STATEESTIMATION_RESULT_STORE_FIELD]: MutableUnknownArray;
+};
+export function setStateEstimationResultFilter(
+    filterTab: keyof AppState[typeof STATEESTIMATION_RESULT_STORE_FIELD],
+    stateEstimationResultFilter: MutableUnknownArray
+): StateEstimationResultFilterAction {
+    return {
+        type: STATEESTIMATION_RESULT_FILTER,
+        filterTab: filterTab,
+        [STATEESTIMATION_RESULT_STORE_FIELD]: stateEstimationResultFilter,
+    };
+}

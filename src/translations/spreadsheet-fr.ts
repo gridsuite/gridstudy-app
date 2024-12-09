@@ -6,14 +6,20 @@
  */
 
 const spreadsheetFr = {
+    'spreadsheet/custom_column/edit_columns': 'Éditer une colonne',
     'spreadsheet/column/button': 'Afficher / masquer colonnes',
     'spreadsheet/column/dialog/title': 'Liste des colonnes',
     'spreadsheet/column/dialog/check_all': 'Sélectionner tout / aucun',
-    'spreadsheet/custom_column/add_columns': 'Ajouter colonnes personnalisées',
-    'spreadsheet/custom_column/column_name': 'Nom colonne',
-    'spreadsheet/custom_column/column_content': 'Contenu colonne',
-    'spreadsheet/custom_column/column_content_tooltip': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau) et des opérateurs proposés par la librairie MathJS (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes`,
+    'spreadsheet/custom_column/add_columns': 'Ajouter une colonne',
+    'spreadsheet/custom_column/column_name': 'Nom de la colonne',
+    'spreadsheet/custom_column/column_content': 'Entrer la formule',
+    'spreadsheet/custom_column/column_content_description': `Le contenu d'une colonne est décrit avec des noms de variables (pour faire référence aux données du réseau) et des opérateurs proposés par la librairie <Link>MathJS</Link> (pour transformer les données du réseau). Exemple : maxP - p pour afficher la réserve de puissance active dans le tableur des groupes`,
     'spreadsheet/custom_column/error/not_unique': 'Les noms de colonne doivent être uniques',
+    'spreadsheet/custom_column/update_custom_column': 'Modifier colonne',
+    'spreadsheet/custom_column/delete_custom_column': 'Supprimer colonne',
+    'spreadsheet/custom_column/delete_custom_column_confirmation':
+        'Êtes-vous sûr de vouloir supprimer la colonne "{columnName}" ?',
+    'spreadsheet/custom_column/column_name_already_exist': 'Nom de colonne déjà existant',
     'spreadsheet/save/button': 'Enregistrer',
     'spreadsheet/save/options/model': 'En tant que modèle',
     'spreadsheet/save/options/csv': 'Export CSV',

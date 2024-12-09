@@ -6,6 +6,7 @@
  */
 
 import {
+    FILTER_DATA_TYPES,
     FilterDataType,
     FilterSelectorType,
     FilterStorePropsType,
@@ -14,6 +15,7 @@ import { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch } from '../redux/store';
 import { AppState } from '../redux/reducer';
+import { computeTolerance } from './use-aggrid-local-row-filter';
 
 export type UseAggridRowFilterOutputType = {
     updateFilter: (field: string, data: FilterDataType) => void;
@@ -58,6 +60,7 @@ export const useAggridRowFilter = (
             const newFilter = {
                 column: field,
                 dataType: data.dataType,
+                tolerance: data.dataType === FILTER_DATA_TYPES.NUMBER ? computeTolerance(data.value) : undefined,
                 type: data.type,
                 value: data.value,
             };

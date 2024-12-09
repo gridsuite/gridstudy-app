@@ -443,7 +443,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 .then((tree) => {
                     const networkModificationTreeModel = new NetworkModificationTreeModel();
                     networkModificationTreeModel.setTreeElements(tree);
-                    networkModificationTreeModel.updateLayout();
 
                     fetchCaseName(studyUuid)
                         .then((res) => {

@@ -48,3 +48,10 @@ export const LOGS_STORE_FIELD = 'logsFilter';
 
 //table sort store field
 export const TABLE_SORT_STORE = 'tableSort';
+
+//stateEstimation result store fields
+export const STATEESTIMATION_RESULT_STORE_FIELD = 'stateEstimationResultFilter';
+export const STATEESTIMATION_RESULT_SORT_STORE = 'stateEstimationResult';
+export const STATEESTIMATION_QUALITY_CRITERION = 'stateEstimationQualityCriterion';
+export const STATEESTIMATION_QUALITY_PER_REGION = 'stateEstimationQualityPerRegion';
+export const STATEESTIMATION_RESULT = 'stateEstimationResult';

@@ -7,23 +7,25 @@
 
 import { FormattedMessage } from 'react-intl';
 import { Badge, Button } from '@mui/material';
-import { Calculate as CalculateIcon } from '@mui/icons-material';
+import AddColumnRightLight from 'images/add_column_right_light.svg?react';
+import AddColumnRightDark from 'images/add_column_right_dark.svg?react';
 import { useSelector } from 'react-redux';
 import { AppState } from '../../../redux/reducer';
-import { useStateBoolean } from '@gridsuite/commons-ui';
+import { LIGHT_THEME, useStateBoolean } from '@gridsuite/commons-ui';
 import CustomColumnDialog from './custom-columns-dialog';
 import { spreadsheetStyles } from '../utils/style';
 
 export type CustomColumnsConfigProps = {
-    indexTab: number;
+    tabIndex: number;
 };
 
-export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumnsConfigProps>) {
+export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumnsConfigProps>) {
     const dialogOpen = useStateBoolean(false);
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[indexTab]].columns
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
+    const theme = useSelector((state: AppState) => state.theme);
 
     return (
         <>
@@ -31,18 +33,18 @@ export default function CustomColumnsConfig({ indexTab }: Readonly<CustomColumns
                 color="secondary"
                 anchorOrigin={{
                     vertical: 'top',
-                    horizontal: 'right',
+                    horizontal: 'left',
                 }}
                 badgeContent={customColumnsDefinitions.length}
             >
                 <Button sx={spreadsheetStyles.spreadsheetButton} size={'small'} onClick={dialogOpen.setTrue}>
-                    <CalculateIcon />
+                    {theme === LIGHT_THEME ? <AddColumnRightLight /> : <AddColumnRightDark />}
                     <FormattedMessage id="spreadsheet/custom_column/add_columns" />
                 </Button>
             </Badge>
 
             <CustomColumnDialog
-                indexTab={indexTab}
+                tabIndex={tabIndex}
                 open={dialogOpen}
                 customColumnsDefinitions={customColumnsDefinitions}
             />

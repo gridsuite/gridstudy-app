@@ -33,6 +33,18 @@ const backend_locale_en = {
 
     // Voltage init results
     REACTIVE_SLACKS_OVER_THRESHOLD: `Reactive slack exceeds {threshold} MVar for at least one bus`,
+
+    // State estimation results
+    UNKNOWN: 'Unknown',
+    TAUX_OBS: 'Observability rate',
+    REDONDANCE_ACT: 'Active redundancy',
+    REDONDANCE_REA: 'Reactive redundancy',
+    INJ_PERDUES: 'Lost injections',
+    TELEMESURES_INV: 'Invalidated measurements',
+    TELEMESURES_CRIT: 'Critical measurements',
+    ECARTS_HN: 'Out of bounds deviations',
+    NB_ITER: 'Iterations number',
+    TRANSITS_PERDUS: 'Lost flows',
 };
 
 export default backend_locale_en;

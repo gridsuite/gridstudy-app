@@ -10,7 +10,7 @@ import { Button, Menu, MenuItem, Theme, Tooltip } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useStateBoolean } from '@gridsuite/commons-ui';
 import AddSpreadsheetConfigDialog from './custom-spreadsheet-dialog';
-import { NEW_SPREADSHEET_CREATION_OPTIONS } from './constants';
+import { NEW_SPREADSHEET_CREATION_OPTIONS } from '../constants';
 import { FormattedMessage } from 'react-intl';
 
 interface CustomSpreadsheetConfigProps {

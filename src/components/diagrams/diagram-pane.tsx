@@ -1022,6 +1022,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                                         svgMetadata={diagramView.metadata}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
+                                        visible={visible}
                                     />
                                 )}
                                 {diagramView.svgType === DiagramType.NETWORK_AREA_DIAGRAM && (
@@ -1032,6 +1033,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                                         svgMetadata={diagramView.nadMetadata}
                                         loadingState={diagramView.loadingState}
                                         diagramSizeSetter={setDiagramSize}
+                                        visible={visible}
                                     />
                                 )}
                             </Diagram>

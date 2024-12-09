@@ -544,8 +544,9 @@ code {
 /* Network modification tree */
 
 .react-flow__node-ROOT {
-    width: auto;
-    height: auto;
+    width: 180px;
+    height: 40px;
+    margin-top: 20px;
     display: flex;
     align-content: center;
     justify-content: center;
@@ -561,4 +562,7 @@ code {
 
 .react-flow__node > .MuiButton-root {
     width: 100%;
+}
+.react-flow {
+    --xy-edge-stroke-width-default: 2;
 }
