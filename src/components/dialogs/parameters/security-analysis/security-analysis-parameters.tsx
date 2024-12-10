@@ -112,7 +112,7 @@ export const SecurityAnalysisParameters: FunctionComponent<{
             if (!params?.limitReductions) {
                 return [];
             }
-            return params?.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
+            return params.limitReductions.map((vlLimits: ILimitReductionsByVoltageLevel, indexVl: number) => {
                 let vlLNewLimits: ILimitReductionsByVoltageLevel = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],

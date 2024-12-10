@@ -168,7 +168,7 @@ const EventModificationScenarioEditor = () => {
             return;
         }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(studyUuid, currentNode?.id, selectedEvents).catch((errMsg) => {
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
             snackError({
                 messageTxt: errMsg,
                 headerId: 'DynamicSimulationEventDeleteError',

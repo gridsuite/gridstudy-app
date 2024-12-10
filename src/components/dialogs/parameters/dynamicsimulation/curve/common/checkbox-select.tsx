@@ -53,11 +53,10 @@ const CheckboxSelect: FunctionComponent<CheckBoxSelectProps> = ({
     const handleChange = useCallback(
         (event: SelectChangeEvent<string[]>) => {
             const {
-                target: { value: values },
+                target: { value: eventValue },
             } = event;
-            if (!Array.isArray(values)) {
-                return; //TODO: check is ok
-            }
+            const values = Array.isArray(eventValue) ? eventValue : [eventValue];
+
             let newSelectedOptions: string[];
             if (values.find((elem) => elem === CHECK_ALL.value)) {
                 // must check all items
