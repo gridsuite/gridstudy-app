@@ -12,8 +12,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/ControlPoint';
 import { useFieldArray } from 'react-hook-form';
 import ReactiveCapabilityCurveRowForm from './reactive-capability-curve-row-form';
-import { P, MAX_Q, MIN_Q } from 'components/utils/field-constants';
-import { MidFormError, ErrorInput } from '@gridsuite/commons-ui';
+import { MAX_Q, MIN_Q, P } from 'components/utils/field-constants';
+import { ErrorInput, MidFormError } from '@gridsuite/commons-ui';
 import { INSERT, REMOVE } from './reactive-capability-utils';
 
 const MIN_LENGTH = 2;
@@ -87,7 +87,6 @@ export const ReactiveCapabilityCurveTable = ({
                             fieldId={value.id}
                             index={index}
                             labelSuffix={labelSuffix}
-                            previousValues={previousValues?.[index]}
                         />
                         <Grid item xs={1}>
                             <IconButton
