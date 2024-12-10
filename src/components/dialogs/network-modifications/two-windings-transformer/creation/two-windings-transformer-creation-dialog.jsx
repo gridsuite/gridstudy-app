@@ -90,7 +90,7 @@ import {
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getAllLimitsFormData,
     getLimitsValidationSchema,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
@@ -119,7 +119,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(LIMITS, false),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -248,7 +248,7 @@ const TwoWindingsTransformerCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getLimitsFormData({
+                ...getAllLimitsFormData({
                     permanentLimit1: twt.currentLimits1?.permanentLimit,
                     permanentLimit2: twt.currentLimits2?.permanentLimit,
                     temporaryLimits1: addSelectedFieldToRows(
@@ -337,7 +337,7 @@ const TwoWindingsTransformerCreationDialog = ({
                             CONNECTIVITY_2
                         ),
                     }),
-                    ...getLimitsFormData({
+                    ...getAllLimitsFormData({
                         permanentLimit1: twt.currentLimits1?.permanentLimit,
                         permanentLimit2: twt.currentLimits2?.permanentLimit,
                         temporaryLimits1: addSelectedFieldToRows(
