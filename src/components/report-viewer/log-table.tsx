@@ -89,6 +89,8 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
+
+    console.log(severities);
     const orderedSeverities = useMemo(() => orderSeverityList(severities), [severities]);
 
     const resetSearch = useCallback(() => {

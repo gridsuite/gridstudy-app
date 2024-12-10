@@ -13,6 +13,7 @@ import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import ReportTree from './report-tree';
 import { Report, ReportLog, ReportTree as ReportTreeType, ReportType, SeverityLevel } from 'utils/report/report.type';
+import reportTree from './report-tree';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -59,10 +60,12 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
+        console.log(reportTree);
+
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
-        setSeverities([...new Set(reportTree.severities)]);
+        setSeverities([reportTree.severity]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
@@ -73,7 +76,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
         if (selectedReportId !== reportId) {
             setSelectedReportId(reportId);
-            setSeverities([...new Set(reportTreeData.current[reportId].severities)]);
+            setSeverities([reportTreeData.current[reportId].severity]);
             setSelectedReportType(reportTreeData.current[reportId].type);
         }
     };
