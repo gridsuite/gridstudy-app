@@ -52,9 +52,9 @@ const prepareRequest = (init: any, token: string | undefined) => {
     if (!(typeof init == 'undefined' || typeof init == 'object')) {
         throw new TypeError('Argument 2 of backendFetch is not an object' + typeof init);
     }
-    const initCopy = Object.assign({}, init);
+    const initCopy = { ...init };
     initCopy.headers = new Headers(initCopy.headers || {});
-    const tokenCopy = token || getUserToken();
+    const tokenCopy = token ?? getUserToken();
     initCopy.headers.append('Authorization', 'Bearer ' + tokenCopy);
     return initCopy;
 };
@@ -133,7 +133,7 @@ export const fetchDefaultParametersValues = () => {
             return Promise.reject(new Error('Study entry could not be found in metadatas'));
         }
 
-        //FIXME: Metadata doesn't contain defaultParametersValues. We need to change it to StudyMetadata.
+        //TODO:fetchAppsMetadata return a Metadata type and Metadata doesn't contain defaultParametersValues. Check if we need to change it to StudyMetadata.
         // @ts-ignore
         return studyMetadata.defaultParametersValues;
     });
