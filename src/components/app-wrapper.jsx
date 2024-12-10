@@ -132,6 +132,10 @@ let lightTheme = createTheme({
     },
     searchedText: {
         highlightColor: '#53AAFF',
+        currentHighlightColor: '#FFA853',
+    },
+    severityChip: {
+        disabledColor: '#EAECED',
     },
     [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/light-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:
@@ -212,6 +216,10 @@ let darkTheme = createTheme({
     },
     searchedText: {
         highlightColor: '#123FBB',
+        currentHighlightColor: '#BB8E12',
+    },
+    severityChip: {
+        disabledColor: '#3B434A',
     },
     [basemap_style_theme_key(MAP_BASEMAP_MAPBOX)]: 'mapbox://styles/mapbox/dark-v9',
     [basemap_style_theme_key(MAP_BASEMAP_CARTO_NOLABEL)]:

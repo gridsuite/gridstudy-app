@@ -177,9 +177,9 @@ export function fetchNetworkModificationTree(studyUuid: UUID) {
     return backendFetchJson(url);
 }
 
-export function fetchNetworkModificationSubtree(studyUuid: UUID, parentNodeUuid: UUID) {
-    console.info('Fetching network modification tree node : ', parentNodeUuid);
-    const url = getStudyUrl(studyUuid) + '/subtree?parentNodeUuid=' + encodeURIComponent(parentNodeUuid);
+export function fetchNetworkModificationSubtree(studyUuid: UUID, parentId: UUID) {
+    console.info('Fetching network modification tree node : ', parentId);
+    const url = getStudyUrl(studyUuid) + '/subtree?parentNodeUuid=' + encodeURIComponent(parentId);
     console.debug(url);
     return backendFetchJson(url);
 }
