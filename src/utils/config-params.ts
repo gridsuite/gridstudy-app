@@ -40,11 +40,11 @@ export const PARAM_SA_HIGH_VOLTAGE_ABSOLUTE_THRESHOLD = 'highVoltageAbsoluteThre
 export const MAP_BASEMAP_MAPBOX = 'mapbox';
 export const MAP_BASEMAP_CARTO = 'carto';
 export const MAP_BASEMAP_CARTO_NOLABEL = 'cartonolabel';
-export const basemap_style_theme_key = (basemap) => basemap + 'Style';
+export const basemap_style_theme_key = (basemap: string) => basemap + 'Style';
 
 const COMMON_CONFIG_PARAMS_NAMES = new Set([PARAM_THEME, PARAM_LANGUAGE]);
 
-export function getAppName(paramName) {
+export function getAppName(paramName: string) {
     return COMMON_CONFIG_PARAMS_NAMES.has(paramName) ? COMMON_APP_NAME : APP_NAME;
 }
 
@@ -54,6 +54,6 @@ const PARAM_SA_PROPORTIONAL_THRESHOLD = new Set([
     PARAM_SA_HIGH_VOLTAGE_PROPORTIONAL_THRESHOLD,
 ]);
 
-export const isProportionalSAParam = (param) => {
+export const isProportionalSAParam = (param: string) => {
     return PARAM_SA_PROPORTIONAL_THRESHOLD.has(param);
 };

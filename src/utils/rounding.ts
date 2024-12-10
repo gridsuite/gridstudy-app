@@ -25,8 +25,8 @@ export const GRIDSUITE_DEFAULT_PRECISION = 13;
 // Note: this is not guaranteed to always round in the same direction:
 // roundToPrecision(300000.00000365, 13) => 300000.0000037
 // roundToPrecision(900000.00000365, 13) => 900000.0000036
-export const roundToPrecision = (num, precision) => Number(num.toPrecision(precision));
-export const roundToDefaultPrecision = (num) => roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
+export const roundToPrecision = (num: number, precision: number) => Number(num.toPrecision(precision));
+export const roundToDefaultPrecision = (num: number) => roundToPrecision(num, GRIDSUITE_DEFAULT_PRECISION);
 
 /**
  * Counts the number of decimal places in a given number.
@@ -36,13 +36,13 @@ export const roundToDefaultPrecision = (num) => roundToPrecision(num, GRIDSUITE_
  * @param {number} number - The number whose decimal places are to be counted.
  * @returns {number} The number of decimal places in the input number.
  */
-export const countDecimalPlaces = (number) => {
+export const countDecimalPlaces = (number: number) => {
     // Convert the number to a string for easier manipulation
     const numberAsString = number.toString();
     return countDecimalPlacesFromString(numberAsString);
 };
 
-export const countDecimalPlacesFromString = (numberAsString) => {
+export const countDecimalPlacesFromString = (numberAsString: string) => {
     // Check if the number has a decimal part
     if (numberAsString.includes('.')) {
         // Return the length of the part after the decimal point
@@ -53,7 +53,7 @@ export const countDecimalPlacesFromString = (numberAsString) => {
     return 0;
 };
 
-export const truncateNumber = (value, decimalPrecision) => {
+export const truncateNumber = (value: number, decimalPrecision: number) => {
     // Calculate the factor based on the decimal precision (e.g., 100 for two decimal places)
     let factor = Math.pow(10, decimalPrecision);
 

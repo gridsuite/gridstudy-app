@@ -11,10 +11,29 @@ import { FormattedMessage } from 'react-intl';
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import PropTypes from 'prop-types';
 import { CancelButton } from '@gridsuite/commons-ui';
+import { ReactElement } from 'react';
+import { SxProps, Theme } from '@mui/material';
 
-const SelectOptionsDialog = ({ open, onClose, onClick, title, child, style, validateKey }) => {
+interface SelectOptionsDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onClick: () => void;
+    title: string;
+    child: ReactElement;
+    style?: SxProps<Theme>;
+    validateKey?: string;
+}
+
+const SelectOptionsDialog = ({
+    open,
+    onClose,
+    onClick,
+    title,
+    child,
+    style,
+    validateKey,
+}: SelectOptionsDialogProps) => {
     const handleClose = () => {
         onClose();
     };
@@ -26,21 +45,11 @@ const SelectOptionsDialog = ({ open, onClose, onClick, title, child, style, vali
             <DialogActions>
                 <CancelButton onClick={handleClose} />
                 <Button onClick={onClick} variant="outlined">
-                    <FormattedMessage id={validateKey || 'validate'} />
+                    <FormattedMessage id={validateKey ?? 'validate'} />
                 </Button>
             </DialogActions>
         </Dialog>
     );
-};
-
-SelectOptionsDialog.propTypes = {
-    open: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onClick: PropTypes.func.isRequired,
-    title: PropTypes.string.isRequired,
-    child: PropTypes.element.isRequired,
-    style: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
-    validateKey: PropTypes.string,
 };
 
 export { SelectOptionsDialog };
