@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import { CustomFormProvider, MODIFICATION_TYPES, useSnackMessage } from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
@@ -14,6 +14,7 @@ import {
     BUS_BAR_COUNT,
     BUS_BAR_SECTION_ID1,
     BUS_BAR_SECTION_ID2,
+    COUNTRY,
     COUPLING_OMNIBUS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
@@ -26,6 +27,7 @@ import {
     NOMINAL_V,
     SECTION_COUNT,
     SUBSTATION_ID,
+    SUBSTATION_NAME,
     SWITCH_KIND,
     SWITCH_KINDS,
     SWITCHES_BETWEEN_SECTIONS,
@@ -33,7 +35,7 @@ import {
 } from 'components/utils/field-constants';
 import yup from 'components/utils/yup-config';
 import PropTypes from 'prop-types';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import ModificationDialog from 'components/dialogs/commons/modificationDialog';
 
@@ -79,6 +81,8 @@ const emptyFormData = {
     [SWITCHES_BETWEEN_SECTIONS]: '',
     [COUPLING_OMNIBUS]: [],
     [SWITCH_KINDS]: [],
+    [SUBSTATION_NAME]: null,
+    [COUNTRY]: null,
     ...emptyProperties,
 };
 
@@ -124,6 +128,8 @@ const formSchema = yup
             .test('coupling-omnibus-between-sections', (values) =>
                 controlCouplingOmnibusBetweenSections(values, 'CouplingOmnibusBetweenSameBusbar')
             ),
+        [SUBSTATION_NAME]: yup.string(),
+        [COUNTRY]: yup.string().nullable(),
     })
     .concat(creationPropertiesSchema);
 const VoltageLevelCreationDialog = ({
@@ -145,7 +151,7 @@ const VoltageLevelCreationDialog = ({
 
     const { reset } = formMethods;
     const intl = useIntl();
-
+    const [isSubstationCreation, setIsSubstationCreation] = useState(false);
     const fromExternalDataToFormValues = useCallback(
         (voltageLevel, fromCopy = true) => {
             const properties = fromCopy
@@ -206,12 +212,21 @@ const VoltageLevelCreationDialog = ({
 
     const onSubmit = useCallback(
         (voltageLevel) => {
+            const substationCreation = isSubstationCreation
+                ? {
+                      type: MODIFICATION_TYPES.SUBSTATION_CREATION.type,
+                      equipmentId: voltageLevel[SUBSTATION_ID],
+                      equipmentName: voltageLevel[SUBSTATION_NAME],
+                      country: voltageLevel[COUNTRY],
+                  }
+                : null;
             onCreateVoltageLevel({
                 studyUuid: studyUuid,
                 nodeUuid: currentNodeUuid,
                 voltageLevelId: voltageLevel[EQUIPMENT_ID],
                 voltageLevelName: sanitizeString(voltageLevel[EQUIPMENT_NAME]),
                 substationId: voltageLevel[SUBSTATION_ID],
+                substationCreation,
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
@@ -234,8 +249,12 @@ const VoltageLevelCreationDialog = ({
                 });
             });
         },
-        [onCreateVoltageLevel, studyUuid, currentNodeUuid, editData, snackError]
+        [onCreateVoltageLevel, isSubstationCreation, studyUuid, currentNodeUuid, editData, snackError]
     );
+
+    const handleSubstationCreation = (isWithSubstationCreation) => {
+        setIsSubstationCreation(isWithSubstationCreation);
+    };
 
     const clear = useCallback(() => {
         reset(emptyFormData);
@@ -261,7 +280,11 @@ const VoltageLevelCreationDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <VoltageLevelCreationForm currentNode={currentNode} studyUuid={studyUuid} />
+                <VoltageLevelCreationForm
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    handleSubstationCreation={handleSubstationCreation}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
