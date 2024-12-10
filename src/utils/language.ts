@@ -14,6 +14,6 @@ export const getSystemLanguage = () => {
     return supportedLanguages.includes(systemLanguage) ? systemLanguage : LANG_ENGLISH;
 };
 
-export const getComputedLanguage = (language) => {
+export const getComputedLanguage = (language: string) => {
     return language === LANG_SYSTEM ? getSystemLanguage() : language;
 };

@@ -9,7 +9,7 @@ const MAX_TITLE_LENGTH = 300;
 const MAX_STUDY_NAME_LENGTH = 200;
 const SEPARATOR = ' | ';
 
-export const computeFullPath = (parents) => {
+export const computeFullPath = (parents: string[]) => {
     let path = '';
 
     for (let i = 0; i < parents.length; i++) {
@@ -19,7 +19,7 @@ export const computeFullPath = (parents) => {
     return path;
 };
 
-const computePath = (parents, maxAllowedPathSize) => {
+const computePath = (parents: string[], maxAllowedPathSize: number) => {
     let testedPath = '';
     let path = '';
 
@@ -35,11 +35,11 @@ const computePath = (parents, maxAllowedPathSize) => {
     return path;
 };
 
-const computePageTitleWithFirstDirectory = (pageTitle, parents) => {
+const computePageTitleWithFirstDirectory = (pageTitle: string, parents: string[]) => {
     return pageTitle + (parents.length > 1 ? '...' : '') + '/' + parents[0];
 };
 
-const computePageTitleWithFullPath = (pageTitle, parents) => {
+const computePageTitleWithFullPath = (pageTitle: string, parents: string[]) => {
     const maxAllowedPathSize = MAX_TITLE_LENGTH - pageTitle.length - '...'.length;
 
     pageTitle = pageTitle + computePath(parents, maxAllowedPathSize);
@@ -47,11 +47,11 @@ const computePageTitleWithFullPath = (pageTitle, parents) => {
     return pageTitle;
 };
 
-const limitChar = (str, limit) => {
+const limitChar = (str: string, limit: number) => {
     return str.length > limit ? str.substring(0, limit) + '...' : str;
 };
 
-export const computePageTitle = (appName, studyName, parents) => {
+export const computePageTitle = (appName: string, studyName?: string | null, parents?: string[] | null) => {
     if (!studyName) {
         return appName;
     }
