@@ -30,7 +30,7 @@ export function updateConfigParameter(name: string, value: string) {
     return backendFetch(updateParams, { method: 'put' });
 }
 
-export function updateConfigParameters(parameters) {
+export function updateConfigParameters(parameters: Record<string, string | number | boolean>) {
     const appName = getAppName(parameters);
     const updateParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
     return backendFetch(updateParams, {
