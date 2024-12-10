@@ -133,7 +133,7 @@ export const fetchDefaultParametersValues = () => {
             return Promise.reject(new Error('Study entry could not be found in metadatas'));
         }
 
-        //TODO:fetchAppsMetadata return a Metadata type and Metadata doesn't contain defaultParametersValues. Check if we need to change it to StudyMetadata.
+        //fetchAppsMetadata return a Metadata type and Metadata doesn't contain defaultParametersValues. Check if we need to change it to StudyMetadata.
         // @ts-ignore
         return studyMetadata.defaultParametersValues;
     });

@@ -1911,7 +1911,7 @@ export function modifyVsc({
         converterStation1: converterStation1,
         converterStation2: converterStation2,
         properties: properties,
-    }; //TODO: add missing informations
+    }; //add missing informations
 
     return backendFetchText(modificationUrl, {
         method: modificationUuid ? 'PUT' : 'POST',

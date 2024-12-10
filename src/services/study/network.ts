@@ -210,9 +210,7 @@ export function fetchNetworkElementInfos(
     }
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
-    const optionalParams = new Map();
 
-    optionalParams.forEach((value, key) => urlSearchParams.append(`optionalParameters[${key}]`, value));
     const fetchElementsUrl =
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network/elements/' +
