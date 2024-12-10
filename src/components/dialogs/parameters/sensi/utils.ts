@@ -28,7 +28,7 @@ import {
 } from '../../../utils/field-constants';
 import yup from '../../../utils/yup-config';
 
-interface INewParamsPst {
+export interface INewParamsPst {
     sensitivityPST: Array<{
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
@@ -47,7 +47,7 @@ interface INewParamsPst {
     }>;
 }
 
-interface INewParamsNodes {
+export interface INewParamsNodes {
     sensitivityNodes: Array<{
         [SUPERVISED_VOLTAGE_LEVELS]: Array<{
             [ID]: string;
@@ -65,7 +65,7 @@ interface INewParamsNodes {
     }>;
 }
 
-interface INewParamsHvdc {
+export interface INewParamsHvdc {
     sensitivityHVDC: Array<{
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
@@ -84,7 +84,7 @@ interface INewParamsHvdc {
     }>;
 }
 
-interface INewParamsInjections {
+export interface INewParamsInjections {
     sensitivityInjection: Array<{
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
@@ -288,7 +288,7 @@ export const getSensiInjectionsSetFormSchema = () => ({
     ),
 });
 
-interface INewParamsInjectionsSet {
+export interface INewParamsInjectionsSet {
     sensitivityInjectionsSet: Array<{
         [MONITORED_BRANCHES]: Array<{
             [ID]: string;
@@ -307,7 +307,7 @@ interface INewParamsInjectionsSet {
     }>;
 }
 
-interface IRowNewParams {
+export interface IRowNewParams {
     [MONITORED_BRANCHES]: Array<{
         [ID]: string;
         [NAME]: string;

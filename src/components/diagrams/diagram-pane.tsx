@@ -69,17 +69,17 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getVoltageLevelSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelId,
-                      paramUseName,
-                      centerName,
-                      diagonalName,
-                      componentLibrary,
-                      SLD_DISPLAY_MODE.STATE_VARIABLE,
-                      language
-                  )
+                ? getVoltageLevelSingleLineDiagram({
+                      studyUuid: studyUuid,
+                      currentNodeUuid: currentNode?.id,
+                      voltageLevelId: voltageLevelId,
+                      useName: paramUseName,
+                      centerLabel: centerName,
+                      diagonalLabel: diagonalName,
+                      componentLibrary: componentLibrary,
+                      sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language: language,
+                  })
                 : null,
         [currentNode, studyUuid, paramUseName, centerName, diagonalName, componentLibrary, language]
     );
@@ -87,17 +87,17 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getSubstationSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      voltageLevelId,
-                      paramUseName,
-                      centerName,
-                      diagonalName,
-                      substationLayout,
-                      componentLibrary,
-                      language
-                  )
+                ? getSubstationSingleLineDiagram({
+                      studyUuid: studyUuid,
+                      currentNodeUuid: currentNode?.id,
+                      substationId: voltageLevelId,
+                      useName: paramUseName,
+                      centerLabel: centerName,
+                      diagonalLabel: diagonalName,
+                      substationLayout: substationLayout,
+                      componentLibrary: componentLibrary,
+                      language: language,
+                  })
                 : null,
         [centerName, componentLibrary, diagonalName, studyUuid, substationLayout, paramUseName, currentNode, language]
     );

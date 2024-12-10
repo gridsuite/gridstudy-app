@@ -101,16 +101,16 @@ const DeleteAttachingLineDialog = ({
 
     const onSubmit = useCallback(
         (formData) => {
-            deleteAttachingLine(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                formData[LINE_TO_ATTACH_TO_1_ID],
-                formData[LINE_TO_ATTACH_TO_2_ID],
-                formData[ATTACHED_LINE_ID],
-                formData[REPLACING_LINE_1_ID],
-                sanitizeString(formData[REPLACING_LINE_1_NAME])
-            ).catch((error) => {
+            deleteAttachingLine({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData ? editData.uuid : undefined,
+                lineToAttachTo1Id: formData[LINE_TO_ATTACH_TO_1_ID],
+                lineToAttachTo2Id: formData[LINE_TO_ATTACH_TO_2_ID],
+                attachedLineId: formData[ATTACHED_LINE_ID],
+                replacingLine1Id: formData[REPLACING_LINE_1_ID],
+                replacingLine1Name: sanitizeString(formData[REPLACING_LINE_1_NAME]),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'DeleteAttachingLineError',
