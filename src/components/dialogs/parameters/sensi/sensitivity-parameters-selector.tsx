@@ -5,15 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import Grid from '@mui/material/Grid';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs, Theme } from '@mui/material';
 import { TabPanel, useParameterState } from '../parameters';
 import { useCreateRowDataSensi } from '../../../../hooks/use-create-row-data-sensi';
 import * as sensiParam from './columns-definitions';
+import { IColumnsDef } from './columns-definitions';
 import {
     SensiHvdcs,
     SensiInjection,
@@ -28,24 +29,24 @@ import CircularProgress from '@mui/material/CircularProgress';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const styles = {
-    circularProgress: (theme) => ({
+    circularProgress: (theme: Theme) => ({
         display: 'flex',
         marginRight: theme.spacing(1),
         color: theme.palette.primary.main,
     }),
-    errorOutlineIcon: (theme) => ({
+    errorOutlineIcon: (theme: Theme) => ({
         marginRight: theme.spacing(1),
         color: theme.palette.error.main,
         display: 'flex',
     }),
-    textInfo: (theme) => ({
+    textInfo: (theme: Theme) => ({
         color: theme.palette.primary.main,
         display: 'flex',
     }),
     textInitial: {
         color: 'grey',
     },
-    textAlert: (theme) => ({
+    textAlert: (theme: Theme) => ({
         color: theme.palette.error.main,
         display: 'flex',
     }),
@@ -59,21 +60,38 @@ const styles = {
     },
 };
 
-const SensitivityParametersSelector = ({ onFormChanged, onChangeParams, launchLoader, analysisComputeComplexity }) => {
+interface SensitivityParametersSelectorProps {
+    onFormChanged: (hasFormChanged: boolean) => void;
+    onChangeParams: (a: any, b: any, c: number) => void; // fixing any on "b" here is not trivial, will need to fix SensitivityTable which is used in another unrelated component
+    launchLoader: boolean;
+    analysisComputeComplexity: number;
+}
+
+interface TabInfo {
+    label: string;
+    subTabs?: { label: string }[];
+}
+
+const SensitivityParametersSelector: FunctionComponent<SensitivityParametersSelectorProps> = ({
+    onFormChanged,
+    onChangeParams,
+    launchLoader,
+    analysisComputeComplexity,
+}) => {
     const intl = useIntl();
 
-    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
+    const [enableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE) as [boolean];
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.SensitivityBranches);
     const [subTabValue, setSubTabValue] = useState(TAB_VALUES.SensiInjectionsSet);
-    const handleTabChange = useCallback((event, newValue) => {
+    const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: number) => {
         setTabValue(newValue);
     }, []);
-    const handleSubTabChange = useCallback((event, newValue) => {
+    const handleSubTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: number) => {
         setSubTabValue(newValue);
     }, []);
 
-    const tabInfo = [
+    const tabInfo: TabInfo[] = [
         {
             label: 'SensitivityBranches',
             subTabs: [
@@ -99,7 +117,7 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams, launchLo
     const [rowDataNodes, useFieldArrayOutputNodes] = useCreateRowDataSensi(sensiParam.SensiNodes);
 
     const getColumnsDefinition = useCallback(
-        (sensiColumns) => {
+        (sensiColumns: IColumnsDef[]) => {
             if (sensiColumns) {
                 return sensiColumns.map((column) => ({
                     ...column,
@@ -124,7 +142,7 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams, launchLo
         if (analysisComputeComplexity < 999999 && analysisComputeComplexity > 500000) {
             return (
                 <Box sx={styles.textAlert}>
-                    <ErrorOutlineIcon size={'1em'} sx={styles.errorOutlineIcon} />
+                    <ErrorOutlineIcon sx={styles.errorOutlineIcon} />
                     <FormattedMessage
                         id="sensitivityAnalysis.simulatedComputations"
                         values={{
@@ -137,7 +155,7 @@ const SensitivityParametersSelector = ({ onFormChanged, onChangeParams, launchLo
         if (analysisComputeComplexity > 999999) {
             return (
                 <Box sx={styles.textAlert}>
-                    <ErrorOutlineIcon size={'1em'} sx={styles.errorOutlineIcon} />
+                    <ErrorOutlineIcon sx={styles.errorOutlineIcon} />
                     <FormattedMessage id="sensitivityAnalysis.moreThanOneMillionComputations" />
                 </Box>
             );

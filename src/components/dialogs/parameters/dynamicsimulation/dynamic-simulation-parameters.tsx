@@ -6,10 +6,10 @@
  */
 
 import yup from '../../../utils/yup-config';
-import { Grid, Tab, Tabs } from '@mui/material';
+import { Grid, SelectChangeEvent, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import TimeDelayParameters, {
     emptyFormData as timeDelayEmptyFormData,
     formSchema as timeDelayFormSchema,
@@ -55,16 +55,36 @@ import { useForm } from 'react-hook-form';
 import { getTabStyle } from '../../../utils/tab-utils';
 import ComputingType from '../../../computing-status/computing-type';
 import LineSeparator from '../../commons/line-separator';
+import { User } from 'oidc-client';
+import { SolverInfos } from 'services/study/dynamic-simulation.type';
 
-const TAB_VALUES = {
-    TIME_DELAY: 'timeDelay',
-    SOLVER: 'solver',
-    MAPPING: 'mapping',
-    NETWORK: 'network',
-    CURVE: 'curve',
-};
+enum TAB_VALUES {
+    TIME_DELAY = 'timeDelay',
+    SOLVER = 'solver',
+    MAPPING = 'mapping',
+    NETWORK = 'network',
+    CURVE = 'curve',
+}
 
-const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
+interface DynamicSimulationParametersProps {
+    user: User | null;
+    setHaveDirtyFields: (haveDirtyFields: boolean) => void;
+}
+
+const formSchema = yup.object().shape({
+    [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
+    [TAB_VALUES.SOLVER]: solverFormSchema,
+    [TAB_VALUES.MAPPING]: mappingFormSchema,
+    [TAB_VALUES.NETWORK]: networkFormSchema,
+    [TAB_VALUES.CURVE]: curveFormSchema,
+});
+
+export type DynamicSimulationForm = yup.InferType<typeof formSchema>;
+
+const DynamicSimulationParameters: FunctionComponent<DynamicSimulationParametersProps> = ({
+    user,
+    setHaveDirtyFields,
+}) => {
     const dynamicSimulationAvailability = useOptionalServiceStatus(OptionalServicesNames.DynamicSimulation);
 
     const [providers, provider, updateProvider, resetProvider, parameters, updateParameters, resetParameters] =
@@ -82,10 +102,10 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.TIME_DELAY);
 
-    const [tabIndexesWithError, setTabIndexesWithError] = useState([]);
+    const [tabIndexesWithError, setTabIndexesWithError] = useState<TAB_VALUES[]>([]);
 
     const handleUpdateProvider = useCallback(
-        (evt) => {
+        (evt: SelectChangeEvent<string>) => {
             updateProvider(evt.target.value);
         },
         [updateProvider]
@@ -106,15 +126,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
         };
     }, []);
 
-    const formSchema = yup.object().shape({
-        [TAB_VALUES.TIME_DELAY]: timeDelayFormSchema,
-        [TAB_VALUES.SOLVER]: solverFormSchema,
-        [TAB_VALUES.MAPPING]: mappingFormSchema,
-        [TAB_VALUES.NETWORK]: networkFormSchema,
-        [TAB_VALUES.CURVE]: curveFormSchema,
-    });
-
-    const formMethods = useForm({
+    const formMethods = useForm<DynamicSimulationForm>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -122,7 +134,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     const { reset, handleSubmit, formState, clearErrors } = formMethods;
 
     const onError = useCallback(
-        (errors) => {
+        (errors: Record<TAB_VALUES, any>) => {
             const tabsInError = [];
             // do not show error when being in the current tab
             if (errors?.[TAB_VALUES.TIME_DELAY] && TAB_VALUES.TIME_DELAY !== tabValue) {
@@ -153,21 +165,21 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
     }, [errorsJSON, onError]);
 
     const onSubmit = useCallback(
-        (newParams) => {
+        (newParams: DynamicSimulationForm) => {
             // use updater to set with new parameters
             updateParameters({
                 ...parameters,
                 ...newParams[TAB_VALUES.TIME_DELAY],
                 [SOLVER_ID]: newParams[TAB_VALUES.SOLVER][SOLVER_ID],
                 // merge only the current selected solver, others are ignored
-                [SOLVERS]: parameters[SOLVERS].reduce(
+                [SOLVERS]: parameters?.[SOLVERS]?.reduce(
                     (arr, curr, index) => [
                         ...arr,
-                        newParams[TAB_VALUES.SOLVER][SOLVERS][index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
+                        newParams[TAB_VALUES.SOLVER][SOLVERS]?.[index].id === newParams[TAB_VALUES.SOLVER][SOLVER_ID]
                             ? newParams[TAB_VALUES.SOLVER][SOLVERS][index]
                             : curr,
                     ],
-                    []
+                    [] as SolverInfos[]
                 ),
                 ...newParams[TAB_VALUES.MAPPING],
                 ...newParams[TAB_VALUES.MAPPING],
@@ -202,7 +214,7 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
         }
     }, [reset, parameters]);
 
-    const handleTabChange = useCallback((event, newValue) => {
+    const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabValue(newValue);
     }, []);
 
@@ -232,10 +244,13 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                             <DropDown
                                 value={provider}
                                 label="Provider"
-                                values={Object.entries(providers).reduce((obj, [key, value]) => {
-                                    obj[key] = `DynamicSimulationProvider${value}`;
-                                    return obj;
-                                }, {})}
+                                values={Object.entries(providers).reduce<Record<string, string>>(
+                                    (obj, [key, value]) => {
+                                        obj[key] = `DynamicSimulationProvider${value}`;
+                                        return obj;
+                                    },
+                                    {}
+                                )}
                                 callback={handleUpdateProvider}
                             />
                         )}
@@ -278,13 +293,12 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 solver={
                                     parameters
                                         ? {
-                                              solverId: parameters.solverId,
-                                              solvers: parameters.solvers,
+                                              solverId: parameters.solverId as string,
+                                              solvers: parameters.solvers as Record<string, any>[],
                                           }
                                         : undefined
                                 }
                                 path={TAB_VALUES.SOLVER}
-                                errors={formState.errors[TAB_VALUES.SOLVER]}
                                 clearErrors={clearErrors}
                             />
                         </TabPanel>
@@ -293,7 +307,6 @@ const DynamicSimulationParameters = ({ user, setHaveDirtyFields }) => {
                                 mapping={
                                     parameters
                                         ? {
-                                              mapping: parameters.mapping,
                                               mappings: parameters.mappings,
                                           }
                                         : undefined

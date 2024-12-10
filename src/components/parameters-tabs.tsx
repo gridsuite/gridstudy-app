@@ -343,25 +343,25 @@ const ParametersTabs: FunctionComponent<OwnProps> = (props) => {
                                 label={<FormattedMessage id="SensitivityAnalysis" />}
                                 value={TAB_VALUES.sensitivityAnalysisParamsTabValue}
                             />
-                            {enableDeveloperMode && (
+                            {enableDeveloperMode ? (
                                 <Tab
                                     disabled={nonEvacuatedEnergyAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="NonEvacuatedEnergyAnalysis" />}
                                     value={TAB_VALUES.nonEvacuatedEnergyParamsTabValue}
                                 />
-                            )}
+                            ) : null}
                             <Tab
                                 disabled={shortCircuitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="ShortCircuit" />}
                                 value={TAB_VALUES.shortCircuitParamsTabValue}
                             />
-                            {enableDeveloperMode && (
+                            {enableDeveloperMode ? (
                                 <Tab
                                     disabled={dynamicSimulationAvailability !== OptionalServicesStatus.Up}
                                     label={<FormattedMessage id="DynamicSimulation" />}
                                     value={TAB_VALUES.dynamicSimulationParamsTabValue}
                                 />
-                            )}
+                            ) : null}
                             <Tab
                                 disabled={voltageInitAvailability !== OptionalServicesStatus.Up}
                                 label={<FormattedMessage id="VoltageInit" />}

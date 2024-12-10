@@ -59,7 +59,7 @@ const defParams = {
     ...commonDefParams,
 };
 
-const IdaSolverParameters = ({ path }) => {
+const IdaSolverParameters = ({ path }: { path: string }) => {
     return <>{makeComponents(defParams, path)}</>;
 };
 

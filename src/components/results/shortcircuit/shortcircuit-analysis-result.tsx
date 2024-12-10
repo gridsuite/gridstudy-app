@@ -182,7 +182,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
     ]);
 
     useEffect(() => {
-        if (analysisStatus !== RunningStatus.SUCCEED) {
+        if (analysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
             return;
         }
 
@@ -195,7 +195,7 @@ export const ShortCircuitAnalysisResult: FunctionComponent<IShortCircuitAnalysis
         const filterTypes = isOneBusShortCircuitAnalysisType ? oneBusFilterTypes : allBusesFilterTypes;
 
         const promises = filterTypes.map((filter) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, currentComputingType, filter)
+            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, currentComputingType, filter)
         );
 
         Promise.all(promises)

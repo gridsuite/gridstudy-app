@@ -13,7 +13,7 @@ export const START_TIME = 'startTime';
 export const STOP_TIME = 'stopTime';
 
 export const formSchema = yup.object().shape({
-    [START_TIME]: yup.number().required(),
+    [START_TIME]: yup.number().required().nonNullable(),
     [STOP_TIME]: yup
         .number()
         .required()
@@ -21,6 +21,7 @@ export const formSchema = yup.object().shape({
             if (startTime) {
                 return schema.min(startTime, 'DynamicSimulationStopTimeMustBeGreaterThanOrEqualToStartTime');
             }
+            return schema;
         }),
 });
 
@@ -40,7 +41,7 @@ const defParams = {
     },
 };
 
-const TimeDelayParameters = ({ path }) => {
+const TimeDelayParameters = ({ path }: { path: string }) => {
     return (
         <Grid xl={6} container>
             {makeComponents(defParams, path)}

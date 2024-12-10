@@ -12,60 +12,67 @@ import {
     DialogContent,
     DialogTitle,
     Grid,
-    Typography,
     IconButton,
+    Typography,
     useTheme,
 } from '@mui/material';
-import { useCallback, useRef } from 'react';
+import { FunctionComponent, useCallback, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { styles } from '../../../parameters';
-import CurveSelector from './curve-selector';
-import CurvePreview from './curve-preview';
+import CurveSelector, { GetSelectedItemsHandler } from './curve-selector';
+import CurvePreview, { Curve, CurveHandler } from './curve-preview';
 import Tooltip from '@mui/material/Tooltip';
 import ArrowCircleRightIcon from '@mui/icons-material/ArrowCircleRight';
 import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { mergeSx } from '../../../../../utils/functions';
 
-const CurveSelectorDialog = ({ open, onClose, onSave }) => {
+interface CurveSelectorDialogProps {
+    open: boolean;
+    onClose: () => void;
+    onSave: (curves: Curve[]) => void;
+}
+
+const CurveSelectorDialog: FunctionComponent<CurveSelectorDialogProps> = ({ open, onClose, onSave }) => {
     const theme = useTheme();
 
-    const selectorRef = useRef();
-    const previewRef = useRef();
+    const selectorRef = useRef<GetSelectedItemsHandler>(null);
+    const previewRef = useRef<CurveHandler>(null);
 
     const handleClose = useCallback(() => {
         onClose();
     }, [onClose]);
 
     const handleAdd = useCallback(() => {
+        if (!previewRef.current) {
+            return;
+        }
         onSave(previewRef.current.api.getCurves());
     }, [onSave]);
 
     const intl = useIntl();
 
     const handleAddButton = useCallback(() => {
+        if (!selectorRef.current || !previewRef.current) {
+            return;
+        }
         const selectedEquipments = selectorRef.current.api.getSelectedEquipments();
 
         const selectedVariables = selectorRef.current.api.getSelectedVariables();
 
         // combine between equipments and variables
-        const curves = selectedEquipments.reduce(
-            (arr, equipment) =>
-                selectedVariables.reduce(
-                    (acc, variable) => [
-                        ...acc,
-                        {
-                            equipmentType: equipment.type,
-                            equipmentId: equipment.id,
-                            variableId: variable.variableId,
-                        },
-                    ],
-                    arr
-                ),
-            []
+        const curves = selectedEquipments.flatMap((equipment) =>
+            selectedVariables.map((variable) => ({
+                equipmentType: equipment.type,
+                equipmentId: equipment.id,
+                variableId: variable.variableId,
+            }))
         );
         previewRef.current.api.addCurves(curves);
     }, []);
     const handleDeleteButton = useCallback(() => {
+        if (!previewRef.current) {
+            return;
+        }
         previewRef.current.api.removeCurves();
     }, []);
 

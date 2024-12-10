@@ -7,24 +7,41 @@
 
 import { forwardRef, useCallback, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Grid, Box, Typography } from '@mui/material';
+import { Grid, Box, Typography, Theme } from '@mui/material';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { ValueFormatterParams } from 'ag-grid-community';
+import { AgGridReact } from 'ag-grid-react';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
 const styles = {
     grid: {
         width: 'auto',
         height: '100%',
     },
-    h6: (theme) => ({
+    h6: (theme: Theme) => ({
         marginBottom: theme.spacing(2),
     }),
 };
 
-const CurvePreview = forwardRef((props, ref) => {
-    const intl = useIntl();
-    const gridRef = useRef();
+export interface Curve {
+    equipmentType: EQUIPMENT_TYPES;
+    equipmentId: string;
+    variableId: string | undefined;
+}
 
-    const [rowData, setRowData] = useState([]);
+export interface CurveHandler {
+    api: {
+        addCurves: (curves: Curve[]) => void;
+        removeCurves: () => void;
+        getCurves: () => Curve[];
+    };
+}
+
+const CurvePreview = forwardRef<CurveHandler>((props, ref) => {
+    const intl = useIntl();
+    const gridRef = useRef<AgGridReact<any>>(null);
+
+    const [rowData, setRowData] = useState<Curve[]>([]);
     const [selectedRowsLength, setSelectedRowsLength] = useState(0);
     const columnDefs = useMemo(() => {
         return [
@@ -41,7 +58,7 @@ const CurvePreview = forwardRef((props, ref) => {
                 headerName: intl.formatMessage({
                     id: 'DynamicSimulationCurveVariableHeader',
                 }),
-                valueFormatter: (params) =>
+                valueFormatter: (params: ValueFormatterParams) =>
                     intl.formatMessage({
                         id: `variables.${params.value}`,
                     }),
@@ -62,7 +79,11 @@ const CurvePreview = forwardRef((props, ref) => {
     }, []);
 
     const onSelectionChanged = useCallback(() => {
+        if (!gridRef.current) {
+            return;
+        }
         const selectedRows = gridRef.current.api.getSelectedRows();
+
         setSelectedRowsLength(selectedRows.length);
     }, []);
 
@@ -84,6 +105,9 @@ const CurvePreview = forwardRef((props, ref) => {
                     });
                 },
                 removeCurves: () => {
+                    if (!gridRef.current) {
+                        return;
+                    }
                     const selectedRows = gridRef.current.api.getSelectedRows();
 
                     // reset selected rows length

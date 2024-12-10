@@ -587,7 +587,7 @@ export const useFetchFiltersEnums = () => {
     );
 
     useEffect(() => {
-        if (securityAnalysisStatus !== RunningStatus.SUCCEED) {
+        if (securityAnalysisStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
             return;
         }
 
@@ -600,7 +600,7 @@ export const useFetchFiltersEnums = () => {
         ];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.SECURITY_ANALYSIS, filterType)
+            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, computingType.SECURITY_ANALYSIS, filterType)
         );
 
         setLoading(true);

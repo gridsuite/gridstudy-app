@@ -7,10 +7,10 @@
 
 import { Grid, Switch } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import { styles, useParameterState } from '../parameters';
+import { UseParameterStateParamName, styles, useParameterState } from '../parameters';
 
 type SwitchParameterLineProps = {
-    readonly paramNameId: string;
+    readonly paramNameId: UseParameterStateParamName;
     disabled?: boolean;
     label?: string;
 };
