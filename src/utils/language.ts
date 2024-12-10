@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { LANG_ENGLISH, LANG_FRENCH, LANG_SYSTEM } from '@gridsuite/commons-ui';
+import { GsLang, GsLangUser, LANG_ENGLISH, LANG_FRENCH, LANG_SYSTEM } from '@gridsuite/commons-ui';
 
-const supportedLanguages = [LANG_FRENCH, LANG_ENGLISH];
+const supportedLanguages: readonly GsLangUser[] = [LANG_FRENCH, LANG_ENGLISH] as const;
 
 export const getSystemLanguage = () => {
     const systemLanguage = navigator.language.split(/[-_]/)[0];
-    return supportedLanguages.includes(systemLanguage) ? systemLanguage : LANG_ENGLISH;
+    return supportedLanguages.includes(systemLanguage as GsLangUser) ? (systemLanguage as GsLangUser) : LANG_ENGLISH;
 };
 
-export const getComputedLanguage = (language: string) => {
+export const getComputedLanguage = (language: GsLang): GsLangUser => {
     return language === LANG_SYSTEM ? getSystemLanguage() : language;
 };
