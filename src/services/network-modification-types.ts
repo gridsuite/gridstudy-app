@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
+import { ConverterStationElementModificationInfos } from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
