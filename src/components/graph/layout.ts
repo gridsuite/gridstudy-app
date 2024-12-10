@@ -289,7 +289,7 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
 
     const nodePlacements = compressTreePlacements(newNodes, uncompressedNodePlacements);
 
-    newNodes.forEach((node) => {
+    return newNodes.map((node) => {
         const placement = nodePlacements.getPlacement(node.id);
         if (placement) {
             if (node.parentId) {
@@ -308,8 +308,14 @@ export function getTreeNodesWithUpdatedPositions(nodes: CurrentTreeNode[]) {
                 y: placement.row * nodeHeight,
             };
         }
+        return {
+            ...node,
+            position: {
+                x: node.position.x,
+                y: node.position.y,
+            },
+        };
     });
-    return [...newNodes];
 }
 
 /**
