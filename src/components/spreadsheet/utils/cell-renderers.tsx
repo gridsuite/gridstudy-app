@@ -161,17 +161,24 @@ export const DefaultCellRenderer = (props: any) => {
     );
 };
 
-export const EllipsisCellRenderer = ({
+export const MessageLogCellRenderer = ({
     param,
-    indexTextToHighlight,
     highlightColor,
+    currentHighlightColor,
+    searchTerm,
+    currentResultIndex,
+    searchResults,
 }: {
     param: ICellRendererParams;
-    indexTextToHighlight?: number;
     highlightColor?: string;
+    currentHighlightColor?: string;
+    searchTerm?: string;
+    currentResultIndex?: number;
+    searchResults?: number[];
 }) => {
-    const textRef = useRef<any>(null);
+    const textRef = useRef<HTMLDivElement>(null);
     const [isEllipsisActive, setIsEllipsisActive] = useState(false);
+
     const checkEllipsis = () => {
         if (textRef.current) {
             const zoomLevel = window.devicePixelRatio;
@@ -193,6 +200,42 @@ export const EllipsisCellRenderer = ({
         };
     }, [param.value]);
 
+    const escapeRegExp = (string: string) => {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    };
+
+    const renderHighlightedText = (value: string) => {
+        if (!searchTerm || searchTerm === '') {
+            return value;
+        }
+
+        const escapedSearchTerm = escapeRegExp(searchTerm);
+        const parts = value.split(new RegExp(`(${escapedSearchTerm})`, 'gi'));
+        return (
+            <span>
+                {parts.map((part: string, index: number) =>
+                    part.toLowerCase() === searchTerm.toLowerCase() ? (
+                        <span
+                            key={`${part}-${index}`}
+                            style={{
+                                backgroundColor:
+                                    searchResults &&
+                                    currentResultIndex !== undefined &&
+                                    searchResults[currentResultIndex] === param.node.rowIndex
+                                        ? currentHighlightColor
+                                        : highlightColor,
+                            }}
+                        >
+                            {part}
+                        </span>
+                    ) : (
+                        part
+                    )
+                )}
+            </span>
+        );
+    };
+
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip disableFocusListener disableTouchListener title={isEllipsisActive ? param.value : ''}>
@@ -200,10 +243,9 @@ export const EllipsisCellRenderer = ({
                     ref={textRef}
                     sx={{
                         ...styles.overflow,
-                        ...(indexTextToHighlight === param.node.rowIndex ? { backgroundColor: highlightColor } : {}),
                     }}
                 >
-                    {param.value}
+                    {renderHighlightedText(param.value)}
                 </Box>
             </Tooltip>
         </Box>
