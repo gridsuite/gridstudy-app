@@ -80,12 +80,7 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
     }, [columnsDefinition]);
 
     return (
-        <TableContainer
-            sx={{
-                height: 500,
-                border: '0px rgba(0,0,0,0.1)',
-            }}
-        >
+        <TableContainer sx={{ height: 500 }}>
             <Table stickyHeader size="small" sx={{ tableLayout: 'fixed', textAlign: 'center' }}>
                 <TableHead>
                     <TableRow>
