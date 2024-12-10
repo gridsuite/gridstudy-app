@@ -10,21 +10,15 @@ const MAX_STUDY_NAME_LENGTH = 200;
 const SEPARATOR = ' | ';
 
 export const computeFullPath = (parents: string[]) => {
-    let path = '';
-
-    for (let i = 0; i < parents.length; i++) {
-        path = '/' + parents[i] + path;
-    }
-
-    return path;
+    return parents.reduce((path, parent) => `${path}/${parent}`, '');
 };
 
 const computePath = (parents: string[], maxAllowedPathSize: number) => {
     let testedPath = '';
     let path = '';
 
-    for (let i = 0; i < parents.length; i++) {
-        testedPath += '/' + parents[i];
+    for (const parent of parents) {
+        testedPath += '/' + parent;
         if (testedPath.length > maxAllowedPathSize) {
             return '...' + path;
         }

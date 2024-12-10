@@ -45,7 +45,7 @@ const SelectOptionsDialog = ({
             <DialogActions>
                 <CancelButton onClick={handleClose} />
                 <Button onClick={onClick} variant="outlined">
-                    <FormattedMessage id={validateKey || 'validate'} />
+                    <FormattedMessage id={validateKey ?? 'validate'} />
                 </Button>
             </DialogActions>
         </Dialog>
