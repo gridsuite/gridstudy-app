@@ -55,8 +55,8 @@ export function getNetworkAreaDiagramUrl(
         getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
-            depth: String(depth),
-            withGeoData: String(withGeoData),
+            depth: depth.toString(),
+            withGeoData: withGeoData.toString(),
         }) +
         '&' +
         getQueryParamsList(voltageLevelsIds, 'voltageLevelsIds').toString()
@@ -136,7 +136,7 @@ export function searchEquipmentsInfos(
     urlSearchParams.append('userInput', searchTerm);
     urlSearchParams.append('fieldSelector', getUseNameParameterKey());
     if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', String(inUpstreamBuiltParentNode));
+        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode.toString());
     }
     if (equipmentType !== undefined) {
         urlSearchParams.append('equipmentType', equipmentType);

@@ -65,7 +65,7 @@ export function changeNetworkModificationOrder(
 
 export function stashModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('stashed', 'true');
+    urlSearchParams.append('stashed', String(true));
     urlSearchParams.append('uuids', String(modificationUuids));
     const modificationDeleteUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationDeleteUrl);
@@ -93,7 +93,7 @@ export function setModificationActivated(
 
 export function restoreModifications(studyUuid: UUID | null, nodeUuid: UUID | undefined, modificationUuids: UUID[]) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('stashed', 'false');
+    urlSearchParams.append('stashed', String(false));
     urlSearchParams.append('uuids', String(modificationUuids));
     const RestoreModificationsUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
 

@@ -6,7 +6,9 @@
  */
 
 import {
+    AttributeModification,
     ConverterStationElementModificationInfos,
+    ReactiveCapabilityCurvePoint,
     ReactiveCapabilityCurvePointsData,
 } from '../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
 import { UUID } from 'crypto';
@@ -48,8 +50,6 @@ export interface VscModificationInfo {
     connectionPosition?: string | null;
     terminalConnected?: boolean | null;
 }
-
-type AttributeModification<T> = { value: T; op: string };
 
 export interface BatteryModificationInfo {
     studyUuid: string;
@@ -346,16 +346,7 @@ export interface VSCModificationConverterStation {
     type: string;
     minQ: AttributeModification<number> | null;
     equipmentId: string;
-    reactiveCapabilityCurvePoints:
-        | {
-              p: number | null;
-              oldP: number | null;
-              minQ: number | null;
-              oldMinQ: number | null;
-              maxQ: number | null;
-              oldMaxQ: number | null;
-          }[]
-        | null;
+    reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePoint[] | null;
     voltageLevelId: AttributeModification<string> | null;
     reactivePowerSetpoint: AttributeModification<number> | null;
     equipmentName: AttributeModification<string> | null;

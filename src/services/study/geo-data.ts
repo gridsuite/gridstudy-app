@@ -9,11 +9,7 @@ import { backendFetchJson, getQueryParamsList } from '../utils';
 import { getStudyUrlWithNodeUuid } from './index';
 import { UUID } from 'crypto';
 
-export function fetchSubstationPositions(
-    studyUuid: UUID,
-    currentNodeUuid: UUID | undefined,
-    substationsIds?: string[]
-) {
+export function fetchSubstationPositions(studyUuid: UUID, currentNodeUuid?: UUID, substationsIds?: string[]) {
     console.info(
         `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
