@@ -52,7 +52,6 @@ import {
 } from 'components/utils/field-constants';
 import {
     checkValidationsAndRefreshCells,
-    deepFindValue,
     formatFetchedEquipment,
     formatFetchedEquipments,
     updateGeneratorCells,
@@ -60,16 +59,11 @@ import {
     updateTwtCells,
 } from './utils/equipment-table-utils';
 import { fetchNetworkElementInfos } from 'services/study/network';
-import { toModificationOperation } from 'components/utils/utils';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
-import { makeAgGridCustomHeaderColumn } from 'components/custom-aggrid/custom-aggrid-header-utils';
-import { useAggridLocalRowFilter } from 'hooks/use-aggrid-local-row-filter';
-import { useAgGridSort } from 'hooks/use-aggrid-sort';
-import { setSpreadsheetFilter, updateEquipments } from 'redux/actions';
+import { updateEquipments } from 'redux/actions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { SPREADSHEET_SORT_STORE, SPREADSHEET_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
@@ -83,10 +77,17 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
+import {
+    CustomColDef,
+    FILTER_NUMBER_COMPARATORS,
+    FILTER_TEXT_COMPARATORS,
+} from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import { defaultColumnType } from './config/column-type-flter-config';
+import { makeAgGridColumn } from './config/column-aggrid-utils';
+import { toModificationOperation } from 'components/utils/utils';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -268,14 +269,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         );
     }, [disabled, selectedColumnsNames, currentTabType, currentColumns]);
 
-    const { onSortChanged, sortConfig } = useAgGridSort(SPREADSHEET_SORT_STORE, currentTabName());
-
-    const { updateFilter, filterSelector } = useAggridLocalRowFilter(gridRef, {
-        filterType: SPREADSHEET_STORE_FIELD,
-        filterTab: currentTabName(),
-        filterStoreAction: setSpreadsheetFilter,
-    });
-
     const equipmentDefinition = useMemo(
         () => ({
             type: currentTabType(),
@@ -304,29 +297,29 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         formatFetchedEquipmentsHandler
     );
 
-    // Function to get the columns that have isEnum filter set to true in customFilterParams
-    const getEnumFilterColumns = useCallback(() => {
-        return currentColumns().filter((c) => c.isEnum);
-    }, [currentColumns]);
+    function contains(target: string, lookingFor: string) {
+        return target && target?.toLowerCase().indexOf(lookingFor.toLowerCase()) >= 0;
+    }
 
-    const generateEquipmentsFilterEnums = useCallback(() => {
-        if (!equipments) {
-            return {};
-        }
-        const filterEnums: any = {};
-        getEnumFilterColumns().forEach((column) => {
-            filterEnums[column.field ?? ''] = [
-                ...new Set(
-                    equipments
-                        .map((equipment: any) => deepFindValue(equipment, column.field))
-                        .filter((value: any) => value != null)
-                ),
-            ];
-        });
-        return filterEnums;
-    }, [getEnumFilterColumns, equipments]);
-
-    const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
+    const columnTypes = {
+        ...defaultColumnType,
+        countryFilter: {
+            filter: 'agTextColumnFilter',
+            filterParams: {
+                caseSensitive: false,
+                maxNumConditions: 1,
+                filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                textMatcher: ({ value, filterText }: { value: string; filterText: string }) => {
+                    const countryCode = value?.toUpperCase();
+                    const countryName = translate(countryCode);
+                    return contains(countryName, filterText || '') || contains(value, filterText);
+                },
+                debounceMs: 200,
+            },
+            sortable: true,
+            resizable: true,
+        },
+    };
 
     const enrichColumn = useCallback(
         (column: CustomColDef) => {
@@ -426,36 +419,13 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 };
             }
 
-            return makeAgGridCustomHeaderColumn({
+            return makeAgGridColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
-                sortProps: {
-                    onSortChanged,
-                    sortConfig,
-                },
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-                filterParams: {
-                    ...columnExtended?.customFilterParams,
-                    filterEnums,
-                },
                 ...columnExtended,
             });
         },
-        [
-            intl,
-            lockedColumnsNames,
-            onSortChanged,
-            sortConfig,
-            updateFilter,
-            filterSelector,
-            loadFlowStatus,
-            applyFluxConvention,
-            filterEnums,
-            translate,
-        ]
+        [intl, lockedColumnsNames, loadFlowStatus, applyFluxConvention, translate]
     );
 
     useEffect(() => {
@@ -466,14 +436,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             });
         }
     }, [errorMessage, snackError]);
-
-    // Ensure initial sort is applied by including mergedColumnData in dependencies
-    useEffect(() => {
-        gridRef.current?.api?.applyColumnState({
-            state: sortConfig,
-            defaultState: { sort: null },
-        });
-    }, [sortConfig, mergedColumnData]);
 
     useEffect(() => {
         if (disabled || !equipments) {
@@ -1305,6 +1267,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
+                        columnTypes={columnTypes}
                     />
                 </Box>
             )}

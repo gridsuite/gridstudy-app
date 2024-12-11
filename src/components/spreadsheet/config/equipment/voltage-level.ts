@@ -10,17 +10,11 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
+import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 function generateEditableNumericColumnDefinition<
     TId extends string,
@@ -32,7 +26,7 @@ function generateEditableNumericColumnDefinition<
         id: id,
         field: field,
         numeric: true,
-        ...defaultNumericFilterConfig,
+        type: NUMERIC_FILTER,
         fractionDigits: 1,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
@@ -54,30 +48,30 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'SubstationId',
             field: 'substationId',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
+            type: COUNTRY_FILTER,
             cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
             field: 'nominalV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 0,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
@@ -87,7 +81,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
@@ -108,7 +102,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,

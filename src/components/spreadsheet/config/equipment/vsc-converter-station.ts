@@ -10,15 +10,8 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
+import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 
 export const VSC_CONVERTER_STATION_TAB_DEF = {
@@ -31,41 +24,41 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
+            type: COUNTRY_FILTER,
             cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
             field: 'nominalV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 0,
         },
         {
             id: 'HvdcLineId',
             field: 'hvdcLineId',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -74,7 +67,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -83,7 +76,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'LossFactor',
             field: 'lossFactor',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -92,14 +85,14 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'voltageRegulatorOn',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: TEXT_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -107,7 +100,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             id: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -116,7 +109,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: TEXT_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

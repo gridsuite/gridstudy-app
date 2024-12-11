@@ -10,13 +10,9 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    typeAndFetchers,
-} from './common-config';
+import { editableColumnConfig, typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
+import { COUNTRY_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 export const SUBSTATION_TAB_DEF = {
     index: 0,
@@ -26,14 +22,14 @@ export const SUBSTATION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
             isDefaultSort: true,
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Country',
@@ -45,7 +41,7 @@ export const SUBSTATION_TAB_DEF = {
                 params.data.country = params?.newValue;
                 return true;
             },
-            ...countryEnumFilterConfig,
+            type: COUNTRY_FILTER,
         },
         genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
     ],

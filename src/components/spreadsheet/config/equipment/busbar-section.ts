@@ -7,8 +7,9 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { typeAndFetchers } from './common-config';
 import type { ReadonlyDeep } from 'type-fest';
+import { TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 export const BUSBAR_SECTION_TAB_DEF = {
     index: 16,
@@ -19,12 +20,12 @@ export const BUSBAR_SECTION_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;

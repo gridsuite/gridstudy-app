@@ -38,6 +38,7 @@ import {
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { getEnumFilterConfig } from '../column-type-flter-config';
 
 type TapPositionsType = {
     lowTapPosition: number;
@@ -183,7 +184,7 @@ export const defaultBooleanFilterConfig = {
 // It generates configuration for filtering, sorting and rendering
 export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
     ({
-        ...defaultEnumFilterConfig,
+        ...getEnumFilterConfig(enumOptions as EnumOption[]),
         cellRenderer: EnumCellRenderer,
         cellRendererParams: {
             enumOptions: enumOptions as Writable<typeof enumOptions>,

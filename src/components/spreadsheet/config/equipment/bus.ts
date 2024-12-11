@@ -9,13 +9,9 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 export const BUS_TAB_DEF = {
     index: 14,
@@ -26,7 +22,7 @@ export const BUS_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Magnitude',
@@ -34,7 +30,7 @@ export const BUS_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
         },
         {
             id: 'Angle',
@@ -42,27 +38,27 @@ export const BUS_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
         },
         {
             id: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
         },
         {
             id: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
+            type: COUNTRY_FILTER,
             cellRenderer: CountryCellRenderer,
         },
         {
@@ -70,7 +66,7 @@ export const BUS_TAB_DEF = {
             field: 'nominalVoltage',
             numeric: true,
             fractionDigits: 0,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
         },
         genericColumnOfProperties,
     ],

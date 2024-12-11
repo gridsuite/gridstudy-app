@@ -51,6 +51,7 @@ interface EquipmentTableProps {
     handleRowDataUpdated: () => void;
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
+    columnTypes: { [key: string]: ColDef };
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -69,6 +70,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     handleRowDataUpdated,
     fetched,
     shouldHidePinnedHeaderRightBorder,
+    columnTypes,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -150,6 +152,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            columnTypes={columnTypes}
         />
     );
 };

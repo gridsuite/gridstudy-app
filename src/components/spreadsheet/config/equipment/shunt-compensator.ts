@@ -11,16 +11,19 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
     defaultNumericFilterConfig,
-    defaultTextFilterConfig,
     editableColumnConfig,
     excludeFromGlobalFilter,
     getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
-import { MEDIUM_COLUMN_WIDTH, MIN_COLUMN_WIDTH } from '../../utils/constants';
+import {
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    MIN_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
@@ -35,24 +38,24 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
             isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
             ...editableColumnConfig,
             columnWidth: MIN_COLUMN_WIDTH,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_FILTER,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
+            type: COUNTRY_FILTER,
             cellRenderer: CountryCellRenderer,
         },
         {
@@ -67,7 +70,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'q',
             numeric: true,
             fractionDigits: 1,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             canBeInvalidated: true,
             withFluxConvention: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -78,7 +81,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 minExpression: 1,
@@ -90,7 +93,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.sectionCount),
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 minExpression: 0,
@@ -110,7 +113,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
@@ -123,7 +126,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -133,7 +136,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'maxSusceptance',
             numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -143,7 +146,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 5,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -151,7 +154,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'voltageSetpoint',
             field: 'targetV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -160,7 +163,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: TEXT_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,
