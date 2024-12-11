@@ -5,22 +5,21 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useLayoutEffect, useRef, useMemo, useCallback, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RunningStatus } from '../../utils/running-status';
 import {
-    MIN_HEIGHT,
-    MIN_WIDTH,
+    DiagramType,
     MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
     MAX_WIDTH_NETWORK_AREA_DIAGRAM,
+    MIN_HEIGHT,
+    MIN_WIDTH,
     styles,
-    DiagramType,
 } from '../diagram-common';
 import {
     CSS_RULE,
-    NetworkAreaDiagramViewer,
-    THRESHOLD_STATUS,
     DiagramMetadata,
+    NetworkAreaDiagramViewer,
     OnToggleNadHoverCallbackType,
 } from '@powsybl/network-viewer';
 import LinearProgress from '@mui/material/LinearProgress';
@@ -40,96 +39,125 @@ import { FEEDER_TYPES } from 'components/utils/feederType';
 const dynamicCssRules: CSS_RULE[] = [
     {
         cssSelector: '.nad-edge-infos', // data on edges (arrows and values)
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 2500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 2500,
     },
     {
         cssSelector: '.nad-label-box', // tooltips linked to nodes
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 3500,
     },
     {
         cssSelector: '.nad-text-edges', // visual link between nodes and their tooltip
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 3500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 3500,
     },
     {
         cssSelector: '[class^="nad-vl0to30"], [class*=" nad-vl0to30"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 12000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 12000,
     },
     {
         cssSelector: '[class^="nad-vl30to50"], [class*=" nad-vl30to50"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 12000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 12000,
     },
     {
         cssSelector: '[class^="nad-vl50to70"], [class*=" nad-vl50to70"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 27000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 27000,
     },
     {
         cssSelector: '[class^="nad-vl70to120"], [class*=" nad-vl70to120"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 27000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 27000,
     },
     {
         cssSelector: '[class^="nad-vl120to180"], [class*=" nad-vl120to180"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 36000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 36000,
     },
     {
         cssSelector: '[class^="nad-vl180to300"], [class*=" nad-vl180to300"]',
-        belowThresholdCssDeclaration: { display: 'block' },
-        aboveThresholdCssDeclaration: { display: 'none' },
-        threshold: 80000,
-        thresholdStatus: THRESHOLD_STATUS.BELOW,
+        cssInRange: { display: 'block' },
+        cssOutOfRange: { display: 'none' },
+        min: 0,
+        max: 80000,
     },
     {
         cssSelector: '.nad-disconnected .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-dasharray': '10, 10' },
-        aboveThresholdCssDeclaration: { 'stroke-dasharray': '0.5%, 0.5%' },
-        threshold: 2500,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssInRange: { 'stroke-dasharray': '10, 10' },
+        cssOutOfRange: { 'stroke-dasharray': '0.5%, 0.5%' },
+        min: 0,
+        max: 2500,
     },
     {
-        cssSelector: '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssSelector:
+            '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path, .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding, .nad-vl-nodes circle.nad-unknown-busnode',
+        cssInRange: { 'stroke-width': '3px' }, // When zooming in on an edge, we want the line to grow as the user keeps on zooming
+        min: 0,
+        max: 1000, // After this zoom level, the line should use a percentage value to stay visible when zooming far away
     },
+    // Between the zoom level 1000 and 45000, we use a work around to fix an issue with Chromium : see the
+    // addStrokeWidthRulesForChromiumFix function that creates 20 rules (that cover 1000 to 45000) to create 20
+    // "trigger" steps to force Chromium's update.
     {
-        cssSelector: '.nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
-    },
-    {
-        cssSelector: '.nad-vl-nodes circle.nad-unknown-busnode',
-        belowThresholdCssDeclaration: { 'stroke-width': '3' },
-        aboveThresholdCssDeclaration: { 'stroke-width': '0.25%' },
-        threshold: 1000,
-        thresholdStatus: THRESHOLD_STATUS.ABOVE,
+        cssSelector:
+            '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path, .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding, .nad-vl-nodes circle.nad-unknown-busnode',
+        cssInRange: { 'stroke-width': '0.15%' },
+        min: 45000,
+        max: Infinity,
     },
 ];
+
+// WORK AROUND FOR CHROMIUM :
+// Chromium do not always update the SVG's polylines when their stroke-width is defined with a percentage.
+// To force updates when zooming, we add a lot of new rules to cover a lot more zoom levels. Each of these rules
+// only slightly differ from each other, but because their values are differents, the browser picks up the change
+// and update the displayed lines.
+/**
+ * Create CSS rules to fix an issue with Chromium's display when zooming.
+ * The rules will cover zoom levels from minRange to maxRange, divided in nbSteps individual rules.
+ * @param nbSteps number of rules to create
+ * @param minRange the lowest min value of the first rule
+ * @param maxRange the highest max value of the last rule
+ */
+function addStrokeWidthRulesForChromiumFix(nbSteps: number, minRange: number, maxRange: number): CSS_RULE[] {
+    const basePercentage = 0.2;
+    const stepSize = (maxRange - minRange) / nbSteps;
+
+    return Array.from({ length: nbSteps }, (_, i) => {
+        const min = minRange + i * stepSize;
+        const max = minRange + (i + 1) * stepSize;
+        const strokeWidth = `${(basePercentage - i * 0.002).toFixed(4)}%`;
+
+        return {
+            cssSelector:
+                '.nad-branch-edges .nad-edge-path, .nad-3wt-edges .nad-edge-path, .nad-branch-edges .nad-winding, .nad-3wt-nodes .nad-winding, .nad-vl-nodes circle.nad-unknown-busnode',
+            cssInRange: { 'stroke-width': strokeWidth },
+            min,
+            max,
+        };
+    });
+}
+
+const dynamicCssRulesChromiumFix = [...dynamicCssRules, ...addStrokeWidthRulesForChromiumFix(20, 1000, 45000)];
 
 const equipmentsWithPopover = [
     EQUIPMENT_TYPES.LINE,
@@ -215,7 +243,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 null,
                 true,
                 true,
-                dynamicCssRules,
+                dynamicCssRulesChromiumFix,
                 OnToggleHoverCallback
             );
 
