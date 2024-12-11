@@ -9,7 +9,7 @@ import { Grid } from '@mui/material';
 import { CheckboxInput } from '@gridsuite/commons-ui';
 import ReadOnlyInput from 'components/utils/rhf-inputs/read-only/read-only-input';
 import {
-    MCS_SELECTED,
+    SHUNT_COMPENSATOR_SELECTED,
     ID,
     DELETION_SPECIFIC_DATA,
     SHUNT_COMPENSATOR_SIDE_1,
@@ -39,7 +39,10 @@ const HvdcLccDeletionSpecificForm = () => {
                 {mcsRows.map((field, index) => (
                     <Grid container spacing={1} alignItems="center" key={field.id}>
                         <Grid item xs={1} align={'start'}>
-                            <CheckboxInput key={field.id + 'SEL'} name={`${arrayFormName}[${index}].${MCS_SELECTED}`} />
+                            <CheckboxInput
+                                key={field.id + 'SEL'}
+                                name={`${arrayFormName}[${index}].${SHUNT_COMPENSATOR_SELECTED}`}
+                            />
                         </Grid>
                         <Grid item xs={11} align={'start'}>
                             <ReadOnlyInput key={field.id + 'ID'} name={`${arrayFormName}[${index}].${ID}`} />
