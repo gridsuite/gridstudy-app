@@ -16,12 +16,10 @@ export interface ReportItem {
     icon?: ReactNode | undefined;
     label: string;
     depth: number;
-    parentId: string | undefined;
     collapsed?: boolean;
     isCollapsable?: boolean;
     isLeaf?: boolean;
     isSelected?: boolean;
-    isDisplayed: boolean;
 }
 
 const styles = {
@@ -100,11 +98,7 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     const left = currentNode.depth * 12;
     const isCollapsable = currentNode.isCollapsable === undefined ? true : currentNode.isCollapsable;
     return (
-        <TreeViewItemBox
-            sx={mergeSx(styles.content, styles.labelRoot)}
-            style={props.style}
-            onClick={() => onSelectedItem(currentNode)}
-        >
+        <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={props.style}>
             <TreeViewItemStack
                 direction="row"
                 left={left}
@@ -119,7 +113,7 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
                     />
                 )}
                 {currentNode.icon}
-                <Typography variant="body2" sx={styles.labelText}>
+                <Typography variant="body2" sx={styles.labelText} onClick={() => onSelectedItem(currentNode)}>
                     {currentNode.label}
                 </Typography>
             </TreeViewItemStack>

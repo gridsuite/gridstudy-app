@@ -9,13 +9,13 @@ import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
-import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
-import { VirtualizedTreeview } from '../custom-treeview/virtualized-treeview';
+import { Report, ReportLog, ReportTree, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
+import { VirtualizedTreeview } from './virtualized-treeview';
 import Label from '@mui/icons-material/Label';
-import { ReportItem } from '../custom-treeview/treeview-item';
+import { ReportItem } from './treeview-item';
 import { Theme } from '@mui/system';
 import { FixedSizeList } from 'react-window';
-import { useTreeViewScroll } from '../custom-treeview/use-treeview-scroll';
+import { useTreeViewScroll } from './use-treeview-scroll';
 
 const styles = {
     treeItem: {
@@ -39,30 +39,34 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const [severities, setSeverities] = useState<string[]>([]);
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
-    const reportTreeData = useRef<Record<string, ReportTreeType>>({});
+    const reportTreeData = useRef<Record<string, ReportTree>>({});
     const treeView = useRef<ReportItem[]>();
     const listRef = useRef<FixedSizeList>(null);
 
+    const mapReportsById = useCallback((item: ReportTree) => {
+        reportTreeData.current[item.id] = item;
+        for (let subReport of item.subReports) {
+            mapReportsById(subReport);
+        }
+    }, []);
+
     const toTreeNodes = useCallback(
-        (item: ReportTreeType, depth: number, parentId?: string): ReportItem[] => {
+        (item: ReportTreeType, depth: number): ReportItem[] => {
             const result: ReportItem[] = [];
             const collapsed = !expandedTreeReports.includes(item.id);
             if (item.id) {
-                reportTreeData.current[item.id] = item;
                 result.push({
-                    collapsed: collapsed,
-                    depth: depth,
+                    collapsed,
+                    depth,
                     label: item.message,
                     id: item.id,
-                    parentId: parentId,
                     isLeaf: !item.subReports.find((subReports) => subReports.id !== null),
                     icon: <Label htmlColor={item.highestSeverity.colorName} sx={styles.labelIcon} />,
                     isSelected: item.id === selectedReportId,
-                    isDisplayed: (parentId && expandedTreeReports.includes(parentId)) || depth === 0,
                 });
-                if (item.subReports.length > 0) {
+                if (!collapsed) {
                     for (let subReports of item.subReports) {
-                        result.push(...toTreeNodes(subReports, depth + 1, item.id));
+                        result.push(...toTreeNodes(subReports, depth + 1));
                     }
                 }
             }
@@ -73,11 +77,12 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
+        mapReportsById(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
         setSeverities([...new Set(reportTree.severities)]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
-    }, [report, dispatch]);
+    }, [report, dispatch, mapReportsById]);
 
     const handleReportVerticalPositionFromTop = useCallback((node: HTMLDivElement) => {
         setReportVerticalPositionFromTop(node?.getBoundingClientRect()?.top);
@@ -119,19 +124,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     );
 
     treeView.current = toTreeNodes(mapReportsTree(report), 0);
-    const areParentsExpanded = useCallback((node: ReportItem): boolean => {
-        if (node.parentId) {
-            const parent = treeView.current?.find((nodeParent) => nodeParent.id === node.parentId);
-            if (!parent) {
-                return true;
-            }
-            return parent.isDisplayed && areParentsExpanded(parent);
-        } else {
-            return true;
-        }
-    }, []);
-    const reportsToDisplay = treeView.current?.filter((node) => node.isDisplayed && areParentsExpanded(node)) ?? [];
-    useTreeViewScroll(highlightedReportId, reportsToDisplay, listRef);
+    useTreeViewScroll(highlightedReportId, treeView.current, listRef);
 
     return (
         report && (
@@ -151,7 +144,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                         {treeView.current && (
                             <VirtualizedTreeview
                                 listRef={listRef}
-                                nodes={reportsToDisplay}
+                                nodes={treeView.current}
                                 itemSize={32}
                                 style={styles.treeItem}
                                 onSelectedItem={handleSelectedItem}
