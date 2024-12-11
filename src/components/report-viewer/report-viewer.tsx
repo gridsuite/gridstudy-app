@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
-import { Report, ReportLog, ReportTree, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
+import { Report, ReportLog, ReportTree, ReportTree as ReportTreeType, ReportType, SeverityLevel } from 'utils/report/report.type';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import Label from '@mui/icons-material/Label';
 import { ReportItem } from './treeview-item';
@@ -36,7 +36,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
 
     const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [severities, setSeverities] = useState<string[]>([]);
+    const [severities, setSeverities] = useState<SeverityLevel[]>([]);
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
     const reportTreeData = useRef<Record<string, ReportTree>>({});
