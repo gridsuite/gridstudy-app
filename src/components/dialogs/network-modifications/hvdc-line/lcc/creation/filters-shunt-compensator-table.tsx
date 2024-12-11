@@ -60,9 +60,9 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
                 width: '30%',
             },
             {
-                label: 'connectedToHvdc',
+                label: 'connected',
                 dataKey: SHUNT_COMPENSATOR_SELECTED,
-                initialValue: false,
+                initialValue: true,
                 width: '10%',
             },
         ].map((column) => ({
@@ -80,7 +80,7 @@ export default function FiltersShuntCompensatorTable({ id }: Readonly<FiltersShu
     }, [columnsDefinition]);
 
     return (
-        <TableContainer sx={{ height: 500 }}>
+        <TableContainer>
             <Table stickyHeader size="small" sx={{ tableLayout: 'fixed', textAlign: 'center' }}>
                 <TableHead>
                     <TableRow>

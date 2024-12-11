@@ -911,7 +911,7 @@
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
-    "powerFactorNormalizedPercentage": "La valeur de Coefficient Q/P doit être inférieur à 1 %",
+    "powerFactorNormalizedPercentage": "La valeur de Coefficient Q/P doit être inférieur à 1",
     "PermanentCurrentLimitText1": "IST 1",
     "PermanentCurrentLimitText2": "IST 2",
 

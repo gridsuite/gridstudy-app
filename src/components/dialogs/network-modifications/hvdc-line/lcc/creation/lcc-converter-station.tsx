@@ -53,7 +53,12 @@ export const getLccConverterStationSchema = () =>
     yup.object().shape({
         [CONVERTER_STATION_ID]: yup.string().nullable().required(),
         [CONVERTER_STATION_NAME]: yup.string().nullable(),
-        [LOSS_FACTOR]: yup.number().nullable().required(),
+        [LOSS_FACTOR]: yup
+            .number()
+            .nullable()
+            .min(0, 'NormalizedPercentage')
+            .max(100, 'NormalizedPercentage')
+            .required(),
         [POWER_FACTOR]: yup.number().nullable().max(1, 'powerFactorNormalizedPercentage').required(),
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
             .array()
@@ -77,7 +82,7 @@ export const getEmptyShuntCompensatorOnSideFormData = () => ({
     [SHUNT_COMPENSATOR_ID]: null,
     [SHUNT_COMPENSATOR_NAME]: '',
     [MAX_Q_AT_NOMINAL_V]: null,
-    [SHUNT_COMPENSATOR_SELECTED]: false,
+    [SHUNT_COMPENSATOR_SELECTED]: true,
 });
 
 export const getEmptyFiltersShuntCompensatorTableFormData = (count = 0) =>
@@ -102,7 +107,7 @@ const getShuntCompensatorOnSideFormData = (
             [SHUNT_COMPENSATOR_ID]: shuntCp.id ?? null,
             [SHUNT_COMPENSATOR_NAME]: shuntCp.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? false,
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? true,
         })) ?? []
     );
 };
@@ -126,7 +131,7 @@ export const getShuntCompensatorOnSideFromSearchCopy = (shuntCompensatorInfos?: 
             [SHUNT_COMPENSATOR_ID]: shuntCp.id + '(1)',
             [SHUNT_COMPENSATOR_NAME]: shuntCp?.name ?? '',
             [MAX_Q_AT_NOMINAL_V]: shuntCp.maxQAtNominalV ?? null,
-            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? false,
+            [SHUNT_COMPENSATOR_SELECTED]: shuntCp.connectedToHvdc ?? true,
         })) ?? []
     );
 };
@@ -231,9 +236,7 @@ export default function LccConverterStation({
         <FloatInput name={`${id}.${LOSS_FACTOR}`} label={'lossFactorLabel'} adornment={percentageTextField} />
     );
 
-    const powerFactorField = (
-        <FloatInput name={`${id}.${POWER_FACTOR}`} label={'powerFactorLabel'} adornment={percentageTextField} />
-    );
+    const powerFactorField = <FloatInput name={`${id}.${POWER_FACTOR}`} label={'powerFactorLabel'} />;
 
     return (
         <Grid container spacing={2}>
