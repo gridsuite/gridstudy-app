@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { ChangeEvent, FunctionComponent, useCallback, useState } from 'react';
+import { ChangeEvent, FunctionComponent, useCallback, useEffect, useState } from 'react';
 import { Grid, InputAdornment, TextField, Typography, IconButton } from '@mui/material';
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -55,6 +55,13 @@ const CustomAggridDurationFilter: FunctionComponent<ICustomAggridDurationFilter>
     const { minutes: initialMinutes, seconds: initialSeconds } = parseInitialValue();
     const [minutes, setMinutes] = useState(initialMinutes);
     const [seconds, setSeconds] = useState(initialSeconds);
+
+    useEffect(() => {
+        if (!minutes && !seconds) {
+            setMinutes(initialMinutes);
+            setSeconds(initialSeconds);
+        }
+    }, [initialMinutes, initialSeconds, minutes, seconds]);
 
     const handleTimeChange = useCallback(
         (newMinutes: string, newSeconds: string) => {
