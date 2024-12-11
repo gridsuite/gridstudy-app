@@ -33,16 +33,12 @@ export const useCustomAggridComparatorFilter = (field: string, filterParams: Cus
     const handleClearFilter = () => {
         handleChangeFilterValue({
             value: undefined,
-            type: selectedFilterComparator,
-            dataType: filterDataType,
         });
     };
 
     const handleFilterDurationChange = (value?: string) => {
         handleChangeFilterValue({
             value,
-            type: selectedFilterComparator,
-            dataType: FILTER_DATA_TYPES.NUMBER,
         });
     };
 
@@ -50,7 +46,6 @@ export const useCustomAggridComparatorFilter = (field: string, filterParams: Cus
         const value = event.target.value.toUpperCase();
         handleChangeFilterValue({
             value,
-            dataType: filterDataType,
             tolerance: isNumberInput ? computeTolerance(value) : undefined,
         });
     };

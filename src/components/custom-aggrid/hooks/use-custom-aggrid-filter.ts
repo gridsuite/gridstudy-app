@@ -32,7 +32,7 @@ export const useCustomAggridFilter = (field: string, filterParams: CustomHeaderF
         debouncedUpdateFilter({
             value: filterData.value,
             type: filterData.type ?? selectedFilterComparator,
-            dataType: filterData.dataType ?? filterDataType,
+            dataType: filterDataType,
             tolerance: filterData.tolerance,
         });
     };
