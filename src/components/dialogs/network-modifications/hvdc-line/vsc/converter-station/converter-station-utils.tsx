@@ -6,7 +6,7 @@
  */
 
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
-import yup from '../../../../utils/yup-config';
+import yup from '../../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
     CONNECTION_DIRECTION,
@@ -27,25 +27,25 @@ import {
     VOLTAGE,
     VOLTAGE_LEVEL,
     VOLTAGE_REGULATION_ON,
-} from '../../../../utils/field-constants';
+} from '../../../../../utils/field-constants';
 import {
     getConnectivityFormData,
     getConnectivityWithPositionEmptyFormData,
     getConnectivityWithPositionValidationSchema,
-} from '../../../connectivity/connectivity-form-utils';
+} from '../../../../connectivity/connectivity-form-utils';
 import {
     getReactiveLimitsEmptyFormData,
     getReactiveLimitsFormData,
     getReactiveLimitsSchema,
-} from '../../../reactive-limits/reactive-limits-utils';
-import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../network/constants';
-import { sanitizeString } from '../../../dialog-utils';
+} from '../../../../reactive-limits/reactive-limits-utils';
+import { UNDEFINED_CONNECTION_DIRECTION } from '../../../../../network/constants';
+import { sanitizeString } from '../../../../dialog-utils';
 import {
     calculateCurvePointsToStore,
     completeReactiveCapabilityCurvePointsData,
     getRowEmptyFormData,
-} from '../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
-import { toModificationOperation } from '../../../../utils/utils';
+} from '../../../../reactive-limits/reactive-capability-curve/reactive-capability-utils';
+import { toModificationOperation } from '../../../../../utils/utils';
 
 export type UpdateReactiveCapabilityCurveTable = (action: string, index: number) => void;
 
