@@ -11,9 +11,10 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
-import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
 import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 import { CustomAggridFilterProps } from './custom-aggrid-filter';
+import { FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -32,12 +33,17 @@ const styles = {
 const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterProps> = ({ field, filterParams }) => {
     const intl = useIntl();
 
-    const { selectedFilterData, booleanFilterParams } = useCustomAggridFilter(field, filterParams);
-    const { handleSelectedFilterDataChange } = booleanFilterParams;
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(field, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
-        handleSelectedFilterDataChange && handleSelectedFilterDataChange(newValue);
+        handleChangeFilterValue({ value: newValue, type: FILTER_TEXT_COMPARATORS.EQUALS });
+    };
+
+    const handleClearFilter = () => {
+        handleChangeFilterValue({
+            value: undefined,
+        });
     };
 
     return (
@@ -53,7 +59,7 @@ const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterProps> = ({
             })}
             endAdornment={
                 isStringOrNonEmptyArray(selectedFilterData) && (
-                    <IconButton onClick={() => handleSelectedFilterDataChange('')}>
+                    <IconButton onClick={handleClearFilter}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>
                 )

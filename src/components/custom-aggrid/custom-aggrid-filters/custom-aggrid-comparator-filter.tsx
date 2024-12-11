@@ -8,23 +8,25 @@ import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selec
 import CustomAggridDurationFilter from './custom-aggrid-duration-filter';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
-import { useCustomAggridFilter } from './use-custom-aggrid-filter';
 import { CustomAggridFilterProps } from './custom-aggrid-filter';
+import { useCustomAggridComparatorFilter } from '../hooks/use-custom-aggrid-comparator-filter';
 
 export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggridFilterProps) => {
-    const { selectedFilterData, comparatorFilterParams } = useCustomAggridFilter(field, filterParams);
     const {
+        selectedFilterData,
         selectedFilterComparator,
-        filterComparators,
         decimalAfterDot,
         isNumberInput,
         handleFilterComparatorChange,
         handleFilterDurationChange,
         handleFilterTextChange,
         handleClearFilter,
-    } = comparatorFilterParams;
+    } = useCustomAggridComparatorFilter(field, filterParams);
 
-    const { isDuration } = filterParams;
+    const {
+        isDuration,
+        filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
+    } = filterParams;
 
     return (
         <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>

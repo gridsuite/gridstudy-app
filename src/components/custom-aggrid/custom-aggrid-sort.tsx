@@ -5,11 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { IconButton } from '@mui/material';
-import { SortWay } from '../../../hooks/use-aggrid-sort';
+import { SortWay } from '../../hooks/use-aggrid-sort';
 import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import React from 'react';
-import { useCustomAggridSort } from './use-custom-aggrid-sort';
-import { CustomHeaderSortParams } from '../custom-aggrid-header.type';
+import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
+import { CustomHeaderSortParams } from './custom-aggrid-header.type';
 
 const styles = {
     iconSize: {

@@ -70,9 +70,9 @@ export type CustomHeaderSortParams = {
 } & SortPropsType;
 
 export type FilterDataType = {
-    dataType: string;
-    type: string;
-    value: undefined | null | number | string | string[];
+    dataType?: string;
+    type?: string;
+    value: unknown;
     tolerance?: number; // tolerance when comparing values. Only useful for the number type
 };
 

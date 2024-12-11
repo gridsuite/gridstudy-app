@@ -9,8 +9,8 @@ import React, { useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
 import { CustomHeaderFilterParams, CustomHeaderMenuParams, CustomHeaderSortParams } from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
-import { CustomAggridSort } from './custom-aggrid-sort/custom-aggrid-sort';
-import { useCustomAggridSort } from './custom-aggrid-sort/use-custom-aggrid-sort';
+import { CustomAggridSort } from './custom-aggrid-sort';
+import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
 import { CustomMenu } from './custom-menu';
 
 const styles = {

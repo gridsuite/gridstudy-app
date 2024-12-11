@@ -11,7 +11,7 @@ import CustomAggridBooleanFilter from './custom-aggrid-boolean-filter';
 import { CustomHeaderFilterParams, FILTER_DATA_TYPES } from '../custom-aggrid-header.type';
 import { CustomFilterIcon } from './custom-filter-icon';
 import { CustomAggridComparatorFilter } from './custom-aggrid-comparator-filter';
-import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
 import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
 
 const styles = {
