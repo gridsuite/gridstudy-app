@@ -160,8 +160,7 @@ export const useAggridLocalRowFilter = (
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
-                let valueAsNumber: number | string[] | null | undefined =
-                    typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
+                let valueAsNumber = typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
                     if (tolerance === undefined) {
