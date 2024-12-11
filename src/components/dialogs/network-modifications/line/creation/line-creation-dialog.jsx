@@ -143,7 +143,7 @@ const LineCreationDialog = ({
         let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
         completeCurrentLimits.forEach((elt) =>
             formattedCompleteCurrentLimit.push({
-                operationalLimitGroupId: elt.id,
+                operationalLimitGroupId: elt.id ?? elt.operationalLimitGroupId,
                 permanentLimit: elt.permanentLimit,
                 temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
             })
@@ -152,7 +152,6 @@ const LineCreationDialog = ({
     };
 
     const fromSearchCopyToFormValues = (line) => {
-        // console.log("Mathieu line :  " + JSON.stringify(line, null, 4)); // TODO : remove
         reset(
             {
                 ...getHeaderFormData({
