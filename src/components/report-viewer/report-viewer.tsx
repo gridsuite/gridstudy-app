@@ -33,7 +33,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
 
     const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [severities, setSeverities] = useState<SeverityLevel[]>([]);
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
     const reportTreeData = useRef<Record<string, ReportTreeType>>({});
@@ -65,7 +64,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
-        setSeverities([reportTree.severity]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
@@ -76,7 +74,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
         if (selectedReportId !== reportId) {
             setSelectedReportId(reportId);
-            setSeverities([reportTreeData.current[reportId].severity]);
             setSelectedReportType(reportTreeData.current[reportId].type);
         }
     };
@@ -139,7 +136,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                             selectedReportId={selectedReportId}
                             reportType={reportType}
                             reportNature={selectedReportType} // GlobalReport or NodeReport
-                            severities={severities}
                             onRowClick={onLogRowClick}
                         />
                     )}

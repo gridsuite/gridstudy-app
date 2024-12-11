@@ -21,7 +21,7 @@ import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
+import { Log, ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -62,11 +62,10 @@ type LogTableProps = {
     selectedReportId: string;
     reportType: string;
     reportNature: ReportType;
-    severities: SeverityLevel[];
     onRowClick: (data: ReportLog) => void;
 };
 
-const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRowClick }: LogTableProps) => {
+const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
@@ -82,6 +81,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(-1);
     const [rowData, setRowData] = useState<ReportLog[] | null>(null);
+    const [severities, setSeverities] = useState<SeverityLevel[]>([]);
     const [searchResults, setSearchResults] = useState<number[]>([]);
     const [currentResultIndex, setCurrentResultIndex] = useState(-1);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -90,8 +90,12 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
 
-    console.log(severities);
     const orderedSeverities = useMemo(() => orderSeverityList(severities), [severities]);
+
+    const computeSeverities = useCallback((reportLogs: Log[]) => {
+        const newSeverities = new Set<SeverityLevel>(reportLogs.map((report) => report.severity.name));
+        setSeverities([...newSeverities]);
+    }, []);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -115,6 +119,9 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                         backgroundColor: log.severity.colorName,
                     } as unknown as ReportLog)
             );
+            if (!severities.length) {
+                computeSeverities(reportLogs);
+            }
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
             resetSearch();
@@ -123,14 +130,14 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
 
     useEffect(() => {
         // initialize the filter with the severities
-        if (filterSelector?.length === 0 && severities?.length > 0) {
+        if (filterSelector?.length === 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
                         column: 'severity',
                         dataType: FILTER_DATA_TYPES.TEXT,
                         type: FILTER_TEXT_COMPARATORS.EQUALS,
-                        value: getDefaultSeverityFilter(severities),
+                        value: Array.from(Object.values(REPORT_SEVERITY).map((severity) => severity.name)),
                     },
                 ])
             );
