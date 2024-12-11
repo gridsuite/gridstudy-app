@@ -94,6 +94,7 @@ ModificationDialog.propTypes = {
     onClear: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
     searchCopy: PropTypes.object,
+    subtitle: PropTypes.object,
     disabledSave: PropTypes.bool,
     onValidated: PropTypes.func,
     onValidationError: PropTypes.func,

@@ -9,10 +9,10 @@ import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import yup from '../../../../utils/yup-config';
 import {
     BUS_OR_BUSBAR_SECTION,
+    CONNECTED,
     CONNECTION_DIRECTION,
     CONNECTION_NAME,
     CONNECTION_POSITION,
-    CONNECTED,
     CONNECTIVITY,
     CONVERTER_STATION_ID,
     CONVERTER_STATION_NAME,
