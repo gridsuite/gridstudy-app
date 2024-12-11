@@ -72,7 +72,7 @@ export const makeAgGridCustomHeaderColumn = ({
             isCustomColumn: isCustomColumn,
             Menu: Menu,
         },
-        //filterParams: props?.agGridFilterParams || undefined,
+        filterParams: props?.agGridFilterParams || undefined,
         ...props,
     };
 };

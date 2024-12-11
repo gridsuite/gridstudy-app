@@ -184,7 +184,7 @@ export const defaultBooleanFilterConfig = {
 // It generates configuration for filtering, sorting and rendering
 export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
     ({
-        ...getEnumFilterConfig(enumOptions as EnumOption[]),
+        ...getEnumFilterConfig(),
         cellRenderer: EnumCellRenderer,
         cellRendererParams: {
             enumOptions: enumOptions as Writable<typeof enumOptions>,

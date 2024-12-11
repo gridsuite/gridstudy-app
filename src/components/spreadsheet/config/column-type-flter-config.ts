@@ -6,13 +6,12 @@
  */
 
 import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { EnumOption } from 'components/utils/utils-type';
 
 function contains(target: string, lookingFor: string) {
     return target && target?.toLowerCase().indexOf(lookingFor.toLowerCase()) >= 0;
 }
 
-export const getEnumFilterConfig = (enumOption: EnumOption[]) => {
+export const getEnumFilterConfig = () => {
     return {
         enumFilter: {
             filter: 'agTextColumnFilter',
@@ -22,10 +21,6 @@ export const getEnumFilterConfig = (enumOption: EnumOption[]) => {
                 filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
                 textMatcher: ({ value, filterText }: { value: string; filterText: string }) => {
                     if (value) {
-                        /*  const label =
-                                getEnumLabelById(Object.values(enumOption) as EnumOption[], value?.toUpperCase()) ||
-                                value;
-                            const text = label ? intl.formatMessage({ id: label }) : value; */
                         return contains(value, filterText || '');
                     }
                     return false;
