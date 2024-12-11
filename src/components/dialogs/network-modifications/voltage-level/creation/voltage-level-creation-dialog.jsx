@@ -41,7 +41,6 @@ import VoltageLevelCreationForm from './voltage-level-creation-form';
 import { controlCouplingOmnibusBetweenSections } from '../voltage-level-creation-utils';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { useIntl } from 'react-intl';
-import { kiloUnitToUnit, unitToKiloUnit } from 'utils/unit-converter';
 import { FORM_LOADING_DELAY } from 'components/network/constants';
 import { useOpenShortWaitFetching } from '../../../commons/handle-modification-form';
 import { createVoltageLevel } from '../../../../../services/study/network-modifications';
@@ -53,6 +52,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { convertInputValues, convertOutputValues, FieldType } from '../../../converter-unit-utils.js';
 
 /**
  * Dialog to create a load in the network
@@ -159,10 +159,12 @@ const VoltageLevelCreationDialog = ({
                 [NOMINAL_V]: voltageLevel[NOMINAL_V],
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertOutputValues(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
                 ),
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: unitToKiloUnit(
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertOutputValues(
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
                 [BUS_BAR_COUNT]: voltageLevel[BUS_BAR_COUNT] ?? 1,
@@ -215,8 +217,14 @@ const VoltageLevelCreationDialog = ({
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                ipMin: kiloUnitToUnit(voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]),
-                ipMax: kiloUnitToUnit(voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]),
+                ipMin: convertInputValues(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
+                ipMax: convertInputValues(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
+                ),
                 busbarCount: voltageLevel[BUS_BAR_COUNT],
                 sectionCount: voltageLevel[SECTION_COUNT],
                 switchKinds: voltageLevel[SWITCH_KINDS].map((e) => {

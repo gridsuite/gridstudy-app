@@ -19,8 +19,8 @@ import {
     typeAndFetchers,
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
-import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { convertInputValues, FieldType } from '../../../dialogs/converter-unit-utils';
 
 export const LINE_TAB_DEF = {
     index: 2,
@@ -134,7 +134,7 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.g1),
+            valueGetter: (params) => convertInputValues(FieldType.G1, params.data.g1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -143,7 +143,7 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.g2),
+            valueGetter: (params) => convertInputValues(FieldType.G2, params.data.g2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -152,7 +152,7 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.b1),
+            valueGetter: (params) => convertInputValues(FieldType.B1, params.data.b1),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -161,7 +161,7 @@ export const LINE_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.b2),
+            valueGetter: (params) => convertInputValues(FieldType.B2, params.data.b2),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

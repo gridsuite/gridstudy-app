@@ -20,11 +20,11 @@ import {
     R,
     X,
 } from 'components/utils/field-constants';
-import { unitToMicroUnit } from 'utils/unit-converter';
 import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
+import { convertInputValues, FieldType } from '../../../converter-unit-utils';
 
 const styles = {
     h3: {
@@ -70,7 +70,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${G1}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(lineToModify?.g1)}
+            previousValue={convertInputValues(FieldType.G1, lineToModify?.g1)}
             clearable={clearableFields}
         />
     );
@@ -80,7 +80,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${B1}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(lineToModify?.b1)}
+            previousValue={convertInputValues(FieldType.B1, lineToModify?.b1)}
             clearable={clearableFields}
         />
     );
@@ -90,7 +90,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${G2}`}
             label="ShuntConductanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(lineToModify?.g2)}
+            previousValue={convertInputValues(FieldType.G2, lineToModify?.g2)}
             clearable={clearableFields}
         />
     );
@@ -100,7 +100,7 @@ const LineCharacteristicsPane = ({
             name={`${id}.${B2}`}
             label="ShuntSusceptanceText"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(lineToModify?.b2)}
+            previousValue={convertInputValues(FieldType.B2, lineToModify?.b2)}
             clearable={clearableFields}
         />
     );

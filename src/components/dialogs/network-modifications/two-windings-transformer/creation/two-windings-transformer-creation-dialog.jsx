@@ -55,7 +55,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { sanitizeString } from '../../../dialog-utils';
 import EquipmentSearchDialog from '../../../equipment-search-dialog';
 import { useFormSearchCopy } from '../../../form-search-copy-hook';
@@ -104,6 +103,7 @@ import {
     getPropertiesFromModification,
     toModificationProperties,
 } from '../../common/properties/property-utils';
+import { convertInputValues, convertOutputValues, FieldType } from '../../../converter-unit-utils';
 
 /**
  * Dialog to create a two windings transformer in the network
@@ -218,8 +218,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 ...getTwoWindingsTransformerFormData({
                     r: twt.r,
                     x: twt.x,
-                    g: unitToMicroUnit(twt.g),
-                    b: unitToMicroUnit(twt.b),
+                    g: convertInputValues(FieldType.G, twt.g),
+                    b: convertInputValues(FieldType.B, twt.b),
                     ratedU1: twt.ratedU1,
                     ratedU2: twt.ratedU2,
                     ratedS: twt.ratedS,
@@ -311,8 +311,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...getTwoWindingsTransformerFormData({
                         r: twt.r,
                         x: twt.x,
-                        g: unitToMicroUnit(twt.g),
-                        b: unitToMicroUnit(twt.b),
+                        g: convertInputValues(FieldType.G, twt.g),
+                        b: convertInputValues(FieldType.B, twt.b),
                         ratedU1: twt.ratedU1,
                         ratedU2: twt.ratedU2,
                         ratedS: twt.ratedS,
@@ -503,8 +503,8 @@ const TwoWindingsTransformerCreationDialog = ({
                 temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
             };
 
-            characteristics[G] = microUnitToUnit(characteristics[G]);
-            characteristics[B] = microUnitToUnit(characteristics[B]);
+            characteristics[G] = convertOutputValues(FieldType.G, characteristics[G]);
+            characteristics[B] = convertOutputValues(FieldType.B, characteristics[B]);
             let ratioTap = undefined;
             if (enableRatioTapChanger) {
                 const ratioTapChangerFormValues = twt[RATIO_TAP_CHANGER];

@@ -24,9 +24,9 @@ import {
     FilterPropsType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { unitToKiloUnit } from '../../../utils/unit-converter';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
+import { convertOutputValues, FieldType } from '../../dialogs/converter-unit-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];
@@ -143,7 +143,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 sortProps,
                 filterProps: filterProps,
                 filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.current),
+                valueGetter: (params: ValueGetterParams) =>
+                    convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.data?.current),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'Side' }),
@@ -171,7 +172,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMin),
+                valueGetter: (params: ValueGetterParams) =>
+                    convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.data?.limitMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'IscMaxKA' }),
@@ -182,7 +184,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.limitMax),
+                valueGetter: (params: ValueGetterParams) =>
+                    convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.data?.limitMax),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'PscMVA' }),
@@ -203,7 +206,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMin),
+                valueGetter: (params: ValueGetterParams) =>
+                    convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.data?.deltaCurrentIpMin),
             }),
             makeAgGridCustomHeaderColumn({
                 headerName: intl.formatMessage({ id: 'deltaCurrentIpMax' }),
@@ -214,7 +218,8 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 sortProps: sortPropsCheckedForAllBusesAnalysisType,
                 filterProps: filterPropsCheckedForAllBusesAnalysisType,
                 filterParams: numericFilterParams,
-                valueGetter: (params: ValueGetterParams) => unitToKiloUnit(params.data?.deltaCurrentIpMax),
+                valueGetter: (params: ValueGetterParams) =>
+                    convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.data?.deltaCurrentIpMax),
             }),
             {
                 field: 'linkedElementId',

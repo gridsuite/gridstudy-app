@@ -18,9 +18,9 @@ import {
     excludeFromGlobalFilter,
     typeAndFetchers,
 } from './common-config';
-import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
+import { convertInputValues, convertOutputValues, FieldType } from '../../../dialogs/converter-unit-utils';
 
 function generateEditableNumericColumnDefinition<
     TId extends string,
@@ -91,12 +91,21 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin)),
-            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
+            ...numericalCellEditorConfig((params) =>
+                convertOutputValues(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    params.data?.identifiableShortCircuit?.ipMin
+                )
+            ),
+            valueGetter: (params) =>
+                convertOutputValues(
+                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    params.data?.identifiableShortCircuit?.ipMin
+                ),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMin: kiloUnitToUnit(params.newValue),
+                    ipMin: convertInputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },
@@ -112,12 +121,21 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
-            ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax)),
-            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
+            ...numericalCellEditorConfig((params) =>
+                convertOutputValues(
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    params.data?.identifiableShortCircuit?.ipMax
+                )
+            ),
+            valueGetter: (params) =>
+                convertOutputValues(
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    params.data?.identifiableShortCircuit?.ipMax
+                ),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMax: kiloUnitToUnit(params.newValue),
+                    ipMax: convertInputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },

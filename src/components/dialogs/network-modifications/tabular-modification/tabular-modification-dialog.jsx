@@ -19,13 +19,13 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
-    convertValueFromBackToFront,
-    convertValueFromFrontToBack,
     formatModification,
     getEquipmentTypeFromModificationType,
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
+import { convertInputValues, convertOutputValues, FieldType } from '../../converter-unit-utils';
+import { toModificationOperation } from '../../../utils/utils.js';
 
 const formSchema = yup
     .object()
@@ -76,7 +76,7 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertValueFromBackToFront(key, modif[key]);
+                    modification[key] = convertInputValues(FieldType[key], modif[key]);
                 });
                 return modification;
             });
@@ -95,7 +95,7 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    modification[key] = convertValueFromFrontToBack(key, row[key]);
+                    modification[key] = toModificationOperation(convertOutputValues(FieldType[key], row[key]));
                 });
                 return modification;
             });

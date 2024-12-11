@@ -41,7 +41,6 @@ import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { FetchStatus } from '../../../../../services/utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { FORM_LOADING_DELAY, UNDEFINED_CONNECTION_DIRECTION } from 'components/network/constants';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
@@ -76,6 +75,7 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
+import { convertInputValues, convertOutputValues, FieldType } from '../../../converter-unit-utils';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
@@ -149,10 +149,10 @@ const LineCreationDialog = ({
                 ...getCharacteristicsFormData({
                     r: line.r,
                     x: line.x,
-                    g1: unitToMicroUnit(line.g1), // this form uses and displays microSiemens
-                    b1: unitToMicroUnit(line.b1),
-                    g2: unitToMicroUnit(line.g2),
-                    b2: unitToMicroUnit(line.b2),
+                    g1: convertInputValues(FieldType.G1, line.g1), // this form uses and displays microSiemens
+                    b1: convertInputValues(FieldType.B1, line.b1),
+                    g2: convertInputValues(FieldType.G2, line.g2),
+                    b2: convertInputValues(FieldType.B2, line.b2),
                     ...(displayConnectivity &&
                         getConnectivityFormData(
                             {
@@ -200,10 +200,10 @@ const LineCreationDialog = ({
                 ...getCharacteristicsFormData({
                     r: line.r,
                     x: line.x,
-                    g1: unitToMicroUnit(line.g1),
-                    b1: unitToMicroUnit(line.b1),
-                    g2: unitToMicroUnit(line.g2),
-                    b2: unitToMicroUnit(line.b2),
+                    g1: convertInputValues(FieldType.G1, line.g1),
+                    b1: convertInputValues(FieldType.B1, line.b1),
+                    g2: convertInputValues(FieldType.G2, line.g2),
+                    b2: convertInputValues(FieldType.B2, line.b2),
                     ...getConnectivityFormData(
                         {
                             busbarSectionId: line.busOrBusbarSectionId1,
@@ -290,10 +290,10 @@ const LineCreationDialog = ({
                 sanitizeString(header[EQUIPMENT_NAME]),
                 characteristics[R],
                 characteristics[X],
-                microUnitToUnit(characteristics[G1]),
-                microUnitToUnit(characteristics[B1]),
-                microUnitToUnit(characteristics[G2]),
-                microUnitToUnit(characteristics[B2]),
+                convertOutputValues(FieldType.G1, characteristics[G1]),
+                convertOutputValues(FieldType.B1, characteristics[B1]),
+                convertOutputValues(FieldType.G2, characteristics[G2]),
+                convertOutputValues(FieldType.B2, characteristics[B2]),
                 characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.id,
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,

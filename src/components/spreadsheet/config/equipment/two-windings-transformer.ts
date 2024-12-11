@@ -29,7 +29,6 @@ import {
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
-import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { getComputedRegulationMode } from '../../../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import {
@@ -39,6 +38,7 @@ import {
     numericalCellEditorConfig,
     standardSelectCellEditorConfig,
 } from '../common/cell-editors';
+import { convertInputValues, FieldType } from '../../../dialogs/converter-unit-utils';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
@@ -600,7 +600,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.g),
+            valueGetter: (params) => convertInputValues(FieldType.G, params.data.g),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -609,7 +609,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             numeric: true,
             ...defaultNumericFilterConfig,
             fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.b),
+            valueGetter: (params) => convertInputValues(FieldType.B, params.data.b),
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

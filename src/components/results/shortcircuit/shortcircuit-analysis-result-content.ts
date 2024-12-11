@@ -8,7 +8,7 @@
 import { ALL_BUSES, ONE_BUS } from 'utils/store-sort-filter-fields';
 import { ShortCircuitAnalysisType } from './shortcircuit-analysis-result.type';
 import { FilterSelectorType } from '../../custom-aggrid/custom-aggrid-header.type';
-import { kiloUnitToUnit } from '../../../utils/unit-converter';
+import { convertInputValues, FieldType } from '../../dialogs/converter-unit-utils';
 
 export const PAGE_OPTIONS = [25, 100, 500, 1000];
 
@@ -49,6 +49,8 @@ export const mappingTabs = (analysisType: ShortCircuitAnalysisType): string => {
 
 export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
     return filterSelector.map((filter) => {
+        const fieldKey = filter.column as keyof typeof FieldType;
+        const field = FieldType[fieldKey];
         switch (filter.column) {
             case 'current':
             case 'deltaCurrentIpMax':
@@ -57,8 +59,8 @@ export const convertFilterValues = (filterSelector: FilterSelectorType[]) => {
             case 'limitMax':
                 return {
                     ...filter,
-                    value: kiloUnitToUnit(filter.value),
-                    tolerance: kiloUnitToUnit(filter.tolerance),
+                    value: convertInputValues(field, filter.value),
+                    tolerance: convertInputValues(field, filter.tolerance),
                 };
             default:
                 return filter;

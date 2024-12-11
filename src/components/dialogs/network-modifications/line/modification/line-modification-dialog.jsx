@@ -39,7 +39,6 @@ import {
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 
@@ -81,6 +80,7 @@ import {
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
 } from '../../../connectivity/connectivity-form-utils';
+import { convertInputValues, convertOutputValues, FieldType } from '../../../converter-unit-utils';
 
 export const LineModificationDialogTab = {
     CONNECTIVITY_TAB: 0,
@@ -161,10 +161,10 @@ const LineModificationDialog = ({
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
-                    g1: unitToMicroUnit(line.g1?.value ?? null),
-                    b1: unitToMicroUnit(line.b1?.value ?? null),
-                    g2: unitToMicroUnit(line.g2?.value ?? null),
-                    b2: unitToMicroUnit(line.b2?.value ?? null),
+                    g1: convertInputValues(FieldType.G1, line.g1?.value ?? null),
+                    b1: convertInputValues(FieldType.B1, line.b1?.value ?? null),
+                    g2: convertInputValues(FieldType.G2, line.g2?.value ?? null),
+                    b2: convertInputValues(FieldType.B2, line.b2?.value ?? null),
                 }),
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -242,10 +242,10 @@ const LineModificationDialog = ({
                 sanitizeString(line[EQUIPMENT_NAME]),
                 characteristics[R],
                 characteristics[X],
-                microUnitToUnit(characteristics[G1]),
-                microUnitToUnit(characteristics[B1]),
-                microUnitToUnit(characteristics[G2]),
-                microUnitToUnit(characteristics[B2]),
+                convertOutputValues(FieldType.G1, characteristics[G1]),
+                convertOutputValues(FieldType.B1, characteristics[B1]),
+                convertOutputValues(FieldType.G2, characteristics[G2]),
+                convertOutputValues(FieldType.B2, characteristics[B2]),
                 currentLimits1,
                 currentLimits2,
                 connectivity1[VOLTAGE_LEVEL]?.id,

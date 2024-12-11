@@ -19,7 +19,6 @@ import { ASSIGNMENTS, EDITED_FIELD, EQUIPMENT_TYPE_FIELD, VALUE_FIELD } from '..
 import { modifyByAssignment } from '../../../../../services/study/network-modifications';
 import {
     convertInputValue,
-    convertOutputValue,
     getAssignmentFromEditData,
     getAssignmentInitialValue,
     getAssignmentsSchema,
@@ -27,6 +26,7 @@ import {
 } from './assignment/assignment-utils';
 import { Assignment, ModificationByAssignment } from './assignment/assignment.type';
 import { DeepNullable } from '../../../../utils/ts-utils';
+import { convertOutputValues, FieldType } from '../../../converter-unit-utils';
 
 const formSchema = yup
     .object()
@@ -93,7 +93,11 @@ const ModificationByAssignmentDialog: FC<any> = ({
         (formData: ModificationByAssignment) => {
             const assignmentsList = formData[ASSIGNMENTS].map((assignment) => {
                 const dataType = getDataType(assignment[EDITED_FIELD]);
-                const valueConverted = convertOutputValue(assignment[EDITED_FIELD], assignment[VALUE_FIELD]);
+                console.log('=================assignment[EDITED_FIELD]', assignment[EDITED_FIELD]);
+                const fieldKey = assignment[EDITED_FIELD] as keyof typeof FieldType;
+                const field = FieldType[fieldKey];
+                const value = assignment[VALUE_FIELD];
+                const valueConverted = convertOutputValues(field, value);
                 return {
                     ...assignment,
                     dataType,
