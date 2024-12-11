@@ -5,13 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../utils/field-constants';
+import { CONVERTER_STATION_1, CONVERTER_STATION_2, HVDC_LINE_TAB } from '../../../../../utils/field-constants';
 import { FunctionComponent } from 'react';
 import VscHvdcLinePane from '../hvdc-line-pane/vsc-hvdc-line-pane';
 import ConverterStationPane from '../converter-station/converter-station-pane';
 import { VSC_CREATION_TABS } from './vsc-creation-dialog';
 import { UUID } from 'crypto';
-import { CurrentTreeNode } from '../../../../../redux/reducer';
+import { CurrentTreeNode } from '../../../../../../redux/reducer';
 import { Box } from '@mui/material';
 
 interface VscCreationFormProps {

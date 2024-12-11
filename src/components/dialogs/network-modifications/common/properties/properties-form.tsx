@@ -14,13 +14,15 @@ import { useFormContext, useWatch } from 'react-hook-form';
 import GridSection from '../../../commons/grid-section';
 
 type PropertiesFormProps = {
+    id?: string;
     networkElementType?: string;
     isModification?: boolean;
 };
 
-const PropertiesForm = ({ networkElementType, isModification = false }: PropertiesFormProps) => {
+const PropertiesForm = ({ id, networkElementType, isModification = false }: PropertiesFormProps) => {
+    const additionalProperties = id ? `${id}.${ADDITIONAL_PROPERTIES}` : ADDITIONAL_PROPERTIES;
     const watchProps = useWatch({
-        name: ADDITIONAL_PROPERTIES,
+        name: additionalProperties,
     });
     const { getValues, setValue } = useFormContext();
     const [predefinedProperties, setPredefinedProperties] = useState({} as PredefinedProperties);
@@ -36,19 +38,19 @@ const PropertiesForm = ({ networkElementType, isModification = false }: Properti
 
     const getDeletionMark = useCallback(
         (idx: number) => {
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            const properties = getValues(`${additionalProperties}`);
             if (properties && typeof properties[idx] !== 'undefined') {
                 return watchProps && properties[idx][DELETION_MARK];
             }
             return false;
         },
-        [getValues, watchProps]
+        [getValues, watchProps, additionalProperties]
     );
 
     const deleteCallback = useCallback(
         (idx: number) => {
             let markedForDeletion = false;
-            const properties = getValues(`${ADDITIONAL_PROPERTIES}`);
+            const properties = getValues(`${additionalProperties}`);
             if (properties && typeof properties[idx] !== 'undefined') {
                 markedForDeletion = properties[idx][DELETION_MARK];
             } else {
@@ -58,19 +60,19 @@ const PropertiesForm = ({ networkElementType, isModification = false }: Properti
             let canRemoveLine = true;
             if (markedForDeletion) {
                 // just unmark
-                setValue(`${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`, false, { shouldDirty: true });
+                setValue(`${additionalProperties}.${idx}.${DELETION_MARK}`, false, { shouldDirty: true });
                 canRemoveLine = false;
             } else {
                 // we should mark for deletion a property that actually exists in the network and not delete the property line straight away
                 if (properties[idx][PREVIOUS_VALUE] && properties[idx][ADDED] === false) {
-                    setValue(`${ADDITIONAL_PROPERTIES}.${idx}.${DELETION_MARK}`, true, { shouldDirty: true });
+                    setValue(`${additionalProperties}.${idx}.${DELETION_MARK}`, true, { shouldDirty: true });
                     canRemoveLine = false;
                 }
             }
             // otherwise just delete the line
             return canRemoveLine;
         },
-        [getValues, setValue]
+        [getValues, setValue, additionalProperties]
     );
 
     const modificationProperties = isModification
@@ -83,7 +85,7 @@ const PropertiesForm = ({ networkElementType, isModification = false }: Properti
 
     const additionalProps = (
         <ExpandableInput
-            name={ADDITIONAL_PROPERTIES}
+            name={additionalProperties}
             Field={PropertyForm}
             fieldProps={{ predefinedProperties }}
             addButtonLabel={'AddProperty'}
