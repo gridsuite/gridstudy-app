@@ -14,6 +14,7 @@ export const AUTOMATON = 'automaton';
 export const Q0 = 'q0';
 export const VOLTAGE_LEVEL = 'voltageLevel';
 export const ID = 'id';
+export const OPERATIONAL_LIMIT_GROUP_ID = 'operationalLimitGroupId';
 export const NAME = 'name';
 export const DESTINATION_FOLDER = 'destinationFolder';
 export const FOLDER_NAME = 'folderName';

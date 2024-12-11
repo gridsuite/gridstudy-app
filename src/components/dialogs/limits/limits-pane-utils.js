@@ -9,8 +9,8 @@ import { sanitizeString } from '../dialog-utils';
 import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
-    ID,
     LIMITS,
+    OPERATIONAL_LIMIT_GROUP_ID,
     PERMANENT_LIMIT,
     SELECTED_LIMIT_GROUP_1,
     SELECTED_LIMIT_GROUP_2,
@@ -25,18 +25,18 @@ import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
 const limitGroupValidationSchema = () => ({
-    [ID]: yup.string().nullable(),
+    [OPERATIONAL_LIMIT_GROUP_ID]: yup.string().nullable(),
     [PERMANENT_LIMIT]: yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero'),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(
-            yup.lazy( (item) => {
+            yup.lazy((item) => {
                 if (item[TEMPORARY_LIMIT_NAME]) {
                     return yup.object().shape({
                         [TEMPORARY_LIMIT_NAME]: yup.string().required(),
                         [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
                         [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-                    })
+                    });
                 }
                 // totally empty lines are fine : they will be ignored later
                 // TODO : how to force the case when all are empty ? Or should I drop them before ??
@@ -133,14 +133,14 @@ export const getAllLimitsFormData = (
     {
         currentLimits1 = [
             {
-                [ID]: '',
+                [OPERATIONAL_LIMIT_GROUP_ID]: null,
                 [PERMANENT_LIMIT]: null,
                 [TEMPORARY_LIMITS]: [],
             },
         ],
         currentLimits2 = [
             {
-                [ID]: '',
+                [OPERATIONAL_LIMIT_GROUP_ID]: null,
                 [PERMANENT_LIMIT]: null,
                 [TEMPORARY_LIMITS]: [],
             },

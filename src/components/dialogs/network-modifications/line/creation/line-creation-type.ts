@@ -6,7 +6,7 @@
  */
 
 export interface CurrentLimitsData {
-    id: string;
+    operationalLimitGroupId: string;
     temporaryLimits: TemporaryLimitData[];
     permanentLimit?: number;
 }

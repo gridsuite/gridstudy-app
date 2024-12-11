@@ -30,7 +30,7 @@ export const SelectedOperationalLimitGroup = ({
             let allLimitSets: Option[] = [];
             optionsValues.forEach((optionObj: CurrentLimitsData) => {
                 const option: Option = {
-                    id: optionObj.id,
+                    id: optionObj.operationalLimitGroupId,
                     label: '',
                 };
                 allLimitSets.push(option);

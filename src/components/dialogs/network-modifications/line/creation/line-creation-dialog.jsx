@@ -30,7 +30,6 @@ import {
     SELECTED_LIMIT_GROUP_1,
     SELECTED_LIMIT_GROUP_2,
     TAB_HEADER,
-    TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -144,7 +143,7 @@ const LineCreationDialog = ({
         let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
         completeCurrentLimits.forEach((elt) =>
             formattedCompleteCurrentLimit.push({
-                id: elt.id,
+                operationalLimitGroupId: elt.id,
                 permanentLimit: elt.permanentLimit,
                 temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
             })
@@ -266,18 +265,17 @@ const LineCreationDialog = ({
     /**
      * delete the empty temporary limits lines
      */
-    const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) => {
-        const finalCurrentLimitsData = currentLimitsData.map((currentLimits) /*: CurrentLimitsData*/ =>
-            currentLimits[TEMPORARY_LIMITS].filter(
+    const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) => currentLimitsData.map(({temporaryLimits, ...baseData}) /*: CurrentLimitsData*/ => ({
+            ...baseData,
+            temporaryLimits: temporaryLimits.filter(
                 (limit) =>
                     // completely empty lines should be filtered out (the interface display always some lines even if empty)
                     limit.name !== undefined && limit.name !== null && limit.name !== ''
             ).map(({ name, ...temporaryLimit }) => ({
                 ...temporaryLimit,
                 name: sanitizeString(name),
-            })));
-        return finalCurrentLimitsData;
-    };
+            }))
+        }));
 
     const handleLineSegmentsBuildSubmit = (data) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {

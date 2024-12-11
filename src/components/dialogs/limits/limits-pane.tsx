@@ -74,25 +74,25 @@ export function LimitsPane({
     useEffect(() => {
         setIndexSelectedLimitSet1(
             selectedSetStr
-                ? limitSets1.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
+                ? limitSets1.findIndex((limitSet: CurrentLimitsData) => limitSet.operationalLimitGroupId === selectedSetStr)
                 : undefined
         );
         setIndexSelectedLimitSet2(
             selectedSetStr
-                ? limitSets2.findIndex((limitSet: CurrentLimitsData) => limitSet.id === selectedSetStr)
+                ? limitSets2.findIndex((limitSet: CurrentLimitsData) => limitSet.operationalLimitGroupId === selectedSetStr)
                 : undefined
         );
     }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
 
     useEffect(() => {
         let allLimitSets: string[] = [];
-        allLimitSets.push(...limitSets1.map((limitSet: { id: any }) => limitSet.id));
+        allLimitSets.push(...limitSets1.map((limitSet: { operationalLimitGroupId: any }) => limitSet.operationalLimitGroupId));
         allLimitSets.push(
             ...limitSets2
                 .filter(
-                    (limitSet: CurrentLimitsData) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.id)
+                    (limitSet: CurrentLimitsData) => !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.operationalLimitGroupId)
                 )
-                .map((limitSet: { id: any }) => limitSet.id)
+                .map((limitSet: { operationalLimitGroupId: any }) => limitSet.operationalLimitGroupId)
         );
         setAllLimitSetsStr(allLimitSets);
     }, [limitSets1, limitSets2]);
