@@ -59,8 +59,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
 
     useEffect(() => {
         const reportTree = mapReportsTree(report);
-        console.log(reportTree);
-
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
