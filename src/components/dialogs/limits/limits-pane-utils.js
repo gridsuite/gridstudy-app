@@ -44,7 +44,7 @@ const limitGroupValidationSchema = () => ({
                     [TEMPORARY_LIMIT_NAME]: yup.string().nullable(),
                     [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
                     [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
-            })
+                });
             })
         )
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
@@ -52,11 +52,11 @@ const limitGroupValidationSchema = () => ({
                 .filter((l) => !!l[TEMPORARY_LIMIT_NAME])
                 .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
-        })
-        /*.test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
+        }),
+        /* .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
             const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]);
             return areArrayElementsUnique(durationsArray); // TODO ignorer les lignes vides et réactiver ça
-        }),*/
+        }), */
 });
 
 const limitsValidationSchema = (id, onlySelectedLimits = true) =>

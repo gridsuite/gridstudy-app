@@ -264,16 +264,19 @@ const LineCreationDialog = ({
     /**
      * delete the empty temporary limits lines
      */
-    const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) => currentLimitsData.map(({temporaryLimits, ...baseData}) /*: CurrentLimitsData*/ => ({
+    const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) =>
+        currentLimitsData.map(({ temporaryLimits, ...baseData }) /*: CurrentLimitsData*/ => ({
             ...baseData,
-            temporaryLimits: temporaryLimits.filter(
-                (limit) =>
-                    // completely empty lines should be filtered out (the interface display always some lines even if empty)
-                    limit.name !== undefined && limit.name !== null && limit.name !== ''
-            ).map(({ name, ...temporaryLimit }) => ({
-                ...temporaryLimit,
-                name: sanitizeString(name),
-            }))
+            temporaryLimits: temporaryLimits
+                .filter(
+                    (limit) =>
+                        // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                        limit.name !== undefined && limit.name !== null && limit.name !== ''
+                )
+                .map(({ name, ...temporaryLimit }) => ({
+                    ...temporaryLimit,
+                    name: sanitizeString(name),
+                })),
         }));
 
     const handleLineSegmentsBuildSubmit = (data) => {

@@ -19,7 +19,7 @@ import { LimitsSidePane } from './limits-side-pane';
 import { SelectedOperationalLimitGroup } from './selected-operational-limit-group.jsx';
 import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
-import { useWatch } from 'react-hook-form';
+import { useFieldArray, useWatch } from 'react-hook-form';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { CurrentLimitsData } from '../network-modifications/line/creation/line-creation-type';
 
@@ -125,16 +125,23 @@ export function LimitsPane({
   };
      */
 
+    const useFieldArrayCurrentLimits1 = useFieldArray({
+        name: `${id}.${CURRENT_LIMITS_1}`,
+    });
+    const useFieldArrayCurrentLimits2 = useFieldArray({
+        name: `${id}.${CURRENT_LIMITS_2}`,
+    });
+
     const addNewLimitSet = () => {
-        /*const newLimitSet: CurrentLimitsData = {
-            id: `New Limit Set ${limitSets.length - 1}`,
+        const newLimitSet: CurrentLimitsData = {
+            operationalLimitGroupId: `DEFAULT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : ''}`,
             temporaryLimits: [],
             permanentLimit: undefined,
-        };*/
-        const newLimitSet: string = `DEFAUT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : ''}`;
-        setAllLimitSetsStr([...allLimitSetsStr, newLimitSet]); // TODO : l'ajouter dans les deux côtés ? cf createRows
+        };
+        useFieldArrayCurrentLimits1.append(newLimitSet);
+        useFieldArrayCurrentLimits2.append(newLimitSet);
         setSelectedLimitSetTabIndex(allLimitSetsStr.length - 1);
-        setSelectedSetStr(newLimitSet);
+        setSelectedSetStr(newLimitSet.operationalLimitGroupId);
     };
 
     return (
