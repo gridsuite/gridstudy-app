@@ -58,8 +58,10 @@ import {
     ComponentLibraryAction,
     CURRENT_TREE_NODE,
     CurrentTreeNodeAction,
-    CUSTOM_COLUMNS_DEFINITIONS,
-    CustomColumnsDefinitionsAction,
+    UPDATE_CUSTOM_COLUMNS_DEFINITION,
+    REMOVE_CUSTOM_COLUMNS_DEFINITION,
+    UpdateCustomColumnsDefinitionsAction,
+    RemoveCustomColumnsDefinitionsAction,
     DECREMENT_NETWORK_AREA_DIAGRAM_DEPTH,
     DecrementNetworkAreaDiagramDepthAction,
     DELETE_EQUIPMENTS,
@@ -118,12 +120,14 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
+    NETWORK_MODIFICATION_TREE_SWITCH_NODES,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
+    NetworkModificationTreeSwitchNodesAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
@@ -202,6 +206,8 @@ import {
     UpdateTableDefinitionAction,
     USE_NAME,
     UseNameAction,
+    STATEESTIMATION_RESULT_FILTER,
+    StateEstimationResultFilterAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -289,6 +295,10 @@ import {
     SPREADSHEET_STORE_FIELD,
     TABLE_SORT_STORE,
     TIMELINE,
+    STATEESTIMATION_RESULT_STORE_FIELD,
+    STATEESTIMATION_RESULT_SORT_STORE,
+    STATEESTIMATION_QUALITY_CRITERION,
+    STATEESTIMATION_QUALITY_PER_REGION,
 } from '../utils/store-sort-filter-fields';
 import { UUID } from 'crypto';
 import { Filter } from '../components/results/common/results-global-filter';
@@ -373,7 +383,6 @@ export type StudyUpdated = {
 
 type NodeCommonData = {
     label: string;
-    parentNodeUuid?: UUID;
     globalBuildStatus?: BUILD_STATUS;
     description?: string;
     readOnly?: boolean;
@@ -414,6 +423,7 @@ export type TableSort = {
     [SENSITIVITY_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
     [DYNAMIC_SIMULATION_RESULT_SORT_STORE]: TableSortConfig;
     [SHORTCIRCUIT_ANALYSIS_RESULT_SORT_STORE]: TableSortConfig;
+    [STATEESTIMATION_RESULT_SORT_STORE]: TableSortConfig;
 };
 export type TableSortKeysType = keyof TableSort;
 
@@ -539,7 +549,10 @@ export interface AppState extends CommonStoreState {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: UnknownArray;
     };
-
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: UnknownArray;
+        [STATEESTIMATION_QUALITY_PER_REGION]: UnknownArray;
+    };
     [SPREADSHEET_STORE_FIELD]: SpreadsheetFilterState;
 
     [LOGS_STORE_FIELD]: LogsFilterState;
@@ -717,6 +730,10 @@ const initialState: AppState = {
     [DYNAMIC_SIMULATION_RESULT_STORE_FIELD]: {
         [TIMELINE]: [],
     },
+    [STATEESTIMATION_RESULT_STORE_FIELD]: {
+        [STATEESTIMATION_QUALITY_CRITERION]: [],
+        [STATEESTIMATION_QUALITY_PER_REGION]: [],
+    },
 
     // Spreadsheet filters
     [SPREADSHEET_STORE_FIELD]: Object.values(initialTablesState.definitions)
@@ -786,8 +803,21 @@ const initialState: AppState = {
             [ONE_BUS]: [{ colId: 'current', sort: SortWay.DESC }],
             [ALL_BUSES]: [{ colId: 'elementId', sort: SortWay.ASC }],
         },
+        [STATEESTIMATION_RESULT_SORT_STORE]: {
+            [STATEESTIMATION_QUALITY_CRITERION]: [
+                {
+                    colId: 'type',
+                    sort: SortWay.ASC,
+                },
+            ],
+            [STATEESTIMATION_QUALITY_PER_REGION]: [
+                {
+                    colId: 'name',
+                    sort: SortWay.ASC,
+                },
+            ],
+        },
     },
-
     // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
     // defaulted to true to init load geo data with HYBRID defaulted display Mode
     // TODO REMOVE LATER
@@ -876,6 +906,24 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
+    builder.addCase(
+        NETWORK_MODIFICATION_TREE_SWITCH_NODES,
+        (state, action: NetworkModificationTreeSwitchNodesAction) => {
+            if (state.networkModificationTreeModel) {
+                let newModel = state.networkModificationTreeModel.newSharedForUpdate();
+
+                const nodeToMove = newModel.treeNodes.find((n: CurrentTreeNode) => n.id === action.nodeToMoveId);
+                const destinationNode = newModel.treeNodes.find(
+                    (n: CurrentTreeNode) => n.id === action.destinationNodeId
+                );
+                if (nodeToMove && destinationNode) {
+                    newModel.switchBranches(nodeToMove, destinationNode);
+                }
+                state.networkModificationTreeModel = newModel;
+            }
+        }
+    );
+
     builder.addCase(NETWORK_MODIFICATION_TREE_NODE_ADDED, (state, action: NetworkModificationTreeNodeAddedAction) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
@@ -885,14 +933,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -908,14 +955,13 @@ export const reducer = createReducer(initialState, (builder) => {
                 action.insertMode,
                 action.referenceNodeId
             );
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
             // check if added node is the new parent of the current Node
             if (
                 state.currentTreeNode?.id &&
                 action.networkModificationTreeNode?.childrenIds?.includes(state.currentTreeNode?.id)
             ) {
-                // Then must overwrite currentTreeNode to set new parentNodeUuid
+                // Then must overwrite currentTreeNode to set new parentId
                 synchCurrentTreeNode(state, state.currentTreeNode?.id);
             }
         }
@@ -925,8 +971,6 @@ export const reducer = createReducer(initialState, (builder) => {
         if (state.networkModificationTreeModel) {
             let newModel = state.networkModificationTreeModel.newSharedForUpdate();
             unravelSubTree(newModel, action.parentNodeId, action.networkModificationTreeNodes);
-
-            newModel.updateLayout();
             state.networkModificationTreeModel = newModel;
         }
     });
@@ -941,11 +985,10 @@ export const reducer = createReducer(initialState, (builder) => {
                 //in the future, if the deleted nodes are no longer contiguous we will need another implementation
                 const nextCurrentNodeUuid = newModel.treeNodes
                     .filter((node) => action.networkModificationTreeNodes.includes(node.id))
-                    .map((node) => node.data.parentNodeUuid)
-                    .find((parentNodeUuid) => !action.networkModificationTreeNodes.includes(parentNodeUuid!));
+                    .map((node) => node.parentId)
+                    .find((parentId) => !action.networkModificationTreeNodes.includes(parentId as UUID));
 
                 newModel.removeNodes(action.networkModificationTreeNodes);
-                newModel.updateLayout();
                 state.networkModificationTreeModel = newModel;
 
                 // check if current node is in the nodes deleted list
@@ -955,15 +998,15 @@ export const reducer = createReducer(initialState, (builder) => {
                         state.currentTreeNode?.id
                     )
                 ) {
-                    synchCurrentTreeNode(state, nextCurrentNodeUuid);
+                    synchCurrentTreeNode(state, nextCurrentNodeUuid as UUID);
                 } // check if parent node of the current node is in the nodes deleted list
                 else if (
                     action.networkModificationTreeNodes.includes(
                         // @ts-expect-error TODO: what to do if current node null?
-                        state.currentTreeNode?.data?.parentNodeUuid
+                        state.currentTreeNode?.parentId
                     )
                 ) {
-                    // Then must overwrite currentTreeNode to get new parentNodeUuid
+                    // Then must overwrite currentTreeNode to get new parentId
                     synchCurrentTreeNode(state, state.currentTreeNode?.id);
                 }
             }
@@ -1671,6 +1714,10 @@ export const reducer = createReducer(initialState, (builder) => {
         state[DYNAMIC_SIMULATION_RESULT_STORE_FIELD][action.filterTab] = action[DYNAMIC_SIMULATION_RESULT_STORE_FIELD];
     });
 
+    builder.addCase(STATEESTIMATION_RESULT_FILTER, (state, action: StateEstimationResultFilterAction) => {
+        state[STATEESTIMATION_RESULT_STORE_FIELD][action.filterTab] = action[STATEESTIMATION_RESULT_STORE_FIELD];
+    });
+
     builder.addCase(SPREADSHEET_FILTER, (state, action: SpreadsheetFilterAction) => {
         state[SPREADSHEET_STORE_FIELD][action.filterTab] = action[SPREADSHEET_STORE_FIELD];
     });
@@ -1699,8 +1746,20 @@ export const reducer = createReducer(initialState, (builder) => {
         state.tableSort[SPREADSHEET_SORT_STORE][newTabName] = value;
     });
 
-    builder.addCase(CUSTOM_COLUMNS_DEFINITIONS, (state, action: CustomColumnsDefinitionsAction) => {
-        state.tables.allCustomColumnsDefinitions[action.table].columns = action.definitions;
+    builder.addCase(UPDATE_CUSTOM_COLUMNS_DEFINITION, (state, action: UpdateCustomColumnsDefinitionsAction) => {
+        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
+            action.table
+        ].columns.some((column) => column.id === action.definition.id)
+            ? state.tables.allCustomColumnsDefinitions[action.table].columns.map((column) =>
+                  column.id === action.definition.id ? action.definition : column
+              )
+            : [...state.tables.allCustomColumnsDefinitions[action.table].columns, action.definition];
+    });
+
+    builder.addCase(REMOVE_CUSTOM_COLUMNS_DEFINITION, (state, action: RemoveCustomColumnsDefinitionsAction) => {
+        state.tables.allCustomColumnsDefinitions[action.table].columns = state.tables.allCustomColumnsDefinitions[
+            action.table
+        ].columns.filter((column) => column.id !== action.definitionId);
     });
 });
 
@@ -1886,7 +1945,7 @@ function unravelSubTree(
         if (treeModel.treeNodes.find((el) => el.id === node.id)) {
             treeModel.removeNodes([node.id]);
         }
-        treeModel.addChild(node, subtreeParentId, NodeInsertModes.After);
+        treeModel.addChild(node, subtreeParentId, NodeInsertModes.NewBranch, subtreeParentId, true);
 
         if (node.children.length > 0) {
             node.children.forEach((child) => {

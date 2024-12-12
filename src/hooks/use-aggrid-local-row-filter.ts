@@ -13,12 +13,35 @@ import {
     FilterStorePropsType,
     FILTER_DATA_TYPES,
     FILTER_NUMBER_COMPARATORS,
+    UNDISPLAYED_FILTER_NUMBER_COMPARATORS,
 } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { countDecimalPlaces, truncateNumber } from 'utils/rounding';
+import { countDecimalPlaces, countDecimalPlacesFromString } from 'utils/rounding';
+import { isNumber } from 'mathjs';
 
 interface FilterModel {
     [colId: string]: any;
 }
+
+/**
+ * Compute the tolerance that should be applied when comparing filter values to database values
+ * @param value value entered in the filter
+ */
+export const computeTolerance = (value: undefined | null | number | string | string[]) => {
+    if (!value) {
+        return 0;
+    }
+    let decimalPrecision: number;
+    // the reference for the comparison is the number of digits after the decimal point in 'value'
+    // extra digits are ignored, but the user may add '0's after the decimal point in order to get a better precision
+    if (isNumber(value)) {
+        decimalPrecision = countDecimalPlaces(value);
+    } else {
+        decimalPrecision = countDecimalPlacesFromString(value as string);
+    }
+    // tolerance is multiplied by 0.5 to simulate the fact that the database value is rounded (in the front, from the user viewpoint)
+    // more than 13 decimal after dot will likely cause rounding errors due to double precision
+    return (1 / Math.pow(10, decimalPrecision)) * 0.5;
+};
 
 export const useAggridLocalRowFilter = (
     gridRef: React.MutableRefObject<AgGridReact | null>,
@@ -60,6 +83,7 @@ export const useAggridLocalRowFilter = (
                     } else {
                         agGridFilterModel[column] = {
                             filterType: filter.dataType,
+                            tolerance: filter.tolerance,
                             type: filter.type,
                             filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
                         };
@@ -68,6 +92,7 @@ export const useAggridLocalRowFilter = (
                     // Multiple filters on the same column
                     const conditions = filters.map((filter) => ({
                         filterType: filter.dataType,
+                        tolerance: filter.tolerance,
                         type: filter.type,
                         filter: filter.dataType === FILTER_DATA_TYPES.NUMBER ? Number(filter.value) : filter.value,
                     }));
@@ -75,6 +100,7 @@ export const useAggridLocalRowFilter = (
                     // Create a combined filter model with 'OR' for all conditions
                     agGridFilterModel[column] = {
                         filterType: filters[0].dataType,
+                        tolerance: filters[0].tolerance,
                         operator: 'OR',
                         // Dynamically add additional conditions
                         // Each additional condition is added as 'condition1', 'condition2', etc.
@@ -123,8 +149,14 @@ export const useAggridLocalRowFilter = (
         [formatCustomFiltersForAgGrid, gridRef]
     );
 
-    const addToleranceToFilter = (filters: FilterSelectorType[], tolerance: number = 0.00001): FilterSelectorType[] => {
-        const decimalPrecision: number = countDecimalPlaces(tolerance);
+    const addToleranceToFilter = (
+        filters: FilterSelectorType[],
+        tolerance: number | undefined = undefined
+    ): FilterSelectorType[] => {
+        let finalTolerance: number;
+        if (tolerance !== undefined) {
+            finalTolerance = tolerance;
+        }
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
@@ -132,35 +164,37 @@ export const useAggridLocalRowFilter = (
                     typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
-                    // Call the truncateNumber function to accurately truncate 'valueAsNumber' to 'decimalPrecision' decimal places.
-                    let truncatedNumber = truncateNumber(valueAsNumber, decimalPrecision);
+                    if (tolerance === undefined) {
+                        // better to use the string value (filter.value) in order not to lose the decimal precision for values like 420.0000000
+                        finalTolerance = computeTolerance(filter.value);
+                    }
+
                     // Depending on the filter type, adjust the filter value by adding or subtracting the tolerance
                     switch (filter.type) {
+                        // Creates two conditions to test we are not in [value-tolerance..value+tolerance] (handles rounded decimal precision)
                         case FILTER_NUMBER_COMPARATORS.NOT_EQUAL:
-                            // Create two conditions to test we are not in [value-tolerance..value+tolerance]
                             return [
                                 {
                                     ...filter,
-                                    type: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                    value: (truncatedNumber + tolerance).toFixed(decimalPrecision),
+                                    type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.GREATER_THAN,
+                                    value: valueAsNumber + finalTolerance,
                                 },
                                 {
                                     ...filter,
-                                    type: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                    value: (truncatedNumber - tolerance).toFixed(decimalPrecision),
+                                    type: UNDISPLAYED_FILTER_NUMBER_COMPARATORS.LESS_THAN,
+                                    value: valueAsNumber - finalTolerance,
                                 },
                             ];
                         case FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL:
                             // Adjust the value upwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber + tolerance).toFixed(decimalPrecision),
+                                value: valueAsNumber + finalTolerance,
                             };
                         case FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL:
-                            // Adjust the value downwards by the tolerance
                             return {
                                 ...filter,
-                                value: (truncatedNumber - tolerance).toFixed(decimalPrecision),
+                                value: valueAsNumber - finalTolerance,
                             };
                         default:
                             return filter;

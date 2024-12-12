@@ -176,7 +176,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     );
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
-        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]]
+        (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
@@ -204,6 +204,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [columnData, setColumnData] = useState<CustomColDef[]>([]);
     const [customColumnData, setCustomColumnData] = useState<CustomColDef[]>([]);
     const [mergedColumnData, setMergedColumnData] = useState<ColDef[]>([]);
+
     const { createCustomColumn } = useCustomColumn(tabIndex);
 
     const globalFilterRef = useRef<any>();
@@ -1269,13 +1270,13 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     </Grid>
                     {developerMode && (
                         <Grid item>
-                            <CustomColumnsConfig indexTab={tabIndex} />
+                            <CustomColumnsConfig tabIndex={tabIndex} />
                         </Grid>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item sx={styles.save}>
                         <SpreadsheetSave
-                            indexTab={tabIndex}
+                            tabIndex={tabIndex}
                             gridRef={gridRef}
                             columns={columnData}
                             tableName={currentTabName()}

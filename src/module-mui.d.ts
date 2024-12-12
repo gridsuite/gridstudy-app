@@ -40,6 +40,10 @@ declare module '@mui/material/styles' {
         };
         searchedText: {
             highlightColor: string;
+            currentHighlightColor: string;
+        };
+        severityChip: {
+            disabledColor: string;
         };
     }
     export interface Theme extends MuiTheme, Required<ThemeExtension> {}

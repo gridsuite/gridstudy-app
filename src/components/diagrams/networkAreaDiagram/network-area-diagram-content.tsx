@@ -144,9 +144,10 @@ type NetworkAreaDiagramContentProps = {
     readonly loadingState: boolean;
     readonly diagramSizeSetter: (id: UUID, type: DiagramType, width: number, height: number) => void;
     readonly diagramId: UUID;
+    visible: boolean;
 };
 function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
-    const { diagramSizeSetter } = props;
+    const { diagramSizeSetter, visible } = props;
     const dispatch = useDispatch();
     const svgRef = useRef();
 
@@ -265,7 +266,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     return (
         <>
             <Box height={2}>{props.loadingState && <LinearProgress />}</Box>
-            {shouldDisplayTooltip && (
+            {visible && shouldDisplayTooltip && (
                 <EquipmentPopover
                     studyUuid={studyUuid}
                     anchorPosition={anchorPosition}
