@@ -103,7 +103,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
             resetSearch();
             return;
         }
-        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter).then((reportLogs) => {
+        fetchReportLogs(selectedReportId, severityFilter, reportNature, messageFilter)?.then((reportLogs) => {
             const transformedLogs = reportLogs.map(
                 (log) =>
                     ({
@@ -295,10 +295,16 @@ const LogTable = ({ selectedReportId, reportType, reportNature, severities, onRo
                         type: FILTER_TEXT_COMPARATORS.EQUALS,
                         value: updatedFilter,
                     },
+                    {
+                        column: 'message',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.CONTAINS,
+                        value: messageFilter,
+                    },
                 ])
             );
         },
-        [dispatch, reportType, severityFilter]
+        [dispatch, reportType, severityFilter, messageFilter]
     );
 
     return (

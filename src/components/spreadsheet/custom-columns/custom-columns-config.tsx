@@ -33,7 +33,7 @@ export default function CustomColumnsConfig({ tabIndex }: Readonly<CustomColumns
                 color="secondary"
                 anchorOrigin={{
                     vertical: 'top',
-                    horizontal: 'left',
+                    horizontal: 'right',
                 }}
                 badgeContent={customColumnsDefinitions.length}
             >

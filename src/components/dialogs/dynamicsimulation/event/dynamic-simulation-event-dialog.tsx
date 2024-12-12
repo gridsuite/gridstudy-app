@@ -21,10 +21,10 @@ import { fetchDynamicSimulationEvent, saveDynamicSimulationEvent } from '../../.
 import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { FetchStatus } from '../../../../services/utils';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
+import { useSelector } from 'react-redux';
+import { AppState } from 'redux/reducer';
 
 export type DynamicSimulationEventDialogProps = {
-    studyUuid: string;
-    currentNodeId: string;
     equipmentId: string;
     equipmentType: EQUIPMENT_TYPES;
     onClose: () => void;
@@ -33,18 +33,12 @@ export type DynamicSimulationEventDialogProps = {
 } & Omit<DialogProps, 'open'>;
 
 export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialogProps) => {
-    const {
-        studyUuid,
-        currentNodeId,
-        equipmentId,
-        equipmentType,
-        onClose,
-        title,
-        open: defaultOpen,
-        ...dialogProps
-    } = props;
+    const { equipmentId, equipmentType, onClose, title, open: defaultOpen, ...dialogProps } = props;
 
     const { snackError } = useSnackMessage();
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentNodeId = currentNode?.id;
     const [dataFetchStatus, setDataFetchStatus] = useState(FetchStatus.IDLE);
     const [event, setEvent] = useState<Event>();
 
@@ -92,6 +86,9 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
 
     // load event for equipment
     useEffect(() => {
+        if (!studyUuid || !currentNodeId) {
+            return;
+        }
         setDataFetchStatus(FetchStatus.RUNNING);
         fetchDynamicSimulationEvent(studyUuid, currentNodeId, equipmentId).then((event) => {
             setDataFetchStatus(FetchStatus.SUCCEED);
@@ -120,6 +117,9 @@ export const DynamicSimulationEventDialog = (props: DynamicSimulationEventDialog
     // submit form
     const handleSubmit = useCallback(
         (formObj: { [KEY in EventPropertyName]: any }) => {
+            if (!studyUuid || !currentNodeId) {
+                return;
+            }
             // formObj to EventProperty[]
             const propertyNames = Object.keys(formObj ?? {}) as EventPropertyName[];
 
