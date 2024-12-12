@@ -15,7 +15,7 @@ import { NodeInsertModes } from '../nodes/node-insert-modes';
 import { CustomDialog } from '../../utils/custom-dialog';
 import { CustomNestedMenuItem } from '../../utils/custom-nested-menu';
 import { BUILD_STATUS } from '../../network/constants';
-import { AppState, CurrentTreeNode } from 'redux/reducer';
+import { type AppState, type CurrentTreeNode, type NodeSelectionForCopy } from 'redux/reducer';
 import { UUID } from 'crypto';
 import NetworkModificationTreeModel from '../network-modification-tree-model';
 import { CopyType } from 'components/network-modification.type';
@@ -47,7 +47,7 @@ interface CreateNodeMenuProps {
     handleUnbuildNode: (element: CurrentTreeNode) => void;
     handleExportCaseOnNode: (node: CurrentTreeNode) => void;
     activeNode: CurrentTreeNode;
-    nodeSelectionForCopy: { sourceStudyUuid: UUID; nodeId: UUID; copyType: CopyType; allChildrenIds: string[] };
+    nodeSelectionForCopy: NodeSelectionForCopy;
     handleCopyNode: (nodeId: string) => void;
     handleCutNode: (nodeId: UUID | null) => void;
     handlePasteNode: (activeNode: string, insertMode: NodeInsertModes) => void;
