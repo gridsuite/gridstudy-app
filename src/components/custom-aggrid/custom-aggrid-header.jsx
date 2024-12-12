@@ -78,19 +78,23 @@ export function DisplayRounding({ decimalAfterDot }) {
         }) + ' ';
 
     const decimalAfterDotStr = -decimalAfterDot;
+    let roundingPrecision = null;
+    if (!roundedTo1) {
+        roundingPrecision = displayAsPower10 ? (
+            <>
+                10
+                <Box component="span" sx={styles.exponent}>
+                    {decimalAfterDotStr}
+                </Box>
+            </>
+        ) : (
+            1 / Math.pow(10, decimalAfterDot)
+        );
+    }
     return (
         <FormHelperText>
             {baseMessage}
-            {roundedTo1 ? null : displayAsPower10 ? (
-                <>
-                    10
-                    <Box component="span" sx={styles.exponent}>
-                        {decimalAfterDotStr}
-                    </Box>
-                </>
-            ) : (
-                1 / Math.pow(10, decimalAfterDot)
-            )}
+            {roundingPrecision}
         </FormHelperText>
     );
 }
