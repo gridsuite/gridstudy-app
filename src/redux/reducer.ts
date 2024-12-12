@@ -437,7 +437,7 @@ export type DiagramState = {
     needsToBlink?: boolean;
 };
 
-export type NadNodeMovement = {
+export type NadMovement = {
     nadIdentifier: string;
     equipmentId: string;
     x: number;
@@ -483,8 +483,8 @@ export interface AppState extends CommonStoreState {
     networkModificationTreeModel: NetworkModificationTreeModel | null;
     mapDataLoading: boolean;
     diagramStates: DiagramState[];
-    nadNodeMovements: NadNodeMovement[];
-    nadTextNodeMovements: NadNodeMovement[];
+    nadNodeMovements: NadMovement[];
+    nadTextNodeMovements: NadMovement[];
     fullScreenDiagram: null | {
         id: string;
         svgType?: DiagramType;
@@ -1514,7 +1514,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramNodeMovementAction) => {
-            const correspondingMovement: NadNodeMovement[] = state.nadNodeMovements.filter(
+            const correspondingMovement: NadMovement[] = state.nadNodeMovements.filter(
                 (movement) =>
                     movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
             );
@@ -1535,7 +1535,7 @@ export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(
         STORE_NETWORK_AREA_DIAGRAM_TEXT_NODE_MOVEMENT,
         (state, action: StoreNetworkAreaDiagramTextNodeMovementAction) => {
-            const correspondingMovement: NadNodeMovement[] = state.nadTextNodeMovements.filter(
+            const correspondingMovement: NadMovement[] = state.nadTextNodeMovements.filter(
                 (movement) =>
                     movement.nadIdentifier === action.nadIdentifier && movement.equipmentId === action.equipmentId
             );

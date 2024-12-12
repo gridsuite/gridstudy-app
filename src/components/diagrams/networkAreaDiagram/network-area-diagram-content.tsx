@@ -170,9 +170,30 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
+            // Dispatch the updated position of the node
             dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+
+            // Check if there is a corresponding text node attached to this node
+            const textNodeMovement = nadTextNodeMovements.find(
+                (movement) => movement.equipmentId === equipmentId && movement.nadIdentifier === nadIdentifier
+            );
+
+            if (textNodeMovement) {
+                // If the text node has already been moved, recalculate its position using the delta
+                const relativeX = textNodeMovement.x - xOrig; // relative to the original node position
+                const relativeY = textNodeMovement.y - yOrig;
+
+                // Calculate new text node position by applying the delta
+                const newXTextNode = x + relativeX;
+                const newYTextNode = y + relativeY;
+
+                // Dispatch new position for the text node, maintaining its relative position to the node
+                dispatch(
+                    storeNetworkAreaDiagramTextNodeMovement(nadIdentifier, equipmentId, newXTextNode, newYTextNode)
+                );
+            }
         },
-        [dispatch, nadIdentifier]
+        [dispatch, nadIdentifier, nadTextNodeMovements]
     );
 
     const onMoveTextNodeCallback = useCallback(
@@ -190,6 +211,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
             connectionShiftYOrig: number,
             mousePosition: Point
         ) => {
+            // Dispatch the new position of the text node
             dispatch(
                 storeNetworkAreaDiagramTextNodeMovement(nadIdentifier, equipmentId, mousePosition.x, mousePosition.y)
             );
@@ -242,37 +264,25 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 OnToggleHoverCallback
             );
 
-            // Update the diagram-pane's list of sizes with the width and height from the backend
-            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
-
-            // If a previous diagram was loaded and the diagram's size remained the same, we keep
-            // the user's zoom and scroll state for the current render.
-            if (
-                diagramViewerRef.current &&
-                diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
-                diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
-            ) {
-                const viewBox = diagramViewerRef.current.getViewBox();
-                if (viewBox) {
-                    diagramViewer.setViewBox(viewBox);
-                }
-            }
-
-            // Repositioning the previously moved nodes
+            // Repositioning previously moved nodes
             const correspondingMovements = nadNodeMovements.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
+                    // Move the node to the new position
                     diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                 });
             }
-            // Repositioning the previously moved text nodes
+
+            // Repositioning previously moved text nodes
             const correspondingTextMovements = nadTextNodeMovements.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
             );
             if (correspondingTextMovements.length > 0) {
                 correspondingTextMovements.forEach((movement) => {
+                    // If the movement is due to a node move, adjust the text node relative to the node's movement
+                    // In case of text node movement adjust text node position
                     diagramViewer.moveTextNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                 });
             }
