@@ -7,34 +7,20 @@
 
 import yup from '../../../components/utils/yup-config';
 
-export const TAB_CUSTOM_COLUMN = 'TAB_CUSTOM_COLUMN';
+export const COLUMN_ID = 'id';
 export const COLUMN_NAME = 'name';
 export const FORMULA = 'formula';
 
 export const initialCustomColumnForm: CustomColumnForm = {
-    [TAB_CUSTOM_COLUMN]: [
-        {
-            [COLUMN_NAME]: '',
-            [FORMULA]: '',
-        },
-    ],
+    [COLUMN_ID]: '',
+    [COLUMN_NAME]: '',
+    [FORMULA]: '',
 };
 
 export const customColumnFormSchema = yup.object().shape({
-    [TAB_CUSTOM_COLUMN]: yup
-        .array()
-        .of(
-            yup.object().shape({
-                [COLUMN_NAME]: yup.string().required().max(60, 'Column name must be at most 60 characters'),
-                [FORMULA]: yup.string().required(),
-            })
-        )
-        .required()
-        .test('unique-column-names', 'spreadsheet/custom_column/error/not_unique', function (columns) {
-            const columnNames = columns.map((col) => col[COLUMN_NAME]);
-            const uniqueNames = new Set(columnNames);
-            return uniqueNames.size === columnNames.length; // Checks that each name is unique
-        }),
+    [COLUMN_ID]: yup.string(),
+    [COLUMN_NAME]: yup.string().required().max(60, 'spreadsheet/custom_column/error/name_exceeds_length'),
+    [FORMULA]: yup.string().required(),
 });
 
 export type CustomColumnForm = yup.InferType<typeof customColumnFormSchema>;

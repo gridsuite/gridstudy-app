@@ -5,13 +5,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ArrowDownward, ArrowUpward, FilterAlt } from '@mui/icons-material';
 import ClearIcon from '@mui/icons-material/Clear';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {
+    Box,
     Autocomplete,
     Badge,
     debounce,
+    FormHelperText,
     Grid,
     IconButton,
     InputAdornment,
@@ -28,8 +31,16 @@ import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
+import { countDecimalPlaces } from '../../utils/rounding';
+import { computeTolerance } from '../../hooks/use-aggrid-local-row-filter';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const styles = {
+    exponent: {
+        position: 'relative',
+        bottom: '1ex',
+        fontSize: '80%',
+    },
     iconSize: {
         fontSize: '1rem',
     },
@@ -54,6 +65,40 @@ const styles = {
     },
 };
 
+/**
+ * displays a rounding precision like this : 'Rounded to 10^decimalAfterDot' or as a decimal number if decimalAfterDot <= 4
+ */
+export function DisplayRounding({ decimalAfterDot }) {
+    const intl = useIntl();
+    const roundedTo1 = decimalAfterDot === 0;
+    const displayAsPower10 = decimalAfterDot > 4;
+    const baseMessage =
+        intl.formatMessage({
+            id: roundedTo1 ? 'filter.roundedToOne' : 'filter.rounded',
+        }) + ' ';
+
+    const decimalAfterDotStr = -decimalAfterDot;
+    let roundingPrecision = null;
+    if (!roundedTo1) {
+        roundingPrecision = displayAsPower10 ? (
+            <>
+                10
+                <Box component="span" sx={styles.exponent}>
+                    {decimalAfterDotStr}
+                </Box>
+            </>
+        ) : (
+            1 / Math.pow(10, decimalAfterDot)
+        );
+    }
+    return (
+        <FormHelperText>
+            {baseMessage}
+            {roundingPrecision}
+        </FormHelperText>
+    );
+}
+
 const CustomHeaderComponent = ({
     field,
     displayName,
@@ -63,7 +108,10 @@ const CustomHeaderComponent = ({
     filterParams = {},
     getEnumLabel, // Used for translation of enum values in the filter
     isCountry, // Used for translation of the countries options in the filter
-    shouldDisplayFilterBadge,
+    forceDisplayFilterIcon = false,
+    tabIndex,
+    isCustomColumn = false,
+    Menu,
 }) => {
     const {
         filterDataType = FILTER_DATA_TYPES.TEXT,
@@ -86,6 +134,7 @@ const CustomHeaderComponent = ({
     const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
     const columnSort = sortConfig?.find((value) => value.colId === field);
     const isColumnSorted = !!columnSort;
+    const { snackWarning } = useSnackMessage();
 
     /* Filter should be activated for current column and
     Filter dataType should be defined and
@@ -99,6 +148,9 @@ const CustomHeaderComponent = ({
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState();
+    const [menuOpen, setMenuOpen] = useState(false);
+    const menuButtonRef = useRef(null);
+    const [decimalAfterDot, setDecimalAfterDot] = useState(0);
 
     const shouldDisplayFilterIcon =
         isHoveringColumnHeader || // user is hovering column header
@@ -111,6 +163,7 @@ const CustomHeaderComponent = ({
             value: undefined,
             type: selectedFilterComparator,
             dataType: filterDataType,
+            tolerance: undefined,
         });
     };
 
@@ -137,7 +190,17 @@ const CustomHeaderComponent = ({
             value: value,
             type: selectedFilterComparator,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(value) : undefined,
         });
+        if (isNumberInput) {
+            let decimalAfterDot = countDecimalPlaces(value);
+            if (decimalAfterDot >= 13) {
+                snackWarning({
+                    headerId: 'filter.warnRounding',
+                });
+            }
+            setDecimalAfterDot(decimalAfterDot);
+        }
     };
 
     const handleFilterDurationChange = (value) => {
@@ -146,6 +209,7 @@ const CustomHeaderComponent = ({
             value: value,
             type: selectedFilterComparator,
             dataType: FILTER_DATA_TYPES.NUMBER,
+            tolerance: undefined,
         });
     };
 
@@ -159,6 +223,7 @@ const CustomHeaderComponent = ({
             value: data,
             type: FILTER_TEXT_COMPARATORS.EQUALS,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(data) : undefined,
         });
     };
 
@@ -169,6 +234,7 @@ const CustomHeaderComponent = ({
             value: selectedFilterData,
             type: newType,
             dataType: filterDataType,
+            tolerance: isNumberInput ? computeTolerance(selectedFilterData) : undefined,
         });
     };
 
@@ -225,6 +291,29 @@ const CustomHeaderComponent = ({
                       defaultMessage: option,
                   }),
         [isCountry, intl, translate, getEnumLabel]
+    );
+
+    const renderFilterIcon = (shouldDisplayFilterIcon, handleShowFilter, selectedFilterData) => (
+        <Grid
+            item
+            sx={{
+                overflow: 'visible',
+            }}
+        >
+            {(forceDisplayFilterIcon || shouldDisplayFilterIcon) && (
+                <Grid item>
+                    <IconButton size={'small'} onClick={handleShowFilter}>
+                        <Badge
+                            color="secondary"
+                            variant={selectedFilterData?.length ? 'dot' : null}
+                            invisible={!selectedFilterData}
+                        >
+                            <FilterAlt sx={styles.iconSize} />
+                        </Badge>
+                    </IconButton>
+                </Grid>
+            )}
+        </Grid>
     );
 
     return (
@@ -288,39 +377,26 @@ const CustomHeaderComponent = ({
                                 )}
                             </Grid>
                         )}
+                        {forceDisplayFilterIcon &&
+                            shouldActivateFilter &&
+                            renderFilterIcon(true, handleShowFilter, selectedFilterData)}
                     </Grid>
-                    {shouldActivateFilter && (
-                        <Grid
-                            item
-                            sx={{
-                                overflow: 'visible',
-                            }}
-                        >
-                            {(shouldDisplayFilterIcon || shouldDisplayFilterBadge) && (
-                                <Grid item>
-                                    <IconButton size={'small'} onClick={handleShowFilter}>
-                                        {shouldDisplayFilterBadge ?? true ? (
-                                            <Badge
-                                                color="secondary"
-                                                variant={
-                                                    selectedFilterData?.length || shouldDisplayFilterBadge
-                                                        ? 'dot'
-                                                        : null
-                                                }
-                                                invisible={!selectedFilterData}
-                                            >
-                                                <FilterAlt sx={styles.iconSize} />
-                                            </Badge>
-                                        ) : (
-                                            <FilterAlt sx={styles.iconSize} />
-                                        )}
-                                    </IconButton>
-                                </Grid>
-                            )}
-                        </Grid>
-                    )}
+
+                    {!forceDisplayFilterIcon &&
+                        shouldActivateFilter &&
+                        renderFilterIcon(shouldDisplayFilterIcon, handleShowFilter, selectedFilterData)}
                 </Grid>
+                {isCustomColumn && (
+                    <Grid item direction={'row'}>
+                        <IconButton ref={menuButtonRef} size={'small'} onClick={() => setMenuOpen(true)}>
+                            <Badge color="secondary">
+                                <MoreVertIcon sx={styles.iconSize} />
+                            </Badge>
+                        </IconButton>
+                    </Grid>
+                )}
             </Grid>
+
             {shouldActivateFilter && (
                 <Popover
                     id={`${field}-filter-popover`}
@@ -390,37 +466,55 @@ const CustomHeaderComponent = ({
                                     onChange={handleFilterDurationChange}
                                 />
                             ) : (
-                                <TextField
-                                    size={'small'}
-                                    fullWidth
-                                    value={selectedFilterData || ''}
-                                    onChange={handleFilterTextChange}
-                                    placeholder={intl.formatMessage({
-                                        id: 'filter.filterOoo',
-                                    })}
-                                    inputProps={{
-                                        type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
-                                    }}
-                                    sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
-                                    InputProps={{
-                                        endAdornment: selectedFilterData ? (
-                                            <InputAdornment position="end">
-                                                <IconButton
-                                                    aria-label="clear filter"
-                                                    onClick={handleClearFilter}
-                                                    edge="end"
-                                                    size="small"
-                                                >
-                                                    <ClearIcon />
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ) : null,
-                                    }}
-                                />
+                                <Grid container item direction={'column'} gap={0.2}>
+                                    <Grid item>
+                                        <TextField
+                                            size={'small'}
+                                            fullWidth
+                                            value={selectedFilterData || ''}
+                                            onChange={handleFilterTextChange}
+                                            placeholder={intl.formatMessage({
+                                                id: 'filter.filterOoo',
+                                            })}
+                                            inputProps={{
+                                                type: isNumberInput ? FILTER_DATA_TYPES.NUMBER : FILTER_DATA_TYPES.TEXT,
+                                            }}
+                                            sx={mergeSx(styles.input, isNumberInput && styles.noArrows)}
+                                            InputProps={{
+                                                endAdornment: selectedFilterData ? (
+                                                    <InputAdornment position="end">
+                                                        <IconButton
+                                                            aria-label="clear filter"
+                                                            onClick={handleClearFilter}
+                                                            edge="end"
+                                                            size="small"
+                                                        >
+                                                            <ClearIcon />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ) : null,
+                                            }}
+                                        />
+                                    </Grid>
+                                    {isNumberInput && selectedFilterData ? (
+                                        <Grid item>
+                                            <DisplayRounding decimalAfterDot={decimalAfterDot} />
+                                        </Grid>
+                                    ) : null}
+                                </Grid>
                             )}
                         </Grid>
                     )}
                 </Popover>
+            )}
+            {Menu && (
+                <Menu
+                    open={menuOpen}
+                    tabIndex={tabIndex}
+                    customColumnName={field}
+                    onClose={() => setMenuOpen(false)}
+                    anchorEl={menuButtonRef.current}
+                />
             )}
         </Grid>
     );
@@ -449,6 +543,9 @@ CustomHeaderComponent.propTypes = {
         customFilterOptions: PropTypes.arrayOf(PropTypes.string),
         filterSelector: PropTypes.array,
     }),
+    tabIndex: PropTypes.number,
+    isCustomColumn: PropTypes.bool,
+    Menu: PropTypes.elementType,
 };
 
 export default CustomHeaderComponent;
