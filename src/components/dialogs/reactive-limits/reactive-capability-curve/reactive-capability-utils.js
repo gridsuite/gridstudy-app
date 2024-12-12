@@ -98,14 +98,6 @@ export const getReactiveCapabilityCurveValidationSchema = (
         }),
 });
 
-export const insertEmptyRowAtSecondToLastIndex = (table) => {
-    table.splice(table.length - 1, 0, {
-        [P]: null,
-        [MAX_Q]: null,
-        [MIN_Q]: null,
-    });
-};
-
 export function setSelectedReactiveLimits(id, minMaxReactiveLimits, setValue) {
     setValue(id, minMaxReactiveLimits ? 'MINMAX' : 'CURVE');
 }
@@ -119,30 +111,10 @@ export function setCurrentReactiveCapabilityCurveTable(
 ) {
     if (previousReactiveCapabilityCurveTable) {
         const currentReactiveCapabilityCurveTable = getValues(fieldKey);
-
-        const sizeDiff = previousReactiveCapabilityCurveTable.length - currentReactiveCapabilityCurveTable.length;
-
-        // if there are more values in previousValues table, we need to insert rows to current tables to match the number of previousValues table rows
-        if (sizeDiff > 0) {
-            for (let i = 0; i < sizeDiff; i++) {
-                insertEmptyRowAtSecondToLastIndex(currentReactiveCapabilityCurveTable);
-            }
-            setValue(fieldKey, currentReactiveCapabilityCurveTable, {
-                shouldValidate: true,
-            });
-        } else if (sizeDiff < 0) {
-            // if there are more values in current table, we need to add rows to previousValues tables to match the number of current table rows
-            for (let i = 0; i > sizeDiff; i--) {
-                insertEmptyRowAtSecondToLastIndex(previousReactiveCapabilityCurveTable);
-            }
-        } else if (!isNodeBuilt && currentReactiveCapabilityCurveTable) {
-            setValue(fieldKey, currentReactiveCapabilityCurveTable, {
-                shouldValidate: true,
-            });
+        if (!isNodeBuilt && currentReactiveCapabilityCurveTable) {
+            setValue(fieldKey, currentReactiveCapabilityCurveTable);
         } else {
-            setValue(fieldKey, previousReactiveCapabilityCurveTable, {
-                shouldValidate: true,
-            });
+            setValue(fieldKey, previousReactiveCapabilityCurveTable);
         }
     }
 }

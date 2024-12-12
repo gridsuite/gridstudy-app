@@ -241,7 +241,7 @@ const GeneratorModificationDialog = ({
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
-                    currentNodeUuid,
+                    currentNode.id,
                     EQUIPMENT_TYPES.GENERATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -256,7 +256,7 @@ const GeneratorModificationDialog = ({
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
                                     setValue,
-                                    isNodeBuilt(currentNodeUuid)
+                                    isNodeBuilt(currentNode)
                                 );
                             }
                             setValue(`${CONNECTIVITY}.${VOLTAGE_LEVEL}.${ID}`, value?.voltageLevelId);
@@ -284,7 +284,7 @@ const GeneratorModificationDialog = ({
                 setGeneratorToModify(null);
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
+        [studyUuid, currentNode, reset, getValues, setValue, setValuesAndEmptyOthers, editData]
     );
 
     useEffect(() => {

@@ -198,7 +198,7 @@ const BatteryModificationDialog = ({
                 setDataFetchStatus(FetchStatus.RUNNING);
                 fetchNetworkElementInfos(
                     studyUuid,
-                    currentNodeUuid,
+                    currentNode.id,
                     EQUIPMENT_TYPES.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -213,7 +213,7 @@ const BatteryModificationDialog = ({
                                     `${REACTIVE_LIMITS}.${REACTIVE_CAPABILITY_CURVE_TABLE}`,
                                     getValues,
                                     setValue,
-                                    isNodeBuilt(currentNodeUuid)
+                                    isNodeBuilt(currentNode)
                                 );
                             }
                             setValue(
@@ -245,7 +245,7 @@ const BatteryModificationDialog = ({
                 setBatteryToModify(null);
             }
         },
-        [studyUuid, currentNodeUuid, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
+        [studyUuid, currentNode, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
     );
 
     useEffect(() => {
