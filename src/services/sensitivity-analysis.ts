@@ -13,9 +13,9 @@ export function getSensiUrl() {
     return `${PREFIX_SENSITIVITY_ANALYSIS_SERVER_QUERIES}/v1/`;
 }
 
-export function fetchSensitivityAnalysisProviders() {
+export function fetchSensitivityAnalysisProviders(): Promise<string[]> {
     console.info('fetch sensitivity analysis providers');
     const url = getSensiUrl() + 'providers';
     console.debug(url);
-    return backendFetchJson(url) as Promise<string[]>;
+    return backendFetchJson(url);
 }

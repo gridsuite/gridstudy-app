@@ -192,11 +192,11 @@ export function getAvailableExportFormats() {
     return backendFetchJson(getExportFormatsUrl);
 }
 
-export function getAvailableComponentLibraries() {
+export function getAvailableComponentLibraries(): Promise<string[]> {
     console.info('get available component libraries for diagrams');
     const getAvailableComponentLibrariesUrl = PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
     console.debug(getAvailableComponentLibrariesUrl);
-    return backendFetchJson(getAvailableComponentLibrariesUrl) as Promise<string[]>;
+    return backendFetchJson(getAvailableComponentLibrariesUrl);
 }
 
 export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID) {

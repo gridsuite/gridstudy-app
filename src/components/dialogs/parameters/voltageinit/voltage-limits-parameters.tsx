@@ -25,8 +25,10 @@ import { VoltageAdornment } from '../../dialog-utils';
 import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
 
+// TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
+const DndTableTyped = DndTable as React.ComponentType<any>;
+
 const VoltageLimitsParameters = () => {
-    const DndTableTyped = DndTable as React.ComponentType<any>;
     const intl = useIntl();
     const VoltageLevelFilterTooltip = useMemo(() => {
         return (

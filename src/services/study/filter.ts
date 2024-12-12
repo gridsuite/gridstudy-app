@@ -29,7 +29,7 @@ export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
-) {
+): Promise<IdentifiableAttributes[]> {
     console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const evaluateFilterUrl =
@@ -39,5 +39,5 @@ export function evaluateJsonFilter(
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(filter),
-    }) as Promise<IdentifiableAttributes[]>;
+    });
 }
