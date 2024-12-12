@@ -80,6 +80,8 @@
     "CBNone": "Aucun",
     "Map": "Carte",
     "NetworkVisualizations": "Images réseau",
+    "getNetworkVisualizationsParametersError": "Une erreur est survenue lors de la récupération des paramètres des images réseau",
+    "updateNetworkVisualizationsParametersError": "Une erreur est survenue lors de la mise a jour des paramètres des images réseau",
     "lineFullPath": "Afficher le chemin complet des lignes",
     "lineParallelPath": "Écarter les lignes superposées",
     "LineFlowMode": "Mode de représentation des flux sur les lignes",

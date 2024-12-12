@@ -4,83 +4,42 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { styles, TabPanel } from '../parameters';
 import { SingleLineDiagramParameters, useGetAvailableComponentLibraries } from './single-line-diagram-parameters';
 import { NetworkAreaDiagramParameters } from './network-area-diagram-parameters';
 import { MapParameters } from './map-parameters';
-import { useSelector } from 'react-redux';
-import { AppState } from '../../../../redux/reducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppState, NotificationType } from '../../../../redux/reducer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     initialNetworkVisualizationParametersForm,
-    NetworkVisualizationParametersForm,
     networkVisualizationParametersSchema,
 } from './network-visualizations-form';
 import { CustomFormProvider, SubmitButton, useSnackMessage } from '@gridsuite/commons-ui';
-import {
-    formatParametersToSend,
-    fromNetworkVisualizationsParamsDataToFormValues,
-    TabValue,
-} from './network-visualizations-utils';
+import { TabValue } from './network-visualizations-utils';
 import { mergeSx } from '../../../utils/functions';
-import { updateConfigParameters } from '../../../../services/config';
+import { NetworkVisualizationParameters } from './network-visualizations.types';
+import {
+    getNetworkVisualizationParameters,
+    setNetworkVisualizationParameters,
+} from '../../../../services/study/study-config';
+import { UUID } from 'crypto';
+import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
+import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 
 export const NetworkVisualizationsParameters: FunctionComponent = () => {
     const user = useSelector((state: AppState) => state.user);
     const componentLibraries = useGetAvailableComponentLibraries(user);
     const [tabValue, setTabValue] = useState(TabValue.MAP);
-    const [dirtyFields, setDirtyFields] = useState<Partial<NetworkVisualizationParametersForm>>({});
-    //Map parameters
-    const lineFullPath = useSelector((state: AppState) => state.lineFullPath);
-    const lineParallelPath = useSelector((state: AppState) => state.lineParallelPath);
-    const lineFlowMode = useSelector((state: AppState) => state.lineFlowMode);
-    const lineFlowColorMode = useSelector((state: AppState) => state.lineFlowColorMode);
-    const lineFlowAlertThreshold = useSelector((state: AppState) => state.lineFlowAlertThreshold);
-    const mapManualRefresh = useSelector((state: AppState) => state.mapManualRefresh);
-    const mapBaseMap = useSelector((state: AppState) => state.mapBaseMap);
-    //Single line diagram parameters
-    const diagonalLabel = useSelector((state: AppState) => state.diagonalLabel);
-    const centerLabel = useSelector((state: AppState) => state.centerLabel);
-    const substationLayout = useSelector((state: AppState) => state.substationLayout);
-    const componentLibrary = useSelector((state: AppState) => state.componentLibrary);
-    //Network area diagram parameters
-    const initNadWithGeoData = useSelector((state: AppState) => state.initNadWithGeoData);
-
-    const parameters = useMemo(() => {
-        return {
-            lineFullPath,
-            lineParallelPath,
-            lineFlowMode,
-            lineFlowColorMode,
-            lineFlowAlertThreshold,
-            mapManualRefresh,
-            mapBaseMap,
-            diagonalLabel,
-            centerLabel,
-            substationLayout,
-            componentLibrary,
-            initNadWithGeoData,
-        };
-    }, [
-        lineFullPath,
-        lineParallelPath,
-        lineFlowMode,
-        lineFlowColorMode,
-        lineFlowAlertThreshold,
-        mapManualRefresh,
-        mapBaseMap,
-        diagonalLabel,
-        centerLabel,
-        substationLayout,
-        componentLibrary,
-        initNadWithGeoData,
-    ]);
-
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const networkVisualizationsParameters = useSelector((state: AppState) => state.networkVisualizationsParameters);
+    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
     const { snackError } = useSnackMessage();
+    const dispatch = useDispatch();
 
     const handleTabChange = useCallback((_: SyntheticEvent, newValue: TabValue) => {
         setTabValue(newValue);
@@ -91,29 +50,43 @@ export const NetworkVisualizationsParameters: FunctionComponent = () => {
         resolver: yupResolver(networkVisualizationParametersSchema),
     });
 
-    const { reset, handleSubmit, formState } = formMethods;
+    const { reset, handleSubmit } = formMethods;
     useEffect(() => {
-        if (parameters) {
-            reset(fromNetworkVisualizationsParamsDataToFormValues(parameters));
+        if (networkVisualizationsParameters) {
+            reset(networkVisualizationsParameters);
         }
-    }, [reset, parameters]);
+    }, [reset, networkVisualizationsParameters]);
+
+    useEffect(() => {
+        if (
+            studyUpdated.eventData.headers &&
+            studyUpdated.eventData.headers[UPDATE_TYPE_HEADER] ===
+                NotificationType.NETWORK_VISUALIZATION_PARAMETERS_UPDATED
+        ) {
+            getNetworkVisualizationParameters(studyUuid as UUID)
+                .then((params: NetworkVisualizationParameters) => {
+                    dispatch(setUpdateNetworkVisualizationParameters(params));
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                        headerId: 'getNetworkVisualizationsParametersError',
+                    });
+                });
+        }
+    }, [dispatch, reset, snackError, studyUpdated, studyUuid]);
 
     const onSubmit = useCallback(
-        (newParams: NetworkVisualizationParametersForm) => {
-            // We need to send only the fields that have been changed in order to get the proper notification.
-            updateConfigParameters(formatParametersToSend(newParams, dirtyFields)).catch((error) => {
+        (newParams: NetworkVisualizationParameters) => {
+            setNetworkVisualizationParameters(studyUuid as UUID, newParams).catch((error) => {
                 snackError({
                     messageTxt: error.message,
-                    headerId: 'updateVoltageInitParametersError',
+                    headerId: 'updateNetworkVisualizationsParametersError',
                 });
             });
         },
-        [dirtyFields, snackError]
+        [studyUuid, snackError]
     );
-    // to keep track of the changed fields because formState.dirtyFields is always empty inside onSubmit.
-    useEffect(() => {
-        setDirtyFields(formState.dirtyFields);
-    }, [formState, setDirtyFields]);
 
     return (
         <CustomFormProvider validationSchema={networkVisualizationParametersSchema} {...formMethods}>

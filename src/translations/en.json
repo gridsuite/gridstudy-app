@@ -79,6 +79,8 @@
     "CBNone": "None",
     "Map": "Map",
     "NetworkVisualizations": "Network visualizations",
+    "getNetworkVisualizationsParametersError": "An error occurred while reading the network visualizations parameters",
+    "updateNetworkVisualizationsParametersError": "An error occurred while updating the network visualizations parameters",
     "lineFullPath": "Line full path",
     "lineParallelPath": "Spread overlapping lines",
     "LineFlowMode": "Line flow mode",

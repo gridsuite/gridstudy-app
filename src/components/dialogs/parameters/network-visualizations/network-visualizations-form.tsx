@@ -49,7 +49,7 @@ export const networkVisualizationParametersSchema = yup.object().shape({
         [PARAM_LINE_PARALLEL_PATH]: yup.boolean(),
         [PARAM_LINE_FLOW_MODE]: yup.string(),
         [PARAM_LINE_FLOW_COLOR_MODE]: yup.string(),
-        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: yup.number().positive(),
+        [PARAM_LINE_FLOW_ALERT_THRESHOLD]: yup.number().positive().max(100),
         [PARAM_MAP_MANUAL_REFRESH]: yup.boolean(),
         [PARAM_MAP_BASEMAP]: yup.string(),
     }),

@@ -26,23 +26,11 @@ import { FormattedMessage } from 'react-intl';
 import {
     APP_NAME,
     COMMON_APP_NAME,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
     PARAM_DEVELOPER_MODE,
-    PARAM_DIAGONAL_LABEL,
     PARAM_FAVORITE_CONTINGENCY_LISTS,
     PARAM_FLUX_CONVENTION,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
     PARAM_LANGUAGE,
     PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
     PARAM_THEME,
     PARAM_USE_NAME,
 } from '../utils/config-params';
@@ -64,29 +52,19 @@ import {
     changeLockedColumns,
     changeReorderedColumns,
     limitReductionModified,
-    selectCenterLabelState,
-    selectComponentLibrary,
     selectComputedLanguage,
-    selectDiagonalLabelState,
     selectEnableDeveloperMode,
     selectFavoriteContingencyLists,
     selectFluxConvention,
-    selectInitNadWithGeoData,
     selectLanguage,
     selectLimitReduction,
-    selectLineFlowAlertThreshold,
-    selectLineFlowColorMode,
-    selectLineFlowMode,
-    selectLineFullPathState,
-    selectLineParallelPathState,
-    selectMapBaseMap,
-    selectMapManualRefresh,
-    selectSubstationLayout,
     selectTheme,
     selectUseName,
     setOptionalServices,
     setParamsLoaded,
+    setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
+import { getNetworkVisualizationParameters } from '../services/study/study-config.ts';
 
 const noUserManager = { instance: null, error: null };
 
@@ -96,6 +74,7 @@ const App = () => {
     const { snackError } = useSnackMessage();
 
     const user = useSelector((state) => state.user);
+    const studyUuid = useSelector((state) => state.studyUuid);
     const tablesNamesIndexes = useSelector((state) => state.tables.namesIndexes);
     const tablesDefinitionIndexes = useSelector((state) => state.tables.definitionIndexes);
 
@@ -112,6 +91,14 @@ const App = () => {
     const location = useLocation();
 
     const [tabIndex, setTabIndex] = useState(0);
+
+    const updateNetworkVisualizationsParams = useCallback(
+        (params) => {
+            console.debug('received network visualizations parameters : ', params);
+            dispatch(setUpdateNetworkVisualizationParameters(params));
+        },
+        [dispatch]
+    );
 
     const updateParams = useCallback(
         (params) => {
@@ -132,50 +119,14 @@ const App = () => {
                         dispatch(selectLanguage(param.value));
                         dispatch(selectComputedLanguage(getComputedLanguage(param.value)));
                         break;
-                    case PARAM_CENTER_LABEL:
-                        dispatch(selectCenterLabelState(param.value === 'true'));
-                        break;
-                    case PARAM_DIAGONAL_LABEL:
-                        dispatch(selectDiagonalLabelState(param.value === 'true'));
-                        break;
                     case PARAM_LIMIT_REDUCTION:
                         dispatch(selectLimitReduction(param.value));
-                        break;
-                    case PARAM_LINE_FLOW_ALERT_THRESHOLD:
-                        dispatch(selectLineFlowAlertThreshold(param.value));
-                        break;
-                    case PARAM_LINE_FLOW_COLOR_MODE:
-                        dispatch(selectLineFlowColorMode(param.value));
-                        break;
-                    case PARAM_LINE_FLOW_MODE:
-                        dispatch(selectLineFlowMode(param.value));
                         break;
                     case PARAM_FLUX_CONVENTION:
                         dispatch(selectFluxConvention(param.value));
                         break;
                     case PARAM_DEVELOPER_MODE:
                         dispatch(selectEnableDeveloperMode(param.value === 'true'));
-                        break;
-                    case PARAM_INIT_NAD_WITH_GEO_DATA:
-                        dispatch(selectInitNadWithGeoData(param.value === 'true'));
-                        break;
-                    case PARAM_LINE_FULL_PATH:
-                        dispatch(selectLineFullPathState(param.value === 'true'));
-                        break;
-                    case PARAM_LINE_PARALLEL_PATH:
-                        dispatch(selectLineParallelPathState(param.value === 'true'));
-                        break;
-                    case PARAM_SUBSTATION_LAYOUT:
-                        dispatch(selectSubstationLayout(param.value));
-                        break;
-                    case PARAM_COMPONENT_LIBRARY:
-                        dispatch(selectComponentLibrary(param.value));
-                        break;
-                    case PARAM_MAP_MANUAL_REFRESH:
-                        dispatch(selectMapManualRefresh(param.value === 'true'));
-                        break;
-                    case PARAM_MAP_BASEMAP:
-                        dispatch(selectMapBaseMap(param.value));
                         break;
                     case PARAM_USE_NAME:
                         dispatch(selectUseName(param.value === 'true'));
@@ -343,7 +294,11 @@ const App = () => {
     }, [initialMatchSilentRenewCallbackUrl, dispatch, initialMatchSigninCallbackUrl]);
 
     useEffect(() => {
-        if (user !== null) {
+        if (user !== null && studyUuid !== null) {
+            const fetchNetworkVisualizationParametersPromise = getNetworkVisualizationParameters(studyUuid).then(
+                (params) => updateNetworkVisualizationsParams(params)
+            );
+
             const fetchCommonConfigPromise = fetchConfigParameters(COMMON_APP_NAME).then((params) =>
                 updateParams(params)
             );
@@ -409,7 +364,12 @@ const App = () => {
             // This might not be necessary but allows to gradually migrate parts
             // of the code that don't subscribe to exactly the parameters they need.
             // Code that depends on this could be rewritten to depend on what it acually needs.
-            Promise.all([fetchCommonConfigPromise, fetchAppConfigPromise, fetchOptionalServices])
+            Promise.all([
+                fetchNetworkVisualizationParametersPromise,
+                fetchCommonConfigPromise,
+                fetchAppConfigPromise,
+                fetchOptionalServices,
+            ])
                 .then(() => {
                     dispatch(setParamsLoaded());
                 })
@@ -425,7 +385,15 @@ const App = () => {
                 ws.close();
             };
         }
-    }, [user, dispatch, updateParams, connectNotificationsUpdateConfig, snackError]);
+    }, [
+        user,
+        studyUuid,
+        dispatch,
+        updateParams,
+        connectNotificationsUpdateConfig,
+        snackError,
+        updateNetworkVisualizationsParams,
+    ]);
 
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
