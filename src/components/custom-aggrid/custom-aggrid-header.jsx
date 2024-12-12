@@ -31,7 +31,7 @@ import { mergeSx } from '../utils/functions';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import CustomAggridBooleanFilter from './custom-aggrid-filters/custom-aggrid-boolean-filter';
 import CustomAggridDurationFilter from './custom-aggrid-filters/custom-aggrid-duration-filter';
-import { countDecimalPlaces } from '../../utils/rounding.js';
+import { countDecimalPlaces } from '../../utils/rounding';
 import { computeTolerance } from '../../hooks/use-aggrid-local-row-filter';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
