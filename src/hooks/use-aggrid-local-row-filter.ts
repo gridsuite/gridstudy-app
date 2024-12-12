@@ -36,7 +36,7 @@ export const computeTolerance = (value: undefined | null | number | string | str
     if (isNumber(value)) {
         decimalPrecision = countDecimalPlaces(value);
     } else {
-        decimalPrecision = countDecimalPlacesFromString(value);
+        decimalPrecision = countDecimalPlacesFromString(value as string);
     }
     // tolerance is multiplied by 0.5 to simulate the fact that the database value is rounded (in the front, from the user viewpoint)
     // more than 13 decimal after dot will likely cause rounding errors due to double precision

@@ -9,7 +9,7 @@ import { FunctionComponent } from 'react';
 import { Grid, Tab, Tabs } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { VSC_CREATION_TABS } from './creation/vsc-creation-dialog';
-import { getTabIndicatorStyle, getTabStyle } from '../../../utils/tab-utils';
+import { getTabIndicatorStyle, getTabStyle } from '../../../../utils/tab-utils';
 
 interface VscTabsProps {
     tabIndex: number;
