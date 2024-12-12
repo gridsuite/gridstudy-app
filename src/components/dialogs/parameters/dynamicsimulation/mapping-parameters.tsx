@@ -7,10 +7,11 @@
 
 import yup from '../../../utils/yup-config';
 import { Grid } from '@mui/material';
-import { makeComponents, TYPES } from '../util/make-component-utils';
-import { useMemo } from 'react';
+import { DefParam, makeComponents, TYPES } from '../util/make-component-utils';
+import { FunctionComponent, useMemo } from 'react';
 import { getIdOrSelf } from '../../dialog-utils';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
+import { MappingInfos } from 'services/study/dynamic-simulation.type';
 
 export const MAPPING = 'mapping';
 
@@ -22,14 +23,26 @@ export const emptyFormData = {
     [MAPPING]: '',
 };
 
-const MappingParameters = ({ mapping, path }) => {
+interface MappingParametersProps {
+    mapping?: {
+        mappings?: MappingInfos[];
+    };
+    path: string;
+}
+
+const MappingParameters: FunctionComponent<MappingParametersProps> = ({ mapping, path }) => {
     const { mappings } = mapping ?? {};
 
     const mappingOptions = useMemo(() => {
-        return mappings?.map((elem) => elem.name) ?? [];
+        return (
+            mappings?.map((elem) => ({
+                id: elem.name,
+                label: elem.name,
+            })) ?? []
+        );
     }, [mappings]);
 
-    const defParams = {
+    const defParams: Record<string, DefParam> = {
         [MAPPING]: {
             type: TYPES.ENUM,
             label: 'DynamicSimulationMapping',
@@ -39,7 +52,7 @@ const MappingParameters = ({ mapping, path }) => {
                     <AutocompleteInput
                         name={`${path}.${key}`}
                         label={''}
-                        options={defParam.options}
+                        options={defParam.options ?? []}
                         fullWidth
                         size={'small'}
                         getOptionLabel={getIdOrSelf}

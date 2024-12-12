@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -23,12 +23,21 @@ import {
 } from './columns-definitions';
 import SensitivityTable from '../sensi/sensitivity-table';
 import GeneratorsCappingsThreshold from './generators-cappings-threshold';
+import { IColumnsDef } from '../sensi/columns-definitions';
 
-const NonEvacuatedEnergyParametersSelector = ({ onFormChanged, onChangeParams }) => {
+interface NonEvacuatedEnergyParametersSelectorProps {
+    onFormChanged: (hasFormChanged: boolean) => void;
+    onChangeParams: (a: Record<string, any>, b: string, c: number) => void;
+}
+
+const NonEvacuatedEnergyParametersSelector: FunctionComponent<NonEvacuatedEnergyParametersSelectorProps> = ({
+    onFormChanged,
+    onChangeParams,
+}) => {
     const intl = useIntl();
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.GenerationStages);
-    const handleTabChange = useCallback((event, newValue) => {
+    const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: number) => {
         setTabValue(newValue);
     }, []);
 
@@ -60,7 +69,7 @@ const NonEvacuatedEnergyParametersSelector = ({ onFormChanged, onChangeParams })
     );
 
     const getColumnsDefinition = useCallback(
-        (columns) => {
+        (columns: IColumnsDef[]) => {
             if (columns) {
                 return columns.map((column) => ({
                     ...column,
