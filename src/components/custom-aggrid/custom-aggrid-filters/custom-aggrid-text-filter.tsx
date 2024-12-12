@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React from 'react';
+import React, { useMemo } from 'react';
 import { TextField, Grid, InputAdornment, IconButton } from '@mui/material';
 import ClearIcon from '@mui/icons-material/Clear';
 import { DisplayRounding } from '../display-rounding';
@@ -44,6 +44,8 @@ export const CustomAggridTextFilter: React.FC<CustomAggridTextFilterProps> = ({
 }) => {
     const intl = useIntl();
 
+    const isRoundingDisplayed = useMemo(() => !!(isNumberInput && value), [isNumberInput, value]);
+
     return (
         <Grid container direction="column" gap={0.2}>
             <Grid item>
@@ -70,7 +72,7 @@ export const CustomAggridTextFilter: React.FC<CustomAggridTextFilterProps> = ({
                     }}
                 />
             </Grid>
-            {isNumberInput && decimalAfterDot > 0 && (
+            {isRoundingDisplayed && (
                 <Grid item>
                     <DisplayRounding decimalAfterDot={decimalAfterDot} />
                 </Grid>
