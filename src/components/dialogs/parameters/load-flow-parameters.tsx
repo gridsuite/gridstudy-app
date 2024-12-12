@@ -445,7 +445,7 @@ const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParametersPr
                 paramsAsArray={specificParamsDescription ?? []}
                 initValues={specificCurrentParams}
                 onChange={onChange}
-                variant="standard"
+                variant="outlined"
             />
         </ParameterGroup>
     );
