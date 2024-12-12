@@ -10,7 +10,6 @@ import { CheckBoxList, useSnackMessage } from '@gridsuite/commons-ui';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, Checkbox, CircularProgress, Toolbar, Typography } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { useParams } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useIsAnyNodeBuilding } from '../../../utils/is-any-node-building-hook';
@@ -31,8 +30,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 const EventModificationScenarioEditor = () => {
     const intl = useIntl();
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
-    const params = useParams();
-    const studyUuid = params?.studyUuid ? decodeURIComponent(params.studyUuid) : undefined;
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
@@ -94,11 +92,11 @@ const EventModificationScenarioEditor = () => {
 
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION') {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION' || !studyUuid) {
             return;
         }
         setLaunchLoader(true);
-        fetchDynamicSimulationEvents(studyUuid ?? '', currentNode.id)
+        fetchDynamicSimulationEvents(studyUuid, currentNode.id)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -166,13 +164,11 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
+        if (!studyUuid || !currentNode?.id) {
+            return;
+        }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(
-            studyUuid ?? '',
-            // @ts-expect-error TODO: manage null case
-            currentNode?.id,
-            selectedEvents
-        ).catch((errMsg) => {
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
             snackError({
                 messageTxt: errMsg,
                 headerId: 'DynamicSimulationEventDeleteError',
@@ -344,9 +340,6 @@ const EventModificationScenarioEditor = () => {
 
             {editDialogOpen && (
                 <DynamicSimulationEventDialog
-                    studyUuid={studyUuid ?? ''}
-                    // @ts-expect-error TODO: manage null case
-                    currentNodeId={currentNode?.id}
                     equipmentId={editDialogOpen.equipmentId}
                     equipmentType={editDialogOpen.equipmentType}
                     onClose={() => handleCloseDialog()}
