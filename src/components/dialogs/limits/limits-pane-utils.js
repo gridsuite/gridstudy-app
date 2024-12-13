@@ -71,8 +71,8 @@ const limitsValidationSchema = (id, onlySelectedLimits = true) =>
               [id]: yup.object().shape({
                   [CURRENT_LIMITS_1]: yup.array(yup.object().shape(limitGroupValidationSchema())),
                   [CURRENT_LIMITS_2]: yup.array(yup.object().shape(limitGroupValidationSchema())),
-                  [SELECTED_LIMIT_GROUP_1]: yup.string(),
-                  [SELECTED_LIMIT_GROUP_2]: yup.string(),
+                  [SELECTED_LIMIT_GROUP_1]: yup.string().nullable(),
+                  [SELECTED_LIMIT_GROUP_2]: yup.string().nullable(),
               }),
           };
 

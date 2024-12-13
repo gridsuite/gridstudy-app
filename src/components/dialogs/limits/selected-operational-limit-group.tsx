@@ -7,8 +7,7 @@
 import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
-import { SelectInput } from '@gridsuite/commons-ui';
-import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
+import { AutocompleteInput } from '@gridsuite/commons-ui';
 import { CurrentLimitsData } from './limits-type';
 
 export interface SelectedOperationalLimitGroupProps {
@@ -24,31 +23,18 @@ export const SelectedOperationalLimitGroup = ({
         name: optionsFormName,
     });
 
-    const limitSets: Option[] = useMemo(() => {
-        if (optionsValues.length > 0) {
-            // TODO  faire ça avec un stream
-            let allLimitSets: Option[] = [];
-            optionsValues.forEach((optionObj: CurrentLimitsData) => {
-                const option: Option = {
-                    id: optionObj.operationalLimitGroupId,
-                    label: '',
-                };
-                allLimitSets.push(option);
-            });
-            return allLimitSets;
-        }
-        return [];
-    }, [optionsValues]);
+    const limitSets: string[] = useMemo(() => 
+        optionsValues.map((optionObj: CurrentLimitsData) => optionObj.operationalLimitGroupId)
+    , [optionsValues]);
 
     return (
         <Box sx={{ maxWidth: 300 }}>
-            <SelectInput
+            <AutocompleteInput
                 name={selectedFormName}
                 options={limitSets}
                 label={'SelectedOperationalLimitGroup'}
                 size={'small'}
-                allowNewValue={false}
-                disableClearable={true}
+                allowNewValue
             />
         </Box>
     );
