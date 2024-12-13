@@ -53,7 +53,7 @@ export function fetchDynamicSimulationResultTimeline(
 
 // --- Event API - BEGIN
 
-export function fetchDynamicSimulationEvents(studyUuid: string, nodeUuid: string): Promise<Event[]> {
+export function fetchDynamicSimulationEvents(studyUuid: UUID, nodeUuid: UUID): Promise<Event[]> {
     console.info(`Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`);
 
     const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/dynamic-simulation/events';
@@ -63,7 +63,7 @@ export function fetchDynamicSimulationEvents(studyUuid: string, nodeUuid: string
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationEvent(studyUuid: string, nodeUuid: string, equipmentId: string): Promise<Event> {
+export function fetchDynamicSimulationEvent(studyUuid: UUID, nodeUuid: UUID, equipmentId: string): Promise<Event> {
     console.info(
         `Fetching dynamic simulation event with '${equipmentId}' on '${studyUuid}' and node '${nodeUuid}' ...`
     );
@@ -75,7 +75,7 @@ export function fetchDynamicSimulationEvent(studyUuid: string, nodeUuid: string,
     return backendFetchJson(url);
 }
 
-export function saveDynamicSimulationEvent(studyUuid: string, nodeUuid: string, event: Event) {
+export function saveDynamicSimulationEvent(studyUuid: UUID, nodeUuid: UUID, event: Event) {
     console.info(`Saving dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`);
 
     const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + `/dynamic-simulation/events`;
@@ -91,7 +91,7 @@ export function saveDynamicSimulationEvent(studyUuid: string, nodeUuid: string, 
     });
 }
 
-export function deleteDynamicSimulationEvents(studyUuid: string, nodeUuid: string, events: Event[]) {
+export function deleteDynamicSimulationEvents(studyUuid: UUID, nodeUuid: UUID, events: Event[]) {
     console.info(`Delete dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`);
 
     const eventIdsParams = getRequestParamFromList(

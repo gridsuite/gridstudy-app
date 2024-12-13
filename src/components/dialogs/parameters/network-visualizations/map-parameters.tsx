@@ -4,13 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Grid } from '@mui/material';
+import { Grid, Slider } from '@mui/material';
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
-import { useState } from 'react';
 import {
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    MAP_BASEMAP_MAPBOX,
     PARAM_LINE_FLOW_ALERT_THRESHOLD,
     PARAM_LINE_FLOW_COLOR_MODE,
     PARAM_LINE_FLOW_MODE,
@@ -19,13 +15,25 @@ import {
     PARAM_MAP_BASEMAP,
     PARAM_MAP_MANUAL_REFRESH,
 } from '../../../../utils/config-params';
-import { styles, useParameterState } from '../parameters';
-import ParameterLineDropdown from '../widget/parameter-line-dropdown';
-import ParameterLineSlider from '../widget/parameter-line-slider';
-import ParameterLineSwitch from '../widget/parameter-line-switch';
+import { styles } from '../parameters';
 import LineSeparator from '../../commons/line-separator';
+import { mergeSx, MuiSelectInput, SwitchInput } from '@gridsuite/commons-ui';
+import { FormattedMessage } from 'react-intl';
+import {
+    ALERT_THRESHOLD_LABEL,
+    INTL_LINE_FLOW_COLOR_MODE_OPTIONS,
+    INTL_LINE_FLOW_MODE_OPTIONS,
+    INTL_MAP_BASE_MAP_OPTIONS,
+    LINE_FLOW_COLOR_MODE,
+    LINE_FLOW_MODE,
+    MAP_BASE_MAP,
+    MAP_MANUAL_REFRESH,
+    TabValue,
+} from './network-visualizations-utils';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 export const MapParameters = () => {
+    const { setValue, getValues, control } = useFormContext();
     const alertThresholdMarks = [
         {
             value: 0,
@@ -36,11 +44,89 @@ export const MapParameters = () => {
             label: '100',
         },
     ];
+    const watchLineFlowColorMode = useWatch({
+        name: `${TabValue.MAP}.${PARAM_LINE_FLOW_COLOR_MODE}`,
+    });
 
-    const [lineFlowColorModeLocal] = useParameterState(PARAM_LINE_FLOW_COLOR_MODE);
+    const onSliderChange = (value: number) => {
+        const dirty = { shouldDirty: true };
+        setValue(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`, value, dirty);
+    };
 
-    const [disabledFlowAlertThreshold, setDisabledFlowAlertThreshold] = useState(
-        lineFlowColorModeLocal === LineFlowColorMode.NOMINAL_VOLTAGE
+    // fields definition
+    const lineSwitch = (name: string, label: string) => (
+        <>
+            <Grid item xs={8} sx={styles.parameterName}>
+                <FormattedMessage id={label} />
+            </Grid>
+            <Grid item container xs={4} sx={styles.controlItem}>
+                <SwitchInput name={`${TabValue.MAP}.${name}`} />
+            </Grid>
+        </>
+    );
+
+    const lineFlow = (
+        name: string,
+        label: string,
+        options: { id: LineFlowColorMode | LineFlowMode; label: string }[]
+    ) => (
+        <>
+            <Grid item xs={5} sx={styles.parameterName}>
+                <FormattedMessage id={label} />
+            </Grid>
+            <Grid item xs={4} sx={styles.controlItem}>
+                <MuiSelectInput
+                    fullWidth
+                    name={`${TabValue.MAP}.${name}`}
+                    size="small"
+                    options={Object.values(options)?.map((option) => option)}
+                />
+            </Grid>
+        </>
+    );
+
+    const mapBaseMap = (
+        <>
+            <Grid item xs={5} sx={styles.parameterName}>
+                <FormattedMessage id={MAP_BASE_MAP} />
+            </Grid>
+            <Grid item xs={4} sx={styles.controlItem}>
+                <MuiSelectInput
+                    fullWidth
+                    name={`${TabValue.MAP}.${PARAM_MAP_BASEMAP}`}
+                    size="small"
+                    options={Object.values(INTL_MAP_BASE_MAP_OPTIONS)?.map((option) => option)}
+                />
+            </Grid>
+        </>
+    );
+
+    const slider = (
+        <>
+            <Grid item xs={8} sx={styles.parameterName}>
+                <FormattedMessage id={ALERT_THRESHOLD_LABEL} />
+            </Grid>
+            <Grid item container xs={4} sx={mergeSx(styles.controlItem, { paddingRight: 2 })}>
+                <Controller
+                    name={`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`}
+                    control={control}
+                    render={() => (
+                        <Slider
+                            name={`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`}
+                            onChange={(_event, newValue) => {
+                                onSliderChange(Number(newValue));
+                            }}
+                            valueLabelDisplay="auto"
+                            max={100}
+                            min={0}
+                            value={Number(getValues(`${TabValue.MAP}.${PARAM_LINE_FLOW_ALERT_THRESHOLD}`))}
+                            marks={alertThresholdMarks}
+                            disabled={watchLineFlowColorMode === LineFlowColorMode.NOMINAL_VOLTAGE}
+                        />
+                    )}
+                />
+            </Grid>
+        </>
     );
 
     return (
@@ -53,53 +139,24 @@ export const MapParameters = () => {
             marginTop={-3}
             justifyContent={'space-between'}
         >
-            <ParameterLineSwitch paramNameId={PARAM_LINE_FULL_PATH} label="lineFullPath" />
+            {lineSwitch(PARAM_LINE_FULL_PATH, PARAM_LINE_FULL_PATH)}
             <LineSeparator />
-            <ParameterLineSwitch paramNameId={PARAM_LINE_PARALLEL_PATH} label="lineParallelPath" />
+
+            {lineSwitch(PARAM_LINE_PARALLEL_PATH, PARAM_LINE_PARALLEL_PATH)}
             <LineSeparator />
-            <ParameterLineDropdown
-                paramNameId={PARAM_LINE_FLOW_MODE}
-                labelTitle="LineFlowMode"
-                labelValue="line-flow-mode-select-label"
-                values={{
-                    [LineFlowMode.STATIC_ARROWS]: 'StaticArrows',
-                    [LineFlowMode.ANIMATED_ARROWS]: 'AnimatedArrows',
-                    [LineFlowMode.FEEDERS]: 'Feeders',
-                }}
-            />
+
+            {lineFlow(PARAM_LINE_FLOW_MODE, LINE_FLOW_MODE, INTL_LINE_FLOW_MODE_OPTIONS)}
             <LineSeparator />
-            <ParameterLineDropdown
-                paramNameId={PARAM_LINE_FLOW_COLOR_MODE}
-                labelTitle="LineFlowColorMode"
-                labelValue="line-flow-color-mode-select-label"
-                values={{
-                    [LineFlowColorMode.NOMINAL_VOLTAGE]: 'NominalVoltage',
-                    [LineFlowColorMode.OVERLOADS]: 'Overloads',
-                }}
-                onPreChange={(event) => {
-                    setDisabledFlowAlertThreshold(event.target.value === LineFlowColorMode.NOMINAL_VOLTAGE);
-                }}
-            />
+
+            {lineFlow(PARAM_LINE_FLOW_COLOR_MODE, LINE_FLOW_COLOR_MODE, INTL_LINE_FLOW_COLOR_MODE_OPTIONS)}
             <LineSeparator />
-            <ParameterLineSlider
-                paramNameId={PARAM_LINE_FLOW_ALERT_THRESHOLD}
-                label="AlertThresholdLabel"
-                disabled={disabledFlowAlertThreshold}
-                marks={alertThresholdMarks}
-            />
+
+            {slider}
             <LineSeparator />
-            <ParameterLineSwitch paramNameId={PARAM_MAP_MANUAL_REFRESH} label="MapManualRefresh" />
+
+            {lineSwitch(PARAM_MAP_MANUAL_REFRESH, MAP_MANUAL_REFRESH)}
             <LineSeparator />
-            <ParameterLineDropdown
-                paramNameId={PARAM_MAP_BASEMAP}
-                labelTitle="MapBaseMap"
-                labelValue="map-base-map-select-label"
-                values={{
-                    [MAP_BASEMAP_MAPBOX]: 'Mapbox',
-                    [MAP_BASEMAP_CARTO]: 'Carto',
-                    [MAP_BASEMAP_CARTO_NOLABEL]: 'CartoNoLabel',
-                }}
-            />
+            {mapBaseMap}
         </Grid>
     );
 };
