@@ -10,11 +10,12 @@ import {
     DirectoryItemSelector,
     ElementType,
     FlatParameters,
+    Parameter,
     SubmitButton,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
-import { Autocomplete, Box, Chip, Grid, Tab, Tabs, TextField } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Autocomplete, Box, Chip, Grid, SelectChangeEvent, Tab, Tabs, TextField } from '@mui/material';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { fetchLoadFlowParameters } from '../../../services/loadflow';
 import { PARAM_DEVELOPER_MODE, PARAM_LIMIT_REDUCTION } from '../../../utils/config-params';
@@ -26,6 +27,7 @@ import { DropDown, LabelledButton, SwitchWithLabel, TabPanel, styles, useParamet
 import { ParameterGroup } from './widget';
 import ParameterLineSlider from './widget/parameter-line-slider';
 import {
+    ILimitReductionsByVoltageLevel,
     IST_FORM,
     LIMIT_DURATION_FORM,
     LIMIT_REDUCTIONS_FORM,
@@ -37,9 +39,19 @@ import LimitReductionsTableForm from './common/limitreductions/limit-reductions-
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { toFormValuesLimitReductions } from './common/limitreductions/limit-reductions-form-util';
+import yup from '@gridsuite/commons-ui/dist/utils/yupConfig';
 import LineSeparator from '../commons/line-separator';
+import { UseParametersBackendReturnProps } from './parameters.type';
+import ComputingType from 'components/computing-status/computing-type';
+import { LoadFlowParametersInfos } from 'services/study/loadflow.type';
 
-const CountrySelector = ({ value, label, callback }) => {
+interface CountrySelectorProps {
+    value: string[];
+    label: string;
+    callback: (newValues: string[]) => void;
+}
+
+const CountrySelector: FunctionComponent<CountrySelectorProps> = ({ value, label, callback }) => {
     const { translate, countryCodes } = useLocalizedCountries();
 
     return (
@@ -80,7 +92,18 @@ const CountrySelector = ({ value, label, callback }) => {
     );
 };
 
-export const DoubleEditor = ({
+interface DoubleEditorProps {
+    initValue: string;
+    label: string;
+    callback: (value: number) => void;
+    checkIsTwoDigitAfterDecimal?: boolean;
+    ge?: number;
+    gt?: number;
+    le?: number;
+    lt?: number;
+}
+
+export const DoubleEditor: FunctionComponent<DoubleEditorProps> = ({
     initValue,
     label,
     callback,
@@ -104,15 +127,15 @@ export const DoubleEditor = ({
         } else if (initValue !== value) {
             const f = parseFloat(value);
             if (!isNaN(f)) {
-                callback(value);
+                callback(f);
             }
         }
     }, [value, initValue, callback, doubleError]);
 
     const checkValue = useCallback(
-        (newValue) => {
+        (newValue: string) => {
             const FloatRE = checkIsTwoDigitAfterDecimal ? /^(\d*\.{0,1}\d{0,2}$)/ : /^-?\d*[.,]?\d*$/;
-            const outputTransformFloatString = (value) => {
+            const outputTransformFloatString = (value: string) => {
                 return value?.replace(',', '.') || '';
             };
             const m = FloatRE.exec(newValue);
@@ -153,7 +176,7 @@ export const DoubleEditor = ({
     );
 };
 
-const fusionSpecificWithOtherParams = (allParams, specificParams) => {
+const fusionSpecificWithOtherParams = (allParams: LoadFlowParametersInfos, specificParams: Record<string, any>) => {
     const commitParameters = allParams;
     commitParameters['specificParametersPerProvider'] =
         Object.keys(specificParams).length > 0
@@ -163,7 +186,13 @@ const fusionSpecificWithOtherParams = (allParams, specificParams) => {
     return commitParameters;
 };
 
-function makeComponentsFor(defParams, localParams, allParams, setter, provider) {
+function makeComponentsFor(
+    defParams: Record<string, any>,
+    localParams: Record<string, string | number | boolean | string[]>,
+    allParams: LoadFlowParametersInfos | null,
+    setter: (newParams: LoadFlowParametersInfos) => void,
+    provider?: string
+) {
     return Object.keys(defParams).map((key) => (
         <Grid container spacing={1} paddingTop={1} key={key} justifyContent={'space-between'}>
             {makeComponentFor(defParams[key], key, localParams, allParams, setter, provider)}
@@ -172,15 +201,25 @@ function makeComponentsFor(defParams, localParams, allParams, setter, provider) 
     ));
 }
 
-function getValue(param, key) {
+function getValue(param: any, key: string) {
     if (!param || param[key] === undefined) {
         return null;
     }
     return param[key];
 }
 
-function makeComponentFor(defParam, key, localParams, allParams, setter, provider) {
-    function updateValues(newval) {
+function makeComponentFor(
+    defParam: Record<string, any>,
+    key: string,
+    localParams: Record<string, string | number | boolean | string[]>,
+    allParams: LoadFlowParametersInfos | null,
+    setter: (newParams: LoadFlowParametersInfos) => void,
+    provider?: string
+) {
+    function updateValues(newval: boolean | string | string[] | number) {
+        if (!allParams) {
+            return;
+        }
         localParams = { ...localParams, [key]: newval }; // single value update made
         let newParams = { ...allParams }; // but we send/update all params to the back
         if (provider === undefined) {
@@ -193,8 +232,10 @@ function makeComponentFor(defParam, key, localParams, allParams, setter, provide
             'specificParametersPerProvider' in newParams &&
             provider in newParams['specificParametersPerProvider']
         ) {
+            const stringifiedLocalParams: Record<string, string> = {};
+            Object.keys(localParams).forEach((key) => (stringifiedLocalParams[key] = localParams[key].toString()));
             newParams['specificParametersPerProvider'][provider] = {
-                ...localParams,
+                ...stringifiedLocalParams,
             };
         }
         setter(newParams);
@@ -254,7 +295,12 @@ const TYPES = {
     double: 'Double',
 };
 
-const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
+interface BasicLoadFlowParametersProps {
+    lfParams: LoadFlowParametersInfos | null;
+    commitLFParameter: (newParams: LoadFlowParametersInfos) => void;
+}
+
+const BasicLoadFlowParameters: FunctionComponent<BasicLoadFlowParametersProps> = ({ lfParams, commitLFParameter }) => {
     const defParams = {
         transformerVoltageControlOn: {
             type: TYPES.bool,
@@ -299,7 +345,15 @@ const BasicLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     return makeComponentsFor(defParams, lfParams?.commonParameters || {}, lfParams, commitLFParameter);
 };
 
-const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
+interface AdvancedLoadFlowParametersProps {
+    lfParams: LoadFlowParametersInfos | null;
+    commitLFParameter: (newParams: LoadFlowParametersInfos) => void;
+}
+
+const AdvancedLoadFlowParameters: FunctionComponent<AdvancedLoadFlowParametersProps> = ({
+    lfParams,
+    commitLFParameter,
+}) => {
     const [showAdvancedLfParams, setShowAdvancedLfParams] = useState(false);
 
     const defParams = {
@@ -355,7 +409,15 @@ const AdvancedLoadFlowParameters = ({ lfParams, commitLFParameter }) => {
     );
 };
 
-const SpecificLoadFlowParameters = ({
+interface SpecificLoadFlowParametersProps {
+    disabled: boolean;
+    subText: string;
+    specificParamsDescription: Parameter[];
+    specificCurrentParams: Record<string, string>;
+    onSpecificParamChange: (paramnName: string, value: unknown) => void;
+}
+
+const SpecificLoadFlowParameters: FunctionComponent<SpecificLoadFlowParametersProps> = ({
     disabled,
     subText,
     specificParamsDescription,
@@ -363,7 +425,7 @@ const SpecificLoadFlowParameters = ({
     onSpecificParamChange,
 }) => {
     const [showSpecificLfParams, setShowSpecificLfParams] = useState(false);
-    const onChange = (paramName, value, isEdit) => {
+    const onChange = (paramName: string, value: unknown, isEdit: boolean) => {
         if (isEdit) {
             return;
         }
@@ -380,16 +442,24 @@ const SpecificLoadFlowParameters = ({
             infoText={subText}
         >
             <FlatParameters
-                sx={styles.parameterName}
                 paramsAsArray={specificParamsDescription ?? []}
                 initValues={specificCurrentParams}
                 onChange={onChange}
+                variant="outlined"
             />
         </ParameterGroup>
     );
 };
 
-export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) => {
+interface LoadFlowParametersProps {
+    parametersBackend: UseParametersBackendReturnProps<ComputingType.LOAD_FLOW>;
+    setHaveDirtyFields: (haveDirtyField: boolean) => void;
+}
+
+export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
+    parametersBackend,
+    setHaveDirtyFields,
+}) => {
     const [
         providers,
         provider,
@@ -420,10 +490,17 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     const { snackError } = useSnackMessage();
     const intl = useIntl();
 
-    const onSpecificParamChange = (paramName, newValue) => {
-        const specificParamDescr = Object.values(specificParamsDescrWithoutNanVals[provider]).find(
-            (descr) => descr.name === paramName
-        );
+    const onSpecificParamChange = (paramName: string, newValue: unknown) => {
+        if (!provider || !params) {
+            return;
+        }
+        const specificParamDescr: Parameter | undefined = Object.values(
+            specificParamsDescrWithoutNanVals[provider]
+        ).find((descr: Parameter) => descr.name === paramName);
+
+        if (!specificParamDescr) {
+            return;
+        }
 
         let specParamsToSave;
         if (specificParamDescr.defaultValue !== newValue) {
@@ -447,7 +524,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     };
 
     const specificParamsDescrWithoutNanVals = useMemo(() => {
-        let specificParamsDescrCopy = {};
+        let specificParamsDescrCopy: Record<string, Parameter[]> = {};
         specificParamsDescriptions &&
             Object.entries(specificParamsDescriptions).forEach(([k, v]) => {
                 specificParamsDescrCopy = {
@@ -459,14 +536,14 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     }, [specificParamsDescriptions]);
 
     const updateLfProviderCallback = useCallback(
-        (evt) => {
+        (evt: SelectChangeEvent<string>) => {
             updateProvider(evt.target.value);
         },
         [updateProvider]
     );
 
     const resetLfParametersAndLfProvider = useCallback(() => {
-        resetParameters().then(resetProvider);
+        resetParameters()?.then(resetProvider);
     }, [resetParameters, resetProvider]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
@@ -477,11 +554,11 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     }, [provider, resetProvider, enableDeveloperMode]);
 
     // TODO: remove this when DynaFlow will be available not only in developer mode
-    const LoadFlowProviders = Object.fromEntries(
+    const LoadFlowProviders: Record<string, string> = Object.fromEntries(
         Object.entries(providers).filter(([key]) => !key.includes('DynaFlow') || enableDeveloperMode)
     );
     const handleLoadParameter = useCallback(
-        (newParams) => {
+        (newParams: Record<string, any>) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 fetchLoadFlowParameters(newParams[0].id)
@@ -506,7 +583,10 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
         },
         [snackError, updateParameters]
     );
-    const formatNewParams = useCallback((newParams) => {
+    const formatNewParams = useCallback((newParams: Record<string, any> | null) => {
+        if (!newParams) {
+            return newParams;
+        }
         const speceficParameters =
             'specificParametersPerProvider' in newParams ? newParams['specificParametersPerProvider'] : {};
 
@@ -517,24 +597,29 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     }, []);
 
     const [tabValue, setTabValue] = useState(TAB_VALUES.General);
-    const handleTabChange = useCallback((event, newValue) => {
+    const handleTabChange = useCallback((event: React.SyntheticEvent<Element, Event>, newValue: TAB_VALUES) => {
         setTabValue(newValue);
     }, []);
 
     const formSchema = useMemo(() => {
         return getLimitReductionsFormSchema(
-            params.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
+            params?.limitReductions ? params.limitReductions[0].temporaryLimitReductions.length : 0
         );
     }, [params]);
 
-    const formMethods = useForm({
+    type LoadFlowParametersForm = yup.InferType<typeof formSchema>;
+
+    const formMethods = useForm<LoadFlowParametersForm>({
         defaultValues: { [LIMIT_REDUCTIONS_FORM]: [] },
         resolver: yupResolver(formSchema),
     });
 
     const toLimitReductions = useCallback(
-        (formLimits) => {
-            return params.limitReductions.map((vlLimits, indexVl) => {
+        (formLimits: LoadFlowParametersForm['limitReductionsForm']) => {
+            if (!params || !formLimits) {
+                return undefined;
+            }
+            return params.limitReductions.map<ILimitReductionsByVoltageLevel>((vlLimits, indexVl) => {
                 let vlLNewLimits = {
                     ...vlLimits,
                     permanentLimitReduction: formLimits[indexVl][IST_FORM],
@@ -542,7 +627,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                 vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
                     vlLNewLimits.temporaryLimitReductions[index] = {
                         ...temporaryLimit,
-                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM + index],
+                        reduction: formLimits[indexVl][LIMIT_DURATION_FORM][index],
                     };
                 });
                 return vlLNewLimits;
@@ -554,10 +639,17 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
     const { handleSubmit, formState } = formMethods;
 
     const updateLimitReductions = useCallback(
-        (formLimits) => {
+        (formLimits: LoadFlowParametersForm) => {
+            if (!params) {
+                return;
+            }
+            const limitReductions = toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]);
+            if (!limitReductions) {
+                return;
+            }
             updateParameters({
                 ...params,
-                limitReductions: toLimitReductions(formLimits[LIMIT_REDUCTIONS_FORM]),
+                limitReductions: limitReductions,
             });
         },
         [params, updateParameters, toLimitReductions]
@@ -565,8 +657,11 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
 
     const { reset } = formMethods;
     useEffect(() => {
+        if (!params?.limitReductions) {
+            return;
+        }
         reset(toFormValuesLimitReductions(params.limitReductions));
-    }, [params.limitReductions, reset]);
+    }, [params?.limitReductions, reset]);
 
     useEffect(() => {
         setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
@@ -597,7 +692,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                             justifyContent={'space-between'}
                         >
                             <DropDown
-                                value={provider}
+                                value={provider ?? ''}
                                 label="Provider"
                                 values={LoadFlowProviders}
                                 callback={updateLfProviderCallback}
@@ -643,21 +738,23 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                             {tabValue === TAB_VALUES.General && (
                                                 <>
                                                     <BasicLoadFlowParameters
-                                                        lfParams={params || {}}
+                                                        lfParams={params}
                                                         commitLFParameter={updateParameters}
                                                     />
                                                     <AdvancedLoadFlowParameters
-                                                        lfParams={params || {}}
+                                                        lfParams={params}
                                                         commitLFParameter={updateParameters}
                                                     />
                                                     <SpecificLoadFlowParameters
-                                                        disabled={!specificParamsDescriptions?.[provider]}
-                                                        subText={provider}
+                                                        disabled={!provider || !specificParamsDescriptions?.[provider]}
+                                                        subText={provider ?? ''}
                                                         specificParamsDescription={
-                                                            specificParamsDescrWithoutNanVals[provider]
+                                                            provider ? specificParamsDescrWithoutNanVals[provider] : []
                                                         }
                                                         specificCurrentParams={
-                                                            params.specificParametersPerProvider[provider] || {}
+                                                            provider && params
+                                                                ? params.specificParametersPerProvider[provider]
+                                                                : {}
                                                         }
                                                         onSpecificParamChange={onSpecificParamChange}
                                                     />
@@ -678,7 +775,7 @@ export const LoadFlowParameters = ({ parametersBackend, setHaveDirtyFields }) =>
                                                         paddingLeft={2}
                                                         sx={{ width: '100%' }}
                                                     >
-                                                        {params.limitReductions !== null ? (
+                                                        {params?.limitReductions ? (
                                                             <LimitReductionsTableForm limits={params.limitReductions} />
                                                         ) : (
                                                             <ParameterLineSlider

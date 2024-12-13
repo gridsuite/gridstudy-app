@@ -8,10 +8,16 @@
 import { Grid, IconButton, Tooltip } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useCallback } from 'react';
+import { FunctionComponent, useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
-const GridButtons = ({ onAddButton, onDeleteButton, disabled }) => {
+interface GridButtonsProps {
+    onAddButton: () => void;
+    onDeleteButton: () => void;
+    disabled?: boolean;
+}
+
+const GridButtons: FunctionComponent<GridButtonsProps> = ({ onAddButton, onDeleteButton, disabled }) => {
     const intl = useIntl();
 
     const handleAddButton = useCallback(() => {
