@@ -70,26 +70,31 @@ const styles = {
  */
 export function DisplayRounding({ decimalAfterDot }) {
     const intl = useIntl();
+    const roundedTo1 = decimalAfterDot === 0;
     const displayAsPower10 = decimalAfterDot > 4;
     const baseMessage =
         intl.formatMessage({
-            id: 'filter.rounded',
+            id: roundedTo1 ? 'filter.roundedToOne' : 'filter.rounded',
         }) + ' ';
 
     const decimalAfterDotStr = -decimalAfterDot;
+    let roundingPrecision = null;
+    if (!roundedTo1) {
+        roundingPrecision = displayAsPower10 ? (
+            <>
+                10
+                <Box component="span" sx={styles.exponent}>
+                    {decimalAfterDotStr}
+                </Box>
+            </>
+        ) : (
+            1 / Math.pow(10, decimalAfterDot)
+        );
+    }
     return (
         <FormHelperText>
             {baseMessage}
-            {displayAsPower10 ? (
-                <>
-                    10
-                    <Box component="span" sx={styles.exponent}>
-                        {decimalAfterDotStr}
-                    </Box>
-                </>
-            ) : (
-                1 / Math.pow(10, decimalAfterDot)
-            )}
+            {roundingPrecision}
         </FormHelperText>
     );
 }
@@ -491,7 +496,7 @@ const CustomHeaderComponent = ({
                                             }}
                                         />
                                     </Grid>
-                                    {isNumberInput && decimalAfterDot > 0 ? (
+                                    {isNumberInput && selectedFilterData ? (
                                         <Grid item>
                                             <DisplayRounding decimalAfterDot={decimalAfterDot} />
                                         </Grid>

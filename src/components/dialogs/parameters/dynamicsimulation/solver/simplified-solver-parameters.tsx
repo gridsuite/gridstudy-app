@@ -130,7 +130,7 @@ const defParams = {
     ...commonDefParams,
 };
 
-const SimplifiedSolverParameters = ({ path }) => {
+const SimplifiedSolverParameters = ({ path }: { path: string }) => {
     return <>{makeComponents(defParams, path)}</>;
 };
 
