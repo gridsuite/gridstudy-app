@@ -3,7 +3,8 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDuration" : "Limit duration {sign} {value}min",
+    "LimitDuration" : "Between {highBound} and {lowBound}",
+    "LimitDurationAfterIST": "After IT{value}",
 
     "button.delete": "Delete",
     "filter": "Filter",

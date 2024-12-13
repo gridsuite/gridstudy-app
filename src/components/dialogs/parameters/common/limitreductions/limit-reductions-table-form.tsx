@@ -21,11 +21,18 @@ const LimitReductionsTableForm: FunctionComponent<{
 
     const getLabelColumn = useCallback(
         (limit: ITemporaryLimitReduction) => {
+            const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
+            const highBound = Math.trunc(limit.limitDuration.highBound / 60);
+            if (lowBound === 0) {
+                return intl.formatMessage({ id: 'LimitDurationAfterIST' }, { value: highBound });
+            }
+            const lowBoundLabel = lowBound === 0 ? 'IST' : 'IT ' + lowBound;
+            const highBoundLabel = highBound === 0 ? 'IST' : 'IT ' + highBound;
             return intl.formatMessage(
                 { id: 'LimitDuration' },
                 {
-                    sign: limit.limitDuration.lowClosed ? '>=' : '>',
-                    value: Math.trunc(limit.limitDuration.lowBound / 60),
+                    lowBound: lowBoundLabel,
+                    highBound: highBoundLabel,
                 }
             );
         },

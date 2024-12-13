@@ -3,7 +3,8 @@
 
     "LimitReductions" : "Abattements de limites",
     "IST" : "IST",
-    "LimitDuration" : "Surcharge {sign} {value}min",
+    "LimitDuration" : "Entre {highBound} et {lowBound}",
+    "LimitDurationAfterIST": "Audelà de IT{value}",
 
     "button.delete": "Supprimer",
     "filter": "Filtre",
