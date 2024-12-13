@@ -31,7 +31,6 @@ import {
     LIMITS,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
     R,
     RATED_S,
@@ -42,11 +41,12 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
+    SELECTED_LIMIT_GROUP_1,
+    SELECTED_LIMIT_GROUP_2,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
-    TEMPORARY_LIMITS,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
@@ -131,7 +131,7 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         ...getTwoWindingsTransformerValidationSchema(),
-        ...getLimitsValidationSchema(),
+        ...getLimitsValidationSchema(LIMITS, false),
         ...getRatioTapChangerValidationSchema(),
         ...getPhaseTapChangerValidationSchema(),
     })
@@ -249,14 +249,10 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
-                    ),
+                    currentLimits1: formatCompleteCurrentLimit(twt.currentLimits1),
+                    currentLimits2: formatCompleteCurrentLimit(twt.currentLimits2),
+                    selectedOperationalLimitsGroupId1: twt.selectedOperationalLimitsGroupId1,
+                    selectedOperationalLimitsGroupId2: twt.selectedOperationalLimitsGroupId2,
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -302,6 +298,20 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
+    const formatCompleteCurrentLimit = (completeCurrentLimits /*: CurrentLimitsData[]*/) => {
+        let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
+        if (completeCurrentLimits) {
+            completeCurrentLimits.forEach((elt) =>
+                formattedCompleteCurrentLimit.push({
+                    operationalLimitGroupId: elt.id ?? elt.operationalLimitGroupId,
+                    permanentLimit: elt.permanentLimit,
+                    temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                })
+            );
+        }
+        return formattedCompleteCurrentLimit;
+    };
+
     const fromSearchCopyToFormValues = useCallback(
         (twt) => {
             reset(
@@ -338,14 +348,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         ),
                     }),
                     ...getAllLimitsFormData({
-                        permanentLimit1: twt.currentLimits1?.permanentLimit,
-                        permanentLimit2: twt.currentLimits2?.permanentLimit,
-                        temporaryLimits1: addSelectedFieldToRows(
-                            formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
-                        ),
-                        temporaryLimits2: addSelectedFieldToRows(
-                            formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
-                        ),
+                        currentLimits1: formatCompleteCurrentLimit(twt.currentLimits1),
+                        currentLimits2: formatCompleteCurrentLimit(twt.currentLimits2),
+                        selectedOperationalLimitsGroupId1: twt.selectedOperationalLimitsGroupId1,
+                        selectedOperationalLimitsGroupId2: twt.selectedOperationalLimitsGroupId2,
                     }),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -493,16 +499,6 @@ const TwoWindingsTransformerCreationDialog = ({
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
 
-            const currentLimits1 = {
-                permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-            };
-
-            const currentLimits2 = {
-                permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
-            };
-
             characteristics[G] = microUnitToUnit(characteristics[G]);
             characteristics[B] = microUnitToUnit(characteristics[B]);
             let ratioTap = undefined;
@@ -558,6 +554,23 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...twt[PHASE_TAP_CHANGER],
                 };
             }
+            /**
+             * delete the empty temporary limits lines
+             */
+            const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) =>
+                currentLimitsData.map(({ temporaryLimits, ...baseData }) /*: CurrentLimitsData*/ => ({
+                    ...baseData,
+                    temporaryLimits: temporaryLimits
+                        .filter(
+                            (limit) =>
+                                // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                                limit.name !== undefined && limit.name !== null && limit.name !== ''
+                        )
+                        .map(({ name, ...temporaryLimit }) => ({
+                            ...temporaryLimit,
+                            name: sanitizeLimitNames(name),
+                        })),
+                }));
 
             createTwoWindingsTransformer(
                 studyUuid,
@@ -571,8 +584,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[RATED_S] ?? '',
                 characteristics[RATED_U1],
                 characteristics[RATED_U2],
-                currentLimits1,
-                currentLimits2,
+                sanitizeCurrentLimits(limits[CURRENT_LIMITS_1]),
+                sanitizeCurrentLimits(limits[CURRENT_LIMITS_2]),
+                limits[SELECTED_LIMIT_GROUP_1],
+                limits[SELECTED_LIMIT_GROUP_2],
                 characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],

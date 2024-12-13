@@ -141,13 +141,15 @@ const LineCreationDialog = ({
 
     const formatCompleteCurrentLimit = (completeCurrentLimits /*: CurrentLimitsData[]*/) => {
         let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
-        completeCurrentLimits.forEach((elt) =>
-            formattedCompleteCurrentLimit.push({
-                operationalLimitGroupId: elt.id ?? elt.operationalLimitGroupId,
-                permanentLimit: elt.permanentLimit,
-                temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
-            })
-        );
+        if (completeCurrentLimits) {
+            completeCurrentLimits.forEach((elt) =>
+                formattedCompleteCurrentLimit.push({
+                    operationalLimitGroupId: elt.id ?? elt.operationalLimitGroupId,
+                    permanentLimit: elt.permanentLimit,
+                    temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                })
+            );
+        }
         return formattedCompleteCurrentLimit;
     };
 

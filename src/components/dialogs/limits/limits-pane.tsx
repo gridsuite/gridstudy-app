@@ -21,7 +21,7 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { CurrentLimitsData } from '../network-modifications/line/creation/line-creation-type';
+import { CurrentLimitsData } from './limits-type';
 
 const styles = {
     limitsBackground: {

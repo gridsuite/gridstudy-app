@@ -9,7 +9,7 @@ import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { SelectInput } from '@gridsuite/commons-ui';
 import { Option } from '@gridsuite/commons-ui/dist/utils/types/types';
-import { CurrentLimitsData } from '../network-modifications/line/creation/line-creation-type';
+import { CurrentLimitsData } from './limits-type';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
