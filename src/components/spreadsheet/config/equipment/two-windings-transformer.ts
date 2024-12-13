@@ -22,7 +22,13 @@ import {
     isEditable,
     typeAndFetchers,
 } from './common-config';
-import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
+import {
+    BOOLEAN_FILTER,
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
@@ -203,7 +209,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
             valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
             cellStyle: editableCellStyle,
             valueSetter: (params) => {
@@ -621,7 +627,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal1Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -629,7 +635,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal2Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,

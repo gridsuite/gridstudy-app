@@ -14,7 +14,7 @@ import { Theme } from '@mui/material/styles';
 import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE } from './utils/constants';
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
-import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION } from '../../utils/config-params';
+import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION, PARAM_LANGUAGE } from '../../utils/config-params';
 import { RunningStatus } from '../utils/running-status';
 import {
     DefaultCellRenderer,
@@ -77,17 +77,14 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import {
-    CustomColDef,
-    FILTER_NUMBER_COMPARATORS,
-    FILTER_TEXT_COMPARATORS,
-} from '../custom-aggrid/custom-aggrid-header.type';
+import { CustomColDef } from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
-import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
+import { SpreadsheetColDef, SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
-import { defaultColumnType } from './config/column-type-flter-config';
-import { makeAgGridColumn } from './config/column-aggrid-utils';
+import { makeSpreadsheetAgGridColumn } from './config/column-aggrid-utils';
 import { toModificationOperation } from 'components/utils/utils';
+import { defaultColumnType } from './config/column-type-flter-config';
+import { useParameterState } from 'components/dialogs/parameters/parameters';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -169,6 +166,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const [tabIndex, setTabIndex] = useState<number>(0);
 
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
+    const [languageLocal] = useParameterState(PARAM_LANGUAGE);
 
     const allDisplayedColumnsNames = useSelector((state: AppState) => state.tables.columnsNamesJson);
     const allLockedColumnsNames = useSelector((state: AppState) => state.allLockedColumnsNames);
@@ -297,32 +295,8 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         formatFetchedEquipmentsHandler
     );
 
-    function contains(target: string, lookingFor: string) {
-        return target && target?.toLowerCase().indexOf(lookingFor.toLowerCase()) >= 0;
-    }
-
-    const columnTypes = {
-        ...defaultColumnType,
-        countryFilter: {
-            filter: 'agTextColumnFilter',
-            filterParams: {
-                caseSensitive: false,
-                maxNumConditions: 1,
-                filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
-                textMatcher: ({ value, filterText }: { value: string; filterText: string }) => {
-                    const countryCode = value?.toUpperCase();
-                    const countryName = translate(countryCode);
-                    return contains(countryName, filterText || '') || contains(value, filterText);
-                },
-                debounceMs: 200,
-            },
-            sortable: true,
-            resizable: true,
-        },
-    };
-
     const enrichColumn = useCallback(
-        (column: CustomColDef) => {
+        (column: SpreadsheetColDef) => {
             const columnExtended = { ...column };
             columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
@@ -350,35 +324,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                             return 1;
                         }
                         return 0;
-                    };
-                    // redefine agGrid predicates to possibly invert sign depending on flux convention (called when we use useAggridLocalRowFilter).
-                    columnExtended.agGridFilterParams = {
-                        filterOptions: [
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.GREATER_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue >= filterValue : false;
-                                },
-                            },
-                            {
-                                displayKey: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                displayName: FILTER_NUMBER_COMPARATORS.LESS_THAN_OR_EQUAL,
-                                predicate: (filterValues: number[], cellValue: number) => {
-                                    const filterValue = filterValues.at(0);
-                                    if (filterValue === undefined) {
-                                        return false;
-                                    }
-                                    const transformedValue = applyFluxConvention(cellValue);
-                                    return transformedValue != null ? transformedValue <= filterValue : false;
-                                },
-                            },
-                        ],
                     };
                 }
             }
@@ -419,7 +364,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 };
             }
 
-            return makeAgGridColumn({
+            return makeSpreadsheetAgGridColumn({
                 headerName: columnExtended.headerName,
                 field: columnExtended.field,
                 ...columnExtended,
@@ -1197,6 +1142,10 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         setColumnData(generateTableColumns());
     }, [generateTableColumns]);
 
+    useEffect(() => {
+        gridRef.current?.api?.setFilterModel(null);
+    }, [languageLocal]);
+
     const topPinnedData = useMemo((): any[] | undefined => {
         if (editingData) {
             editingDataRef.current = { ...editingData };
@@ -1267,7 +1216,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         handleGridReady={handleGridReady}
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
-                        columnTypes={columnTypes}
+                        columnTypes={defaultColumnType}
                     />
                 </Box>
             )}

@@ -12,7 +12,7 @@ import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { BOOLEAN_FILTER, COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 export const LCC_CONVERTER_STATION_TAB_DEF = {
     index: 11,
@@ -92,7 +92,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

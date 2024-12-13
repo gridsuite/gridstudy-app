@@ -18,6 +18,7 @@ import {
     typeAndFetchers,
 } from './common-config';
 import {
+    BOOLEAN_FILTER,
     COUNTRY_FILTER,
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
@@ -163,7 +164,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,

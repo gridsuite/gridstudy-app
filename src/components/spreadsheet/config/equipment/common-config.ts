@@ -36,7 +36,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../../services/study/network';
-import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
+import { EquipmentFetcher, SpreadsheetColDef, SpreadsheetEquipmentType } from '../spreadsheet.type';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { getEnumFilterConfig } from '../column-type-flter-config';
 
@@ -184,14 +184,14 @@ export const defaultBooleanFilterConfig = {
 // It generates configuration for filtering, sorting and rendering
 export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
     ({
-        ...getEnumFilterConfig(),
+        ...getEnumFilterConfig(enumOptions as EnumOption[]),
         cellRenderer: EnumCellRenderer,
         cellRendererParams: {
             enumOptions: enumOptions as Writable<typeof enumOptions>,
             // @ts-expect-error TODO TS1360: Property value is missing in type
         } satisfies EnumCellRendererProps,
         getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
-    } as const satisfies Partial<ReadonlyDeep<CustomColDef>>);
+    } as const satisfies Partial<ReadonlyDeep<SpreadsheetColDef>>);
 
 export const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,

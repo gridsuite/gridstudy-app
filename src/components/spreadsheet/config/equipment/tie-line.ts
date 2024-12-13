@@ -11,7 +11,13 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
-import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
+import {
+    BOOLEAN_FILTER,
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesReadonly } from '../common/column-properties';
 
@@ -162,7 +168,7 @@ export const TIE_LINE_TAB_DEF = {
             field: 'terminal1Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -170,7 +176,7 @@ export const TIE_LINE_TAB_DEF = {
             field: 'terminal2Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesReadonly,

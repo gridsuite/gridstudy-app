@@ -11,7 +11,13 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { editableColumnConfig, excludeFromGlobalFilter, generateTapPositions, typeAndFetchers } from './common-config';
-import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
+import {
+    BOOLEAN_FILTER,
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 import { standardSelectCellEditorConfig } from '../common/cell-editors';
 
@@ -146,7 +152,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging1Capabilities',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -154,7 +160,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingRatio1',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -188,7 +194,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging2Capabilities',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -196,7 +202,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingRatio2',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -230,7 +236,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'hasLoadTapChanging3Capabilities',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -238,7 +244,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingRatio3',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -279,7 +285,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase1',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -321,7 +327,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase2',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -363,7 +369,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'isRegulatingPhase3',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -398,7 +404,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal1Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -406,7 +412,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal2Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -414,7 +420,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             field: 'terminal3Connected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

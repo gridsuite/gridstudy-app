@@ -11,7 +11,13 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
-import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
+import {
+    BOOLEAN_FILTER,
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 
@@ -89,7 +95,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

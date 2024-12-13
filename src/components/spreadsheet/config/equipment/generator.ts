@@ -22,7 +22,13 @@ import {
     getDefaultEnumConfig,
     typeAndFetchers,
 } from './common-config';
-import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
+import {
+    BOOLEAN_FILTER,
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import {
@@ -125,7 +131,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             ...editableColumnConfig,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
@@ -223,7 +229,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             ...editableColumnConfig,
             ...booleanCellEditorConfig((params) => params.data?.voltageRegulatorOn ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -406,7 +412,7 @@ export const GENERATOR_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

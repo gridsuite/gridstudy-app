@@ -13,7 +13,7 @@ import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { BOOLEAN_FILTER, COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 export const DANGLING_LINE_TAB_DEF = {
     index: 13,
@@ -94,7 +94,7 @@ export const DANGLING_LINE_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

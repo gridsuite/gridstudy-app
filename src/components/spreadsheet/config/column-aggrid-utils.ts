@@ -5,15 +5,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomColDef } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { SpreadsheetColDef } from './spreadsheet.type';
 
-export const makeAgGridColumn = ({
+export const makeSpreadsheetAgGridColumn = ({
     forceDisplayFilterIcon,
     tabIndex,
     isCustomColumn,
     Menu,
     ...props // agGrid column props
-}: CustomColDef) => {
+}: SpreadsheetColDef) => {
     const { headerName, fractionDigits, numeric } = props;
 
     let minWidth = 75;

@@ -12,6 +12,7 @@ import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import {
+    BOOLEAN_FILTER,
     COUNTRY_FILTER,
     LARGE_COLUMN_WIDTH,
     MEDIUM_COLUMN_WIDTH,
@@ -126,7 +127,7 @@ export const HVDC_LINE_TAB_DEF = {
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

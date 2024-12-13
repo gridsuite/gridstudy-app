@@ -21,6 +21,7 @@ import {
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -74,6 +75,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+    const { translate } = useLocalizedCountries();
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
@@ -97,8 +99,10 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
+            intl: intl,
+            translateCountryCode: translate,
         }),
-        [currentNode, studyUuid, theme, topPinnedData]
+        [currentNode, intl, studyUuid, theme, topPinnedData, translate]
     );
 
     const getRowHeight = useCallback(

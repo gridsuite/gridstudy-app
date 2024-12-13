@@ -11,7 +11,13 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { editableColumnConfig, excludeFromGlobalFilter, getDefaultEnumConfig, typeAndFetchers } from './common-config';
-import { COUNTRY_FILTER, MEDIUM_COLUMN_WIDTH, NUMERIC_FILTER, TEXT_FILTER } from '../../utils/constants';
+import {
+    BOOLEAN_FILTER,
+    COUNTRY_FILTER,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_FILTER,
+    TEXT_FILTER,
+} from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
@@ -106,7 +112,7 @@ export const LOAD_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,

@@ -13,7 +13,7 @@ import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from '
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
-import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { BOOLEAN_FILTER, COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
 
 export const BATTERY_TAB_DEF = {
     index: 9,
@@ -74,7 +74,7 @@ export const BATTERY_TAB_DEF = {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             ...editableColumnConfig,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
@@ -166,7 +166,7 @@ export const BATTERY_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: TEXT_FILTER,
+            type: BOOLEAN_FILTER,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,
