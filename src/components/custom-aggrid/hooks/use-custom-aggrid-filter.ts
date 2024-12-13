@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CustomHeaderFilterParams, FILTER_DATA_TYPES, FilterDataType } from '../custom-aggrid-header.type';
+import { FILTER_DATA_TYPES, FilterDataType, FilterParams } from '../custom-aggrid-header.type';
 import { useCallback, useEffect, useState } from 'react';
 import { debounce } from '@mui/material';
 
-export const useCustomAggridFilter = (field: string, filterParams: CustomHeaderFilterParams) => {
+export const useCustomAggridFilter = (field: string, filterParams: FilterParams) => {
     const [selectedFilterComparator, setSelectedFilterComparator] = useState('');
     const [selectedFilterData, setSelectedFilterData] = useState<unknown>();
     const [tolerance, setTolerance] = useState<number | undefined>();

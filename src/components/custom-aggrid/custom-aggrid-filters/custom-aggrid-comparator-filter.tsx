@@ -8,10 +8,14 @@ import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selec
 import CustomAggridDurationFilter from './custom-aggrid-duration-filter';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
-import { CustomAggridFilterProps } from './custom-aggrid-filter';
 import { useCustomAggridComparatorFilter } from '../hooks/use-custom-aggrid-comparator-filter';
+import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 
-export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggridFilterProps) => {
+export interface CustomAggridComparatorFilterParams extends CustomAggridFilterParams {
+    isDuration?: boolean;
+}
+
+export const CustomAggridComparatorFilter = ({ field, filterParams, isDuration }: CustomAggridComparatorFilterParams) => {
     const {
         selectedFilterData,
         selectedFilterComparator,
@@ -24,7 +28,6 @@ export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggr
     } = useCustomAggridComparatorFilter(field, filterParams);
 
     const {
-        isDuration,
         filterComparators = [], // used for text filter as a UI type (examples: contains, startsWith..)
     } = filterParams;
 

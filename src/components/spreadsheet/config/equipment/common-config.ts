@@ -38,6 +38,8 @@ import {
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
 import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import { CustomAggridAutocompleteFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 type TapPositionsType = {
     lowTapPosition: number;
@@ -118,9 +120,12 @@ export const excludeFromGlobalFilter = () => '' as const;
 
 export const defaultTextFilterConfig = {
     filter: 'agTextColumnFilter',
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.TEXT,
-        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+    filterComponent: CustomAggridComparatorFilter,
+    filterComponentParams: {
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+        },
     },
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
@@ -141,8 +146,11 @@ export const defaultEnumFilterConfig = {
             },
         ],
     },
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.TEXT,
+    //filterComponent: CustomAggridAutocompleteFilter,
+    filterComponentParams: {
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.TEXT,
+        },
     },
     isEnum: true,
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
@@ -174,8 +182,10 @@ export const defaultBooleanFilterConfig = {
             },
         ],
     },
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.BOOLEAN,
+    filterComponentParams: {
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.BOOLEAN,
+        },
     },
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
@@ -194,13 +204,14 @@ export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
 
 export const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
-    isCountry: true,
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 export const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.NUMBER,
-        filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+    filterComponentParams: {
+        filterParams: {
+            filterDataType: FILTER_DATA_TYPES.NUMBER,
+            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        },
     },
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;

@@ -5,9 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import React, { useCallback, useState } from 'react';
+import React, { ComponentType, useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import { CustomHeaderFilterParams, CustomHeaderMenuParams, CustomHeaderSortParams } from './custom-aggrid-header.type';
+import {
+    CustomAggridFilterParams,
+    CustomHeaderMenuParams,
+    CustomHeaderSortParams,
+} from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';
@@ -20,25 +24,28 @@ const styles = {
     },
 };
 
-interface CustomHeaderComponentProps {
+interface CustomHeaderComponentProps<F extends CustomAggridFilterParams> {
     field: string;
     displayName: string;
     sortParams: CustomHeaderSortParams;
-    filterParams: CustomHeaderFilterParams;
     customMenuParams: CustomHeaderMenuParams;
+    forceDisplayFilterIcon: boolean;
+    filterComponent: ComponentType<F>;
+    filterComponentParams: F;
 }
 
-const CustomHeaderComponent = ({
+const CustomHeaderComponent = <T extends CustomAggridFilterParams>({
     field,
     displayName,
     sortParams,
-    filterParams,
     customMenuParams,
-}: CustomHeaderComponentProps) => {
+    forceDisplayFilterIcon,
+    filterComponent,
+    filterComponentParams,
+}: CustomHeaderComponentProps<T>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
     const { handleSortChange } = useCustomAggridSort(field, sortParams);
-    const { forceDisplayFilterIcon = false } = filterParams;
     const { isSortable = false } = sortParams;
     const handleClickHeader = () => {
         if (isSortable) {
@@ -86,10 +93,11 @@ const CustomHeaderComponent = ({
                 </Grid>
                 <Grid container item flex="1">
                     <CustomAggridFilter
-                        field={field}
-                        filterParams={filterParams}
-                        handleCloseFilter={handleCloseFilter}
+                        filterComponent={filterComponent}
+                        filterComponentParams={{ ...filterComponentParams, field }}
                         isHoveringColumnHeader={isHoveringColumnHeader}
+                        forceDisplayFilterIcon={forceDisplayFilterIcon}
+                        handleCloseFilter={handleCloseFilter}
                     />
                     <CustomMenu field={field} customMenuParams={customMenuParams} />
                 </Grid>

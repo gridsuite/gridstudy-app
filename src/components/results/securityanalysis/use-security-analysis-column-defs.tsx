@@ -20,7 +20,7 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SortPropsType } from 'hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterPropsType } from '../../custom-aggrid/custom-aggrid-header.type';
+import { FilterEnumsType, FilterParams } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
@@ -37,7 +37,7 @@ export interface SecurityAnalysisFilterEnumsType {
 
 type UseSecurityAnalysisColumnsDefsProps = (
     sortProps: SortPropsType,
-    filterProps: FilterPropsType,
+    filterProps: FilterParams,
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     openVoltageLevelDiagram: (id: string) => void
