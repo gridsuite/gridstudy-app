@@ -5,15 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo } from 'react';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import Checkbox from '@mui/material/Checkbox';
-import ListItemText from '@mui/material/ListItemText';
-import Paper from '@mui/material/Paper';
+import { useCallback, useMemo } from 'react';
+import { Button, Checkbox, List, ListItem, ListItemButton, ListItemText, Paper } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import Button from '@mui/material/Button';
-import { ListItemButton } from '@mui/material';
 
 const styles = {
     nominalVoltageZone: {
@@ -54,15 +48,8 @@ export default function NominalVoltageFilter({
     filteredNominalVoltages,
     onChange,
 }: Readonly<NominalVoltageFilterProps>) {
-    // Set up filteredNominalVoltages
-    useEffect(() => {
-        if (nominalVoltages.length > 0 && filteredNominalVoltages.length <= 0) {
-            onChange(nominalVoltages);
-        }
-    }, [nominalVoltages, filteredNominalVoltages, onChange]);
-
     const handleToggle = useCallback(
-        (vnoms: number[], isToggle: boolean) => {
+        (vnoms: number[], isToggle = false) => {
             let newFiltered: number[];
             if (isToggle) {
                 // we "inverse" the selection for vnoms values
@@ -83,8 +70,8 @@ export default function NominalVoltageFilter({
         },
         [filteredNominalVoltages, onChange]
     );
-    const handleSelectAll = useCallback(() => handleToggle(nominalVoltages, false), [handleToggle, nominalVoltages]);
-    const handleSelectNone = useCallback(() => handleToggle([], false), [handleToggle]);
+    const handleSelectAll = useCallback(() => handleToggle(nominalVoltages), [handleToggle, nominalVoltages]);
+    const handleSelectNone = useCallback(() => handleToggle([]), [handleToggle]);
 
     const nominalVoltagesList = useMemo(
         () =>

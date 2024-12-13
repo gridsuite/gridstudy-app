@@ -144,7 +144,7 @@ export const NetworkMapTab = ({
 
     const { snackError } = useSnackMessage();
 
-    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>([]);
+    const [filteredNominalVoltages, setFilteredNominalVoltages] = useState<number[]>();
     const [geoData, setGeoData] = useState<GeoData>();
     const geoDataRef = useRef<any>();
 
@@ -988,7 +988,7 @@ export const NetworkMapTab = ({
         />
     );
 
-    const handleChange = useCallback<NominalVoltageFilterProps['onChange']>(
+    const handleFilteredNominalVoltagesChange = useCallback<NominalVoltageFilterProps['onChange']>(
         (newValues) => {
             setFilteredNominalVoltages(newValues);
             onNominalVoltagesChange(newValues);
@@ -996,13 +996,22 @@ export const NetworkMapTab = ({
         [onNominalVoltagesChange]
     );
 
+    // Set up filteredNominalVoltages once at map initialization
+    // TODO: how do we must manage case where voltages change (like when changing node), as filters are already initialized?
+    const nominalVoltages = mapEquipments?.getNominalVoltages();
+    useEffect(() => {
+        if (nominalVoltages !== undefined && nominalVoltages.length > 0 && filteredNominalVoltages === undefined) {
+            handleFilteredNominalVoltagesChange(nominalVoltages);
+        }
+    }, [filteredNominalVoltages, handleFilteredNominalVoltagesChange, nominalVoltages]);
+
     function renderNominalVoltageFilter() {
         return (
             <Box sx={styles.divNominalVoltageFilter}>
                 <NominalVoltageFilter
-                    nominalVoltages={mapEquipments?.getNominalVoltages() ?? EMPTY_ARRAY}
-                    filteredNominalVoltages={filteredNominalVoltages}
-                    onChange={handleChange}
+                    nominalVoltages={nominalVoltages ?? EMPTY_ARRAY}
+                    filteredNominalVoltages={filteredNominalVoltages ?? EMPTY_ARRAY}
+                    onChange={handleFilteredNominalVoltagesChange}
                 />
             </Box>
         );
