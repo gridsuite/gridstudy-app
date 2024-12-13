@@ -10,7 +10,6 @@ import { getEnumLabelById } from '../../../utils/utils';
 import {
     type CustomColDef,
     FILTER_DATA_TYPES,
-    FILTER_NUMBER_COMPARATORS,
     FILTER_TEXT_COMPARATORS,
 } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EnumOption } from '../../../utils/utils-type';
@@ -37,7 +36,6 @@ import {
     fetchVscConverterStations,
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetColDef, SpreadsheetEquipmentType } from '../spreadsheet.type';
-import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { getEnumFilterConfig } from '../column-type-flter-config';
 
 type TapPositionsType = {
@@ -125,61 +123,6 @@ export const defaultTextFilterConfig = {
     },
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
-/**
- * Default configuration for an enum filter
- * a new filter option is added to the default ag-grid filter
- */
-export const defaultEnumFilterConfig = {
-    filter: 'agTextColumnFilter',
-    agGridFilterParams: {
-        filterOptions: [
-            {
-                displayKey: 'customInRange',
-                displayName: 'customInRange',
-                predicate: (filterValues: string[], cellValue: string) =>
-                    // We receive here the filter enum values as a string (filterValue)
-                    filterValues.at(0)?.includes(cellValue) ?? false,
-            },
-        ],
-    },
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.TEXT,
-    },
-    isEnum: true,
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
-/**
- * Default configuration for a boolean filter
- */
-export const defaultBooleanFilterConfig = {
-    filter: 'agTextColumnFilter',
-    agGridFilterParams: {
-        filterOptions: [
-            {
-                displayKey: 'booleanMatches',
-                displayName: 'booleanMatches',
-                predicate: (filterValues: string[], cellValue: boolean) => {
-                    const filterValue = filterValues.at(0);
-                    if (filterValue === undefined) {
-                        return false;
-                    }
-                    // We receive here the filter boolean value as a string (filterValue)
-                    // we check if the cellValue is not null neither undefined
-                    if (cellValue != null) {
-                        return filterValue === cellValue.toString();
-                    }
-
-                    // we return true if the filter chosen is undefinedValue
-                    return filterValue === BooleanFilterValue.UNDEFINED;
-                },
-            },
-        ],
-    },
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.BOOLEAN,
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
 // This function is used to generate the default configuration for an enum filter
 // It generates configuration for filtering, sorting and rendering
 export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
@@ -192,16 +135,3 @@ export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
         } satisfies EnumCellRendererProps,
         getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
     } as const satisfies Partial<ReadonlyDeep<SpreadsheetColDef>>);
-
-export const countryEnumFilterConfig = {
-    ...defaultEnumFilterConfig,
-    isCountry: true,
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
-export const defaultNumericFilterConfig = {
-    filter: 'agNumberColumnFilter',
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.NUMBER,
-        filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;

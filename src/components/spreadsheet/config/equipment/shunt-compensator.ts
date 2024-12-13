@@ -10,13 +10,7 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    defaultNumericFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
-    typeAndFetchers,
-} from './common-config';
+import { editableColumnConfig, excludeFromGlobalFilter, getDefaultEnumConfig, typeAndFetchers } from './common-config';
 import {
     BOOLEAN_FILTER,
     COUNTRY_FILTER,
@@ -63,7 +57,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'NominalV',
             field: 'nominalVoltage',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_FILTER,
             fractionDigits: 0,
         },
         {
