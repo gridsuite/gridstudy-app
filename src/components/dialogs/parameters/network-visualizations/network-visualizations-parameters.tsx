@@ -59,7 +59,7 @@ export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualiza
     const { reset, handleSubmit, formState } = formMethods;
 
     useEffect(() => {
-      setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
     }, [formState, setHaveDirtyFields]);
 
     useEffect(() => {
