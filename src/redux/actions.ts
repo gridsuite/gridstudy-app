@@ -431,7 +431,6 @@ export type UpdateNetworkVisualizationParametersAction = Readonly<
 export function setUpdateNetworkVisualizationParameters(
     parameters: NetworkVisualizationParameters
 ): UpdateNetworkVisualizationParametersAction {
-    console.log('DBG DBR setUpdateNetworkVisualizationParameters', parameters);
     return {
         type: UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
         parameters: parameters,

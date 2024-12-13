@@ -21,7 +21,7 @@ type SingleLineDiagramParameters = {
     diagonalLabel: boolean;
     centerLabel: boolean;
     substationLayout: string;
-    componentLibrary?: string;
+    componentLibrary: string;
 };
 
 type NetworkAreaDiagramParameters = {

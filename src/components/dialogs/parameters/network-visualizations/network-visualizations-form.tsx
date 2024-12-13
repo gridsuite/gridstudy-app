@@ -57,7 +57,7 @@ export const networkVisualizationParametersSchema = yup.object().shape({
         [PARAM_DIAGONAL_LABEL]: yup.boolean(),
         [PARAM_CENTER_LABEL]: yup.boolean(),
         [PARAM_SUBSTATION_LAYOUT]: yup.string(),
-        [PARAM_COMPONENT_LIBRARY]: yup.string().nullable(),
+        [PARAM_COMPONENT_LIBRARY]: yup.string(),
     }),
     [TabValue.NETWORK_AREA_DIAGRAM]: yup.object().shape({
         [PARAM_INIT_NAD_WITH_GEO_DATA]: yup.boolean(),
