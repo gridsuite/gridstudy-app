@@ -53,8 +53,8 @@ export const CustomAggridFilter = <F extends CustomAggridFilterParams>({
     };
 
     const shouldDisplayFilterIcon = useMemo(
-        () => (!!FilterComponent && isHoveringColumnHeader) || forceDisplayFilterIcon,
-        [FilterComponent, forceDisplayFilterIcon, isHoveringColumnHeader]
+        () => (!!FilterComponent && isHoveringColumnHeader) || !!selectedFilterData || forceDisplayFilterIcon,
+        [FilterComponent, forceDisplayFilterIcon, isHoveringColumnHeader, selectedFilterData]
     );
 
     return (

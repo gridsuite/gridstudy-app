@@ -37,7 +37,10 @@ import {
     fetchVscConverterStations,
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
-import { BooleanFilterValue } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
+import {
+    BooleanFilterValue,
+    CustomAggridBooleanFilter,
+} from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-boolean-filter';
 import { CustomAggridAutocompleteFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 import { CustomAggridComparatorFilter } from '../../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
@@ -146,7 +149,7 @@ export const defaultEnumFilterConfig = {
             },
         ],
     },
-    //filterComponent: CustomAggridAutocompleteFilter,
+    filterComponent: CustomAggridAutocompleteFilter,
     filterComponentParams: {
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.TEXT,
@@ -182,6 +185,7 @@ export const defaultBooleanFilterConfig = {
             },
         ],
     },
+    filterComponent: CustomAggridBooleanFilter,
     filterComponentParams: {
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.BOOLEAN,
@@ -204,10 +208,12 @@ export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
 
 export const countryEnumFilterConfig = {
     ...defaultEnumFilterConfig,
+    isCountry: true,
 } as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
 
 export const defaultNumericFilterConfig = {
     filter: 'agNumberColumnFilter',
+    filterComponent: CustomAggridComparatorFilter,
     filterComponentParams: {
         filterParams: {
             filterDataType: FILTER_DATA_TYPES.NUMBER,

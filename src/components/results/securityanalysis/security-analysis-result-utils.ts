@@ -22,8 +22,8 @@ import {
     FILTER_TEXT_COMPARATORS,
     FILTER_DATA_TYPES,
     FilterSelectorType,
-    FilterPropsType,
     FilterEnumsType,
+    FilterParams,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { SortPropsType } from '../../../hooks/use-aggrid-sort';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
@@ -35,6 +35,9 @@ import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 import RunningStatus from 'components/utils/running-status';
 import { SecurityAnalysisFilterEnumsType } from './use-security-analysis-column-defs';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
+import { CustomAggridAutocompleteFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
+import CustomAggridDurationFilter from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-duration-filter';
 
 const contingencyGetterValues = (params: ValueGetterParams) => {
     if (params.data?.contingencyId && params.data?.contingencyEquipmentsIds) {
@@ -127,7 +130,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
 export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
-    filterProps: FilterPropsType,
+    filterProps: FilterParams,
     filterEnums: FilterEnumsType
 ): ColDef[] => [
     makeAgGridCustomHeaderColumn({
@@ -135,10 +138,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         id: 'subjectId',
         field: 'subjectId',
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                ...filterProps,
+            },
         },
     }),
 
@@ -147,9 +153,12 @@ export const securityAnalysisTableNColumnsDefinition = (
         id: 'limitType',
         field: 'limitType',
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
+        filterComponent: CustomAggridAutocompleteFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                ...filterProps,
+            },
             filterEnums,
         },
     }),
@@ -160,10 +169,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         field: 'limitName',
         valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
-            filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                ...filterProps,
+            },
         },
     }),
 
@@ -174,10 +186,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         numeric: true,
         fractionDigits: 2,
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                ...filterProps,
+            },
         },
     }),
 
@@ -188,10 +203,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         numeric: true,
         fractionDigits: 2,
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                ...filterProps,
+            },
         },
     }),
 
@@ -202,10 +220,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         numeric: true,
         fractionDigits: 2,
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        filterComponent: CustomAggridComparatorFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                ...filterProps,
+            },
         },
     }),
 
@@ -217,11 +238,13 @@ export const securityAnalysisTableNColumnsDefinition = (
         field: 'acceptableDuration',
         valueFormatter: (value: any) => convertDuration(value.data.acceptableDuration),
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.NUMBER,
-            isDuration: true,
-            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+        filterComponent: CustomAggridDurationFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.NUMBER,
+                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                ...filterProps,
+            },
         },
     }),
 
@@ -230,9 +253,12 @@ export const securityAnalysisTableNColumnsDefinition = (
         id: 'side',
         field: 'side',
         sortProps,
-        filterProps,
-        filterParams: {
-            filterDataType: FILTER_DATA_TYPES.TEXT,
+        filterComponent: CustomAggridAutocompleteFilter,
+        filterComponentParams: {
+            filterParams: {
+                filterDataType: FILTER_DATA_TYPES.TEXT,
+                ...filterProps,
+            },
             filterEnums,
         },
     }),
@@ -241,7 +267,7 @@ export const securityAnalysisTableNColumnsDefinition = (
 export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: SubjectIdRendererType,
-    filterProps: FilterPropsType,
+    filterProps: FilterParams,
     sortProps: SortPropsType,
     filterEnums: FilterEnumsType
 ): ColDef[] => {
@@ -253,10 +279,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
             sortProps,
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -264,9 +293,12 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             id: 'status',
             field: 'status',
             sortProps,
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterProps,
+                },
                 filterEnums,
             },
         }),
@@ -276,10 +308,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -287,9 +322,12 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             id: 'limitType',
             field: 'limitType',
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterProps,
+                },
                 filterEnums,
             },
         }),
@@ -299,10 +337,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -312,10 +353,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -325,10 +369,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -338,10 +385,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -352,11 +402,13 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                isDuration: true,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridDurationFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -364,9 +416,12 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
             id: 'side',
             field: 'side',
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterProps,
+                },
                 filterEnums,
             },
         }),
@@ -383,7 +438,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
 export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     intl: IntlShape,
     subjectIdRenderer: SubjectIdRendererType,
-    filterProps: FilterPropsType,
+    filterProps: FilterParams,
     sortProps: SortPropsType,
     filterEnums: FilterEnumsType
 ): ColDef[] => {
@@ -394,10 +449,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'subjectId',
             cellRenderer: subjectIdRenderer,
             sortProps,
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -407,10 +465,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             valueGetter: contingencyGetterValues,
             cellRenderer: ContingencyCellRenderer,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -418,9 +479,12 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             id: 'status',
             field: 'status',
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterProps,
+                },
                 filterEnums,
             },
         }),
@@ -429,9 +493,11 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             id: 'limitType',
             field: 'limitType',
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                },
                 filterEnums,
             },
         }),
@@ -441,10 +507,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'limitName',
             valueFormatter: (params: ValueFormatterParams) => formatNAValue(params.value, intl),
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
-                filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    filterComparators: [FILTER_TEXT_COMPARATORS.EQUALS],
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -454,10 +523,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -467,10 +539,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -480,10 +555,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             numeric: true,
             fractionDigits: 2,
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridComparatorFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -494,11 +572,13 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             field: 'acceptableDuration',
             valueFormatter: (value: ValueFormatterParams) => convertDuration(value.data.acceptableDuration),
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.NUMBER,
-                isDuration: true,
-                filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+            filterComponent: CustomAggridDurationFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.NUMBER,
+                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    ...filterProps,
+                },
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -506,9 +586,12 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
             id: 'side',
             field: 'side',
             sortProps: { ...sortProps, children: true },
-            filterProps,
-            filterParams: {
-                filterDataType: FILTER_DATA_TYPES.TEXT,
+            filterComponent: CustomAggridAutocompleteFilter,
+            filterComponentParams: {
+                filterParams: {
+                    filterDataType: FILTER_DATA_TYPES.TEXT,
+                    ...filterProps,
+                },
                 filterEnums,
             },
         }),

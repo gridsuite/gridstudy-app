@@ -5,24 +5,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selecter';
-import CustomAggridDurationFilter from './custom-aggrid-duration-filter';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
 import { useCustomAggridComparatorFilter } from '../hooks/use-custom-aggrid-comparator-filter';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
 
-export interface CustomAggridComparatorFilterParams extends CustomAggridFilterParams {
-    isDuration?: boolean;
-}
-
-export const CustomAggridComparatorFilter = ({ field, filterParams, isDuration }: CustomAggridComparatorFilterParams) => {
+export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggridFilterParams) => {
     const {
         selectedFilterData,
         selectedFilterComparator,
         decimalAfterDot,
         isNumberInput,
         handleFilterComparatorChange,
-        handleFilterDurationChange,
         handleFilterTextChange,
         handleClearFilter,
     } = useCustomAggridComparatorFilter(field, filterParams);
@@ -38,18 +32,13 @@ export const CustomAggridComparatorFilter = ({ field, filterParams, isDuration }
                 onChange={handleFilterComparatorChange}
                 options={filterComparators}
             />
-
-            {isDuration ? (
-                <CustomAggridDurationFilter value={selectedFilterData} onChange={handleFilterDurationChange} />
-            ) : (
-                <CustomAggridTextFilter
-                    value={selectedFilterData}
-                    onChange={handleFilterTextChange}
-                    onClear={handleClearFilter}
-                    isNumberInput={isNumberInput}
-                    decimalAfterDot={decimalAfterDot}
-                />
-            )}
+            <CustomAggridTextFilter
+                value={selectedFilterData}
+                onChange={handleFilterTextChange}
+                onClear={handleClearFilter}
+                isNumberInput={isNumberInput}
+                decimalAfterDot={decimalAfterDot}
+            />
         </Grid>
     );
 };

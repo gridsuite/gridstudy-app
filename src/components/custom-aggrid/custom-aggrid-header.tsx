@@ -7,11 +7,7 @@
 
 import React, { ComponentType, useCallback, useState } from 'react';
 import { Grid } from '@mui/material';
-import {
-    CustomAggridFilterParams,
-    CustomHeaderMenuParams,
-    CustomHeaderSortParams,
-} from './custom-aggrid-header.type';
+import { CustomAggridFilterParams, CustomHeaderMenuParams, CustomHeaderSortParams } from './custom-aggrid-header.type';
 import { CustomAggridFilter } from './custom-aggrid-filters/custom-aggrid-filter';
 import { CustomAggridSort } from './custom-aggrid-sort';
 import { useCustomAggridSort } from './hooks/use-custom-aggrid-sort';

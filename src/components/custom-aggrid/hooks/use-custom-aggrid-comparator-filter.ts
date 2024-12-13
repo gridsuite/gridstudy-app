@@ -4,21 +4,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CustomHeaderFilterParams, FILTER_DATA_TYPES } from '../custom-aggrid-header.type';
+import { FILTER_DATA_TYPES } from '../custom-aggrid-header.type';
 import { ChangeEvent, useMemo } from 'react';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { computeTolerance } from '../../../hooks/use-aggrid-local-row-filter';
 import { countDecimalPlaces } from '../../../utils/rounding';
 import { useCustomAggridFilter } from './use-custom-aggrid-filter';
+import { FilterParams } from '../custom-aggrid-header.type';
 
-export const useCustomAggridComparatorFilter = (field: string, filterParams: CustomHeaderFilterParams) => {
-    const {
-        filterDataType = FILTER_DATA_TYPES.TEXT,
-        isDuration, // if the value is a duration, we need to handle that special case, because it's a number filter but with text input
-    } = filterParams;
+export const useCustomAggridComparatorFilter = (field: string, filterParams: FilterParams) => {
+    const { filterDataType = FILTER_DATA_TYPES.TEXT } = filterParams;
 
-    const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER && !isDuration;
+    const isNumberInput = filterDataType === FILTER_DATA_TYPES.NUMBER;
 
     const { selectedFilterData, selectedFilterComparator, handleChangeFilterValue, handleChangeComparator } =
         useCustomAggridFilter(field, filterParams);
@@ -35,13 +33,6 @@ export const useCustomAggridComparatorFilter = (field: string, filterParams: Cus
             value: undefined,
         });
     };
-
-    const handleFilterDurationChange = (value?: string) => {
-        handleChangeFilterValue({
-            value,
-        });
-    };
-
     const handleFilterTextChange = (event: ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value.toUpperCase();
         handleChangeFilterValue({
@@ -69,7 +60,6 @@ export const useCustomAggridComparatorFilter = (field: string, filterParams: Cus
         decimalAfterDot,
         isNumberInput,
         handleFilterComparatorChange,
-        handleFilterDurationChange,
         handleFilterTextChange,
         handleClearFilter,
     };

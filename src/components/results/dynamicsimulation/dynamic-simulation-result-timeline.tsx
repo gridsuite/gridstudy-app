@@ -39,6 +39,7 @@ import {
     TIMELINE,
 } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 const styles = {
     loader: {
@@ -113,9 +114,12 @@ const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSi
                 fractionDigits: 2,
                 id: 'agNumberColumnFilter',
                 filter: 'agNumberColumnFilter',
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.NUMBER,
-                    filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        filterDataType: FILTER_DATA_TYPES.NUMBER,
+                        filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    },
                 },
                 cellRenderer: NumberCellRenderer,
                 ...sortAndFilterProps,
