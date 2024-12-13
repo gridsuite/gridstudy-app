@@ -8,6 +8,7 @@
 import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { getEnumLabelById } from 'components/utils/utils';
 import { EnumOption } from 'components/utils/utils-type';
+import CountryCellRenderer from '../utils/country-cell-render';
 
 const contains = (target: string, lookingFor: string): boolean => {
     if (target && lookingFor) {
@@ -39,7 +40,7 @@ export const getEnumFilterConfig = (enumOptions: EnumOption[]) => {
 };
 
 export const defaultColumnType = {
-    textFilter: {
+    textType: {
         filter: 'agTextColumnFilter',
         filterParams: {
             caseSensitive: false,
@@ -49,7 +50,7 @@ export const defaultColumnType = {
         sortable: true,
         resizable: true,
     },
-    numericFilter: {
+    numericType: {
         filter: 'agNumberColumnFilter',
         filterParams: {
             maxNumConditions: 1,
@@ -59,7 +60,7 @@ export const defaultColumnType = {
         sortable: false,
         resizable: true,
     },
-    booleanFilter: {
+    booleanType: {
         filter: 'agTextColumnFilter',
         filterParams: {
             caseSensitive: false,
@@ -76,7 +77,7 @@ export const defaultColumnType = {
         sortable: true,
         resizable: true,
     },
-    countryFilter: {
+    countryType: {
         filter: 'agTextColumnFilter',
         filterParams: {
             caseSensitive: false,
@@ -94,5 +95,6 @@ export const defaultColumnType = {
         },
         sortable: true,
         resizable: true,
+        cellRenderer: CountryCellRenderer,
     },
 };

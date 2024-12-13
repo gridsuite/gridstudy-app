@@ -36,7 +36,7 @@ import {
     fetchVscConverterStations,
 } from '../../../../services/study/network';
 import { EquipmentFetcher, SpreadsheetColDef, SpreadsheetEquipmentType } from '../spreadsheet.type';
-import { getEnumFilterConfig } from '../column-type-flter-config';
+import { getEnumFilterConfig } from '../column-type-filter-config';
 
 type TapPositionsType = {
     lowTapPosition: number;

@@ -11,13 +11,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { editableColumnConfig, excludeFromGlobalFilter, getDefaultEnumConfig, typeAndFetchers } from './common-config';
-import {
-    BOOLEAN_FILTER,
-    COUNTRY_FILTER,
-    MEDIUM_COLUMN_WIDTH,
-    NUMERIC_FILTER,
-    TEXT_FILTER,
-} from '../../utils/constants';
+import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
@@ -32,12 +26,12 @@ export const LOAD_TAB_DEF = {
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
             isDefaultSort: true,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Name',
             field: 'name',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             ...editableColumnConfig,
         },
@@ -54,26 +48,26 @@ export const LOAD_TAB_DEF = {
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            type: COUNTRY_FILTER,
+            type: COUNTRY_TYPE,
             cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 0,
         },
         {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -82,7 +76,7 @@ export const LOAD_TAB_DEF = {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -91,7 +85,7 @@ export const LOAD_TAB_DEF = {
             id: 'p0',
             field: 'p0',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.p0),
@@ -101,7 +95,7 @@ export const LOAD_TAB_DEF = {
             id: 'q0',
             field: 'q0',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.q0),
@@ -112,7 +106,7 @@ export const LOAD_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: BOOLEAN_FILTER,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,

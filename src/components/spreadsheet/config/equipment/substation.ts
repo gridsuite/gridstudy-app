@@ -12,7 +12,7 @@ import { SelectCountryField } from '../../utils/equipment-table-editors';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { editableColumnConfig, typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
-import { COUNTRY_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { COUNTRY_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
 
 export const SUBSTATION_TAB_DEF = {
     index: 0,
@@ -22,14 +22,14 @@ export const SUBSTATION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
             isDefaultSort: true,
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
@@ -41,7 +41,7 @@ export const SUBSTATION_TAB_DEF = {
                 params.data.country = params?.newValue;
                 return true;
             },
-            type: COUNTRY_FILTER,
+            type: COUNTRY_TYPE,
         },
         genericColumnOfPropertiesEditPopup, // FIXME try valueFormatter?
     ],

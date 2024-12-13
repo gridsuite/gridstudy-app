@@ -83,7 +83,7 @@ import { SpreadsheetColDef, SpreadsheetEquipmentType } from './config/spreadshee
 import SpreadsheetSave from './spreadsheet-save';
 import { makeSpreadsheetAgGridColumn } from './config/column-aggrid-utils';
 import { toModificationOperation } from 'components/utils/utils';
-import { defaultColumnType } from './config/column-type-flter-config';
+import { defaultColumnType } from './config/column-type-filter-config';
 import { useParameterState } from 'components/dialogs/parameters/parameters';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {

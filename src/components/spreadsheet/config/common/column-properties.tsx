@@ -9,7 +9,7 @@ import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
 import type { ValueGetterFunc, ValueSetterParams } from 'ag-grid-community';
 import { editableColumnConfig, excludeFromGlobalFilter } from '../equipment/common-config';
-import { TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { TEXT_TYPE } from 'components/spreadsheet/utils/constants';
 
 const propertiesGetter: ValueGetterFunc = (params) => {
     const properties = params?.data?.properties;
@@ -30,7 +30,7 @@ export const genericColumnOfPropertiesReadonly = {
     cellRenderer: PropertiesCellRenderer,
     minWidth: 300,
     getQuickFilterText: excludeFromGlobalFilter,
-    type: TEXT_FILTER,
+    type: TEXT_TYPE,
 };
 
 export const genericColumnOfProperties = {

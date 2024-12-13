@@ -11,13 +11,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
-import {
-    BOOLEAN_FILTER,
-    COUNTRY_FILTER,
-    MEDIUM_COLUMN_WIDTH,
-    NUMERIC_FILTER,
-    TEXT_FILTER,
-} from '../../utils/constants';
+import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 
@@ -30,36 +24,36 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Name',
             field: 'name',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            type: COUNTRY_FILTER,
+            type: COUNTRY_TYPE,
             cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
             field: NOMINAL_V,
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 0,
         },
         {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -68,7 +62,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -77,7 +71,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             id: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -85,7 +79,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             id: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -95,7 +89,7 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: BOOLEAN_FILTER,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

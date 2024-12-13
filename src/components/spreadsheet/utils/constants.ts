@@ -15,8 +15,8 @@ export const DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'displayedColumns.
 export const LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'lockedColumns.';
 export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'reorderedColumns.';
 
-export const TEXT_FILTER = 'textFilter';
-export const NUMERIC_FILTER = 'numericFilter';
-export const ENUM_FILTER = 'enumFilter';
-export const BOOLEAN_FILTER = 'booleanFilter';
-export const COUNTRY_FILTER = 'countryFilter';
+export const TEXT_TYPE = 'textType';
+export const NUMERIC_TYPE = 'numericType';
+export const ENUM_TYPE = 'enumType';
+export const BOOLEAN_TYPE = 'booleanType';
+export const COUNTRY_TYPE = 'countryType';

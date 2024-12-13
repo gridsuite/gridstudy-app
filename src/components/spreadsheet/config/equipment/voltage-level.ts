@@ -14,7 +14,7 @@ import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from '
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
-import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
 
 function generateEditableNumericColumnDefinition<
     TId extends string,
@@ -26,7 +26,7 @@ function generateEditableNumericColumnDefinition<
         id: id,
         field: field,
         numeric: true,
-        type: NUMERIC_FILTER,
+        type: NUMERIC_TYPE,
         fractionDigits: 1,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
@@ -48,30 +48,30 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'SubstationId',
             field: 'substationId',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            type: COUNTRY_FILTER,
+            type: COUNTRY_TYPE,
             cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
             field: 'nominalV',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 0,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
@@ -81,7 +81,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,
@@ -102,7 +102,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             numeric: true,

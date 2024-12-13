@@ -11,7 +11,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
 
 export const BUS_TAB_DEF = {
     index: 14,
@@ -22,7 +22,7 @@ export const BUS_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Magnitude',
@@ -30,7 +30,7 @@ export const BUS_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             canBeInvalidated: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'Angle',
@@ -38,35 +38,34 @@ export const BUS_TAB_DEF = {
             numeric: true,
             fractionDigits: 1,
             canBeInvalidated: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            type: COUNTRY_FILTER,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
             numeric: true,
             fractionDigits: 0,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
         },
         genericColumnOfProperties,
     ],

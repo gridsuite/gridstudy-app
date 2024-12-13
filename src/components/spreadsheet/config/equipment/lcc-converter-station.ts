@@ -12,7 +12,7 @@ import CountryCellRenderer from '../../utils/country-cell-render';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { BOOLEAN_FILTER, COUNTRY_FILTER, NUMERIC_FILTER, TEXT_FILTER } from 'components/spreadsheet/utils/constants';
+import { BOOLEAN_TYPE, COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
 
 export const LCC_CONVERTER_STATION_TAB_DEF = {
     index: 11,
@@ -23,41 +23,40 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             id: 'ID',
             field: 'id',
             isDefaultSort: true,
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Name',
             field: 'name',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            type: COUNTRY_FILTER,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalV',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 0,
         },
         {
             id: 'HvdcLineId',
             field: 'hvdcLineId',
-            type: TEXT_FILTER,
+            type: TEXT_TYPE,
         },
         {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -66,7 +65,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -75,7 +74,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             id: 'PowerFactor',
             field: 'powerFactor',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -83,7 +82,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             id: 'LossFactor',
             field: 'lossFactor',
             numeric: true,
-            type: NUMERIC_FILTER,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -92,7 +91,7 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             field: 'terminalConnected',
             boolean: true,
             cellRenderer: BooleanCellRenderer,
-            type: BOOLEAN_FILTER,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,
