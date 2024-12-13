@@ -34,7 +34,7 @@ interface CustomHeaderComponentProps<F extends CustomAggridFilterParams> {
     filterComponentParams: F;
 }
 
-const CustomHeaderComponent = <T extends CustomAggridFilterParams>({
+const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
     field,
     displayName,
     sortParams,
@@ -42,7 +42,7 @@ const CustomHeaderComponent = <T extends CustomAggridFilterParams>({
     forceDisplayFilterIcon,
     filterComponent,
     filterComponentParams,
-}: CustomHeaderComponentProps<T>) => {
+}: CustomHeaderComponentProps<F>) => {
     const [isHoveringColumnHeader, setIsHoveringColumnHeader] = useState(false);
 
     const { handleSortChange } = useCustomAggridSort(field, sortParams);
