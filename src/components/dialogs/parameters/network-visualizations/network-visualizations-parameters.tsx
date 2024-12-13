@@ -31,7 +31,13 @@ import { UUID } from 'crypto';
 import { UPDATE_TYPE_HEADER } from '../common/computation-parameters-util';
 import { setUpdateNetworkVisualizationParameters } from '../../../../redux/actions';
 
-export const NetworkVisualizationsParameters: FunctionComponent = () => {
+interface NetworkVisualizationsParametersProps {
+    setHaveDirtyFields: (haveDirtyFields: boolean) => void;
+}
+
+export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualizationsParametersProps> = ({
+    setHaveDirtyFields,
+}) => {
     const user = useSelector((state: AppState) => state.user);
     const componentLibraries = useGetAvailableComponentLibraries(user);
     const [tabValue, setTabValue] = useState(TabValue.MAP);
@@ -50,7 +56,12 @@ export const NetworkVisualizationsParameters: FunctionComponent = () => {
         resolver: yupResolver(networkVisualizationParametersSchema),
     });
 
-    const { reset, handleSubmit } = formMethods;
+    const { reset, handleSubmit, formState } = formMethods;
+
+    useEffect(() => {
+      setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     useEffect(() => {
         if (networkVisualizationsParameters) {
             reset(networkVisualizationsParameters);
