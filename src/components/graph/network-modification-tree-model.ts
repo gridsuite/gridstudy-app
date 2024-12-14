@@ -30,6 +30,14 @@ export default class NetworkModificationTreeModel {
 
     isAnyNodeBuilding = false;
 
+    // TODO CHARLY commentaire
+    childrenNodeSorter(a, b) {
+        if (a.columnPosition !== undefined && b.columnPosition !== undefined) {
+            return a.columnPosition - b.columnPosition;
+        }
+        return 0;
+    }
+    
     /**
      * Will switch the order of two nodes in the tree.
      * The nodeToMove will be moved, either to the left or right of the destinationNode, depending
@@ -133,7 +141,7 @@ export default class NetworkModificationTreeModel {
         return null;
     }
 
-    switchBranches(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+    switchBranches(studyUuid: UUID, nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
         // We find the nodes from the two branches that share the same parent
         const commonAncestor = this.getCommonAncestor(nodeToMove, destinationNode);
         if (commonAncestor) {
@@ -141,8 +149,14 @@ export default class NetworkModificationTreeModel {
             const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
             if (siblingFromNodeToMoveBranch && siblingFromDestinationNodeBranch) {
                 this.switchSiblingsOrder(siblingFromNodeToMoveBranch, siblingFromDestinationNodeBranch);
+                //this.saveChildrenColumnPositions(studyUuid, commonAncestor);
             }
         }
+        return commonAncestor;
+    }
+
+    reorganizeNodes(parentNodeId: string, nodeIdToPositions: Map<string, number>) {
+// TODO CHARLY ici : point de sortie du Reducer
     }
 
     addChild(
@@ -241,7 +255,7 @@ export default class NetworkModificationTreeModel {
         if (!skipChildren) {
             // Add children of this node recursively
             if (newNode.children) {
-                newNode.children.forEach((child) => {
+                newNode.children.sort(this.childrenNodeSorter).forEach((child) => {
                     this.addChild(child, newNode.id, undefined, undefined);
                 });
             }
@@ -321,7 +335,7 @@ export default class NetworkModificationTreeModel {
         // handle root node
         this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
         // handle root children
-        elements.children.forEach((child) => {
+        elements.children.sort(this.childrenNodeSorter).forEach((child) => {
             this.addChild(child, elements.id);
         });
         this.setBuildingStatus();

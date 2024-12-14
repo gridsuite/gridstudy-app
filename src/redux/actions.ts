@@ -317,23 +317,26 @@ export function networkModificationTreeNodeMoved(
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE_SWITCH_NODES';
+/*export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE_SWITCH_NODES';
 export type NetworkModificationTreeSwitchNodesAction = Readonly<
     Action<typeof NETWORK_MODIFICATION_TREE_SWITCH_NODES>
 > & {
+    studyUuid: UUID;
     nodeToMoveId: string;
     destinationNodeId: string;
 };
 export function networkModificationTreeSwitchNodes(
+    studyUuid: UUID,
     nodeToMoveId: string,
     destinationNodeId: string
 ): NetworkModificationTreeSwitchNodesAction {
     return {
         type: NETWORK_MODIFICATION_TREE_SWITCH_NODES,
+        studyUuid,
         nodeToMoveId,
         destinationNodeId,
     };
-}
+}*/
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {

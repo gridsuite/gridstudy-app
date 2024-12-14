@@ -130,6 +130,20 @@ export function updateTreeNode(studyUuid, node) {
     });
 }
 
+export function updateNodesColumnPositions(studyUuid, parentNodeId, nodes) {
+    const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes/columnpositions/' + encodeURIComponent(parentNodeId);
+    console.debug(nodeUpdateUrl);
+    console.error("CHARLY hello to back");
+    return backendFetch(nodeUpdateUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(nodes),
+    });
+}
+
 export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     console.info('Fetching network modification tree node : ', nodeUuid);
     const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);

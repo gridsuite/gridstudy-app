@@ -10,7 +10,7 @@ import { ReactFlow, Controls, useStore, useReactFlow, MiniMap, useEdgesState, us
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { setModificationsDrawerOpen, setCurrentTreeNode, networkModificationTreeSwitchNodes } from '../redux/actions';
+import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -29,6 +29,8 @@ import {
     snapGrid,
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
+import {updateNodesColumnPositions} from "../services/study/tree-subtree.js";
+import {useSnackMessage} from "@gridsuite/commons-ui";
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -38,6 +40,7 @@ const NetworkModificationTree = ({
     isStudyDrawerOpen,
 }) => {
     const dispatch = useDispatch();
+    const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -218,6 +221,26 @@ const NetworkModificationTree = ({
         }
     };
 
+
+    const saveChildrenColumnPositions = (parentNode) => {
+        console.error("CHARLY lets go2 "+parentNode?.id);
+        const nodesToUpdate = treeModel.treeNodes
+            .filter(n => n.parentId === parentNode.id)
+            .map((node, index) => ({
+                id: node.id,
+                type: node.type,
+                columnPosition: index
+            }));
+        console.error("CHARLY lets go3 ",nodesToUpdate);
+        updateNodesColumnPositions(studyUuid, parentNode.id, nodesToUpdate)
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'NodeUpdateColumnPositions',
+                });
+            });
+    };
+
     /**
      * When the user stops dragging a node and releases it to its new position, we check if we need
      * to switch the order of the moved branch with a neighboring branch.
@@ -240,7 +263,18 @@ const NetworkModificationTree = ({
                 movedNodeXPositionAfterDrag
             );
             if (nodeToSwitchWith) {
-                dispatch(networkModificationTreeSwitchNodes(movedNode.id, nodeToSwitchWith.id));
+                const nodeToMove = treeModel.treeNodes.find((n) => n.id === movedNode.id);
+                const destinationNode = treeModel.treeNodes.find(
+                    (n) => n.id === nodeToSwitchWith.id
+                );
+                if (nodeToMove && destinationNode) {
+                    const parentNode = treeModel.switchBranches(studyUuid, nodeToMove, destinationNode);
+                    if (parentNode) {
+                        console.error("CHARLY lets go");
+                        saveChildrenColumnPositions(parentNode);
+                    }
+                }
+                //dispatch(networkModificationTreeSwitchNodes(studyUuid, movedNode.id, nodeToSwitchWith.id));
             }
         }
     };
