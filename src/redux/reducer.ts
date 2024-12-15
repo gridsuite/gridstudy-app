@@ -649,7 +649,7 @@ const initialState: AppState = {
     centerOnSubstation: null,
     notificationIdList: [],
     isModificationsInProgress: false,
-    studyDisplayMode: StudyDisplayMode.TREE,
+    studyDisplayMode: StudyDisplayMode.HYBRID,
     diagramStates: [],
     nadNodeMovements: [],
     reloadMap: true,
