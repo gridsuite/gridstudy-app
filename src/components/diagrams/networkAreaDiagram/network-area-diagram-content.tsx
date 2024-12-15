@@ -264,6 +264,22 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 OnToggleHoverCallback
             );
 
+            // Update the diagram-pane's list of sizes with the width and height from the backend
+            diagramSizeSetter(props.diagramId, props.svgType, diagramViewer.getWidth(), diagramViewer.getHeight());
+
+            // If a previous diagram was loaded and the diagram's size remained the same, we keep
+            // the user's zoom and scroll state for the current render.
+            if (
+                diagramViewerRef.current &&
+                diagramViewer.getWidth() === diagramViewerRef.current.getWidth() &&
+                diagramViewer.getHeight() === diagramViewerRef.current.getHeight()
+            ) {
+                const viewBox = diagramViewerRef.current.getViewBox();
+                if (viewBox) {
+                    diagramViewer.setViewBox(viewBox);
+                }
+            }
+
             // Repositioning previously moved nodes
             const correspondingMovements = nadNodeMovements.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
