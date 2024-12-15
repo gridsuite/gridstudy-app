@@ -120,14 +120,14 @@ import {
     NETWORK_MODIFICATION_TREE_NODE_MOVED,
     NETWORK_MODIFICATION_TREE_NODES_REMOVED,
     NETWORK_MODIFICATION_TREE_NODES_UPDATED,
-    //NETWORK_MODIFICATION_TREE_SWITCH_NODES,
+    NETWORK_MODIFICATION_TREE_REORDER_NODES,
     NetworkAreaDiagramNbVoltageLevelsAction,
     NetworkModificationHandleSubtreeAction,
     NetworkModificationTreeNodeAddedAction,
     NetworkModificationTreeNodeMovedAction,
     NetworkModificationTreeNodesRemovedAction,
     NetworkModificationTreeNodesUpdatedAction,
-    NetworkModificationTreeSwitchNodesAction,
+    NetworkModificationTreeReorderNodesAction,
     OPEN_DIAGRAM,
     OPEN_NAD_LIST,
     OPEN_STUDY,
@@ -903,24 +903,16 @@ export const reducer = createReducer(initialState, (builder) => {
         }
     );
 
-    /*builder.addCase(
-        NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        (state, action: NetworkModificationTreeSwitchNodesAction) => {
+    builder.addCase(
+        NETWORK_MODIFICATION_TREE_REORDER_NODES,
+        (state, action: NetworkModificationTreeReorderNodesAction) => {
             if (state.networkModificationTreeModel) {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate();
-
-                const nodeToMove = newModel.treeNodes.find((n: CurrentTreeNode) => n.id === action.nodeToMoveId);
-                const studyUuid = action.studyUuid;
-                const destinationNode = newModel.treeNodes.find(
-                    (n: CurrentTreeNode) => n.id === action.destinationNodeId
-                );
-                if (nodeToMove && destinationNode) {
-                    newModel.switchBranches("5c661016-67c4-440d-ae05-f87eea474a91", nodeToMove, destinationNode);
-                }
+                newModel.reorderNodes(action.parentNodeId, action.nodeIds);
                 state.networkModificationTreeModel = newModel;
             }
         }
-    );*/
+    );
 
     builder.addCase(NETWORK_MODIFICATION_TREE_NODE_ADDED, (state, action: NetworkModificationTreeNodeAddedAction) => {
         if (state.networkModificationTreeModel) {

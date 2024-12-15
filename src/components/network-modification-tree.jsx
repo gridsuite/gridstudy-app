@@ -29,8 +29,8 @@ import {
     snapGrid,
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
-import {updateNodesColumnPositions} from "../services/study/tree-subtree.js";
-import {useSnackMessage} from "@gridsuite/commons-ui";
+import { updateNodesColumnPositions } from '../services/study/tree-subtree.js';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -221,24 +221,23 @@ const NetworkModificationTree = ({
         }
     };
 
-
+    /**
+     * Saves the new order of parentNode's children in the backend
+     */
     const saveChildrenColumnPositions = (parentNode) => {
-        console.error("CHARLY lets go2 "+parentNode?.id);
         const nodesToUpdate = treeModel.treeNodes
-            .filter(n => n.parentId === parentNode.id)
+            .filter((n) => n.parentId === parentNode.id)
             .map((node, index) => ({
                 id: node.id,
                 type: node.type,
-                columnPosition: index
+                columnPosition: index,
             }));
-        console.error("CHARLY lets go3 ",nodesToUpdate);
-        updateNodesColumnPositions(studyUuid, parentNode.id, nodesToUpdate)
-            .catch((error) => {
-                snackError({
-                    messageTxt: error.message,
-                    headerId: 'NodeUpdateColumnPositions',
-                });
+        updateNodesColumnPositions(studyUuid, parentNode.id, nodesToUpdate).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'NodeUpdateColumnPositions',
             });
+        });
     };
 
     /**
@@ -264,17 +263,13 @@ const NetworkModificationTree = ({
             );
             if (nodeToSwitchWith) {
                 const nodeToMove = treeModel.treeNodes.find((n) => n.id === movedNode.id);
-                const destinationNode = treeModel.treeNodes.find(
-                    (n) => n.id === nodeToSwitchWith.id
-                );
+                const destinationNode = treeModel.treeNodes.find((n) => n.id === nodeToSwitchWith.id);
                 if (nodeToMove && destinationNode) {
                     const parentNode = treeModel.switchBranches(studyUuid, nodeToMove, destinationNode);
                     if (parentNode) {
-                        console.error("CHARLY lets go");
                         saveChildrenColumnPositions(parentNode);
                     }
                 }
-                //dispatch(networkModificationTreeSwitchNodes(studyUuid, movedNode.id, nodeToSwitchWith.id));
             }
         }
     };

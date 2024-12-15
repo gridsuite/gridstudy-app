@@ -15,6 +15,7 @@ import {
     networkModificationHandleSubtree,
     setSelectionForCopy,
     resetLogsFilter,
+    networkModificationTreeReorderNodes,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -215,10 +216,13 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'columnsChanged') {
-                const payload = JSON.parse(studyUpdatedForce.eventData.payload);
-                const nodeIdToPositions = new Map(Object.entries(payload));
-                //dispatch(); // TODO CHARLY nouvel appel au Reducer, jusqu'à arriver au model::reorganizeNodes(parentNodeId: string, nodeIdToPositions: Map<string, number>)
-                console.error("CHARLY nodeIdToPositions", nodeIdToPositions);
+                const orderedChildrenNodeIds = JSON.parse(studyUpdatedForce.eventData.payload);
+                dispatch(
+                    networkModificationTreeReorderNodes(
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                        orderedChildrenNodeIds
+                    )
+                );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
                 fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
                     (node) => {

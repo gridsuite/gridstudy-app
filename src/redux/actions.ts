@@ -92,7 +92,7 @@ export type AppActions =
     | NetworkModificationHandleSubtreeAction
     | NetworkModificationTreeNodesRemovedAction
     | NetworkModificationTreeNodesUpdatedAction
-    | NetworkModificationTreeSwitchNodesAction
+    | NetworkModificationTreeReorderNodesAction
     | SelectThemeAction
     | SelectLanguageAction
     | SelectComputedLanguageAction
@@ -317,26 +317,23 @@ export function networkModificationTreeNodeMoved(
     };
 }
 
-/*export const NETWORK_MODIFICATION_TREE_SWITCH_NODES = 'NETWORK_MODIFICATION_TREE_SWITCH_NODES';
-export type NetworkModificationTreeSwitchNodesAction = Readonly<
-    Action<typeof NETWORK_MODIFICATION_TREE_SWITCH_NODES>
+export const NETWORK_MODIFICATION_TREE_REORDER_NODES = 'NETWORK_MODIFICATION_TREE_REORDER_NODES';
+export type NetworkModificationTreeReorderNodesAction = Readonly<
+    Action<typeof NETWORK_MODIFICATION_TREE_REORDER_NODES>
 > & {
-    studyUuid: UUID;
-    nodeToMoveId: string;
-    destinationNodeId: string;
+    parentNodeId: string;
+    nodeIds: string[];
 };
-export function networkModificationTreeSwitchNodes(
-    studyUuid: UUID,
-    nodeToMoveId: string,
-    destinationNodeId: string
-): NetworkModificationTreeSwitchNodesAction {
+export function networkModificationTreeReorderNodes(
+    parentNodeId: string,
+    nodeIds: string[]
+): NetworkModificationTreeReorderNodesAction {
     return {
-        type: NETWORK_MODIFICATION_TREE_SWITCH_NODES,
-        studyUuid,
-        nodeToMoveId,
-        destinationNodeId,
+        type: NETWORK_MODIFICATION_TREE_REORDER_NODES,
+        parentNodeId,
+        nodeIds,
     };
-}*/
+}
 
 export const NETWORK_MODIFICATION_HANDLE_SUBTREE = 'NETWORK_MODIFICATION_HANDLE_SUBTREE';
 export type NetworkModificationHandleSubtreeAction = Readonly<Action<typeof NETWORK_MODIFICATION_HANDLE_SUBTREE>> & {

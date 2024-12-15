@@ -133,7 +133,6 @@ export function updateTreeNode(studyUuid, node) {
 export function updateNodesColumnPositions(studyUuid, parentNodeId, nodes) {
     const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes/columnpositions/' + encodeURIComponent(parentNodeId);
     console.debug(nodeUpdateUrl);
-    console.error("CHARLY hello to back");
     return backendFetch(nodeUpdateUrl, {
         method: 'put',
         headers: {

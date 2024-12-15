@@ -37,7 +37,7 @@ export default class NetworkModificationTreeModel {
         }
         return 0;
     }
-    
+
     /**
      * Will switch the order of two nodes in the tree.
      * The nodeToMove will be moved, either to the left or right of the destinationNode, depending
@@ -149,14 +149,33 @@ export default class NetworkModificationTreeModel {
             const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
             if (siblingFromNodeToMoveBranch && siblingFromDestinationNodeBranch) {
                 this.switchSiblingsOrder(siblingFromNodeToMoveBranch, siblingFromDestinationNodeBranch);
-                //this.saveChildrenColumnPositions(studyUuid, commonAncestor);
             }
         }
         return commonAncestor;
     }
 
-    reorganizeNodes(parentNodeId: string, nodeIdToPositions: Map<string, number>) {
-// TODO CHARLY ici : point de sortie du Reducer
+    reorderNodes(parentNodeId: string, nodeIds: string[]) {
+        // We check if the current position is already correct
+        const children = this.treeNodes.filter((n) => n.parentId === parentNodeId);
+        if (nodeIds.length !== children.length) {
+            console.warn('reorderNodes : synchronization error, reorder cancelled');
+            return;
+        }
+        if (children.map((child) => child.id).join(',') === nodeIds.join(',')) {
+            // Alreay in the same order.
+            return;
+        }
+        // Let's reorder the children :
+        // We create a map of children node ids and number of nodes in each of these child's family,
+        // then in nodeIds order, we cut and paste the corresponding number of nodes in this.treeNodes.
+
+        const nodeIdAndFamilySize = new Map(nodeIds.map((id) => [id, 1 + countNodes(this.treeNodes, id)]));
+
+        nodeIdAndFamilySize.forEach((value, key) => {
+            console.error('%s', `CHARLY => ${key.substring(0, 3)}: ${value}`);
+        });
+
+        // TODO Faire la manip dans le tableau this.treeNodes.
     }
 
     addChild(
