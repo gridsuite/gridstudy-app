@@ -908,7 +908,7 @@ export const reducer = createReducer(initialState, (builder) => {
         (state, action: NetworkModificationTreeReorderNodesAction) => {
             if (state.networkModificationTreeModel) {
                 let newModel = state.networkModificationTreeModel.newSharedForUpdate();
-                newModel.reorderNodes(action.parentNodeId, action.nodeIds);
+                newModel.reorderChildrenNodes(action.parentNodeId, action.nodeIds);
                 state.networkModificationTreeModel = newModel;
             }
         }

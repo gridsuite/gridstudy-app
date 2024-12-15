@@ -11,7 +11,7 @@ import { BUILD_STATUS } from '../network/constants';
 import { UUID } from 'crypto';
 import { CurrentTreeNode, isReactFlowRootNodeData } from '../../redux/reducer';
 import { Edge } from '@xyflow/react';
-import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
+import { AbstractNode, NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
@@ -30,8 +30,8 @@ export default class NetworkModificationTreeModel {
 
     isAnyNodeBuilding = false;
 
-    // TODO CHARLY commentaire
-    childrenNodeSorter(a, b) {
+    // Will sort if columnPosition is defined, and not move the nodes if undefined
+    childrenNodeSorter(a: AbstractNode, b: AbstractNode) {
         if (a.columnPosition !== undefined && b.columnPosition !== undefined) {
             return a.columnPosition - b.columnPosition;
         }
@@ -154,7 +154,12 @@ export default class NetworkModificationTreeModel {
         return commonAncestor;
     }
 
-    reorderNodes(parentNodeId: string, nodeIds: string[]) {
+    /**
+     * Will reorganize this.treeNode and put the children of parentNodeId in the order provided in nodeIds array.
+     * @param parentNodeId parent ID of the to be reordered children nodes
+     * @param nodeIds array of children ID in the order we want
+     */
+    reorderChildrenNodes(parentNodeId: string, nodeIds: string[]) {
         // We check if the current position is already correct
         const children = this.treeNodes.filter((n) => n.parentId === parentNodeId);
         if (nodeIds.length !== children.length) {
@@ -168,14 +173,15 @@ export default class NetworkModificationTreeModel {
         // Let's reorder the children :
         // We create a map of children node ids and number of nodes in each of these child's family,
         // then in nodeIds order, we cut and paste the corresponding number of nodes in this.treeNodes.
-
-        const nodeIdAndFamilySize = new Map(nodeIds.map((id) => [id, 1 + countNodes(this.treeNodes, id)]));
-
-        nodeIdAndFamilySize.forEach((value, key) => {
-            console.error('%s', `CHARLY => ${key.substring(0, 3)}: ${value}`);
+        const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 to have the index just after the parent node
+        let insertedNodes = 0;
+        const nodeIdAndFamilySize = new Map(nodeIds.map((id) => [id, 1 + countNodes(this.treeNodes, id as UUID)]));
+        nodeIdAndFamilySize.forEach((familySize, nodeId) => {
+            const nodesToMoveIndex = this.treeNodes.findIndex((n) => n.id === nodeId);
+            const nodesToMove = this.treeNodes.splice(nodesToMoveIndex, familySize);
+            this.treeNodes.splice(justAfterParentIndex + insertedNodes, 0, ...nodesToMove);
+            insertedNodes += familySize;
         });
-
-        // TODO Faire la manip dans le tableau this.treeNodes.
     }
 
     addChild(
