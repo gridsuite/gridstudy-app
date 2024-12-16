@@ -6,7 +6,13 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValues,
+    convertOutputValues,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
@@ -80,7 +86,6 @@ import {
     getConnectivityFormData,
     getCont1Cont2WithPositionEmptyFormData,
 } from '../../../connectivity/connectivity-form-utils';
-import { convertInputValues, convertOutputValues, FieldType } from '../../../converter-unit-utils';
 
 export const LineModificationDialogTab = {
     CONNECTIVITY_TAB: 0,

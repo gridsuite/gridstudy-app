@@ -6,9 +6,9 @@
  */
 
 import type { ReadonlyDeep } from 'type-fest';
-import { DataType, FieldOptionType, FieldType } from './assignment.type';
+import { DataType, FieldOptionType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType } from '@gridsuite/commons-ui';
+import { EquipmentType, FieldType } from '@gridsuite/commons-ui';
 import { KILO_AMPERE, MICRO_SIEMENS } from '../../../../../utils/field-constants';
 
 export const FIELD_OPTIONS = {
@@ -108,8 +108,8 @@ export const FIELD_OPTIONS = {
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
     },
-    MAXIMUM_Q_AT_NOMINAL_VOLTAGE: {
-        id: FieldType.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
+    MAX_Q_AT_NOMINAL_V: {
+        id: FieldType.MAX_Q_AT_NOMINAL_V,
         label: 'maxQAtNominalV',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
@@ -303,7 +303,7 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.MAXIMUM_SECTION_COUNT,
         FIELD_OPTIONS.SECTION_COUNT,
         FIELD_OPTIONS.MAXIMUM_SUSCEPTANCE,
-        FIELD_OPTIONS.MAXIMUM_Q_AT_NOMINAL_VOLTAGE,
+        FIELD_OPTIONS.MAX_Q_AT_NOMINAL_V,
     ],
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
     [EquipmentType.HVDC_LINE]: [FIELD_OPTIONS.PROPERTY],

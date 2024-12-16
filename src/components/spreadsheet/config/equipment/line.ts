@@ -20,7 +20,7 @@ import {
 } from './common-config';
 import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { convertInputValues, FieldType } from '../../../dialogs/converter-unit-utils';
+import { convertInputValues, FieldType } from '@gridsuite/commons-ui';
 
 export const LINE_TAB_DEF = {
     index: 2,

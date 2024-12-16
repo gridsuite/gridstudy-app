@@ -7,7 +7,13 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValues,
+    convertOutputValues,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -24,7 +30,6 @@ import {
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
-import { convertInputValues, convertOutputValues, FieldType } from '../../converter-unit-utils';
 import { toModificationOperation } from '../../../utils/utils.js';
 
 const formSchema = yup

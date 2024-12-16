@@ -20,7 +20,7 @@ import {
 } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
-import { convertInputValues, convertOutputValues, FieldType } from '../../../dialogs/converter-unit-utils';
+import { convertInputValues, convertOutputValues, FieldType } from '@gridsuite/commons-ui';
 
 function generateEditableNumericColumnDefinition<
     TId extends string,

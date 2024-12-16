@@ -24,9 +24,8 @@ import {
     FilterPropsType,
 } from '../../custom-aggrid/custom-aggrid-header.type';
 import { makeAgGridCustomHeaderColumn } from '../../custom-aggrid/custom-aggrid-header-utils';
-import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { convertOutputValues, CustomAGGrid, FieldType } from '@gridsuite/commons-ui';
 import { convertSide } from '../loadflow/load-flow-result-utils';
-import { convertOutputValues, FieldType } from '../../dialogs/converter-unit-utils';
 
 interface ShortCircuitAnalysisResultProps {
     result: SCAFaultResult[];

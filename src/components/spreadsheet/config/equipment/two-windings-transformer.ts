@@ -38,7 +38,7 @@ import {
     numericalCellEditorConfig,
     standardSelectCellEditorConfig,
 } from '../common/cell-editors';
-import { convertInputValues, FieldType } from '../../../dialogs/converter-unit-utils';
+import { convertInputValues, FieldType } from '@gridsuite/commons-ui';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)

@@ -7,7 +7,7 @@
 
 import { Grid } from '@mui/material';
 import { MicroSusceptanceAdornment, OhmAdornment } from '../../../dialog-utils';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { convertInputValues, FieldType, FloatInput } from '@gridsuite/commons-ui';
 import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import {
     B1,
@@ -24,7 +24,6 @@ import PropertiesForm from '../../common/properties/properties-form';
 import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
-import { convertInputValues, FieldType } from '../../../converter-unit-utils';
 
 const styles = {
     h3: {

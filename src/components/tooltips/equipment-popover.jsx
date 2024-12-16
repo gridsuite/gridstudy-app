@@ -16,8 +16,7 @@ import { RunningStatus } from '../utils/running-status';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { fetchNetworkElementInfos } from '../../services/study/network';
 import { mergeSx } from '../utils/functions';
-import { useDebounce } from '@gridsuite/commons-ui';
-import { convertInputValues, FieldType } from '../dialogs/converter-unit-utils';
+import { convertInputValues, FieldType, useDebounce } from '@gridsuite/commons-ui';
 
 const styles = {
     tableCells: {
