@@ -351,11 +351,4 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
     );
 };
 
-LogTable.propTypes = {
-    selectedReportId: PropTypes.string,
-    reportType: PropTypes.string,
-    reportNature: PropTypes.string,
-    onRowClick: PropTypes.func,
-};
-
 export default memo(LogTable);
