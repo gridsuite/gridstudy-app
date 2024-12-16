@@ -51,7 +51,6 @@ const SensitivityAnalysisResult = ({
     const makeColumn = useCallback(
         ({ field, labelId, isNum = false, pinned = false, maxWidth }) => {
             const { onSortChanged = () => {}, sortConfig } = sortProps || {};
-            const { updateFilter, filterSelector } = filterProps || {};
 
             const isSortActive = !!sortConfig?.find((value) => value.colId === field);
 
@@ -70,11 +69,11 @@ const SensitivityAnalysisResult = ({
                         sortConfig,
                         onSortChanged,
                     },
-                    isFilterable: !!filterProps && !!filterOptions.length, // Filter should have options
-                    filterParams: {
-                        filterSelector,
-                        customFilterOptions: filterOptions,
-                        updateFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...filterProps,
+                            customFilterOptions: filterOptions,
+                        },
                     },
                 },
                 minWidth: isSortActive ? 95 : 65,

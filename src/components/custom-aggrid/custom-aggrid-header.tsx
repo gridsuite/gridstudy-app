@@ -88,14 +88,16 @@ const CustomHeaderComponent = <F extends CustomAggridFilterParams>({
                     </Grid>
                 </Grid>
                 <Grid container item flex="1">
-                    <CustomAggridFilter
-                        filterComponent={filterComponent}
-                        filterComponentParams={{ ...filterComponentParams, field }}
-                        isHoveringColumnHeader={isHoveringColumnHeader}
-                        forceDisplayFilterIcon={forceDisplayFilterIcon}
-                        handleCloseFilter={handleCloseFilter}
-                    />
-                    <CustomMenu field={field} customMenuParams={customMenuParams} />
+                    {filterComponent && (
+                        <CustomAggridFilter
+                            filterComponent={filterComponent}
+                            filterComponentParams={{ ...filterComponentParams, field }}
+                            isHoveringColumnHeader={isHoveringColumnHeader}
+                            forceDisplayFilterIcon={forceDisplayFilterIcon}
+                            handleCloseFilter={handleCloseFilter}
+                        />
+                    )}
+                    {customMenuParams && <CustomMenu field={field} customMenuParams={customMenuParams} />}
                 </Grid>
             </Grid>
         </Grid>

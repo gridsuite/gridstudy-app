@@ -57,6 +57,15 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
 
     const nodeUuid = currentNode?.id;
 
+    const getEnumLabel = useCallback(
+        (value: string) =>
+            intl.formatMessage({
+                id: value,
+                defaultMessage: value,
+            }),
+        [intl]
+    );
+
     // for nmk views, click handler on subjectId cell
     const onClickNmKConstraint = useCallback(
         (row: SecurityAnalysisNmkTableRow, column?: ColDef) => {
@@ -138,7 +147,8 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterProps,
                     sortProps,
-                    filterEnums.nmk
+                    filterEnums.nmk,
+                    getEnumLabel
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -146,12 +156,19 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterProps,
                     sortProps,
-                    filterEnums.nmk
+                    filterEnums.nmk,
+                    getEnumLabel
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, sortProps, filterProps, filterEnums.n);
+                return securityAnalysisTableNColumnsDefinition(
+                    intl,
+                    sortProps,
+                    filterProps,
+                    filterEnums.n,
+                    getEnumLabel
+                );
         }
-    }, [resultType, intl, SubjectIdRenderer, filterProps, sortProps, filterEnums]);
+    }, [resultType, intl, SubjectIdRenderer, filterProps, sortProps, filterEnums.nmk, filterEnums.n, getEnumLabel]);
 
     return columnDefs;
 };

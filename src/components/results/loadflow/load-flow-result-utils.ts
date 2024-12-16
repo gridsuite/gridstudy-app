@@ -228,7 +228,8 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterParams,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -325,6 +326,7 @@ export const loadFlowCurrentViolationsColumnsDefinition = (
                     filterDataType: FILTER_DATA_TYPES.TEXT,
                 },
                 filterEnums: filterEnums,
+                getEnumLabel: getEnumLabel,
             },
         }),
     ];
@@ -337,7 +339,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterParams,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -360,6 +363,7 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
                     filterDataType: FILTER_DATA_TYPES.TEXT,
                 },
                 filterEnums: filterEnums,
+                getEnumLabel: getEnumLabel,
             },
             valueGetter: (value: ValueGetterParams) => {
                 return formatLimitType(value.data.limitType, intl);
@@ -393,6 +397,7 @@ export const loadFlowResultColumnsDefinition = (
     sortProps: SortPropsType,
     filterProps: FilterParams,
     filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string, // Used for translation of enum values in the filter
     statusCellRender: (cellData: ICellRendererParams) => React.JSX.Element,
     numberRenderer: (cellData: ICellRendererParams) => React.JSX.Element
 ): ColDef[] => {
@@ -425,6 +430,7 @@ export const loadFlowResultColumnsDefinition = (
                     filterDataType: FILTER_DATA_TYPES.TEXT,
                 },
                 filterEnums: filterEnums,
+                getEnumLabel: getEnumLabel,
             },
             cellRenderer: statusCellRender,
         }),

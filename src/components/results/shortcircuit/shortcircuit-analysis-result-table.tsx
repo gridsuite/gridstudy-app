@@ -86,6 +86,15 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
     const intl = useIntl();
     const theme = useTheme();
 
+    const getEnumLabel = useCallback(
+        (value: string) =>
+            intl.formatMessage({
+                id: value,
+                defaultMessage: value,
+            }),
+        [intl]
+    );
+
     const columns = useMemo(() => {
         const isAllBusesAnalysisType = analysisType === ShortCircuitAnalysisType.ALL_BUSES;
         const isOneBusAnalysisType = analysisType === ShortCircuitAnalysisType.ONE_BUS;
@@ -137,6 +146,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         ...filterPropsCheckedForAllBusesAnalysisType,
                     },
                     filterEnums: autoCompleteFilterParams.filterEnums,
+                    getEnumLabel: getEnumLabel,
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -181,6 +191,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         filterDataType: autoCompleteFilterParams.filterDataType,
                     },
                     filterEnums: autoCompleteFilterParams.filterEnums,
+                    getEnumLabel: getEnumLabel,
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -195,6 +206,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                         ...filterPropsCheckedForAllBusesAnalysisType,
                     },
                     filterEnums: autoCompleteFilterParams.filterEnums,
+                    getEnumLabel: getEnumLabel,
                 },
             }),
             makeAgGridCustomHeaderColumn({
@@ -281,7 +293,7 @@ const ShortCircuitAnalysisResultTable: FunctionComponent<ShortCircuitAnalysisRes
                 hide: true,
             },
         ];
-    }, [intl, analysisType, sortProps, filterProps, filterEnums]);
+    }, [analysisType, sortProps, filterProps, filterEnums, intl, getEnumLabel]);
 
     const shortCircuitAnalysisStatus = useSelector(
         (state: AppState) =>

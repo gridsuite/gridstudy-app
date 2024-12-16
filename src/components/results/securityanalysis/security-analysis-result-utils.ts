@@ -131,7 +131,8 @@ export const securityAnalysisTableNColumnsDefinition = (
     intl: IntlShape,
     sortProps: SortPropsType,
     filterProps: FilterParams,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
 ): ColDef[] => [
     makeAgGridCustomHeaderColumn({
         headerName: intl.formatMessage({ id: 'Equipment' }),
@@ -160,6 +161,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 ...filterProps,
             },
             filterEnums,
+            getEnumLabel,
         },
     }),
 
@@ -260,6 +262,7 @@ export const securityAnalysisTableNColumnsDefinition = (
                 ...filterProps,
             },
             filterEnums,
+            getEnumLabel,
         },
     }),
 ];
@@ -269,7 +272,8 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterParams,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -300,6 +304,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     ...filterProps,
                 },
                 filterEnums,
+                getEnumLabel,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -329,6 +334,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     ...filterProps,
                 },
                 filterEnums,
+                getEnumLabel,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -423,6 +429,7 @@ export const securityAnalysisTableNmKContingenciesColumnsDefinition = (
                     ...filterProps,
                 },
                 filterEnums,
+                getEnumLabel,
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
@@ -440,7 +447,8 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
     subjectIdRenderer: SubjectIdRendererType,
     filterProps: FilterParams,
     sortProps: SortPropsType,
-    filterEnums: FilterEnumsType
+    filterEnums: FilterEnumsType,
+    getEnumLabel: (value: string) => string // Used for translation of enum values in the filter
 ): ColDef[] => {
     return [
         makeAgGridCustomHeaderColumn({
@@ -486,6 +494,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     ...filterProps,
                 },
                 filterEnums,
+                getEnumLabel,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -499,6 +508,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     filterDataType: FILTER_DATA_TYPES.TEXT,
                 },
                 filterEnums,
+                getEnumLabel,
             },
         }),
         makeAgGridCustomHeaderColumn({
@@ -593,6 +603,7 @@ export const securityAnalysisTableNmKConstraintsColumnsDefinition = (
                     ...filterProps,
                 },
                 filterEnums,
+                getEnumLabel,
             },
         }),
         //the following column is used purely to determine which rows are a group 'parent' and which are its 'children'
