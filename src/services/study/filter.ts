@@ -9,8 +9,9 @@ import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { getStudyUrlWithNodeUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
+import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
-interface ExpertFilter {
+export interface ExpertFilter {
     id?: UUID;
     type: 'EXPERT';
     equipmentType: string; // TODO must be EquipmentType enum
@@ -18,11 +19,17 @@ interface ExpertFilter {
     topologyKind?: string; // TODO must be TopologyKind enum
 }
 
+export interface IdentifiableAttributes {
+    id: string;
+    type: EQUIPMENT_TYPES;
+    distributionKey: number;
+}
+
 export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
-) {
+): Promise<IdentifiableAttributes[]> {
     console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const evaluateFilterUrl =

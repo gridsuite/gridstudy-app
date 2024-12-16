@@ -12,7 +12,6 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import yup from '../../../../utils/yup-config';
-import { NumberSchema } from 'yup';
 
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
 export const VOLTAGE_LEVELS_FORM = 'voltageLevelsForm';
@@ -79,19 +78,6 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
     },
 ];
 
-const getLimitDurationsFormSchema = (nbLimits: number) => {
-    let limitDurationsFormSchema: Record<string, NumberSchema> = {};
-    for (let i = 0; i < nbLimits; i++) {
-        limitDurationsFormSchema[LIMIT_DURATION_FORM + i] = yup
-            .number()
-            .min(0, 'RealPercentage')
-            .max(1, 'RealPercentage')
-            .nullable()
-            .required();
-    }
-    return limitDurationsFormSchema;
-};
-
 export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
     return yup
         .object()
@@ -100,14 +86,18 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
                 yup.object().shape({
                     [VOLTAGE_LEVELS_FORM]: yup.string(),
                     [IST_FORM]: yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required(),
-                    ...getLimitDurationsFormSchema(nbTemporaryLimits),
+                    [LIMIT_DURATION_FORM]: yup
+                        .array()
+                        .length(nbTemporaryLimits)
+                        .of(yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required())
+                        .required(),
                 })
             ),
         })
         .required();
 };
 
-export const getSAParametersFromSchema = (limitReductions: ILimitReductionsByVoltageLevel[]) => {
+export const getSAParametersFromSchema = (limitReductions?: ILimitReductionsByVoltageLevel[]) => {
     const limitReductionsSchema = getLimitReductionsFormSchema(
         limitReductions ? limitReductions[0].temporaryLimitReductions.length : 0
     );

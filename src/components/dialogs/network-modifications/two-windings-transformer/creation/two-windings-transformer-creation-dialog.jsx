@@ -600,26 +600,33 @@ const TwoWindingsTransformerCreationDialog = ({
         [editData, studyUuid, currentNodeUuid, snackError]
     );
 
-    const onValidationError = (errors) => {
-        let tabsInError = [];
-        if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB);
-        }
-        if (errors?.[RATIO_TAP_CHANGER] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB);
-        }
-        if (errors?.[CHARACTERISTICS] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB);
-        }
-        if (errors?.[LIMITS] !== undefined) {
-            tabsInError.push(TwoWindingsTransformerCreationDialogTab.LIMITS_TAB);
-        }
+    const onValidationError = useCallback(
+        (errors) => {
+            const tabsInError = [];
+            if (errors?.[PHASE_TAP_CHANGER] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.PHASE_TAP_TAB);
+            }
+            if (errors?.[RATIO_TAP_CHANGER] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.RATIO_TAP_TAB);
+            }
+            if (errors?.[CHARACTERISTICS] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.CHARACTERISTICS_TAB);
+            }
+            if (errors?.[LIMITS] !== undefined) {
+                tabsInError.push(TwoWindingsTransformerCreationDialogTab.LIMITS_TAB);
+            }
 
-        if (tabsInError.length > 0) {
-            setTabIndex(tabsInError[0]);
-        }
-        setTabIndexesWithError(tabsInError);
-    };
+            if (tabsInError.includes(tabIndex)) {
+                // error in current tab => do not change tab systematically but remove current tab in error list
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex) => errorTabIndex !== tabIndex));
+            } else if (tabsInError.length > 0) {
+                // switch to the first tab in the list then remove the tab in the error list
+                setTabIndex(tabsInError[0]);
+                setTabIndexesWithError(tabsInError.filter((errorTabIndex, index, arr) => errorTabIndex !== arr[0]));
+            }
+        },
+        [tabIndex]
+    );
 
     const clear = useCallback(() => {
         reset(emptyFormData);
