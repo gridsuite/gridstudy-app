@@ -5,8 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Log, ReportLog, ReportSeverity } from './report.type';
-import { REPORT_SEVERITY } from './report-severity';
+import { Log, ReportLog } from './report.type';
 
 export const mapReportLogs = (reportLogs: ReportLog[]) => {
     const formattedLogs: Log[] = [];
