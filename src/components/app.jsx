@@ -271,8 +271,8 @@ const App = () => {
         [dispatch, tablesNamesIndexes, tablesDefinitionIndexes]
     );
 
-    useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
-        listenerCallbackMessage: (event) => {
+    const updateConfig = useCallback(
+        (event) => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
@@ -290,6 +290,11 @@ const App = () => {
                     );
             }
         },
+        [dispatch, snackError, updateParams]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
+        listenerCallbackMessage: updateConfig,
     });
 
     // Can't use lazy initializer because useRouteMatch is a hook
