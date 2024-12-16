@@ -15,13 +15,18 @@ import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-f
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import { orderSeverityList, REPORT_SEVERITY } from '../../utils/report/report-severity';
+import {
+    getDefaultSeverityFilter,
+    getReportSeverities,
+    orderSeverityList,
+    REPORT_SEVERITY,
+} from '../../utils/report/report-severity';
 import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
 import { AgGridReact } from 'ag-grid-react';
-import { Log, ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
+import { Report, ReportLog, ReportType, SeverityLevel } from 'utils/report/report.type';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -59,13 +64,14 @@ const styles = {
 const SEVERITY_COLUMN_FIXED_WIDTH = 115;
 
 type LogTableProps = {
+    report: Report;
     selectedReportId: string;
     reportType: string;
     reportNature: ReportType;
     onRowClick: (data: ReportLog) => void;
 };
 
-const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: LogTableProps) => {
+const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowClick }: LogTableProps) => {
     const intl = useIntl();
 
     const theme = useTheme<Theme>();
@@ -89,13 +95,7 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
-
     const orderedSeverities = useMemo(() => orderSeverityList(severities), [severities]);
-
-    const computeSeverities = useCallback((reportLogs: Log[]) => {
-        const newSeverities = new Set<SeverityLevel>(reportLogs.map((report) => report.severity.name));
-        setSeverities([...newSeverities]);
-    }, []);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -119,9 +119,6 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
                         backgroundColor: log.severity.colorName,
                     } as unknown as ReportLog)
             );
-            if (reportLogs.length && !severities.length) {
-                computeSeverities(reportLogs);
-            }
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
             resetSearch();
@@ -134,19 +131,20 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
         messageFilter,
         resetSearch,
         severities.length,
-        computeSeverities,
     ]);
 
     useEffect(() => {
         // initialize the filter with the severities
         if (filterSelector?.length === 0) {
+            const newSeverities = getReportSeverities(report);
+            setSeverities(newSeverities);
             dispatch(
                 setLogsFilter(reportType, [
                     {
                         column: 'severity',
                         dataType: FILTER_DATA_TYPES.TEXT,
                         type: FILTER_TEXT_COMPARATORS.EQUALS,
-                        value: Array.from(Object.values(REPORT_SEVERITY).map((severity) => severity.name)),
+                        value: getDefaultSeverityFilter(newSeverities),
                     },
                 ])
             );

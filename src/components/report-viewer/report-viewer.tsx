@@ -130,6 +130,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     {selectedReportId && selectedReportType && (
                         <LogTable
+                            report={report}
                             selectedReportId={selectedReportId}
                             reportType={reportType}
                             reportNature={selectedReportType} // GlobalReport or NodeReport
