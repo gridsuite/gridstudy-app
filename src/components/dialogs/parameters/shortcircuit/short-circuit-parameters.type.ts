@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { INITIAL_VOLTAGE } from '../../../utils/constants';
+import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../../utils/constants';
 
 export interface ShortCircuitFieldsProps {
-    resetAll: (predefinedParams: INITIAL_VOLTAGE) => void;
+    resetAll: (predefinedParams: PREDEFINED_PARAMETERS) => void;
 }
 
 export interface VoltageTableProps {
@@ -18,11 +18,12 @@ export interface VoltageRange {
     maximumNominalVoltage: number;
 }
 
-export interface ShortCircuitParameters {
+export interface ShortCircuitParametersDto {
     withFeederResult: boolean;
     withLoads: boolean;
     withVSCConverterStations: boolean;
     withShuntCompensators: boolean;
     withNeutralPosition: boolean;
     initialVoltageProfileMode: INITIAL_VOLTAGE;
+    voltageRanges?: VoltageRange[];
 }

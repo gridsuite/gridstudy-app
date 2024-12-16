@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Button, Grid } from '@mui/material';
 import { styles } from './parameters';
@@ -14,6 +14,7 @@ import {
     DirectoryItemSelector,
     ElementType,
     SubmitButton,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { useSelector } from 'react-redux';
@@ -45,21 +46,29 @@ import CreateParameterDialog from './common/parameters-creation-dialog';
 import { formatShortCircuitParameters } from './shortcircuit/short-circuit-parameters-utils';
 import ComputingType from '../../computing-status/computing-type';
 import { isComputationParametersUpdated } from './common/computation-parameters-util';
+import { AppState } from 'redux/reducer';
+import { UUID } from 'crypto';
 import LineSeparator from '../commons/line-separator';
+import { ShortCircuitParametersInfos } from 'services/study/short-circuit-analysis.type';
 
-export const useGetShortCircuitParameters = () => {
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const studyUpdated = useSelector((state) => state.studyUpdated);
+export type UseGetShortCircuitParametersProps = [
+    ShortCircuitParametersInfos | null,
+    React.Dispatch<React.SetStateAction<ShortCircuitParametersInfos | null>>
+];
+
+export const useGetShortCircuitParameters = (): UseGetShortCircuitParametersProps => {
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const studyUpdated = useSelector((state: AppState) => state.studyUpdated);
 
     const { snackError } = useSnackMessage();
-    const [shortCircuitParams, setShortCircuitParams] = useState(null);
+    const [shortCircuitParams, setShortCircuitParams] = useState<ShortCircuitParametersInfos | null>(null);
 
     const shortCircuitAvailability = useOptionalServiceStatus(OptionalServicesNames.ShortCircuit);
 
     const fetchShortCircuitParameters = useCallback(
-        (studyUuid) => {
+        (studyUuid: UUID) => {
             getShortCircuitParameters(studyUuid)
-                .then((params) => {
+                .then((params: ShortCircuitParametersInfos) => {
                     setShortCircuitParams(params);
                 })
                 .catch((error) => {
@@ -96,29 +105,38 @@ const formSchema = yup
     .object()
     .shape({
         [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: yup.boolean(),
-        [SHORT_CIRCUIT_PREDEFINED_PARAMS]: yup.string().required(),
+        [SHORT_CIRCUIT_PREDEFINED_PARAMS]: yup
+            .mixed<PREDEFINED_PARAMETERS>()
+            .oneOf(Object.values(PREDEFINED_PARAMETERS))
+            .required(),
         [SHORT_CIRCUIT_WITH_LOADS]: yup.boolean(),
         [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: yup.boolean(),
         [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: yup.boolean(),
         [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: yup.boolean(),
-        [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: yup.string().required(),
+        [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]: yup
+            .mixed<INITIAL_VOLTAGE>()
+            .oneOf(Object.values(INITIAL_VOLTAGE))
+            .required(),
     })
     .required();
 
-const prepareDataToSend = (shortCircuitParams, newParameters) => {
-    const oldParameters = { ...shortCircuitParams.parameters };
+const prepareDataToSend = (
+    shortCircuitParams: ShortCircuitParametersInfos | null,
+    newParameters: ShortCircuitParametersFormProps
+) => {
+    const oldParameters = { ...shortCircuitParams?.parameters };
+    const { predefinedParameters: omit, ...newParametersWithoutPredefinedParameters } = newParameters;
     let parameters = {
         ...oldParameters,
-        ...newParameters,
+        ...newParametersWithoutPredefinedParameters,
         // we need to add voltageRanges to the parameters only when initialVoltageProfileMode is equals to CEI909
         voltageRanges: undefined,
-        predefinedParameters: undefined, // because this field is not part of the powsybl parameters
         withNeutralPosition: !newParameters.withNeutralPosition,
     };
     if (newParameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CEI909) {
         parameters = {
             ...parameters,
-            voltageRanges: shortCircuitParams.cei909VoltageRanges,
+            voltageRanges: shortCircuitParams?.cei909VoltageRanges,
             initialVoltageProfileMode: INITIAL_VOLTAGE.CONFIGURED,
         };
     }
@@ -129,8 +147,18 @@ const prepareDataToSend = (shortCircuitParams, newParameters) => {
     };
 };
 
-export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirtyFields }) => {
-    const studyUuid = useSelector((state) => state.studyUuid);
+type ShortCircuitParametersFormProps = yup.InferType<typeof formSchema>;
+
+interface ShortCircuitParametersProps {
+    useShortCircuitParameters: UseGetShortCircuitParametersProps;
+    setHaveDirtyFields: (hasDirtyField: boolean) => void;
+}
+
+export const ShortCircuitParameters: FunctionComponent<ShortCircuitParametersProps> = ({
+    useShortCircuitParameters,
+    setHaveDirtyFields,
+}) => {
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const intl = useIntl();
     const [openSelectParameterDialog, setOpenSelectParameterDialog] = useState(false);
     const [openCreateParameterDialog, setOpenCreateParameterDialog] = useState(false);
@@ -140,22 +168,22 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
     const { snackError } = useSnackMessage();
     // get default values based on shortCircuitParams
     const emptyFormData = useMemo(() => {
-        const { parameters, predefinedParameters } = shortCircuitParams;
+        const { parameters, predefinedParameters } = shortCircuitParams || {};
         return {
-            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters.withFeederResult,
+            [SHORT_CIRCUIT_WITH_FEEDER_RESULT]: parameters?.withFeederResult,
             [SHORT_CIRCUIT_PREDEFINED_PARAMS]: predefinedParameters,
-            [SHORT_CIRCUIT_WITH_LOADS]: parameters.withLoads,
-            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: parameters.withVSCConverterStations,
-            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: parameters.withShuntCompensators,
-            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: !parameters.withNeutralPosition,
+            [SHORT_CIRCUIT_WITH_LOADS]: parameters?.withLoads,
+            [SHORT_CIRCUIT_WITH_VSC_CONVERTER_STATIONS]: parameters?.withVSCConverterStations,
+            [SHORT_CIRCUIT_WITH_SHUNT_COMPENSATORS]: parameters?.withShuntCompensators,
+            [SHORT_CIRCUIT_WITH_NEUTRAL_POSITION]: !parameters?.withNeutralPosition,
             [SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE]:
-                parameters.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
+                parameters?.initialVoltageProfileMode === INITIAL_VOLTAGE.CONFIGURED
                     ? INITIAL_VOLTAGE.CEI909
-                    : parameters.initialVoltageProfileMode,
+                    : parameters?.initialVoltageProfileMode,
         };
     }, [shortCircuitParams]);
 
-    const formMethods = useForm({
+    const formMethods = useForm<ShortCircuitParametersFormProps>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
@@ -164,8 +192,8 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
 
     // submit the new parameters
     const onSubmit = useCallback(
-        (newParams) => {
-            const oldParams = { ...shortCircuitParams };
+        (newParams: ShortCircuitParametersFormProps) => {
+            const oldParams = shortCircuitParams;
             setShortCircuitParameters(studyUuid, {
                 ...prepareDataToSend(shortCircuitParams, newParams),
             })
@@ -194,7 +222,7 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
 
     // when ever the predefined parameter is manually changed, we need to reset all parameters
     const resetAll = useCallback(
-        (predefinedParameter) => {
+        (predefinedParameter: PREDEFINED_PARAMETERS) => {
             const dirty = { shouldDirty: true };
             setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, true, dirty);
             setValue(SHORT_CIRCUIT_WITH_LOADS, false, dirty);
@@ -221,7 +249,7 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
     }, [formState, setHaveDirtyFields]);
 
     const replaceFormValues = useCallback(
-        (param) => {
+        (param: ShortCircuitParametersInfos) => {
             const dirty = { shouldDirty: true };
             setValue(SHORT_CIRCUIT_WITH_FEEDER_RESULT, param.parameters.withFeederResult, dirty);
             setValue(SHORT_CIRCUIT_PREDEFINED_PARAMS, param.predefinedParameters, dirty);
@@ -241,12 +269,12 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
     );
 
     const loadParameters = useCallback(
-        (newParams) => {
+        (newParams: TreeViewFinderNodeProps[]) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 const paramUuid = newParams[0].id;
                 fetchShortCircuitParameters(paramUuid)
-                    .then((parameters) => {
+                    .then((parameters: ShortCircuitParametersInfos) => {
                         console.info('loading the following shortcircuit parameters : ' + paramUuid);
                         // Replace form data with fetched data
                         replaceFormValues(parameters);
