@@ -17,18 +17,9 @@ export const mapReportLogs = (reportLogs: ReportLog[]) => {
 };
 
 const formatLog = (reportLog: ReportLog, formattedLogs: Log[]) => {
-    const highestSeverity = mapSeverity(reportLog.severity ?? [REPORT_SEVERITY.UNKNOWN.name]);
     formattedLogs.push({
         message: reportLog.message,
-        severity: highestSeverity,
+        severity: reportLog.severity,
         parentId: reportLog.parentId,
     });
-};
-
-const mapSeverity = (severities: string[]) => {
-    let reduceFct = (p: ReportSeverity, c: ReportSeverity) => (c.level > p.level ? c : p);
-    let highestSeverity: ReportSeverity = REPORT_SEVERITY.UNKNOWN;
-    return Object.values(REPORT_SEVERITY)
-        .filter((s) => severities.includes(s.name))
-        .reduce(reduceFct, highestSeverity);
 };
