@@ -21,7 +21,6 @@ import {
     orderSeverityList,
     REPORT_SEVERITY,
 } from '../../utils/report/report-severity';
-import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
