@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getLayoutedNodes } from './layout';
 import { convertNodetoReactFlowModelNode, getModificationNodeDataOrUndefined } from './util/model-functions';
 import { NodeInsertModes } from './nodes/node-insert-modes';
 import { BUILD_STATUS } from '../network/constants';
@@ -16,9 +15,9 @@ import { NetworkModificationNodeData, RootNodeData } from './tree-node.type';
 
 // Function to count children nodes for a given parentId recursively in an array of nodes.
 // TODO refactoring when changing NetworkModificationTreeModel as it becomes an object containing nodes
-const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
+export const countNodes = (nodes: CurrentTreeNode[], parentId: UUID) => {
     return nodes.reduce((acc, n) => {
-        if (n.data.parentNodeUuid === parentId) {
+        if (n.parentId === parentId) {
             acc += 1 + countNodes(nodes, n.id); // this node + its children
         }
         return acc;
@@ -31,19 +30,141 @@ export default class NetworkModificationTreeModel {
 
     isAnyNodeBuilding = false;
 
-    updateLayout() {
-        this.treeNodes = getLayoutedNodes(this.treeNodes, this.treeEdges);
-        this.treeEdges = [...this.treeEdges]; //otherwise react-flow doesn't show new edges
+    /**
+     * Will switch the order of two nodes in the tree.
+     * The nodeToMove will be moved, either to the left or right of the destinationNode, depending
+     * on their initial positions.
+     * Both nodes should have the same parent.
+     */
+    switchSiblingsOrder(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+        if (!nodeToMove.parentId || nodeToMove.parentId !== destinationNode.parentId) {
+            console.error('Both nodes should have the same parent to switch their order');
+            return;
+        }
+        const nodeToMoveIndex = this.treeNodes.findIndex((node) => node.id === nodeToMove.id);
+        const destinationNodeIndex = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
+
+        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, nodeToMove.id);
+        const nodesToMove = this.treeNodes.splice(nodeToMoveIndex, numberOfNodesToMove);
+
+        if (nodeToMoveIndex > destinationNodeIndex) {
+            this.treeNodes.splice(destinationNodeIndex, 0, ...nodesToMove);
+        } else {
+            // When moving nodeToMove to the right, we have to take into account the splice function that changed the nodes' indexes.
+            // We also need to find the correct position of nodeToMove, to the right of the destination node, meaning we need to find
+            // how many children the destination node has and add all of them to the new index.
+            const destinationNodeIndexAfterSplice = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
+            const destinationNodeFamilySize: number = 1 + countNodes(this.treeNodes, destinationNode.id);
+            this.treeNodes.splice(destinationNodeIndexAfterSplice + destinationNodeFamilySize, 0, ...nodesToMove);
+        }
+
+        this.treeNodes = [...this.treeNodes];
     }
+
+    /**
+     * Finds the lowest common ancestor of two nodes in the tree.
+     *
+     * Example tree:
+     *     A
+     *    / \
+     *   B   D
+     *  /   / \
+     * C   E   F
+     *
+     * Examples:
+     * - getCommonAncestor(B, E) will return A
+     * - getCommonAncestor(E, F) will return D
+     */
+    getCommonAncestor(nodeA: CurrentTreeNode, nodeB: CurrentTreeNode): CurrentTreeNode | null {
+        const getAncestors = (node: CurrentTreeNode) => {
+            const ancestors = [];
+            let current: CurrentTreeNode | undefined = node;
+            while (current && current.parentId) {
+                const parentId: string = current.parentId;
+                ancestors.push(parentId);
+                current = this.treeNodes.find((n) => n.id === parentId);
+            }
+            return ancestors;
+        };
+        // We get the entire ancestors of one of the nodes in an array, then iterate over the other node's ancestors
+        // until we find a node that is in the first array : this common node is an ancestor of both intial nodes.
+        const ancestorsA: string[] = getAncestors(nodeA);
+        let current: CurrentTreeNode | undefined = nodeB;
+        while (current && current.parentId) {
+            const parentId: string = current.parentId;
+            current = this.treeNodes.find((n) => n.id === parentId);
+            if (current && ancestorsA.includes(current.id)) {
+                return current;
+            }
+        }
+        console.warn('No common ancestor found !');
+        return null;
+    }
+
+    /**
+     * Finds the child of the ancestor node that is on the path to the descendant node.
+     *
+     * Example tree:
+     *     A
+     *    / \
+     *   B   D
+     *  /   / \
+     * C   E   F
+     *
+     * Examples:
+     * - getChildOfAncestorInLineage(A, E) will return D
+     * - getChildOfAncestorInLineage(D, F) will return F
+     *
+     * @param ancestor node, must be an ancestor of descendant node
+     * @param descendant node, must be a descendant of ancestor
+     * @returns The child of the ancestor node in the lineage or null if not found.
+     * @private
+     */
+    getChildOfAncestorInLineage(ancestor: CurrentTreeNode, descendant: CurrentTreeNode): CurrentTreeNode | null {
+        let current: CurrentTreeNode | undefined = descendant;
+        while (current && current.parentId) {
+            const parentId: string = current.parentId;
+            if (parentId === ancestor.id) {
+                return current;
+            }
+            current = this.treeNodes.find((n) => n.id === parentId);
+        }
+        console.warn('The ancestor and descendant do not share the same branch !');
+        return null;
+    }
+
+    switchBranches(nodeToMove: CurrentTreeNode, destinationNode: CurrentTreeNode) {
+        // We find the nodes from the two branches that share the same parent
+        const commonAncestor = this.getCommonAncestor(nodeToMove, destinationNode);
+        if (commonAncestor) {
+            const siblingFromNodeToMoveBranch = this.getChildOfAncestorInLineage(commonAncestor, nodeToMove);
+            const siblingFromDestinationNodeBranch = this.getChildOfAncestorInLineage(commonAncestor, destinationNode);
+            if (siblingFromNodeToMoveBranch && siblingFromDestinationNodeBranch) {
+                this.switchSiblingsOrder(siblingFromNodeToMoveBranch, siblingFromDestinationNodeBranch);
+            }
+        }
+    }
+
     addChild(
         newNode: NetworkModificationNodeData | RootNodeData,
         parentId: UUID,
         insertMode?: NodeInsertModes,
-        referenceNodeId?: UUID
+        referenceNodeId?: UUID,
+        skipChildren: boolean = false
     ) {
-        // we have to keep a precise order of nodes in the array to avoid gettings children
-        // nodes before their parents when building graph in dagre library which have uncontrolled results
-        // We also need to do this to keep a correct order when inserting nodes and not loose the user.
+        /**
+         * The layout algorithm used to draw the graph is dependant on the order of nodes in the array.
+         * We have to keep a precise order of nodes in the array to always have a child node after its parent.
+         *
+         * Example tree :
+         *     A
+         *    / \
+         *   B   D
+         *  /   / \
+         * C   E   F
+         *
+         * This tree should have its nodes in the array in this order : [A, B, C, D, E, F]
+         */
         const referenceNodeIndex = this.treeNodes.findIndex((node) => node.id === referenceNodeId);
         switch (insertMode) {
             case NodeInsertModes.Before: {
@@ -83,7 +204,6 @@ export default class NetworkModificationTreeModel {
                 id: 'e' + parentId + '-' + newNode.id,
                 source: parentId,
                 target: newNode.id,
-                type: 'smoothstep',
             });
         }
         if (insertMode === NodeInsertModes.Before || insertMode === NodeInsertModes.After) {
@@ -100,7 +220,6 @@ export default class NetworkModificationTreeModel {
                     id: 'e' + newNode.id + '-' + childId,
                     source: newNode.id,
                     target: childId,
-                    type: 'smoothstep',
                 });
             });
 
@@ -109,10 +228,7 @@ export default class NetworkModificationTreeModel {
                 if (newNode.childrenIds.includes(node.id)) {
                     return {
                         ...node,
-                        data: {
-                            ...node.data,
-                            parentNodeUuid: newNode.id,
-                        },
+                        parentId: newNode.id,
                     };
                 }
                 return node;
@@ -122,11 +238,13 @@ export default class NetworkModificationTreeModel {
             this.treeEdges = filteredEdges;
         }
 
-        // Add children of this node recursively
-        if (newNode.children) {
-            newNode.children.forEach((child) => {
-                this.addChild(child, newNode.id);
-            });
+        if (!skipChildren) {
+            // Add children of this node recursively
+            if (newNode.children) {
+                newNode.children.forEach((child) => {
+                    this.addChild(child, newNode.id, undefined, undefined);
+                });
+            }
         }
     }
 
@@ -151,25 +269,21 @@ export default class NetworkModificationTreeModel {
                         id: 'e' + edgeOfTarget.source + '-' + edgeOfSource.target,
                         source: edgeOfTarget.source,
                         target: edgeOfSource.target,
-                        type: 'smoothstep',
                     });
                 });
             });
             this.treeEdges = filteredEdges;
 
-            // fix parentNodeUuid of children
+            // fixes the parentId of children
             const nodeToDelete = this.treeNodes.find((el) => el.id === nodeId);
             if (!nodeToDelete) {
                 return;
             }
             const nextTreeNodes = filteredNodes.map((node) => {
-                if (node.data?.parentNodeUuid === nodeId) {
+                if (node.parentId === nodeId) {
                     return {
                         ...node,
-                        data: {
-                            ...node.data,
-                            parentNodeUuid: nodeToDelete.data?.parentNodeUuid,
-                        },
+                        parentId: nodeToDelete.parentId,
                     };
                 }
                 return node;

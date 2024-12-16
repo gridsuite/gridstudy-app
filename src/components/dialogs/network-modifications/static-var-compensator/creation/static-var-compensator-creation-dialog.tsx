@@ -289,7 +289,6 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
         toFormValues: (data: StaticVarCompensatorCreationSchemaForm) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
-        operation: undefined,
     });
 
     useEffect(() => {
