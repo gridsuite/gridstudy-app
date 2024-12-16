@@ -5,9 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Checkbox, MenuItem, Select } from '@mui/material';
+import { Checkbox, MenuItem, Select, SelectChangeEvent } from '@mui/material';
 import ListItemText from '@mui/material/ListItemText';
-import { useCallback, useState } from 'react';
+import { FunctionComponent, useCallback, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 const ITEM_HEIGHT = 48;
@@ -25,7 +25,15 @@ const MenuProps = {
 const CHECK_ALL = { label: 'SelectAll', value: 'check_all' };
 const UNCHECK_ALL = { label: 'UnselectAll', value: 'uncheck_all' };
 
-const CheckboxSelect = ({
+interface CheckBoxSelectProps {
+    options: string[];
+    getOptionLabel: (label: string) => string;
+    onChange: (newSelectedOption: string[]) => void;
+    value: string[];
+    disabled: boolean;
+}
+
+const CheckboxSelect: FunctionComponent<CheckBoxSelectProps> = ({
     options,
     getOptionLabel: defaultGetOptionLabel,
     onChange,
@@ -43,11 +51,13 @@ const CheckboxSelect = ({
     }
 
     const handleChange = useCallback(
-        (event) => {
+        (event: SelectChangeEvent<string[]>) => {
             const {
-                target: { value: values },
+                target: { value: eventValue },
             } = event;
-            let newSelectedOptions;
+            const values = Array.isArray(eventValue) ? eventValue : [eventValue];
+
+            let newSelectedOptions: string[];
             if (values.find((elem) => elem === CHECK_ALL.value)) {
                 // must check all items
                 newSelectedOptions = options;
@@ -67,7 +77,7 @@ const CheckboxSelect = ({
     );
 
     const getOptionLabel = useCallback(
-        (option) => {
+        (option: string) => {
             return defaultGetOptionLabel(option);
         },
         [defaultGetOptionLabel]
@@ -94,14 +104,14 @@ const CheckboxSelect = ({
             sx={{ width: '100%' }}
             disabled={disabled}
         >
-            <MenuItem size={'small'} key={CHECK_ALL.value} value={CHECK_ALL.value}>
+            <MenuItem key={CHECK_ALL.value} value={CHECK_ALL.value}>
                 <ListItemText primary={intl.formatMessage({ id: CHECK_ALL.label })} />
             </MenuItem>
-            <MenuItem size={'small'} key={UNCHECK_ALL.value} value={UNCHECK_ALL.value}>
+            <MenuItem key={UNCHECK_ALL.value} value={UNCHECK_ALL.value}>
                 <ListItemText primary={intl.formatMessage({ id: UNCHECK_ALL.label })} />
             </MenuItem>
             {options.map((option) => (
-                <MenuItem size={'small'} key={option} value={option}>
+                <MenuItem key={option} value={option}>
                     <Checkbox checked={selectedOptions.indexOf(option) > -1} />
                     <ListItemText>{getOptionLabel(option)}</ListItemText>
                 </MenuItem>

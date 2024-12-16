@@ -25,6 +25,9 @@ import { VoltageAdornment } from '../../dialog-utils';
 import { styles } from '../parameters';
 import Alert from '@mui/material/Alert';
 
+// TODO: to fix when either migrating DndTable to typescript or using something else than DndTable
+const DndTableTyped = DndTable as React.ComponentType<any>;
+
 const VoltageLimitsParameters = () => {
     const intl = useIntl();
     const VoltageLevelFilterTooltip = useMemo(() => {
@@ -122,7 +125,7 @@ const VoltageLimitsParameters = () => {
     }, [VoltageLevelFilterTooltip, intl]);
 
     const newModificationRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: Record<string, any> = {};
         newRowData[SELECTED] = false;
         VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS.forEach(
             (column) => (newRowData[column.dataKey] = column.initialValue)
@@ -133,7 +136,7 @@ const VoltageLimitsParameters = () => {
     const createVoltageLimitModificationRows = () => [newModificationRowData];
 
     const newDefaultRowData = useMemo(() => {
-        const newRowData = {};
+        const newRowData: Record<string, any> = {};
         newRowData[SELECTED] = false;
         VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS.forEach(
             (column) => (newRowData[column.dataKey] = column.initialValue)
@@ -159,7 +162,7 @@ const VoltageLimitsParameters = () => {
             <Alert sx={styles.adjustExistingLimitsInfo} severity="info" variant="outlined">
                 <FormattedMessage id="AdjustExistingLimitsInfo" />
             </Alert>
-            <DndTable
+            <DndTableTyped
                 arrayFormName={`${VOLTAGE_LIMITS_MODIFICATION}`}
                 columnsDefinition={VOLTAGE_LIMITS_MODIFICATION_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useVoltageLimitsModificationFieldArrayOutput}
@@ -172,7 +175,7 @@ const VoltageLimitsParameters = () => {
             <Typography component="span" variant="h6">
                 <FormattedMessage id="SetDefaultLimits" />
             </Typography>
-            <DndTable
+            <DndTableTyped
                 arrayFormName={`${VOLTAGE_LIMITS_DEFAULT}`}
                 columnsDefinition={VOLTAGE_LIMITS_DEFAULT_COLUMNS_DEFINITIONS}
                 useFieldArrayOutput={useVoltageLimitsDefaultFieldArrayOutput}

@@ -11,10 +11,11 @@ import {
     ElementType,
     MuiSelectInput,
     SubmitButton,
+    TreeViewFinderNodeProps,
     useSnackMessage,
 } from '@gridsuite/commons-ui';
 import { Button, DialogActions, Grid } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useSelector } from 'react-redux';
 import { styles } from '../parameters';
@@ -55,7 +56,6 @@ import {
 } from '../../../../services/study/sensitivity-analysis';
 import SensitivityAnalysisFields from './sensitivity-Flow-parameters';
 import SensitivityParametersSelector from './sensitivity-parameters-selector';
-import { parseIntData } from '../../dialog-utils';
 import {
     getGenericRowNewParams,
     getSensiHvdcformatNewParams,
@@ -68,10 +68,20 @@ import {
     getSensiNodesFormSchema,
     getSensiPstformatNewParams,
     getSensiPSTsFormSchema,
+    IRowNewParams,
 } from './utils';
 import { mergeSx } from 'components/utils/functions';
 import CreateParameterDialog from '../common/parameters-creation-dialog';
 import LineSeparator from '../../commons/line-separator';
+import { AppState } from 'redux/reducer';
+import { SensitivityAnalysisParametersInfos } from 'services/study/sensitivity-analysis.type';
+import ComputingType from 'components/computing-status/computing-type';
+import { UseParametersBackendReturnProps } from '../parameters.type';
+
+interface SensitivityAnalysisParametersProps {
+    parametersBackend: UseParametersBackendReturnProps<ComputingType.SENSITIVITY_ANALYSIS>;
+    setHaveDirtyFields: any;
+}
 
 const formSchema = yup
     .object()
@@ -88,8 +98,14 @@ const formSchema = yup
     })
     .required();
 
+export type SensitivityAnalysisParametersFormSchema = yup.InferType<typeof formSchema>;
+
 const numberMax = 500000;
-export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyFields }) => {
+
+export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysisParametersProps> = ({
+    parametersBackend,
+    setHaveDirtyFields,
+}) => {
     const intl = useIntl();
     const { snackError } = useSnackMessage();
 
@@ -119,14 +135,14 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
         };
     }, []);
 
-    const formMethods = useForm({
+    const formMethods = useForm<SensitivityAnalysisParametersFormSchema>({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
 
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
-    const studyUuid = useSelector((state) => state.studyUuid);
-    const currentNode = useSelector((state) => state.currentTreeNode);
+    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] = useState(params);
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
@@ -138,39 +154,54 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
         });
     }, [studyUuid, snackError]);
 
-    const formatNewParams = useCallback((newParams) => {
-        return {
-            [PROVIDER]: newParams[PROVIDER],
-            [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
-            [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: newParams[ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD],
-            [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: newParams[FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD],
-            ...getSensiInjectionsSetformatNewParams(newParams),
-            ...getSensiInjectionsformatNewParams(newParams),
-            ...getSensiHvdcformatNewParams(newParams),
-            ...getSensiPstformatNewParams(newParams),
-            ...getSensiNodesformatNewParams(newParams),
-        };
-    }, []);
+    const formatNewParams = useCallback(
+        (newParams: SensitivityAnalysisParametersFormSchema): SensitivityAnalysisParametersInfos => {
+            return {
+                [PROVIDER]: newParams[PROVIDER],
+                [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: newParams[FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD],
+                [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: newParams[ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD],
+                [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: newParams[FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD],
+                ...getSensiInjectionsSetformatNewParams(newParams),
+                ...getSensiInjectionsformatNewParams(newParams),
+                ...getSensiHvdcformatNewParams(newParams),
+                ...getSensiPstformatNewParams(newParams),
+                ...getSensiNodesformatNewParams(newParams),
+            };
+        },
+        []
+    );
 
-    const formatFilteredParams = useCallback((row) => {
+    const formatFilteredParams = useCallback((row: IRowNewParams) => {
         return getGenericRowNewParams(row);
     }, []);
 
+    type SubTabsValues = 'sensitivityInjectionsSet' | 'sensitivityInjection' | 'sensitivityHVDC' | 'sensitivityPST';
     const getResultCount = useCallback(() => {
         const values = getValues();
         let totalResultCount = 0;
-        const tabsToCheck = ['sensitivityInjectionsSet', 'sensitivityInjection', 'sensitivityHVDC', 'sensitivityPST'];
+        const tabsToCheck: SubTabsValues[] = [
+            'sensitivityInjectionsSet',
+            'sensitivityInjection',
+            'sensitivityHVDC',
+            'sensitivityPST',
+        ];
         tabsToCheck.forEach((tab) => {
-            const count = values[tab]
-                .filter((entry) => entry[ACTIVATED])
-                .filter((entry) => entry[MONITORED_BRANCHES].length > 0)
-                .filter(
-                    (entry) => entry[INJECTIONS]?.length > 0 || entry[PSTS]?.length > 0 || entry[HVDC_LINES]?.length > 0
-                )
-                .map((entry) => entry[COUNT])
-                .reduce((a, b) => a + b, 0);
+            const tabToCheck = values[tab] as any[] | undefined;
+            // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
+            // "none of those signatures are compatible with each other
+            if (tabToCheck) {
+                const count = tabToCheck
+                    .filter((entry) => entry[ACTIVATED])
+                    .filter((entry) => entry[MONITORED_BRANCHES].length > 0)
+                    .filter(
+                        (entry) =>
+                            entry[INJECTIONS]?.length > 0 || entry[PSTS]?.length > 0 || entry[HVDC_LINES]?.length > 0
+                    )
+                    .map((entry) => entry[COUNT])
+                    .reduce((a, b) => a + b, 0);
 
-            totalResultCount += count;
+                totalResultCount += count;
+            }
         });
         setAnalysisComputeComplexity(totalResultCount);
         const timeoutId = setTimeout(() => {
@@ -180,7 +211,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
     }, [getValues]);
 
     const onFormChanged = useCallback(
-        (onFormChanged) => {
+        (onFormChanged: boolean) => {
             if (onFormChanged) {
                 setLaunchLoader(true);
                 getResultCount();
@@ -190,7 +221,12 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
     );
 
     const onChangeParams = useCallback(
-        (row, arrayFormName, index) => {
+        (row: any, arrayFormName: SubTabsValues, index: number) => {
+            // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
+            // "none of those signatures are compatible with each other
+            if (!currentNode) {
+                return;
+            }
             setLaunchLoader(true);
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
@@ -199,8 +235,8 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
                 formatFilteredParams(row)
             )
                 .then((response) => {
-                    response.text().then((value) => {
-                        setValue(`${arrayFormName}[${index}].[${COUNT}]`, parseIntData(value, 0));
+                    response.text().then((value: string) => {
+                        setValue(`${arrayFormName}.${index}.${COUNT}`, !isNaN(Number(value)) ? parseInt(value) : 0);
                         getResultCount();
                     });
                 })
@@ -215,152 +251,171 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
         [snackError, studyUuid, formatFilteredParams, setValue, getResultCount, currentNode]
     );
 
-    const fromSensitivityAnalysisParamsDataToFormValues = useCallback((parameters) => {
-        const values = {
-            [PROVIDER]: parameters[PROVIDER],
-            [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: parameters.flowFlowSensitivityValueThreshold,
-            [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: parameters.angleFlowSensitivityValueThreshold,
-            [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: parameters.flowVoltageSensitivityValueThreshold,
-            [PARAMETER_SENSI_INJECTIONS_SET]:
-                parameters.sensitivityInjectionsSet?.map((sensiInjectionsSet) => {
-                    return {
-                        [MONITORED_BRANCHES]: sensiInjectionsSet[MONITORED_BRANCHES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [INJECTIONS]: sensiInjectionsSet[INJECTIONS].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [DISTRIBUTION_TYPE]: sensiInjectionsSet[DISTRIBUTION_TYPE],
-                        [CONTINGENCIES]: sensiInjectionsSet[CONTINGENCIES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
-                        [COUNT]: 0,
-                    };
-                }) ?? [],
+    const fromSensitivityAnalysisParamsDataToFormValues = useCallback(
+        (parameters: SensitivityAnalysisParametersInfos): SensitivityAnalysisParametersFormSchema => {
+            const values = {
+                [PROVIDER]: parameters[PROVIDER],
+                [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: parameters.flowFlowSensitivityValueThreshold,
+                [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: parameters.angleFlowSensitivityValueThreshold,
+                [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: parameters.flowVoltageSensitivityValueThreshold,
+                [PARAMETER_SENSI_INJECTIONS_SET]:
+                    parameters.sensitivityInjectionsSet?.map((sensiInjectionsSet) => {
+                        return {
+                            [MONITORED_BRANCHES]:
+                                sensiInjectionsSet[MONITORED_BRANCHES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [INJECTIONS]:
+                                sensiInjectionsSet[INJECTIONS]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [DISTRIBUTION_TYPE]: sensiInjectionsSet[DISTRIBUTION_TYPE],
+                            [CONTINGENCIES]:
+                                sensiInjectionsSet[CONTINGENCIES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED] ?? false,
+                            [COUNT]: 0,
+                        };
+                    }) ?? [],
 
-            [PARAMETER_SENSI_INJECTION]:
-                parameters.sensitivityInjection?.map((sensiInjections) => {
-                    return {
-                        [MONITORED_BRANCHES]: sensiInjections[MONITORED_BRANCHES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [INJECTIONS]: sensiInjections[INJECTIONS].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [DISTRIBUTION_TYPE]: sensiInjections[DISTRIBUTION_TYPE],
-                        [CONTINGENCIES]: sensiInjections[CONTINGENCIES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [ACTIVATED]: sensiInjections[ACTIVATED],
-                        [COUNT]: 0,
-                    };
-                }) ?? [],
-            [PARAMETER_SENSI_HVDC]:
-                parameters.sensitivityHVDC?.map((sensiInjectionsSet) => {
-                    return {
-                        [MONITORED_BRANCHES]: sensiInjectionsSet[MONITORED_BRANCHES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [HVDC_LINES]: sensiInjectionsSet[HVDC_LINES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [SENSITIVITY_TYPE]: sensiInjectionsSet[SENSITIVITY_TYPE],
-                        [CONTINGENCIES]: sensiInjectionsSet[CONTINGENCIES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
-                        [COUNT]: 0,
-                    };
-                }) ?? [],
-            [PARAMETER_SENSI_PST]:
-                parameters.sensitivityPST?.map((sensiInjectionsSet) => {
-                    return {
-                        [MONITORED_BRANCHES]: sensiInjectionsSet[MONITORED_BRANCHES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [PSTS]: sensiInjectionsSet[PSTS].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [SENSITIVITY_TYPE]: sensiInjectionsSet[SENSITIVITY_TYPE],
-                        [CONTINGENCIES]: sensiInjectionsSet[CONTINGENCIES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
-                        [COUNT]: 0,
-                    };
-                }) ?? [],
-            [PARAMETER_SENSI_NODES]:
-                parameters.sensitivityNodes?.map((sensiInjectionsSet) => {
-                    return {
-                        [SUPERVISED_VOLTAGE_LEVELS]: sensiInjectionsSet[SUPERVISED_VOLTAGE_LEVELS].map(
-                            (sensiInjection) => {
-                                return {
-                                    [ID]: sensiInjection[CONTAINER_ID],
-                                    [NAME]: sensiInjection[CONTAINER_NAME],
-                                };
-                            }
-                        ),
-                        [EQUIPMENTS_IN_VOLTAGE_REGULATION]: sensiInjectionsSet[EQUIPMENTS_IN_VOLTAGE_REGULATION].map(
-                            (sensiInjection) => {
-                                return {
-                                    [ID]: sensiInjection[CONTAINER_ID],
-                                    [NAME]: sensiInjection[CONTAINER_NAME],
-                                };
-                            }
-                        ),
-                        [CONTINGENCIES]: sensiInjectionsSet[CONTINGENCIES].map((sensiInjection) => {
-                            return {
-                                [ID]: sensiInjection[CONTAINER_ID],
-                                [NAME]: sensiInjection[CONTAINER_NAME],
-                            };
-                        }),
-                        [ACTIVATED]: sensiInjectionsSet[ACTIVATED],
-                        [COUNT]: 0,
-                    };
-                }) ?? [],
-        };
-        return values;
-    }, []);
+                [PARAMETER_SENSI_INJECTION]:
+                    parameters.sensitivityInjection?.map((sensiInjections) => {
+                        return {
+                            [MONITORED_BRANCHES]:
+                                sensiInjections[MONITORED_BRANCHES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [INJECTIONS]:
+                                sensiInjections[INJECTIONS]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [CONTINGENCIES]:
+                                sensiInjections[CONTINGENCIES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [ACTIVATED]: sensiInjections[ACTIVATED] ?? false,
+                            [COUNT]: 0,
+                        };
+                    }) ?? [],
+                [PARAMETER_SENSI_HVDC]:
+                    parameters.sensitivityHVDC?.map((sensiInjectionsSet) => {
+                        return {
+                            [MONITORED_BRANCHES]:
+                                sensiInjectionsSet[MONITORED_BRANCHES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [HVDC_LINES]:
+                                sensiInjectionsSet[HVDC_LINES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [SENSITIVITY_TYPE]: sensiInjectionsSet[SENSITIVITY_TYPE],
+                            [CONTINGENCIES]:
+                                sensiInjectionsSet[CONTINGENCIES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED] ?? false,
+                            [COUNT]: 0,
+                        };
+                    }) ?? [],
+                [PARAMETER_SENSI_PST]:
+                    parameters.sensitivityPST?.map((sensiInjectionsSet) => {
+                        return {
+                            [MONITORED_BRANCHES]:
+                                sensiInjectionsSet[MONITORED_BRANCHES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [PSTS]:
+                                sensiInjectionsSet[PSTS]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [SENSITIVITY_TYPE]: sensiInjectionsSet[SENSITIVITY_TYPE],
+                            [CONTINGENCIES]:
+                                sensiInjectionsSet[CONTINGENCIES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED] ?? false,
+                            [COUNT]: 0,
+                        };
+                    }) ?? [],
+                [PARAMETER_SENSI_NODES]:
+                    parameters.sensitivityNodes?.map((sensiInjectionsSet) => {
+                        return {
+                            [SUPERVISED_VOLTAGE_LEVELS]:
+                                sensiInjectionsSet[SUPERVISED_VOLTAGE_LEVELS]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [EQUIPMENTS_IN_VOLTAGE_REGULATION]:
+                                sensiInjectionsSet[EQUIPMENTS_IN_VOLTAGE_REGULATION]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [CONTINGENCIES]:
+                                sensiInjectionsSet[CONTINGENCIES]?.map((sensiInjection) => {
+                                    return {
+                                        [ID]: sensiInjection[CONTAINER_ID],
+                                        [NAME]: sensiInjection[CONTAINER_NAME],
+                                    };
+                                }) ?? [],
+                            [ACTIVATED]: sensiInjectionsSet[ACTIVATED] ?? false,
+                            [COUNT]: 0,
+                        };
+                    }) ?? [],
+            };
+            return values;
+        },
+        []
+    );
 
     const initRowsCount = useCallback(() => {
-        const handleEntries = (entries, parameter) => {
+        const handleEntries = (entries: any[] | undefined, parameter: SubTabsValues) => {
+            // TODO: not easy to fix any here since values[SubTabsValues] have each time different type which causes problems with "filter"
+            // "none of those signatures are compatible with each other
+            if (!entries) {
+                return;
+            }
+
             const entriesWithIndices = entries.map((entry, index) => ({
                 entry,
                 index,
@@ -384,7 +439,7 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
         handleEntries(values[PARAMETER_SENSI_PST], PARAMETER_SENSI_PST);
     }, [onChangeParams, getValues]);
     const onSubmit = useCallback(
-        (newParams) => {
+        (newParams: SensitivityAnalysisParametersFormSchema) => {
             setIsSubmitAction(true);
             setSensitivityAnalysisParameters(studyUuid, formatNewParams(newParams))
                 .then(() => {
@@ -404,11 +459,11 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
     );
 
     const handleSensibilityParameter = useCallback(
-        (newParams) => {
+        (newParams: TreeViewFinderNodeProps[]) => {
             if (newParams && newParams.length > 0) {
                 setOpenSelectParameterDialog(false);
                 fetchSensitivityAnalysisParameters(newParams[0].id)
-                    .then((parameters) => {
+                    .then((parameters: SensitivityAnalysisParametersInfos) => {
                         console.info('loading the following sensi parameters : ' + parameters.uuid);
                         reset(fromSensitivityAnalysisParamsDataToFormValues(parameters), {
                             keepDefaultValues: true,
@@ -484,13 +539,12 @@ export const SensitivityAnalysisParameters = ({ parametersBackend, setHaveDirtyF
                             <Grid container paddingTop={1} paddingBottom={1}>
                                 <LineSeparator />
                             </Grid>
-                            <SensitivityAnalysisFields reset={reset} />
+                            <SensitivityAnalysisFields />
                         </Grid>
                         <Grid container paddingTop={4} paddingBottom={2}>
                             <LineSeparator />
                         </Grid>
                         <SensitivityParametersSelector
-                            reset={reset}
                             onFormChanged={onFormChanged}
                             onChangeParams={onChangeParams}
                             launchLoader={launchLoader}
