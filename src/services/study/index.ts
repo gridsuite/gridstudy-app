@@ -161,8 +161,8 @@ export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, co
 }
 
 export function copyOrMoveModifications(
-    studyUuid: UUID | null,
-    targetNodeId: UUID | undefined,
+    studyUuid: UUID,
+    targetNodeId: UUID,
     modificationToCutUuidList: string[],
     copyInfos: NetworkModificationCopyInfo
 ) {
@@ -196,7 +196,7 @@ export function getAvailableExportFormats() {
     return backendFetchJson(getExportFormatsUrl);
 }
 
-export function getAvailableComponentLibraries() {
+export function getAvailableComponentLibraries(): Promise<string[]> {
     console.info('get available component libraries for diagrams');
     const getAvailableComponentLibrariesUrl = PREFIX_STUDY_QUERIES + '/v1/svg-component-libraries';
     console.debug(getAvailableComponentLibrariesUrl);
@@ -258,8 +258,8 @@ export function getServersInfos() {
 }
 
 export function fetchAvailableFilterEnumValues(
-    studyUuid: UUID | null,
-    nodeUuid: UUID | undefined,
+    studyUuid: UUID,
+    nodeUuid: UUID,
     computingType: ComputingType,
     filterEnum: string
 ) {

@@ -73,11 +73,10 @@ const phaseTapChangerValidationSchema = (id) => ({
         [CURRENT_LIMITER_REGULATING_VALUE]: yup
             .number()
             .nullable()
-            .positive('CurrentLimiterMustBeGreaterThanZero')
             .when([ENABLED, REGULATION_MODE], {
                 is: (enabled, regulationMode) =>
                     enabled && regulationMode === PHASE_REGULATION_MODES.CURRENT_LIMITER.id,
-                then: (schema) => schema.required(),
+                then: (schema) => schema.positive('CurrentLimiterMustBeGreaterThanZero').required(),
             }),
         [FLOW_SET_POINT_REGULATING_VALUE]: yup
             .number()
