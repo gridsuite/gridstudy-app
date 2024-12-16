@@ -39,6 +39,7 @@ const VoltageTable: FunctionComponent<VoltageTableProps> = ({ voltageProfileMode
                             <TableCell
                                 sx={{
                                     width: '10%',
+                                    textAlign: 'center',
                                 }}
                                 key={value}
                             >
