@@ -46,7 +46,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         return (
             <ReportItem
                 labelText={report.message}
-                labelIconColor={report.highestSeverity.colorName}
+                labelIconColor={report.severity.colorName}
                 key={report.id}
                 sx={styles.treeItem}
                 nodeId={report.id}

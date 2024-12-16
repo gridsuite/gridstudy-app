@@ -15,11 +15,9 @@ export function mapReportsTree(report: Report, reportType?: ReportType): ReportT
         id: report.id,
         message: report.message,
         parentId: report.parentId,
-        severity: report.severity,
-        highestSeverity:
-            Object.values(REPORT_SEVERITY).find((s) => report.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN,
+        severity: Object.values(REPORT_SEVERITY).find((s) => report.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN,
         subReports: report.subReports
             .filter((subReport) => subReport.subReports.length > 0 || subReport.id)
             .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
-    };
+    } satisfies ReportTree;
 }

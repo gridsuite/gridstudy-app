@@ -21,9 +21,9 @@ export enum ReportType {
     NODE = 'NodeReport',
 }
 
-export type ReportTree = Report & {
+export type ReportTree = Omit<Report, 'severity' | 'subReports'> & {
     type: ReportType;
-    highestSeverity: ReportSeverity;
+    severity: ReportSeverity;
     subReports: ReportTree[];
 };
 
@@ -43,7 +43,7 @@ export type Log = {
 
 export type ReportLog = {
     message: string;
-    severity: SeverityLevel[];
+    severity: ReportSeverity;
     parentId: string;
     backgroundColor?: string;
 };
