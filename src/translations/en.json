@@ -1433,5 +1433,6 @@
     "qualityCriterionResults": "Quality criterion",
     "qualityPerRegionResults": "Quality region",
     "StateEstimationStatus": "Status : ",
-    "StateEstimationQuality": "Quality : "
+    "StateEstimationQuality": "Quality : ",
+    "Or": "or"
 }
