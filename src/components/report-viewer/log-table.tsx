@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import React, { memo, useCallback, useEffect, useState, useMemo, useRef } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useIntl } from 'react-intl';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
 import { alpha, useTheme } from '@mui/material/styles';
@@ -123,15 +123,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
             setRowData(transformedLogs);
             resetSearch();
         });
-    }, [
-        severityFilter,
-        fetchReportLogs,
-        selectedReportId,
-        reportNature,
-        messageFilter,
-        resetSearch,
-        severities.length,
-    ]);
+    }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
 
     useEffect(() => {
         // initialize the filter with the severities
@@ -156,6 +148,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
         dispatch,
         filterSelector?.length,
         refreshLogsOnSelectedReport,
+        report,
         reportNature,
         reportType,
         selectedReportId,
