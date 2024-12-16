@@ -9,10 +9,10 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { SelectCountryField } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import { editableColumnConfig, typeAndFetchers } from './common-config';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { COUNTRY_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const SUBSTATION_TAB_DEF = {
     index: 0,
@@ -23,7 +23,7 @@ export const SUBSTATION_TAB_DEF = {
             id: 'ID',
             field: 'id',
             type: TEXT_TYPE,
-            isDefaultSort: true,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -36,7 +36,6 @@ export const SUBSTATION_TAB_DEF = {
             field: 'country',
             ...editableColumnConfig,
             cellEditor: SelectCountryField,
-            cellRenderer: CountryCellRenderer,
             valueSetter: (params) => {
                 params.data.country = params?.newValue;
                 return true;

@@ -5,16 +5,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import type { ReadonlyDeep, Writable } from 'type-fest';
-import { getEnumLabelById } from '../../../utils/utils';
-import {
-    type CustomColDef,
-    FILTER_DATA_TYPES,
-    FILTER_TEXT_COMPARATORS,
-} from '../../../custom-aggrid/custom-aggrid-header.type';
-import { EnumOption } from '../../../utils/utils-type';
+import type { ReadonlyDeep } from 'type-fest';
+import { type CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import type { CellStyleFunc, EditableCallback } from 'ag-grid-community';
-import EnumCellRenderer, { type EnumCellRendererProps } from '../../utils/enum-cell-renderer';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import {
     fetchBatteries,
@@ -35,8 +28,7 @@ import {
     fetchVoltageLevels,
     fetchVscConverterStations,
 } from '../../../../services/study/network';
-import { EquipmentFetcher, SpreadsheetColDef, SpreadsheetEquipmentType } from '../spreadsheet.type';
-import { getEnumFilterConfig } from '../column-type-filter-config';
+import { EquipmentFetcher, SpreadsheetEquipmentType } from '../spreadsheet.type';
 
 type TapPositionsType = {
     lowTapPosition: number;
@@ -114,24 +106,3 @@ export const editableColumnConfig = {
 // The columns we want to include in the global filter at the date of this comment: ID (all), Name, Country, Type and Nominal Voltage (all).
 // All the others should be excluded.
 export const excludeFromGlobalFilter = () => '' as const;
-
-export const defaultTextFilterConfig = {
-    filter: 'agTextColumnFilter',
-    customFilterParams: {
-        filterDataType: FILTER_DATA_TYPES.TEXT,
-        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-    },
-} as const satisfies Partial<ReadonlyDeep<CustomColDef>>;
-
-// This function is used to generate the default configuration for an enum filter
-// It generates configuration for filtering, sorting and rendering
-export const getDefaultEnumConfig = (enumOptions: Readonly<EnumOption[]>) =>
-    ({
-        ...getEnumFilterConfig(enumOptions as EnumOption[]),
-        cellRenderer: EnumCellRenderer,
-        cellRendererParams: {
-            enumOptions: enumOptions as Writable<typeof enumOptions>,
-            // @ts-expect-error TODO TS1360: Property value is missing in type
-        } satisfies EnumCellRendererProps,
-        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
-    } as const satisfies Partial<ReadonlyDeep<SpreadsheetColDef>>);

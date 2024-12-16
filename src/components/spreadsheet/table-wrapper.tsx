@@ -1217,6 +1217,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         handleRowDataUpdated={handleRowDataUpdated}
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                         columnTypes={defaultColumnType}
+                        applyFluxConvention={applyFluxConvention}
                     />
                 </Box>
             )}

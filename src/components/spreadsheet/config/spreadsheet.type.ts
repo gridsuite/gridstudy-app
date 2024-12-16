@@ -36,7 +36,7 @@ export interface SpreadsheetColDef<TData = any, TValue = any> extends ColDef<TDa
     changeCmd?: string;
     columnWidth?: number;
     crossValidation?: CrossValidationOptions;
-    type?: string;
+    type?: string | string[];
     filter?: string;
     filterParams?: ITextFilterParams;
     fractionDigits?: number;

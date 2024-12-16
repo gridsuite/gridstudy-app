@@ -8,12 +8,11 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
     index: 8,
@@ -23,8 +22,8 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -40,7 +39,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
             id: 'Country',
             field: 'country',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
@@ -87,8 +85,6 @@ export const STATIC_VAR_COMPENSATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

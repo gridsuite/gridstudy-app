@@ -7,13 +7,12 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 import { BOOLEAN_TYPE, COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const BATTERY_TAB_DEF = {
     index: 9,
@@ -23,8 +22,9 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
+
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -72,7 +72,6 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             ...editableColumnConfig,
             valueSetter: (params) => {
@@ -163,8 +162,6 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

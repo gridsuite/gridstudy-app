@@ -10,7 +10,6 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { type EquipmentTableDataEditorProps, TWTRegulatingTerminalEditor } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback } from 'ag-grid-community';
 import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
@@ -18,7 +17,6 @@ import {
     editableColumnConfig,
     excludeFromGlobalFilter,
     generateTapPositions,
-    getDefaultEnumConfig,
     isEditable,
     typeAndFetchers,
 } from './common-config';
@@ -35,6 +33,8 @@ import {
     numericalCellEditorConfig,
     standardSelectCellEditorConfig,
 } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
+import { getEnumConfig } from '../column-type-filter-config';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
@@ -104,8 +104,8 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -126,7 +126,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'Country',
             field: 'country',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'nominalVoltage1KV',
@@ -202,7 +201,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
             valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
             cellStyle: editableCellStyle,
@@ -246,7 +244,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
                     columnValue: true,
                 },
             },
-            ...getDefaultEnumConfig(Object.values(RATIO_REGULATION_MODES)),
+            ...getEnumConfig(Object.values(RATIO_REGULATION_MODES)),
         },
         {
             id: 'TargetVPoint',
@@ -301,12 +299,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
             getQuickFilterText: excludeFromGlobalFilter,
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
+            ...getEnumConfig(Object.values(REGULATION_TYPES)),
         },
         {
             id: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
-            ...getDefaultEnumConfig(Object.values(SIDE)),
+            ...getEnumConfig(Object.values(SIDE)),
             valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
@@ -401,7 +399,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
-            ...getDefaultEnumConfig(Object.values(PHASE_REGULATION_MODES)),
+            ...getEnumConfig(Object.values(PHASE_REGULATION_MODES)),
             valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
@@ -462,7 +460,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
+            ...getEnumConfig(Object.values(REGULATION_TYPES)),
             valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
@@ -483,7 +481,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
-            ...getDefaultEnumConfig(Object.values(SIDE)),
+            ...getEnumConfig(Object.values(SIDE)),
             valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
@@ -628,7 +626,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'connected2',
             field: 'terminal2Connected',
             boolean: true,
-            cellRenderer: BooleanCellRenderer,
+            //cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

@@ -8,12 +8,11 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesReadonly } from '../common/column-properties';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const TIE_LINE_TAB_DEF = {
     index: 15,
@@ -24,8 +23,8 @@ export const TIE_LINE_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -47,13 +46,11 @@ export const TIE_LINE_TAB_DEF = {
             id: 'Country1',
             field: 'country1',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'Country2',
             field: 'country2',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'nominalVoltage1KV',
@@ -160,16 +157,12 @@ export const TIE_LINE_TAB_DEF = {
         {
             id: 'connected1',
             field: 'terminal1Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected2',
             field: 'terminal2Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

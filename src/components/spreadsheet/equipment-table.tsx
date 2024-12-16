@@ -19,9 +19,12 @@ import {
     RowHeightParams,
     RowStyle,
 } from 'ag-grid-community';
-import { CurrentTreeNode } from '../../redux/reducer';
+import { AppState, CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
+import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
+import { useSelector } from 'react-redux';
+import { PARAM_FLUX_CONVENTION } from 'utils/config-params';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -53,6 +56,7 @@ interface EquipmentTableProps {
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
     columnTypes: { [key: string]: ColDef };
+    applyFluxConvention: (value: number) => number;
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -72,6 +76,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     fetched,
     shouldHidePinnedHeaderRightBorder,
     columnTypes,
+    applyFluxConvention,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -101,8 +106,9 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             studyUuid: studyUuid,
             intl: intl,
             translateCountryCode: translate,
+            applyFluxConvention: applyFluxConvention,
         }),
-        [currentNode, intl, studyUuid, theme, topPinnedData, translate]
+        [applyFluxConvention, currentNode, intl, studyUuid, theme, topPinnedData, translate]
     );
 
     const getRowHeight = useCallback(

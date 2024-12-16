@@ -8,13 +8,13 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import { editableColumnConfig, excludeFromGlobalFilter, getDefaultEnumConfig, typeAndFetchers } from './common-config';
+import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
+import { getEnumConfig } from '../column-type-filter-config';
 
 export const LOAD_TAB_DEF = {
     index: 6,
@@ -25,8 +25,8 @@ export const LOAD_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -38,7 +38,7 @@ export const LOAD_TAB_DEF = {
         {
             id: 'loadType',
             field: 'type',
-            ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
+            ...getEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
             ...editableColumnConfig,
             ...enumCellEditorConfig(
                 (params) => params.data?.type,
@@ -54,7 +54,6 @@ export const LOAD_TAB_DEF = {
             id: 'Country',
             field: 'country',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
@@ -104,8 +103,6 @@ export const LOAD_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

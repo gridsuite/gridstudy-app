@@ -8,12 +8,11 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { editableColumnConfig, excludeFromGlobalFilter, generateTapPositions, typeAndFetchers } from './common-config';
 import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
 import { standardSelectCellEditorConfig } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 function generateTapRequest(tapType: string, legNumber: number) {
     return (
@@ -37,8 +36,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -64,7 +63,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'Country',
             field: 'country',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalVT3WSide1',
@@ -145,15 +143,11 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'HasLoadTapChanging1Capabilities',
             field: 'hasLoadTapChanging1Capabilities',
             boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulatingRatio1',
             field: 'isRegulatingRatio1',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -186,16 +180,12 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'HasLoadTapChanging2Capabilities',
             field: 'hasLoadTapChanging2Capabilities',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulatingRatio2',
             field: 'isRegulatingRatio2',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -228,16 +218,12 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'HasLoadTapChanging3Capabilities',
             field: 'hasLoadTapChanging3Capabilities',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulatingRatio3',
             field: 'isRegulatingRatio3',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -277,8 +263,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingPhase1',
             field: 'isRegulatingPhase1',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -319,8 +303,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingPhase2',
             field: 'isRegulatingPhase2',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -361,8 +343,6 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingPhase3',
             field: 'isRegulatingPhase3',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -396,24 +376,18 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ConnectedT3WSide1',
             field: 'terminal1Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ConnectedT3WSide2',
             field: 'terminal2Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ConnectedT3WSide3',
             field: 'terminal3Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

@@ -9,6 +9,9 @@ import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from 'components/c
 import { getEnumLabelById } from 'components/utils/utils';
 import { EnumOption } from 'components/utils/utils-type';
 import CountryCellRenderer from '../utils/country-cell-render';
+import { BooleanCellRenderer, DefaultCellRenderer } from '../utils/cell-renderers';
+import EnumCellRenderer from '../utils/enum-cell-renderer';
+import { Writable } from 'type-fest';
 
 const contains = (target: string, lookingFor: string): boolean => {
     if (target && lookingFor) {
@@ -17,7 +20,7 @@ const contains = (target: string, lookingFor: string): boolean => {
     return false;
 };
 
-export const getEnumFilterConfig = (enumOptions: EnumOption[]) => {
+export const getEnumConfig = (enumOptions: Readonly<EnumOption[]>) => {
     return {
         filter: 'agTextColumnFilter',
         filterParams: {
@@ -36,65 +39,110 @@ export const getEnumFilterConfig = (enumOptions: EnumOption[]) => {
             },
             debounceMs: 200,
         },
+        cellRenderer: EnumCellRenderer,
+        cellRendererParams: {
+            enumOptions: enumOptions as Writable<typeof enumOptions>,
+            // @ts-expect-error TODO TS1360: Property value is missing in type
+        } satisfies EnumCellRendererProps,
+        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
     };
 };
 
+const textType = {
+    filter: 'agTextColumnFilter',
+    filterParams: {
+        caseSensitive: false,
+        maxNumConditions: 1,
+        filterOptions: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+    },
+    cellRendererSelector: (props: any) => {
+        return {
+            component: DefaultCellRenderer,
+            props: props,
+        };
+    },
+    sortable: true,
+    resizable: true,
+};
+
+const numericType = {
+    filter: 'agNumberColumnFilter',
+    filterParams: {
+        maxNumConditions: 1,
+        filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
+        debounceMs: 200,
+    },
+    cellRendererSelector: (props: any) => {
+        return {
+            component: DefaultCellRenderer,
+            props: {
+                isValueInvalid: props.colDef.cellRendererParams.colisValueInvalid,
+                applyFluxConvention: props.context.applyFluxConvention,
+            },
+        };
+    },
+    sortable: true,
+    resizable: true,
+};
+
+const booleanType = {
+    cellRendererSelector: ({ value }: { value: string }) => {
+        return {
+            component: BooleanCellRenderer,
+            props: {
+                value,
+            },
+        };
+    },
+    filter: 'agTextColumnFilter',
+    filterParams: {
+        caseSensitive: false,
+        maxNumConditions: 1,
+        filterOptions: [FILTER_TEXT_COMPARATORS.EQUALS],
+        textMatcher: ({ value, filterText, context }: any): boolean => {
+            if (value) {
+                const displayedValue = context.intl.formatMessage({ id: value }) ?? value;
+                return contains(displayedValue, filterText || '');
+            }
+            return false;
+        },
+        debounceMs: 200,
+    },
+    sortable: true,
+    resizable: true,
+};
+
+const countryType = {
+    cellRendererSelector: ({ value }: { value: string }) => {
+        return {
+            component: CountryCellRenderer,
+            params: {
+                value,
+            },
+        };
+    },
+    filter: 'agTextColumnFilter',
+    filterParams: {
+        caseSensitive: false,
+        maxNumConditions: 1,
+        filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
+        textMatcher: ({ value, filterText, context }: { value: string; filterText: string; context: any }) => {
+            if (value) {
+                const countryCode = value?.toUpperCase();
+                const countryName = context?.translateCountryCode(countryCode);
+                return contains(countryName, filterText || '') || contains(value, filterText);
+            }
+            return false;
+        },
+        debounceMs: 200,
+    },
+    sortable: true,
+    resizable: true,
+};
+
 export const defaultColumnType = {
-    textType: {
-        filter: 'agTextColumnFilter',
-        filterParams: {
-            caseSensitive: false,
-            maxNumConditions: 1,
-            filterOptions: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-        },
-        sortable: true,
-        resizable: true,
-    },
-    numericType: {
-        filter: 'agNumberColumnFilter',
-        filterParams: {
-            maxNumConditions: 1,
-            filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
-            debounceMs: 200,
-        },
-        sortable: false,
-        resizable: true,
-    },
-    booleanType: {
-        filter: 'agTextColumnFilter',
-        filterParams: {
-            caseSensitive: false,
-            maxNumConditions: 1,
-            filterOptions: [FILTER_TEXT_COMPARATORS.EQUALS],
-            textMatcher: ({ value, filterText, context }: any): boolean => {
-                if (value) {
-                    const displayedValue = context.intl.formatMessage({ id: value }) ?? value;
-                    return contains(displayedValue, filterText || '');
-                }
-                return false;
-            },
-        },
-        sortable: true,
-        resizable: true,
-    },
-    countryType: {
-        filter: 'agTextColumnFilter',
-        filterParams: {
-            caseSensitive: false,
-            maxNumConditions: 1,
-            filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
-            textMatcher: ({ value, filterText, context }: { value: string; filterText: string; context: any }) => {
-                if (value) {
-                    const countryCode = value?.toUpperCase();
-                    const countryName = context?.translateCountryCode(countryCode);
-                    return contains(countryName, filterText || '') || contains(value, filterText);
-                }
-                return false;
-            },
-            debounceMs: 200,
-        },
-        sortable: true,
-        resizable: true,
-        cellRenderer: CountryCellRenderer,
-    },
+    textType,
+    numericType,
+    booleanType,
+    countryType,
 };

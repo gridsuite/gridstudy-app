@@ -8,9 +8,7 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import { editableColumnConfig, excludeFromGlobalFilter, getDefaultEnumConfig, typeAndFetchers } from './common-config';
+import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import {
     BOOLEAN_TYPE,
     COUNTRY_TYPE,
@@ -22,6 +20,8 @@ import {
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
+import { getEnumConfig } from '../column-type-filter-config';
 
 export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
@@ -32,8 +32,8 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -51,7 +51,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'Country',
             field: 'country',
             type: COUNTRY_TYPE,
-            cellRenderer: CountryCellRenderer,
         },
         {
             id: 'NominalV',
@@ -98,7 +97,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'Type',
             field: 'type',
-            ...getDefaultEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
+            ...getEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },
@@ -156,8 +155,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },

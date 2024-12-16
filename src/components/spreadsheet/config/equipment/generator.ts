@@ -12,16 +12,8 @@ import {
     type EquipmentTableDataEditorProps,
     GeneratorRegulatingTerminalEditor,
 } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    editableCellStyle,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
-    typeAndFetchers,
-} from './common-config';
+import { editableCellStyle, editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
@@ -31,6 +23,8 @@ import {
     type ICustomCellEditorParams,
     numericalCellEditorConfig,
 } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
+import { getEnumConfig } from '../column-type-filter-config';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -67,8 +61,8 @@ export const GENERATOR_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -96,7 +90,7 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'energySource',
             field: 'energySource',
-            ...getDefaultEnumConfig(ENERGY_SOURCES),
+            ...getEnumConfig(ENERGY_SOURCES),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.energySource, ENERGY_SOURCES),
         },
@@ -123,7 +117,6 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             ...editableColumnConfig,
             valueSetter: (params) => {
@@ -221,7 +214,6 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             ...editableColumnConfig,
             ...booleanCellEditorConfig((params) => params.data?.voltageRegulatorOn ?? false),
@@ -403,15 +395,13 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulationTypeText',
             field: 'RegulationTypeText',
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
+            ...getEnumConfig(Object.values(REGULATION_TYPES)),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.RegulationTypeText, Object.values(REGULATION_TYPES)),
         },

@@ -8,8 +8,6 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import {
     BOOLEAN_TYPE,
@@ -20,6 +18,7 @@ import {
     TEXT_TYPE,
 } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const HVDC_LINE_TAB_DEF = {
     index: 10,
@@ -30,8 +29,8 @@ export const HVDC_LINE_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
             type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
@@ -123,8 +122,6 @@ export const HVDC_LINE_TAB_DEF = {
         {
             id: 'AcEmulation',
             field: 'hvdcAngleDroopActivePowerControl.isEnabled',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
