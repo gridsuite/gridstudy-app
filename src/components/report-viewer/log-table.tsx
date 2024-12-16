@@ -15,7 +15,7 @@ import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-f
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import { getDefaultSeverityFilter, orderSeverityList, REPORT_SEVERITY } from '../../utils/report/report-severity';
+import { orderSeverityList, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import PropTypes from 'prop-types';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
@@ -119,14 +119,23 @@ const LogTable = ({ selectedReportId, reportType, reportNature, onRowClick }: Lo
                         backgroundColor: log.severity.colorName,
                     } as unknown as ReportLog)
             );
-            if (!severities.length) {
+            if (reportLogs.length && !severities.length) {
                 computeSeverities(reportLogs);
             }
             setSelectedRowIndex(-1);
             setRowData(transformedLogs);
             resetSearch();
         });
-    }, [fetchReportLogs, messageFilter, reportNature, severityFilter, selectedReportId, resetSearch]);
+    }, [
+        severityFilter,
+        fetchReportLogs,
+        selectedReportId,
+        reportNature,
+        messageFilter,
+        resetSearch,
+        severities.length,
+        computeSeverities,
+    ]);
 
     useEffect(() => {
         // initialize the filter with the severities

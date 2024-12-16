@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { Report, ReportSeverity, ReportTree, ReportType } from './report.type';
+import { Report, ReportTree, ReportType } from './report.type';
 import { GLOBAL_REPORT_NODE_LABEL } from './report.constant';
 import { REPORT_SEVERITY } from './report-severity';
 
@@ -16,11 +16,10 @@ export function mapReportsTree(report: Report, reportType?: ReportType): ReportT
         message: report.message,
         parentId: report.parentId,
         severity: report.severity,
-        highestSeverity: Object.values(REPORT_SEVERITY)
-            .filter((s) => report.severity === s.name)
-            .reduce((p: ReportSeverity, c: ReportSeverity) => (c.level > p.level ? c : p), REPORT_SEVERITY.UNKNOWN),
+        highestSeverity:
+            Object.values(REPORT_SEVERITY).find((s) => report.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN,
         subReports: report.subReports
             .filter((subReport) => subReport.subReports.length > 0 || subReport.id)
             .map((subReport) => mapReportsTree(subReport, ReportType.NODE)),
-    } satisfies ReportTree;
+    };
 }
