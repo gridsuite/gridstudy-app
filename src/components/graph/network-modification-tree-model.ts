@@ -175,7 +175,12 @@ export default class NetworkModificationTreeModel {
         // then in nodeIds order, we cut and paste the corresponding number of nodes in treeNodes.
         const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 here to set the index just after the parent node
         let insertedNodes = 0;
-        const nodeIdAndFamilySize = new Map(nodeIds.map((id) => [id, 1 + countNodes(this.treeNodes, id as UUID)]));
+        const nodeIdAndFamilySize = new Map(
+            nodeIds.map((id) => [
+                id,
+                1 + countNodes(this.treeNodes, id as UUID), // We add 1 here to include the current node in its family size
+            ])
+        );
 
         nodeIdAndFamilySize.forEach((familySize, nodeId) => {
             const nodesToMoveIndex = this.treeNodes.findIndex((n) => n.id === nodeId);
