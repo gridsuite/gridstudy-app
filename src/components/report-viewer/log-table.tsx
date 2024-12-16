@@ -374,7 +374,6 @@ LogTable.propTypes = {
     selectedReportId: PropTypes.string,
     reportType: PropTypes.string,
     reportNature: PropTypes.string,
-    severities: PropTypes.arrayOf(PropTypes.string),
     onRowClick: PropTypes.func,
 };
 
