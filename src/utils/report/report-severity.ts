@@ -82,7 +82,9 @@ export const getDefaultSeverityFilter = (severityList: string[]): string[] => {
 
 export const getReportSeverities = (report: Report): SeverityLevel[] => {
     const severities: SeverityLevel[] = [];
-    severities.push(report.severity);
+    if (report.severity) {
+        severities.push(report.severity);
+    }
     if (report.subReports.length > 0) {
         report.subReports.forEach((subreport) => {
             severities.push(...getReportSeverities(subreport));
