@@ -422,9 +422,10 @@ export function setParamsLoaded(): SetParamsLoadedAction {
 export const OPEN_STUDY = 'OPEN_STUDY';
 export type OpenStudyAction = Readonly<Action<typeof OPEN_STUDY>> & {
     studyRef: [UUID];
+    rootNetworkRef: [UUID];
 };
-export function openStudy(studyUuid: UUID): OpenStudyAction {
-    return { type: OPEN_STUDY, studyRef: [studyUuid] };
+export function openStudy(studyUuid: UUID, rootNetworkUuid: UUID): OpenStudyAction {
+    return { type: OPEN_STUDY, studyRef: [studyUuid], rootNetworkRef: [rootNetworkUuid] };
 }
 
 export const CLOSE_STUDY = 'CLOSE_STUDY';
@@ -738,6 +739,17 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     return {
         type: CURRENT_TREE_NODE,
         currentTreeNode: currentTreeNode,
+    };
+}
+
+export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
+export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
+    currentRootNetwork: UUID;
+};
+export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+    return {
+        type: CURRENT_ROOT_NETWORK,
+        currentRootNetwork: currentRootNetwork,
     };
 }
 

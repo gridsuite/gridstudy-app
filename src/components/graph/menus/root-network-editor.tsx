@@ -16,6 +16,7 @@ import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import { Theme } from '@mui/material/styles';
+import RootNetworkNodeEditor from './root-network-node-editor';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -23,16 +24,17 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-       // background: "red",
+     //   background: "red",
 
     }),
-};
+}; 
 
-const NodeEditor = () => {
+const RootNetworkEditor = () => {
     const dispatch = useDispatch();
     const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const rootNetworkUuid = useSelector((state: AppState) => state.rootNetworkUuid);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
@@ -57,15 +59,15 @@ const NodeEditor = () => {
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
                 onChange={changeNodeName}
-                isCloseIconVisible={true}
+                isCloseIconVisible={false}
             />
-            <NetworkModificationNodeEditor />
+            <RootNetworkNodeEditor />
         </Box>
     );
 };
 
-NodeEditor.propTypes = {
+RootNetworkEditor.propTypes = {
     className: PropTypes.string,
 };
 
-export default NodeEditor;
+export default RootNetworkEditor;

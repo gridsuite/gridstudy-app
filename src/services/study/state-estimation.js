@@ -5,12 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
 export function startStateEstimation(studyUuid, currentNodeUuid) {
     console.info(`Running state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/state-estimation/run';
+    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/state-estimation/run';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
@@ -18,14 +18,20 @@ export function startStateEstimation(studyUuid, currentNodeUuid) {
 
 export function stopStateEstimation(studyUuid, currentNodeUuid) {
     console.info(`Stopping state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/stop`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/state-estimation/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
 
-export function fetchStateEstimationStatus(studyUuid, currentNodeUuid) {
-    console.info(`Fetching state estimation status on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/status`;
+export function fetchStateEstimationStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.info(
+        `Fetching state estimation status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/state-estimation/status`;
     console.debug(url);
     return backendFetchText(url);
 }
@@ -33,7 +39,7 @@ export function fetchStateEstimationStatus(studyUuid, currentNodeUuid) {
 export function fetchStateEstimationResult(studyUuid, currentNodeUuid) {
     console.info(`Fetching state estimation result on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/state-estimation/result`;
     console.debug(url);
     return backendFetchJson(url);
 }

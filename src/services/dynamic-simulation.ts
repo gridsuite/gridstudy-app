@@ -7,7 +7,7 @@
 
 import { Event } from '../components/dialogs/dynamicsimulation/event/types/event.type';
 import { backendFetch, backendFetchJson, getRequestParamFromList } from './utils';
-import { getStudyUrlWithNodeUuid } from './study';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './study';
 import { UUID } from 'crypto';
 import {
     TimelineEvent,
@@ -30,33 +30,41 @@ export function fetchDynamicSimulationProviders() {
 
 export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid: UUID,
-    currentNodeUuid: UUID
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
 ): Promise<TimeSeriesMetadata[] | null> {
     console.info(
-        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching dynamic simulation time series's metadata on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/dynamic-simulation/result/timeseries/metadata';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/dynamic-simulation/result/timeseries/metadata';
     console.debug(url);
     return backendFetchJson(url);
 }
 
 export function fetchDynamicSimulationResultTimeline(
     studyUuid: UUID,
-    currentNodeUuid: UUID
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
 ): Promise<TimelineEvent[] | null> {
-    console.info(`Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/dynamic-simulation/result/timeline';
+    console.info(
+        `Fetching dynamic simulation timeline result on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/dynamic-simulation/result/timeline';
     console.debug(url);
     return backendFetchJson(url);
 }
 
 // --- Event API - BEGIN
-
+//TODO: should not be linked to rootnetworkUUID
 export function fetchDynamicSimulationEvents(studyUuid: UUID, nodeUuid: UUID): Promise<Event[]> {
     console.info(`Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`);
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/dynamic-simulation/events';
+    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/dynamic-simulation/events';
 
     console.debug(url);
 
@@ -68,7 +76,9 @@ export function fetchDynamicSimulationEvent(studyUuid: UUID, nodeUuid: UUID, equ
         `Fetching dynamic simulation event with '${equipmentId}' on '${studyUuid}' and node '${nodeUuid}' ...`
     );
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + `/dynamic-simulation/events?equipmentId=${equipmentId}`;
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) +
+        `/dynamic-simulation/events?equipmentId=${equipmentId}`;
 
     console.debug(url);
 
@@ -78,7 +88,7 @@ export function fetchDynamicSimulationEvent(studyUuid: UUID, nodeUuid: UUID, equ
 export function saveDynamicSimulationEvent(studyUuid: UUID, nodeUuid: UUID, event: Event) {
     console.info(`Saving dynamic simulation event on '${studyUuid}' and node '${nodeUuid}' ...`);
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + `/dynamic-simulation/events`;
+    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + `/dynamic-simulation/events`;
     console.debug(url);
 
     return backendFetch(url, {
@@ -99,7 +109,8 @@ export function deleteDynamicSimulationEvents(studyUuid: UUID, nodeUuid: UUID, e
         'eventUuids'
     );
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + `/dynamic-simulation/events?${eventIdsParams}`;
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + `/dynamic-simulation/events?${eventIdsParams}`;
 
     console.debug(url);
 

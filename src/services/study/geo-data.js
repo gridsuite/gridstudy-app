@@ -6,30 +6,35 @@
  */
 
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
-export function fetchSubstationPositions(studyUuid, currentNodeUuid, substationsIds) {
+export function fetchSubstationPositions(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
     console.info(
-        `Fetching substation positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
+        `Fetching substation positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
 
     const paramsList =
         substationsIds && substationsIds.length > 0 ? '?' + getQueryParamsList(substationsIds, 'substationId') : '';
 
     const fetchSubstationPositionsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/substations' + paramsList;
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/geo-data/substations' +
+        paramsList;
     console.debug(fetchSubstationPositionsUrl);
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
 
-export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
+export function fetchLinePositions(studyUuid, currentNodeUuid, currentRootNetworkUuid, linesIds) {
     console.info(
-        `Fetching line positions of study '${studyUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
+        `Fetching line positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );
 
     const paramsList = linesIds && linesIds.length > 0 ? '?' + getQueryParamsList(linesIds, 'lineId') : '';
 
-    const fetchLinePositionsUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines' + paramsList;
+    const fetchLinePositionsUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/geo-data/lines' +
+        paramsList;
 
     console.debug(fetchLinePositionsUrl);
     return backendFetchJson(fetchLinePositionsUrl);

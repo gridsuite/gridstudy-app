@@ -7,7 +7,7 @@
 
 import { backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { RuleGroupTypeExport } from '../../components/dialogs/filter/expert/expert-filter.type';
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 
@@ -33,7 +33,8 @@ export function evaluateJsonFilter(
     console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const evaluateFilterUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/filters/evaluate?inUpstreamBuiltParentNode=true';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        '/filters/evaluate?inUpstreamBuiltParentNode=true';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {
         method: 'post',

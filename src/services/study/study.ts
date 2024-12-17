@@ -18,6 +18,7 @@ interface BasicStudyInfos {
 export const recreateStudyNetworkFromExistingCase = (
     caseUuid: UUID,
     studyUuid: UUID,
+    rootNetworkUuid: UUID,
     importParameters: Record<string, any>
 ): Promise<BasicStudyInfos> => {
     const urlSearchParams = new URLSearchParams();
@@ -27,6 +28,8 @@ export const recreateStudyNetworkFromExistingCase = (
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
         encodeURIComponent(studyUuid) +
+        '/root-networks/' +
+        encodeURIComponent(rootNetworkUuid) +
         '/network?' +
         urlSearchParams.toString();
 
@@ -39,8 +42,14 @@ export const recreateStudyNetworkFromExistingCase = (
     });
 };
 
-export const recreateStudyNetwork = (studyUuid: UUID): Promise<BasicStudyInfos> => {
-    const recreateStudyNetworkUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid) + '/network';
+export const recreateStudyNetwork = (studyUuid: UUID, rootNetworkUuid: UUID): Promise<BasicStudyInfos> => {
+    const recreateStudyNetworkUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/root-networks/' +
+        encodeURIComponent(rootNetworkUuid) +
+        '/network';
 
     console.debug(recreateStudyNetworkUrl);
 
@@ -50,8 +59,14 @@ export const recreateStudyNetwork = (studyUuid: UUID): Promise<BasicStudyInfos> 
     });
 };
 
-export const reindexAllStudy = (studyUuid: UUID): Promise<void> => {
-    const reindexAllStudyUrl = PREFIX_STUDY_QUERIES + '/v1/studies/' + encodeURIComponent(studyUuid) + '/reindex-all';
+export const reindexAllStudy = (studyUuid: UUID, rootNetworkUuid: UUID): Promise<void> => {
+    const reindexAllStudyUrl =
+        PREFIX_STUDY_QUERIES +
+        '/v1/studies/' +
+        encodeURIComponent(studyUuid) +
+        '/root-networks/' +
+        encodeURIComponent(rootNetworkUuid) +
+        '/reindex-all';
 
     console.debug(reindexAllStudyUrl);
 

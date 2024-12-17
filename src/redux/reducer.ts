@@ -208,6 +208,8 @@ import {
     UseNameAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
+    CURRENT_ROOT_NETWORK,
+    CurrentRootNetworkAction,
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -459,7 +461,9 @@ export interface AppState extends CommonStoreState {
 
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
+    rootNetworkUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
+    currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -621,7 +625,9 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     studyUuid: null,
+    rootNetworkUuid: null,
     currentTreeNode: null,
+    currentRootNetwork: null,
     selectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -823,6 +829,8 @@ const initialState: AppState = {
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
+        state.rootNetworkUuid = action.rootNetworkRef[0];
+        console.log('=================== ', action.studyRef);
 
         if (action.studyRef[0] != null) {
             state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
@@ -831,6 +839,7 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CLOSE_STUDY, (state, action: CloseStudyAction) => {
         state.studyUuid = null;
+        state.rootNetworkUuid = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
     });
@@ -1204,6 +1213,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
+        state.reloadMap = true;
+    });
+
+    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
+        state.currentRootNetwork = action.currentRootNetwork;
         state.reloadMap = true;
     });
 
