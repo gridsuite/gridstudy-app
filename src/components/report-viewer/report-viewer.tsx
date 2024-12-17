@@ -12,7 +12,7 @@ import ReportItem from './report-item';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
 import ReportTree from './report-tree';
-import { Report, ReportLog, ReportTree as ReportTreeType, ReportType, SeverityLevel } from 'utils/report/report.type';
+import { Report, ReportLog, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
 
 // WARNING this file has been copied from commons-ui, and updated here. Putting it back to commons-ui has to be discussed.
 
@@ -32,7 +32,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
 
     const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [severities, setSeverities] = useState<SeverityLevel[]>([]);
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
     const reportTreeData = useRef<Record<string, ReportTreeType>>({});
@@ -47,7 +46,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         return (
             <ReportItem
                 labelText={report.message}
-                labelIconColor={report.highestSeverity.colorName}
+                labelIconColor={report.severity.colorName}
                 key={report.id}
                 sx={styles.treeItem}
                 nodeId={report.id}
@@ -62,7 +61,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         treeView.current = initializeTreeDataAndComponent(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
-        setSeverities([...new Set(reportTree.severities)]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, initializeTreeDataAndComponent, dispatch]);
 
@@ -73,7 +71,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const handleSelectNode = (_: SyntheticEvent, reportId: string) => {
         if (selectedReportId !== reportId) {
             setSelectedReportId(reportId);
-            setSeverities([...new Set(reportTreeData.current[reportId].severities)]);
             setSelectedReportType(reportTreeData.current[reportId].type);
         }
     };
@@ -133,10 +130,10 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 <Grid item xs={12} sm={9} sx={{ height: '100%' }}>
                     {selectedReportId && selectedReportType && (
                         <LogTable
+                            report={report}
                             selectedReportId={selectedReportId}
                             reportType={reportType}
                             reportNature={selectedReportType} // GlobalReport or NodeReport
-                            severities={severities}
                             onRowClick={onLogRowClick}
                         />
                     )}

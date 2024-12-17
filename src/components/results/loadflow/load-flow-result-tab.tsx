@@ -149,6 +149,15 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
         [tabIndex]
     );
 
+    const getEnumLabel = useCallback(
+        (value: string) =>
+            intl.formatMessage({
+                id: value,
+                defaultMessage: value,
+            }),
+        [intl]
+    );
+
     const fetchLimitViolationsWithParameters = useCallback(() => {
         const limitTypeValues =
             tabIndex === 0 ? [LimitTypes.CURRENT] : [LimitTypes.HIGH_VOLTAGE, LimitTypes.LOW_VOLTAGE];
@@ -204,14 +213,16 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                     intl,
                     { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
-                    filterEnums
+                    filterEnums,
+                    getEnumLabel
                 );
             case 1:
                 return loadFlowVoltageViolationsColumnsDefinition(
                     intl,
                     { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
-                    filterEnums
+                    filterEnums,
+                    getEnumLabel
                 );
             case 2:
                 return loadFlowResultColumnsDefinition(
@@ -219,6 +230,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
                     { onSortChanged, sortConfig },
                     { updateFilter, filterSelector },
                     filterEnums,
+                    getEnumLabel,
                     StatusCellRender,
                     NumberCellRenderer
                 );
@@ -226,7 +238,7 @@ export const LoadFlowResultTab: FunctionComponent<LoadFlowTabProps> = ({ studyUu
             default:
                 return [];
         }
-    }, [filterEnums, filterSelector, intl, onSortChanged, sortConfig, updateFilter, tabIndex]);
+    }, [tabIndex, intl, onSortChanged, sortConfig, updateFilter, filterSelector, filterEnums, getEnumLabel]);
 
     const resetResultStates = useCallback(() => {
         setResult(null);
