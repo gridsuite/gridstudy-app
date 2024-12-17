@@ -422,9 +422,10 @@ export function setParamsLoaded(): SetParamsLoadedAction {
 export const OPEN_STUDY = 'OPEN_STUDY';
 export type OpenStudyAction = Readonly<Action<typeof OPEN_STUDY>> & {
     studyRef: [UUID];
+    rootNetworkRef: [UUID];
 };
-export function openStudy(studyUuid: UUID): OpenStudyAction {
-    return { type: OPEN_STUDY, studyRef: [studyUuid] };
+export function openStudy(studyUuid: UUID, rootNetworkUuid: UUID): OpenStudyAction {
+    return { type: OPEN_STUDY, studyRef: [studyUuid], rootNetworkRef: [rootNetworkUuid] };
 }
 
 export const CLOSE_STUDY = 'CLOSE_STUDY';

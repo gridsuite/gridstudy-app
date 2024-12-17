@@ -127,6 +127,7 @@ export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, default
 
 function useStudy(studyUuidRequest) {
     const [studyUuid, setStudyUuid] = useState(undefined);
+    const [rootNetworkUuid, setRootNetworkUuid] = useState(undefined);
     const [pending, setPending] = useState(true);
     const [errMessage, setErrMessage] = useState(undefined);
     const intlRef = useIntlRef();
@@ -135,6 +136,9 @@ function useStudy(studyUuidRequest) {
         fetchStudyExists(studyUuidRequest)
             .then(() => {
                 setStudyUuid(studyUuidRequest);
+                
+                setRootNetworkUuid('40347c68-15d1-45f4-b878-ecfd0739171a');
+                //get root network
             })
             .catch((error) => {
                 if (error.status === HttpStatusCode.NOT_FOUND) {
@@ -148,7 +152,7 @@ function useStudy(studyUuidRequest) {
             .finally(() => setPending(false));
     }, [studyUuidRequest, intlRef]);
 
-    return [studyUuid, pending, errMessage];
+    return [studyUuid, rootNetworkUuid, pending, errMessage];
 }
 
 export const UPDATE_TYPE_HEADER = 'updateType';
@@ -165,7 +169,9 @@ export function StudyContainer({ view, onChangeTab }) {
     const websocketExpectedCloseRef = useRef();
     const intlRef = useIntlRef();
 
-    const [studyUuid, studyPending, studyErrorMessage] = useStudy(decodeURIComponent(useParams().studyUuid));
+    const [studyUuid, rootNetworkUuid, studyPending, studyErrorMessage] = useStudy(
+        decodeURIComponent(useParams().studyUuid)
+    );
 
     const [studyName, setStudyName] = useState();
     const prevStudyName = usePrevious(studyName);
@@ -693,7 +699,8 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
-            dispatch(openStudy(studyUuid));
+            //dispatch root network uuid
+            dispatch(openStudy(studyUuid, rootNetworkUuid));
 
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
@@ -708,7 +715,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // Note: dispach, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, connectNotifications, connectDeletedStudyNotifications]);
+    }, [dispatch, studyUuid, rootNetworkUuid, connectNotifications, connectDeletedStudyNotifications]);
 
     useEffect(() => {
         if (studyUuid) {

@@ -368,6 +368,9 @@
     "TwoSides.ONE": "Côté 1",
     "TwoSides.TWO": "Côté 2",
 
+    "selectCase": "Sélectionner une situation",
+    "ChooseSituation": "Choisir une situation",
+    
     "ContingencyListsSelection": "Sélection des listes d'aléas",
     "Execute": "Exécuter",
     "AddContingencyList": "Ajouter",
@@ -562,6 +565,8 @@
     "DisplayMinimap": "Afficher la mini-carte",
     "HideMinimap": "Masquer la mini-carte",
     "DisplayTheWholeTree": "Visualiser l'arbre en entier",
+
+    "CreateRootNetwork": "Configurer un réseau racine",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",

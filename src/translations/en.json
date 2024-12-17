@@ -367,6 +367,9 @@
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 
+    "selectCase": "Select case",
+    "ChooseSituation": "Select a case",
+    
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
@@ -561,6 +564,8 @@
     "DisplayMinimap": "Display minimap",
     "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
+
+    "CreateRootNetwork": "Configure root network",
 
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
