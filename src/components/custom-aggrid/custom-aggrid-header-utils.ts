@@ -5,37 +5,30 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { CustomColDef, FILTER_DATA_TYPES, FilterSelectorType } from './custom-aggrid-header.type';
+import { CustomAggridFilterParams, CustomColDef, FilterSelectorType } from './custom-aggrid-header.type';
 import CustomHeaderComponent from './custom-aggrid-header';
-import { SortWay } from 'hooks/use-aggrid-sort';
 
-export const makeAgGridCustomHeaderColumn = ({
+export const makeAgGridCustomHeaderColumn = <F extends CustomAggridFilterParams = CustomAggridFilterParams>({
     sortProps, // sortProps: contains useAgGridSort params
-    filterProps, // filterProps: contains useAgGridRowFilter params
-    filterParams, // filterParams: Parameters for the column's filtering functionality
     filterTab,
     forceDisplayFilterIcon,
+    filterComponent,
+    filterComponentParams,
     tabIndex,
     isCustomColumn,
     Menu,
     ...props // agGrid column props
-}: CustomColDef) => {
+}: CustomColDef<any, any, F>) => {
     const { headerName, field = '', fractionDigits, numeric } = props;
-    const { onSortChanged = () => {}, sortConfig, children } = sortProps || {};
-    const { updateFilter, filterSelector } = filterProps || {};
-    const { filterDataType, filterEnums = {} } = filterParams || {};
-
-    const customFilterOptions = filterDataType === FILTER_DATA_TYPES.TEXT ? filterEnums[field] : [];
-
+    const { onSortChanged = () => {}, sortConfig } = sortProps || {};
     const isSortable = !!sortProps;
-    const isFilterable = !!filterProps;
     const isCurrentColumnSorted = !!sortConfig?.find((value) => value.colId === field);
 
     let minWidth = 75;
     if (isSortable && isCurrentColumnSorted) {
         minWidth += 30;
     }
-    if (isFilterable) {
+    if (!!filterComponent) {
         minWidth += 30;
     }
 
@@ -47,30 +40,19 @@ export const makeAgGridCustomHeaderColumn = ({
         headerComponentParams: {
             field,
             displayName: headerName,
-            isSortable,
             sortParams: {
+                isSortable,
                 sortConfig,
-                onSortChanged: (newSortValue: SortWay) => {
-                    onSortChanged({
-                        colId: field,
-                        sort: newSortValue,
-                        children: children,
-                    });
-                },
+                onSortChanged,
             },
-            isFilterable,
-            filterParams: {
-                ...filterParams,
-                filterSelector,
-                customFilterOptions,
-                updateFilter,
+            customMenuParams: {
+                tabIndex: tabIndex,
+                isCustomColumn: isCustomColumn,
+                Menu: Menu,
             },
-            getEnumLabel: props?.getEnumLabel,
-            isCountry: props?.isCountry,
-            forceDisplayFilterIcon,
-            tabIndex: tabIndex,
-            isCustomColumn: isCustomColumn,
-            Menu: Menu,
+            forceDisplayFilterIcon: forceDisplayFilterIcon,
+            filterComponent: filterComponent,
+            filterComponentParams,
         },
         filterParams: props?.agGridFilterParams || undefined,
         ...props,
@@ -85,4 +67,11 @@ export const mapFieldsToColumnsFilter = (
         ...filter,
         column: columnToFieldMapping[filter.column],
     }));
+};
+
+export const isStringOrNonEmptyArray = (value: unknown): value is string | unknown[] => {
+    if (typeof value === 'string' && value.length > 0) {
+        return true;
+    }
+    return Array.isArray(value) && value.length > 0;
 };

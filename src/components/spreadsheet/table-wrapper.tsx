@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Alert, Box, Grid } from '@mui/material';
@@ -15,13 +15,7 @@ import { EDIT_COLUMN, MIN_COLUMN_WIDTH, REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DA
 import { EquipmentTable } from './equipment-table';
 import { Identifiable, useSnackMessage } from '@gridsuite/commons-ui';
 import { PARAM_DEVELOPER_MODE, PARAM_FLUX_CONVENTION, PARAM_LANGUAGE } from '../../utils/config-params';
-import { RunningStatus } from '../utils/running-status';
-import {
-    DefaultCellRenderer,
-    EditableCellRenderer,
-    EditingCellRenderer,
-    ReferenceLineCellRenderer,
-} from './utils/cell-renderers';
+import { EditableCellRenderer, EditingCellRenderer, ReferenceLineCellRenderer } from './utils/cell-renderers';
 import { ColumnsConfig } from './columns-config';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { GlobalFilter } from './global-filter';
@@ -63,7 +57,6 @@ import { sanitizeString } from 'components/dialogs/dialog-utils';
 import { REGULATION_TYPES, SHUNT_COMPENSATOR_TYPES } from 'components/network/constants';
 import ComputingType from 'components/computing-status/computing-type';
 import { updateEquipments } from 'redux/actions';
-import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 import { useCustomColumn } from './custom-columns/use-custom-column';
 import CustomColumnsConfig from './custom-columns/custom-columns-config';
 import { AppState, CurrentTreeNode, EquipmentUpdateType, getUpdateTypeFromEquipmentType } from '../../redux/reducer';
@@ -160,7 +153,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const gridRef = useRef<AgGridReact>(null);
     const timerRef = useRef<NodeJS.Timeout>();
     const intl = useIntl();
-    const { translate } = useLocalizedCountries();
     const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const [tabIndex, setTabIndex] = useState<number>(0);
@@ -314,7 +306,6 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         },
         [intl, lockedColumnsNames]
     );
-
     useEffect(() => {
         if (errorMessage) {
             snackError({
@@ -1167,5 +1158,4 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         </>
     );
 };
-
 export default TableWrapper;

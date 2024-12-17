@@ -11,7 +11,6 @@ import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.t
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { type EquipmentTableDataEditorProps, TWTRegulatingTerminalEditor } from '../../utils/equipment-table-editors';
 import type { EditableCallback } from 'ag-grid-community';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
     editableCellStyle,
     editableColumnConfig,
