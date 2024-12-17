@@ -30,14 +30,15 @@ export function fetchDynamicSimulationProviders() {
 
 export function fetchDynamicSimulationTimeSeriesMetadata(
     studyUuid: UUID,
-    currentNodeUuid: UUID
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
 ): Promise<TimeSeriesMetadata[] | null> {
     console.info(
-        `Fetching dynamic simulation time series's metadata on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching dynamic simulation time series's metadata on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
 
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/dynamic-simulation/result/timeseries/metadata';
     console.debug(url);
     return backendFetchJson(url);
@@ -45,17 +46,21 @@ export function fetchDynamicSimulationTimeSeriesMetadata(
 
 export function fetchDynamicSimulationResultTimeline(
     studyUuid: UUID,
-    currentNodeUuid: UUID
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID
 ): Promise<TimelineEvent[] | null> {
-    console.info(`Fetching dynamic simulation timeline result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Fetching dynamic simulation timeline result on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/dynamic-simulation/result/timeline';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/dynamic-simulation/result/timeline';
     console.debug(url);
     return backendFetchJson(url);
 }
 
 // --- Event API - BEGIN
-
+//TODO: should not be linked to rootnetworkUUID
 export function fetchDynamicSimulationEvents(studyUuid: UUID, nodeUuid: UUID): Promise<Event[]> {
     console.info(`Fetching dynamic simulation events on '${studyUuid}' and node '${nodeUuid}' ...`);
 

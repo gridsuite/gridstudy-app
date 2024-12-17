@@ -27,6 +27,9 @@ export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (studyUuid: UUID, nodeU
         rootNetworkUuid
     )}/nodes/${encodeURIComponent(nodeUuid)}`;
 
+export const getStudyUrlWithNodeUuid = (studyUuid: UUID, nodeUuid: UUID) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/nodes/${encodeURIComponent(nodeUuid)}`;
+
 export const fetchStudy = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' ...`);
     const fetchStudiesUrl = getStudyUrl(studyUuid);
@@ -209,9 +212,18 @@ export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID) {
     return backendFetchText(url, { method: 'post' });
 }
 
-export function buildNode(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info('Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/build';
+export function buildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        'Build node ' +
+            currentNodeUuid +
+            ' on root network ' +
+            currentRootNetworkUuid +
+            ' of study ' +
+            studyUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/build';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }

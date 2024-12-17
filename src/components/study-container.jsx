@@ -746,6 +746,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 <StudyPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetwork={currentRootNetwork}
                     view={view}
                     onChangeTab={onChangeTab}
                     setErrorMessage={setErrorMessage}

@@ -56,6 +56,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         const studyUuid = useSelector((state: AppState) => state.studyUuid);
         const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+        const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
 
         const intl = useIntl();
         const equipmentsRef = useRef<AgGridReact<IdentifiableAttributes>>(null);
@@ -91,7 +92,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 return;
             }
             // Load voltage level IDs
-            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id)
+            fetchVoltageLevelsMapInfos(studyUuid, currentNode.id, currentRootNetwork)
                 .then((voltageLevels: VoltageLevel[]) => {
                     const vlMap = new Map<string, string | undefined>();
                     const nvSet = new Set<number>();

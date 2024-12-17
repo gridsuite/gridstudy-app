@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
+const StudyPane = ({ studyUuid, currentNode, currentRootNetwork, setErrorMessage, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -82,6 +82,7 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
                 <MapViewer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetwork={currentRootNetwork}
                     view={props.view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}

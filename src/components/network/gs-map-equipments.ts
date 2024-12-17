@@ -24,11 +24,35 @@ export default class GSMapEquipments extends MapEquipments {
     errHandler?: UseSnackMessageReturn['snackError'];
     intlRef: RefObject<IntlShape>;
 
-    initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
-        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false);
-        const fetchLinesMapInfosPromise = fetchLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
-        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
-        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(studyUuid, currentNodeUuid, undefined, false);
+    initEquipments(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+        const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
+        const fetchLinesMapInfosPromise = fetchLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
+        const fetchTieLinesMapInfosPromise = fetchTieLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
+        const fetchHvdcLinesMapInfosPromise = fetchHvdcLinesMapInfos(
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            undefined,
+            false
+        );
 
         this.dispatch(setMapEquipementsInitialized(false));
 
@@ -101,6 +125,7 @@ export default class GSMapEquipments extends MapEquipments {
     constructor(
         studyUuid: UUID,
         currentNodeUuid: UUID,
+        currentRootNetworkUuid: UUID,
         errHandler: UseSnackMessageReturn['snackError'],
         dispatch: Dispatch,
         intlRef: RefObject<IntlShape>
@@ -109,7 +134,7 @@ export default class GSMapEquipments extends MapEquipments {
         this.dispatch = dispatch;
         this.errHandler = errHandler;
         this.intlRef = intlRef;
-        this.initEquipments(studyUuid, currentNodeUuid);
+        this.initEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid);
     }
 
     reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | null) {
