@@ -269,7 +269,7 @@ export default class NetworkModificationTreeModel {
             });
 
             // overwrite old children nodes parentUuid when inserting new nodes
-            const nextNodes = this.treeNodes.map((node) => {
+            this.treeNodes = this.treeNodes.map((node) => {
                 if (newNode.childrenIds.includes(node.id)) {
                     return {
                         ...node,
@@ -278,15 +278,14 @@ export default class NetworkModificationTreeModel {
                 }
                 return node;
             });
-
-            this.treeNodes = nextNodes;
             this.treeEdges = filteredEdges;
         }
 
         if (!skipChildren) {
             // Add children of this node recursively
             if (newNode.children) {
-                newNode.children.sort(this.childrenNodeSorter).forEach((child) => {
+                newNode.children.sort(this.childrenNodeSorter);
+                newNode.children.forEach((child) => {
                     this.addChild(child, newNode.id, undefined, undefined);
                 });
             }
@@ -324,7 +323,7 @@ export default class NetworkModificationTreeModel {
             if (!nodeToDelete) {
                 return;
             }
-            const nextTreeNodes = filteredNodes.map((node) => {
+            this.treeNodes = filteredNodes.map((node) => {
                 if (node.parentId === nodeId) {
                     return {
                         ...node,
@@ -333,8 +332,6 @@ export default class NetworkModificationTreeModel {
                 }
                 return node;
             });
-
-            this.treeNodes = nextTreeNodes;
         });
     }
 
@@ -366,7 +363,8 @@ export default class NetworkModificationTreeModel {
         // handle root node
         this.treeNodes.push(convertNodetoReactFlowModelNode(elements));
         // handle root children
-        elements.children.sort(this.childrenNodeSorter).forEach((child) => {
+        elements.children.sort(this.childrenNodeSorter);
+        elements.children.forEach((child) => {
             this.addChild(child, elements.id);
         });
         this.setBuildingStatus();
@@ -374,8 +372,7 @@ export default class NetworkModificationTreeModel {
 
     newSharedForUpdate() {
         /* shallow clone of the network https://stackoverflow.com/a/44782052 */
-        let newTreeModel = Object.assign(Object.create(Object.getPrototypeOf(this)), this);
-        return newTreeModel;
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
     }
 
     setBuildingStatus() {
