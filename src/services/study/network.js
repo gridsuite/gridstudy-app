@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 
@@ -25,7 +25,7 @@ export function getVoltageLevelSingleLineDiagram(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     return (
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
@@ -52,7 +52,7 @@ export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, vol
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
     const fetchSubstationIdUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/substation-id' +
@@ -72,7 +72,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNode
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
     const fetchBusbarSectionsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/buses-or-busbar-sections' +
@@ -99,7 +99,7 @@ export function getSubstationSingleLineDiagram(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     return (
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +
@@ -146,7 +146,7 @@ export function fetchNetworkElementsInfos(
     urlSearchParams.append('elementType', elementType);
 
     const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network/elements' +
         '?' +
         urlSearchParams +
@@ -180,7 +180,7 @@ export function fetchNetworkElementInfos(
     const optionalParams = new Map();
     optionalParams.forEach((value, key) => urlSearchParams.append(`optionalParameters[${key}]`, value));
     const fetchElementsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network/elements/' +
         encodeURIComponent(elementId) +
         '?' +
@@ -423,15 +423,15 @@ export function fetchBusbarSections(studyUuid, currentNodeUuid, substationsIds) 
     );
 }
 
-export const fetchNetworkExistence = (studyUuid) => {
-    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/network`;
+export const fetchNetworkExistence = (studyUuid, rootNetworkUuid) => {
+    const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
     return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
 };
 
-export const fetchStudyIndexationStatus = (studyUuid) => {
+export const fetchStudyIndexationStatus = (studyUuid, rootNetworkUuid) => {
     console.info(`Fetching study indexation status of study '${studyUuid}' ...`);
-    const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/indexation/status`;
+    const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/indexation/status`;
 
     console.debug(fetchStudyIndexationUrl);
 
@@ -439,8 +439,13 @@ export const fetchStudyIndexationStatus = (studyUuid) => {
 };
 
 /* export-network */
-export function getExportUrl(studyUuid, nodeUuid, exportFormat) {
-    const url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/export-network/' + exportFormat;
+export function getExportUrl(studyUuid, nodeUuid, rootNetworkUuid, exportFormat) {
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) +
+        '/root-networks/' +
+        rootNetworkUuid +
+        '/export-network/' +
+        exportFormat;
     return getUrlWithToken(url);
 }
 

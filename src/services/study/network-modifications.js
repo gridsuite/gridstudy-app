@@ -8,18 +8,18 @@
 import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 
 function getNetworkModificationUrl(studyUuid, nodeUuid) {
-    return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
+    return getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
 
 export function changeNetworkModificationOrder(studyUuid, nodeUuid, itemUuid, beforeUuid) {
     console.info('reorder node ' + nodeUuid + ' of study ' + studyUuid + ' ...');
     const url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) +
         '/network-modification/' +
         itemUuid +
         '?' +

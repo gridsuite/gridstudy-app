@@ -74,7 +74,10 @@ import {
     stashModifications,
 } from '../../../services/study/network-modifications';
 import { FetchStatus } from '../../../services/utils';
-import ElementCreationDialog, { IElementCreationDialog, IElementCreationDialog1 } from '../../dialogs/element-creation-dialog';
+import ElementCreationDialog, {
+    IElementCreationDialog,
+    IElementCreationDialog1,
+} from '../../dialogs/element-creation-dialog';
 import {
     MenuDefinition,
     MenuDefinitionSubItem,
@@ -645,8 +648,6 @@ const RootNetworkNodeEditor = () => {
         );
     };
 
-  
-
     // const renderCaseSelectionDialog = () => {
     //     // return (
     //     //     <ElementCreationDialog
@@ -675,7 +676,7 @@ const RootNetworkNodeEditor = () => {
         //return <CreateCaseDialog open={rootNetworkCreationDialogOpen}  onClose={() => setRootNetworkCreationDialogOpen(false)} />;
     };
 
-        /* Effects */
+         /* Effects */
     // handle create r from existing case
     useEffect(() => {
           //  getCurrentCaseImportParams(providedExistingCase.elementUuid);
@@ -708,19 +709,11 @@ const RootNetworkNodeEditor = () => {
         },
         [intl ]
     );
-    const doCreateRootNetwork = ({
-        name,
-         caseName,
-        caseId,
-    }: IElementCreationDialog1) => {
-console.log("fetcccccccccch ???? "  ,  name,
-caseName,
-caseId)
-if(caseId){
-    getCurrentCaseImportParams
-}
+
+     const doCreateRootNetwork = ({ name, caseName, caseId }: IElementCreationDialog1) => {
+        console.log('fetcccccccccch ???? ', name, caseName, caseId);
         setSaveInProgress(true);
-        // createRootNetwork(   caseId , 
+        // createRootNetwork(   caseId ,
         //     "XIIDM",
         //     studyUuid,
         //     importParameters)
