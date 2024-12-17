@@ -90,12 +90,9 @@ export const getReportSeverities = (report: Report): SeverityLevel[] => {
             severities.push(...getReportSeverities(subreport));
         });
     }
+    severities.sort((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level);
     return [...new Set(severities)];
 };
-
-export function orderSeverityList(severityList: SeverityLevel[]): SeverityLevel[] {
-    return severityList.sort((a, b) => REPORT_SEVERITY[b].level - REPORT_SEVERITY[a].level);
-}
 
 export function getContainerDefaultSeverityList(): string[] {
     // return name list like ['WARN', 'INFO']

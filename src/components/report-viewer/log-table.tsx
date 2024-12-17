@@ -15,12 +15,7 @@ import { getColumnFilterValue, useAggridRowFilter } from 'hooks/use-aggrid-row-f
 import { LOGS_STORE_FIELD } from 'utils/store-sort-filter-fields';
 import { useReportFetcher } from 'hooks/use-report-fetcher';
 import { useDispatch } from 'react-redux';
-import {
-    getDefaultSeverityFilter,
-    getReportSeverities,
-    orderSeverityList,
-    REPORT_SEVERITY,
-} from '../../utils/report/report-severity';
+import { getDefaultSeverityFilter, getReportSeverities, REPORT_SEVERITY } from '../../utils/report/report-severity';
 import { QuickSearch } from './QuickSearch';
 import { Box, Chip, Theme } from '@mui/material';
 import { CellClickedEvent, GridApi, ICellRendererParams, IRowNode, RowClassParams, RowStyle } from 'ag-grid-community';
@@ -94,7 +89,6 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
     const [severities, setSeverities] = useState<SeverityLevel[]>([]);
-    const orderedSeverities = useMemo(() => orderSeverityList(severities), [severities]);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -127,17 +121,19 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
     useEffect(() => {
         const newSeverities = getReportSeverities(report);
         setSeverities(newSeverities);
-        dispatch(
-            setLogsFilter(reportType, [
-                {
-                    column: 'severity',
-                    dataType: FILTER_DATA_TYPES.TEXT,
-                    type: FILTER_TEXT_COMPARATORS.EQUALS,
-                    value: getDefaultSeverityFilter(newSeverities),
-                },
-            ])
-        );
-    }, [report, dispatch, reportType]);
+        if (filterSelector?.length === 0 && newSeverities?.length > 0) {
+            dispatch(
+                setLogsFilter(reportType, [
+                    {
+                        column: 'severity',
+                        dataType: FILTER_DATA_TYPES.TEXT,
+                        type: FILTER_TEXT_COMPARATORS.EQUALS,
+                        value: getDefaultSeverityFilter(newSeverities),
+                    },
+                ])
+            );
+        }
+    }, [report, dispatch, reportType, filterSelector]);
 
     useEffect(() => {
         if (selectedReportId && reportNature) {
@@ -324,7 +320,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
                 />
             </Box>
             <Box sx={styles.chipContainer}>
-                {orderedSeverities.map((severity, index) => (
+                {severities.map((severity, index) => (
                     <Chip
                         key={severity}
                         label={severity}
