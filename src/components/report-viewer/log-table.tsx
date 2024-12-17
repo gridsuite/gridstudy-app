@@ -88,7 +88,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
 
     const severityFilter = useMemo(() => getColumnFilterValue(filterSelector, 'severity') ?? [], [filterSelector]);
     const messageFilter = useMemo(() => getColumnFilterValue(filterSelector, 'message'), [filterSelector]);
-    const [severities, setSeverities] = useState<SeverityLevel[]>([]);
+    const severities = useMemo(() => getReportSeverities(report), [report]);
 
     const resetSearch = useCallback(() => {
         setSearchResults([]);
@@ -119,21 +119,19 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
     }, [severityFilter, fetchReportLogs, selectedReportId, reportNature, messageFilter, resetSearch]);
 
     useEffect(() => {
-        const newSeverities = getReportSeverities(report);
-        setSeverities(newSeverities);
-        if (filterSelector?.length === 0 && newSeverities?.length > 0) {
+        if (filterSelector?.length === 0 && severities?.length > 0) {
             dispatch(
                 setLogsFilter(reportType, [
                     {
                         column: 'severity',
                         dataType: FILTER_DATA_TYPES.TEXT,
                         type: FILTER_TEXT_COMPARATORS.EQUALS,
-                        value: getDefaultSeverityFilter(newSeverities),
+                        value: getDefaultSeverityFilter(severities),
                     },
                 ])
             );
         }
-    }, [report, dispatch, reportType, filterSelector]);
+    }, [severities, dispatch, reportType, filterSelector]);
 
     useEffect(() => {
         if (selectedReportId && reportNature) {
