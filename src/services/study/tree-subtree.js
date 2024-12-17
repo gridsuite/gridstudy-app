@@ -131,7 +131,8 @@ export function updateTreeNode(studyUuid, node) {
 }
 
 export function updateNodesColumnPositions(studyUuid, parentNodeId, nodes) {
-    const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes/columnpositions/' + encodeURIComponent(parentNodeId);
+    const nodeUpdateUrl =
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentNodeId) + '/children-column-positions';
     console.debug(nodeUpdateUrl);
     return backendFetch(nodeUpdateUrl, {
         method: 'put',
