@@ -92,7 +92,7 @@ export type AppActions =
     | NetworkModificationHandleSubtreeAction
     | NetworkModificationTreeNodesRemovedAction
     | NetworkModificationTreeNodesUpdatedAction
-    | NetworkModificationTreeReorderNodesAction
+    | NetworkModificationTreeNodesReorderAction
     | SelectThemeAction
     | SelectLanguageAction
     | SelectComputedLanguageAction
@@ -317,19 +317,19 @@ export function networkModificationTreeNodeMoved(
     };
 }
 
-export const NETWORK_MODIFICATION_TREE_REORDER_NODES = 'NETWORK_MODIFICATION_TREE_REORDER_NODES';
-export type NetworkModificationTreeReorderNodesAction = Readonly<
-    Action<typeof NETWORK_MODIFICATION_TREE_REORDER_NODES>
+export const NETWORK_MODIFICATION_TREE_NODES_REORDER = 'NETWORK_MODIFICATION_TREE_NODES_REORDER';
+export type NetworkModificationTreeNodesReorderAction = Readonly<
+    Action<typeof NETWORK_MODIFICATION_TREE_NODES_REORDER>
 > & {
     parentNodeId: string;
     nodeIds: string[];
 };
-export function networkModificationTreeReorderNodes(
+export function reorderNetworkModificationTreeNodes(
     parentNodeId: string,
     nodeIds: string[]
-): NetworkModificationTreeReorderNodesAction {
+): NetworkModificationTreeNodesReorderAction {
     return {
-        type: NETWORK_MODIFICATION_TREE_REORDER_NODES,
+        type: NETWORK_MODIFICATION_TREE_NODES_REORDER,
         parentNodeId,
         nodeIds,
     };

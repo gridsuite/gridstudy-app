@@ -15,7 +15,7 @@ import {
     networkModificationHandleSubtree,
     setSelectionForCopy,
     resetLogsFilter,
-    networkModificationTreeReorderNodes,
+    reorderNetworkModificationTreeNodes,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -218,7 +218,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodesColumnPositionsChanged') {
                 const orderedChildrenNodeIds = JSON.parse(studyUpdatedForce.eventData.payload);
                 dispatch(
-                    networkModificationTreeReorderNodes(
+                    reorderNetworkModificationTreeNodes(
                         studyUpdatedForce.eventData.headers['parentNode'],
                         orderedChildrenNodeIds
                     )
