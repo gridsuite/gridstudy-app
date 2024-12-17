@@ -52,7 +52,7 @@ export default class NetworkModificationTreeModel {
         const nodeToMoveIndex = this.treeNodes.findIndex((node) => node.id === nodeToMove.id);
         const destinationNodeIndex = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
 
-        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, nodeToMove.id);
+        const numberOfNodesToMove: number = 1 + countNodes(this.treeNodes, nodeToMove.id); // We add 1 here to include the node in its subtree size
         const nodesToMove = this.treeNodes.splice(nodeToMoveIndex, numberOfNodesToMove);
 
         if (nodeToMoveIndex > destinationNodeIndex) {
@@ -62,8 +62,8 @@ export default class NetworkModificationTreeModel {
             // We also need to find the correct position of nodeToMove, to the right of the destination node, meaning we need to find
             // how many children the destination node has and add all of them to the new index.
             const destinationNodeIndexAfterSplice = this.treeNodes.findIndex((node) => node.id === destinationNode.id);
-            const destinationNodeFamilySize: number = 1 + countNodes(this.treeNodes, destinationNode.id);
-            this.treeNodes.splice(destinationNodeIndexAfterSplice + destinationNodeFamilySize, 0, ...nodesToMove);
+            const destinationNodeSubTreeSize: number = 1 + countNodes(this.treeNodes, destinationNode.id); // We add 1 here to include the destination node in its subtree size
+            this.treeNodes.splice(destinationNodeIndexAfterSplice + destinationNodeSubTreeSize, 0, ...nodesToMove);
         }
 
         this.treeNodes = [...this.treeNodes];
@@ -175,22 +175,22 @@ export default class NetworkModificationTreeModel {
             return;
         }
         // Let's reorder the children :
-        // We create a map of children node ids and number of nodes in each of these child's family,
+        // We create a map of children node ids and number of nodes in each of these child's subtree,
         // then in nodeIds order, we cut and paste the corresponding number of nodes in treeNodes.
         const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 here to set the index just after the parent node
         let insertedNodes = 0;
-        const nodeIdAndFamilySize = new Map(
+        const nodeIdAndCorrespondingSubTreeSize = new Map(
             orderedNodeIds.map((id) => [
                 id,
-                1 + countNodes(this.treeNodes, id as UUID), // We add 1 here to include the current node in its family size
+                1 + countNodes(this.treeNodes, id as UUID), // We add 1 here to include the current node in its subtree size
             ])
         );
 
-        nodeIdAndFamilySize.forEach((familySize, nodeId) => {
+        nodeIdAndCorrespondingSubTreeSize.forEach((subTreeSize, nodeId) => {
             const nodesToMoveIndex = this.treeNodes.findIndex((n) => n.id === nodeId);
-            const nodesToMove = this.treeNodes.splice(nodesToMoveIndex, familySize);
+            const nodesToMove = this.treeNodes.splice(nodesToMoveIndex, subTreeSize);
             this.treeNodes.splice(justAfterParentIndex + insertedNodes, 0, ...nodesToMove);
-            insertedNodes += familySize;
+            insertedNodes += subTreeSize;
         });
     }
 

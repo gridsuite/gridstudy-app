@@ -261,9 +261,9 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
         // to the maximum column placement values (per row) of the nodes on the left.
         // The resulting space we find represents how much we can shift the current column to the left.
 
-        const currentNodeFamilySize = 1 + countNodes(nodes, currentNodeId as UUID);
+        const currentSubTreeSize = 1 + countNodes(nodes, currentNodeId as UUID);
         const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNodeId);
-        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentNodeFamilySize);
+        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentSubTreeSize);
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
 
         // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
