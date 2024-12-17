@@ -13,6 +13,7 @@ import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
 import type { UnknownArray } from 'type-fest';
 import { ILimitReductionsByVoltageLevel } from '../../components/dialogs/parameters/common/limitreductions/columns-definitions';
+import { ParametersInfos } from '../../components/dialogs/parameters/parameters.type';
 
 interface LoadFlowParams {
     provider: string;

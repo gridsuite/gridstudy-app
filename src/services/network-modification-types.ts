@@ -5,20 +5,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import {
-    AttributeModification,
-    ConverterStationElementModificationInfos,
-    ReactiveCapabilityCurvePoint,
-    ReactiveCapabilityCurvePointsData,
-} from '../components/dialogs/network-modifications/vsc/converter-station/converter-station-utils';
 import { UUID } from 'crypto';
 import { Property } from '../components/dialogs/network-modifications/common/properties/property-utils';
-
 import {
     DataType,
     FieldValue,
 } from '../components/dialogs/network-modifications/by-filter/by-assignment/assignment/assignment.type';
 import { Filter } from '../components/dialogs/network-modifications/by-filter/commons/by-filter.type';
+import {
+    AttributeModification,
+    ConverterStationElementModificationInfos,
+    ReactiveCapabilityCurvePoint,
+    ReactiveCapabilityCurvePointsData,
+} from '../components/dialogs/network-modifications/hvdc-line/vsc/converter-station/converter-station-utils';
+import { ShuntCompensatorInfos } from '../components/dialogs/network-modifications/hvdc-line/lcc/creation/lcc-creation.type';
 
 export interface HvdcAngleDroopActivePowerControlInfo {
     isEnabled: boolean;
@@ -230,8 +230,8 @@ export interface TwoWindingsTransformerModificationInfo {
     busOrBusbarSectionId1?: string;
     voltageLevelId2?: string;
     busOrBusbarSectionId2?: string;
-    ratioTapChanger: any;
-    phaseTapChanger: any;
+    ratioTapChanger: Record<string, any> | null;
+    phaseTapChanger: Record<string, any> | null;
     isUpdate?: boolean;
     modificationUuid?: string;
     connectionName1?: string | null;
@@ -336,6 +336,21 @@ export interface VSCCreationConverterStation {
     minQ: number | null;
     maxQ: number | null;
     reactiveCapabilityCurvePoints: ReactiveCapabilityCurvePointsData[];
+}
+
+export interface LCCCreationConverterStation {
+    type: string;
+    equipmentId: string;
+    equipmentName?: string;
+    lossFactor: number;
+    powerFactor: number;
+    voltageLevelId?: string;
+    busOrBusbarSectionId?: string;
+    connectionName?: string | null;
+    connectionDirection: string;
+    connectionPosition?: number;
+    terminalConnected?: boolean;
+    shuntCompensatorsOnSide: ShuntCompensatorInfos[];
 }
 
 export interface VSCModificationConverterStation {
@@ -631,6 +646,23 @@ export interface VSCCreationInfo {
     properties?: Property[];
     isUpdate: boolean;
     modificationUuid: UUID;
+}
+
+export interface LCCCreationInfo {
+    studyUuid: string;
+    nodeUuid: UUID;
+    id: string;
+    name?: string | null;
+    nominalV: number;
+    r: number;
+    maxP: number;
+    convertersMode: string;
+    activePowerSetpoint: number;
+    converterStation1: LCCCreationConverterStation;
+    converterStation2: LCCCreationConverterStation;
+    properties?: Property[];
+    isUpdate: boolean;
+    modificationUuid?: string;
 }
 
 export interface VSCModificationInfo {

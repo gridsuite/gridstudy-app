@@ -14,7 +14,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 import { FilterSelectorType } from '../../components/custom-aggrid/custom-aggrid-header.type';
 import { SortConfigType } from '../../hooks/use-aggrid-sort';
-import { INITIAL_VOLTAGE } from '../../components/utils/constants';
+import { INITIAL_VOLTAGE, PREDEFINED_PARAMETERS } from '../../components/utils/constants';
 
 const PREFIX_SHORT_CIRCUIT_SERVER_QUERIES = import.meta.env.VITE_API_GATEWAY + '/shortcircuit';
 
@@ -39,14 +39,14 @@ interface VoltageRanges {
     voltageRangeCoefficient: number;
 }
 interface ShortCircuitParameters {
-    predefinedParameters: string;
+    predefinedParameters: NonNullable<PREDEFINED_PARAMETERS | undefined>;
     parameters: {
         withFeederResult: boolean;
         withLoads: boolean;
         withVSCConverterStations: boolean;
         withShuntCompensators: boolean;
         withNeutralPosition: boolean;
-        initialVoltageProfileMode: INITIAL_VOLTAGE;
+        initialVoltageProfileMode: NonNullable<INITIAL_VOLTAGE | undefined>;
         voltageRanges?: VoltageRanges;
     };
 }
@@ -161,7 +161,7 @@ export function getShortCircuitParameters(studyUuid: UUID) {
     return backendFetchJson(getShortCircuitParams);
 }
 
-export function setShortCircuitParameters(studyUuid: UUID, newParams: ShortCircuitParameters) {
+export function setShortCircuitParameters(studyUuid: UUID | null, newParams: ShortCircuitParameters) {
     console.info('set short-circuit parameters');
     const url = getStudyUrl(studyUuid) + '/short-circuit-analysis/parameters';
     console.debug(url);
@@ -176,13 +176,13 @@ export function setShortCircuitParameters(studyUuid: UUID, newParams: ShortCircu
     });
 }
 
-export function fetchShortCircuitParameters(parameterUuid: UUID) {
+export function fetchShortCircuitParameters(parameterUuid: string) {
     console.info('get short circuit analysis parameters');
     const url = getShortCircuitUrl() + 'parameters/' + encodeURIComponent(parameterUuid);
     return backendFetchJson(url);
 }
 
-export function invalidateShortCircuitStatus(studyUuid: UUID) {
+export function invalidateShortCircuitStatus(studyUuid: UUID | null) {
     console.info('invalidate short circuit status');
     const invalidateShortCircuitStatusUrl = getStudyUrl(studyUuid) + '/short-circuit/invalidate-status';
     console.debug(invalidateShortCircuitStatusUrl);

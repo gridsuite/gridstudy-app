@@ -46,8 +46,8 @@ export function fetchSecurityAnalysisResult(studyUuid: string, currentNodeUuid: 
     }
 
     if (typeof page === 'number') {
-        params.append('page', String(page));
-        params.append('size', size);
+        params.append('page', page.toString());
+        params.append('size', size.toString());
     }
 
     const urlWithParams = `${url}?${params.toString()}`;

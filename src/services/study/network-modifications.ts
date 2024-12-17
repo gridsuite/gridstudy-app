@@ -22,6 +22,7 @@ import {
     GenerationDispatchInfo,
     GeneratorCreationInfo,
     GeneratorModificationInfo,
+    LCCCreationInfo,
     LineCreationInfo,
     LineModificationInfo,
     LinesAttachToSplitLinesInfo,
@@ -1778,7 +1779,7 @@ export function deleteEquipmentByFilter(
 export function fetchNetworkModifications(studyUuid: UUID | null, nodeUuid: string, onlyStashed: boolean) {
     console.info('Fetching network modifications (metadata) for nodeUuid : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('onlyStashed', String(onlyStashed));
+    urlSearchParams.append('onlyStashed', onlyStashed.toString());
     urlSearchParams.append('onlyMetadata', 'true');
     const modificationsGetUrl = getNetworkModificationUrl(studyUuid, nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(modificationsGetUrl);
@@ -1804,7 +1805,52 @@ export function updateSwitchState(studyUuid: string, nodeUuid: UUID | undefined,
         }),
     });
 }
+export function createLcc({
+    studyUuid,
+    nodeUuid,
+    id,
+    name,
+    nominalV,
+    r,
+    maxP,
+    convertersMode,
+    activePowerSetpoint,
+    converterStation1,
+    converterStation2,
+    properties,
+    isUpdate = false,
+    modificationUuid,
+}: LCCCreationInfo) {
+    let createLccUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
+    if (isUpdate) {
+        createLccUrl += '/' + safeEncodeURIComponent(modificationUuid);
+        console.info('Updating lcc hvdc line creation');
+    } else {
+        console.info('Creating lcc hvdc line creation');
+    }
+
+    return backendFetchText(createLccUrl, {
+        method: isUpdate ? 'PUT' : 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            type: MODIFICATION_TYPES.LCC_CREATION.type,
+            equipmentId: id,
+            equipmentName: name,
+            nominalV: nominalV,
+            r: r,
+            maxP: maxP,
+            convertersMode: convertersMode,
+            activePowerSetpoint: activePowerSetpoint,
+            converterStation1: converterStation1,
+            converterStation2: converterStation2,
+            properties: properties,
+        }),
+    });
+}
 export function createVsc({
     studyUuid,
     nodeUuid,

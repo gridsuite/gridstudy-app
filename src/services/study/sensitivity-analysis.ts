@@ -8,37 +8,13 @@
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import {
-    INewParamsHvdc,
-    INewParamsInjections,
-    INewParamsInjectionsSet,
-    INewParamsNodes,
-    INewParamsPst,
-} from '../../components/dialogs/parameters/sensi/utils';
-import {
-    ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD,
-    FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD,
-    PROVIDER,
-} from '../../components/utils/field-constants';
+import { SensitivityAnalysisParametersFormSchema } from '../../components/dialogs/parameters/sensi/sensitivity-analysis-parameters';
 
 const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
 interface SelectorFilterOptions {
     tabSelection: string;
     functionType: string;
-}
-
-interface SensitivityAnalysisParameters
-    extends INewParamsInjectionsSet,
-        INewParamsInjections,
-        INewParamsHvdc,
-        INewParamsPst,
-        INewParamsNodes {
-    [PROVIDER]: string;
-    [FLOW_FLOW_SENSITIVITY_VALUE_THRESHOLD]: number;
-    [ANGLE_FLOW_SENSITIVITY_VALUE_THRESHOLD]: number;
-    [FLOW_VOLTAGE_SENSITIVITY_VALUE_THRESHOLD]: number;
 }
 
 interface SensitivityAnalysisFactorsCountParameters {
@@ -127,14 +103,17 @@ export function getSensitivityAnalysisParameters(studyUuid: UUID) {
     return backendFetchJson(url);
 }
 
-export function fetchSensitivityAnalysisParameters(parameterUuid: UUID) {
+export function fetchSensitivityAnalysisParameters(parameterUuid: string) {
     console.info('get sensitivity analysis parameters');
     const url = `${GET_PARAMETERS_PREFIX}/${parameterUuid}`;
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function setSensitivityAnalysisParameters(studyUuid: UUID, newParams: SensitivityAnalysisParameters | null) {
+export function setSensitivityAnalysisParameters(
+    studyUuid: UUID | null,
+    newParams: SensitivityAnalysisParametersFormSchema | null
+) {
     console.info('set sensitivity analysis parameters');
     const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
     console.debug(url);
@@ -149,7 +128,7 @@ export function setSensitivityAnalysisParameters(studyUuid: UUID, newParams: Sen
 }
 
 export function getSensitivityAnalysisFactorsCount(
-    studyUuid: UUID,
+    studyUuid: UUID | null,
     currentNodeUuid: UUID,
     isInjectionsSet: boolean,
     newParams: SensitivityAnalysisFactorsCountParameters
