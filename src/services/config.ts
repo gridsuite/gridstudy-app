@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { getAppName } from '../utils/config-params';
+import { APP_NAME, getAppName } from '../utils/config-params';
 import { backendFetch, backendFetchJson } from './utils';
 
 const PREFIX_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/config';
@@ -31,8 +31,7 @@ export function updateConfigParameter(name: string, value: string) {
 }
 
 export function updateConfigParameters(parameters: Record<string, string | number | boolean>) {
-    const appName = getAppName(parameters);
-    const updateParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${appName}/parameters`;
+    const updateParams = PREFIX_CONFIG_QUERIES + `/v1/applications/${APP_NAME}/parameters`;
     return backendFetch(updateParams, {
         method: 'put',
         headers: {

@@ -11,18 +11,6 @@ import { UUID } from 'crypto';
 import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { SortConfigType } from 'hooks/use-aggrid-sort';
 import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
-import type { UnknownArray } from 'type-fest';
-import { ILimitReductionsByVoltageLevel } from '../../components/dialogs/parameters/common/limitreductions/columns-definitions';
-import { ParametersInfos } from '../../components/dialogs/parameters/parameters.type';
-
-interface LoadFlowParams {
-    provider: string;
-    commonParameters: Record<string, string | boolean | number | UnknownArray>;
-    specificParametersPerProvider: {
-        [providerName: string]: Record<string, string | boolean | number>;
-    };
-    limitReductions: ILimitReductionsByVoltageLevel[];
-}
 
 interface QueryParams {
     sort?: SortConfigType[];
@@ -37,7 +25,7 @@ export function getDefaultLoadFlowProvider() {
     return backendFetchText(getDefaultLoadFlowProviderUrl);
 }
 
-export function setLoadFlowParameters(studyUuid: UUID, newParams: LoadFlowParams) {
+export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);

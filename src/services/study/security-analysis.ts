@@ -8,7 +8,6 @@
 import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 import { UUID } from 'crypto';
-import { ISAParameters } from '../../components/dialogs/parameters/common/limitreductions/columns-definitions';
 import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
 
 export function startSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, contingencyListNames: string[]) {
@@ -120,7 +119,7 @@ export function getSecurityAnalysisParameters(studyUuid: UUID) {
     return backendFetchJson(url);
 }
 
-export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: ISAParameters) {
+export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
     console.info('set security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
     console.debug(url);

@@ -8,7 +8,7 @@
 import { PREFIX_STUDY_QUERIES, getStudyUrl, getStudyUrlWithNodeUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
-import { SensitivityAnalysisParametersFormSchema } from '../../components/dialogs/parameters/sensi/sensitivity-analysis-parameters';
+import { SensitivityAnalysisParametersInfos } from './sensitivity-analysis.type';
 
 const GET_PARAMETERS_PREFIX = import.meta.env.VITE_API_GATEWAY + '/sensitivity-analysis/v1/parameters';
 
@@ -112,7 +112,7 @@ export function fetchSensitivityAnalysisParameters(parameterUuid: string) {
 
 export function setSensitivityAnalysisParameters(
     studyUuid: UUID | null,
-    newParams: SensitivityAnalysisParametersFormSchema | null
+    newParams: SensitivityAnalysisParametersInfos | null
 ) {
     console.info('set sensitivity analysis parameters');
     const url = getStudyUrl(studyUuid) + '/sensitivity-analysis/parameters';
