@@ -5,6 +5,7 @@
     "IST" : "IST",
     "LimitDuration" : "Between {highBound} and {lowBound}",
     "LimitDurationAfterIST": "After IT{value}",
+    "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
     "filter": "Filter",
@@ -414,6 +415,7 @@
     "CalculatedValue": "Calculated value (A or kV)",
     "OverloadedEquipment": "Equipment",
     "PermanentLimitName": "IST",
+    "Permanent": "Permanent",
     "LimitAcceptableDuration": "Duration",
     "Overload": "Overload",
     "ErrFetchViolationsMsg": "An error occurred while getting constraint violations",

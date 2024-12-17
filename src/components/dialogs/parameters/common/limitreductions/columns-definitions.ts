@@ -64,17 +64,20 @@ export const TAB_INFO = [
 export interface IColumnsDef {
     label: string;
     dataKey: string;
+    tooltip: string;
     width?: string;
 }
 
-export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
+export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS: IColumnsDef[] = [
     {
-        label: 'VoltageLevels',
+        label: 'voltageRange',
         dataKey: VOLTAGE_LEVELS_FORM,
+        tooltip: 'voltageRange',
     },
     {
         label: 'IST',
         dataKey: IST_FORM,
+        tooltip: 'Permanent',
     },
 ];
 

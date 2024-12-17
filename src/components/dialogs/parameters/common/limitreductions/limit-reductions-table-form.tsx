@@ -26,23 +26,28 @@ const LimitReductionsTableForm: FunctionComponent<{
             if (lowBound === 0) {
                 return intl.formatMessage({ id: 'LimitDurationAfterIST' }, { value: highBound });
             }
-            const lowBoundLabel = lowBound === 0 ? 'IST' : 'IT ' + lowBound;
-            const highBoundLabel = highBound === 0 ? 'IST' : 'IT ' + highBound;
             return intl.formatMessage(
                 { id: 'LimitDuration' },
                 {
-                    lowBound: lowBoundLabel,
-                    highBound: highBoundLabel,
+                    lowBound: `IT ${lowBound}`,
+                    highBound: `IT ${highBound}`,
                 }
             );
         },
         [intl]
     );
 
+    const getToolTipColumn = useCallback((limit: ITemporaryLimitReduction) => {
+        const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
+        const highBound = Math.trunc(limit.limitDuration.highBound / 60);
+        return `[${lowBound} min, ${highBound} min[`;
+    }, []);
+
     const columnsDefinition = useMemo(() => {
         let columnsDefinition = COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS.map((column) => ({
             ...column,
             label: intl.formatMessage({ id: column.label }),
+            tooltip: intl.formatMessage({ id: column.tooltip }),
         }));
 
         if (limits !== null && limits.length > 0) {
@@ -50,12 +55,13 @@ const LimitReductionsTableForm: FunctionComponent<{
                 columnsDefinition.push({
                     label: getLabelColumn(tlimit),
                     dataKey: LIMIT_DURATION_FORM + index,
+                    tooltip: getToolTipColumn(tlimit),
                 });
             });
         }
 
         return columnsDefinition;
-    }, [intl, limits, getLabelColumn]);
+    }, [intl, limits, getLabelColumn, getToolTipColumn]);
 
     return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
 };
