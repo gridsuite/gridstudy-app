@@ -344,39 +344,6 @@ export function getFirstAncestorWithSibling(
 }
 
 /**
- * Will find the sibling node whose X position is closer to xDestination in the X range provided.
- */
-export function findClosestSiblingInRange(
-    nodes: CurrentTreeNode[],
-    node: CurrentTreeNode,
-    xOrigin: number,
-    xDestination: number
-): CurrentTreeNode | null {
-    const minX = Math.min(xOrigin, xDestination);
-    const maxX = Math.max(xOrigin, xDestination);
-    const siblingNodes = findSiblings(nodes, node);
-    const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
-    if (nodesBetween.length > 0) {
-        const closestNode = nodesBetween.reduce(
-            (closest, current) =>
-                Math.abs(current.position.x - xDestination) < Math.abs(closest.position.x - xDestination)
-                    ? current
-                    : closest,
-            nodesBetween[0]
-        );
-        return closestNode;
-    }
-    return null;
-}
-
-/**
- * Will find the siblings of a provided node (all siblings have the same parent).
- */
-function findSiblings(nodes: CurrentTreeNode[], node: CurrentTreeNode): CurrentTreeNode[] {
-    return nodes.filter((n) => n.parentId === node.parentId && n.id !== node.id);
-}
-
-/**
  * Computes the absolute position of a node by calculating the sum of all the relative positions of
  * the node's lineage.
  */
