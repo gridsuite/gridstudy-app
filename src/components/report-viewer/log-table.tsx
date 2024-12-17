@@ -25,6 +25,7 @@ import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.con
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { MessageLogCellRenderer } from 'components/spreadsheet/utils/cell-renderers';
+import { CustomAggridComparatorFilter } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 const styles = {
     chip: (severity: string, severityFilter: string[], theme: Theme) => ({
@@ -155,13 +156,14 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
                 headerName: intl.formatMessage({ id: 'report_viewer/message' }),
                 id: 'message',
                 field: 'message',
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-                filterParams: {
-                    filterDataType: FILTER_DATA_TYPES.TEXT,
-                    filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                filterComponent: CustomAggridComparatorFilter,
+                filterComponentParams: {
+                    filterParams: {
+                        updateFilter,
+                        filterSelector,
+                        filterDataType: FILTER_DATA_TYPES.TEXT,
+                        filterComparators: [FILTER_TEXT_COMPARATORS.CONTAINS],
+                    },
                 },
                 flex: 1,
                 cellRenderer: (param: ICellRendererParams) =>
