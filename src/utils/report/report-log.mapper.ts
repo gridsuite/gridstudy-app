@@ -5,6 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { REPORT_SEVERITY } from './report-severity';
 import { Log, ReportLog } from './report.type';
 
 export const mapReportLogs = (reportLogs: ReportLog[]) => {
@@ -18,7 +19,7 @@ export const mapReportLogs = (reportLogs: ReportLog[]) => {
 const formatLog = (reportLog: ReportLog, formattedLogs: Log[]) => {
     formattedLogs.push({
         message: reportLog.message,
-        severity: reportLog.severity,
+        severity: Object.values(REPORT_SEVERITY).find((s) => reportLog.severity === s.name) ?? REPORT_SEVERITY.UNKNOWN,
         parentId: reportLog.parentId,
     });
 };
