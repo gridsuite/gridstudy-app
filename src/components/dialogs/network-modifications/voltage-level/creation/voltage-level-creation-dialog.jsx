@@ -227,7 +227,7 @@ const VoltageLevelCreationDialog = ({
                     voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 ipMax: convertInputValues(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 busbarCount: voltageLevel[BUS_BAR_COUNT],

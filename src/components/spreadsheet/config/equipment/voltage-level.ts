@@ -135,7 +135,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMax: convertInputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
+                    ipMax: convertInputValues(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },

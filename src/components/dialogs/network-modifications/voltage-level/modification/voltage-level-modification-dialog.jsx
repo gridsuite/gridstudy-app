@@ -190,7 +190,7 @@ const VoltageLevelModificationDialog = ({
                     voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 highShortCircuitCurrentLimit: convertInputValues(
-                    FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
+                    FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
                 properties: toModificationProperties(voltageLevel),
