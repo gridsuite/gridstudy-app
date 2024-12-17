@@ -225,14 +225,12 @@ const NetworkModificationTree = ({
      * Saves the new order of parentNode's children in the backend
      */
     const saveChildrenColumnPositions = (parentNode) => {
-        const nodesToUpdate = treeModel.treeNodes
-            .filter((n) => n.parentId === parentNode.id)
-            .map((node, index) => ({
-                id: node.id,
-                type: node.type,
-                columnPosition: index,
-            }));
-        updateNodesColumnPositions(studyUuid, parentNode.id, nodesToUpdate).catch((error) => {
+        const children = treeModel.getChildren(parentNode.id).map((node, index) => ({
+            id: node.id,
+            type: node.type,
+            columnPosition: index,
+        }));
+        updateNodesColumnPositions(studyUuid, parentNode.id, children).catch((error) => {
             snackError({
                 messageTxt: error.message,
                 headerId: 'NodeUpdateColumnPositions',

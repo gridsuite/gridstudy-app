@@ -154,19 +154,23 @@ export default class NetworkModificationTreeModel {
         return commonAncestor;
     }
 
+    getChildren(parentNodeId: string): CurrentTreeNode[] {
+        return this.treeNodes.filter((n) => n.parentId === parentNodeId);
+    }
+
     /**
      * Will reorganize treeNodes and put the children of parentNodeId in the order provided in nodeIds array.
      * @param parentNodeId parent ID of the to be reordered children nodes
-     * @param nodeIds array of children ID in the order we want
+     * @param orderedNodeIds array of children ID in the order we want
      */
-    reorderChildrenNodes(parentNodeId: string, nodeIds: string[]) {
+    reorderChildrenNodes(parentNodeId: string, orderedNodeIds: string[]) {
         // We check if the current position is already correct
-        const children = this.treeNodes.filter((n) => n.parentId === parentNodeId);
-        if (nodeIds.length !== children.length) {
+        const children = this.getChildren(parentNodeId);
+        if (orderedNodeIds.length !== children.length) {
             console.warn('reorderNodes : synchronization error, reorder cancelled');
             return;
         }
-        if (children.map((child) => child.id).join(',') === nodeIds.join(',')) {
+        if (children.map((child) => child.id).join(',') === orderedNodeIds.join(',')) {
             // Alreay in the same order.
             return;
         }
@@ -176,7 +180,7 @@ export default class NetworkModificationTreeModel {
         const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 here to set the index just after the parent node
         let insertedNodes = 0;
         const nodeIdAndFamilySize = new Map(
-            nodeIds.map((id) => [
+            orderedNodeIds.map((id) => [
                 id,
                 1 + countNodes(this.treeNodes, id as UUID), // We add 1 here to include the current node in its family size
             ])
