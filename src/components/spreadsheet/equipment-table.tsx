@@ -19,12 +19,9 @@ import {
     RowHeightParams,
     RowStyle,
 } from 'ag-grid-community';
-import { AppState, CurrentTreeNode } from '../../redux/reducer';
+import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
 import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
-import { FluxConventions } from 'components/dialogs/parameters/network-parameters';
-import { useSelector } from 'react-redux';
-import { PARAM_FLUX_CONVENTION } from 'utils/config-params';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
