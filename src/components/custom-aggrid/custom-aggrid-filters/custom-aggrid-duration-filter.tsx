@@ -9,7 +9,7 @@ import { Grid, IconButton, InputAdornment, TextField, Typography } from '@mui/ma
 import { useIntl } from 'react-intl';
 import ClearIcon from '@mui/icons-material/Clear';
 import { CustomAggridFilterParams } from '../custom-aggrid-header.type';
-import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selecter';
+import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
 
@@ -134,7 +134,7 @@ const CustomAggridDurationFilter: FunctionComponent<CustomAggridFilterParams> = 
 
     return (
         <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
-            <CustomAggridComparatorSelecter
+            <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
                 options={filterComparators}

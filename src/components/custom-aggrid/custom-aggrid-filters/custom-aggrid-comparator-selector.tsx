@@ -16,13 +16,13 @@ const styles = {
     },
 };
 
-interface CustomAggridComparatorSelecterProps {
+interface CustomAggridComparatorSelectorProps {
     value: string;
     onChange: (event: SelectChangeEvent) => void;
     options: string[];
 }
 
-export const CustomAggridComparatorSelecter: React.FC<CustomAggridComparatorSelecterProps> = ({
+export const CustomAggridComparatorSelector: React.FC<CustomAggridComparatorSelectorProps> = ({
     value,
     onChange,
     options,

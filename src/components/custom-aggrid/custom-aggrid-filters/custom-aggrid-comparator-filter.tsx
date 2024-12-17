@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CustomAggridComparatorSelecter } from './custom-aggrid-comparator-selecter';
+import { CustomAggridComparatorSelector } from './custom-aggrid-comparator-selector';
 import { CustomAggridTextFilter } from './custom-aggrid-text-filter';
 import { Grid } from '@mui/material';
 import { useCustomAggridComparatorFilter } from '../hooks/use-custom-aggrid-comparator-filter';
@@ -27,7 +27,7 @@ export const CustomAggridComparatorFilter = ({ field, filterParams }: CustomAggr
 
     return (
         <Grid container direction={'column'} gap={0.8} sx={{ padding: '8px' }}>
-            <CustomAggridComparatorSelecter
+            <CustomAggridComparatorSelector
                 value={selectedFilterComparator}
                 onChange={handleFilterComparatorChange}
                 options={filterComparators}

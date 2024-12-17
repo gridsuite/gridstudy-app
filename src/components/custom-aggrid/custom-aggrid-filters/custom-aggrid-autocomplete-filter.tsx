@@ -29,10 +29,7 @@ export const CustomAggridAutocompleteFilter: FunctionComponent<CustomAggridAutoc
         handleChangeFilterValue({ value: data, type: FILTER_TEXT_COMPARATORS.EQUALS });
     };
 
-    const filterOption = useMemo(
-        () => (filterEnums?.hasOwnProperty(field) ? filterEnums[field] ?? [] : []),
-        [field, filterEnums]
-    );
+    const filterOption = useMemo(() => filterEnums?.[field] ?? [], [field, filterEnums]);
 
     return (
         <Autocomplete
