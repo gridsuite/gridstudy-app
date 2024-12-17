@@ -7,13 +7,7 @@
 
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from 'components/utils/yup-config';
-import {
-    convertInputValues,
-    convertOutputValues,
-    CustomFormProvider,
-    FieldType,
-    useSnackMessage,
-} from '@gridsuite/commons-ui';
+import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
 import { useForm } from 'react-hook-form';
 import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -25,12 +19,13 @@ import { createTabulareModification } from 'services/study/network-modifications
 import { FetchStatus } from 'services/utils';
 import TabularModificationForm from './tabular-modification-form';
 import {
+    convertInputValue,
+    convertOutputValue,
     formatModification,
     getEquipmentTypeFromModificationType,
     TABULAR_MODIFICATION_TYPES,
 } from './tabular-modification-utils';
 import { useIntl } from 'react-intl';
-import { toModificationOperation } from '../../../utils/utils.js';
 
 const formSchema = yup
     .object()
@@ -81,7 +76,7 @@ const TabularModificationDialog = ({
             const modifications = editData?.modifications.map((modif) => {
                 const modification = {};
                 Object.keys(formatModification(modif)).forEach((key) => {
-                    modification[key] = convertInputValues(FieldType[key], modif[key]);
+                    modification[key] = convertInputValue(key, modif[key]);
                 });
                 return modification;
             });
@@ -100,7 +95,7 @@ const TabularModificationDialog = ({
                     type: modificationType,
                 };
                 Object.keys(row).forEach((key) => {
-                    modification[key] = toModificationOperation(convertOutputValues(FieldType[key], row[key]));
+                    modification[key] = convertOutputValue(key, row[key]);
                 });
                 return modification;
             });

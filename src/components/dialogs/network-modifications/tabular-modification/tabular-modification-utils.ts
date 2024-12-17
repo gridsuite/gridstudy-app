@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { convertInputValues, convertOutputValues, FieldType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
     B,
     B1,
@@ -48,6 +48,7 @@ import {
     VOLTAGE_REGULATION_ON,
     X,
 } from 'components/utils/field-constants';
+import { toModificationOperation } from '../../../utils/utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -116,4 +117,26 @@ export const getEquipmentTypeFromModificationType = (type: string) => {
 
 export const styles = {
     grid: { height: 500, width: '100%' },
+};
+
+const keyToFieldType = (key: string) =>
+    FieldType[
+        key
+            .split(/\.?(?=[A-Z])/)
+            .join('_')
+            .toUpperCase() as keyof typeof FieldType
+    ];
+
+export const convertInputValue = (key: string, value: { value: string | number }) => {
+    if (key === EQUIPMENT_ID) {
+        return value;
+    }
+    return convertInputValues(keyToFieldType(key), value?.value);
+};
+
+export const convertOutputValue = (key: string, value: string | number) => {
+    if (key === EQUIPMENT_ID) {
+        return value;
+    }
+    return toModificationOperation(convertOutputValues(keyToFieldType(key), value));
 };
