@@ -300,69 +300,11 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             const columnExtended = { ...column };
             columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
-            if (columnExtended.numeric) {
-                //numeric columns need the loadflow status in order to apply a specific css class in case the loadflow is invalid to highlight the value has not been computed
-                const isValueInvalid = loadFlowStatus !== RunningStatus.SUCCEED && columnExtended.canBeInvalidated;
-
-                columnExtended.cellRendererParams = {
-                    isValueInvalid: isValueInvalid,
-                };
-                if (columnExtended.withFluxConvention) {
-                    // We enrich "flux convention" properties here (and not in config-tables) because we use a hook
-                    // to get the convention, which requires a component context.
-                    columnExtended.cellRendererParams.applyFluxConvention = applyFluxConvention;
-                    columnExtended.comparator = (valueA: number, valueB: number) => {
-                        const normedValueA = valueA !== undefined ? applyFluxConvention(valueA) : undefined;
-                        const normedValueB = valueB !== undefined ? applyFluxConvention(valueB) : undefined;
-                        if (normedValueA !== undefined && normedValueB !== undefined) {
-                            return normedValueA - normedValueB;
-                        } else if (normedValueA === undefined && normedValueB === undefined) {
-                            return 0;
-                        } else if (normedValueA === undefined) {
-                            return -1;
-                        } else if (normedValueB === undefined) {
-                            return 1;
-                        }
-                        return 0;
-                    };
-                }
-            }
-
-            if (columnExtended.cellRenderer == null) {
-                columnExtended.cellRenderer = DefaultCellRenderer;
-            }
-
             columnExtended.width = columnExtended.columnWidth || MIN_COLUMN_WIDTH;
 
             //if it is not the first render the column might already have a pinned value so we need to handle the case where it needs to be reseted to undefined
             //we reuse and mutate the column objects so we need to clear to undefined
             columnExtended.pinned = lockedColumnsNames.has(columnExtended.id) ? 'left' : undefined;
-
-            //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
-            if (columnExtended?.isEnum) {
-                columnExtended.comparator = (valueA: string, valueB: string) => {
-                    const getTranslatedOrOriginalValue = (value: string) => {
-                        if (value === undefined || value === null) {
-                            return '';
-                        }
-                        if (columnExtended.isCountry) {
-                            return translate(value);
-                        } else if (columnExtended.getEnumLabel) {
-                            const labelId = columnExtended.getEnumLabel(value);
-                            return intl.formatMessage({
-                                id: labelId || value,
-                                defaultMessage: value,
-                            });
-                        }
-                        return value;
-                    };
-
-                    const translatedValueA = getTranslatedOrOriginalValue(valueA);
-                    const translatedValueB = getTranslatedOrOriginalValue(valueB);
-
-                    return translatedValueA.localeCompare(translatedValueB);
-                };
-            }
 
             return makeSpreadsheetAgGridColumn({
                 headerName: columnExtended.headerName,
@@ -370,7 +312,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 ...columnExtended,
             });
         },
-        [intl, lockedColumnsNames, loadFlowStatus, applyFluxConvention, translate]
+        [intl, lockedColumnsNames]
     );
 
     useEffect(() => {
@@ -1218,6 +1160,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         shouldHidePinnedHeaderRightBorder={isLockedColumnNamesEmpty}
                         columnTypes={defaultColumnType}
                         applyFluxConvention={applyFluxConvention}
+                        loadFlowStatus={loadFlowStatus}
                     />
                 </Box>
             )}

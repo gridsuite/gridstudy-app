@@ -54,6 +54,7 @@ interface EquipmentTableProps {
     shouldHidePinnedHeaderRightBorder: boolean;
     columnTypes: { [key: string]: ColDef };
     applyFluxConvention: (value: number) => number;
+    loadFlowStatus: string;
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -74,6 +75,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     shouldHidePinnedHeaderRightBorder,
     columnTypes,
     applyFluxConvention,
+    loadFlowStatus,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
@@ -104,8 +106,9 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             intl: intl,
             translateCountryCode: translate,
             applyFluxConvention: applyFluxConvention,
+            loadFlowStatus: loadFlowStatus,
         }),
-        [applyFluxConvention, currentNode, intl, studyUuid, theme, topPinnedData, translate]
+        [applyFluxConvention, currentNode, intl, loadFlowStatus, studyUuid, theme, topPinnedData, translate]
     );
 
     const getRowHeight = useCallback(

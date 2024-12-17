@@ -10,7 +10,14 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import CountryCellRenderer from '../../utils/country-cell-render';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
-import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from '../../utils/constants';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfProperties } from '../common/column-properties';
 import { SortWay } from 'hooks/use-aggrid-sort';
@@ -72,37 +79,35 @@ export const LINE_TAB_DEF = {
             id: 'ActivePowerSide1',
             field: 'p1',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.p1);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerSide2',
             field: 'p2',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide1',
             field: 'q1',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide2',
             field: 'q2',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

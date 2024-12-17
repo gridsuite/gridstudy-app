@@ -14,7 +14,14 @@ import {
 } from '../../utils/equipment-table-editors';
 import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
 import { editableCellStyle, editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
-import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import {
@@ -99,9 +106,10 @@ export const GENERATOR_TAB_DEF = {
             field: 'p',
             numeric: true,
             fractionDigits: 1,
-            type: NUMERIC_TYPE,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.p);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -109,9 +117,11 @@ export const GENERATOR_TAB_DEF = {
             field: 'q',
             numeric: true,
             fractionDigits: 1,
-            type: NUMERIC_TYPE,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.q);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

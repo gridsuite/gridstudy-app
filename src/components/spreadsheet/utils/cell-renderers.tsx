@@ -142,6 +142,7 @@ export const convertDuration = (duration: number) => {
 
 export const DefaultCellRenderer = (props: any) => {
     const cellValue = formatCell(props);
+
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
@@ -150,10 +151,7 @@ export const DefaultCellRenderer = (props: any) => {
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
                 <Box
-                    sx={mergeSx(
-                        styles.overflow,
-                        props?.colDef?.cellRendererParams?.isValueInvalid ? styles.valueInvalid : undefined
-                    )}
+                    sx={mergeSx(styles.overflow, props?.isValueInvalid ? styles.valueInvalid : undefined)}
                     children={cellValue.value}
                 />
             </Tooltip>

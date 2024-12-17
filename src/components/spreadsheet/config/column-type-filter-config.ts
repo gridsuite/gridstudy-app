@@ -12,6 +12,7 @@ import CountryCellRenderer from '../utils/country-cell-render';
 import { BooleanCellRenderer, DefaultCellRenderer } from '../utils/cell-renderers';
 import EnumCellRenderer from '../utils/enum-cell-renderer';
 import { Writable } from 'type-fest';
+import RunningStatus from 'components/utils/running-status';
 
 const contains = (target: string, lookingFor: string): boolean => {
     if (target && lookingFor) {
@@ -55,12 +56,7 @@ const textType = {
         maxNumConditions: 1,
         filterOptions: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
     },
-    cellRendererSelector: (props: any) => {
-        return {
-            component: DefaultCellRenderer,
-            props: props,
-        };
-    },
+    cellRenderer: DefaultCellRenderer,
     sortable: true,
     resizable: true,
 };
@@ -72,28 +68,32 @@ const numericType = {
         filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
         debounceMs: 200,
     },
-    cellRendererSelector: (props: any) => {
+    cellRenderer: DefaultCellRenderer,
+    sortable: true,
+    resizable: true,
+};
+
+const numericCanBeInvalidatedType = {
+    filter: 'agNumberColumnFilter',
+    filterParams: {
+        maxNumConditions: 1,
+        filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
+        debounceMs: 200,
+    },
+    cellRendererSelector: ({ context }: { context: any }) => {
         return {
             component: DefaultCellRenderer,
-            props: {
-                isValueInvalid: props.colDef.cellRendererParams.colisValueInvalid,
-                applyFluxConvention: props.context.applyFluxConvention,
+            params: {
+                isValueInvalid: context.loadFlowStatus !== RunningStatus.SUCCEED,
             },
         };
     },
+
     sortable: true,
     resizable: true,
 };
 
 const booleanType = {
-    cellRendererSelector: ({ value }: { value: string }) => {
-        return {
-            component: BooleanCellRenderer,
-            props: {
-                value,
-            },
-        };
-    },
     filter: 'agTextColumnFilter',
     filterParams: {
         caseSensitive: false,
@@ -108,19 +108,12 @@ const booleanType = {
         },
         debounceMs: 200,
     },
+    cellRenderer: BooleanCellRenderer,
     sortable: true,
     resizable: true,
 };
 
 const countryType = {
-    cellRendererSelector: ({ value }: { value: string }) => {
-        return {
-            component: CountryCellRenderer,
-            params: {
-                value,
-            },
-        };
-    },
     filter: 'agTextColumnFilter',
     filterParams: {
         caseSensitive: false,
@@ -136,6 +129,7 @@ const countryType = {
         },
         debounceMs: 200,
     },
+    cellRenderer: CountryCellRenderer,
     sortable: true,
     resizable: true,
 };
@@ -143,6 +137,7 @@ const countryType = {
 export const defaultColumnType = {
     textType,
     numericType,
+    numericCanBeInvalidatedType,
     booleanType,
     countryType,
 };

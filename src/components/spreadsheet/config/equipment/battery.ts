@@ -11,7 +11,13 @@ import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from '
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
-import { BOOLEAN_TYPE, COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const BATTERY_TAB_DEF = {
@@ -54,9 +60,10 @@ export const BATTERY_TAB_DEF = {
             field: 'p',
             numeric: true,
             fractionDigits: 1,
-            type: NUMERIC_TYPE,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.p);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -64,9 +71,10 @@ export const BATTERY_TAB_DEF = {
             field: 'q',
             numeric: true,
             fractionDigits: 1,
-            type: NUMERIC_TYPE,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.q);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

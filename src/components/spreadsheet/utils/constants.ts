@@ -17,6 +17,7 @@ export const REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE = 'reorderedColumns.
 
 export const TEXT_TYPE = 'textType';
 export const NUMERIC_TYPE = 'numericType';
+export const NUMERIC_CAN_BE_INVALIDATED_TYPE = 'numericCanBeInvalidatedType';
 export const ENUM_TYPE = 'enumType';
 export const BOOLEAN_TYPE = 'booleanType';
 export const COUNTRY_TYPE = 'countryType';

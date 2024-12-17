@@ -14,6 +14,7 @@ import {
     COUNTRY_TYPE,
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
     NUMERIC_TYPE,
     TEXT_TYPE,
 } from '../../utils/constants';
@@ -64,9 +65,10 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             field: 'q',
             numeric: true,
             fractionDigits: 1,
-            type: NUMERIC_TYPE,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.q);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

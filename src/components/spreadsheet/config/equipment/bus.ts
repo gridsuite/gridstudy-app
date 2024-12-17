@@ -10,7 +10,12 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import {
+    COUNTRY_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const BUS_TAB_DEF = {
@@ -29,16 +34,14 @@ export const BUS_TAB_DEF = {
             field: 'v',
             numeric: true,
             fractionDigits: 1,
-            canBeInvalidated: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
         },
         {
             id: 'Angle',
             field: 'angle',
             numeric: true,
             fractionDigits: 1,
-            canBeInvalidated: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
         },
         {
             id: 'ConnectedComponent',

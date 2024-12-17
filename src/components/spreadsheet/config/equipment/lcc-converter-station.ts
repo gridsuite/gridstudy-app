@@ -10,7 +10,13 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
-import { BOOLEAN_TYPE, COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const LCC_CONVERTER_STATION_TAB_DEF = {
@@ -55,18 +61,16 @@ export const LCC_CONVERTER_STATION_TAB_DEF = {
             id: 'activePower',
             field: 'p',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

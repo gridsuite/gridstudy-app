@@ -20,7 +20,14 @@ import {
     isEditable,
     typeAndFetchers,
 } from './common-config';
-import { BOOLEAN_TYPE, COUNTRY_TYPE, MEDIUM_COLUMN_WIDTH, NUMERIC_TYPE, TEXT_TYPE } from '../../utils/constants';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from '../../utils/constants';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
 import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
 import { unitToMicroUnit } from '../../../../utils/unit-converter';
@@ -165,36 +172,32 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'ActivePowerSide1',
             field: 'p1',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerSide2',
             field: 'p2',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide1',
             field: 'q1',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide2',
             field: 'q2',
             numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
             fractionDigits: 1,
-            canBeInvalidated: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -617,16 +620,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'connected1',
             field: 'terminal1Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected2',
             field: 'terminal2Connected',
-            boolean: true,
-            //cellRenderer: BooleanCellRenderer,
             type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
