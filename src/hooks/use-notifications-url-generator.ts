@@ -25,13 +25,12 @@ const useNotificationsUrlGenerator = () => {
     }, []);
 
     const urlMapper = useMemo(() => {
-        if (!tokenId) {
-            return {};
-        }
         let mapper: Object = {
-            [NOTIFICATIONS_URL_KEYS.CONFIG]: getUrlWithToken(
-                `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${urlParams({ appName: APP_NAME })}`
-            ),
+            [NOTIFICATIONS_URL_KEYS.CONFIG]: tokenId
+                ? getUrlWithToken(
+                      `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${urlParams({ appName: APP_NAME })}`
+                  )
+                : undefined,
         };
         return mapper;
     }, [wsBase, urlParams, tokenId]);
