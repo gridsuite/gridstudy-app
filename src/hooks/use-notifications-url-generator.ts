@@ -25,6 +25,8 @@ const useNotificationsUrlGenerator = () => {
     }, []);
 
     const urlMapper = useMemo(() => {
+        // return a mapper with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
+        // it will be used to register listeners as soon as possible.
         let mapper: Object = {
             [NOTIFICATIONS_URL_KEYS.CONFIG]: tokenId
                 ? getUrlWithToken(
