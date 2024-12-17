@@ -29,7 +29,13 @@ import {
 import { mergeSx } from '../../../utils/functions';
 import { updateConfigParameters } from '../../../../services/config';
 
-export const NetworkVisualizationsParameters: FunctionComponent = () => {
+interface NetworkVisualizationsParametersProps {
+    setHaveDirtyFields: (haveDirtyFields: boolean) => void;
+}
+
+export const NetworkVisualizationsParameters: FunctionComponent<NetworkVisualizationsParametersProps> = ({
+    setHaveDirtyFields,
+}) => {
     const user = useSelector((state: AppState) => state.user);
     const componentLibraries = useGetAvailableComponentLibraries(user);
     const [tabValue, setTabValue] = useState(TabValue.MAP);
@@ -92,6 +98,11 @@ export const NetworkVisualizationsParameters: FunctionComponent = () => {
     });
 
     const { reset, handleSubmit, formState } = formMethods;
+
+    useEffect(() => {
+        setHaveDirtyFields(!!Object.keys(formState.dirtyFields).length);
+    }, [formState, setHaveDirtyFields]);
+
     useEffect(() => {
         if (parameters) {
             reset(fromNetworkVisualizationsParamsDataToFormValues(parameters));
