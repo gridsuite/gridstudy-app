@@ -10,8 +10,11 @@ import {
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
     LIMITS,
+    OPERATIONAL_LIMIT_GROUP_ID,
+    PERMANENT_LIMIT,
     SELECTED_LIMIT_GROUP_1,
     SELECTED_LIMIT_GROUP_2,
+    TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -54,8 +57,6 @@ export function LimitsPane({
     const [selectedSetStr, setSelectedSetStr] = useState<string | null>(allLimitSetsStr[0] || null);
     const [selectedLimitSetTabIndex, setSelectedLimitSetTabIndex] = useState<number>(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        // console.log("Mathieu handleTabChange newValue : " + newValue);
-        // console.log("Mathieu handleTabChange allLimitSetsStr[newValue] : " + allLimitSetsStr[newValue]);
         setSelectedLimitSetTabIndex(newValue);
         setSelectedSetStr(allLimitSetsStr[newValue] || null);
     };
@@ -71,7 +72,44 @@ export function LimitsPane({
     // in the limitSets2 array
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
+    const useFieldArrayCurrentLimits1 = useFieldArray({
+        name: `${id}.${CURRENT_LIMITS_1}`,
+    });
+    const useFieldArrayCurrentLimits2 = useFieldArray({
+        name: `${id}.${CURRENT_LIMITS_2}`,
+    });
+
     useEffect(() => {
+        // all the limit sets have to be present in both sides even if empty
+        // the cleaning is done at the validation
+        limitSets1.forEach((limitData1: CurrentLimitsData) => {
+            if (
+                !limitSets2.find(
+                    (limitData2: CurrentLimitsData) =>
+                        limitData1.operationalLimitGroupId === limitData2.operationalLimitGroupId
+                )
+            ) {
+                useFieldArrayCurrentLimits2.append({
+                    [OPERATIONAL_LIMIT_GROUP_ID]: limitData1.operationalLimitGroupId,
+                    [PERMANENT_LIMIT]: null,
+                    [TEMPORARY_LIMITS]: [],
+                });
+            }
+        });
+        limitSets2.forEach((limitData2: CurrentLimitsData) => {
+            if (
+                !limitSets1.find(
+                    (limitData1: CurrentLimitsData) =>
+                        limitData2.operationalLimitGroupId === limitData1.operationalLimitGroupId
+                )
+            ) {
+                useFieldArrayCurrentLimits1.append({
+                    [OPERATIONAL_LIMIT_GROUP_ID]: limitData2.operationalLimitGroupId,
+                    [PERMANENT_LIMIT]: null,
+                    [TEMPORARY_LIMITS]: [],
+                });
+            }
+        });
         setIndexSelectedLimitSet1(
             selectedSetStr
                 ? limitSets1.findIndex(
@@ -86,7 +124,15 @@ export function LimitsPane({
                   )
                 : undefined
         );
-    }, [selectedSetStr, setIndexSelectedLimitSet1, setIndexSelectedLimitSet2, limitSets1, limitSets2]);
+    }, [
+        selectedSetStr,
+        setIndexSelectedLimitSet1,
+        setIndexSelectedLimitSet2,
+        limitSets1,
+        limitSets2,
+        useFieldArrayCurrentLimits1,
+        useFieldArrayCurrentLimits2,
+    ]);
 
     useEffect(() => {
         let allLimitSets: string[] = [];
@@ -124,13 +170,6 @@ export function LimitsPane({
     }
   };
      */
-
-    const useFieldArrayCurrentLimits1 = useFieldArray({
-        name: `${id}.${CURRENT_LIMITS_1}`,
-    });
-    const useFieldArrayCurrentLimits2 = useFieldArray({
-        name: `${id}.${CURRENT_LIMITS_2}`,
-    });
 
     const addNewLimitSet = () => {
         const newLimitSet: CurrentLimitsData = {

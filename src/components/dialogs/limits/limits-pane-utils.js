@@ -96,8 +96,18 @@ const limitsEmptyFormData = (id, onlySelectedLimits = true) =>
           }
         : {
               [id]: {
-                  [CURRENT_LIMITS_1]: [],
-                  [CURRENT_LIMITS_2]: [],
+                  [CURRENT_LIMITS_1]: [
+                      {
+                          [PERMANENT_LIMIT]: null,
+                          [TEMPORARY_LIMITS]: [],
+                      },
+                  ],
+                  [CURRENT_LIMITS_2]: [
+                      {
+                          [PERMANENT_LIMIT]: null,
+                          [TEMPORARY_LIMITS]: [],
+                      },
+                  ],
                   [SELECTED_LIMIT_GROUP_1]: null,
                   [SELECTED_LIMIT_GROUP_2]: null,
               },
@@ -158,11 +168,19 @@ export const getAllLimitsFormData = (
     },
 });
 
-export const sanitizeLimitNames = (temporaryLimitList) =>
-    temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-        ...temporaryLimit,
-        name: sanitizeString(name),
-    }));
+export const sanitizeLimitNames = (temporaryLimitList /*:TemporaryLimitData[]*/) /*:TemporaryLimitData[]*/ =>
+    temporaryLimitList
+        ? temporaryLimitList
+              .filter(
+                  (limit) =>
+                      // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                      limit.name !== undefined && limit.name !== null && limit.name !== ''
+              )
+              .map(({ name, ...temporaryLimit }) => ({
+                  ...temporaryLimit,
+                  name: sanitizeString(name),
+              }))
+        : [];
 
 const findTemporaryLimit = (temporaryLimits, limit) =>
     temporaryLimits?.find((l) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration);

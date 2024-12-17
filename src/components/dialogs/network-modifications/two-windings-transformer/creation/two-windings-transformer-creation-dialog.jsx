@@ -92,6 +92,7 @@ import {
     getLimitsEmptyFormData,
     getAllLimitsFormData,
     getLimitsValidationSchema,
+    sanitizeLimitNames,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
@@ -486,12 +487,6 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
-
     const onSubmit = useCallback(
         (twt) => {
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
@@ -560,16 +555,7 @@ const TwoWindingsTransformerCreationDialog = ({
             const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) =>
                 currentLimitsData.map(({ temporaryLimits, ...baseData }) /*: CurrentLimitsData*/ => ({
                     ...baseData,
-                    temporaryLimits: temporaryLimits
-                        .filter(
-                            (limit) =>
-                                // completely empty lines should be filtered out (the interface display always some lines even if empty)
-                                limit.name !== undefined && limit.name !== null && limit.name !== ''
-                        )
-                        .map(({ name, ...temporaryLimit }) => ({
-                            ...temporaryLimit,
-                            name: sanitizeLimitNames(name),
-                        })),
+                    temporaryLimits: sanitizeLimitNames(temporaryLimits),
                 }));
 
             createTwoWindingsTransformer(

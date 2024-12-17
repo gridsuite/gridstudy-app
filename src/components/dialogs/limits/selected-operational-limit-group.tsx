@@ -23,9 +23,10 @@ export const SelectedOperationalLimitGroup = ({
         name: optionsFormName,
     });
 
-    const limitSets: string[] = useMemo(() => 
-        optionsValues.map((optionObj: CurrentLimitsData) => optionObj.operationalLimitGroupId)
-    , [optionsValues]);
+    const limitSets: string[] = useMemo(
+        () => optionsValues.map((optionObj: CurrentLimitsData) => optionObj.operationalLimitGroupId),
+        [optionsValues]
+    );
 
     return (
         <Box sx={{ maxWidth: 300 }}>
