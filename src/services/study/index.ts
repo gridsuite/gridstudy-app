@@ -22,8 +22,10 @@ export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
 export const getStudyUrl = (studyUuid: UUID) => `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;
 
-export const getStudyUrlWithNodeUuid = (studyUuid: UUID, nodeUuid: UUID) =>
-    `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/nodes/${encodeURIComponent(nodeUuid)}`;
+export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(
+        rootNetworkUuid
+    )}/nodes/${encodeURIComponent(nodeUuid)}`;
 
 export const fetchStudy = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' ...`);
@@ -48,7 +50,7 @@ export function getNetworkAreaDiagramUrl(
 ) {
     console.info(`Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`);
     return (
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
             depth: depth.toString(),
@@ -78,7 +80,7 @@ export function fetchParentNodesReport(
     );
 
     let url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) +
         '/parent-nodes-report?nodeOnlyReport=' +
         (nodeOnlyReport ? 'true' : 'false') +
         '&reportType=' +
@@ -100,9 +102,9 @@ export function fetchNodeReportLogs(
 ) {
     let url;
     if (isGlobalLogs) {
-        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/logs?';
+        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/report/logs?';
     } else {
-        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/logs?';
+        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/logs?';
     }
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -150,7 +152,8 @@ export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, co
     const contingencyListNamesParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/contingency-count?' + urlSearchParams;
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/contingency-count?' + urlSearchParams;
 
     console.debug(url);
     return backendFetchJson(url);
@@ -201,21 +204,21 @@ export function getAvailableComponentLibraries(): Promise<string[]> {
 
 export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info('Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/unbuild';
+    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/unbuild';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
 
 export function buildNode(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info('Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/build';
+    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/build';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
 
-export function fetchCaseName(studyUuid: UUID) {
+export function fetchCaseName(studyUuid: UUID, rootNetworkUuid: UUID) {
     console.info('Fetching case name');
-    const url = getStudyUrl(studyUuid) + '/case/name';
+    const url = getStudyUrl(studyUuid) + '/root-networks/' + encodeURIComponent(rootNetworkUuid) + '/case/name';
     console.debug(url);
 
     return backendFetchText(url);
@@ -260,7 +263,7 @@ export function fetchAvailableFilterEnumValues(
     filterEnum: string
 ) {
     console.info('fetch available filter values');
-    const url = `${getStudyUrlWithNodeUuid(
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         nodeUuid
     )}/computation/result/enum-values?computingType=${encodeURIComponent(computingType)}&enumName=${encodeURIComponent(

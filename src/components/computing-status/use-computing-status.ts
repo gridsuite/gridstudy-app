@@ -20,7 +20,8 @@ interface UseComputingStatusProps {
     (
         studyUuid: UUID,
         nodeUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+        rootNetworkUuid: UUID,
+        fetcher: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<string>,
         invalidations: string[],
         completions: string[],
         resultConversion: (x: string) => RunningStatus,
@@ -31,7 +32,7 @@ interface UseComputingStatusProps {
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
-    fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>;
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) => Promise<string>;
 }
 
 function isWorthUpdate(
@@ -84,6 +85,7 @@ function isWorthUpdate(
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
+    rootNetworkUuid,
     fetcher,
     invalidations,
     completions,
@@ -114,7 +116,7 @@ export const useComputingStatus: UseComputingStatusProps = (
         dispatch(setLastCompletedComputation());
 
         nodeUuidRef.current = nodeUuid;
-        fetcher(studyUuid, nodeUuid)
+        fetcher(studyUuid, nodeUuid, rootNetworkUuid)
             .then((res: string) => {
                 if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
                     const status = resultConversion(res);

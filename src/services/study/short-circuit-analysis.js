@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrl, getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import {
     getShortCircuitAnalysisTypeFromEnum,
     ShortCircuitAnalysisType,
@@ -25,33 +25,48 @@ export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
     busId && urlSearchParams.append('busId', busId);
 
     const startShortCircuitAnalysisUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/run?' + urlSearchParams.toString();
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/run?' +
+        urlSearchParams.toString();
     console.debug(startShortCircuitAnalysisUrl);
     return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
 
 export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
     console.info(`Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const stopShortCircuitAnalysisUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/stop';
+    const stopShortCircuitAnalysisUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/shortcircuit/stop';
     console.debug(stopShortCircuitAnalysisUrl);
     return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
 }
 
-export function fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid, type = ShortCircuitAnalysisType.ALL_BUSES) {
+export function fetchShortCircuitAnalysisStatus(
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    type = ShortCircuitAnalysisType.ALL_BUSES
+) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
     console.info(
-        `Fetching ${analysisType} short circuit analysis status on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching ${analysisType} short circuit analysis status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('type', analysisType);
     const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/status?' + urlSearchParams.toString();
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/shortcircuit/status?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchOneBusShortCircuitAnalysisStatus(studyUuid, currentNodeUuid) {
-    return fetchShortCircuitAnalysisStatus(studyUuid, currentNodeUuid, ShortCircuitAnalysisType.ONE_BUS);
+export function fetchOneBusShortCircuitAnalysisStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    return fetchShortCircuitAnalysisStatus(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        ShortCircuitAnalysisType.ONE_BUS
+    );
 }
 
 export function fetchShortCircuitAnalysisResult({ studyUuid, currentNodeUuid, type }) {
@@ -66,7 +81,9 @@ export function fetchShortCircuitAnalysisResult({ studyUuid, currentNodeUuid, ty
     }
 
     const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/result?' + urlSearchParams.toString();
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/result?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -106,7 +123,9 @@ export function fetchShortCircuitAnalysisPagedResults({
     }
 
     const url =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/shortcircuit/result?' + urlSearchParams.toString();
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        '/shortcircuit/result?' +
+        urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }
@@ -156,7 +175,7 @@ export function downloadShortCircuitResultZippedCsv(
     enumValueTranslations
 ) {
     console.info(`Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/shortcircuit/result/csv`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/shortcircuit/result/csv`;
     const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
     const param = new URLSearchParams({ type });
     const urlWithParam = `${url}?${param.toString()}`;

@@ -325,11 +325,6 @@ const NetworkModificationNodeEditor = () => {
                     label: 'VSC',
                     action: () => withDefaultParams(VscCreationDialog),
                 },
-                {
-                    id: MODIFICATION_TYPES.LCC_CREATION.type,
-                    label: 'LCC',
-                    action: () => withDefaultParams(LccCreationDialog),
-                },
             ],
         },
         {

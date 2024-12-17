@@ -6,7 +6,7 @@
  */
 
 import { backendFetchJson, getQueryParamsList } from '../utils';
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 
 export function fetchSubstationPositions(studyUuid, currentNodeUuid, substationsIds) {
     console.info(
@@ -17,7 +17,7 @@ export function fetchSubstationPositions(studyUuid, currentNodeUuid, substations
         substationsIds && substationsIds.length > 0 ? '?' + getQueryParamsList(substationsIds, 'substationId') : '';
 
     const fetchSubstationPositionsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/substations' + paramsList;
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/geo-data/substations' + paramsList;
     console.debug(fetchSubstationPositionsUrl);
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
@@ -29,7 +29,8 @@ export function fetchLinePositions(studyUuid, currentNodeUuid, linesIds) {
 
     const paramsList = linesIds && linesIds.length > 0 ? '?' + getQueryParamsList(linesIds, 'lineId') : '';
 
-    const fetchLinePositionsUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/geo-data/lines' + paramsList;
+    const fetchLinePositionsUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/geo-data/lines' + paramsList;
 
     console.debug(fetchLinePositionsUrl);
     return backendFetchJson(fetchLinePositionsUrl);

@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import { EquipmentInfos, EquipmentType, createFilter } from '@gridsuite/commons-ui';
@@ -21,7 +21,7 @@ export function fetchHvdcLineWithShuntCompensators(studyUuid: UUID, currentNodeU
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
     const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network-map' +
         '/hvdc-lines/' +
         hvdcLineId +
@@ -37,7 +37,7 @@ export function fetchAllEquipments(studyUuid: UUID, currentNodeUuid: UUID, subst
     );
 
     const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network-map/all' +
         '?' +
         getQueryParamsList(substationsIds, 'substationId');
@@ -61,7 +61,7 @@ export function fetchVoltageLevelEquipments(
     }
 
     const fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network-map' +
         '/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
@@ -93,7 +93,7 @@ export function fetchEquipmentsIds(
     const nominalVoltagesParamsList = nominalVoltages && nominalVoltages.length > 0 ? '&' + nominalVoltagesParams : '';
 
     let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network-map/' +
         'equipments-ids' +
         '?' +
@@ -126,7 +126,7 @@ export function fetchVoltageLevelIdForLineOrTransformerBySide(
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
     urlSearchParams.append('side', side);
 
-    const fetchEquipmentInfosUrl = `${getStudyUrlWithNodeUuid(
+    const fetchEquipmentInfosUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid
     )}/network-map/branch-or-3wt/${encodeURIComponent(equipmentId)}/voltage-level-id?${urlSearchParams.toString()}`;
@@ -139,7 +139,8 @@ export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const fetchCountriesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/network-map/countries?inUpstreamBuiltParentNode=true';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
 }
@@ -267,7 +268,7 @@ export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID) 
     console.info(`Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const fetchNominalVoltagesUrl =
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
         '/network-map/nominal-voltages?inUpstreamBuiltParentNode=true';
     console.debug(fetchNominalVoltagesUrl);
     return backendFetchJson(fetchNominalVoltagesUrl);
