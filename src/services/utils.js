@@ -126,7 +126,7 @@ export const fetchDefaultParametersValues = () => {
         console.info('fecthing default parameters values from apps-metadata file');
         const studyMetadata = res.find((metadata) => metadata.name === 'Study');
         if (!studyMetadata) {
-            return Promise.reject('Study entry could not be found in metadatas');
+            return Promise.reject(new Error('Study entry could not be found in metadatas'));
         }
 
         return studyMetadata.defaultParametersValues;
