@@ -215,7 +215,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                         );
                     }
                 );
-            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'columnsChanged') {
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodesColumnPositionsChanged') {
                 const orderedChildrenNodeIds = JSON.parse(studyUpdatedForce.eventData.payload);
                 dispatch(
                     networkModificationTreeReorderNodes(
