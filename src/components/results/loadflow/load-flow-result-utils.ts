@@ -177,14 +177,14 @@ export const useFetchFiltersEnums = (): {
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED) {
+        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
             return;
         }
 
         const filterTypes = ['computation-status', 'limit-types', 'branch-sides'];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode?.id, computingType.LOAD_FLOW, filterType)
+            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, computingType.LOAD_FLOW, filterType)
         );
 
         setLoading(true);
