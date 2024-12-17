@@ -647,6 +647,7 @@
     "LCC_CONVERTER_STATION": "Station de conversion LCC",
     "VSC_CONVERTER_STATION": "Station de conversion VSC",
     "VSC": "HVDC (VSC)",
+    "LCC": "HVDC (LCC)",
     "BUS": "Bus",
     "BUSBAR_SECTION": "Section de jeux de barres",
     "BY_FORMULA": "Par formule",
@@ -679,6 +680,7 @@
     "ShuntCompensatorNonlinearError": "La modification d'un moyen de compensation non linéaire n'est pas possible pour le moment",
     "HVDCLineConverterStationError": "Erreur lors de l'accès aux stations de conversion de la ligne HVDC",
     "StaticVarCompensatorCreationError": "Erreur lors de la création d'un cspr",
+    "LccCreationError": "Erreur lors de la création d'une HVDC (LCC)",
 
     "CreateBattery": "Créer une batterie",
     "ModifyBattery": "Modifier une batterie",
@@ -758,7 +760,9 @@
     "ModifyLine": "Modifier une ligne",
     "CreateLine": "Créer une ligne",
     "CreateVsc": "Création d'une HVDC (VSC)",
+    "CreateLcc": "Création d'une HVDC (LCC)",
     "Characteristics": "Caractéristiques",
+    "Filters": "Filtres",
     "Side1": "Côté 1",
     "Side2": "Côté 2",
     "Side": "Côté",
@@ -906,7 +910,14 @@
 
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
-
+    "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
+    "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
+    "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
+    "nominalVMustBeGreaterOrEqualToZero": "La valeur de la tension nominale DC doit être supérieure à 0",
+    "dcResistanceMustBeGreaterOrEqualToZero": "La valeur de la résistance DC doit être supérieure à 0",
+    "maxPMustBeGreaterOrEqualToZero": "La valeur de la puissance active max doit être supérieure à 0",
+    "activePowerSetpointMinValueError": "La valeur de la puissance active doit être supérieure à 0",
+    "activePowerSetpointMaxValueError": "La valeur de la puissance active doit être inférieure à la valeur de la puissance active max",
     "PermanentCurrentLimitText1": "IST 1",
     "PermanentCurrentLimitText2": "IST 2",
 
@@ -1268,12 +1279,15 @@
     "operatorActivePowerLimitSide1Label": "Limite de fonctionnement (1->2)",
     "converterModeLabel": "Mode de fonctionnement des stations",
     "lossFactorLabel": "Coefficient de pertes",
+    "powerFactorLabel": "Coefficient Q/P",
     "angleDroopActivePowerControlLabel": "Emulation AC",
     "p0Label": "P0",
     "droopLabel": "Gain",
     "side1RectifierSide2Inverter": "Flux (1->2)",
     "side1InverterSide2Rectifier": "Flux (2->1)",
-
+    "shuntCompensatorId": "ID du MCS",
+    "shuntCompensatorName": "Nom du MCS",
+    "connectedToHvdc": "Connecté à HVDC",
     "g": "Conductance magnétisante (μS)",
     "b": "Susceptance magnétisante (μS)",
     "ratedNominalPower": "Puissance nominale (MVA)",
@@ -1424,5 +1438,6 @@
     "qualityCriterionResults": "Critères qualité",
     "qualityPerRegionResults": "Qualité par région",
     "StateEstimationStatus": "Statut : ",
-    "StateEstimationQuality": "Qualité: "
+    "StateEstimationQuality": "Qualité: ",
+    "Or": "ou"
 }

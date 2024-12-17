@@ -26,7 +26,7 @@ interface FilterModel {
  * Compute the tolerance that should be applied when comparing filter values to database values
  * @param value value entered in the filter
  */
-export const computeTolerance = (value: undefined | null | number | string | string[]) => {
+export const computeTolerance = (value: unknown) => {
     if (!value) {
         return 0;
     }
@@ -36,7 +36,7 @@ export const computeTolerance = (value: undefined | null | number | string | str
     if (isNumber(value)) {
         decimalPrecision = countDecimalPlaces(value);
     } else {
-        decimalPrecision = countDecimalPlacesFromString(value);
+        decimalPrecision = countDecimalPlacesFromString(value as string);
     }
     // tolerance is multiplied by 0.5 to simulate the fact that the database value is rounded (in the front, from the user viewpoint)
     // more than 13 decimal after dot will likely cause rounding errors due to double precision
@@ -160,8 +160,7 @@ export const useAggridLocalRowFilter = (
         return filters
             .map((filter): FilterSelectorType | FilterSelectorType[] => {
                 // Attempt to convert filter value to a number if it's a string, otherwise keep it as is
-                let valueAsNumber: number | string[] | null | undefined =
-                    typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
+                let valueAsNumber = typeof filter.value === 'string' ? parseFloat(filter.value) : filter.value;
                 // If the value is successfully converted to a number, apply tolerance adjustments
                 if (typeof valueAsNumber === 'number') {
                     if (tolerance === undefined) {

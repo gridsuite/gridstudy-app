@@ -55,7 +55,12 @@ export const useReportFetcher = (
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
-    (reportId: string, severityList: string[], reportType: ReportType, filterMessage: string) => Promise<Log[]>
+    (
+        reportId: string,
+        severityList: string[],
+        reportType: ReportType,
+        filterMessage: string
+    ) => Promise<Log[]> | undefined
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -95,7 +100,7 @@ export const useReportFetcher = (
 
     const fetchRawParentReport = useCallback(
         (nodeOnlyReport?: boolean) => {
-            if (currentNode !== null) {
+            if (currentNode !== null && studyUuid) {
                 return fetch(() =>
                     fetchParentNodesReport(
                         studyUuid,
@@ -113,6 +118,9 @@ export const useReportFetcher = (
 
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
+            if (!studyUuid) {
+                return;
+            }
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
             if (reportType === ReportType.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
