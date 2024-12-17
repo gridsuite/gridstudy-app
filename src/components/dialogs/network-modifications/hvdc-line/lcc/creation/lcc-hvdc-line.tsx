@@ -26,11 +26,16 @@ export const getLccHvdcLineSchema = () =>
     yup
         .object()
         .shape({
-            [NOMINAL_V]: yup.number().nullable().required(),
-            [R]: yup.number().nullable().required(),
-            [MAX_P]: yup.number().nullable().required(),
+            [NOMINAL_V]: yup.number().nullable().min(0, 'nominalVMustBeGreaterOrEqualToZero').required(),
+            [R]: yup.number().nullable().min(0, 'dcResistanceMustBeGreaterOrEqualToZero').required(),
+            [MAX_P]: yup.number().nullable().min(0, 'maxPMustBeGreaterOrEqualToZero').required(),
+            [ACTIVE_POWER_SETPOINT]: yup
+                .number()
+                .nullable()
+                .min(0, 'activePowerSetpointMinValueError')
+                .max(yup.ref(MAX_P), 'activePowerSetpointMaxValueError')
+                .required(),
             [CONVERTERS_MODE]: yup.string().required(),
-            [ACTIVE_POWER_SETPOINT]: yup.number().nullable().required(),
         })
         .concat(creationPropertiesSchema);
 

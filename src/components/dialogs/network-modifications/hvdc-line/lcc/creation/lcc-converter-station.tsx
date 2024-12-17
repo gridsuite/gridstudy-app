@@ -59,7 +59,12 @@ export const getLccConverterStationSchema = () =>
             .min(0, 'NormalizedPercentage')
             .max(100, 'NormalizedPercentage')
             .required(),
-        [POWER_FACTOR]: yup.number().nullable().max(1, 'powerFactorNormalizedPercentage').required(),
+        [POWER_FACTOR]: yup
+            .number()
+            .nullable()
+            .min(-1, 'powerFactorMinValueError')
+            .max(1, 'powerFactorMaxValueError')
+            .required(),
         [FILTERS_SHUNT_COMPENSATOR_TABLE]: yup
             .array()
             .of(
