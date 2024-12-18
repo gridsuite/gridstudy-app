@@ -658,7 +658,11 @@ export const NetworkMapTab = ({
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
             if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-                return Promise.reject();
+                return Promise.reject(
+                    new Error(
+                        'reloadMapEquipments error: currentNode not build or studyUuid undefined or mapEquipments not initialized'
+                    )
+                );
             }
 
             const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = mapEquipments
@@ -704,11 +708,6 @@ export const NetworkMapTab = ({
 
     const updateMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null) => {
-            if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
-                dispatch(resetMapReloaded());
-                return Promise.reject();
-            }
-
             const mapEquipmentsTypes = [
                 EquipmentType.SUBSTATION,
                 EquipmentType.LINE,
@@ -737,37 +736,48 @@ export const NetworkMapTab = ({
             dispatch(resetMapReloaded());
             resetImpactedElementTypes();
             resetImpactedSubstationsIds();
-            return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend);
+            return reloadMapEquipments(currentNodeAtReloadCalling, updatedSubstationsToSend).catch((e) =>
+                snackError({
+                    messageTxt: e.message,
+                })
+            );
         },
         [
-            currentNode,
-            studyUuid,
-            mapEquipments,
             impactedElementTypes,
             impactedSubstationsIds,
             dispatch,
             resetImpactedElementTypes,
             resetImpactedSubstationsIds,
             reloadMapEquipments,
+            snackError,
         ]
     );
 
     const updateMapEquipmentsAndGeoData = useCallback(() => {
         const currentNodeAtReloadCalling = currentNodeRef.current;
-        updateMapEquipments(currentNodeAtReloadCalling)?.then(() => {
+        if (!isNodeBuilt(currentNode) || !studyUuid || !mapEquipments) {
+            dispatch(resetMapReloaded());
+            return;
+        }
+
+        updateMapEquipments(currentNodeAtReloadCalling).then(() => {
             if (checkNodeConsistency(currentNodeAtReloadCalling)) {
                 loadGeoData();
             }
         });
-    }, [loadGeoData, updateMapEquipments]);
+    }, [currentNode, dispatch, loadGeoData, mapEquipments, studyUuid, updateMapEquipments]);
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
-                reloadMapEquipments(currentNodeRef.current, undefined);
+                reloadMapEquipments(currentNodeRef.current, undefined).catch((e) =>
+                    snackError({
+                        messageTxt: e.message,
+                    })
+                );
             }
         }
-    }, [isInitialized, studyUpdatedForce, reloadMapEquipments]);
+    }, [isInitialized, studyUpdatedForce, reloadMapEquipments, snackError]);
 
     useEffect(() => {
         if (!mapEquipments || refIsMapManualRefreshEnabled.current) {

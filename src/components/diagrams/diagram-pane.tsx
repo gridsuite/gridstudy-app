@@ -162,7 +162,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     return useCallback(
         (diagramState: Partial<DiagramView>) => {
             if (!studyUuid || !currentNode) {
-                return Promise.reject();
+                return Promise.reject(new Error('useDisplayView error: currentNode not build or studyUuid undefined'));
             }
 
             function createSubstationDiagramView(id: UUID, state: ViewState | undefined) {
@@ -318,6 +318,7 @@ type DiagramView = {
 };
 
 export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible }: DiagramPaneProps) {
+    const { snackError } = useSnackMessage();
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
@@ -394,26 +395,32 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
                 // Then we add the data when the fetch is finished
                 diagramsToAdd.forEach((diagramState) => {
-                    createView(diagramState)?.then((singleLineDiagramView) => {
-                        setViews((views) => {
-                            const diagramViewId = views.findIndex(
-                                (view) =>
-                                    view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && view.id === diagramState.id
-                            );
-                            const updatedViews = views.slice();
-                            // we update the SLD with the fetched data
-                            updatedViews[diagramViewId] = {
-                                ...updatedViews[diagramViewId],
-                                ...singleLineDiagramView,
-                                loadingState: false,
-                            } as unknown as DiagramView;
-                            return updatedViews;
+                    createView(diagramState)
+                        ?.then((singleLineDiagramView) => {
+                            setViews((views) => {
+                                const diagramViewId = views.findIndex(
+                                    (view) =>
+                                        view.svgType !== DiagramType.NETWORK_AREA_DIAGRAM && view.id === diagramState.id
+                                );
+                                const updatedViews = views.slice();
+                                // we update the SLD with the fetched data
+                                updatedViews[diagramViewId] = {
+                                    ...updatedViews[diagramViewId],
+                                    ...singleLineDiagramView,
+                                    loadingState: false,
+                                } as unknown as DiagramView;
+                                return updatedViews;
+                            });
+                        })
+                        .catch((error) => {
+                            snackError({
+                                messageTxt: error.message,
+                            });
                         });
-                    });
                 });
             }
         },
-        [createView, intl]
+        [createView, intl, snackError]
     );
 
     // Check if we need to remove old SLDs from the 'views' and remove them if necessary
@@ -488,25 +495,31 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                 state: networkAreaViewState,
                 svgType: DiagramType.NETWORK_AREA_DIAGRAM,
                 depth: networkAreaDiagramDepth,
-            })?.then((networkAreaDiagramView) => {
-                setViews((views) => {
-                    const updatedViews = views.slice();
-                    const nadViewId = views.findIndex((view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM);
-                    updatedViews[nadViewId] = {
-                        ...updatedViews[nadViewId],
-                        ...networkAreaDiagramView,
-                        loadingState: false,
-                    } as unknown as DiagramView;
-                    dispatch(
-                        setNetworkAreaDiagramNbVoltageLevels(
-                            networkAreaDiagramView.additionalMetadata?.nbVoltageLevels ?? 0
-                        )
-                    );
-                    return updatedViews;
+            })
+                ?.then((networkAreaDiagramView) => {
+                    setViews((views) => {
+                        const updatedViews = views.slice();
+                        const nadViewId = views.findIndex((view) => view.svgType === DiagramType.NETWORK_AREA_DIAGRAM);
+                        updatedViews[nadViewId] = {
+                            ...updatedViews[nadViewId],
+                            ...networkAreaDiagramView,
+                            loadingState: false,
+                        } as unknown as DiagramView;
+                        dispatch(
+                            setNetworkAreaDiagramNbVoltageLevels(
+                                networkAreaDiagramView.additionalMetadata?.nbVoltageLevels ?? 0
+                            )
+                        );
+                        return updatedViews;
+                    });
+                })
+                .catch((error) => {
+                    snackError({
+                        messageTxt: error.message,
+                    });
                 });
-            });
         },
-        [createView, intl, dispatch]
+        [createView, intl, dispatch, snackError]
     );
 
     const removeNAD = useCallback(() => {
@@ -718,28 +731,36 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
                         } else {
                             updatedDiagramPromise = currentView.fetchSvg?.();
                         }
-                        updatedDiagramPromise?.then((svg) => {
-                            setViews((views) => {
-                                const updatedViews = views.slice();
-                                const data: DiagramView = {
-                                    ...updatedViews[i],
-                                    ...svg,
-                                    loadingState: false,
-                                } as unknown as DiagramView;
-                                updatedViews[i] = data;
-                                if (fromScratch && svg.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
-                                    dispatch(
-                                        setNetworkAreaDiagramNbVoltageLevels(svg.additionalMetadata?.nbVoltageLevels)
-                                    );
-                                }
-                                return updatedViews;
+                        updatedDiagramPromise
+                            ?.then((svg) => {
+                                setViews((views) => {
+                                    const updatedViews = views.slice();
+                                    const data: DiagramView = {
+                                        ...updatedViews[i],
+                                        ...svg,
+                                        loadingState: false,
+                                    } as unknown as DiagramView;
+                                    updatedViews[i] = data;
+                                    if (fromScratch && svg.svgType === DiagramType.NETWORK_AREA_DIAGRAM) {
+                                        dispatch(
+                                            setNetworkAreaDiagramNbVoltageLevels(
+                                                svg.additionalMetadata?.nbVoltageLevels
+                                            )
+                                        );
+                                    }
+                                    return updatedViews;
+                                });
+                            })
+                            .catch((error) => {
+                                snackError({
+                                    messageTxt: error.message,
+                                });
                             });
-                        });
                     }
                 }
             }
         },
-        [createView, dispatch]
+        [createView, dispatch, snackError]
     );
 
     // Updates particular diagrams from the current node
