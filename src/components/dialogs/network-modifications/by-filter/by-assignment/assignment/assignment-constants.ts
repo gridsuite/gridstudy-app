@@ -102,8 +102,8 @@ export const FIELD_OPTIONS = {
         label: 'sectionCount',
         dataType: DataType.INTEGER,
     },
-    MAXIMUM_SUSCEPTANCE: {
-        id: FieldType.MAXIMUM_SUSCEPTANCE,
+    MAX_SUSCEPTANCE: {
+        id: FieldType.MAX_SUSCEPTANCE,
         label: 'maxSusceptance',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
@@ -302,7 +302,7 @@ export const EQUIPMENTS_FIELDS = {
         FIELD_OPTIONS.PROPERTY,
         FIELD_OPTIONS.MAXIMUM_SECTION_COUNT,
         FIELD_OPTIONS.SECTION_COUNT,
-        FIELD_OPTIONS.MAXIMUM_SUSCEPTANCE,
+        FIELD_OPTIONS.MAX_SUSCEPTANCE,
         FIELD_OPTIONS.MAX_Q_AT_NOMINAL_V,
     ],
     [EquipmentType.STATIC_VAR_COMPENSATOR]: [FIELD_OPTIONS.PROPERTY],
