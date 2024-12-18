@@ -411,7 +411,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     handleOpenModificationDialog={handleOpenModificationDialog}
                     onOpenDynamicSimulationEventDialog={handleOpenDynamicSimulationEventDialog}
                     currentNode={currentNode}
-                    studyUuid={studyUuid as UUID}
+                    studyUuid={studyUuid}
                     modificationInProgress={modificationInProgress}
                     setModificationInProgress={setModificationInProgress}
                 />
@@ -430,11 +430,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             equipmentMenu.equipmentId &&
             equipmentMenu.equipmentType === equipmentType && (
                 <Menu
-                    equipment={
-                        {
-                            id: equipmentMenu.equipmentId,
-                        } as MapEquipment
-                    }
+                    equipment={{ id: equipmentMenu.equipmentId } as MapEquipment}
                     equipmentType={convertToEquipmentType(equipmentMenu.equipmentType)}
                     position={equipmentMenu.position}
                     handleClose={closeEquipmentMenu}

@@ -6,23 +6,21 @@
  */
 
 import { UUID } from 'crypto';
-import { RefObject } from 'react';
-import { IntlShape } from 'react-intl';
 import { Dispatch } from 'redux';
 import { UseSnackMessageReturn } from '@gridsuite/commons-ui';
 import { mapEquipmentsCreated, setMapEquipementsInitialized } from '../../redux/actions';
+import { MapEquipments } from '@powsybl/network-viewer';
+import type { AppDispatch } from '../../redux/store';
 import {
     fetchHvdcLinesMapInfos,
     fetchLinesMapInfos,
     fetchSubstationsMapInfos,
     fetchTieLinesMapInfos,
-} from '../../services/study/network';
-import { MapEquipments } from '@powsybl/network-viewer';
+} from '../../services/study/network-ts';
 
 export default class GSMapEquipments extends MapEquipments {
-    dispatch: Dispatch;
+    dispatch: AppDispatch;
     errHandler?: UseSnackMessageReturn['snackError'];
-    intlRef: RefObject<IntlShape>;
 
     initEquipments(studyUuid: UUID, currentNodeUuid: UUID) {
         const fetchSubstationsMapInfosPromise = fetchSubstationsMapInfos(studyUuid, currentNodeUuid, undefined, false);
@@ -102,17 +100,15 @@ export default class GSMapEquipments extends MapEquipments {
         studyUuid: UUID,
         currentNodeUuid: UUID,
         errHandler: UseSnackMessageReturn['snackError'],
-        dispatch: Dispatch,
-        intlRef: RefObject<IntlShape>
+        dispatch: Dispatch
     ) {
         super();
         this.dispatch = dispatch;
         this.errHandler = errHandler;
-        this.intlRef = intlRef;
         this.initEquipments(studyUuid, currentNodeUuid);
     }
 
-    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | null) {
+    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | undefined) {
         const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
         const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);

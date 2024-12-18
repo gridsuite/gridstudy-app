@@ -9,7 +9,7 @@ import { getStudyUrlWithNodeUuid } from './index';
 import { backendFetchJson, backendFetchText, getQueryParamsList } from '../utils';
 import { EQUIPMENT_INFOS_TYPES } from '../../components/utils/equipment-types';
 import { EquipmentInfos, EquipmentType, createFilter } from '@gridsuite/commons-ui';
-import { fetchNetworkElementsInfos } from './network';
+import { fetchNetworkElementsInfos } from './network-ts';
 import { createContingencyList } from 'services/explore';
 import { ContingencyList, createIdentifierContingencyList } from './contingency-list';
 import { UUID } from 'crypto';
@@ -237,7 +237,7 @@ export async function createMapContingencyList(
             }
 
             const selectedEquipmentsIds = selectedEquipments.map((element) => element.id);
-            const elementsIds = await fetchNetworkElementsInfos(
+            const elementsIds = await fetchNetworkElementsInfos<EquipmentInfos[]>(
                 studyUuid,
                 currentNodeUuid,
                 selectedEquipmentsIds,
