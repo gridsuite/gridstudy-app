@@ -39,7 +39,10 @@ export function fetchVoltageInitResult(studyUuid: UUID, currentNodeUuid: UUID) {
     return backendFetchJson(url);
 }
 
-export function updateVoltageInitParameters(studyUuid: UUID | null, newParams: VoltageInitParam) {
+export function updateVoltageInitParameters(
+    studyUuid: UUID | null,
+    newParams: VoltageInitParam | Record<string, boolean | null>
+) {
     console.info('set voltage init parameters');
     const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(url);
