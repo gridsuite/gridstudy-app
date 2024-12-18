@@ -92,20 +92,20 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) =>
-                convertOutputValues(
+                convertInputValues(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 )
             ),
             valueGetter: (params) =>
-                convertOutputValues(
+                convertInputValues(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMin
                 ),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMin: convertInputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
+                    ipMin: convertOutputValues(FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },
@@ -122,20 +122,20 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
             ...editableColumnConfig,
             numeric: true,
             ...numericalCellEditorConfig((params) =>
-                convertOutputValues(
+                convertInputValues(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 )
             ),
             valueGetter: (params) =>
-                convertOutputValues(
+                convertInputValues(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     params.data?.identifiableShortCircuit?.ipMax
                 ),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
-                    ipMax: convertInputValues(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
+                    ipMax: convertOutputValues(FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT, params.newValue),
                 };
                 return true;
             },

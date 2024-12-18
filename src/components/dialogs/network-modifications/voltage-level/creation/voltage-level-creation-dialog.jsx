@@ -164,11 +164,11 @@ const VoltageLevelCreationDialog = ({
                 [NOMINAL_V]: voltageLevel[NOMINAL_V],
                 [LOW_VOLTAGE_LIMIT]: voltageLevel[LOW_VOLTAGE_LIMIT],
                 [HIGH_VOLTAGE_LIMIT]: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertOutputValues(
+                [LOW_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValues(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMin : voltageLevel.ipMin
                 ),
-                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertOutputValues(
+                [HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]: convertInputValues(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     fromCopy ? voltageLevel.identifiableShortCircuit?.ipMax : voltageLevel.ipMax
                 ),
@@ -222,11 +222,11 @@ const VoltageLevelCreationDialog = ({
                 nominalV: voltageLevel[NOMINAL_V],
                 lowVoltageLimit: voltageLevel[LOW_VOLTAGE_LIMIT],
                 highVoltageLimit: voltageLevel[HIGH_VOLTAGE_LIMIT],
-                ipMin: convertInputValues(
+                ipMin: convertOutputValues(
                     FieldType.LOW_SHORT_CIRCUIT_CURRENT_LIMIT,
                     voltageLevel[LOW_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
-                ipMax: convertInputValues(
+                ipMax: convertOutputValues(
                     FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
                     voltageLevel[HIGH_SHORT_CIRCUIT_CURRENT_LIMIT]
                 ),
