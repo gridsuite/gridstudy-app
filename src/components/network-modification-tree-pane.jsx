@@ -98,6 +98,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
     const [broadcastChannel] = useState(() => {
         const broadcast = new BroadcastChannel('nodeCopyChannel');
         broadcast.onmessage = (event) => {
+            console.log('🚀 QCA :  ~ const[broadcastChannel]=useState ~ event:', event);
             console.info('message received from broadcast channel');
             console.info(event.data);
             isInitiatingCopyTab.current = false;

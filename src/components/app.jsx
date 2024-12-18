@@ -7,12 +7,12 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import {
     getOptionalServiceByServerName,
     OptionalServicesNames,
     OptionalServicesStatus,
 } from './utils/optional-services';
-import { Navigate, Route, Routes, useLocation, useMatch, useNavigate } from 'react-router-dom';
 import { StudyView } from './study-pane';
 import {
     AuthenticationRouter,
@@ -20,45 +20,13 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
+    Websocket,
 } from '@gridsuite/commons-ui';
-import PageNotFound from './page-not-found';
+
 import { FormattedMessage } from 'react-intl';
-import {
-    APP_NAME,
-    COMMON_APP_NAME,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
-    PARAM_DEVELOPER_MODE,
-    PARAM_DIAGONAL_LABEL,
-    PARAM_FAVORITE_CONTINGENCY_LISTS,
-    PARAM_FLUX_CONVENTION,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
-    PARAM_LANGUAGE,
-    PARAM_LIMIT_REDUCTION,
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
-    PARAM_THEME,
-    PARAM_USE_NAME,
-} from '../utils/config-params';
-import {
-    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
-} from './spreadsheet/utils/constants';
-import { getComputedLanguage } from '../utils/language';
-import AppTopBar from './app-top-bar';
-import { StudyContainer } from './study-container';
-import { fetchValidateUser } from '../services/user-admin';
-import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
-import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
-import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
-import { getOptionalServices } from '../services/study';
+import PageNotFound from './page-not-found';
+
+import useWebsocketUrlGenerator from 'hooks/use-websocket-url-generator';
 import {
     changeDisplayedColumns,
     changeLockedColumns,
@@ -87,6 +55,42 @@ import {
     setOptionalServices,
     setParamsLoaded,
 } from '../redux/actions';
+import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
+import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
+import { getOptionalServices } from '../services/study';
+import { fetchValidateUser } from '../services/user-admin';
+import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
+import {
+    APP_NAME,
+    COMMON_APP_NAME,
+    PARAM_CENTER_LABEL,
+    PARAM_COMPONENT_LIBRARY,
+    PARAM_DEVELOPER_MODE,
+    PARAM_DIAGONAL_LABEL,
+    PARAM_FAVORITE_CONTINGENCY_LISTS,
+    PARAM_FLUX_CONVENTION,
+    PARAM_INIT_NAD_WITH_GEO_DATA,
+    PARAM_LANGUAGE,
+    PARAM_LIMIT_REDUCTION,
+    PARAM_LINE_FLOW_ALERT_THRESHOLD,
+    PARAM_LINE_FLOW_COLOR_MODE,
+    PARAM_LINE_FLOW_MODE,
+    PARAM_LINE_FULL_PATH,
+    PARAM_LINE_PARALLEL_PATH,
+    PARAM_MAP_BASEMAP,
+    PARAM_MAP_MANUAL_REFRESH,
+    PARAM_SUBSTATION_LAYOUT,
+    PARAM_THEME,
+    PARAM_USE_NAME,
+} from '../utils/config-params';
+import { getComputedLanguage } from '../utils/language';
+import AppTopBar from './app-top-bar';
+import {
+    DISPLAYED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    LOCKED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+    REORDERED_COLUMNS_PARAMETER_PREFIX_IN_DATABASE,
+} from './spreadsheet/utils/constants';
+import { StudyContainer } from './study-container';
 
 const noUserManager = { instance: null, error: null };
 
@@ -274,6 +278,7 @@ const App = () => {
         const ws = connectNotificationsWsUpdateConfig();
 
         ws.onmessage = function (event) {
+            console.log('🚀 QCA :  ~ connectNotificationsUpdateConfig ~ event:', event);
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
@@ -431,6 +436,7 @@ const App = () => {
         setTabIndex(newTabIndex);
     }, []);
 
+    const urlMapper = useWebsocketUrlGenerator();
     return (
         <div
             className="singlestretch-child"
@@ -439,56 +445,58 @@ const App = () => {
                 flexDirection: 'column',
             }}
         >
-            <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
-            <CardErrorBoundary>
-                <div
-                    className="singlestretch-parent"
-                    style={{
-                        flexGrow: 1,
-                        //Study pane needs 'hidden' when displaying a
-                        //fullscreen sld or when displaying the results or
-                        //elements tables for certain screen sizes because
-                        //width/heights are computed programmaticaly and
-                        //resizing the page trigger render loops due to
-                        //appearing and disappearing scrollbars.
-                        //For all other cases, auto is better because it will
-                        //be easier to see that we have a layout problem when
-                        //scrollbars appear when they should not.
-                        overflow: isStudyPane ? 'hidden' : 'auto',
-                    }}
-                >
-                    {user !== null ? (
-                        <Routes>
-                            <Route
-                                path="/studies/:studyUuid"
-                                element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+            <Websocket urls={urlMapper}>
+                <AppTopBar user={user} tabIndex={tabIndex} onChangeTab={onChangeTab} userManager={userManager} />
+                <CardErrorBoundary>
+                    <div
+                        className="singlestretch-parent"
+                        style={{
+                            flexGrow: 1,
+                            //Study pane needs 'hidden' when displaying a
+                            //fullscreen sld or when displaying the results or
+                            //elements tables for certain screen sizes because
+                            //width/heights are computed programmaticaly and
+                            //resizing the page trigger render loops due to
+                            //appearing and disappearing scrollbars.
+                            //For all other cases, auto is better because it will
+                            //be easier to see that we have a layout problem when
+                            //scrollbars appear when they should not.
+                            overflow: isStudyPane ? 'hidden' : 'auto',
+                        }}
+                    >
+                        {user !== null ? (
+                            <Routes>
+                                <Route
+                                    path="/studies/:studyUuid"
+                                    element={<StudyContainer view={STUDY_VIEWS[tabIndex]} onChangeTab={onChangeTab} />}
+                                />
+                                <Route
+                                    path="/sign-in-callback"
+                                    element={<Navigate replace to={getPreLoginPath() || '/'} />}
+                                />
+                                <Route
+                                    path="/logout-callback"
+                                    element={<h1>Error: logout failed; you are still logged in.</h1>}
+                                />
+                                <Route
+                                    path="*"
+                                    element={<PageNotFound message={<FormattedMessage id="PageNotFound" />} />}
+                                />
+                            </Routes>
+                        ) : (
+                            <AuthenticationRouter
+                                userManager={userManager}
+                                signInCallbackError={signInCallbackError}
+                                authenticationRouterError={authenticationRouterError}
+                                showAuthenticationRouterLogin={showAuthenticationRouterLogin}
+                                dispatch={dispatch}
+                                navigate={navigate}
+                                location={location}
                             />
-                            <Route
-                                path="/sign-in-callback"
-                                element={<Navigate replace to={getPreLoginPath() || '/'} />}
-                            />
-                            <Route
-                                path="/logout-callback"
-                                element={<h1>Error: logout failed; you are still logged in.</h1>}
-                            />
-                            <Route
-                                path="*"
-                                element={<PageNotFound message={<FormattedMessage id="PageNotFound" />} />}
-                            />
-                        </Routes>
-                    ) : (
-                        <AuthenticationRouter
-                            userManager={userManager}
-                            signInCallbackError={signInCallbackError}
-                            authenticationRouterError={authenticationRouterError}
-                            showAuthenticationRouterLogin={showAuthenticationRouterLogin}
-                            dispatch={dispatch}
-                            navigate={navigate}
-                            location={location}
-                        />
-                    )}
-                </div>
-            </CardErrorBoundary>
+                        )}
+                    </div>
+                </CardErrorBoundary>
+            </Websocket>
         </div>
     );
 };

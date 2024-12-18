@@ -5,47 +5,48 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import StudyPane from './study-pane';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useIntlRef, useListener, useSnackMessage } from '@gridsuite/commons-ui';
 import * as PropTypes from 'prop-types';
-import { useParams } from 'react-router-dom';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { PARAMS_LOADED } from '../utils/config-params';
+import { useParams } from 'react-router-dom';
+import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
 import {
     closeStudy,
+    limitReductionModified,
     loadNetworkModificationTreeSuccess,
     openStudy,
-    studyUpdated,
-    setCurrentTreeNode,
     resetEquipments,
     resetEquipmentsPostLoadflow,
+    setCurrentTreeNode,
     setStudyIndexationStatus,
-    limitReductionModified,
+    studyUpdated,
 } from '../redux/actions';
-import WaitingLoader from './utils/waiting-loader';
-import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
-import NetworkModificationTreeModel from './graph/network-modification-tree-model';
-import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
-import { RunningStatus } from './utils/running-status';
-import { computePageTitle, computeFullPath } from '../utils/compute-title';
-import { directoriesNotificationType } from '../utils/directories-notification-type';
-import { BUILD_STATUS } from './network/constants';
-import { connectNotificationsWebsocket } from '../services/study-notification';
 import {
     connectDeletedStudyNotificationsWebsocket,
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
-import { useAllComputingStatus } from './computing-status/use-all-computing-status';
 import { fetchCaseName, fetchStudyExists } from '../services/study';
-import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { connectNotificationsWebsocket } from '../services/study-notification';
 import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/study/network';
-import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';
-import { invalidateLoadFlowStatus } from 'services/study/loadflow';
+import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
+import { computeFullPath, computePageTitle } from '../utils/compute-title';
+import { PARAMS_LOADED } from '../utils/config-params';
+import { directoriesNotificationType } from '../utils/directories-notification-type';
+import { useAllComputingStatus } from './computing-status/use-all-computing-status';
+import NetworkModificationTreeModel from './graph/network-modification-tree-model';
+import { getFirstNodeOfType, isNodeBuilt, isNodeRenamed, isSameNode } from './graph/util/model-functions';
+import { BUILD_STATUS } from './network/constants';
+import StudyPane from './study-pane';
+import { RunningStatus } from './utils/running-status';
+import WaitingLoader from './utils/waiting-loader';
 
+import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { HttpStatusCode } from 'utils/http-status-code';
 import { usePrevious } from './utils/utils';
 import { StudyIndexationStatus } from 'redux/reducer';
-import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
+import { WS_URL_KEYS } from './utils/websocket-utils';
 import { NodeType } from './graph/tree-node.type';
 
 function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, nodeUuid, invalidations) {
@@ -312,6 +313,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 minUptime: DELAY_BEFORE_WEBSOCKET_CONNECTED,
             });
             ws.onmessage = function (event) {
+                console.log('🚀 QCA :  ~ StudyContainer ~ event:', event);
                 const eventData = JSON.parse(event.data);
                 const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
                 if (updateTypeHeader === 'STUDY_ALERT') {
@@ -383,7 +385,8 @@ export function StudyContainer({ view, onChangeTab }) {
         console.info(`Connecting to directory notifications ...`);
 
         const ws = connectDeletedStudyNotificationsWebsocket(studyUuid);
-        ws.onmessage = function () {
+        ws.onmessage = function (event) {
+            console.log('🚀 QCA :  ~ connectDeletedStudyNotifications ~ event:', event);
             window.close();
         };
         ws.onclose = function (event) {
@@ -402,6 +405,7 @@ export function StudyContainer({ view, onChangeTab }) {
         wsRef.current = connectNotificationsWsUpdateDirectories();
 
         wsRef.current.onmessage = function (event) {
+            console.log('🚀 QCA :  ~ useEffect ~ event:', event);
             const eventData = JSON.parse(event.data);
             dispatch(studyUpdated(eventData));
             if (eventData.headers) {
@@ -724,6 +728,28 @@ export function StudyContainer({ view, onChangeTab }) {
             }
         }
     }, [studyUuid, isLimitReductionModified, snackError, dispatch]);
+
+    useListener(WS_URL_KEYS.APP, {
+        listenerCallbackMessage: (eventData) => {
+            console.log('🚀 QCA :  ~ useListener ~ APP:', eventData);
+        },
+    });
+
+    useListener(WS_URL_KEYS.DELETE_STUDY, {
+        listenerCallbackMessage: (eventData) => {
+            console.log('🚀 QCA :  ~ useListener ~ DELETE_STUDY:', eventData);
+        },
+    });
+    useListener(WS_URL_KEYS.DIRECTORIES, {
+        listenerCallbackMessage: (eventData) => {
+            console.log('🚀 QCA :  ~ useListener ~ DIRECTORIES:', eventData);
+        },
+    });
+    useListener(WS_URL_KEYS.STUDY, {
+        listenerCallbackMessage: (eventData) => {
+            console.log('🚀 QCA :  ~ useListener ~ STUDY:', eventData);
+        },
+    });
 
     return (
         <>
