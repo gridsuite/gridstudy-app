@@ -91,11 +91,13 @@ export interface TreeViewItemProps {
     style: CSSProperties;
 }
 
+const ITEM_DEPTH_OFFSET = 12;
+
 export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     const { data, index } = props;
     const { nodes, onSelectedItem, onExpandItem, highlightedReportId } = data;
     const currentNode = nodes[index];
-    const left = currentNode.depth * 12;
+    const left = currentNode.depth * ITEM_DEPTH_OFFSET;
     const isCollapsable = currentNode.isCollapsable === undefined ? true : currentNode.isCollapsable;
     return (
         <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={props.style}>

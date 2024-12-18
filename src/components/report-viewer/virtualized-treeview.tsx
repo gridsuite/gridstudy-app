@@ -5,10 +5,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { CSSProperties, FunctionComponent, RefObject } from 'react';
-import AutoSizer from 'react-virtualized-auto-sizer';
 import { FixedSizeList } from 'react-window';
 import memoizeOne from 'memoize-one';
 import { ReportItem, TreeviewItem } from './treeview-item';
+import { AutoSizer } from 'react-virtualized';
 
 const getItemData = memoizeOne(
     (

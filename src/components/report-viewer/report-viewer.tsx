@@ -137,19 +137,17 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 }}
             >
                 <Grid item sm={3}>
-                    <Fragment>
-                        {treeView.current && (
-                            <VirtualizedTreeview
-                                listRef={listRef}
-                                nodes={treeView.current}
-                                itemSize={32}
-                                style={styles.treeItem}
-                                onSelectedItem={handleSelectedItem}
-                                onExpandItem={handleExpandItem}
-                                highlightedReportId={highlightedReportId}
-                            />
-                        )}
-                    </Fragment>
+                    {treeView.current && (
+                        <VirtualizedTreeview
+                            listRef={listRef}
+                            nodes={treeView.current}
+                            itemSize={32}
+                            style={styles.treeItem}
+                            onSelectedItem={handleSelectedItem}
+                            onExpandItem={handleExpandItem}
+                            highlightedReportId={highlightedReportId}
+                        />
+                    )}
                 </Grid>
                 <Grid item xs={12} sm={9}>
                     {selectedReportId && selectedReportType && (
