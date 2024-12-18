@@ -767,6 +767,7 @@ export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible
 
     // This effect will trigger the diagrams' forced update
     useEffect(() => {
+        console.log('TEST', studyUpdatedForce);
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
                 //TODO reload data more intelligently

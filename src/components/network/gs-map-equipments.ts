@@ -137,11 +137,34 @@ export default class GSMapEquipments extends MapEquipments {
         this.initEquipments(studyUuid, currentNodeUuid, currentRootNetworkUuid);
     }
 
-    reloadImpactedSubstationsEquipments(studyUuid: UUID, currentNode: any, substationsIds: string[] | null) {
-        const updatedSubstations = fetchSubstationsMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-        const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-        const updatedTieLines = fetchTieLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
-        const updatedHvdcLines = fetchHvdcLinesMapInfos(studyUuid, currentNode?.id, substationsIds, true);
+    reloadImpactedSubstationsEquipments(
+        studyUuid: UUID,
+        currentNode: any,
+        rootNetworkUuid: UUID,
+        substationsIds: string[] | null
+    ) {
+        const updatedSubstations = fetchSubstationsMapInfos(
+            studyUuid,
+            currentNode?.id,
+            rootNetworkUuid,
+            substationsIds,
+            true
+        );
+        const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, rootNetworkUuid, substationsIds, true);
+        const updatedTieLines = fetchTieLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            rootNetworkUuid,
+            substationsIds,
+            true
+        );
+        const updatedHvdcLines = fetchHvdcLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            rootNetworkUuid,
+            substationsIds,
+            true
+        );
         updatedSubstations.catch((error) => {
             console.error(error.message);
             if (this.errHandler) {

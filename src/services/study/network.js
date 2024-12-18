@@ -171,7 +171,7 @@ export function fetchNetworkElementInfos(
     inUpstreamBuiltParentNode
 ) {
     console.info(
-        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
@@ -182,7 +182,7 @@ export function fetchNetworkElementInfos(
     const optionalParams = new Map();
     optionalParams.forEach((value, key) => urlSearchParams.append(`optionalParameters[${key}]`, value));
     const fetchElementsUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/elements/' +
         encodeURIComponent(elementId) +
         '?' +
