@@ -13,7 +13,7 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 export interface ReportItem {
     id: string;
-    icon?: ReactNode | undefined;
+    icon?: ReactNode;
     label: string;
     depth: number;
     collapsed?: boolean;
@@ -98,7 +98,7 @@ export const TreeviewItem: FunctionComponent<TreeViewItemProps> = (props) => {
     const { nodes, onSelectedItem, onExpandItem, highlightedReportId } = data;
     const currentNode = nodes[index];
     const left = currentNode.depth * ITEM_DEPTH_OFFSET;
-    const isCollapsable = currentNode.isCollapsable === undefined ? true : currentNode.isCollapsable;
+    const isCollapsable = currentNode.isCollapsable ?? true;
     return (
         <TreeViewItemBox sx={mergeSx(styles.content, styles.labelRoot)} style={props.style}>
             <TreeViewItemStack

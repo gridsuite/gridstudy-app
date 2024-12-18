@@ -31,7 +31,7 @@ export interface TreeViewProps {
     onExpandItem: (node: ReportItem) => void;
     highlightedReportId?: string;
     itemSize: number;
-    style?: CSSProperties | undefined;
+    style?: CSSProperties;
 }
 
 export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = (props) => {
@@ -40,7 +40,7 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = (props) => 
 
     return (
         <AutoSizer>
-            {({ height, width }: { height: string | number; width: string | number }) => (
+            {({ height, width }) => (
                 <FixedSizeList
                     ref={listRef}
                     height={height}
