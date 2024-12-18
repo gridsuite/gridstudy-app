@@ -119,7 +119,12 @@ export const styles = {
     grid: { height: 500, width: '100%' },
 };
 
-const keyToFieldType = (key: string) =>
+/**
+ * Convert a camelCase string to SNAKE_CASE format and map it to a key in the FieldType enum.
+ * @param key - The camelCase string to be converted.
+ * @returns The corresponding value from the FieldType enum.
+ */
+const convertCamelToSnake = (key: string) =>
     FieldType[
         key
             .split(/\.?(?=[A-Z])/)
@@ -131,12 +136,12 @@ export const convertInputValue = (key: string, value: { value: string | number }
     if (key === EQUIPMENT_ID) {
         return value;
     }
-    return convertInputValues(keyToFieldType(key), value?.value);
+    return convertInputValues(convertCamelToSnake(key), value?.value);
 };
 
 export const convertOutputValue = (key: string, value: string | number) => {
     if (key === EQUIPMENT_ID) {
         return value;
     }
-    return toModificationOperation(convertOutputValues(keyToFieldType(key), value));
+    return toModificationOperation(convertOutputValues(convertCamelToSnake(key), value));
 };
