@@ -9,20 +9,13 @@ import Grid from '@mui/material/Grid';
 import LogTable from './log-table';
 import { mapReportsTree } from '../../utils/report/report-tree.mapper';
 import { useDispatch } from 'react-redux';
-import {
-    Report,
-    ReportLog,
-    ReportTree,
-    ReportTree as ReportTreeType,
-    ReportType,
-    SeverityLevel,
-} from 'utils/report/report.type';
 import { VirtualizedTreeview } from './virtualized-treeview';
 import Label from '@mui/icons-material/Label';
 import { ReportItem } from './treeview-item';
 import { Theme } from '@mui/system';
 import { FixedSizeList } from 'react-window';
 import { useTreeViewScroll } from './use-treeview-scroll';
+import { Report, ReportLog, ReportTree, ReportTree as ReportTreeType, ReportType } from 'utils/report/report.type';
 
 const styles = {
     treeItem: {
@@ -43,7 +36,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
     const [reportVerticalPositionFromTop, setReportVerticalPositionFromTop] = useState<number | undefined>(undefined);
 
     const [selectedReportId, setSelectedReportId] = useState(report?.id);
-    const [severities, setSeverities] = useState<SeverityLevel[]>([]);
     const [selectedReportType, setSelectedReportType] = useState<ReportType>();
 
     const reportTreeData = useRef<Record<string, ReportTree>>({});
@@ -68,7 +60,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                     label: item.message,
                     id: item.id,
                     isLeaf: !item.subReports.find((subReports) => subReports.id !== null),
-                    icon: <Label htmlColor={item.highestSeverity.colorName} sx={styles.labelIcon} />,
+                    icon: <Label htmlColor={item.severity.colorName} sx={styles.labelIcon} />,
                     isSelected: item.id === selectedReportId,
                 });
                 if (!collapsed) {
@@ -87,7 +79,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         mapReportsById(reportTree);
         setExpandedTreeReports([report.id]);
         setSelectedReportId(report.id);
-        setSeverities([...new Set(reportTree.severities)]);
         setSelectedReportType(reportTreeData.current[report.id]?.type);
     }, [report, dispatch, mapReportsById]);
 
@@ -112,7 +103,6 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
         (report: ReportItem) => {
             if (selectedReportId !== report.id) {
                 setSelectedReportId(report.id);
-                setSeverities([...new Set(reportTreeData.current[report.id].severities)]);
                 setSelectedReportType(reportTreeData.current[report.id].type);
             }
         },
@@ -164,10 +154,10 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                 <Grid item xs={12} sm={9}>
                     {selectedReportId && selectedReportType && (
                         <LogTable
+                            report={report}
                             selectedReportId={selectedReportId}
                             reportType={reportType}
                             reportNature={selectedReportType} // GlobalReport or NodeReport
-                            severities={severities}
                             onRowClick={onLogRowClick}
                         />
                     )}
