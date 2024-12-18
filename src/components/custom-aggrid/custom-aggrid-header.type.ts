@@ -9,6 +9,7 @@ import { SortPropsType } from '../../hooks/use-aggrid-sort';
 import { AnyAction } from 'redux';
 import { CrossValidationOptions } from '../spreadsheet/utils/equipment-table-utils';
 import { CustomColumnConfigProps } from 'components/spreadsheet/custom-columns/custom-column-menu';
+import React, { ComponentType } from 'react';
 
 export enum FILTER_DATA_TYPES {
     TEXT = 'text',
@@ -21,6 +22,7 @@ export enum FILTER_TEXT_COMPARATORS {
     CONTAINS = 'contains',
     STARTS_WITH = 'startsWith',
 }
+
 export enum FILTER_NUMBER_COMPARATORS {
     NOT_EQUAL = 'notEqual',
     LESS_THAN_OR_EQUAL = 'lessThanOrEqual',
@@ -35,24 +37,33 @@ export enum UNDISPLAYED_FILTER_NUMBER_COMPARATORS {
 
 export type FilterEnumsType = Record<string, string[] | null>;
 
-export type FilterPropsType = {
-    updateFilter: (field: string, value: FilterDataType) => void;
-    filterSelector: FilterSelectorType[] | null;
-};
-
 export type FilterParams = {
     filterDataType?: string;
-    isDuration?: boolean;
     filterComparators?: string[];
     debounceMs?: number;
-    filterEnums?: FilterEnumsType;
-    filterOptions?: any;
+    updateFilter?: (field: string, value: FilterDataType) => void;
+    filterSelector?: FilterSelectorType[] | null;
 };
 
+export interface CustomAggridFilterParams {
+    field: string;
+    filterParams: FilterParams;
+}
+
+export type CustomHeaderMenuParams = {
+    tabIndex: number;
+    isCustomColumn: boolean;
+    Menu: React.FC<CustomColumnConfigProps>;
+};
+
+export type CustomHeaderSortParams = {
+    isSortable?: boolean;
+} & SortPropsType;
+
 export type FilterDataType = {
-    dataType: string;
-    type: string;
-    value: undefined | null | number | string | string[];
+    dataType?: string;
+    type?: string;
+    value: unknown;
     tolerance?: number; // tolerance when comparing values. Only useful for the number type
 };
 
@@ -66,7 +77,8 @@ export type FilterStorePropsType = {
     filterStoreAction: (filterTab: string, filter: FilterSelectorType[]) => AnyAction;
 };
 
-export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, TValue> {
+export interface CustomColDef<TData = any, TValue = any, F extends CustomAggridFilterParams = CustomAggridFilterParams>
+    extends ColDef<TData, TValue> {
     agGridFilterParams?: {
         filterOptions: IFilterOptionDef[];
     };
@@ -75,12 +87,6 @@ export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, T
     changeCmd?: string;
     columnWidth?: number;
     crossValidation?: CrossValidationOptions;
-    customFilterParams?: {
-        filterDataType: string;
-        filterComparators?: string[];
-    };
-    filterParams?: FilterParams;
-    filterProps?: FilterPropsType;
     filterTab?: string[];
     fractionDigits?: number;
     getEnumLabel?: (value: string) => string | undefined;
@@ -95,4 +101,7 @@ export interface CustomColDef<TData = any, TValue = any> extends ColDef<TData, T
     tabIndex?: number;
     isCustomColumn?: boolean;
     Menu?: React.FC<CustomColumnConfigProps>;
+    filterComponent?: ComponentType<F>;
+    //We omit field here to avoid duplicating its declaration, we reinject it later inside CustomHeaderComponent
+    filterComponentParams?: Omit<F, 'field'>;
 }

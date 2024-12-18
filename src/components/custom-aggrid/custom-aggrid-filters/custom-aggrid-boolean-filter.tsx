@@ -11,6 +11,9 @@ import ClearIcon from '@mui/icons-material/Clear';
 import { useIntl } from 'react-intl';
 import { SelectChangeEvent } from '@mui/material/Select/SelectInput';
 import { mergeSx } from 'components/utils/functions';
+import { useCustomAggridFilter } from '../hooks/use-custom-aggrid-filter';
+import { isStringOrNonEmptyArray } from '../custom-aggrid-header-utils';
+import { CustomAggridFilterParams, FILTER_TEXT_COMPARATORS } from '../custom-aggrid-header.type';
 
 export enum BooleanFilterValue {
     TRUE = 'true',
@@ -26,33 +29,36 @@ const styles = {
     },
 };
 
-interface ICustomAggridBooleanFilter {
-    value: string;
-    onChange: (value: string) => void;
-}
-
-const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> = ({ value, onChange }) => {
+export const CustomAggridBooleanFilter: FunctionComponent<CustomAggridFilterParams> = ({ field, filterParams }) => {
     const intl = useIntl();
+
+    const { selectedFilterData, handleChangeFilterValue } = useCustomAggridFilter(field, filterParams);
 
     const handleValueChange = (event: SelectChangeEvent) => {
         const newValue = event.target.value;
-        onChange && onChange(newValue);
+        handleChangeFilterValue({ value: newValue, type: FILTER_TEXT_COMPARATORS.EQUALS });
+    };
+
+    const handleClearFilter = () => {
+        handleChangeFilterValue({
+            value: undefined,
+        });
     };
 
     return (
         <Select
             fullWidth
             size={'small'}
-            value={value || ''}
+            value={typeof selectedFilterData === 'string' ? selectedFilterData : ''}
             onChange={handleValueChange}
             sx={mergeSx(styles.input, {
                 '& .MuiSelect-iconOutlined': {
-                    display: value ? 'none' : '',
+                    display: selectedFilterData ? 'none' : '',
                 },
             })}
             endAdornment={
-                value && (
-                    <IconButton onClick={() => onChange('')}>
+                isStringOrNonEmptyArray(selectedFilterData) && (
+                    <IconButton onClick={handleClearFilter}>
                         <ClearIcon fontSize={'small'} />
                     </IconButton>
                 )
@@ -68,5 +74,3 @@ const CustomAggridBooleanFilter: FunctionComponent<ICustomAggridBooleanFilter> =
         </Select>
     );
 };
-
-export default CustomAggridBooleanFilter;

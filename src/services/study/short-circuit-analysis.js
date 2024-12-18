@@ -129,7 +129,7 @@ export function setShortCircuitParameters(studyUuid, newParams) {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParams),
+        body: newParams ? JSON.stringify(newParams) : null,
     });
 }
 
