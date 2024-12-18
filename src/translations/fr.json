@@ -3,7 +3,7 @@
 
     "LimitReductions" : "Abattements",
     "IST" : "IST",
-    "LimitDuration" : "Entre {highBound} et {lowBound}",
+    "LimitDurationInterval" : "Entre {highBound} et {lowBound}",
     "LimitDurationAfterIST": "Au-delà de IT{value}",
     "voltageRange": "Niveau de tension",
 
@@ -1164,7 +1164,7 @@
     "GeneratorFilter": "FILTRE GROUPE",
     "FrequencyReserve": "RESERVE FREQUENCE (%)",
     "frequencyReserve": "Réserve fréquence",
-    "GeneratorsFiltersFrequencyReserveToolTip": "Les saisies sont appliquées dans l'ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)",
+    "GeneratorsFiltersFrequencyReserveToolTip": "Les saisies sont appliquées dans l’ordre de la liste (en remplaçant éventuellement des saisies au fur et à mesure si un groupe est inclus dans plusieurs filtres)",
     "GeneratorsOrdering": "Hiérarchie des sites",
     "ReplacingLine": "Liaison de remplacement",
     "ConnectionPosition": "Position départ",

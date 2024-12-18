@@ -14,6 +14,12 @@ import {
 import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
 
+const getToolTipColumn = (limit: ITemporaryLimitReduction) => {
+    const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
+    const highBound = Math.trunc(limit.limitDuration.highBound / 60);
+    return `[${lowBound} min, ${highBound} min[`;
+};
+
 const LimitReductionsTableForm: FunctionComponent<{
     limits: ILimitReductionsByVoltageLevel[];
 }> = ({ limits }) => {
@@ -27,7 +33,7 @@ const LimitReductionsTableForm: FunctionComponent<{
                 return intl.formatMessage({ id: 'LimitDurationAfterIST' }, { value: highBound });
             }
             return intl.formatMessage(
-                { id: 'LimitDuration' },
+                { id: 'LimitDurationInterval' },
                 {
                     lowBound: `IT ${lowBound}`,
                     highBound: `IT ${highBound}`,
@@ -36,12 +42,6 @@ const LimitReductionsTableForm: FunctionComponent<{
         },
         [intl]
     );
-
-    const getToolTipColumn = useCallback((limit: ITemporaryLimitReduction) => {
-        const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
-        const highBound = Math.trunc(limit.limitDuration.highBound / 60);
-        return `[${lowBound} min, ${highBound} min[`;
-    }, []);
 
     const columnsDefinition = useMemo(() => {
         let columnsDefinition = COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS.map((column) => ({
@@ -61,7 +61,7 @@ const LimitReductionsTableForm: FunctionComponent<{
         }
 
         return columnsDefinition;
-    }, [intl, limits, getLabelColumn, getToolTipColumn]);
+    }, [intl, limits, getLabelColumn]);
 
     return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
 };
