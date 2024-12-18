@@ -75,7 +75,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const rootNetworkUuid = useSelector((state: AppState) => state.rootNetworkUuid);
+    const rootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const { snackError } = useSnackMessage();
 
     const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);

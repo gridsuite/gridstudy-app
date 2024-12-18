@@ -6,7 +6,10 @@
  */
 
 import { UUID } from 'crypto';
-
+export interface RootNetworkMetadata {
+    rootNetworkUuid: UUID;
+    isCreating: boolean;
+}
 export interface NetworkModificationMetadata {
     uuid: UUID;
     type: string;

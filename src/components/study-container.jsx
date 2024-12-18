@@ -137,8 +137,7 @@ function useStudy(studyUuidRequest) {
         fetchStudyExists(studyUuidRequest)
             .then(() => {
                 setStudyUuid(studyUuidRequest);
-                dispatch(setCurrentRootNetwork('18be57cd-a4a4-4844-b285-98ac2e66f095'));
-                //get root network
+                dispatch(setCurrentRootNetwork('c7b1672a-8eba-45da-b761-675a8c5ec9b5'));
             })
             .catch((error) => {
                 if (error.status === HttpStatusCode.NOT_FOUND) {
@@ -150,7 +149,7 @@ function useStudy(studyUuidRequest) {
                 }
             })
             .finally(() => setPending(false));
-    }, [studyUuidRequest, intlRef]);
+    }, [studyUuidRequest, dispatch, intlRef]);
 
     return [studyUuid, pending, errMessage];
 }
@@ -589,7 +588,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, checkStudyIndexation, loadTree, snackWarning, intlRef]
+        [studyUuid, currentRootNetwork, dispatch, checkStudyIndexation, loadTree, snackWarning, intlRef]
     );
 
     useEffect(() => {

@@ -12,14 +12,11 @@ interface ImportCaseDialogProps {
 
 const ImportCaseDialog: FunctionComponent<ImportCaseDialogProps> = ({ open, onClose, onSelectCase }) => {
     const intl = useIntl();
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const rootNetworkUuid = useSelector((state: AppState) => state.rootNetworkUuid);
-    const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const processSelectedElements = (selectedElements: TreeViewFinderNodeProps[]) => {
         if (selectedElements && selectedElements.length > 0) {
             const selectedCase = selectedElements[0]; // Assuming single selection
-            onSelectCase(selectedCase); 
+            onSelectCase(selectedCase);
         }
         onClose();
     };

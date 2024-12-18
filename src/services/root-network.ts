@@ -5,64 +5,45 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { backendFetch } from './utils';
+import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
 import { ElementType } from '@gridsuite/commons-ui';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
-export function createRootNetworka(
-    newParameter: any,
-    name: string,
-    parameterType: ElementType,
-    description: string,
-    studyUuid: UUID
-) {
-    let urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('name', name);
-    urlSearchParams.append('type', parameterType);
-    urlSearchParams.append('description', description);
-    urlSearchParams.append('studyUuid', studyUuid);
-
-    urlSearchParams.toString();
-    const createRootNetworkUrl =
-        PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/root-networks?' +
+export function fetchRootNetworks(studyUuid: UUID) {
+    console.info('Fetching root network for studyUuid : ', studyUuid);
+    const urlSearchParams = new URLSearchParams();
+    const rootNetworkssGetUrl =
+        `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks` +
         urlSearchParams.toString();
 
-    console.debug(createRootNetworkUrl);
-
-    return backendFetch(createRootNetworkUrl, {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newParameter),
-    });
+    console.debug(rootNetworkssGetUrl);
+    return backendFetchJson(rootNetworkssGetUrl);
 }
 
 export const createRootNetwork = (
-    caseUuid: UUID,
+    caseUuid: UUID | undefined,
     caseFormat: string,
-    studyUuid: UUID,
+    studyUuid: UUID | null,
     importParameters: Record<string, any>
 ) => {
-    const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append('caseUuid', caseUuid);
-    urlSearchParams.append('caseFormat', caseFormat);
+    if (!studyUuid || !caseUuid) {
+        throw new Error('studyUuid and caseUuid are required parameters.');
+    }
 
-    const recreateStudyNetworkUrl =
+    const createRootNetworkUrl =
         PREFIX_STUDY_QUERIES +
-        '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
-        '/network?' +
-        urlSearchParams.toString();
+        `/v1/studies/${encodeURIComponent(studyUuid)}/root-networks?` +
+        `caseUuid=${encodeURIComponent(caseUuid)}&` +
+        `caseFormat=${encodeURIComponent(caseFormat)}`;
 
-    console.debug(recreateStudyNetworkUrl);
-
-    return backendFetch(recreateStudyNetworkUrl, {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(importParameters),
+    console.debug(createRootNetworkUrl);
+    return backendFetch(createRootNetworkUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: importParameters ? JSON.stringify(importParameters) : '',
     });
 };

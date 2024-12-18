@@ -1228,6 +1228,8 @@
     "SaveModificationTo": "Enregistrer dans GridExplore",
     "ModificationsSelection": "Sélection des modifications",
     "errCreateModificationsMsg": "Une erreur est survenue lors de la création des modifications",
+    "errCreateRootNetworksMsg": "Une erreur est survenue lors de la création du réseau racine",
+
     "infoCreateModificationsMsg": "Création d'une modification composite de {nbModifications} modifications unitaires dans {studyDirectory}",
     "idSelector.idNeeded": "Veuillez sélectionner un ID",
     "SpreadsheetFetchError": "Une erreur est survenue lors du chargement des ouvrages dans le tableur",

@@ -120,7 +120,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                         headerId: 'FetchCountryError',
                     });
                 });
-        }, [studyUuid, currentNode?.id, snackError]);
+        }, [studyUuid, currentNode?.id, snackError, currentRootNetwork]);
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {

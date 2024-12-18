@@ -23,7 +23,7 @@ export interface GetCaseImportParametersReturn {
     parameters: CaseImportParameters[];
 }
 
-export function getCaseImportParameters(caseUuid: UUID): Promise<GetCaseImportParametersReturn> {
+export function getCaseImportParameters(caseUuid: UUID | undefined): Promise<GetCaseImportParametersReturn> {
     console.info(`get import parameters for case '${caseUuid}' ...`);
     const getExportFormatsUrl =
         PREFIX_NETWORK_CONVERSION_SERVER_QUERIES + '/v1/cases/' + caseUuid + '/import-parameters';

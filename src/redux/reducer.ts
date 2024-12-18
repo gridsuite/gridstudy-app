@@ -461,7 +461,6 @@ export interface AppState extends CommonStoreState {
 
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
-    rootNetworkUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
     currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
@@ -625,7 +624,6 @@ const initialTablesState: TablesState = {
 
 const initialState: AppState = {
     studyUuid: null,
-    rootNetworkUuid: null,
     currentTreeNode: null,
     currentRootNetwork: null,
     selectionForCopy: {
@@ -829,8 +827,6 @@ const initialState: AppState = {
 export const reducer = createReducer(initialState, (builder) => {
     builder.addCase(OPEN_STUDY, (state, action: OpenStudyAction) => {
         state.studyUuid = action.studyRef[0];
-        state.rootNetworkUuid = action.rootNetworkRef[0];
-        console.log('=================== ', action.studyRef);
 
         if (action.studyRef[0] != null) {
             state.diagramStates = loadDiagramStateFromSessionStorage(action.studyRef[0]);
@@ -839,7 +835,6 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CLOSE_STUDY, (state, action: CloseStudyAction) => {
         state.studyUuid = null;
-        state.rootNetworkUuid = null;
         state.geoData = null;
         state.networkModificationTreeModel = null;
     });

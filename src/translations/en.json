@@ -1229,6 +1229,7 @@
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
+    "errCreateRootNetworksMsg": "Root Networks creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",

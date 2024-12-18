@@ -618,7 +618,7 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [rootNodeId, lineFullPath, studyUuid, dispatch, snackError]);
+    }, [rootNodeId, currentRootNetwork, lineFullPath, studyUuid, dispatch, snackError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -664,7 +664,7 @@ export const NetworkMapTab = ({
         if (gSMapEquipments) {
             dispatch(resetMapReloaded());
         }
-    }, [currentNode, dispatch, intlRef, snackError, studyUuid]);
+    }, [currentNode, currentRootNetwork, dispatch, intlRef, snackError, studyUuid]);
 
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
