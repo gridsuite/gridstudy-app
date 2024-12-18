@@ -29,10 +29,9 @@ interface BaseReport<T> {
     subReports: T[];
 }
 
-export interface ReportTree extends Omit<BaseReport<ReportTree>, 'severity' | 'subReports'> {
+export interface ReportTree extends Omit<BaseReport<ReportTree>, 'severity'> {
     type: ReportType;
     severity: ReportSeverity;
-    subReports: ReportTree[];
 }
 
 export interface Report extends BaseReport<Report> {}
