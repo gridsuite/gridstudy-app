@@ -119,29 +119,44 @@ export const styles = {
     grid: { height: 500, width: '100%' },
 };
 
-/**
- * Convert a camelCase string to SNAKE_CASE format and map it to a key in the FieldType enum.
- * @param key - The camelCase string to be converted.
- * @returns The corresponding value from the FieldType enum.
- */
-const convertCamelToSnake = (key: string) =>
-    FieldType[
-        key
-            .split(/\.?(?=[A-Z])/)
-            .join('_')
-            .toUpperCase() as keyof typeof FieldType
-    ];
-
 export const convertInputValue = (key: string, value: { value: string | number }) => {
-    if (key === EQUIPMENT_ID) {
-        return value;
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case G:
+            return convertInputValues(FieldType.G, value?.value);
+        case B:
+            return convertInputValues(FieldType.B, value?.value);
+        case G1:
+            return convertInputValues(FieldType.G1, value?.value);
+        case G2:
+            return convertInputValues(FieldType.G2, value?.value);
+        case B1:
+            return convertInputValues(FieldType.B1, value?.value);
+        case B2:
+            return convertInputValues(FieldType.B2, value?.value);
+        default:
+            return value?.value;
     }
-    return convertInputValues(convertCamelToSnake(key), value?.value);
 };
 
 export const convertOutputValue = (key: string, value: string | number) => {
-    if (key === EQUIPMENT_ID) {
-        return value;
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case G:
+            return toModificationOperation(convertOutputValues(FieldType.G, value));
+        case B:
+            return toModificationOperation(convertOutputValues(FieldType.B, value));
+        case G1:
+            return toModificationOperation(convertOutputValues(FieldType.G1, value));
+        case G2:
+            return toModificationOperation(convertOutputValues(FieldType.G2, value));
+        case B1:
+            return toModificationOperation(convertOutputValues(FieldType.B1, value));
+        case B2:
+            return toModificationOperation(convertOutputValues(FieldType.B2, value));
+        default:
+            return toModificationOperation(value);
     }
-    return toModificationOperation(convertOutputValues(convertCamelToSnake(key), value));
 };
