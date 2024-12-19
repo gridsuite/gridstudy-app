@@ -12,6 +12,7 @@ import {
     PARAM_SA_LOW_VOLTAGE_PROPORTIONAL_THRESHOLD,
 } from 'utils/config-params';
 import yup from '../../../../utils/yup-config';
+import { NumberSchema } from 'yup';
 
 export const LIMIT_REDUCTIONS_FORM = 'limitReductionsForm';
 export const VOLTAGE_LEVELS_FORM = 'voltageLevelsForm';
@@ -78,6 +79,22 @@ export const COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS = [
     },
 ];
 
+//TODO: a cleaner solution can be done by using yup.array()
+// Instead of creating a schema for each limit duration individually,
+// we can use yup.array() to define an array of limit durations directly.
+const getLimitDurationsFormSchema = (nbLimits: number) => {
+    let limitDurationsFormSchema: Record<string, NumberSchema> = {};
+    for (let i = 0; i < nbLimits; i++) {
+        limitDurationsFormSchema[LIMIT_DURATION_FORM + i] = yup
+            .number()
+            .min(0, 'RealPercentage')
+            .max(1, 'RealPercentage')
+            .nullable()
+            .required();
+    }
+    return limitDurationsFormSchema;
+};
+
 export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
     return yup
         .object()
@@ -86,11 +103,7 @@ export const getLimitReductionsFormSchema = (nbTemporaryLimits: number) => {
                 yup.object().shape({
                     [VOLTAGE_LEVELS_FORM]: yup.string(),
                     [IST_FORM]: yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required(),
-                    [LIMIT_DURATION_FORM]: yup
-                        .array()
-                        .length(nbTemporaryLimits)
-                        .of(yup.number().min(0, 'RealPercentage').max(1, 'RealPercentage').nullable().required())
-                        .required(),
+                    ...getLimitDurationsFormSchema(nbTemporaryLimits),
                 })
             ),
         })
