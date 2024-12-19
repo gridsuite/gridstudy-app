@@ -5,19 +5,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { MODIFICATION_TYPES } from '@gridsuite/commons-ui';
+import { convertInputValues, convertOutputValues, FieldType, MODIFICATION_TYPES } from '@gridsuite/commons-ui';
 import {
+    B,
+    B1,
+    B2,
     CONNECTED,
     CONNECTED1,
     CONNECTED2,
+    COUNTRY,
     ENERGY_SOURCE,
     EQUIPMENT_ID,
     FORCED_OUTAGE_RATE,
+    G,
+    G1,
+    G2,
     HIGH_VOLTAGE_LIMIT,
     LOAD_TYPE,
     LOW_VOLTAGE_LIMIT,
-    G,
-    B,
     MARGINAL_COST,
     MAX_P,
     MAX_Q_AT_NOMINAL_V,
@@ -29,27 +34,21 @@ import {
     PLANNED_ACTIVE_POWER_SET_POINT,
     PLANNED_OUTAGE_RATE,
     Q0,
+    R,
     RATED_S,
     RATED_U1,
     RATED_U2,
     SECTION_COUNT,
-    R,
-    X,
     SHUNT_COMPENSATOR_TYPE,
-    G1,
-    B1,
-    G2,
-    B2,
     STEP_UP_TRANSFORMER_REACTANCE,
-    COUNTRY,
     TARGET_P,
     TARGET_Q,
     TARGET_V,
     TRANSIENT_REACTANCE,
     VOLTAGE_REGULATION_ON,
+    X,
 } from 'components/utils/field-constants';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
-import { toModificationOperation } from 'components/utils/utils';
+import { toModificationOperation } from '../../../utils/utils';
 
 export interface TabularModificationFields {
     [key: string]: string[];
@@ -112,42 +111,52 @@ export const formatModification = (modification: Modification) => {
     return rest;
 };
 
-export const convertValueFromBackToFront = (key: string, value: { value: string | number }) => {
-    switch (key) {
-        case EQUIPMENT_ID:
-            return value;
-        case G:
-        case B:
-        case G1:
-        case G2:
-        case B1:
-        case B2:
-            return unitToMicroUnit(value?.value);
-        default:
-            return value?.value;
-    }
-};
-
-export const convertValueFromFrontToBack = (key: string, value: string | number) => {
-    switch (key) {
-        case EQUIPMENT_ID:
-            return value;
-        case G:
-        case B:
-        case G1:
-        case G2:
-        case B1:
-        case B2:
-            return toModificationOperation(microUnitToUnit(value));
-        default:
-            return toModificationOperation(value);
-    }
-};
-
 export const getEquipmentTypeFromModificationType = (type: string) => {
     return Object.keys(TABULAR_MODIFICATION_TYPES).find((key) => TABULAR_MODIFICATION_TYPES[key] === type);
 };
 
 export const styles = {
     grid: { height: 500, width: '100%' },
+};
+
+export const convertInputValue = (key: string, value: { value: string | number }) => {
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case G:
+            return convertInputValues(FieldType.G, value?.value);
+        case B:
+            return convertInputValues(FieldType.B, value?.value);
+        case G1:
+            return convertInputValues(FieldType.G1, value?.value);
+        case G2:
+            return convertInputValues(FieldType.G2, value?.value);
+        case B1:
+            return convertInputValues(FieldType.B1, value?.value);
+        case B2:
+            return convertInputValues(FieldType.B2, value?.value);
+        default:
+            return value?.value;
+    }
+};
+
+export const convertOutputValue = (key: string, value: string | number) => {
+    switch (key) {
+        case EQUIPMENT_ID:
+            return value;
+        case G:
+            return toModificationOperation(convertOutputValues(FieldType.G, value));
+        case B:
+            return toModificationOperation(convertOutputValues(FieldType.B, value));
+        case G1:
+            return toModificationOperation(convertOutputValues(FieldType.G1, value));
+        case G2:
+            return toModificationOperation(convertOutputValues(FieldType.G2, value));
+        case B1:
+            return toModificationOperation(convertOutputValues(FieldType.B1, value));
+        case B2:
+            return toModificationOperation(convertOutputValues(FieldType.B2, value));
+        default:
+            return toModificationOperation(value);
+    }
 };
