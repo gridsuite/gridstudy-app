@@ -7,10 +7,16 @@
 
 import { sanitizeString } from '../dialog-utils';
 import {
+    CURRENT_LIMITS,
     CURRENT_LIMITS_1,
     CURRENT_LIMITS_2,
+    ID,
     LIMITS,
+    LIMITS_GROUP_1,
+    LIMITS_GROUP_2,
     PERMANENT_LIMIT,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
     TEMPORARY_LIMIT_NAME,
@@ -21,15 +27,31 @@ import { areArrayElementsUnique, formatTemporaryLimits } from 'components/utils/
 import yup from 'components/utils/yup-config';
 import { isNodeBuilt } from '../../graph/util/model-functions';
 
-const temporaryLimitsTableValidationSchema = () => ({
+const limitsGroupValidationSchema = () => ({
+    [ID]: yup.string().nullable(),
+    [CURRENT_LIMITS]: yup.object().shape(currentLimitsValidationSchema()),
+});
+
+const currentLimitsValidationSchema = () => ({
     [PERMANENT_LIMIT]: yup.number().nullable().positive('permanentCurrentLimitMustBeGreaterThanZero'),
     [TEMPORARY_LIMITS]: yup
         .array()
         .of(
-            yup.object().shape({
-                [TEMPORARY_LIMIT_NAME]: yup.string().required(),
-                [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
-                [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+            yup.lazy((item) => {
+                if (item[TEMPORARY_LIMIT_NAME]) {
+                    return yup.object().shape({
+                        [TEMPORARY_LIMIT_NAME]: yup.string().required(),
+                        [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
+                        [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+                    });
+                }
+                // totally empty lines are fine : they will be ignored later
+                // TODO : how to force the case when all are empty ? Or should I drop them before ??
+                return yup.object().shape({
+                    [TEMPORARY_LIMIT_NAME]: yup.string().nullable(),
+                    [TEMPORARY_LIMIT_DURATION]: yup.number().nullable().min(0),
+                    [TEMPORARY_LIMIT_VALUE]: yup.number().nullable().positive(),
+                });
             })
         )
         .test('distinctNames', 'TemporaryLimitNameUnicityError', (array) => {
@@ -37,42 +59,65 @@ const temporaryLimitsTableValidationSchema = () => ({
                 .filter((l) => !!l[TEMPORARY_LIMIT_NAME])
                 .map((l) => sanitizeString(l[TEMPORARY_LIMIT_NAME]));
             return areArrayElementsUnique(namesArray);
-        })
-        .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
-            const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]);
-            return areArrayElementsUnique(durationsArray);
         }),
+    /* .test('distinctDurations', 'TemporaryLimitDurationUnicityError', (array) => {
+            const durationsArray = array.map((l) => l[TEMPORARY_LIMIT_DURATION]);
+            return areArrayElementsUnique(durationsArray); // TODO ignorer les lignes vides et réactiver ça
+        }), */
 });
 
-const limitsValidationSchema = (id) => ({
-    [id]: yup.object().shape({
-        [CURRENT_LIMITS_1]: yup.object().shape(temporaryLimitsTableValidationSchema()),
-        [CURRENT_LIMITS_2]: yup.object().shape(temporaryLimitsTableValidationSchema()),
-    }),
-});
+const limitsValidationSchema = (id, onlySelectedLimits = true) =>
+    onlySelectedLimits
+        ? {
+              [id]: yup.object().shape({
+                  [CURRENT_LIMITS_1]: yup.object().shape(currentLimitsValidationSchema()),
+                  [CURRENT_LIMITS_2]: yup.object().shape(currentLimitsValidationSchema()),
+              }),
+          }
+        : {
+              [id]: yup.object().shape({
+                  [LIMITS_GROUP_1]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
+                  [LIMITS_GROUP_2]: yup.array(yup.object().shape(limitsGroupValidationSchema())),
+                  [SELECTED_LIMITS_GROUP_1]: yup.string().nullable(),
+                  [SELECTED_LIMITS_GROUP_2]: yup.string().nullable(),
+              }),
+          };
 
-export const getLimitsValidationSchema = (id = LIMITS) => {
-    return limitsValidationSchema(id);
+export const getLimitsValidationSchema = (id = LIMITS, onlySelectedLimits = true) => {
+    return limitsValidationSchema(id, onlySelectedLimits);
 };
 
-const limitsEmptyFormData = (id) => ({
-    [id]: {
-        [CURRENT_LIMITS_1]: {
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        },
-        [CURRENT_LIMITS_2]: {
-            [PERMANENT_LIMIT]: null,
-            [TEMPORARY_LIMITS]: [],
-        },
-    },
-});
+const limitsEmptyFormData = (id, onlySelectedLimits = true) =>
+    onlySelectedLimits
+        ? {
+              [id]: {
+                  [CURRENT_LIMITS_1]: {
+                      [PERMANENT_LIMIT]: null,
+                      [TEMPORARY_LIMITS]: [],
+                  },
+                  [CURRENT_LIMITS_2]: {
+                      [PERMANENT_LIMIT]: null,
+                      [TEMPORARY_LIMITS]: [],
+                  },
+              },
+          }
+        : {
+              [id]: {
+                  [LIMITS_GROUP_1]: [],
+                  [LIMITS_GROUP_2]: [],
+                  [SELECTED_LIMITS_GROUP_1]: null,
+                  [SELECTED_LIMITS_GROUP_2]: null,
+              },
+          };
 
-export const getLimitsEmptyFormData = (id = LIMITS) => {
-    return limitsEmptyFormData(id);
+export const getLimitsEmptyFormData = (id = LIMITS, onlySelectedLimits = true) => {
+    return limitsEmptyFormData(id, onlySelectedLimits);
 };
 
-export const getLimitsFormData = (
+/**
+ * used when the limit set data only contain the selected limit sets
+ */
+export const getSelectedLimitsFormData = (
     { permanentLimit1 = null, permanentLimit2 = null, temporaryLimits1 = [], temporaryLimits2 = [] },
     id = LIMITS
 ) => ({
@@ -88,11 +133,62 @@ export const getLimitsFormData = (
     },
 });
 
-export const sanitizeLimitNames = (temporaryLimitList) =>
-    temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-        ...temporaryLimit,
-        name: sanitizeString(name),
+/**
+ * used when the limit set data contain all the limit sets data, including the not selected
+ */
+export const getAllLimitsFormData = (
+    {
+        operationalLimitsGroups1 = [],
+        operationalLimitsGroups2 = [],
+        selectedOperationalLimitsGroupId1 = null,
+        selectedOperationalLimitsGroupId2 = null,
+    },
+    id = LIMITS
+) => {
+    return {
+        [id]: {
+            [LIMITS_GROUP_1]: operationalLimitsGroups1,
+            [LIMITS_GROUP_2]: operationalLimitsGroups2,
+            [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroupId1,
+            [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroupId2,
+        },
+    };
+};
+
+/**
+ * delete the empty temporary limits lines
+ */
+export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/) =>
+    limitsGroups.map(({ currentLimits, ...baseData }) => ({
+        ...baseData,
+        currentLimits: {
+            permanentLimit: currentLimits.permanentLimit,
+            temporaryLimits: currentLimits.temporaryLimits
+                .filter(
+                    (limit) =>
+                        // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                        limit.name !== undefined && limit.name !== null && limit.name !== ''
+                )
+                .map(({ name, ...temporaryLimit }) => ({
+                    ...temporaryLimit,
+                    name: sanitizeString(name),
+                })),
+        },
     }));
+
+export const sanitizeLimitNames = (temporaryLimitList /*:TemporaryLimitData[]*/) /*:TemporaryLimitData[]*/ =>
+    temporaryLimitList
+        ? temporaryLimitList
+              .filter(
+                  (limit) =>
+                      // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                      limit.name !== undefined && limit.name !== null && limit.name !== ''
+              )
+              .map(({ name, ...temporaryLimit }) => ({
+                  ...temporaryLimit,
+                  name: sanitizeString(name),
+              }))
+        : [];
 
 const findTemporaryLimit = (temporaryLimits, limit) =>
     temporaryLimits?.find((l) => l.name === limit.name && l.acceptableDuration === limit.acceptableDuration);
