@@ -36,7 +36,7 @@ import {
     connectNotificationsWsUpdateDirectories,
 } from '../services/directory-notification';
 import { useAllComputingStatus } from './computing-status/use-all-computing-status';
-import { fetchCaseName, fetchStudyExists } from '../services/study';
+import { fetchCaseName, fetchStudyExists } from '../services/study/index';
 import { fetchNetworkModificationTree } from '../services/study/tree-subtree';
 import { fetchNetworkExistence, fetchStudyIndexationStatus } from '../services/study/network';
 import { recreateStudyNetwork, reindexAllStudy } from 'services/study/study';

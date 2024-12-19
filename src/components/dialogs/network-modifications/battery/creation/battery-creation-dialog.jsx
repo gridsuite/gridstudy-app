@@ -180,31 +180,33 @@ const BatteryCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, edi
         (battery) => {
             const reactiveLimits = battery[REACTIVE_LIMITS];
             const isReactiveCapabilityCurveOn = reactiveLimits[REACTIVE_CAPABILITY_CURVE_CHOICE] === 'CURVE';
-            createBattery(
-                studyUuid,
-                currentNodeUuid,
-                battery[EQUIPMENT_ID],
-                sanitizeString(battery[EQUIPMENT_NAME]),
-                battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
-                battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
-                battery[CONNECTIVITY]?.[CONNECTION_POSITION],
-                battery[CONNECTIVITY]?.[CONNECTED],
-                battery[MINIMUM_ACTIVE_POWER],
-                battery[MAXIMUM_ACTIVE_POWER],
-                isReactiveCapabilityCurveOn,
-                isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
-                isReactiveCapabilityCurveOn ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE] : null,
-                battery[ACTIVE_POWER_SET_POINT],
-                battery[REACTIVE_POWER_SET_POINT],
-                battery[FREQUENCY_REGULATION],
-                battery[DROOP] ?? null,
-                !!editData,
-                editData?.uuid ?? null,
-                toModificationProperties(battery)
-            ).catch((error) => {
+            createBattery({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                id: battery[EQUIPMENT_ID],
+                name: sanitizeString(battery[EQUIPMENT_NAME]),
+                voltageLevelId: battery[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                busOrBusbarSectionId: battery[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                connectionName: sanitizeString(battery[CONNECTIVITY]?.[CONNECTION_NAME]),
+                connectionDirection: battery[CONNECTIVITY]?.[CONNECTION_DIRECTION] ?? UNDEFINED_CONNECTION_DIRECTION,
+                connectionPosition: battery[CONNECTIVITY]?.[CONNECTION_POSITION],
+                terminalConnected: battery[CONNECTIVITY]?.[CONNECTED],
+                minP: battery[MINIMUM_ACTIVE_POWER],
+                maxP: battery[MAXIMUM_ACTIVE_POWER],
+                isReactiveCapabilityCurveOn: isReactiveCapabilityCurveOn,
+                minQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MINIMUM_REACTIVE_POWER],
+                maxQ: isReactiveCapabilityCurveOn ? null : reactiveLimits[MAXIMUM_REACTIVE_POWER],
+                reactiveCapabilityCurve: isReactiveCapabilityCurveOn
+                    ? reactiveLimits[REACTIVE_CAPABILITY_CURVE_TABLE]
+                    : null,
+                targetP: battery[ACTIVE_POWER_SET_POINT],
+                targetQ: battery[REACTIVE_POWER_SET_POINT],
+                participate: battery[FREQUENCY_REGULATION],
+                droop: battery[DROOP] ?? null,
+                isUpdate: !!editData,
+                modificationUuid: editData?.uuid ?? null,
+                properties: toModificationProperties(battery),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'BatteryCreationError',

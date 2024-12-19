@@ -92,7 +92,10 @@ export interface ConverterStationInterfaceEditData {
     maxQ: number | null;
 }
 
-type AttributeModification<T> = { value: T; op: string };
+export interface AttributeModification<T> {
+    value: T;
+    op: string;
+}
 
 export interface ConverterStationModificationInterfaceEditData {
     equipmentId: string;
@@ -133,6 +136,14 @@ export interface ConverterStationElementInfos {
     reactivePower?: number;
     voltageRegulationOn?: boolean;
     voltage?: number;
+}
+export interface ReactiveCapabilityCurvePoint {
+    p: number | null;
+    oldP: number | null;
+    minQ: number | null;
+    oldMinQ: number | null;
+    maxQ: number | null;
+    oldMaxQ: number | null;
 }
 
 // the backend return a converterStationElementInfo.reactiveCapabilityCurvePoints

@@ -128,7 +128,7 @@ const phaseTapChangerValidationSchema = (id) => ({
                 return areNumbersOrdered(alphaArray) && areArrayElementsUnique(alphaArray);
             }),
         //regulating terminal fields
-        //TODO: is it possible to move it to regulating-terminal-utils.js properly since it depends on "ENABLED" ?
+        //TODO: is it possible to move it to regulating-terminal-utils.ts properly since it depends on "ENABLED" ?
         [VOLTAGE_LEVEL]: yup
             .object()
             .nullable()

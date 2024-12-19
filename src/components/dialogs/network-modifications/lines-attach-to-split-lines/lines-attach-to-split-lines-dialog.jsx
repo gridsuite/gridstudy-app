@@ -113,20 +113,20 @@ const LinesAttachToSplitLinesDialog = ({
 
     const onSubmit = useCallback(
         (linesAttachToSplitLine) => {
-            linesAttachToSplitLines(
-                studyUuid,
-                currentNodeUuid,
-                editData ? editData.uuid : undefined,
-                linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
-                linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
-                linesAttachToSplitLine[ATTACHED_LINE_ID],
-                linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
-                linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
-                linesAttachToSplitLine[REPLACING_LINE_1_ID],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
-                linesAttachToSplitLine[REPLACING_LINE_2_ID],
-                sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME])
-            ).catch((error) => {
+            linesAttachToSplitLines({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                modificationUuid: editData ? editData.uuid : undefined,
+                lineToAttachTo1Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_1_ID],
+                lineToAttachTo2Id: linesAttachToSplitLine[LINE_TO_ATTACH_TO_2_ID],
+                attachedLineId: linesAttachToSplitLine[ATTACHED_LINE_ID],
+                voltageLevelId: linesAttachToSplitLine[CONNECTIVITY]?.[VOLTAGE_LEVEL]?.[ID],
+                bbsBusId: linesAttachToSplitLine[CONNECTIVITY]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
+                replacingLine1Id: linesAttachToSplitLine[REPLACING_LINE_1_ID],
+                replacingLine1Name: sanitizeString(linesAttachToSplitLine[REPLACING_LINE_1_NAME]),
+                replacingLine2Id: linesAttachToSplitLine[REPLACING_LINE_2_ID],
+                replacingLine2Name: sanitizeString(linesAttachToSplitLine[REPLACING_LINE_2_NAME]),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineAttachmentError',
