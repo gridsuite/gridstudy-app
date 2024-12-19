@@ -1,0 +1,143 @@
+/**
+ * Copyright (c) 2024, RTE (http://www.rte-france.com)
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
+
+import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { getEnumLabelById } from 'components/utils/utils';
+import { EnumOption } from 'components/utils/utils-type';
+import CountryCellRenderer from '../utils/country-cell-render';
+import { BooleanCellRenderer, DefaultCellRenderer } from '../utils/cell-renderers';
+import EnumCellRenderer from '../utils/enum-cell-renderer';
+import { Writable } from 'type-fest';
+import RunningStatus from 'components/utils/running-status';
+
+const contains = (target: string, lookingFor: string): boolean => {
+    if (target && lookingFor) {
+        return target?.toLowerCase().indexOf(lookingFor.toLowerCase()) >= 0;
+    }
+    return false;
+};
+
+export const getEnumConfig = (enumOptions: Readonly<EnumOption[]>) => {
+    return {
+        filter: 'agTextColumnFilter',
+        filterParams: {
+            caseSensitive: false,
+            maxNumConditions: 1,
+            filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
+            textMatcher: ({ value, filterText, context }: any): boolean => {
+                if (value) {
+                    const label = enumOptions
+                        ? getEnumLabelById(enumOptions as EnumOption[], value.toUpperCase())
+                        : value;
+                    const displayedValue = label ? context.intl.formatMessage({ id: label }) : value;
+                    return contains(displayedValue, filterText || '');
+                }
+                return false;
+            },
+            debounceMs: 200,
+        },
+        cellRenderer: EnumCellRenderer,
+        cellRendererParams: {
+            enumOptions: enumOptions as Writable<typeof enumOptions>,
+            // @ts-expect-error TODO TS1360: Property value is missing in type
+        } satisfies EnumCellRendererProps,
+        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
+    };
+};
+
+const textType = {
+    filter: 'agTextColumnFilter',
+    filterParams: {
+        caseSensitive: false,
+        maxNumConditions: 1,
+        filterOptions: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+    },
+    cellRenderer: DefaultCellRenderer,
+    sortable: true,
+    resizable: true,
+};
+
+const numericType = {
+    filter: 'agNumberColumnFilter',
+    filterParams: {
+        maxNumConditions: 1,
+        filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
+        debounceMs: 200,
+    },
+    cellRenderer: DefaultCellRenderer,
+    sortable: true,
+    resizable: true,
+};
+
+const numericCanBeInvalidatedType = {
+    filter: 'agNumberColumnFilter',
+    filterParams: {
+        maxNumConditions: 1,
+        filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
+        debounceMs: 200,
+    },
+    cellRendererSelector: ({ context }: { context: any }) => {
+        return {
+            component: DefaultCellRenderer,
+            params: {
+                isValueInvalid: context.loadFlowStatus !== RunningStatus.SUCCEED,
+            },
+        };
+    },
+
+    sortable: true,
+    resizable: true,
+};
+
+const booleanType = {
+    filter: 'agTextColumnFilter',
+    filterParams: {
+        caseSensitive: false,
+        maxNumConditions: 1,
+        filterOptions: [FILTER_TEXT_COMPARATORS.EQUALS],
+        textMatcher: ({ value, filterText, context }: any): boolean => {
+            if (value) {
+                const displayedValue = context.intl.formatMessage({ id: value }) ?? value;
+                return contains(displayedValue, filterText || '');
+            }
+            return false;
+        },
+        debounceMs: 200,
+    },
+    cellRenderer: BooleanCellRenderer,
+    sortable: true,
+    resizable: true,
+};
+
+const countryType = {
+    filter: 'agTextColumnFilter',
+    filterParams: {
+        caseSensitive: false,
+        maxNumConditions: 1,
+        filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
+        textMatcher: ({ value, filterText, context }: { value: string; filterText: string; context: any }) => {
+            if (value) {
+                const countryCode = value?.toUpperCase();
+                const countryName = context?.translateCountryCode(countryCode);
+                return contains(countryName, filterText || '') || contains(value, filterText);
+            }
+            return false;
+        },
+        debounceMs: 200,
+    },
+    cellRenderer: CountryCellRenderer,
+    sortable: true,
+    resizable: true,
+};
+
+export const defaultColumnType = {
+    textType,
+    numericType,
+    numericCanBeInvalidatedType,
+    booleanType,
+    countryType,
+};

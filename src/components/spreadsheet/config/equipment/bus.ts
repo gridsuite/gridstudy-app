@@ -8,14 +8,15 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    typeAndFetchers,
-} from './common-config';
+import { typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
+import {
+    COUNTRY_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const BUS_TAB_DEF = {
     index: 14,
@@ -25,52 +26,49 @@ export const BUS_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Magnitude',
             field: 'v',
             numeric: true,
             fractionDigits: 1,
-            canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
         },
         {
             id: 'Angle',
             field: 'angle',
             numeric: true,
             fractionDigits: 1,
-            canBeInvalidated: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
         },
         {
             id: 'ConnectedComponent',
             field: 'connectedComponentNum',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'SynchronousComponent',
             field: 'synchronousComponentNum',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
             numeric: true,
             fractionDigits: 0,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
         },
         genericColumnOfProperties,
     ],

@@ -12,21 +12,16 @@ import {
     type EquipmentTableDataEditorProps,
     GeneratorRegulatingTerminalEditor,
 } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback, ValueGetterFunc } from 'ag-grid-community';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import { editableCellStyle, editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableCellStyle,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from '../../utils/constants';
 import { ENERGY_SOURCES, REGULATION_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import {
@@ -35,6 +30,8 @@ import {
     type ICustomCellEditorParams,
     numericalCellEditorConfig,
 } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
+import { getEnumConfig } from '../column-type-filter-config';
 
 const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
@@ -71,37 +68,36 @@ export const GENERATOR_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
             ...editableColumnConfig,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 0,
         },
         {
             id: 'energySource',
             field: 'energySource',
-            ...getDefaultEnumConfig(ENERGY_SOURCES),
+            ...getEnumConfig(ENERGY_SOURCES),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.energySource, ENERGY_SOURCES),
         },
@@ -110,9 +106,10 @@ export const GENERATOR_TAB_DEF = {
             field: 'p',
             numeric: true,
             fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.p);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -120,16 +117,17 @@ export const GENERATOR_TAB_DEF = {
             field: 'q',
             numeric: true,
             fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+
+            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            valueGetter: (params) => {
+                return params.context.applyFluxConvention(params.data.q);
+            },
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             ...editableColumnConfig,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
@@ -146,7 +144,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'ActivePowerRegulationDroop',
             field: 'activePowerControl.droop',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
@@ -170,7 +168,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'minP',
             field: 'minP',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.minP),
@@ -183,7 +181,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'maxP',
             field: 'maxP',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.maxP),
@@ -196,7 +194,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'activePowerSetpoint',
             field: 'targetP',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetP),
             fractionDigits: 1,
@@ -211,7 +209,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'reactivePowerSetpoint',
             field: 'targetQ',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetQ),
@@ -226,8 +224,7 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'voltageRegulationOn',
             field: 'voltageRegulatorOn',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             ...editableColumnConfig,
             ...booleanCellEditorConfig((params) => params.data?.voltageRegulatorOn ?? false),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -236,7 +233,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'voltageSetpoint',
             field: 'targetV',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetV),
@@ -251,7 +248,7 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'ReactivePercentageVoltageRegulation',
             field: 'coordinatedReactiveControl.qPercent',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             numeric: true,
@@ -279,7 +276,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'directTransX',
             field: 'generatorShortCircuit.directTransX',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
@@ -300,7 +297,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'stepUpTransformerX',
             field: 'generatorShortCircuit.stepUpTransformerX',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
@@ -321,7 +318,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'plannedActivePowerSetPoint',
             field: 'generatorStartup.plannedActivePowerSetPoint',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
@@ -344,7 +341,7 @@ export const GENERATOR_TAB_DEF = {
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.marginalCost),
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
@@ -363,7 +360,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'plannedOutageRate',
             field: 'generatorStartup.plannedOutageRate',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
@@ -386,7 +383,7 @@ export const GENERATOR_TAB_DEF = {
             id: 'forcedOutageRate',
             field: 'generatorStartup.forcedOutageRate',
             numeric: true,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 2,
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
@@ -408,22 +405,20 @@ export const GENERATOR_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RegulationTypeText',
             field: 'RegulationTypeText',
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
+            ...getEnumConfig(Object.values(REGULATION_TYPES)),
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.RegulationTypeText, Object.values(REGULATION_TYPES)),
         },
         {
             id: 'RegulatingTerminalGenerator',
             field: 'RegulatingTerminalGenerator',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
             valueGetter: RegulatingTerminalCellGetter,
             cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
             editable: isEditableRegulatingTerminalCell,
