@@ -261,9 +261,9 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
         // to the maximum column placement values (per row) of the nodes on the left.
         // The resulting space we find represents how much we can shift the current column to the left.
 
-        const currentNodeFamilySize = 1 + countNodes(nodes, currentNodeId as UUID);
+        const currentSubTreeSize = 1 + countNodes(nodes, currentNodeId as UUID);
         const indexOfCurrentNode = nodes.findIndex((n) => n.id === currentNodeId);
-        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentNodeFamilySize);
+        const nodesOfTheCurrentBranch = nodes.slice(indexOfCurrentNode, indexOfCurrentNode + currentSubTreeSize);
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(nodesOfTheCurrentBranch, placements);
 
         // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
@@ -341,39 +341,6 @@ export function getFirstAncestorWithSibling(
         return getFirstAncestorWithSibling(nodes, nodesMap, nodesMap.get(descendantNode.parentId));
     }
     return undefined;
-}
-
-/**
- * Will find the sibling node whose X position is closer to xDestination in the X range provided.
- */
-export function findClosestSiblingInRange(
-    nodes: CurrentTreeNode[],
-    node: CurrentTreeNode,
-    xOrigin: number,
-    xDestination: number
-): CurrentTreeNode | null {
-    const minX = Math.min(xOrigin, xDestination);
-    const maxX = Math.max(xOrigin, xDestination);
-    const siblingNodes = findSiblings(nodes, node);
-    const nodesBetween = siblingNodes.filter((n) => n.position.x < maxX && n.position.x > minX);
-    if (nodesBetween.length > 0) {
-        const closestNode = nodesBetween.reduce(
-            (closest, current) =>
-                Math.abs(current.position.x - xDestination) < Math.abs(closest.position.x - xDestination)
-                    ? current
-                    : closest,
-            nodesBetween[0]
-        );
-        return closestNode;
-    }
-    return null;
-}
-
-/**
- * Will find the siblings of a provided node (all siblings have the same parent).
- */
-function findSiblings(nodes: CurrentTreeNode[], node: CurrentTreeNode): CurrentTreeNode[] {
-    return nodes.filter((n) => n.parentId === node.parentId && n.id !== node.id);
 }
 
 /**
