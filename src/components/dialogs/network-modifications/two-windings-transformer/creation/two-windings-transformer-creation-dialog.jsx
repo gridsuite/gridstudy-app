@@ -19,8 +19,7 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
+    CURRENT_LIMITS,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_ID,
@@ -29,9 +28,10 @@ import {
     G,
     ID,
     LIMITS,
+    LIMITS_GROUP_1,
+    LIMITS_GROUP_2,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
-    PERMANENT_LIMIT,
     PHASE_TAP_CHANGER,
     R,
     RATED_S,
@@ -42,11 +42,12 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
     TARGET_V,
-    TEMPORARY_LIMITS,
     VOLTAGE_LEVEL,
     X,
 } from 'components/utils/field-constants';
@@ -90,8 +91,9 @@ import {
 import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
 import {
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getAllLimitsFormData,
     getLimitsValidationSchema,
+    sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
@@ -119,7 +121,7 @@ const emptyFormData = {
     [EQUIPMENT_ID]: '',
     [EQUIPMENT_NAME]: '',
     ...getTwoWindingsTransformerEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(LIMITS, false),
     ...getRatioTapChangerEmptyFormData(),
     ...getPhaseTapChangerEmptyFormData(),
     ...emptyProperties,
@@ -131,7 +133,7 @@ const formSchema = yup
         [EQUIPMENT_ID]: yup.string().required(),
         [EQUIPMENT_NAME]: yup.string(),
         ...getTwoWindingsTransformerValidationSchema(),
-        ...getLimitsValidationSchema(),
+        ...getLimitsValidationSchema(LIMITS, false),
         ...getRatioTapChangerValidationSchema(),
         ...getPhaseTapChangerValidationSchema(),
     })
@@ -248,15 +250,11 @@ const TwoWindingsTransformerCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getLimitsFormData({
-                    permanentLimit1: twt.currentLimits1?.permanentLimit,
-                    permanentLimit2: twt.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
-                    ),
+                ...getAllLimitsFormData({
+                    [LIMITS_GROUP_1]: twt.operationalLimitsGroups1,
+                    [LIMITS_GROUP_2]: twt.operationalLimitsGroups2,
+                    selectedOperationalLimitsGroupId1: twt.selectedOperationalLimitsGroupId1 ?? null,
+                    selectedOperationalLimitsGroupId2: twt.selectedOperationalLimitsGroupId2 ?? null,
                 }),
                 ...getPhaseTapChangerFormData({
                     enabled: twt?.[PHASE_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -302,6 +300,22 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
+    const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
+        let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+        if (completeLimitsGroups) {
+            completeLimitsGroups.forEach((elt) =>
+                formattedCompleteLimitsGroups.push({
+                    id: elt.id,
+                    [CURRENT_LIMITS]: {
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                    },
+                })
+            );
+        }
+        return formattedCompleteLimitsGroups;
+    };
+
     const fromSearchCopyToFormValues = useCallback(
         (twt) => {
             reset(
@@ -337,15 +351,11 @@ const TwoWindingsTransformerCreationDialog = ({
                             CONNECTIVITY_2
                         ),
                     }),
-                    ...getLimitsFormData({
-                        permanentLimit1: twt.currentLimits1?.permanentLimit,
-                        permanentLimit2: twt.currentLimits2?.permanentLimit,
-                        temporaryLimits1: addSelectedFieldToRows(
-                            formatTemporaryLimits(twt.currentLimits1?.temporaryLimits)
-                        ),
-                        temporaryLimits2: addSelectedFieldToRows(
-                            formatTemporaryLimits(twt.currentLimits2?.temporaryLimits)
-                        ),
+                    ...getAllLimitsFormData({
+                        [LIMITS_GROUP_1]: formatCompleteCurrentLimit(twt.currentLimits1),
+                        [LIMITS_GROUP_2]: formatCompleteCurrentLimit(twt.currentLimits2),
+                        [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroupId1 ?? null,
+                        [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroupId2 ?? null,
                     }),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -480,28 +490,12 @@ const TwoWindingsTransformerCreationDialog = ({
         }
     };
 
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
-
     const onSubmit = useCallback(
         (twt) => {
             const enablePhaseTapChanger = twt[PHASE_TAP_CHANGER]?.[ENABLED];
             const enableRatioTapChanger = twt[RATIO_TAP_CHANGER]?.[ENABLED];
             const characteristics = twt[CHARACTERISTICS];
             const limits = twt[LIMITS];
-
-            const currentLimits1 = {
-                permanentLimit: limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-            };
-
-            const currentLimits2 = {
-                permanentLimit: limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                temporaryLimits: sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
-            };
 
             characteristics[G] = microUnitToUnit(characteristics[G]);
             characteristics[B] = microUnitToUnit(characteristics[B]);
@@ -571,8 +565,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[RATED_S] ?? '',
                 characteristics[RATED_U1],
                 characteristics[RATED_U2],
-                currentLimits1,
-                currentLimits2,
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_1]),
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_2]),
+                limits[SELECTED_LIMITS_GROUP_1],
+                limits[SELECTED_LIMITS_GROUP_2],
                 characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],
