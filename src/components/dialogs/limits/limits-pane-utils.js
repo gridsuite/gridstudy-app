@@ -145,15 +145,15 @@ export const getAllLimitsFormData = (
     },
     id = LIMITS
 ) => {
-    return ({
+    return {
         [id]: {
             [LIMITS_GROUP_1]: operationalLimitsGroups1,
             [LIMITS_GROUP_2]: operationalLimitsGroups2,
             [SELECTED_LIMITS_GROUP_1]: selectedOperationalLimitsGroupId1,
             [SELECTED_LIMITS_GROUP_2]: selectedOperationalLimitsGroupId2,
         },
-    });
-}
+    };
+};
 
 /**
  * delete the empty temporary limits lines
@@ -161,22 +161,20 @@ export const getAllLimitsFormData = (
 export const sanitizeLimitsGroups = (limitsGroups /*: OperationalLimitsGroup[]*/) =>
     limitsGroups.map(({ currentLimits, ...baseData }) => ({
         ...baseData,
-        currentLimits:
-            {
-                permanentLimit: currentLimits.permanentLimit,
-                temporaryLimits: currentLimits.temporaryLimits
-                    .filter(
-                        (limit) =>
-                            // completely empty lines should be filtered out (the interface display always some lines even if empty)
-                            limit.name !== undefined && limit.name !== null && limit.name !== ''
-                    )
-                    .map(({name, ...temporaryLimit}) => ({
-                        ...temporaryLimit,
-                        name: sanitizeString(name),
-                    })),
-            }
-    })
-);
+        currentLimits: {
+            permanentLimit: currentLimits.permanentLimit,
+            temporaryLimits: currentLimits.temporaryLimits
+                .filter(
+                    (limit) =>
+                        // completely empty lines should be filtered out (the interface display always some lines even if empty)
+                        limit.name !== undefined && limit.name !== null && limit.name !== ''
+                )
+                .map(({ name, ...temporaryLimit }) => ({
+                    ...temporaryLimit,
+                    name: sanitizeString(name),
+                })),
+        },
+    }));
 
 export const sanitizeLimitNames = (temporaryLimitList /*:TemporaryLimitData[]*/) /*:TemporaryLimitData[]*/ =>
     temporaryLimitList

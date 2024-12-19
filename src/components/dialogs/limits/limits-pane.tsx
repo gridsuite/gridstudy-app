@@ -24,7 +24,6 @@ import { SelectedOperationalLimitGroup } from './selected-operational-limit-grou
 import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
-import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { OperationalLimitsGroup } from './limits-type';
 
 const styles = {
@@ -84,8 +83,10 @@ export function LimitsPane({
         // all the limit sets have to be present in both sides even if empty
         // the cleaning is done at the validation
         limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
-            if (limitsGroup1.id &&
-                !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)) {
+            if (
+                limitsGroup1.id &&
+                !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)
+            ) {
                 useFieldArrayLimitsGroups2.append({
                     [ID]: limitsGroup1.id,
                     [CURRENT_LIMITS]: {
@@ -96,8 +97,10 @@ export function LimitsPane({
             }
         });
         limitsGroups2.forEach((limitsGroup2: OperationalLimitsGroup) => {
-            if (limitsGroup2.id &&
-                !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)) {
+            if (
+                limitsGroup2.id &&
+                !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)
+            ) {
                 useFieldArrayLimitsGroups1.append({
                     [ID]: limitsGroup2.id,
                     [CURRENT_LIMITS]: {
@@ -228,8 +231,6 @@ export function LimitsPane({
                                         ? styles.limitsBackground
                                         : styles.limitsBackgroundUnselected
                                 }
-                                icon={<DensityMediumIcon fontSize={'small'} />}
-                                iconPosition="end"
                             />
                         ))}
                     </Tabs>

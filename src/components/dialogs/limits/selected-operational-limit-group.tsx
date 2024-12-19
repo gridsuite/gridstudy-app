@@ -24,7 +24,7 @@ export const SelectedOperationalLimitGroup = ({
     });
 
     const limitSets: string[] = useMemo(
-        () => optionsValues ? optionsValues.map((optionObj: OperationalLimitsGroup) => optionObj.id) : [],
+        () => (optionsValues ? optionsValues.map((optionObj: OperationalLimitsGroup) => optionObj.id) : []),
         [optionsValues]
     );
 
