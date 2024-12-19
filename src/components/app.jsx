@@ -20,6 +20,7 @@ import {
     getPreLoginPath,
     initializeAuthenticationProd,
     useSnackMessage,
+    useNotificationsListener,
 } from '@gridsuite/commons-ui';
 import PageNotFound from './page-not-found';
 import { FormattedMessage } from 'react-intl';
@@ -64,6 +65,7 @@ import {
     setParamsLoaded,
     setUpdateNetworkVisualizationParameters,
 } from '../redux/actions';
+import { NOTIFICATIONS_URL_KEYS } from './utils/notificationsProvider-utils';
 import { getNetworkVisualizationParameters } from '../services/study/study-config.ts';
 
 const noUserManager = { instance: null, error: null };
@@ -221,10 +223,8 @@ const App = () => {
         [dispatch, tablesNamesIndexes, tablesDefinitionIndexes]
     );
 
-    const connectNotificationsUpdateConfig = useCallback(() => {
-        const ws = connectNotificationsWsUpdateConfig();
-
-        ws.onmessage = function (event) {
+    const updateConfig = useCallback(
+        (event) => {
             let eventData = JSON.parse(event.data);
             if (eventData.headers && eventData.headers['parameterName']) {
                 fetchConfigParameter(eventData.headers['parameterName'])
@@ -241,12 +241,13 @@ const App = () => {
                         })
                     );
             }
-        };
-        ws.onerror = function (event) {
-            console.error('Unexpected Notification WebSocket error', event);
-        };
-        return ws;
-    }, [updateParams, snackError, dispatch]);
+        },
+        [dispatch, snackError, updateParams]
+    );
+
+    useNotificationsListener(NOTIFICATIONS_URL_KEYS.CONFIG, {
+        listenerCallbackMessage: updateConfig,
+    });
 
     // Can't use lazy initializer because useRouteMatch is a hook
     const [initialMatchSilentRenewCallbackUrl] = useState(
@@ -379,18 +380,12 @@ const App = () => {
                         headerId: 'paramsRetrievingError',
                     })
                 );
-
-            const ws = connectNotificationsUpdateConfig();
-            return function () {
-                ws.close();
-            };
         }
     }, [
         user,
         studyUuid,
         dispatch,
         updateParams,
-        connectNotificationsUpdateConfig,
         snackError,
         updateNetworkVisualizationsParams,
     ]);
