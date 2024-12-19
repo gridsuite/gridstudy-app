@@ -627,7 +627,7 @@ export const LoadFlowParameters: FunctionComponent<LoadFlowParametersProps> = ({
                 vlLimits.temporaryLimitReductions.forEach((temporaryLimit, index) => {
                     vlLNewLimits.temporaryLimitReductions[index] = {
                         ...temporaryLimit,
-                        // @ts-expect-error
+                        // @ts-expect-error type issue with yup schema , see columns-definitions.ts:getLimitDurationsFormSchema
                         reduction: formLimits[indexVl][LIMIT_DURATION_FORM][index],
                     };
                 });
