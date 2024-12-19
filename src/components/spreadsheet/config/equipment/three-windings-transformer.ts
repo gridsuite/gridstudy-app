@@ -13,6 +13,8 @@ import {
     BOOLEAN_TYPE,
     COUNTRY_TYPE,
     MEDIUM_COLUMN_WIDTH,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
     NUMERIC_TYPE,
     TEXT_TYPE,
@@ -74,76 +76,62 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'NominalVT3WSide1',
             field: 'nominalV1',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'NominalVT3WSide2',
             field: 'nominalV2',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'NominalVT3WSide3',
             field: 'nominalV3',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'ActivePowerT3WSide1',
             field: 'p1',
-            numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerT3WSide2',
             field: 'p2',
             numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerT3WSide3',
             field: 'p3',
             numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerT3WSide1',
             field: 'q1',
             numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerT3WSide2',
             field: 'q2',
             numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerT3WSide3',
             field: 'q3',
             numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'HasLoadTapChanging1Capabilities',
             field: 'hasLoadTapChanging1Capabilities',
-            boolean: true,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -156,8 +144,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'TargetVPoint1',
             field: 'targetV1',
             numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -193,9 +180,7 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'TargetVPoint2',
             field: 'targetV2',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -231,17 +216,14 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'TargetVPoint3',
             field: 'targetV3',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioTap3',
             field: 'ratioTapChanger3',
-            type: NUMERIC_TYPE,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Ratio', 3),
-            fractionDigits: 0,
             valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
             valueSetter: (params) => {
                 params.data.ratioTapChanger3 = {
@@ -270,9 +252,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseTap1',
             field: 'phaseTapChanger1',
-            type: NUMERIC_TYPE,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Phase', 1),
-            fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger1 = {
@@ -288,10 +269,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingValue1',
             field: 'regulatingValue1',
-            numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -310,9 +289,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseTap2',
             field: 'phaseTapChanger2',
-            type: NUMERIC_TYPE,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Phase', 2),
-            fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger2 = {
@@ -328,10 +306,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingValue2',
             field: 'regulatingValue2',
-            numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -350,9 +326,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseTap3',
             field: 'phaseTapChanger3',
-            type: NUMERIC_TYPE,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Phase', 3),
-            fractionDigits: 0,
             valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger3 = {
@@ -368,10 +343,8 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingValue3',
             field: 'regulatingValue3',
-            numeric: true,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

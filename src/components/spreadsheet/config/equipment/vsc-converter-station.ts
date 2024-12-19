@@ -13,8 +13,9 @@ import {
     BOOLEAN_TYPE,
     COUNTRY_TYPE,
     MEDIUM_COLUMN_WIDTH,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
-    NUMERIC_TYPE,
     TEXT_TYPE,
 } from '../../utils/constants';
 import { genericColumnOfProperties } from '../common/column-properties';
@@ -50,9 +51,7 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'NominalV',
             field: 'nominalV',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'HvdcLineId',
@@ -62,25 +61,19 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'LossFactor',
             field: 'lossFactor',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -92,17 +85,13 @@ export const VSC_CONVERTER_STATION_TAB_DEF = {
         {
             id: 'VoltageSetpointKV',
             field: 'voltageSetpoint',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSetpointMVAR',
             field: 'reactivePowerSetpoint',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

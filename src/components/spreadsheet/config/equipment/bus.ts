@@ -12,6 +12,8 @@ import { typeAndFetchers } from './common-config';
 import { genericColumnOfProperties } from '../common/column-properties';
 import {
     COUNTRY_TYPE,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
     NUMERIC_TYPE,
     TEXT_TYPE,
@@ -32,16 +34,12 @@ export const BUS_TAB_DEF = {
         {
             id: 'Magnitude',
             field: 'v',
-            numeric: true,
-            fractionDigits: 1,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
         },
         {
             id: 'Angle',
             field: 'angle',
-            numeric: true,
-            fractionDigits: 1,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
         },
         {
             id: 'ConnectedComponent',
@@ -66,9 +64,7 @@ export const BUS_TAB_DEF = {
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            fractionDigits: 0,
-            type: NUMERIC_TYPE,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         genericColumnOfProperties,
     ],

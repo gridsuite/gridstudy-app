@@ -12,16 +12,17 @@ import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from '
 import {
     BOOLEAN_TYPE,
     COUNTRY_TYPE,
+    LOAD_ENUM_TYPE,
     MEDIUM_COLUMN_WIDTH,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
-    NUMERIC_TYPE,
     TEXT_TYPE,
 } from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 import { SortWay } from 'hooks/use-aggrid-sort';
-import { getEnumConfig } from '../column-type-filter-config';
 
 export const LOAD_TAB_DEF = {
     index: 6,
@@ -45,7 +46,7 @@ export const LOAD_TAB_DEF = {
         {
             id: 'loadType',
             field: 'type',
-            ...getEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
+            type: LOAD_ENUM_TYPE,
             ...editableColumnConfig,
             ...enumCellEditorConfig(
                 (params) => params.data?.type,
@@ -65,32 +66,24 @@ export const LOAD_TAB_DEF = {
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'p0',
             field: 'p0',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.p0),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -98,9 +91,7 @@ export const LOAD_TAB_DEF = {
         {
             id: 'q0',
             field: 'q0',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.q0),
             getQuickFilterText: excludeFromGlobalFilter,

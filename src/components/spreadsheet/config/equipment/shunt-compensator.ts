@@ -14,15 +14,18 @@ import {
     COUNTRY_TYPE,
     MEDIUM_COLUMN_WIDTH,
     MIN_COLUMN_WIDTH,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_5_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
     NUMERIC_TYPE,
+    SHUNT_COMPENSATOR_ENUM_TYPE,
     TEXT_TYPE,
 } from '../../utils/constants';
 import { SHUNT_COMPENSATOR_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
 import { SortWay } from 'hooks/use-aggrid-sort';
-import { getEnumConfig } from '../column-type-filter-config';
 
 export const SHUNT_COMPENSATOR_TAB_DEF = {
     index: 7,
@@ -56,26 +59,18 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            valueGetter: (params) => {
-                return params.context.applyFluxConvention(params.data.q);
-            },
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maximumSectionCount',
             field: 'maximumSectionCount',
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maximumSectionCount),
             type: NUMERIC_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -87,7 +82,6 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'sectionCount',
             field: 'sectionCount',
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => params.data.sectionCount),
             type: NUMERIC_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
@@ -99,7 +93,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'Type',
             field: 'type',
-            ...getEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES)),
+            type: SHUNT_COMPENSATOR_ENUM_TYPE,
             ...editableColumnConfig,
             ...enumCellEditorConfig((params) => params.data?.type, Object.values(SHUNT_COMPENSATOR_TYPES)),
         },
@@ -107,10 +101,8 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
             id: 'maxQAtNominalV',
             field: 'maxQAtNominalV',
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maxQAtNominalV),
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
             crossValidation: {
                 minExpression: 0,
@@ -119,39 +111,31 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'SwitchedOnMaxQAtNominalV',
             field: 'switchedOnQAtNominalV',
-            numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'maxSusceptance',
             ...editableColumnConfig,
             field: 'maxSusceptance',
-            numeric: true,
             ...numericalCellEditorConfig((params) => params.data.maxSusceptance),
-            type: NUMERIC_TYPE,
-            fractionDigits: 5,
+            type: NUMERIC_5_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'SwitchedOnMaxSusceptance',
             field: 'switchedOnSusceptance',
-            numeric: true,
             valueGetter: (params) =>
                 (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            type: NUMERIC_TYPE,
-            fractionDigits: 5,
+            type: NUMERIC_5_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'voltageSetpoint',
             field: 'targetV',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

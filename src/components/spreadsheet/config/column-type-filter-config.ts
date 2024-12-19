@@ -5,139 +5,179 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+import { ICellRendererParams } from 'ag-grid-community';
 import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
-import { getEnumLabelById } from 'components/utils/utils';
+import { BooleanCellRenderer, DefaultSpreadsheetCellRenderer, PropertiesCellRenderer } from '../utils/cell-renderers';
 import { EnumOption } from 'components/utils/utils-type';
-import CountryCellRenderer from '../utils/country-cell-render';
-import { BooleanCellRenderer, DefaultCellRenderer } from '../utils/cell-renderers';
-import EnumCellRenderer from '../utils/enum-cell-renderer';
+import { computeHighTapPosition, getEnumLabelById } from 'components/utils/utils';
 import { Writable } from 'type-fest';
 import RunningStatus from 'components/utils/running-status';
+import {
+    ENERGY_SOURCES,
+    LOAD_TYPES,
+    PHASE_REGULATION_MODES,
+    RATIO_REGULATION_MODES,
+    REGULATION_TYPES,
+    SHUNT_COMPENSATOR_TYPES,
+    SIDE,
+} from 'components/network/constants';
+import { unitToKiloUnit, unitToMicroUnit } from 'utils/unit-converter';
 
-const contains = (target: string, lookingFor: string): boolean => {
-    if (target && lookingFor) {
-        return target?.toLowerCase().indexOf(lookingFor.toLowerCase()) >= 0;
-    }
-    return false;
+const TEXT_FILTER_PARAMS = {
+    caseSensitive: false,
+    maxNumConditions: 1,
+    filterOptions: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+    debounceMs: 200,
 };
 
-export const getEnumConfig = (enumOptions: Readonly<EnumOption[]>) => {
+const NUMERIC_FILTER_PARAMS = {
+    maxNumConditions: 1,
+    filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
+    debounceMs: 200,
+};
+
+const formatCellValue = (value: any, decimalPlaces: number = 1) => {
+    if (value != null) {
+        return parseFloat(value.toFixed(decimalPlaces));
+    }
+
+    return null;
+};
+
+const propertiesGetter = (params: ICellRendererParams) => {
+    const properties = params?.data?.properties;
+    if (properties && Object.keys(properties).length) {
+        return Object.keys(properties)
+            .map((property) => `${property} : ${properties[property]}`)
+            .join(' | ');
+    } else {
+        return null;
+    }
+};
+
+const createTextColumnType = (cellRenderer: any, valueGetter?: (params: ICellRendererParams) => any) => ({
+    filter: 'agTextColumnFilter',
+    filterParams: TEXT_FILTER_PARAMS,
+    cellRenderer,
+    valueGetter,
+    sortable: true,
+    resizable: true,
+});
+
+const createNumericColumnType = (valueGetter: (params: ICellRendererParams) => any) => ({
+    filter: 'agNumberColumnFilter',
+    filterParams: NUMERIC_FILTER_PARAMS,
+    cellRenderer: DefaultSpreadsheetCellRenderer,
+    valueGetter,
+    sortable: true,
+    resizable: true,
+});
+
+const createEnumConfig = (enumOptions: Readonly<EnumOption[]>) => {
     return {
         filter: 'agTextColumnFilter',
         filterParams: {
             caseSensitive: false,
             maxNumConditions: 1,
             filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
-            textMatcher: ({ value, filterText, context }: any): boolean => {
-                if (value) {
-                    const label = enumOptions
-                        ? getEnumLabelById(enumOptions as EnumOption[], value.toUpperCase())
-                        : value;
-                    const displayedValue = label ? context.intl.formatMessage({ id: label }) : value;
-                    return contains(displayedValue, filterText || '');
-                }
-                return false;
-            },
             debounceMs: 200,
         },
-        cellRenderer: EnumCellRenderer,
-        cellRendererParams: {
-            enumOptions: enumOptions as Writable<typeof enumOptions>,
-            // @ts-expect-error TODO TS1360: Property value is missing in type
-        } satisfies EnumCellRendererProps,
-        getEnumLabel: (value: string) => getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
+
+        valueGetter: (params: any) => {
+            const value = params.data[params?.colDef?.field!];
+            return value
+                ? params.context.intl.formatMessage({
+                      id: getEnumLabelById(enumOptions as Writable<typeof enumOptions>, value),
+                  })
+                : value;
+        },
     };
 };
 
-const textType = {
-    filter: 'agTextColumnFilter',
-    filterParams: {
-        caseSensitive: false,
-        maxNumConditions: 1,
-        filterOptions: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
-    },
-    cellRenderer: DefaultCellRenderer,
-    sortable: true,
-    resizable: true,
-};
+const textType = createTextColumnType(DefaultSpreadsheetCellRenderer);
+const propertyType = createTextColumnType(PropertiesCellRenderer, propertiesGetter);
 
-const numericType = {
-    filter: 'agNumberColumnFilter',
-    filterParams: {
-        maxNumConditions: 1,
-        filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
-        debounceMs: 200,
-    },
-    cellRenderer: DefaultCellRenderer,
-    sortable: true,
-    resizable: true,
-};
+const getNumericType = (fractionDigits?: number) =>
+    createNumericColumnType((params) => {
+        const value = params.data[params?.colDef?.field!];
+        return fractionDigits ? formatCellValue(value, fractionDigits) : value;
+    });
+
+const numericType = getNumericType();
+const numeric0FractionDigitsType = getNumericType(0);
+const numeric1FractionDigitsType = getNumericType(1);
+const numeric2FractionDigitsType = getNumericType(2);
+const numeric5FractionDigitsType = getNumericType(5);
+
+const createNumericUnitConversionType = (conversionFunction: (value: any) => any) =>
+    createNumericColumnType((params) => conversionFunction(params.data[params?.colDef?.field!]));
+
+const numericUnitToMicroUnitType = createNumericUnitConversionType(unitToMicroUnit);
+const numericUnitToKiloUnitType = createNumericUnitConversionType(unitToKiloUnit);
+
+const numericHighTapPositionType = createNumericColumnType((params) =>
+    computeHighTapPosition(params.data[params?.colDef?.field!]?.steps)
+);
+
+const getNumericApplyFluxConventionType = (fractionDigits?: number) =>
+    createNumericColumnType((params) => {
+        const value = params.context.applyFluxConvention(params.data[params?.colDef?.field!]);
+        return formatCellValue(value, fractionDigits);
+    });
+
+const numericApplyFluxConventionType = getNumericApplyFluxConventionType(0);
+const numericApplyFluxConvention1FractionDigitsType = getNumericApplyFluxConventionType(1);
+const numericApplyFluxConvention2FractionDigitsType = getNumericApplyFluxConventionType(2);
+const numericApplyFluxConvention5FractionDigitsType = getNumericApplyFluxConventionType(5);
 
 const numericCanBeInvalidatedType = {
-    filter: 'agNumberColumnFilter',
-    filterParams: {
-        maxNumConditions: 1,
-        filterOptions: Object.values(FILTER_NUMBER_COMPARATORS),
-        debounceMs: 200,
-    },
-    cellRendererSelector: ({ context }: { context: any }) => {
-        return {
-            component: DefaultCellRenderer,
-            params: {
-                isValueInvalid: context.loadFlowStatus !== RunningStatus.SUCCEED,
-            },
-        };
-    },
-
-    sortable: true,
-    resizable: true,
-};
-
-const booleanType = {
-    filter: 'agTextColumnFilter',
-    filterParams: {
-        caseSensitive: false,
-        maxNumConditions: 1,
-        filterOptions: [FILTER_TEXT_COMPARATORS.EQUALS],
-        textMatcher: ({ value, filterText, context }: any): boolean => {
-            if (value) {
-                const displayedValue = context.intl.formatMessage({ id: value }) ?? value;
-                return contains(displayedValue, filterText || '');
-            }
-            return false;
+    cellRendererSelector: (params: ICellRendererParams) => ({
+        component: DefaultSpreadsheetCellRenderer,
+        params: {
+            isValueInvalid: params.context.loadFlowStatus !== RunningStatus.SUCCEED,
         },
-        debounceMs: 200,
-    },
-    cellRenderer: BooleanCellRenderer,
-    sortable: true,
-    resizable: true,
+    }),
 };
 
-const countryType = {
-    filter: 'agTextColumnFilter',
-    filterParams: {
-        caseSensitive: false,
-        maxNumConditions: 1,
-        filterOptions: [FILTER_TEXT_COMPARATORS.CONTAINS],
-        textMatcher: ({ value, filterText, context }: { value: string; filterText: string; context: any }) => {
-            if (value) {
-                const countryCode = value?.toUpperCase();
-                const countryName = context?.translateCountryCode(countryCode);
-                return contains(countryName, filterText || '') || contains(value, filterText);
-            }
-            return false;
-        },
-        debounceMs: 200,
-    },
-    cellRenderer: CountryCellRenderer,
-    sortable: true,
-    resizable: true,
-};
+const booleanType = createTextColumnType(BooleanCellRenderer);
+
+const countryType = createTextColumnType(DefaultSpreadsheetCellRenderer, (params: ICellRendererParams) => {
+    if (params.context?.translateCountryCode && params?.colDef?.field) {
+        return params.context.translateCountryCode(params.data[params.colDef.field]);
+    }
+});
+
+const energySourceEnumType = createEnumConfig(ENERGY_SOURCES);
+const regulationEnumType = createEnumConfig(Object.values(REGULATION_TYPES));
+const loadEnumType = createEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]);
+const shuntCompensatorEnumType = createEnumConfig(Object.values(SHUNT_COMPENSATOR_TYPES));
+const ratioRegulationModesEnumType = createEnumConfig(Object.values(RATIO_REGULATION_MODES));
+const sideEnumType = createEnumConfig(Object.values(SIDE));
+const phaseRegulatingModeEnumType = createEnumConfig(Object.values(PHASE_REGULATION_MODES));
 
 export const defaultColumnType = {
     textType,
+    propertyType,
     numericType,
+    numeric0FractionDigitsType,
+    numeric1FractionDigitsType,
+    numeric2FractionDigitsType,
+    numeric5FractionDigitsType,
+    numericUnitToMicroUnitType,
+    numericUnitToKiloUnitType,
+    numericHighTapPositionType,
     numericCanBeInvalidatedType,
+    numericApplyFluxConventionType,
+    numericApplyFluxConvention1FractionDigitsType,
+    numericApplyFluxConvention2FractionDigitsType,
+    numericApplyFluxConvention5FractionDigitsType,
     booleanType,
     countryType,
+    energySourceEnumType,
+    regulationEnumType,
+    loadEnumType,
+    shuntCompensatorEnumType,
+    ratioRegulationModesEnumType,
+    sideEnumType,
+    phaseRegulatingModeEnumType,
 };

@@ -14,6 +14,7 @@ import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/ce
 import {
     BOOLEAN_TYPE,
     COUNTRY_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
     NUMERIC_TYPE,
     TEXT_TYPE,
@@ -51,30 +52,18 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
             type: NUMERIC_TYPE,
-            fractionDigits: 0,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            fractionDigits: 1,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            valueGetter: (params) => {
-                return params.context.applyFluxConvention(params.data.p);
-            },
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            type: NUMERIC_CAN_BE_INVALIDATED_TYPE,
-            valueGetter: (params) => {
-                return params.context.applyFluxConvention(params.data.q);
-            },
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -95,9 +84,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'DroopColumnName',
             field: 'activePowerControl.droop',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
             valueGetter: (params) => params.data?.activePowerControl?.droop,
@@ -119,9 +106,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'minP',
             field: 'minP',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.minP),
             crossValidation: {
@@ -132,9 +117,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'maxP',
             field: 'maxP',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.maxP),
             crossValidation: {
@@ -145,9 +128,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'activePowerSetpoint',
             field: 'targetP',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetP),
             crossValidation: {
@@ -160,9 +141,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'reactivePowerSetpoint',
             field: 'targetQ',
-            numeric: true,
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetQ),
             getQuickFilterText: excludeFromGlobalFilter,

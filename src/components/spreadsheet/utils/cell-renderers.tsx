@@ -107,9 +107,27 @@ export const formatCell = (props: any) => {
             ? props.colDef.valueGetter(props, props.context.network)
             : props.colDef.valueGetter(props);
     }
-    if (props.applyFluxConvention) {
-        value = props.applyFluxConvention(value);
+
+    if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
+        // only numeric rounded cells have a tooltip (their raw numeric value)
+        tooltipValue = value;
+        value = parseFloat(value).toFixed(props.colDef.fractionDigits);
     }
+    if (props.colDef.numeric && isNaN(value)) {
+        value = null;
+    }
+    return { value: value, tooltip: tooltipValue };
+};
+
+export const formatNumericCell = (props: any) => {
+    let value = props?.valueFormatted || props.value;
+    let tooltipValue = undefined;
+    if (props.colDef.valueGetter) {
+        value = props?.context?.network
+            ? props.colDef.valueGetter(props, props.context.network)
+            : props.colDef.valueGetter(props);
+    }
+
     if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
         tooltipValue = value;
@@ -153,6 +171,23 @@ export const DefaultCellRenderer = (props: any) => {
                 <Box
                     sx={mergeSx(styles.overflow, props?.isValueInvalid ? styles.valueInvalid : undefined)}
                     children={cellValue.value}
+                />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const DefaultSpreadsheetCellRenderer = (params: any) => {
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={params.data[params?.colDef?.field!] ?? params.value}
+            >
+                <Box
+                    sx={mergeSx(styles.overflow, params.isValueInvalid ? styles.valueInvalid : undefined)}
+                    children={params.value}
                 />
             </Tooltip>
         </Box>

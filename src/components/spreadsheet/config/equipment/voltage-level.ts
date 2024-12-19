@@ -13,7 +13,13 @@ import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from '
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
-import { COUNTRY_TYPE, NUMERIC_TYPE, TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import {
+    COUNTRY_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_TYPE,
+    NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
 function generateEditableNumericColumnDefinition<
@@ -25,9 +31,7 @@ function generateEditableNumericColumnDefinition<
     return {
         id: id,
         field: field,
-        numeric: true,
-        type: NUMERIC_TYPE,
-        fractionDigits: 1,
+        type: NUMERIC_1_FRACTION_DIGITS_TYPE,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
         crossValidation: {
@@ -69,9 +73,7 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'NominalV',
             field: 'nominalV',
-            numeric: true,
             type: NUMERIC_TYPE,
-            fractionDigits: 0,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
@@ -80,12 +82,9 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin)),
-            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
@@ -101,12 +100,9 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
-            type: NUMERIC_TYPE,
-            fractionDigits: 1,
+            type: NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax)),
-            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
