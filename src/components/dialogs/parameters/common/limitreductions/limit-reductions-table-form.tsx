@@ -15,9 +15,12 @@ import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
 
 const getToolTipColumn = (limit: ITemporaryLimitReduction) => {
-    const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
-    const highBound = Math.trunc(limit.limitDuration.highBound / 60);
-    return `[${lowBound} min, ${highBound} min[`;
+    const lowBound = `${Math.trunc(limit.limitDuration.lowBound / 60)} min`;
+    const highBoundValue = Math.trunc(limit.limitDuration.highBound / 60);
+    const highBound = highBoundValue === 0 ? '∞' : `${Math.trunc(limit.limitDuration.highBound / 60)} min`;
+    const lowerBoundClosed = limit.limitDuration.lowClosed ? '[' : ']';
+    const highBoundClosed = limit.limitDuration.highClosed || null ? ']' : '[';
+    return `${lowerBoundClosed}${lowBound}, ${highBound}${highBoundClosed}`;
 };
 
 const LimitReductionsTableForm: FunctionComponent<{
@@ -32,13 +35,15 @@ const LimitReductionsTableForm: FunctionComponent<{
             if (lowBound === 0) {
                 return intl.formatMessage({ id: 'LimitDurationAfterIST' }, { value: highBound });
             }
+
             return intl.formatMessage(
                 { id: 'LimitDurationInterval' },
                 {
-                    lowBound: `IT ${lowBound}`,
-                    highBound: `IT ${highBound}`,
+                    lowBound: lowBound === 0 ? 'IST' : `IT${lowBound}`,
+                    highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
                 }
             );
+            // return getToolTipColumn(limit);
         },
         [intl]
     );
@@ -53,9 +58,9 @@ const LimitReductionsTableForm: FunctionComponent<{
         if (limits !== null && limits.length > 0) {
             limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
                 columnsDefinition.push({
-                    label: getLabelColumn(tlimit),
+                    label: getToolTipColumn(tlimit),
                     dataKey: LIMIT_DURATION_FORM + index,
-                    tooltip: getToolTipColumn(tlimit),
+                    tooltip: getLabelColumn(tlimit),
                 });
             });
         }

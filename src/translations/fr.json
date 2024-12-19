@@ -3,7 +3,7 @@
 
     "LimitReductions" : "Abattements",
     "IST" : "IST",
-    "LimitDurationInterval" : "Entre {highBound} et {lowBound}",
+    "LimitDurationInterval" : "Intervalle de tempo : {highBound} et {lowBound}",
     "LimitDurationAfterIST": "Au-delà de IT{value}",
     "voltageRange": "Niveau de tension",
 

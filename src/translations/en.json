@@ -3,7 +3,7 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDurationInterval" : "Between {highBound} and {lowBound}",
+    "LimitDurationInterval" : "Tempo interval : {highBound} and {lowBound}",
     "LimitDurationAfterIST": "After IT{value}",
     "voltageRange": "Voltage range",
 
