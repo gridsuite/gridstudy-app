@@ -8,7 +8,7 @@
 import { backendFetchJson } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 
-const PREFIX_SPREADSHEET_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/spreadsheet-config';
+const PREFIX_SPREADSHEET_CONFIG_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study-config';
 
 export function getSpreadsheetModel(spreadsheetModelUuid: UUID) {
     const fetchUrl = `${PREFIX_SPREADSHEET_CONFIG_QUERIES}/v1/spreadsheet-configs/${spreadsheetModelUuid}`;
