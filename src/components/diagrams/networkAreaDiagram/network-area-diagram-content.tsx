@@ -28,7 +28,7 @@ import Box from '@mui/material/Box';
 import { mergeSx } from '../../utils/functions';
 import ComputingType from '../../computing-status/computing-type';
 import { AppState } from 'redux/reducer';
-import { storeNetworkAreaDiagramNodeMovement } from '../../../redux/actions';
+import { storeNetworkAreaDiagramNodeMovement, storeNetworkAreaDiagramTextNodeMovement } from '../../../redux/actions';
 import { PARAM_INIT_NAD_WITH_GEO_DATA } from '../../../utils/config-params';
 import { getNadIdentifier } from '../diagram-utils';
 import EquipmentPopover from 'components/tooltips/equipment-popover';
@@ -155,6 +155,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
     const nadNodeMovements = useSelector((state: AppState) => state.nadNodeMovements);
+    const nadTextNodeMovements = useSelector((state: AppState) => state.nadTextNodeMovements);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const [shouldDisplayTooltip, setShouldDisplayTooltip] = useState(false);
@@ -169,7 +170,51 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
 
     const onMoveNodeCallback = useCallback(
         (equipmentId: string, nodeId: string, x: number, y: number, xOrig: number, yOrig: number) => {
+            // Dispatch the updated position of the node
             dispatch(storeNetworkAreaDiagramNodeMovement(nadIdentifier, equipmentId, x, y));
+
+            // Check if there is a corresponding text node attached to this node
+            const textNodeMovement = nadTextNodeMovements.find(
+                (movement) => movement.equipmentId === equipmentId && movement.nadIdentifier === nadIdentifier
+            );
+
+            if (textNodeMovement) {
+                // If the text node has already been moved, recalculate its position using the delta
+                const relativeX = textNodeMovement.x - xOrig; // relative to the original node position
+                const relativeY = textNodeMovement.y - yOrig;
+
+                // Calculate new text node position by applying the delta
+                const newXTextNode = x + relativeX;
+                const newYTextNode = y + relativeY;
+
+                // Dispatch new position for the text node, maintaining its relative position to the node
+                dispatch(
+                    storeNetworkAreaDiagramTextNodeMovement(nadIdentifier, equipmentId, newXTextNode, newYTextNode)
+                );
+            }
+        },
+        [dispatch, nadIdentifier, nadTextNodeMovements]
+    );
+
+    const onMoveTextNodeCallback = useCallback(
+        (
+            equipmentId: string,
+            vlNodeId: string,
+            textNodeId: string,
+            shiftX: number,
+            shiftY: number,
+            shiftXOrig: number,
+            shiftYOrig: number,
+            connectionShiftX: number,
+            connectionShiftY: number,
+            connectionShiftXOrig: number,
+            connectionShiftYOrig: number,
+            mousePosition: Point
+        ) => {
+            // Dispatch the new position of the text node
+            dispatch(
+                storeNetworkAreaDiagramTextNodeMovement(nadIdentifier, equipmentId, mousePosition.x, mousePosition.y)
+            );
         },
         [dispatch, nadIdentifier]
     );
@@ -211,7 +256,7 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 MAX_WIDTH_NETWORK_AREA_DIAGRAM,
                 MAX_HEIGHT_NETWORK_AREA_DIAGRAM,
                 onMoveNodeCallback,
-                null,
+                onMoveTextNodeCallback,
                 null,
                 true,
                 true,
@@ -235,15 +280,29 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
                 }
             }
 
-            // Repositioning the previously moved nodes
+            // Repositioning previously moved nodes
             const correspondingMovements = nadNodeMovements.filter(
                 (movement) => movement.nadIdentifier === nadIdentifier
             );
             if (correspondingMovements.length > 0) {
                 correspondingMovements.forEach((movement) => {
+                    // Move the node to the new position
                     diagramViewer.moveNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
                 });
             }
+
+            // Repositioning previously moved text nodes
+            const correspondingTextMovements = nadTextNodeMovements.filter(
+                (movement) => movement.nadIdentifier === nadIdentifier
+            );
+            if (correspondingTextMovements.length > 0) {
+                correspondingTextMovements.forEach((movement) => {
+                    // If the movement is due to a node move, adjust the text node relative to the node's movement
+                    // In case of text node movement adjust text node position
+                    diagramViewer.moveTextNodeToCoordinates(movement.equipmentId, movement.x, movement.y);
+                });
+            }
+
             diagramViewerRef.current = diagramViewer;
         }
     }, [
@@ -257,6 +316,8 @@ function NetworkAreaDiagramContent(props: NetworkAreaDiagramContentProps) {
         OnToggleHoverCallback,
         nadIdentifier,
         nadNodeMovements,
+        nadTextNodeMovements,
+        onMoveTextNodeCallback,
     ]);
 
     /**
