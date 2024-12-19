@@ -44,7 +44,6 @@ import { getComputedLanguage } from '../utils/language';
 import AppTopBar from './app-top-bar';
 import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
-import { connectNotificationsWsUpdateConfig } from '../services/config-notification';
 import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
 import { getOptionalServices } from '../services/study';
@@ -381,14 +380,7 @@ const App = () => {
                     })
                 );
         }
-    }, [
-        user,
-        studyUuid,
-        dispatch,
-        updateParams,
-        snackError,
-        updateNetworkVisualizationsParams,
-    ]);
+    }, [user, studyUuid, dispatch, updateParams, snackError, updateNetworkVisualizationsParams]);
 
     const onChangeTab = useCallback((newTabIndex) => {
         setTabIndex(newTabIndex);
