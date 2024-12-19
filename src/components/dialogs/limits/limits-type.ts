@@ -5,8 +5,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
+export interface OperationalLimitsGroup {
+    id: string;
+    currentLimits: CurrentLimitsData;
+}
+
 export interface CurrentLimitsData {
-    operationalLimitGroupId: string;
     temporaryLimits: TemporaryLimitData[];
     permanentLimit?: number;
 }

@@ -8,7 +8,7 @@ import { useMemo } from 'react';
 import { useWatch } from 'react-hook-form';
 import { Box } from '@mui/material';
 import { AutocompleteInput } from '@gridsuite/commons-ui';
-import { CurrentLimitsData } from './limits-type';
+import { OperationalLimitsGroup } from './limits-type';
 
 export interface SelectedOperationalLimitGroupProps {
     selectedFormName: string;
@@ -19,12 +19,12 @@ export const SelectedOperationalLimitGroup = ({
     selectedFormName,
     optionsFormName,
 }: Readonly<SelectedOperationalLimitGroupProps>) => {
-    const optionsValues: CurrentLimitsData[] = useWatch({
+    const optionsValues: OperationalLimitsGroup[] = useWatch({
         name: optionsFormName,
     });
 
     const limitSets: string[] = useMemo(
-        () => optionsValues.map((optionObj: CurrentLimitsData) => optionObj.operationalLimitGroupId),
+        () => optionsValues ? optionsValues.map((optionObj: OperationalLimitsGroup) => optionObj.id) : [],
         [optionsValues]
     );
 

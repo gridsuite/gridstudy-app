@@ -7,13 +7,14 @@
 
 import { Box, Grid, Tab, Tabs } from '@mui/material';
 import {
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
+    CURRENT_LIMITS,
+    ID,
     LIMITS,
-    OPERATIONAL_LIMIT_GROUP_ID,
+    LIMITS_GROUP_1,
+    LIMITS_GROUP_2,
     PERMANENT_LIMIT,
-    SELECTED_LIMIT_GROUP_1,
-    SELECTED_LIMIT_GROUP_2,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     TEMPORARY_LIMITS,
 } from 'components/utils/field-constants';
 import { FormattedMessage } from 'react-intl';
@@ -24,17 +25,17 @@ import { CurrentTreeNode } from '../../../redux/reducer';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useWatch } from 'react-hook-form';
 import DensityMediumIcon from '@mui/icons-material/DensityMedium';
-import { CurrentLimitsData } from './limits-type';
+import { OperationalLimitsGroup } from './limits-type';
 
 const styles = {
     limitsBackground: {
-        backgroundColor: '#1a1919', // TODO : may be found in the theme ??
+        backgroundColor: '#1a1919', // TODO : those colors may be found in the theme see with Stephane ??
         alignItems: 'self-start',
         justifyContent: 'flex-start',
-        '&.Mui-selected': { backgroundColor: '#383838' }, // TODO : may be found in the theme ??
+        '&.Mui-selected': { backgroundColor: '#383838' },
     },
     limitsBackgroundUnselected: {
-        backgroundColor: '#1a1919', // TODO : may be found in the theme ??
+        backgroundColor: '#1a1919',
         alignItems: 'self-start',
         justifyContent: 'flex-start',
     },
@@ -52,103 +53,93 @@ export function LimitsPane({
     equipmentToModify,
     clearableFields,
 }: Readonly<LimitsPaneProps>) {
-    const [allLimitSetsStr, setAllLimitSetsStr] = useState<string[]>([]);
+    const [allLimitsGroupsStr, setAllLimitsGroupsStr] = useState<string[]>([]);
     // selected set in the tab interface
-    const [selectedSetStr, setSelectedSetStr] = useState<string | null>(allLimitSetsStr[0] || null);
-    const [selectedLimitSetTabIndex, setSelectedLimitSetTabIndex] = useState<number>(0);
+    const [selectedGroupStr, setSelectedGroupStr] = useState<string | null>(allLimitsGroupsStr[0] || null);
+    const [selectedLimitGroupTabIndex, setSelectedLimitGroupTabIndex] = useState<number>(0);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-        setSelectedLimitSetTabIndex(newValue);
-        setSelectedSetStr(allLimitSetsStr[newValue] || null);
+        setSelectedLimitGroupTabIndex(newValue);
+        setSelectedGroupStr(allLimitsGroupsStr[newValue] || null);
     };
 
-    const limitSets1: CurrentLimitsData[] = useWatch({
-        name: `${id}.${CURRENT_LIMITS_1}`,
+    const limitsGroups1: OperationalLimitsGroup[] = useWatch({
+        name: `${id}.${LIMITS_GROUP_1}.`,
     });
-    const limitSets2: CurrentLimitsData[] = useWatch({
-        name: `${id}.${CURRENT_LIMITS_2}`,
+    const limitsGroups2: OperationalLimitsGroup[] = useWatch({
+        name: `${id}.${LIMITS_GROUP_2}`,
     });
     // in the limitSets1 array
     const [indexSelectedLimitSet1, setIndexSelectedLimitSet1] = useState<number | undefined>(undefined);
     // in the limitSets2 array
     const [indexSelectedLimitSet2, setIndexSelectedLimitSet2] = useState<number | undefined>(undefined);
 
-    const useFieldArrayCurrentLimits1 = useFieldArray({
-        name: `${id}.${CURRENT_LIMITS_1}`,
+    const useFieldArrayLimitsGroups1 = useFieldArray({
+        name: `${id}.${LIMITS_GROUP_1}`,
     });
-    const useFieldArrayCurrentLimits2 = useFieldArray({
-        name: `${id}.${CURRENT_LIMITS_2}`,
+    const useFieldArrayLimitsGroups2 = useFieldArray({
+        name: `${id}.${LIMITS_GROUP_2}`,
     });
 
     useEffect(() => {
         // all the limit sets have to be present in both sides even if empty
         // the cleaning is done at the validation
-        limitSets1.forEach((limitData1: CurrentLimitsData) => {
-            if (
-                !limitSets2.find(
-                    (limitData2: CurrentLimitsData) =>
-                        limitData1.operationalLimitGroupId === limitData2.operationalLimitGroupId
-                )
-            ) {
-                useFieldArrayCurrentLimits2.append({
-                    [OPERATIONAL_LIMIT_GROUP_ID]: limitData1.operationalLimitGroupId,
-                    [PERMANENT_LIMIT]: null,
-                    [TEMPORARY_LIMITS]: [],
+        limitsGroups1.forEach((limitsGroup1: OperationalLimitsGroup) => {
+            if (limitsGroup1.id &&
+                !limitsGroups2.find((limitsGroup2: OperationalLimitsGroup) => limitsGroup1.id === limitsGroup2.id)) {
+                useFieldArrayLimitsGroups2.append({
+                    [ID]: limitsGroup1.id,
+                    [CURRENT_LIMITS]: {
+                        [PERMANENT_LIMIT]: null,
+                        [TEMPORARY_LIMITS]: [],
+                    },
                 });
             }
         });
-        limitSets2.forEach((limitData2: CurrentLimitsData) => {
-            if (
-                !limitSets1.find(
-                    (limitData1: CurrentLimitsData) =>
-                        limitData2.operationalLimitGroupId === limitData1.operationalLimitGroupId
-                )
-            ) {
-                useFieldArrayCurrentLimits1.append({
-                    [OPERATIONAL_LIMIT_GROUP_ID]: limitData2.operationalLimitGroupId,
-                    [PERMANENT_LIMIT]: null,
-                    [TEMPORARY_LIMITS]: [],
+        limitsGroups2.forEach((limitsGroup2: OperationalLimitsGroup) => {
+            if (limitsGroup2.id &&
+                !limitsGroups1.find((limitsGroup1: OperationalLimitsGroup) => limitsGroup2.id === limitsGroup1.id)) {
+                useFieldArrayLimitsGroups1.append({
+                    [ID]: limitsGroup2.id,
+                    [CURRENT_LIMITS]: {
+                        [PERMANENT_LIMIT]: null,
+                        [TEMPORARY_LIMITS]: [],
+                    },
                 });
             }
         });
         setIndexSelectedLimitSet1(
-            selectedSetStr
-                ? limitSets1.findIndex(
-                      (limitSet: CurrentLimitsData) => limitSet.operationalLimitGroupId === selectedSetStr
-                  )
+            selectedGroupStr
+                ? limitsGroups1.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
                 : undefined
         );
         setIndexSelectedLimitSet2(
-            selectedSetStr
-                ? limitSets2.findIndex(
-                      (limitSet: CurrentLimitsData) => limitSet.operationalLimitGroupId === selectedSetStr
-                  )
+            selectedGroupStr
+                ? limitsGroups2.findIndex((limitsGroup: OperationalLimitsGroup) => limitsGroup.id === selectedGroupStr)
                 : undefined
         );
     }, [
-        selectedSetStr,
+        selectedGroupStr,
         setIndexSelectedLimitSet1,
         setIndexSelectedLimitSet2,
-        limitSets1,
-        limitSets2,
-        useFieldArrayCurrentLimits1,
-        useFieldArrayCurrentLimits2,
+        limitsGroups1,
+        limitsGroups2,
+        useFieldArrayLimitsGroups1,
+        useFieldArrayLimitsGroups2,
     ]);
 
     useEffect(() => {
-        let allLimitSets: string[] = [];
-        allLimitSets.push(
-            ...limitSets1.map((limitSet: { operationalLimitGroupId: any }) => limitSet.operationalLimitGroupId)
-        );
-        allLimitSets.push(
-            ...limitSets2
+        let allLimitsGroups: string[] = [];
+        allLimitsGroups.push(...limitsGroups1.map((limitGroup: { id: string }) => limitGroup.id));
+        allLimitsGroups.push(
+            ...limitsGroups2
                 .filter(
-                    (limitSet: CurrentLimitsData) =>
-                        !allLimitSets.find((limitSetStr) => limitSetStr === limitSet.operationalLimitGroupId)
+                    (limitGroup: OperationalLimitsGroup) =>
+                        !allLimitsGroups.find((limitsGroupStr) => limitsGroupStr === limitGroup.id)
                 )
-                .map((limitSet: { operationalLimitGroupId: any }) => limitSet.operationalLimitGroupId)
+                .map((limitsGroup: { id: string }) => limitsGroup.id)
         );
-        setAllLimitSetsStr(allLimitSets);
-    }, [limitSets1, limitSets2]);
+        setAllLimitsGroupsStr(allLimitsGroups);
+    }, [limitsGroups1, limitsGroups2]);
 
     /*
     const handleCopy = (direction: 'toRight' | 'toLeft') => {
@@ -172,15 +163,17 @@ export function LimitsPane({
      */
 
     const addNewLimitSet = () => {
-        const newLimitSet: CurrentLimitsData = {
-            operationalLimitGroupId: `DEFAULT ${allLimitSetsStr.length > 0 ? allLimitSetsStr.length - 1 : ''}`,
-            temporaryLimits: [],
-            permanentLimit: undefined,
+        const newLimitsGroup: OperationalLimitsGroup = {
+            [ID]: `DEFAULT ${allLimitsGroupsStr.length > 0 ? allLimitsGroupsStr.length - 1 : ''}`,
+            [CURRENT_LIMITS]: {
+                [TEMPORARY_LIMITS]: [],
+                [PERMANENT_LIMIT]: undefined,
+            },
         };
-        useFieldArrayCurrentLimits1.append(newLimitSet);
-        useFieldArrayCurrentLimits2.append(newLimitSet);
-        setSelectedLimitSetTabIndex(allLimitSetsStr.length - 1);
-        setSelectedSetStr(newLimitSet.operationalLimitGroupId);
+        useFieldArrayLimitsGroups1.append(newLimitsGroup);
+        useFieldArrayLimitsGroups2.append(newLimitsGroup);
+        setSelectedLimitGroupTabIndex(allLimitsGroupsStr.length - 1);
+        setSelectedGroupStr(newLimitsGroup.id);
     };
 
     return (
@@ -204,14 +197,14 @@ export function LimitsPane({
                 <Grid item xs={1} />
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
-                        selectedFormName={`${id}.${SELECTED_LIMIT_GROUP_1}`}
-                        optionsFormName={`${id}.${CURRENT_LIMITS_1}`}
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_1}`}
+                        optionsFormName={`${id}.${LIMITS_GROUP_1}`}
                     />
                 </Grid>
                 <Grid item xs={5}>
                     <SelectedOperationalLimitGroup
-                        selectedFormName={`${id}.${SELECTED_LIMIT_GROUP_2}`}
-                        optionsFormName={`${id}.${CURRENT_LIMITS_2}`}
+                        selectedFormName={`${id}.${SELECTED_LIMITS_GROUP_2}`}
+                        optionsFormName={`${id}.${LIMITS_GROUP_2}`}
                     />
                 </Grid>
             </Grid>
@@ -222,16 +215,16 @@ export function LimitsPane({
                     <Tabs
                         orientation="vertical"
                         variant="scrollable"
-                        value={selectedLimitSetTabIndex}
+                        value={selectedLimitGroupTabIndex}
                         onChange={handleTabChange}
                         sx={{ flexGrow: 1 }}
                     >
-                        {allLimitSetsStr.map((set, index) => (
+                        {allLimitsGroupsStr.map((set, index) => (
                             <Tab
                                 key={set}
                                 label={set}
                                 sx={
-                                    index === selectedLimitSetTabIndex
+                                    index === selectedLimitGroupTabIndex
                                         ? styles.limitsBackground
                                         : styles.limitsBackgroundUnselected
                                 }
@@ -242,13 +235,13 @@ export function LimitsPane({
                     </Tabs>
                 </Grid>
                 <Grid item xs={5}>
-                    {limitSets1.map(
+                    {limitsGroups1.map(
                         (item: any, index: number) =>
                             index === indexSelectedLimitSet1 && (
                                 <LimitsSidePane
-                                    limitSetFormName={`${id}.${CURRENT_LIMITS_1}`}
+                                    limitsGroupFormName={`${id}.${LIMITS_GROUP_1}`}
                                     clearableFields={clearableFields}
-                                    indexLimitSet={index}
+                                    indexLimitGroup={index}
                                     permanentCurrentLimitPreviousValue={
                                         equipmentToModify?.currentLimits1?.permanentLimit
                                     }
@@ -259,13 +252,13 @@ export function LimitsPane({
                     )}
                 </Grid>
                 <Grid item xs={5}>
-                    {limitSets2.map(
+                    {limitsGroups2.map(
                         (item: any, index: number) =>
                             index === indexSelectedLimitSet2 && (
                                 <LimitsSidePane
-                                    limitSetFormName={`${id}.${CURRENT_LIMITS_2}`}
+                                    limitsGroupFormName={`${id}.${LIMITS_GROUP_2}`}
                                     clearableFields={clearableFields}
-                                    indexLimitSet={index}
+                                    indexLimitGroup={index}
                                     permanentCurrentLimitPreviousValue={
                                         equipmentToModify?.currentLimits2?.permanentLimit
                                     }

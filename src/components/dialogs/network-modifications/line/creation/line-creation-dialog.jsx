@@ -19,16 +19,18 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
+    CURRENT_LIMITS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     G1,
     G2,
+    ID,
     LIMITS,
+    LIMITS_GROUP_1,
+    LIMITS_GROUP_2,
     R,
-    SELECTED_LIMIT_GROUP_1,
-    SELECTED_LIMIT_GROUP_2,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     TAB_HEADER,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
@@ -58,6 +60,7 @@ import {
     getLimitsEmptyFormData,
     getAllLimitsFormData,
     getLimitsValidationSchema,
+    sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
@@ -139,18 +142,20 @@ const LineCreationDialog = ({
 
     const { reset, setValue } = formMethods;
 
-    const formatCompleteCurrentLimit = (completeCurrentLimits /*: CurrentLimitsData[]*/) => {
-        let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
-        if (completeCurrentLimits) {
-            completeCurrentLimits.forEach((elt) =>
-                formattedCompleteCurrentLimit.push({
-                    operationalLimitGroupId: elt.id ?? elt.operationalLimitGroupId,
-                    permanentLimit: elt.permanentLimit,
-                    temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+    const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
+        let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+        if (completeLimitsGroups) {
+            completeLimitsGroups.forEach((elt) =>
+                formattedCompleteLimitsGroups.push({
+                    [ID]: elt.id,
+                    [CURRENT_LIMITS]: {
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                    },
                 })
             );
         }
-        return formattedCompleteCurrentLimit;
+        return formattedCompleteLimitsGroups;
     };
 
     const fromSearchCopyToFormValues = (line) => {
@@ -189,10 +194,10 @@ const LineCreationDialog = ({
                         )),
                 }),
                 ...getAllLimitsFormData({
-                    currentLimits1: formatCompleteCurrentLimit(line.currentLimits1),
-                    currentLimits2: formatCompleteCurrentLimit(line.currentLimits2),
-                    selectedOperationalLimitsGroupId1: line.selectedOperationalLimitsGroupId1 ?? null,
-                    selectedOperationalLimitsGroupId2: line.selectedOperationalLimitsGroupId2 ?? null,
+                    [LIMITS_GROUP_1]: formatCompleteCurrentLimit(line.currentLimits1),
+                    [LIMITS_GROUP_2]: formatCompleteCurrentLimit(line.currentLimits2),
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroupId1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroupId2 ?? null,
                 }),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -238,10 +243,10 @@ const LineCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    currentLimits1: formatCompleteCurrentLimit(line.currentLimits1),
-                    currentLimits2: formatCompleteCurrentLimit(line.currentLimits2),
-                    selectedOperationalLimitsGroupId1: line.selectedOperationalLimitsGroupId1 ?? null,
-                    selectedOperationalLimitsGroupId2: line.selectedOperationalLimitsGroupId2 ?? null,
+                    [LIMITS_GROUP_1]: line.operationalLimitsGroups1,
+                    [LIMITS_GROUP_2]: line.operationalLimitsGroups2,
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroupId1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroupId2 ?? null,
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
@@ -262,24 +267,6 @@ const LineCreationDialog = ({
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
-
-    /**
-     * delete the empty temporary limits lines
-     */
-    const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) =>
-        currentLimitsData.map(({ temporaryLimits, ...baseData }) /*: CurrentLimitsData*/ => ({
-            ...baseData,
-            temporaryLimits: temporaryLimits
-                .filter(
-                    (limit) =>
-                        // completely empty lines should be filtered out (the interface display always some lines even if empty)
-                        limit.name !== undefined && limit.name !== null && limit.name !== ''
-                )
-                .map(({ name, ...temporaryLimit }) => ({
-                    ...temporaryLimit,
-                    name: sanitizeString(name),
-                })),
-        }));
 
     const handleLineSegmentsBuildSubmit = (data) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
@@ -316,10 +303,10 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                sanitizeCurrentLimits(limits[CURRENT_LIMITS_1]),
-                sanitizeCurrentLimits(limits[CURRENT_LIMITS_2]),
-                limits[SELECTED_LIMIT_GROUP_1],
-                limits[SELECTED_LIMIT_GROUP_2],
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_1]),
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_2]),
+                limits[SELECTED_LIMITS_GROUP_1],
+                limits[SELECTED_LIMITS_GROUP_2],
                 !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),

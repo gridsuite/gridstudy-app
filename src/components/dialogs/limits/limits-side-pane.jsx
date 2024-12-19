@@ -9,6 +9,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import DndTable from '../../utils/dnd-table/dnd-table.jsx';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
+    CURRENT_LIMITS,
     PERMANENT_LIMIT,
     TEMPORARY_LIMIT_DURATION,
     TEMPORARY_LIMIT_MODIFICATION_TYPE,
@@ -33,8 +34,8 @@ const styles = {
 };
 
 export const LimitsSidePane = ({
-    indexLimitSet,
-    limitSetFormName,
+    indexLimitGroup,
+    limitsGroupFormName,
     permanentCurrentLimitPreviousValue,
     previousValues,
     clearableFields,
@@ -43,7 +44,7 @@ export const LimitsSidePane = ({
     const intl = useIntl();
     const { getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
-        name: `${limitSetFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`,
+        name: `${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`,
     });
 
     const columnsDefinition = useMemo(() => {
@@ -153,7 +154,7 @@ export const LimitsSidePane = ({
         () => (
             <Box sx={{ maxWidth: 300 }}>
                 <FloatInput
-                    name={`${limitSetFormName}[${indexLimitSet}].${PERMANENT_LIMIT}`}
+                    name={`${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${PERMANENT_LIMIT}`}
                     label="PermanentCurrentLimitText"
                     adornment={AmpereAdornment}
                     previousValue={permanentCurrentLimitPreviousValue}
@@ -161,7 +162,7 @@ export const LimitsSidePane = ({
                 />
             </Box>
         ),
-        [limitSetFormName, indexLimitSet, clearableFields, permanentCurrentLimitPreviousValue]
+        [limitsGroupFormName, indexLimitGroup, clearableFields, permanentCurrentLimitPreviousValue]
     );
 
     const isValueModified = useCallback(
@@ -181,13 +182,13 @@ export const LimitsSidePane = ({
 
     return (
         <Paper sx={styles.limitsBackground}>
-            {indexLimitSet !== undefined && permanentCurrentLimitField}
+            {indexLimitGroup !== undefined && permanentCurrentLimitField}
             <Box component={`h4`}>
                 <FormattedMessage id="TemporaryCurrentLimitsText" />
             </Box>
-            {indexLimitSet !== undefined && (
+            {indexLimitGroup !== undefined && (
                 <DndTable
-                    arrayFormName={`${limitSetFormName}[${indexLimitSet}].${TEMPORARY_LIMITS}`}
+                    arrayFormName={`${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`}
                     useFieldArrayOutput={useFieldArrayOutputTemporaryLimits}
                     createRows={createRows}
                     columnsDefinition={columnsDefinition}

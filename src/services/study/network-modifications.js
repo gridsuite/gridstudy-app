@@ -11,6 +11,7 @@ import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { getStudyUrlWithNodeUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
+import { LIMITS_GROUP_1, LIMITS_GROUP_2 } from '../../components/utils/field-constants';
 
 function getNetworkModificationUrl(studyUuid, nodeUuid) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
@@ -842,8 +843,8 @@ export function createLine(
     busOrBusbarSectionId1,
     voltageLevelId2,
     busOrBusbarSectionId2,
-    currentLimits1,
-    currentLimits2,
+    limitsGroups1,
+    limitsGroups2,
     selectedLimitGroup1,
     selectedLimitGroup2,
     isUpdate,
@@ -887,8 +888,8 @@ export function createLine(
             busOrBusbarSectionId1: busOrBusbarSectionId1,
             voltageLevelId2: voltageLevelId2,
             busOrBusbarSectionId2: busOrBusbarSectionId2,
-            currentLimits1: currentLimits1,
-            currentLimits2: currentLimits2,
+            [LIMITS_GROUP_1]: limitsGroups1,
+            [LIMITS_GROUP_2]: limitsGroups2,
             selectedOperationalLimitsGroupId1: selectedLimitGroup1,
             selectedOperationalLimitsGroupId2: selectedLimitGroup2,
             connectionName1: connectionName1,
@@ -989,8 +990,8 @@ export function createTwoWindingsTransformer(
     ratedS,
     ratedU1,
     ratedU2,
-    currentLimit1,
-    currentLimit2,
+    limitsGroups1,
+    limitsGroups2,
     selectedLimitGroup1,
     selectedLimitGroup2,
     voltageLevelId1,
@@ -1037,8 +1038,8 @@ export function createTwoWindingsTransformer(
             ratedS: ratedS,
             ratedU1: ratedU1,
             ratedU2: ratedU2,
-            currentLimits1: currentLimit1,
-            currentLimits2: currentLimit2,
+            [LIMITS_GROUP_1]: limitsGroups1,
+            [LIMITS_GROUP_2]: limitsGroups2,
             selectedOperationalLimitsGroupId1: selectedLimitGroup1,
             selectedOperationalLimitsGroupId2: selectedLimitGroup2,
             voltageLevelId1: voltageLevelId1,

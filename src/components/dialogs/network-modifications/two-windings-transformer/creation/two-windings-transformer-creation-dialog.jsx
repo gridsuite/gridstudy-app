@@ -19,8 +19,7 @@ import {
     CONNECTIVITY_1,
     CONNECTIVITY_2,
     CURRENT_LIMITER_REGULATING_VALUE,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
+    CURRENT_LIMITS,
     ENABLED,
     EQUIPMENT,
     EQUIPMENT_ID,
@@ -29,6 +28,8 @@ import {
     G,
     ID,
     LIMITS,
+    LIMITS_GROUP_1,
+    LIMITS_GROUP_2,
     LOAD_TAP_CHANGING_CAPABILITIES,
     LOW_TAP_POSITION,
     PHASE_TAP_CHANGER,
@@ -41,8 +42,8 @@ import {
     REGULATION_MODE,
     REGULATION_SIDE,
     REGULATION_TYPE,
-    SELECTED_LIMIT_GROUP_1,
-    SELECTED_LIMIT_GROUP_2,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     STEPS,
     TAP_POSITION,
     TARGET_DEADBAND,
@@ -92,7 +93,7 @@ import {
     getLimitsEmptyFormData,
     getAllLimitsFormData,
     getLimitsValidationSchema,
-    sanitizeLimitNames,
+    sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import TwoWindingsTransformerCreationDialogHeader from './two-windings-transformer-creation-dialog-header';
@@ -250,8 +251,8 @@ const TwoWindingsTransformerCreationDialog = ({
                     ),
                 }),
                 ...getAllLimitsFormData({
-                    currentLimits1: formatCompleteCurrentLimit(twt.currentLimits1),
-                    currentLimits2: formatCompleteCurrentLimit(twt.currentLimits2),
+                    [LIMITS_GROUP_1]: twt.operationalLimitsGroups1,
+                    [LIMITS_GROUP_2]: twt.operationalLimitsGroups2,
                     selectedOperationalLimitsGroupId1: twt.selectedOperationalLimitsGroupId1 ?? null,
                     selectedOperationalLimitsGroupId2: twt.selectedOperationalLimitsGroupId2 ?? null,
                 }),
@@ -299,18 +300,20 @@ const TwoWindingsTransformerCreationDialog = ({
         [reset]
     );
 
-    const formatCompleteCurrentLimit = (completeCurrentLimits /*: CurrentLimitsData[]*/) => {
-        let formattedCompleteCurrentLimit /*: CurrentLimitsData[]*/ = [];
-        if (completeCurrentLimits) {
-            completeCurrentLimits.forEach((elt) =>
-                formattedCompleteCurrentLimit.push({
-                    operationalLimitGroupId: elt.id ?? elt.operationalLimitGroupId,
-                    permanentLimit: elt.permanentLimit,
-                    temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+    const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
+        let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+        if (completeLimitsGroups) {
+            completeLimitsGroups.forEach((elt) =>
+                formattedCompleteLimitsGroups.push({
+                    id: elt.id,
+                    [CURRENT_LIMITS]: {
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                    },
                 })
             );
         }
-        return formattedCompleteCurrentLimit;
+        return formattedCompleteLimitsGroups;
     };
 
     const fromSearchCopyToFormValues = useCallback(
@@ -349,10 +352,10 @@ const TwoWindingsTransformerCreationDialog = ({
                         ),
                     }),
                     ...getAllLimitsFormData({
-                        currentLimits1: formatCompleteCurrentLimit(twt.currentLimits1),
-                        currentLimits2: formatCompleteCurrentLimit(twt.currentLimits2),
-                        selectedOperationalLimitsGroupId1: twt.selectedOperationalLimitsGroupId1 ?? null,
-                        selectedOperationalLimitsGroupId2: twt.selectedOperationalLimitsGroupId2 ?? null,
+                        [LIMITS_GROUP_1]: formatCompleteCurrentLimit(twt.currentLimits1),
+                        [LIMITS_GROUP_2]: formatCompleteCurrentLimit(twt.currentLimits2),
+                        [SELECTED_LIMITS_GROUP_1]: twt.selectedOperationalLimitsGroupId1 ?? null,
+                        [SELECTED_LIMITS_GROUP_2]: twt.selectedOperationalLimitsGroupId2 ?? null,
                     }),
                     ...getRatioTapChangerFormData({
                         enabled: twt?.[RATIO_TAP_CHANGER]?.[TAP_POSITION] !== undefined,
@@ -549,14 +552,6 @@ const TwoWindingsTransformerCreationDialog = ({
                     ...twt[PHASE_TAP_CHANGER],
                 };
             }
-            /**
-             * delete the empty temporary limits lines
-             */
-            const sanitizeCurrentLimits = (currentLimitsData /*: CurrentLimitsData[]*/) =>
-                currentLimitsData.map(({ temporaryLimits, ...baseData }) /*: CurrentLimitsData*/ => ({
-                    ...baseData,
-                    temporaryLimits: sanitizeLimitNames(temporaryLimits),
-                }));
 
             createTwoWindingsTransformer(
                 studyUuid,
@@ -570,10 +565,10 @@ const TwoWindingsTransformerCreationDialog = ({
                 characteristics[RATED_S] ?? '',
                 characteristics[RATED_U1],
                 characteristics[RATED_U2],
-                sanitizeCurrentLimits(limits[CURRENT_LIMITS_1]),
-                sanitizeCurrentLimits(limits[CURRENT_LIMITS_2]),
-                limits[SELECTED_LIMIT_GROUP_1],
-                limits[SELECTED_LIMIT_GROUP_2],
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_1]),
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_2]),
+                limits[SELECTED_LIMITS_GROUP_1],
+                limits[SELECTED_LIMITS_GROUP_2],
                 characteristics[CONNECTIVITY_1]?.[VOLTAGE_LEVEL]?.[ID],
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.[ID],
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.[ID],
