@@ -15,7 +15,6 @@ import IconButton from '@mui/material/IconButton';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
@@ -33,7 +32,10 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
-import { i } from 'mathjs';
+import { SwitchNetworkModificationActive } from './switch-network-modification-active';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { setCurrentRootNetwork } from 'redux/actions';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -131,7 +133,6 @@ const RootNetworkNodeEditor = () => {
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
 
-    const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
@@ -142,16 +143,11 @@ const RootNetworkNodeEditor = () => {
 
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
-    const [editDataFetchStatus, setEditDataFetchStatus] = useState(FetchStatus.IDLE);
-    const [caseSelectionDialogOpen, setCaseSelectionDialogOpen] = useState(false);
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
-    const [createCompositeModificationDialogOpen, setCreateCompositeModificationDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [messageId, setMessageId] = useState('');
     const [launchLoader, setLaunchLoader] = useState(false);
-    const [isUpdate, setIsUpdate] = useState(false);
-    const buttonAddRef = useRef<HTMLButtonElement>(null);
 
     const updateSelectedItems = useCallback((rootNetworks: RootNetworkMetadata[]) => {
         const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
@@ -265,9 +261,6 @@ const RootNetworkNodeEditor = () => {
     //     }
     // }, [dispatch, dofetchRootNetworks, studyUpdatedForce, cleanClipboard]);
 
-    const isAnyNodeBuilding = useIsAnyNodeBuilding();
-
-    const mapDataLoading = useSelector((state: AppState) => state.mapDataLoading);
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
@@ -349,6 +342,26 @@ const RootNetworkNodeEditor = () => {
                 //    onDragEnd={commit}
                 //     onDragStart={() => setIsDragging(true)}
                 divider
+                secondaryAction={(rootNetwork) => {
+                    const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
+
+                    return (
+                        <Box sx={{ display: 'flex', alignItems: 'center', padding: '8px 0' }}>
+                            <IconButton
+                                size="small"
+                                disabled={isCurrentRootNetwork}
+                                onClick={() => {
+                                    if (rootNetwork.rootNetworkUuid !== currentRootNetwork) {
+                                        // Set this root network as the current root network
+                                        dispatch(setCurrentRootNetwork(rootNetwork.rootNetworkUuid));
+                                    }
+                                }}
+                            >
+                                {isCurrentRootNetwork ? <RemoveRedEyeIcon /> : <VisibilityOffIcon />}
+                            </IconButton>
+                        </Box>
+                    );
+                }}
             />
         );
     };
@@ -492,7 +505,7 @@ const RootNetworkNodeEditor = () => {
                             onClick={openRootNetworkCreationDialog}
                             size={'small'}
                             sx={styles.toolbarIcon}
-                            disabled={isAnyNodeBuilding || mapDataLoading || deleteInProgress}
+                            disabled={false} //TODO
                         >
                             <CreateNewFolderIcon />
                         </IconButton>
@@ -503,13 +516,7 @@ const RootNetworkNodeEditor = () => {
                     onClick={doDeleteRootNetwork}
                     size={'small'}
                     sx={styles.toolbarIcon}
-                    disabled={
-                        selectedItems.length === 0 ||
-                        isAnyNodeBuilding ||
-                        mapDataLoading ||
-                        deleteInProgress ||
-                        !currentNode
-                    }
+                    disabled={selectedItems.length === 0 || !currentNode}
                 >
                     <DeleteIcon />
                 </IconButton>

@@ -423,15 +423,20 @@ export const NetworkMapTab = ({
     const getMissingEquipmentsPositions = useCallback(
         (
             notFoundEquipmentsIds: string[],
-            fetchEquipmentCB: (studyUuid: UUID, nodeId: UUID, equipmentIds: string[]) => Promise<any[]>
+            fetchEquipmentCB: (
+                studyUuid: UUID,
+                nodeId: UUID,
+                currentRootNetwork: UUID,
+                equipmentIds: string[]
+            ) => Promise<any[]>
         ) => {
             if (notFoundEquipmentsIds.length === 0 || !currentNodeRef.current) {
                 return Promise.resolve([]);
             }
 
-            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, notFoundEquipmentsIds);
+            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, currentRootNetwork, notFoundEquipmentsIds);
         },
-        [studyUuid]
+        [studyUuid, currentRootNetwork]
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
