@@ -4,24 +4,31 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Grid, SxProps, Theme } from '@mui/material';
+import { Box, Grid, type GridSize, type SxProps, type Theme, Typography } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import { mergeSx } from '@gridsuite/commons-ui';
+
+const styles = {
+    base: {
+        marginTop: 1,
+        marginBottom: 1,
+    },
+    header: { margin: 0 },
+} as const satisfies SxProps<Theme>;
 
 export interface GridSectionProps {
     title: string;
     heading?: 1 | 2 | 3 | 4 | 5 | 6;
-    size?: number;
+    size?: GridSize;
     customStyle?: SxProps<Theme>;
 }
 
 export default function GridSection({ title, heading = 3, size = 12, customStyle }: Readonly<GridSectionProps>) {
     return (
-        <Grid container spacing={2}>
-            <Grid item xs={size}>
-                <Box sx={customStyle} component={`h${heading}`}>
-                    <FormattedMessage id={title} />
-                </Box>
-            </Grid>
+        <Grid item spacing={2} xs={size} sx={customStyle ? mergeSx(styles.base, customStyle) : styles.base}>
+            <Box component={`h${heading}`} sx={styles.header}>
+                <FormattedMessage id={title} />
+            </Box>
         </Grid>
     );
 }

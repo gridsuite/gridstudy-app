@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Button, Grid } from '@mui/material';
+import { Button, Divider, Grid } from '@mui/material';
 import { styles } from './parameters';
 import {
     CustomFormProvider,
@@ -278,14 +278,9 @@ export const ShortCircuitParameters = ({ useShortCircuitParameters, setHaveDirty
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <Grid sx={{ height: '100%' }}>
-                <Grid container paddingTop={1} paddingBottom={1}>
-                    <LineSeparator />
-                </Grid>
-
-                <Grid sx={styles.scrollableGrid}>
-                    <ShortCircuitFields resetAll={resetAll} />
-                </Grid>
+            <Grid container direction="column" alignItems="stretch" justifyContent="flex-start" sx={{ height: '100%' }}>
+                <LineSeparator xs="auto" />
+                <ShortCircuitFields resetAll={resetAll} sx={styles.scrollableGrid} />
             </Grid>
             <Grid container sx={mergeSx(styles.controlParametersItem, styles.marginTopButton)}>
                 <Button onClick={() => setOpenSelectParameterDialog(true)}>

@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useEffect, useMemo, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import {
     SHORT_CIRCUIT_INITIAL_VOLTAGE_PROFILE_MODE,
     SHORT_CIRCUIT_PREDEFINED_PARAMS,
@@ -30,8 +30,10 @@ import {
 import { ShortCircuitFieldsProps } from './short-circuit-parameters.type';
 import GridItem from '../../commons/grid-item';
 import GridSection from '../../commons/grid-section';
+import { FormattedMessage } from 'react-intl';
+import ParameterFormLineSwitch from '../widget/parameter-form-line-switch';
 
-const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetAll }) => {
+const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetAll, sx }) => {
     const [status, setStatus] = useState(STATUS.SUCCESS);
 
     const watchInitialVoltageProfileMode = useWatch({
@@ -89,14 +91,7 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
 
     // fields definition
     const feederResult = (
-        <Grid container alignItems="center" spacing={2} direction={'row'}>
-            <Grid item xs={10}>
-                <FieldLabel label={'descWithFeederResult'} />
-            </Grid>
-            <Grid item xs={2}>
-                <SwitchInput name={SHORT_CIRCUIT_WITH_FEEDER_RESULT} />
-            </Grid>
-        </Grid>
+        <ParameterFormLineSwitch label="descWithFeederResult" name={SHORT_CIRCUIT_WITH_FEEDER_RESULT} />
     );
     const predefinedParameters = (
         <MuiSelectInput
@@ -155,31 +150,33 @@ const ShortCircuitFields: FunctionComponent<ShortCircuitFieldsProps> = ({ resetA
     ]);
 
     return (
-        <Grid container spacing={2} paddingLeft={2}>
-            <Grid container paddingTop={2} xl={6}>
-                <GridItem size={9}>{feederResult}</GridItem>
-            </Grid>
-            <GridSection title="ShortCircuitPredefinedParameters" heading={4} />
-            <Grid xl={6} container spacing={1} alignItems={'center'}>
-                <GridItem size={8}>{predefinedParameters}</GridItem>
-                <GridItem size={4}>{statusToShow}</GridItem>
-            </Grid>
-            <GridSection title="ShortCircuitCharacteristics" heading={4} />
-            <Grid container spacing={5}>
-                <Grid item>
-                    <GridItem>{loads}</GridItem>
-                    <GridItem>{shuntCompensators}</GridItem>
+        <Grid item container xs paddingLeft={1} sx={sx} direction="row">
+            <Grid item container spacing={2} direction="row" xs={10} sm={9} md={8} lg={7} xl={6}>
+                <Grid item container paddingTop={2}>
+                    {feederResult}
                 </Grid>
-                <Grid item xs={8}>
+                <GridSection title="ShortCircuitPredefinedParameters" heading={4} />
+                <Grid item container columnSpacing={1}>
+                    <Grid item xs={11}>
+                        {predefinedParameters}
+                    </Grid>
+                    <Grid item xs={1} alignContent="center">
+                        {statusToShow}
+                    </Grid>
+                </Grid>
+                <GridSection title="ShortCircuitCharacteristics" heading={4} />
+                <Grid item container columnSpacing={5}>
+                    <GridItem>{loads}</GridItem>
                     <GridItem>{vsc}</GridItem>
+                    <GridItem>{shuntCompensators}</GridItem>
                     <GridItem>{neutralPosition}</GridItem>
                 </Grid>
-            </Grid>
-            <GridSection title="ShortCircuitVoltageProfileMode" heading={4} />
-            <Grid container>
+                <GridSection title="ShortCircuitVoltageProfileMode" heading={4} />
                 <GridItem size={12}>{initialVoltageProfileModeField}</GridItem>
             </Grid>
-            <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
+            <Grid item xs={12}>
+                <VoltageTable voltageProfileMode={watchInitialVoltageProfileMode} />
+            </Grid>
         </Grid>
     );
 };

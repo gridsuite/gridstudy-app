@@ -4,18 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { PropsWithChildren, ReactNode } from 'react';
-import { Grid, GridSize, Tooltip } from '@mui/material';
+import { type ReactNode } from 'react';
+import { type Breakpoint, Grid, type GridProps, type GridSize, Tooltip } from '@mui/material';
 
-export interface GridItemProps extends PropsWithChildren {
+export type GridItemProps = Omit<GridProps, 'item' | 'container' | Breakpoint> & {
     size?: GridSize;
-    alignItem?: string;
     tooltip?: ReactNode;
-}
+};
 
-export default function GridItem({ children, size = 6, alignItem = 'flex-start', tooltip }: Readonly<GridItemProps>) {
+export default function GridItem({ children, size = 6, tooltip, ...otherProps }: Readonly<GridItemProps>) {
     return (
-        <Grid item xs={size} alignItems={alignItem}>
+        <Grid item xs={size} {...otherProps}>
             {children &&
                 (tooltip ? (
                     <Tooltip title={tooltip}>

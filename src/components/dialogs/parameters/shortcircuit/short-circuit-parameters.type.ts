@@ -5,9 +5,11 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { INITIAL_VOLTAGE } from '../../../utils/constants';
+import type { SxProps, Theme } from '@mui/material';
 
 export interface ShortCircuitFieldsProps {
     resetAll: (predefinedParams: INITIAL_VOLTAGE) => void;
+    sx: SxProps<Theme>;
 }
 
 export interface VoltageTableProps {
