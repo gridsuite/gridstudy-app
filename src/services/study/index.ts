@@ -47,13 +47,14 @@ export const fetchStudyExists = (studyUuid: UUID) => {
 export function getNetworkAreaDiagramUrl(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     voltageLevelsIds: UUID[],
     depth: number,
     withGeoData: boolean
 ) {
     console.info(`Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`);
     return (
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
             depth: depth.toString(),
@@ -67,6 +68,7 @@ export function getNetworkAreaDiagramUrl(
 export function fetchParentNodesReport(
     studyUuid: UUID,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     nodeOnlyReport: boolean,
     severityFilterList: string[],
     reportType: keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
@@ -83,7 +85,7 @@ export function fetchParentNodesReport(
     );
 
     let url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
         '/parent-nodes-report?nodeOnlyReport=' +
         (nodeOnlyReport ? 'true' : 'false') +
         '&reportType=' +
@@ -98,6 +100,7 @@ export function fetchParentNodesReport(
 export function fetchNodeReportLogs(
     studyUuid: UUID,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
@@ -105,9 +108,13 @@ export function fetchNodeReportLogs(
 ) {
     let url;
     if (isGlobalLogs) {
-        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/report/logs?';
+        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs?';
     } else {
-        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/logs?';
+        url =
+            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/report/' +
+            reportId +
+            '/logs?';
     }
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -147,7 +154,12 @@ export function searchEquipmentsInfos(
     );
 }
 
-export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, contingencyListNames: string[]) {
+export function fetchContingencyCount(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    contingencyListNames: string[]
+) {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
     );
@@ -156,7 +168,9 @@ export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, co
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/contingency-count?' + urlSearchParams;
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/contingency-count?' +
+        urlSearchParams;
 
     console.debug(url);
     return backendFetchJson(url);
@@ -205,9 +219,10 @@ export function getAvailableComponentLibraries(): Promise<string[]> {
     return backendFetchJson(getAvailableComponentLibrariesUrl);
 }
 
-export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID) {
+export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info('Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/unbuild';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/unbuild';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
@@ -271,13 +286,15 @@ export function getServersInfos() {
 export function fetchAvailableFilterEnumValues(
     studyUuid: UUID,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     computingType: ComputingType,
     filterEnum: string
 ) {
     console.info('fetch available filter values');
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        nodeUuid
+        nodeUuid,
+        currentRootNetworkUuid
     )}/computation/result/enum-values?computingType=${encodeURIComponent(computingType)}&enumName=${encodeURIComponent(
         filterEnum
     )}`;

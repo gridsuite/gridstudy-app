@@ -46,6 +46,7 @@ const styles = {
 interface IResultViewTabProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetwork: UUID;
     openVoltageLevelDiagram: (voltageLevelId: string) => void;
     disabled: boolean;
     view: string;
@@ -62,6 +63,7 @@ export interface IService {
  * control results views
  * @param studyUuid : string uuid of study
  * @param currentNode : object current node
+ * @param currentRootNetwork : uuid of current root network
  * @param openVoltageLevelDiagram : function
  * @param resultTabIndexRedirection : ResultTabIndexRedirection to specific tab [RootTab, LevelOneTab, ...]
  * @param disabled
@@ -71,6 +73,7 @@ export interface IService {
 export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     studyUuid,
     currentNode,
+    currentRootNetwork,
     openVoltageLevelDiagram,
     disabled,
     view,
@@ -92,10 +95,14 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
     const renderLoadFlowResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <LoadFlowResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+                <LoadFlowResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    rootNetworkUuid={currentRootNetwork}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetwork]);
 
     const renderSecurityAnalysisResult = useMemo(() => {
         return (
@@ -103,59 +110,86 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
+                    rootNetworkUuid={currentRootNetwork}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
         );
-    }, [studyUuid, currentNode, openVoltageLevelDiagram]);
+    }, [studyUuid, currentNode, currentRootNetwork, openVoltageLevelDiagram]);
 
     const renderVoltageInitResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <VoltageInitResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+                <VoltageInitResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    rootNetworkUuid={currentRootNetwork}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetwork]);
 
     const renderSensitivityAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <SensitivityAnalysisResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id!} />
+                <SensitivityAnalysisResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id!}
+                    rootNetworkUuid={currentRootNetwork}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetwork]);
 
     const renderNonEvacuatedEnergyResult = useMemo(() => {
+        console.log('ùùùùùù renderNonEvacuatedEnergyResult ',currentRootNetwork);
         return (
             <Paper sx={styles.analysisResult}>
-                <NonEvacuatedEnergyResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id!} />
+                <NonEvacuatedEnergyResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id!}
+                    rootNetworkUuid={currentRootNetwork}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetwork]);
 
     const renderShortCircuitAnalysisResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <ShortCircuitAnalysisResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} view={view} />
+                <ShortCircuitAnalysisResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    rootNetworkUuid={currentRootNetwork}
+                    view={view}
+                />
             </Paper>
         );
-    }, [view, currentNode?.id, studyUuid]);
+    }, [view, currentNode?.id, studyUuid, currentRootNetwork]);
 
     const renderDynamicSimulationResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <DynamicSimulationResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+                <DynamicSimulationResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    rootNetworkUuid={currentRootNetwork}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetwork]);
 
     const renderStateEstimationResult = useMemo(() => {
         return (
             <Paper sx={styles.analysisResult}>
-                <StateEstimationResultTab studyUuid={studyUuid} nodeUuid={currentNode?.id} />
+                <StateEstimationResultTab
+                    studyUuid={studyUuid}
+                    nodeUuid={currentNode?.id}
+                    rootNetworkUuid={currentRootNetwork}
+                />
             </Paper>
         );
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetwork]);
 
     const services: IService[] = useMemo(() => {
         return [

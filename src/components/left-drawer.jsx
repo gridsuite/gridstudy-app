@@ -11,7 +11,7 @@ const styles = {
         flex: '1',
         flexGrow: '1',
         transition: 'none !important',
-      //  backgroundColor: 'green  !important',
+        //  backgroundColor: 'green  !important',
     },
     nodeEditor: (theme) => ({
         width: DRAWER_NODE_EDITOR_WIDTH + 'px',

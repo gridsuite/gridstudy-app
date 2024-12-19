@@ -7,7 +7,6 @@
 
 import { backendFetch, backendFetchJson } from './utils';
 import { UUID } from 'crypto';
-import { ElementType } from '@gridsuite/commons-ui';
 
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
@@ -47,3 +46,18 @@ export const createRootNetwork = (
         body: importParameters ? JSON.stringify(importParameters) : '',
     });
 };
+
+export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
+    // Assuming we want to delete each root network individually:
+    const rootNetworkUuid = rootNetworkUuids[0]; // Modify as needed if deleting multiple root networks
+
+    const rootNetworkDeleteUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(
+        studyUuid
+    )}/root-networks/${encodeURIComponent(rootNetworkUuid)}`;
+
+    console.debug(rootNetworkDeleteUrl); // Debugging the URL
+
+    return backendFetch(rootNetworkDeleteUrl, {
+        method: 'DELETE',
+    });
+}

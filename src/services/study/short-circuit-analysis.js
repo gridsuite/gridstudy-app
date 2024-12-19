@@ -91,6 +91,7 @@ export function fetchShortCircuitAnalysisResult({ studyUuid, currentNodeUuid, ty
 export function fetchShortCircuitAnalysisPagedResults({
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     selector = {},
     type = ShortCircuitAnalysisType.ALL_BUSES,
 }) {
@@ -123,7 +124,7 @@ export function fetchShortCircuitAnalysisPagedResults({
     }
 
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/shortcircuit/result?' +
         urlSearchParams.toString();
     console.debug(url);
@@ -170,12 +171,17 @@ export function invalidateShortCircuitStatus(studyUuid) {
 export function downloadShortCircuitResultZippedCsv(
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     analysisType,
     headersCsv,
     enumValueTranslations
 ) {
     console.info(`Fetching short-circuit analysis export csv on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/shortcircuit/result/csv`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/shortcircuit/result/csv`;
     const type = getShortCircuitAnalysisTypeFromEnum(analysisType);
     const param = new URLSearchParams({ type });
     const urlWithParam = `${url}?${param.toString()}`;

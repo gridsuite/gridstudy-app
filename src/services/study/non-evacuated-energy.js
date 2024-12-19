@@ -36,10 +36,10 @@ export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid, curren
     return backendFetchText(url);
 }
 
-export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid) {
-    console.info(`Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`);
+export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.log(currentRootNetworkUuid,`*****Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/non-evacuated-energy/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/non-evacuated-energy/result`;
     console.debug(url);
     return backendFetchJson(url);
 }

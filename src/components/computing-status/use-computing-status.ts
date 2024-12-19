@@ -135,7 +135,16 @@ export const useComputingStatus: UseComputingStatusProps = (
         return () => {
             canceledRequest = true;
         };
-    }, [nodeUuid, fetcher, studyUuid, resultConversion, dispatch, computingType, isComputationCompleted]);
+    }, [
+        nodeUuid,
+        rootNetworkUuid,
+        fetcher,
+        studyUuid,
+        resultConversion,
+        dispatch,
+        computingType,
+        isComputationCompleted,
+    ]);
 
     /* initial fetch and update */
     useEffect(() => {

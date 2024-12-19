@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentNode, currentRootNetwork, setErrorMessage, ...props }) => {
+const StudyPane = ({ studyUuid, currentRootNetwork, currentNode, setErrorMessage, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -97,6 +97,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetwork, setErrorMessage
                     <TableWrapper
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetwork={currentRootNetwork}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
@@ -104,7 +105,6 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetwork, setErrorMessage
                     />
                 </Paper>
             </TabPanelLazy>
-
             <Box
                 sx={{
                     height: '100%',
@@ -116,6 +116,7 @@ const StudyPane = ({ studyUuid, currentNode, currentRootNetwork, setErrorMessage
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetwork={currentRootNetwork}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
                         view={props.view}

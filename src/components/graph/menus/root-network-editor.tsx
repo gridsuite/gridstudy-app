@@ -24,33 +24,16 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-     //   background: "red",
-
+        //   background: "red",
     }),
-}; 
+};
 
 const RootNetworkEditor = () => {
     const dispatch = useDispatch();
-    const { snackError } = useSnackMessage();
     const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const rootNetworkUuid = useSelector((state: AppState) => state.rootNetworkUuid);
 
     const closeModificationsDrawer = () => {
         dispatch(setModificationsDrawerOpen(false));
-    };
-
-    const changeNodeName = (newName: string) => {
-        updateTreeNode(studyUuid, {
-            id: currentTreeNode?.id,
-            type: currentTreeNode?.type,
-            name: newName,
-        }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'NodeUpdateError',
-            });
-        });
     };
 
     return (
@@ -58,7 +41,6 @@ const RootNetworkEditor = () => {
             <EditableTitle
                 name={currentTreeNode?.data?.label ?? ''}
                 onClose={closeModificationsDrawer}
-                onChange={changeNodeName}
                 isCloseIconVisible={false}
             />
             <RootNetworkNodeEditor />

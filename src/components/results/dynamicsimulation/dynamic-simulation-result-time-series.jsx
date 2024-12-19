@@ -36,7 +36,7 @@ const styles = {
     },
 };
 
-const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
+const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid, rootNetworkUuid }) => {
     const [result, loadTimeSeries, isLoading] = useResultTimeSeries(nodeUuid, studyUuid);
 
     // tab id is automatically increased and reset to zero when there is no tab.
@@ -182,6 +182,7 @@ const DynamicSimulationResultTimeSeries = memo(({ nodeUuid, studyUuid }) => {
 DynamicSimulationResultTimeSeries.propTypes = {
     nodeUuid: PropTypes.string,
     studyUuid: PropTypes.string,
+    rootNetworkUuid: PropTypes.string,
 };
 
 export default DynamicSimulationResultTimeSeries;

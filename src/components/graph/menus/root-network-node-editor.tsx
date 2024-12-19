@@ -12,29 +12,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
-import { UPDATE_TYPE } from 'components/network/constants';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeNotificationByNode, setModificationsInProgress } from '../../../redux/actions';
-import TwoWindingsTransformerModificationDialog from '../../dialogs/network-modifications/two-windings-transformer/modification/two-windings-transformer-modification-dialog';
 import { useIsAnyNodeBuilding } from '../../utils/is-any-node-building-hook';
 
-import RestoreModificationDialog from 'components/dialogs/restore-modification-dialog';
 import { UUID } from 'crypto';
-import { DropResult } from 'react-beautiful-dnd';
-import { AppState, StudyUpdated } from 'redux/reducer';
-import { fetchNetworkModification } from '../../../services/network-modification';
-import { changeNetworkModificationOrder, stashModifications } from '../../../services/study/network-modifications';
+import { AppState } from 'redux/reducer';
 import { FetchStatus } from '../../../services/utils';
-import ElementCreationDialog, {
-    IElementCreationDialog,
-    IElementCreationDialog1,
-} from '../../dialogs/element-creation-dialog';
+import ElementCreationDialog, { IElementCreationDialog1 } from '../../dialogs/element-creation-dialog';
 import {
     NetworkModificationCopyInfo,
     NetworkModificationData,
-    NetworkModificationMetadata,
     RootNetworkMetadata,
 } from './network-modification-menu.type';
 
@@ -43,7 +32,8 @@ import {
     GetCaseImportParametersReturn,
     getCaseImportParameters,
 } from 'services/network-conversion';
-import { createRootNetwork, fetchRootNetworks } from 'services/root-network';
+import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
+import { i } from 'mathjs';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -119,19 +109,6 @@ export const styles = {
     }),
 };
 
-const nonEditableModificationTypes = new Set([
-    'EQUIPMENT_ATTRIBUTE_MODIFICATION',
-    'GROOVY_SCRIPT',
-    'OPERATING_STATUS_MODIFICATION',
-]);
-
-const isEditableModification = (modif: NetworkModificationMetadata) => {
-    if (!modif) {
-        return false;
-    }
-    return !nonEditableModificationTypes.has(modif.type);
-};
-
 export function isChecked(s1: number) {
     return s1 !== 0;
 }
@@ -163,8 +140,6 @@ const RootNetworkNodeEditor = () => {
     const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
     copyInfosRef.current = copyInfos;
 
-    const [isDragging, setIsDragging] = useState(false);
-
     const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
     const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
     const [editDataFetchStatus, setEditDataFetchStatus] = useState(FetchStatus.IDLE);
@@ -178,33 +153,6 @@ const RootNetworkNodeEditor = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const buttonAddRef = useRef<HTMLButtonElement>(null);
 
-    const cleanClipboard = useCallback(() => {
-        setCopyInfos(null);
-        setCopiedModifications((oldCopiedModifications) => {
-            if (oldCopiedModifications.length) {
-                snackInfo({
-                    messageId: 'CopiedModificationInvalidationMessage',
-                });
-            }
-            return [];
-        });
-    }, [snackInfo]);
-
-    // TODO this is not complete.
-    // We should clean Clipboard on notifications when another user edit
-    // a modification on a public study which is in the clipboard.
-    // We don't have precision on notifications to do this for now.
-    const handleValidatedDialog = () => {
-        if (editData?.uuid && copiedModifications.includes(editData?.uuid)) {
-            cleanClipboard();
-        }
-    };
-
-    const handleCloseDialog = () => {
-        setEditDialogOpen(undefined);
-        setEditData(undefined);
-    };
-
     const updateSelectedItems = useCallback((rootNetworks: RootNetworkMetadata[]) => {
         const toKeepIdsSet = new Set(rootNetworks.map((e) => e.rootNetworkUuid));
         setSelectedItems((oldselectedItems) => oldselectedItems.filter((s) => toKeepIdsSet.has(s.rootNetworkUuid)));
@@ -212,7 +160,6 @@ const RootNetworkNodeEditor = () => {
 
     const dofetchRootNetworks = useCallback(() => {
         setLaunchLoader(true);
-
         if (studyUuid) {
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
@@ -232,10 +179,18 @@ const RootNetworkNodeEditor = () => {
                 .finally(() => {
                     setPendingState(false);
                     setLaunchLoader(false);
-                  //  dispatch(setModificationsInProgress(false));
+                    //  dispatch(setModificationsInProgress(false));
                 });
         }
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
+
+    useEffect(() => {
+        if (studyUpdatedForce.eventData.headers) {
+            if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
+                dofetchRootNetworks();
+            }
+        }
+    }, [studyUpdatedForce, dofetchRootNetworks]);
 
     useEffect(() => {
         setEditDialogOpen(editData?.type);
@@ -245,19 +200,20 @@ const RootNetworkNodeEditor = () => {
         // first time with currentNode initialized then fetch modifications
         // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
         // OR next time if currentNodeId changed then fetch modifications
-       // if (currentNode && currentRootNetwork) {
-            if (  currentRootNetwork) {
+        // if (currentNode && currentRootNetwork) {
+
+        if (!currentRootNetwork) {
             //    currentNodeIdRef.current = currentNode.id;
             // Current node has changed then clear the modifications list
             setRootNetworks([]);
-            dofetchRootNetworks();
+
             // reset the network modification and computing logs filter when the user changes the current node
             //  dispatch(resetLogsFilter());
         }
+        dofetchRootNetworks();
     }, [currentRootNetwork, dofetchRootNetworks]);
 
-
-// TODO MANAGE NOTIFICATION 
+    // TODO MANAGE NOTIFICATION
     // useEffect(() => {
     //     if (studyUpdatedForce.eventData.headers) {
     //         if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeDeleted') {
@@ -317,26 +273,21 @@ const RootNetworkNodeEditor = () => {
         setRootNetworkCreationDialogOpen(true);
     }, []);
 
-    const doDeleteModification = useCallback(() => {
-        const selectedModificationsUuid = selectedItems.map((item) => item.rootNetworkUuid);
-        stashModifications(studyUuid, currentNode?.id, selectedModificationsUuid)
-            .then(() => {
-                //if one of the deleted element was in the clipboard we invalidate the clipboard
-                if (
-                    copiedModifications.some((aCopiedModification) =>
-                        selectedModificationsUuid.includes(aCopiedModification)
-                    )
-                ) {
-                    cleanClipboard();
-                }
-            })
-            .catch((errmsg) => {
-                snackError({
-                    messageTxt: errmsg,
-                    headerId: 'errDeleteModificationMsg',
+    const doDeleteRootNetwork = useCallback(() => {
+        const selectedRootNetworksUuid = selectedItems.map((item) => item.rootNetworkUuid);
+        if (studyUuid) {
+            deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
+                .then(() => {
+                    //if one of the deleted element was in the clipboard we invalidate the clipboard
+                })
+                .catch((errmsg) => {
+                    snackError({
+                        messageTxt: errmsg,
+                        headerId: 'errDeleteModificationMsg',
+                    });
                 });
-            });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid, cleanClipboard, copiedModifications]);
+        }
+    }, [currentNode?.id, selectedItems, snackError, studyUuid, copiedModifications]);
 
     const removeNullFields = useCallback((data: NetworkModificationData) => {
         let dataTemp = data;
@@ -354,13 +305,10 @@ const RootNetworkNodeEditor = () => {
         return dataTemp;
     }, []);
 
-     
-
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
     }, [rootNetworks]);
 
-    
     const isLoading = useCallback(() => {
         return notificationIdList.filter((notification) => notification === currentNode?.id).length > 0;
     }, [notificationIdList, currentNode?.id]);
@@ -370,14 +318,7 @@ const RootNetworkNodeEditor = () => {
         if (!rootNetwork) {
             return '';
         }
-         // return intl.formatMessage(
-        //     { id: 'network_modifications.' + modif.messageType },
-        //     {
-        //         ...modif,
-        //         ...computeLabel(modif),
-        //     }
-        // );
-        return intl.formatMessage({ id: 'root_network' }) + rootNetwork.rootNetworkUuid;
+        return intl.formatMessage({ id: 'RootNetwork' }) + ' ' + rootNetwork.rootNetworkUuid;
     };
 
     const renderRootNetworksList = () => {
@@ -386,13 +327,13 @@ const RootNetworkNodeEditor = () => {
                 sx={{
                     items: (rootNetwork) => ({
                         label: {
-                            ...(!rootNetwork.isCreating && { ...styles.disabledModification }),
+                            ...(rootNetwork.isCreating && { ...styles.disabledModification }),
                             ...styles.checkBoxLabel,
                         },
                         checkBoxIcon: styles.checkBoxIcon,
                         checkboxButton: styles.checkboxButton,
                     }),
-                    dragAndDropContainer: styles.listContainer,
+                    // dragAndDropContainer: styles.listContainer,
                 }}
                 onItemClick={(modification) => {
                     console.log(modification.rootNetworkUuid, 'on click');
@@ -476,25 +417,6 @@ const RootNetworkNodeEditor = () => {
             possibleValues: parameter.possibleValues?.sort((a: any, b: any) => a.localeCompare(b)),
         }));
     }
-    const getCurrentCaseImportParams = useCallback(
-        (caseUuid: UUID) => {
-            getCaseImportParameters(caseUuid)
-                .then((result: GetCaseImportParametersReturn) => {
-                    console.log(result);
-                    const formattedParams = formatCaseImportParameters(result.parameters);
-                    const caseFormat = result.formatName;
-                })
-                .catch(() => {
-                    // setError(`root.${FieldConstants.API_CALL}`, {
-                    //     type: 'parameterLoadingProblem',
-                    //     message: intl.formatMessage({
-                    //         id: 'parameterLoadingProblem',
-                    //     }),
-                    // });
-                });
-        },
-        [intl]
-    );
 
     function customizeCurrentParameters(params: Parameter[]): Record<string, string> {
         return params.reduce((obj, parameter) => {
@@ -540,7 +462,6 @@ const RootNetworkNodeEditor = () => {
                 setSaveInProgress(false);
             });
     };
-
     const renderPaneSubtitle = () => {
         if (isLoading() && messageId) {
             return renderRootNetworksListTitleLoading();
@@ -579,7 +500,7 @@ const RootNetworkNodeEditor = () => {
                 </Tooltip>
 
                 <IconButton
-                    onClick={doDeleteModification}
+                    onClick={doDeleteRootNetwork}
                     size={'small'}
                     sx={styles.toolbarIcon}
                     disabled={

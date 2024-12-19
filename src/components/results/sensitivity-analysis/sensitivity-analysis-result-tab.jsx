@@ -46,7 +46,7 @@ function getDisplayedColumns(params) {
     return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);
 }
 
-const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid }) => {
+const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);

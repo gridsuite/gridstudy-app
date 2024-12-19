@@ -65,6 +65,7 @@ export const useReportFetcher = (
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
     const treeModel = useSelector((state: AppState) => state.networkModificationTreeModel);
     const { snackError } = useSnackMessage();
 
@@ -100,11 +101,12 @@ export const useReportFetcher = (
 
     const fetchRawParentReport = useCallback(
         (nodeOnlyReport?: boolean) => {
-            if (currentNode !== null && studyUuid) {
+            if (currentNode !== null && studyUuid && currentRootNetwork) {
                 return fetch(() =>
                     fetchParentNodesReport(
                         studyUuid,
                         currentNode.id,
+                        currentRootNetwork,
                         nodeOnlyReport ?? true,
                         getContainerDefaultSeverityList(),
                         computingAndNetworkModificationType
@@ -118,16 +120,16 @@ export const useReportFetcher = (
 
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
-            if (!studyUuid) {
+            if (!studyUuid || !currentRootNetwork) {
                 return;
             }
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
             if (reportType === ReportType.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
-                    fetchNodeReportLogs(studyUuid, currentNode!.id, null, severityList, messageFilter, true);
+                    fetchNodeReportLogs(studyUuid, currentNode!.id,currentRootNetwork, null, severityList, messageFilter, true);
             } else {
                 fetchPromise = (severityList: string[], reportId: string) =>
-                    fetchNodeReportLogs(studyUuid, currentNode!.id, reportId, severityList, messageFilter, false);
+                    fetchNodeReportLogs(studyUuid, currentNode!.id,currentRootNetwork, reportId, severityList, messageFilter, false);
             }
             return fetchPromise(severityList, reportId).then((r) => {
                 return mapReportLogs(prettifyReportLogMessage(r, nodesNames));

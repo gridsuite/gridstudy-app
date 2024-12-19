@@ -36,10 +36,10 @@ export function fetchStateEstimationStatus(studyUuid, currentNodeUuid, currentRo
     return backendFetchText(url);
 }
 
-export function fetchStateEstimationResult(studyUuid, currentNodeUuid) {
+export function fetchStateEstimationResult(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
     console.info(`Fetching state estimation result on ${studyUuid} and node ${currentNodeUuid}  ...`);
 
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/state-estimation/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid,currentRootNetworkUuid)}/state-estimation/result`;
     console.debug(url);
     return backendFetchJson(url);
 }

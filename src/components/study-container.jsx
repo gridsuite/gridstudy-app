@@ -23,6 +23,8 @@ import {
     limitReductionModified,
     setCurrentRootNetwork,
 } from '../redux/actions';
+import { fetchRootNetworks } from 'services/root-network';
+
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -137,9 +139,34 @@ function useStudy(studyUuidRequest) {
         fetchStudyExists(studyUuidRequest)
             .then(() => {
                 setStudyUuid(studyUuidRequest);
-                dispatch(setCurrentRootNetwork('c7b1672a-8eba-45da-b761-675a8c5ec9b5'));
+
+                // Fetch root networks and set the first one as the current root network
+                fetchRootNetworks(studyUuidRequest)
+                    .then((rootNetworks) => {
+                        if (rootNetworks && rootNetworks.length > 0) {
+                            console.log('======== rootNetworks[0].rootnetworkUuid', rootNetworks[0].rootNetworkUuid);
+                            // Validate that currentRootNetwork is set
+
+                            dispatch(setCurrentRootNetwork(rootNetworks[0].rootNetworkUuid));
+                        } else {
+                            // Handle case where no root networks are available
+                            setErrMessage(
+                                intlRef.current.formatMessage(
+                                    { id: 'noRootNetworksFound' },
+                                    { studyUuid: studyUuidRequest }
+                                )
+                            );
+                        }
+                    })
+                    .catch((error) => {
+                        // Handle errors when fetching root networks
+                        setErrMessage(
+                            intlRef.current.formatMessage({ id: 'fetchRootNetworksError' }, { error: error.message })
+                        );
+                    });
             })
             .catch((error) => {
+                // Handle errors when fetching study existence
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     setErrMessage(
                         intlRef.current.formatMessage({ id: 'studyNotFound' }, { studyUuid: studyUuidRequest })
@@ -306,6 +333,7 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [snackInfo, snackWarning, snackError, userName]
     );
+    console.info(`%%%%%%%%% ????'${currentRootNetwork}'...`);
 
     const connectNotifications = useCallback(
         (studyUuid) => {
@@ -588,14 +616,14 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, currentRootNetwork, dispatch, checkStudyIndexation, loadTree, snackWarning, intlRef]
+        [studyUuid, currentRootNetwork, checkStudyIndexation, loadTree, snackWarning, intlRef]
     );
 
     useEffect(() => {
-        if (studyUuid && !isStudyNetworkFound) {
+        if (studyUuid && currentRootNetwork && !isStudyNetworkFound) {
             checkNetworkExistenceAndRecreateIfNotFound();
         }
-    }, [isStudyNetworkFound, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
+    }, [isStudyNetworkFound, currentRootNetwork, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
 
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
@@ -695,7 +723,7 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
 
     useEffect(() => {
-        if (studyUuid) {
+        if (studyUuid && currentRootNetwork) {
             websocketExpectedCloseRef.current = false;
             //dispatch root network uuid
             dispatch(openStudy(studyUuid, currentRootNetwork));
@@ -744,6 +772,7 @@ export function StudyContainer({ view, onChangeTab }) {
             >
                 <StudyPane
                     studyUuid={studyUuid}
+                    rootNetworkUuid={currentRootNetwork}
                     currentNode={currentNode}
                     currentRootNetwork={currentRootNetwork}
                     view={view}

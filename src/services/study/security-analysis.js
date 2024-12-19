@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 
-export function startSecurityAnalysis(studyUuid, currentNodeUuid, contingencyListNames) {
+export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyListNames) {
     console.info(`Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
 
     // Add params to Url
@@ -17,24 +17,30 @@ export function startSecurityAnalysis(studyUuid, currentNodeUuid, contingencyLis
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
+        currentRootNetworkUuid
     )}/security-analysis/run?${urlSearchParams}`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopSecurityAnalysis(studyUuid, currentNodeUuid) {
+export function stopSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
     console.info('Stopping security analysis on ' + studyUuid + ' and node ' + currentNodeUuid + ' ...');
     const stopSecurityAnalysisUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/security-analysis/stop';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/security-analysis/stop';
     console.debug(stopSecurityAnalysisUrl);
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, queryParams) {
+export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, currentRootNetworkUuid, queryParams) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/security-analysis/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/security-analysis/result`;
 
     const { resultType, page, size, sort, filters } = queryParams || {};
 

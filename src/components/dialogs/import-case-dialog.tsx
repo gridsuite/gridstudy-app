@@ -1,8 +1,6 @@
 import { useIntl } from 'react-intl';
 import { ElementType, DirectoryItemSelector, TreeViewFinderNodeProps } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
-import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
 
 interface ImportCaseDialogProps {
     open: boolean;

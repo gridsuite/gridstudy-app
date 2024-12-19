@@ -88,7 +88,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // fetching options in different criterias
         useEffect(() => {
-            if (!studyUuid || !currentNode?.id) {
+            if (!currentRootNetwork || !studyUuid || !currentNode?.id) {
                 return;
             }
             // Load voltage level IDs
@@ -112,7 +112,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
                 });
 
             // load countries
-            fetchAllCountries(studyUuid, currentNode.id)
+            fetchAllCountries(studyUuid, currentNode.id, currentRootNetwork)
                 .then((countryCodes) => setCountries(countryCodes))
                 .catch((error) => {
                     snackError({
@@ -124,7 +124,7 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
 
         // build fetcher which filters equipments
         const filteringEquipmentsFetcher = useMemo(() => {
-            if (!studyUuid || !currentNode?.id) {
+            if (!studyUuid || !currentRootNetwork || !currentNode?.id) {
                 return;
             }
             const expertFilter = buildExpertFilter(
@@ -135,10 +135,11 @@ const EquipmentFilter = forwardRef<GetSelectedEquipmentsHandle, EquipmentFilterP
             );
 
             // the fetcher which evaluates a filter by filter-server
-            return evaluateJsonFilter(studyUuid, currentNode.id, expertFilter);
+            return evaluateJsonFilter(studyUuid, currentNode.id, currentRootNetwork, expertFilter);
         }, [
             studyUuid,
             currentNode?.id,
+            currentRootNetwork,
             equipmentType,
             selectedVoltageLevelIds,
             selectedCountries,

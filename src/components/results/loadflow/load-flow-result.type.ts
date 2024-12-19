@@ -41,6 +41,7 @@ export enum LimitTypes {
 export interface LoadFlowTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    rootNetworkUuid: UUID;
 }
 
 export interface LoadflowResultTap {

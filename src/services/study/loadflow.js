@@ -55,7 +55,7 @@ export function startLoadFlow(studyUuid, currentNodeUuid, currentRootNetworkUuid
         'Running loadflow on ' + studyUuid + ' and node ' + currentNodeUuid + ' with limit reduction ' + limitReduction
     );
     const startLoadFlowUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/loadflow/run?limitReduction=' +
         limitReduction.toString();
     console.debug(startLoadFlowUrl);
@@ -64,7 +64,9 @@ export function startLoadFlow(studyUuid, currentNodeUuid, currentRootNetworkUuid
 
 export function stopLoadFlow(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
     console.info(`Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`);
-    const stopLoadFlowUrl = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
+    const stopLoadFlowUrl =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/stop';
     console.debug(stopLoadFlowUrl);
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
@@ -88,7 +90,9 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid, currentRootNetwo
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/loadflow/result';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/loadflow/result';
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);
@@ -109,7 +113,9 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, currentRootNetw
         params.append('globalFilters', JSON.stringify(globalFilters));
     }
 
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/limit-violations';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/limit-violations';
     const urlWithParams = `${url}?${params.toString()}`;
     console.debug(urlWithParams);
     return backendFetchJson(urlWithParams);

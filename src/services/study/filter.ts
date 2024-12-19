@@ -28,12 +28,15 @@ export interface IdentifiableAttributes {
 export function evaluateJsonFilter(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     filter: ExpertFilter // at moment only ExpertFilter but in futur may add others filter types to compose a union type
 ): Promise<IdentifiableAttributes[]> {
-    console.info(`Get matched elements of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
+    console.info(
+        `Get matched elements of study '${studyUuid}'  with a root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     const evaluateFilterUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/filters/evaluate?inUpstreamBuiltParentNode=true';
     console.debug(evaluateFilterUrl);
     return backendFetchJson(evaluateFilterUrl, {

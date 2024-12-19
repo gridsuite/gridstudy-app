@@ -160,7 +160,6 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
 
     // Open case selector
     const handleCaseSelection = () => {
-        console.log("?????????",rootNetworkUuid);
         setCaseSelectorOpen(true);
     };
 
@@ -202,7 +201,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                 }
             }
         },
-        [onSave, destinationFolder, selectedCase, snackError, type,rootNetworkUuid]
+        [onSave, destinationFolder, selectedCase, snackError, type]
     );
 
     // Folder chooser component

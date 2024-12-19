@@ -87,6 +87,7 @@ export function fetchVoltageLevelEquipments(
 export function fetchEquipmentsIds(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     substationsIds: string[],
     equipmentType: EquipmentType,
     inUpstreamBuiltParentNode: boolean,
@@ -104,7 +105,7 @@ export function fetchEquipmentsIds(
     const nominalVoltagesParamsList = nominalVoltages && nominalVoltages.length > 0 ? '&' + nominalVoltagesParams : '';
 
     let fetchEquipmentsUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/' +
         'equipments-ids' +
         '?' +
@@ -126,6 +127,7 @@ export function fetchEquipmentsIds(
 export function fetchVoltageLevelIdForLineOrTransformerBySide(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     equipmentId: string,
     side: string
 ) {
@@ -139,18 +141,19 @@ export function fetchVoltageLevelIdForLineOrTransformerBySide(
 
     const fetchEquipmentInfosUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
+        currentRootNetworkUuid
     )}/network-map/branch-or-3wt/${encodeURIComponent(equipmentId)}/voltage-level-id?${urlSearchParams.toString()}`;
 
     console.debug(fetchEquipmentInfosUrl);
     return backendFetchText(fetchEquipmentInfosUrl);
 }
 
-export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID) {
+export function fetchAllCountries(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(`Fetching all countries of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const fetchCountriesUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/countries?inUpstreamBuiltParentNode=true';
     console.debug(fetchCountriesUrl);
     return backendFetchJson(fetchCountriesUrl);
@@ -183,6 +186,7 @@ export async function createMapFilter(
     destinationDirectoryId: UUID,
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     selectedEquipmentsIds: string[],
     nominalVoltages: number[]
 ) {
@@ -207,6 +211,7 @@ export async function createMapFilter(
             const elementsIds = await fetchEquipmentsIds(
                 studyUuid,
                 currentNodeUuid,
+                currentRootNetworkUuid,
                 selectedEquipmentsIds,
                 equipmentType,
                 false,
@@ -232,6 +237,7 @@ export async function createMapContingencyList(
     destinationDirectoryId: UUID,
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     selectedEquipments: EquipmentInfos[],
     nominalVoltages: number[]
 ) {
@@ -252,6 +258,7 @@ export async function createMapContingencyList(
             const elementsIds = await fetchNetworkElementsInfos(
                 studyUuid,
                 currentNodeUuid,
+                currentRootNetworkUuid,
                 selectedEquipmentsIds,
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
@@ -275,11 +282,11 @@ export async function createMapContingencyList(
     return createContingencyList(equipmentContingencyList, elementName, '', destinationDirectoryId);
 }
 
-export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID) {
+export function fetchAllNominalVoltages(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(`Fetching all nominal voltages of study '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     const fetchNominalVoltagesUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-map/nominal-voltages?inUpstreamBuiltParentNode=true';
     console.debug(fetchNominalVoltagesUrl);
     return backendFetchJson(fetchNominalVoltagesUrl);

@@ -20,7 +20,7 @@ import { useSelector } from 'react-redux';
 import { AppState } from '../../../../redux/reducer';
 import { ComputingType } from '../../../computing-status/computing-type';
 import { RESULTS_LOADING_DELAY } from '../../../network/constants';
-
+ 
 const styles = {
     container: {
         display: 'flex',
@@ -41,7 +41,8 @@ const styles = {
 
 export const NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS = ['nonEvacuatedEnergyResult'];
 
-export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({ studyUuid, nodeUuid }) => {
+export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTabProps> = ({ studyUuid, nodeUuid,        rootNetworkUuid
+}) => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const RESULTS_TAB_INDEX = 0;
@@ -54,6 +55,7 @@ export const NonEvacuatedEnergyResultTab: FunctionComponent<NonEvacuatedEnergyTa
     const [nonEvacuatedEnergyResult] = useNodeData(
         studyUuid,
         nodeUuid,
+
         fetchNonEvacuatedEnergyResult,
         NON_EVACUATED_ENERGY_RESULT_INVALIDATIONS
     );

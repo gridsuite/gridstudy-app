@@ -43,7 +43,11 @@ const styles = {
     },
 };
 
-export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({ studyUuid, nodeUuid }) => {
+export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps> = ({
+    studyUuid,
+    nodeUuid,
+    rootNetworkUuid,
+}) => {
     const intl = useIntl();
     const stateEstimationResultInvalidations = ['stateEstimationResult'];
 
@@ -53,8 +57,8 @@ export const StateEstimationResultTab: FunctionComponent<StateEstimationTabProps
     );
 
     const fetchEstimResults = useCallback(() => {
-        return fetchStateEstimationResult(studyUuid, nodeUuid);
-    }, [studyUuid, nodeUuid]);
+        return fetchStateEstimationResult(studyUuid, nodeUuid, rootNetworkUuid);
+    }, [studyUuid, nodeUuid, rootNetworkUuid]);
 
     const fetchResult = useMemo(() => {
         return fetchEstimResults;

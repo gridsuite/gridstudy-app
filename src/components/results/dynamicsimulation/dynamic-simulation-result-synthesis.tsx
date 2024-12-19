@@ -42,6 +42,7 @@ const defaultColDef = {
 type DynamicSimulationResultSynthesisProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
+    rootNetworkUuid: UUID;
 };
 
 const DynamicSimulationResultSynthesis = memo(({ nodeUuid, studyUuid }: DynamicSimulationResultSynthesisProps) => {

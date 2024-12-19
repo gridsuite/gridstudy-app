@@ -54,6 +54,8 @@
     "NetworkAreaDiagram": "Image nodale de zone",
 
     "studyNotFound": "L'étude avec l'identifiant \"{studyUuid}\" n'a pas été trouvée",
+    "RootNetworkNotFound": "Aucun réseau racine n'a été trouvé pour l'étude avec l'ID \"{studyUuid}\"",
+
     "svgNotFound": "L'image poste n'a pas été trouvée : {error}; {svgUrl}",
     "svgLoadingFail": "L'image n'a pas pu être chargée",
     "networkLoadingFail": "Le réseau de l'étude avec l'identifiant \"{studyUuid}\" n'a pas pu être chargé",
@@ -605,6 +607,8 @@
     "NodeBuildingError": "Une erreur est survenue lors de la réalisation du nœud",
     "NodeUnbuildingError": "Une erreur est survenue lors de la déréalisation du nœud",
     "NetworkModifications": "Modifications de réseau",
+    "RootNetwork": "Réseau racine",
+
     "CreateLoad": "Créer une consommation",
     "ModifyLoad": "Modifier une consommation",
     "NameOptional": "Nom (optionnel)",

@@ -64,6 +64,7 @@ const defaultColDef = {
 type DynamicSimulationResultTimelineProps = {
     studyUuid: UUID;
     nodeUuid: UUID;
+    rootNetworkUuid: UUID;
 };
 
 const DynamicSimulationResultTimeline = memo(({ studyUuid, nodeUuid }: DynamicSimulationResultTimelineProps) => {

@@ -53,6 +53,8 @@
     "SingleLineDiagram": "Single line diagram",
     "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
+    "RootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
+
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
@@ -603,6 +605,7 @@
     "NodeBuildingError": "An error occurred while building node",
     "NodeUnbuildingError": "An error occurred while unbuilding node",
     "NetworkModifications": "Network modifications",
+    "RootNetwork": "Root Network",
     "CreateLoad": "Create load",
     "ModifyLoad": "Modify load",
     "NameOptional": "Name (optional)",
