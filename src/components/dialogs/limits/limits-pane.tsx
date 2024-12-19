@@ -237,9 +237,10 @@ export function LimitsPane({
                 </Grid>
                 <Grid item xs={5}>
                     {limitsGroups1.map(
-                        (item: any, index: number) =>
+                        (item: OperationalLimitsGroup, index: number) =>
                             index === indexSelectedLimitSet1 && (
                                 <LimitsSidePane
+                                    key={item.id}
                                     limitsGroupFormName={`${id}.${LIMITS_GROUP_1}`}
                                     clearableFields={clearableFields}
                                     indexLimitGroup={index}
@@ -254,9 +255,10 @@ export function LimitsPane({
                 </Grid>
                 <Grid item xs={5}>
                     {limitsGroups2.map(
-                        (item: any, index: number) =>
+                        (item: OperationalLimitsGroup, index: number) =>
                             index === indexSelectedLimitSet2 && (
                                 <LimitsSidePane
+                                    key={item.id}
                                     limitsGroupFormName={`${id}.${LIMITS_GROUP_2}`}
                                     clearableFields={clearableFields}
                                     indexLimitGroup={index}

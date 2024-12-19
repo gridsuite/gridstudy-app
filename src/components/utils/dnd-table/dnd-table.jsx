@@ -35,7 +35,7 @@ import DndTableAddRowsDialog from './dnd-table-add-rows-dialog';
 import { DirectoryItemsInput } from '@gridsuite/commons-ui';
 import ChipItemsInput from '../rhf-inputs/chip-items-input';
 import IconButton from '@mui/material/IconButton';
-import AddCircleIcon from '@mui/icons-material/AddCircle.js';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 export const MAX_ROWS_NUMBER = 100;
 const styles = {
@@ -218,7 +218,6 @@ const DndTable = ({
     }
 
     function deleteSelectedRows() {
-        // TODO : connecter ça un bouton PAR LIGNE QUI APPARAÎT EN SURBRILLANCE
         const currentRowsValues = getValues(arrayFormName);
 
         let rowsToDelete = [];
