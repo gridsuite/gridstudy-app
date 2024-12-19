@@ -10,8 +10,8 @@ import { AppState } from '../redux/reducer';
 import { useCallback, useMemo, useState } from 'react';
 import { fetchNodeReportLogs, fetchParentNodesReport } from '../services/study';
 import { useSnackMessage } from '@gridsuite/commons-ui';
-import { Log, Report, ReportLog, ReportType } from '../utils/report/report.type';
-import { getContainerDefaultSeverityList } from '../utils/report/report-severity';
+import { Log, Report, ReportLog, ReportSeverity, ReportType, SeverityLevel } from '../utils/report/report.type';
+import { getContainerDefaultSeverityList, REPORT_SEVERITY } from '../utils/report/report-severity';
 import { mapReportLogs } from '../utils/report/report-log.mapper';
 import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE, GLOBAL_REPORT_NODE_LABEL } from '../utils/report/report.constant';
 import { ROOT_NODE_LABEL } from '../constants/node.constant';
@@ -26,10 +26,25 @@ function makeSingleReportAndMapNames(report: Report | Report[], nodesNames: Map<
         return {
             message: GLOBAL_REPORT_NODE_LABEL,
             id: GLOBAL_REPORT_NODE_LABEL,
+            severity: getHighestSeverity(report),
             subReports: report.map((r) => setNodeName(r, nodesNames)),
         } as Report;
     }
 }
+
+const getHighestSeverity = (report: Report[]): SeverityLevel => {
+    if (report.length === 1) {
+        return report[0].severity;
+    }
+
+    const severityList = report.map((r) => r.severity);
+    let reduceFct = (p: ReportSeverity, c: ReportSeverity) => (c.level > p.level ? c : p);
+    let highestSeverity = REPORT_SEVERITY.UNKNOWN;
+
+    return Object.values(REPORT_SEVERITY)
+        .filter((s) => severityList.includes(s.name))
+        .reduce(reduceFct, highestSeverity).name;
+};
 
 function setNodeName(report: Report, nodesNames: Map<string, string>) {
     if (report.message !== ROOT_NODE_LABEL) {
@@ -55,7 +70,12 @@ export const useReportFetcher = (
 ): [
     boolean,
     (nodeOnlyReport?: boolean) => Promise<Report | undefined>,
-    (reportId: string, severityList: string[], reportType: ReportType, filterMessage: string) => Promise<Log[]>
+    (
+        reportId: string,
+        severityList: string[],
+        reportType: ReportType,
+        filterMessage: string
+    ) => Promise<Log[]> | undefined
 ] => {
     const [isLoading, setIsLoading] = useState(false);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
@@ -95,7 +115,7 @@ export const useReportFetcher = (
 
     const fetchRawParentReport = useCallback(
         (nodeOnlyReport?: boolean) => {
-            if (currentNode !== null) {
+            if (currentNode !== null && studyUuid) {
                 return fetch(() =>
                     fetchParentNodesReport(
                         studyUuid,
@@ -113,6 +133,9 @@ export const useReportFetcher = (
 
     const fetchReportLogs = useCallback(
         (reportId: string, severityList: string[], reportType: ReportType, messageFilter: string) => {
+            if (!studyUuid) {
+                return;
+            }
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
             if (reportType === ReportType.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
