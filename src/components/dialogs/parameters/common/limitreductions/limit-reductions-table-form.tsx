@@ -17,7 +17,7 @@ import LimitReductionsTable from './limit-reductions-table';
 const getToolTipColumn = (limit: ITemporaryLimitReduction) => {
     const lowBound = `${Math.trunc(limit.limitDuration.lowBound / 60)} min`;
     const highBoundValue = Math.trunc(limit.limitDuration.highBound / 60);
-    const highBound = highBoundValue === 0 ? '∞ ' : `${Math.trunc(limit.limitDuration.highBound / 60)} min`;
+    const highBound = highBoundValue === 0 ? '∞' : `${Math.trunc(limit.limitDuration.highBound / 60)} min`;
     const lowerBoundClosed = limit.limitDuration.lowClosed ? '[' : ']';
     const highBoundClosed = limit.limitDuration.highClosed || null ? ']' : '[';
     return `${lowerBoundClosed}${lowBound}, ${highBound}${highBoundClosed}`;
