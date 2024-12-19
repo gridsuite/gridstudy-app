@@ -16,17 +16,19 @@ export default function useNotificationsUrlGenerator() {
     const wsBase = getWsBase();
     const tokenId = useSelector((state: AppState) => state.user?.id_token);
 
-    const urlMapper = useMemo(() => {
-        // return a mapper with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
-        // it will be used to register listeners as soon as possible.
-        let mapper: Object = {
-            [NOTIFICATIONS_URL_KEYS.CONFIG]: tokenId
-                ? getUrlWithToken(
-                      `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${new URLSearchParams({ appName: APP_NAME })}`
-                  )
-                : undefined,
-        };
-        return mapper;
-    }, [wsBase, tokenId]);
-    return urlMapper;
-};
+    // return a mapper with NOTIFICATIONS_URL_KEYS and undefined value if URL is not yet buildable (tokenId)
+    // it will be used to register listeners as soon as possible.
+    return useMemo(
+        () =>
+            ({
+                [NOTIFICATIONS_URL_KEYS.CONFIG]: tokenId
+                    ? getUrlWithToken(
+                          `${wsBase}${PREFIX_CONFIG_NOTIFICATION_WS}/notify?${new URLSearchParams({
+                              appName: APP_NAME,
+                          })}`
+                      )
+                    : undefined,
+            } satisfies Record<NOTIFICATIONS_URL_KEYS, string | undefined>),
+        [wsBase, tokenId]
+    );
+}
