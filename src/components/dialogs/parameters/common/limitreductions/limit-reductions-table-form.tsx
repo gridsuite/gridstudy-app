@@ -14,6 +14,15 @@ import {
 import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
 
+const getToolTipColumn = (limit: ITemporaryLimitReduction) => {
+    const lowBound = `${Math.trunc(limit.limitDuration.lowBound / 60)} min`;
+    const highBoundValue = Math.trunc(limit.limitDuration.highBound / 60);
+    const highBound = highBoundValue === 0 ? '∞' : `${Math.trunc(limit.limitDuration.highBound / 60)} min`;
+    const lowerBoundClosed = limit.limitDuration.lowClosed ? '[' : ']';
+    const highBoundClosed = limit.limitDuration.highClosed || null ? ']' : '[';
+    return `${lowerBoundClosed}${lowBound}, ${highBound}${highBoundClosed}`;
+};
+
 const LimitReductionsTableForm: FunctionComponent<{
     limits: ILimitReductionsByVoltageLevel[];
 }> = ({ limits }) => {
@@ -21,13 +30,20 @@ const LimitReductionsTableForm: FunctionComponent<{
 
     const getLabelColumn = useCallback(
         (limit: ITemporaryLimitReduction) => {
+            const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
+            const highBound = Math.trunc(limit.limitDuration.highBound / 60);
+            if (lowBound === 0) {
+                return intl.formatMessage({ id: 'LimitDurationAfterIST' }, { value: highBound });
+            }
+
             return intl.formatMessage(
-                { id: 'LimitDuration' },
+                { id: 'LimitDurationInterval' },
                 {
-                    sign: limit.limitDuration.lowClosed ? '>=' : '>',
-                    value: Math.trunc(limit.limitDuration.lowBound / 60),
+                    lowBound: lowBound === 0 ? 'IST' : `IT${lowBound}`,
+                    highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
                 }
             );
+            // return getToolTipColumn(limit);
         },
         [intl]
     );
@@ -36,13 +52,15 @@ const LimitReductionsTableForm: FunctionComponent<{
         let columnsDefinition = COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS.map((column) => ({
             ...column,
             label: intl.formatMessage({ id: column.label }),
+            tooltip: intl.formatMessage({ id: column.tooltip }),
         }));
 
         if (limits !== null && limits.length > 0) {
             limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
                 columnsDefinition.push({
-                    label: getLabelColumn(tlimit),
+                    label: getToolTipColumn(tlimit),
                     dataKey: LIMIT_DURATION_FORM + index,
+                    tooltip: getLabelColumn(tlimit),
                 });
             });
         }
