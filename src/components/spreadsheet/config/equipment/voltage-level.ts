@@ -9,18 +9,18 @@ import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import {
-    countryEnumFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { kiloUnitToUnit, unitToKiloUnit } from '../../../../utils/unit-converter';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { numericalCellEditorConfig } from '../common/cell-editors';
+import {
+    COUNTRY_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_TYPE,
+    NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 function generateEditableNumericColumnDefinition<
     TId extends string,
@@ -31,9 +31,7 @@ function generateEditableNumericColumnDefinition<
     return {
         id: id,
         field: field,
-        numeric: true,
-        ...defaultNumericFilterConfig,
-        fractionDigits: 1,
+        type: NUMERIC_1_FRACTION_DIGITS_TYPE,
         ...editableColumnConfig,
         ...numericalCellEditorConfig((params) => params.data[field]),
         crossValidation: {
@@ -53,32 +51,29 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
             field: 'name',
             ...editableColumnConfig,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'SubstationId',
             field: 'substationId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalV',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.nominalV),
         },
@@ -87,12 +82,9 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMin',
             field: 'identifiableShortCircuit.ipMin',
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin)),
-            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMin),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,
@@ -108,12 +100,9 @@ export const VOLTAGE_LEVEL_TAB_DEF = {
         {
             id: 'IpMax',
             field: 'identifiableShortCircuit.ipMax',
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
             ...editableColumnConfig,
-            numeric: true,
             ...numericalCellEditorConfig((params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax)),
-            valueGetter: (params) => unitToKiloUnit(params.data?.identifiableShortCircuit?.ipMax),
             valueSetter: (params) => {
                 params.data.identifiableShortCircuit = {
                     ...params.data.identifiableShortCircuit,

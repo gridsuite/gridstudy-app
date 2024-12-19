@@ -5,31 +5,17 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { PropertiesCellRenderer } from '../../utils/cell-renderers';
 import { SitePropertiesEditor } from '../../utils/equipement-table-popup-editors';
-import type { ValueGetterFunc, ValueSetterParams } from 'ag-grid-community';
-import { defaultTextFilterConfig, editableColumnConfig, excludeFromGlobalFilter } from '../equipment/common-config';
-
-const propertiesGetter: ValueGetterFunc = (params) => {
-    const properties = params?.data?.properties;
-    if (properties && Object.keys(properties).length) {
-        return Object.keys(properties)
-            .map((property) => `${property} : ${properties[property]}`)
-            .join(' | ');
-    } else {
-        return null;
-    }
-};
+import type { ValueSetterParams } from 'ag-grid-community';
+import { editableColumnConfig, excludeFromGlobalFilter } from '../equipment/common-config';
 
 //TODO only used in tie-line config, is "valueSetter" forgotten?
 export const genericColumnOfPropertiesReadonly = {
     id: 'Properties',
     field: 'properties',
-    valueGetter: propertiesGetter,
-    cellRenderer: PropertiesCellRenderer,
     minWidth: 300,
     getQuickFilterText: excludeFromGlobalFilter,
-    ...defaultTextFilterConfig,
+    type: 'propertyType',
 };
 
 export const genericColumnOfProperties = {

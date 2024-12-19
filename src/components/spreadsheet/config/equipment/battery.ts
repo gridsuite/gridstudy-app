@@ -7,20 +7,19 @@
 
 import type { ReadonlyDeep } from 'type-fest';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { booleanCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const BATTERY_TAB_DEF = {
     index: 9,
@@ -30,58 +29,47 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
             ...editableColumnConfig,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_TYPE,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            fractionDigits: 1,
-            ...defaultNumericFilterConfig,
-            canBeInvalidated: true,
-            withFluxConvention: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerControl',
             field: 'activePowerControl.participate',
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             ...editableColumnConfig,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
@@ -96,9 +84,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'DroopColumnName',
             field: 'activePowerControl.droop',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
             valueGetter: (params) => params.data?.activePowerControl?.droop,
@@ -120,9 +106,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'minP',
             field: 'minP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.minP),
             crossValidation: {
@@ -133,9 +117,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'maxP',
             field: 'maxP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.maxP),
             crossValidation: {
@@ -146,9 +128,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'activePowerSetpoint',
             field: 'targetP',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetP),
             crossValidation: {
@@ -161,9 +141,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'reactivePowerSetpoint',
             field: 'targetQ',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.targetQ),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -171,9 +149,7 @@ export const BATTERY_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,
