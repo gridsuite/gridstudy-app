@@ -52,7 +52,14 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
 
 export function startLoadFlow(studyUuid, currentNodeUuid, currentRootNetworkUuid, limitReduction) {
     console.info(
-        'Running loadflow on ' + studyUuid + ' and node ' + currentNodeUuid + ' with limit reduction ' + limitReduction
+        'Running loadflow on ' +
+            studyUuid +
+            ' on root network ' +
+            currentRootNetworkUuid +
+            ' and node ' +
+            currentNodeUuid +
+            ' with limit reduction ' +
+            limitReduction
     );
     const startLoadFlowUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +

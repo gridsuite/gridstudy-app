@@ -8,8 +8,11 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 
-export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetworkUuid, contingencyListNames) {
-    console.info(`Running security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
+
+export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetwork, contingencyListNames) {
+    console.info(
+        `Running security analysis on ${studyUuid} on root network ${currentRootNetwork} and node ${currentNodeUuid} ...`
+    );
 
     // Add params to Url
     const contingencyListsQueryParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
@@ -18,7 +21,7 @@ export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNet
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
-        currentRootNetworkUuid
+        currentRootNetwork
     )}/security-analysis/run?${urlSearchParams}`;
 
     console.debug(url);

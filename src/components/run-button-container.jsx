@@ -35,7 +35,7 @@ import { startStateEstimation, stopStateEstimation } from '../services/study/sta
 import { OptionalServicesNames, OptionalServicesStatus } from './utils/optional-services';
 import { useOptionalServiceStatus } from '../hooks/use-optional-service-status';
 
-export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
+export function RunButtonContainer({ studyUuid, currentNode, currentRootNetwork, disabled }) {
     const loadFlowStatus = useSelector((state) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     const securityAnalysisStatus = useSelector((state) => state.computingStatus[ComputingType.SECURITY_ANALYSIS]);
@@ -116,7 +116,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 // close the contingency list selection window
                 setShowContingencyListSelector(false);
             },
-            () => startSecurityAnalysis(studyUuid, currentNode?.id, contingencyListNames),
+            () => startSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetwork, contingencyListNames),
             () => {},
             null,
             null
@@ -152,7 +152,8 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.LOAD_FLOW,
                         null,
-                        () => startLoadFlow(studyUuid, currentNode?.id, limitReductionParam / 100.0),
+                        () =>
+                            startLoadFlow(studyUuid, currentNode?.id, currentRootNetwork, limitReductionParam / 100.0),
                         () => {},
                         null,
                         'startLoadFlowError'
@@ -169,7 +170,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SECURITY_ANALYSIS, () =>
-                        stopSecurityAnalysis(studyUuid, currentNode?.id)
+                        stopSecurityAnalysis(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
@@ -179,7 +180,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.SENSITIVITY_ANALYSIS,
                         null,
-                        () => startSensitivityAnalysis(studyUuid, currentNode?.id),
+                        () => startSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetwork),
                         () => {},
                         null,
                         'startSensitivityAnalysisError'
@@ -187,7 +188,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SENSITIVITY_ANALYSIS, () =>
-                        stopSensitivityAnalysis(studyUuid, currentNode?.id)
+                        stopSensitivityAnalysis(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
@@ -198,7 +199,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         ComputingType.NON_EVACUATED_ENERGY_ANALYSIS,
                         null,
                         () => {
-                            return startNonEvacuatedEnergy(studyUuid, currentNode?.id);
+                            return startNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetwork);
                         },
                         () => {},
                         null,
@@ -207,7 +208,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.NON_EVACUATED_ENERGY_ANALYSIS, () =>
-                        stopNonEvacuatedEnergy(studyUuid, currentNode?.id)
+                        stopNonEvacuatedEnergy(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
@@ -217,7 +218,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.SHORT_CIRCUIT,
                         null,
-                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id),
+                        () => startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetwork),
                         () => {},
                         null,
                         'startShortCircuitError'
@@ -225,7 +226,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.SHORT_CIRCUIT, () =>
-                        stopShortCircuitAnalysis(studyUuid, currentNode?.id)
+                        stopShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
@@ -239,7 +240,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                                 setShowDynamicSimulationParametersSelector(true);
                             } else {
                                 // start server side dynamic simulation directly
-                                return startDynamicSimulation(studyUuid, currentNode?.id);
+                                return startDynamicSimulation(studyUuid, currentNode?.id, currentRootNetwork);
                             }
                         })
                         .catch((error) => {
@@ -251,7 +252,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.DYNAMIC_SIMULATION, () =>
-                        stopDynamicSimulation(studyUuid, currentNode?.id)
+                        stopDynamicSimulation(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
@@ -261,7 +262,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                     startComputationAsync(
                         ComputingType.VOLTAGE_INITIALIZATION,
                         null,
-                        () => startVoltageInit(studyUuid, currentNode?.id),
+                        () => startVoltageInit(studyUuid, currentNode?.id, currentRootNetwork),
                         () => {},
                         null,
                         'startVoltageInitError'
@@ -269,7 +270,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.VOLTAGE_INITIALIZATION, () =>
-                        stopVoltageInit(studyUuid, currentNode?.id)
+                        stopVoltageInit(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
@@ -280,7 +281,7 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                         ComputingType.STATE_ESTIMATION,
                         null,
                         () => {
-                            return startStateEstimation(studyUuid, currentNode?.id);
+                            return startStateEstimation(studyUuid, currentNode?.id, currentRootNetwork);
                         },
                         () => {},
                         null,
@@ -289,12 +290,20 @@ export function RunButtonContainer({ studyUuid, currentNode, disabled }) {
                 },
                 actionOnRunnable() {
                     actionOnRunnables(ComputingType.STATE_ESTIMATION, () =>
-                        stopStateEstimation(studyUuid, currentNode?.id)
+                        stopStateEstimation(studyUuid, currentNode?.id, currentRootNetwork)
                     );
                 },
             },
         };
-    }, [dispatch, snackError, startComputationAsync, studyUuid, limitReductionParam, currentNode?.id]);
+    }, [
+        dispatch,
+        snackError,
+        startComputationAsync,
+        studyUuid,
+        limitReductionParam,
+        currentNode?.id,
+        currentRootNetwork,
+    ]);
 
     // running status is refreshed more often, so we memoize it apart
     const getRunningStatus = useCallback(

@@ -673,7 +673,12 @@ export const NetworkMapTab = ({
             }
 
             const { updatedSubstations, updatedLines, updatedTieLines, updatedHvdcLines } = mapEquipments
-                ? mapEquipments.reloadImpactedSubstationsEquipments(studyUuid, currentNode, substationsIds ?? null)
+                ? mapEquipments.reloadImpactedSubstationsEquipments(
+                      studyUuid,
+                      currentNode,
+                      currentRootNetwork,
+                      substationsIds ?? null
+                  )
                 : {
                       updatedSubstations: Promise.resolve([]),
                       updatedLines: Promise.resolve([]),
@@ -710,7 +715,7 @@ export const NetworkMapTab = ({
                 dispatch(setMapDataLoading(false));
             });
         },
-        [currentNode, dispatch, mapEquipments, studyUuid]
+        [currentNode, currentRootNetwork, dispatch, mapEquipments, studyUuid]
     );
 
     const updateMapEquipments = useCallback(

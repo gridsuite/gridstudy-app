@@ -140,35 +140,29 @@ export default class GSMapEquipments extends MapEquipments {
     reloadImpactedSubstationsEquipments(
         studyUuid: UUID,
         currentNode: any,
-        currentRootNetworkUuid: UUID,
+        rootNetworkUuid: UUID,
         substationsIds: string[] | null
     ) {
         const updatedSubstations = fetchSubstationsMapInfos(
             studyUuid,
             currentNode?.id,
-            currentRootNetworkUuid,
+            rootNetworkUuid,
             substationsIds,
             true
         );
-        const updatedLines = fetchLinesMapInfos(
-            studyUuid,
-            currentNode?.id,
-            substationsIds,
-            currentRootNetworkUuid,
-            true
-        );
+        const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, rootNetworkUuid, substationsIds, true);
         const updatedTieLines = fetchTieLinesMapInfos(
             studyUuid,
             currentNode?.id,
+            rootNetworkUuid,
             substationsIds,
-            currentRootNetworkUuid,
             true
         );
         const updatedHvdcLines = fetchHvdcLinesMapInfos(
             studyUuid,
             currentNode?.id,
+            rootNetworkUuid,
             substationsIds,
-            currentRootNetworkUuid,
             true
         );
         updatedSubstations.catch((error) => {
