@@ -9,6 +9,7 @@ import { TableCell } from '@mui/material';
 import { FloatInput, RawReadOnlyInput } from '@gridsuite/commons-ui';
 import { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM, VOLTAGE_LEVELS_FORM } from './columns-definitions';
+import { Box } from '@mui/system';
 
 const LimitReductionTableCell: FunctionComponent<{
     rowIndex: number;
@@ -17,7 +18,9 @@ const LimitReductionTableCell: FunctionComponent<{
     return (
         <TableCell sx={{ fontWeight: 'bold' }}>
             {column.dataKey === VOLTAGE_LEVELS_FORM ? (
-                <RawReadOnlyInput name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`} />
+                <Box style={{ letterSpacing: '0.1em', fontSize: '0.8em' }}>
+                    <RawReadOnlyInput name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`} />
+                </Box>
             ) : (
                 <FloatInput name={`${LIMIT_REDUCTIONS_FORM}[${rowIndex}].${column.dataKey}`} />
             )}
