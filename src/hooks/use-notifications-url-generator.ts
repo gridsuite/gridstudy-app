@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { NOTIFICATIONS_URL_KEYS, PREFIX_CONFIG_NOTIFICATION_WS } from 'components/utils/notificationsProvider-utils';
+import { NOTIFICATIONS_URL_KEYS, PREFIX_CONFIG_NOTIFICATION_WS } from '../components/utils/notificationsProvider-utils';
 import { useCallback, useMemo } from 'react';
 import { useSelector } from 'react-redux';
-import { AppState } from 'redux/reducer';
-import { getUrlWithToken, getWsBase } from 'services/utils';
-import { APP_NAME } from 'utils/config-params';
+import { type AppState } from '../redux/reducer';
+import { getUrlWithToken, getWsBase } from '../services/utils';
+import { APP_NAME } from '../utils/config-params';
 
-const useNotificationsUrlGenerator = () => {
+export default function useNotificationsUrlGenerator() {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
     const tokenId = useSelector((state: AppState) => state.user?.id_token);
@@ -38,5 +38,3 @@ const useNotificationsUrlGenerator = () => {
     }, [wsBase, urlParams, tokenId]);
     return urlMapper;
 };
-
-export default useNotificationsUrlGenerator;
