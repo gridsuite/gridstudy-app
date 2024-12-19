@@ -43,6 +43,7 @@ import {
     importParamsFr,
     exportParamsEn,
     exportParamsFr,
+    NotificationsProvider,
 } from '@gridsuite/commons-ui';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -79,6 +80,7 @@ import {
     MAP_BASEMAP_CARTO,
     MAP_BASEMAP_CARTO_NOLABEL,
 } from '../utils/config-params';
+import useNotificationsUrlGenerator from 'hooks/use-notifications-url-generator';
 
 let lightTheme = createTheme({
     components: {
@@ -327,6 +329,8 @@ const AppWrapperWithRedux = () => {
 
     const theme = useSelector((state) => state[PARAM_THEME]);
 
+    const urlMapper = useNotificationsUrlGenerator();
+
     return (
         <IntlProvider locale={computedLanguage} messages={messages[computedLanguage]}>
             <BrowserRouter basename={basename}>
@@ -335,7 +339,9 @@ const AppWrapperWithRedux = () => {
                         <SnackbarProvider hideIconVariant={false}>
                             <CssBaseline />
                             <CardErrorBoundary>
-                                <App />
+                                <NotificationsProvider urls={urlMapper}>
+                                    <App />
+                                </NotificationsProvider>
                             </CardErrorBoundary>
                         </SnackbarProvider>
                     </ThemeProvider>
