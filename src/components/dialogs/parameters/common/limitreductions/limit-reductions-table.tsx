@@ -37,6 +37,7 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
                                 sx={{
                                     textAlign: 'center',
                                 }}
+                                title={column.tooltip}
                             >
                                 <Box>{column.label}</Box>
                             </TableCell>

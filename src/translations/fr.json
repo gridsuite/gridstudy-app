@@ -1,9 +1,11 @@
 {
     "General": "General",
 
-    "LimitReductions" : "Abattements de limites",
+    "LimitReductions" : "Abattements",
     "IST" : "IST",
-    "LimitDuration" : "Surcharge {sign} {value}min",
+    "LimitDurationInterval" : "Intervalle de tempo : {highBound} et {lowBound}",
+    "LimitDurationAfterIST": "Au-delà de IT{value}",
+    "voltageRange": "Niveau de tension",
 
     "button.delete": "Supprimer",
     "filter": "Filtre",
@@ -413,9 +415,10 @@
     "LimitName": "Nom du seuil",
     "Limit_name": "Seuil",
     "LimitNameCurrentViolation": "Nom du seuil",
-    "CalculatedValue": "Valeur calculée (A ou kV)",
+    "CalculatedValue": "Valeur calculée (A ou kV)",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
+    "Permanent":"Permanent",
     "LimitAcceptableDuration": "Durée",
     "Overload": "Surcharge",
 
@@ -1239,9 +1242,9 @@
     "muiTablePaginationFirst": "Aller à la première page",
     "muiTablePaginationLast": "Aller à la dernière page",
     "flowSensitivityValue": "Valeur du seuil de sensibilité",
-    "flowFlowSensitivityValueThreshold": "ΔMW ou ΔA / MW",
-    "angleFlowSensitivityValueThreshold": "ΔMW ou ΔA / Δ°",
-    "flowVoltageSensitivityValueThreshold": "ΔkV / kV",
+    "flowFlowSensitivityValueThreshold": "ΔMW ou ΔA / MW",
+    "angleFlowSensitivityValueThreshold": "ΔMW ou ΔA / Δ°",
+    "flowVoltageSensitivityValueThreshold": "ΔkV / kV",
     "previewModifications": "Visualiser modifications",
     "errPreviewVoltageInitModificationMsg": "Une erreur est survenue lors de la récupération des modifications issues de l'initialisation du plan de tension",
     "errCloneVoltageInitModificationMsg": "Une erreur est survenue lors de l'application des modifications issues de l'initialisation du plan de tension",
