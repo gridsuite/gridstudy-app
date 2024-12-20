@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
 import { useFieldArray } from 'react-hook-form';
@@ -37,8 +37,9 @@ const LimitReductionsTable: FunctionComponent<LimitReductionsTableProps> = ({ co
                                 sx={{
                                     textAlign: 'center',
                                 }}
+                                title={column.tooltip}
                             >
-                                <Box>{column.label}</Box>
+                                <span style={{ letterSpacing: '0.1em', fontSize: '0.8em' }}>{column.label}</span>
                             </TableCell>
                         ))}
                     </TableRow>
