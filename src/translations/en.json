@@ -1334,7 +1334,7 @@
     "ShortCircuitCharacteristics": "Features considered",
     "ShortCircuitVoltageProfileMode": "Initial voltage profile",
     "shortCircuitLoads": "Loads",
-    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitHvdc": "HVDC (VSC)",
     "shortCircuitShuntCompensators": "Shunt compensators",
     "shortCircuitNeutralPosition": "Tap position of ratio tap changers",
     "shortCircuitNominalVoltage": "Nominal voltage (kV)",

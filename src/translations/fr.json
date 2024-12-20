@@ -1332,7 +1332,7 @@
     "ShortCircuitCharacteristics": "Caractéristiques prises en compte",
     "ShortCircuitVoltageProfileMode": "Plan de tension initial",
     "shortCircuitLoads": "Charges",
-    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitHvdc": "HVDC (VSC)",
     "shortCircuitShuntCompensators": "MCS",
     "shortCircuitNeutralPosition": "Prises courantes des régleurs en charge",
     "shortCircuitNominalVoltage": "Tension nominale (kV)",
