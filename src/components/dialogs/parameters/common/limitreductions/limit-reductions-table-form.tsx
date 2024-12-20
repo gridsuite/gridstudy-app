@@ -14,7 +14,7 @@ import {
 import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
 
-const getToolTipColumn = (limit: ITemporaryLimitReduction) => {
+const getLabelColumn = (limit: ITemporaryLimitReduction) => {
     const lowBound = `${Math.trunc(limit.limitDuration.lowBound / 60)} min`;
     const highBoundValue = Math.trunc(limit.limitDuration.highBound / 60);
     const highBound = highBoundValue === 0 ? '∞' : `${Math.trunc(limit.limitDuration.highBound / 60)} min`;
@@ -28,7 +28,7 @@ const LimitReductionsTableForm: FunctionComponent<{
 }> = ({ limits }) => {
     const intl = useIntl();
 
-    const getLabelColumn = useCallback(
+    const getToolTipColumn = useCallback(
         (limit: ITemporaryLimitReduction) => {
             const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
             const highBound = Math.trunc(limit.limitDuration.highBound / 60);
@@ -43,7 +43,7 @@ const LimitReductionsTableForm: FunctionComponent<{
                     highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
                 }
             );
-            // return getToolTipColumn(limit);
+            // return getLabelColumn(limit);
         },
         [intl]
     );
@@ -58,15 +58,15 @@ const LimitReductionsTableForm: FunctionComponent<{
         if (limits !== null && limits.length > 0) {
             limits[0].temporaryLimitReductions.forEach((tlimit, index) => {
                 columnsDefinition.push({
-                    label: getToolTipColumn(tlimit),
+                    label: getLabelColumn(tlimit),
                     dataKey: LIMIT_DURATION_FORM + index,
-                    tooltip: getLabelColumn(tlimit),
+                    tooltip: getToolTipColumn(tlimit),
                 });
             });
         }
 
         return columnsDefinition;
-    }, [intl, limits, getLabelColumn]);
+    }, [intl, limits, getToolTipColumn]);
 
     return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
 };
