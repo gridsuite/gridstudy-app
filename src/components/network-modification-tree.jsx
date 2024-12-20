@@ -244,7 +244,7 @@ const NetworkModificationTree = ({
     const handleEndNodeDragging = () => {
         let movedNode = nodesMap.get(draggedBranchIdRef.current);
         draggedBranchIdRef.current = null;
-        if (movedNode && movedNode.parentId) {
+        if (movedNode?.parentId) {
             // In the treeModel.treeNodes variable we can find the positions of the nodes before the user started
             // dragging something, whereas in the movedNode variable (which comes from the nodes variable), we can
             // find the position of the node which has been updated by ReactFlow's onNodesChanges function as the
