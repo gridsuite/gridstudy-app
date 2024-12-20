@@ -61,7 +61,7 @@ export default class NetworkModificationTreeModel {
         }
         // Let's reorder the children :
         // We create a map of children node ids and number of nodes in each of these child's subtree,
-        // then in nodeIds order, we cut and paste the corresponding number of nodes in treeNodes.
+        // then in orderedNodeIds order, we cut and paste the corresponding number of nodes in treeNodes.
         const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 here to set the index just after the parent node
         let insertedNodes = 0;
         const nodeIdAndCorrespondingSubTreeSize = new Map(
