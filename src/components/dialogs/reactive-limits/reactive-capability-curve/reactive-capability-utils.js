@@ -109,12 +109,8 @@ export function setCurrentReactiveCapabilityCurveTable(
     setValue,
     isNodeBuilt
 ) {
-    if (previousReactiveCapabilityCurveTable) {
-        const currentReactiveCapabilityCurveTable = getValues(fieldKey);
-        if (!isNodeBuilt && currentReactiveCapabilityCurveTable) {
-            setValue(fieldKey, currentReactiveCapabilityCurveTable);
-        } else {
-            setValue(fieldKey, previousReactiveCapabilityCurveTable);
-        }
+    const currentReactiveCapabilityCurveTable = getValues(fieldKey);
+    if (isNodeBuilt || !currentReactiveCapabilityCurveTable) {
+        setValue(fieldKey, previousReactiveCapabilityCurveTable);
     }
 }
