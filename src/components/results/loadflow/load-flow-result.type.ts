@@ -69,6 +69,7 @@ export interface OverloadedEquipment {
 }
 export interface OverloadedEquipmentFromBack {
     subjectId: string;
+    locationId: string;
     limit: number;
     limitName: string | null;
     actualOverloadDuration: 300;
