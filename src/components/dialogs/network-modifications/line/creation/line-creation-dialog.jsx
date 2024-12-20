@@ -19,17 +19,19 @@ import {
     CONNECTION_POSITION,
     CONNECTIVITY_1,
     CONNECTIVITY_2,
-    CURRENT_LIMITS_1,
-    CURRENT_LIMITS_2,
+    CURRENT_LIMITS,
     EQUIPMENT_ID,
     EQUIPMENT_NAME,
     G1,
     G2,
+    ID,
     LIMITS,
-    PERMANENT_LIMIT,
+    LIMITS_GROUP_1,
+    LIMITS_GROUP_2,
     R,
+    SELECTED_LIMITS_GROUP_1,
+    SELECTED_LIMITS_GROUP_2,
     TAB_HEADER,
-    TEMPORARY_LIMITS,
     TOTAL_REACTANCE,
     TOTAL_RESISTANCE,
     TOTAL_SUSCEPTANCE,
@@ -53,18 +55,17 @@ import {
     getCharacteristicsValidationSchema,
 } from '../characteristics-pane/line-characteristics-pane-utils';
 import { getHeaderEmptyFormData, getHeaderFormData, getHeaderValidationSchema } from './line-creation-dialog-utils';
-import LimitsPane from '../../../limits/limits-pane';
+import { LimitsPane } from '../../../limits/limits-pane';
 import {
     getLimitsEmptyFormData,
-    getLimitsFormData,
+    getAllLimitsFormData,
     getLimitsValidationSchema,
+    sanitizeLimitsGroups,
 } from '../../../limits/limits-pane-utils';
 import LineDialogTabs from '../line-dialog-tabs';
 import { filledTextField, sanitizeString } from 'components/dialogs/dialog-utils';
 import EquipmentSearchDialog from 'components/dialogs/equipment-search-dialog';
 import { useFormSearchCopy } from 'components/dialogs/form-search-copy-hook';
-import { addSelectedFieldToRows } from 'components/utils/dnd-table/dnd-table';
-import { formatTemporaryLimits } from 'components/utils/utils';
 import LineTypeSegmentDialog from '../../../line-types-catalog/line-type-segment-dialog';
 import { useOpenShortWaitFetching } from 'components/dialogs/commons/handle-modification-form';
 import { createLine } from '../../../../../services/study/network-modifications';
@@ -76,11 +77,13 @@ import {
     toModificationProperties,
 } from '../../common/properties/property-utils';
 import GridItem from '../../../commons/grid-item';
+import { formatTemporaryLimits } from '../../../../utils/utils.js';
+import { addSelectedFieldToRows } from '../../../../utils/dnd-table/dnd-table.jsx';
 
 const emptyFormData = {
     ...getHeaderEmptyFormData(),
     ...getCharacteristicsEmptyFormData(),
-    ...getLimitsEmptyFormData(),
+    ...getLimitsEmptyFormData(LIMITS, false),
     ...emptyProperties,
 };
 
@@ -127,7 +130,7 @@ const LineCreationDialog = ({
         .shape({
             ...getHeaderValidationSchema(),
             ...getCharacteristicsValidationSchema(CHARACTERISTICS, displayConnectivity),
-            ...getLimitsValidationSchema(),
+            ...getLimitsValidationSchema(LIMITS, false),
         })
         .concat(creationPropertiesSchema)
         .required();
@@ -139,12 +142,28 @@ const LineCreationDialog = ({
 
     const { reset, setValue } = formMethods;
 
+    const formatCompleteCurrentLimit = (completeLimitsGroups /*: OperationalLimitsGroup[]*/) => {
+        let formattedCompleteLimitsGroups /*: OperationalLimitsGroup[]*/ = [];
+        if (completeLimitsGroups) {
+            completeLimitsGroups.forEach((elt) =>
+                formattedCompleteLimitsGroups.push({
+                    [ID]: elt.id,
+                    [CURRENT_LIMITS]: {
+                        permanentLimit: elt.permanentLimit,
+                        temporaryLimits: addSelectedFieldToRows(formatTemporaryLimits(elt?.temporaryLimits)),
+                    },
+                })
+            );
+        }
+        return formattedCompleteLimitsGroups;
+    };
+
     const fromSearchCopyToFormValues = (line) => {
         reset(
             {
                 ...getHeaderFormData({
-                    equipmentId: line.id + '(1)',
-                    equipmentName: line.name ?? '',
+                    [EQUIPMENT_ID]: line.id + '(1)',
+                    [EQUIPMENT_NAME]: line.name ?? '',
                 }),
                 ...getCharacteristicsFormData({
                     r: line.r,
@@ -174,15 +193,11 @@ const LineCreationDialog = ({
                             CONNECTIVITY_2
                         )),
                 }),
-                ...getLimitsFormData({
-                    permanentLimit1: line.currentLimits1?.permanentLimit,
-                    permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                    ),
+                ...getAllLimitsFormData({
+                    [LIMITS_GROUP_1]: formatCompleteCurrentLimit(line.currentLimits1),
+                    [LIMITS_GROUP_2]: formatCompleteCurrentLimit(line.currentLimits2),
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroupId1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroupId2 ?? null,
                 }),
                 ...copyEquipmentPropertiesForCreation(line),
             },
@@ -194,8 +209,8 @@ const LineCreationDialog = ({
         (line) => {
             reset({
                 ...getHeaderFormData({
-                    equipmentId: line.equipmentId,
-                    equipmentName: line.equipmentName,
+                    [EQUIPMENT_ID]: line.equipmentId,
+                    [EQUIPMENT_NAME]: line.equipmentName,
                 }),
                 ...getCharacteristicsFormData({
                     r: line.r,
@@ -227,15 +242,11 @@ const LineCreationDialog = ({
                         CONNECTIVITY_2
                     ),
                 }),
-                ...getLimitsFormData({
-                    permanentLimit1: line.currentLimits1?.permanentLimit,
-                    permanentLimit2: line.currentLimits2?.permanentLimit,
-                    temporaryLimits1: addSelectedFieldToRows(
-                        formatTemporaryLimits(line.currentLimits1?.temporaryLimits)
-                    ),
-                    temporaryLimits2: addSelectedFieldToRows(
-                        formatTemporaryLimits(line.currentLimits2?.temporaryLimits)
-                    ),
+                ...getAllLimitsFormData({
+                    [LIMITS_GROUP_1]: line.operationalLimitsGroups1,
+                    [LIMITS_GROUP_2]: line.operationalLimitsGroups2,
+                    [SELECTED_LIMITS_GROUP_1]: line.selectedOperationalLimitsGroupId1 ?? null,
+                    [SELECTED_LIMITS_GROUP_2]: line.selectedOperationalLimitsGroupId2 ?? null,
                 }),
                 ...getPropertiesFromModification(line.properties),
             });
@@ -256,12 +267,6 @@ const LineCreationDialog = ({
             fromEditDataToFormValues(editData);
         }
     }, [fromEditDataToFormValues, editData]);
-
-    const sanitizeLimitNames = (temporaryLimitList) =>
-        temporaryLimitList.map(({ name, ...temporaryLimit }) => ({
-            ...temporaryLimit,
-            name: sanitizeString(name),
-        }));
 
     const handleLineSegmentsBuildSubmit = (data) => {
         setValue(`${CHARACTERISTICS}.${R}`, data[TOTAL_RESISTANCE], {
@@ -298,10 +303,10 @@ const LineCreationDialog = ({
                 characteristics[CONNECTIVITY_1]?.[BUS_OR_BUSBAR_SECTION]?.id,
                 characteristics[CONNECTIVITY_2]?.[VOLTAGE_LEVEL]?.id,
                 characteristics[CONNECTIVITY_2]?.[BUS_OR_BUSBAR_SECTION]?.id,
-                limits[CURRENT_LIMITS_1]?.[PERMANENT_LIMIT],
-                limits[CURRENT_LIMITS_2]?.[PERMANENT_LIMIT],
-                sanitizeLimitNames(limits[CURRENT_LIMITS_1]?.[TEMPORARY_LIMITS]),
-                sanitizeLimitNames(limits[CURRENT_LIMITS_2]?.[TEMPORARY_LIMITS]),
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_1]),
+                sanitizeLimitsGroups(limits[LIMITS_GROUP_2]),
+                limits[SELECTED_LIMITS_GROUP_1],
+                limits[SELECTED_LIMITS_GROUP_2],
                 !!editData,
                 editData ? editData.uuid : undefined,
                 sanitizeString(characteristics[CONNECTIVITY_1]?.[CONNECTION_NAME]),
@@ -386,7 +391,7 @@ const LineCreationDialog = ({
                 onValidationError={onValidationError}
                 onSave={onSubmit}
                 aria-labelledby="dialog-create-line"
-                maxWidth={'md'}
+                maxWidth={'xl'}
                 titleId="CreateLine"
                 subtitle={headerAndTabs}
                 onOpenCatalogDialog={() => setOpenLineTypesCatalogDialog(true)}

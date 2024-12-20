@@ -12,7 +12,7 @@ import TwoWindingsTransformerCharacteristicsPane from '../../characteristics-pan
 import { TwoWindingsTransformerCreationDialogTab } from '../two-windings-transformer-creation-dialog';
 import RatioTapChangerPane from '../../tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane';
 import PhaseTapChangerPane from '../../tap-changer-pane/phase-tap-changer-pane/phase-tap-changer-pane';
-import LimitsPane from '../../../../limits/limits-pane';
+import { LimitsPane } from '../../../../limits/limits-pane';
 import useVoltageLevelsListInfos from '../../../../../../hooks/use-voltage-levels-list-infos';
 import GridSection from '../../../../commons/grid-section';
 import GridItem from '../../../../commons/grid-item';
