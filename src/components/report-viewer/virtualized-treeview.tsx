@@ -4,23 +4,82 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { CSSProperties, FunctionComponent, RefObject } from 'react';
+import { FunctionComponent, useCallback, useMemo, useRef } from 'react';
 import { FixedSizeList } from 'react-window';
 import { ReportItem, TreeviewItem } from './treeview-item';
 import { AutoSizer } from 'react-virtualized';
+import { ReportTree } from '../../utils/report/report.type';
+import Label from '@mui/icons-material/Label';
+import { Theme } from '@mui/system';
+import { useTreeViewScroll } from './use-treeview-scroll';
+
+const styles = {
+    treeItem: {
+        whiteSpace: 'nowrap',
+    },
+    labelIcon: (theme: Theme) => ({
+        marginRight: theme.spacing(1),
+    }),
+};
 
 export interface TreeViewProps {
-    listRef: RefObject<FixedSizeList>;
-    nodes: ReportItem[];
+    expandedTreeReports: string[];
+    setExpandedTreeReports: (reportIds: string[]) => void;
+    selectedReportId: string;
+    reportTree: ReportTree;
     onSelectedItem: (node: ReportItem) => void;
-    onExpandItem: (node: ReportItem) => void;
     highlightedReportId?: string;
-    itemSize: number;
-    style?: CSSProperties;
 }
 
-export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = (props) => {
-    const { listRef, onSelectedItem, onExpandItem, highlightedReportId, nodes } = props;
+export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = ({
+    expandedTreeReports,
+    setExpandedTreeReports,
+    selectedReportId,
+    onSelectedItem,
+    highlightedReportId,
+    reportTree,
+}) => {
+    const listRef = useRef<FixedSizeList>(null);
+
+    const onExpandItem = useCallback(
+        (node: ReportItem) => {
+            if (node.collapsed) {
+                return setExpandedTreeReports([...expandedTreeReports, node.id]);
+            } else {
+                return setExpandedTreeReports(expandedTreeReports.filter((id) => id !== node.id));
+            }
+        },
+        [expandedTreeReports, setExpandedTreeReports]
+    );
+
+    const toTreeNodes = useCallback(
+        (item: ReportTree, depth: number): ReportItem[] => {
+            const result: ReportItem[] = [];
+            const collapsed = !expandedTreeReports.includes(item.id);
+            if (item.id) {
+                result.push({
+                    collapsed,
+                    depth,
+                    label: item.message,
+                    id: item.id,
+                    isLeaf: !item.subReports.find((subReports) => subReports.id !== null),
+                    icon: <Label htmlColor={item.severity.colorName} sx={styles.labelIcon} />,
+                    isSelected: item.id === selectedReportId,
+                });
+                if (!collapsed) {
+                    for (let subReports of item.subReports) {
+                        result.push(...toTreeNodes(subReports, depth + 1));
+                    }
+                }
+            }
+            return result;
+        },
+        [expandedTreeReports, selectedReportId]
+    );
+
+    const nodes = useMemo(() => toTreeNodes(reportTree, 0), [reportTree, toTreeNodes]);
+
+    useTreeViewScroll(highlightedReportId, nodes, listRef);
 
     return (
         <AutoSizer>
@@ -29,9 +88,9 @@ export const VirtualizedTreeview: FunctionComponent<TreeViewProps> = (props) => 
                     ref={listRef}
                     height={height}
                     width={width}
-                    style={props.style}
+                    style={styles.treeItem}
                     itemCount={nodes.length}
-                    itemSize={props.itemSize}
+                    itemSize={32}
                     itemKey={(index) => nodes[index].id}
                     itemData={{ nodes, onSelectedItem, onExpandItem, highlightedReportId }}
                 >
