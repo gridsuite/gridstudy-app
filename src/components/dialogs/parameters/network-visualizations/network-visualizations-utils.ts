@@ -5,30 +5,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 import { LineFlowColorMode, LineFlowMode } from '@powsybl/network-viewer';
-import {
-    MAP_BASEMAP_CARTO,
-    MAP_BASEMAP_CARTO_NOLABEL,
-    MAP_BASEMAP_MAPBOX,
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
-    PARAM_DIAGONAL_LABEL,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
-    PARAM_LINE_FLOW_ALERT_THRESHOLD,
-    PARAM_LINE_FLOW_COLOR_MODE,
-    PARAM_LINE_FLOW_MODE,
-    PARAM_LINE_FULL_PATH,
-    PARAM_LINE_PARALLEL_PATH,
-    PARAM_MAP_BASEMAP,
-    PARAM_MAP_MANUAL_REFRESH,
-    PARAM_SUBSTATION_LAYOUT,
-} from '../../../../utils/config-params';
+import { MAP_BASEMAP_CARTO, MAP_BASEMAP_CARTO_NOLABEL, MAP_BASEMAP_MAPBOX } from '../../../../utils/config-params';
 import { SubstationLayout } from '../../../diagrams/diagram-common';
-import { NetworkVisualizationParametersForm } from './network-visualizations-form';
 
 export enum TabValue {
-    MAP = 'Map',
-    SINGLE_LINE_DIAGRAM = 'SingleLineDiagram',
-    NETWORK_AREA_DIAGRAM = 'NetworkAreaDiagram',
+    MAP = 'mapParameters',
+    SINGLE_LINE_DIAGRAM = 'singleLineDiagramParameters',
+    NETWORK_AREA_DIAGRAM = 'networkAreaDiagramParameters',
 }
 export const MAP_MANUAL_REFRESH = 'MapManualRefresh';
 export const ALERT_THRESHOLD_LABEL = 'AlertThresholdLabel';
@@ -41,24 +24,6 @@ export const CENTER_LABEL = 'centerLabel';
 export const SUBSTATION_LAYOUT = 'SubstationLayout';
 export const COMPONENT_LIBRARY = 'ComponentLibrary';
 export const INIT_NAD_WITH_GEO_DATA = 'initNadWithGeoData';
-
-export interface NetworkVisualizationsParams {
-    lineFullPath: boolean;
-    lineParallelPath: boolean;
-    lineFlowMode: LineFlowMode;
-    lineFlowColorMode: LineFlowColorMode;
-    lineFlowAlertThreshold: number;
-    mapManualRefresh: boolean;
-    mapBaseMap: string;
-    diagonalLabel: boolean;
-    centerLabel: boolean;
-    substationLayout: string;
-    componentLibrary: unknown;
-    initNadWithGeoData: boolean;
-}
-export interface NestedObject {
-    [key: string]: NestedObject | string | number | boolean;
-}
 
 export const INTL_LINE_FLOW_MODE_OPTIONS = [
     {
@@ -100,29 +65,6 @@ export const INTL_MAP_BASE_MAP_OPTIONS = [
     },
 ];
 
-export const fromNetworkVisualizationsParamsDataToFormValues = (parameters: NetworkVisualizationsParams) => {
-    return {
-        [TabValue.MAP]: {
-            [PARAM_LINE_FULL_PATH]: parameters.lineFullPath,
-            [PARAM_LINE_PARALLEL_PATH]: parameters.lineParallelPath,
-            [PARAM_LINE_FLOW_MODE]: parameters.lineFlowMode,
-            [PARAM_LINE_FLOW_COLOR_MODE]: parameters.lineFlowColorMode,
-            [PARAM_LINE_FLOW_ALERT_THRESHOLD]: parameters.lineFlowAlertThreshold,
-            [PARAM_MAP_MANUAL_REFRESH]: parameters.mapManualRefresh,
-            [PARAM_MAP_BASEMAP]: parameters.mapBaseMap,
-        },
-        [TabValue.SINGLE_LINE_DIAGRAM]: {
-            [PARAM_DIAGONAL_LABEL]: parameters.diagonalLabel,
-            [PARAM_CENTER_LABEL]: parameters.centerLabel,
-            [PARAM_SUBSTATION_LAYOUT]: parameters.substationLayout,
-            [PARAM_COMPONENT_LIBRARY]: parameters.componentLibrary,
-        },
-        [TabValue.NETWORK_AREA_DIAGRAM]: {
-            [PARAM_INIT_NAD_WITH_GEO_DATA]: parameters.initNadWithGeoData,
-        },
-    };
-};
-
 export const INTL_SUBSTATION_LAYOUT_OPTIONS = [
     {
         id: SubstationLayout.HORIZONTAL,
@@ -133,21 +75,3 @@ export const INTL_SUBSTATION_LAYOUT_OPTIONS = [
         label: 'VerticalSubstationLayout',
     },
 ];
-
-export const formatParametersToSend = (
-    parameters: NetworkVisualizationParametersForm,
-    changedParameters: Partial<NetworkVisualizationParametersForm>
-) => {
-    const getFlattenedObject = (nestedObject: NestedObject): Record<string, string | number | boolean> =>
-        Object.values(nestedObject)
-            .flatMap((obj) => Object.entries(obj))
-            .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
-
-    const flattenedParameters = getFlattenedObject(parameters as NestedObject);
-    const flattenedChangedParameters = getFlattenedObject(changedParameters as NestedObject);
-
-    return Object.keys(flattenedChangedParameters).reduce((acc, field) => {
-        (acc as any)[field] = flattenedParameters[field];
-        return acc;
-    }, {});
-};
