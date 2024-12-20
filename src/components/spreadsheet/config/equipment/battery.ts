@@ -87,7 +87,6 @@ export const BATTERY_TAB_DEF = {
             type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
-            valueGetter: (params) => params.data?.activePowerControl?.droop,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),

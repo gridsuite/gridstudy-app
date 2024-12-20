@@ -41,3 +41,5 @@ export const RATIO_REGULATION_MODES_ENUM_TYPE = 'ratioRegulationModesEnumType';
 export const SIDE_ENUM_TYPE = 'sideEnumType';
 export const PHASE_REGULATING_MODE_ENUM_TYPE = 'phaseRegulatingModeEnumType';
 export const NUMERIC_HIGH_TAP_POSITION_TYPE = 'numericHighTapPositionType';
+export const NUMERIC_SWITCHED_ON_SUSCEPTANCE_TYPE = 'numericSwitchedOnSusceptanceType';
+export const NUMERIC_SWITCHED_ON_Q_AT_NOMINAL_V_TYPE = 'numericSwitchedOnQAtNominalVType';

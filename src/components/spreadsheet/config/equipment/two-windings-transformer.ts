@@ -36,8 +36,6 @@ import {
     TEXT_TYPE,
 } from '../../utils/constants';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
-import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
-import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { getComputedRegulationMode } from '../../../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import {
@@ -193,7 +191,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
             type: BOOLEAN_TYPE,
             editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
             cellStyle: editableCellStyle,
@@ -215,7 +212,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationMode,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
@@ -274,7 +270,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationType,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
@@ -296,7 +291,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
             type: SIDE_ENUM_TYPE,
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
@@ -319,7 +313,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
             type: NUMERIC_TYPE,
-            valueGetter: (params) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
             cellStyle: (params) => (isEditableTwtRatioRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
@@ -355,18 +348,14 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'RatioHighTapPosition',
-            field: 'ratioTapChanger.highTapPosition',
-            type: NUMERIC_TYPE,
-            valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
+            field: 'ratioTapChanger',
+            type: NUMERIC_HIGH_TAP_POSITION_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioTap',
             field: 'ratioTapChanger.tapPosition',
-            type: NUMERIC_TYPE,
-            numeric: true,
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger?.tapPosition,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...params.data.ratioTapChanger,
@@ -389,7 +378,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
             type: PHASE_REGULATING_MODE_ENUM_TYPE,
-            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
@@ -412,7 +400,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             type: NUMERIC_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
-            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationValue,
             getQuickFilterText: excludeFromGlobalFilter,
             editable: (params) =>
                 hasTwtPhaseTapChangerAndEditable(params) &&
@@ -450,7 +437,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
             type: REGULATION_ENUM_TYPE,
-            valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
@@ -471,7 +457,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
             type: SIDE_ENUM_TYPE,
-            valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
@@ -494,7 +479,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
             type: TEXT_TYPE,
-            valueGetter: (params) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
             cellStyle: (params) => (isEditableTwtPhaseRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
@@ -532,7 +516,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'PhaseHighTapPosition',
-            field: 'phaseTapChanger.highTapPosition',
+            field: 'phaseTapChanger',
             type: NUMERIC_HIGH_TAP_POSITION_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
@@ -540,7 +524,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseTap',
             field: 'phaseTapChanger.tapPosition',
             type: NUMERIC_0_FRACTION_DIGITS_TYPE,
-            valueGetter: (params) => params?.data?.phaseTapChanger?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...params.data.phaseTapChanger,

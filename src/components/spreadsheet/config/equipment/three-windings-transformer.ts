@@ -149,11 +149,10 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'RatioTap1',
-            field: 'ratioTapChanger1',
+            field: 'ratioTapChanger1.tapPosition',
             type: NUMERIC_TYPE,
             changeCmd: generateTapRequest('Ratio', 1),
             fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger1?.tapPosition,
             valueSetter: (params) => {
                 params.data.ratioTapChanger1 = {
                     ...params.data.ratioTapChanger1,
@@ -185,11 +184,10 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'RatioTap2',
-            field: 'ratioTapChanger2',
+            field: 'ratioTapChanger2.tapPosition',
             type: NUMERIC_TYPE,
             changeCmd: generateTapRequest('Ratio', 2),
             fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger2?.tapPosition,
             valueSetter: (params) => {
                 params.data.ratioTapChanger2 = {
                     ...params.data.ratioTapChanger2,
@@ -221,10 +219,9 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'RatioTap3',
-            field: 'ratioTapChanger3',
+            field: 'ratioTapChanger3.tapPosition',
             type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Ratio', 3),
-            valueGetter: (params) => params?.data?.ratioTapChanger3?.tapPosition,
             valueSetter: (params) => {
                 params.data.ratioTapChanger3 = {
                     ...params.data.ratioTapChanger3,
@@ -251,10 +248,9 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'PhaseTap1',
-            field: 'phaseTapChanger1',
+            field: 'phaseTapChanger1.tapPosition',
             type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Phase', 1),
-            valueGetter: (params) => params?.data?.phaseTapChanger1?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger1 = {
                     ...params.data.phaseTapChanger1,
@@ -288,10 +284,9 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'PhaseTap2',
-            field: 'phaseTapChanger2',
+            field: 'phaseTapChanger2.tapPosition',
             type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Phase', 2),
-            valueGetter: (params) => params?.data?.phaseTapChanger2?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger2 = {
                     ...params.data.phaseTapChanger2,
@@ -325,10 +320,9 @@ export const THREE_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'PhaseTap3',
-            field: 'phaseTapChanger3',
+            field: 'phaseTapChanger3.tapPosition',
             type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             changeCmd: generateTapRequest('Phase', 3),
-            valueGetter: (params) => params?.data?.phaseTapChanger3?.tapPosition,
             valueSetter: (params) => {
                 params.data.phaseTapChanger3 = {
                     ...params.data.phaseTapChanger3,

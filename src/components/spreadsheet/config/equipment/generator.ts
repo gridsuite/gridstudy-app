@@ -36,7 +36,7 @@ import {
 } from '../common/cell-editors';
 import { SortWay } from 'hooks/use-aggrid-sort';
 
-const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
+export const RegulatingTerminalCellGetter: ValueGetterFunc = (params) => {
     const { regulatingTerminalConnectableId, regulatingTerminalVlId, regulatingTerminalConnectableType } =
         params?.data || {};
 
@@ -136,7 +136,6 @@ export const GENERATOR_TAB_DEF = {
             type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.activePowerControl?.droop),
-            valueGetter: (params) => params.data?.activePowerControl?.droop,
             valueSetter: (params) => {
                 params.data.activePowerControl = {
                     ...(params.data.activePowerControl || {}),
@@ -234,10 +233,7 @@ export const GENERATOR_TAB_DEF = {
                 const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
                 return isNaN(qPercent) ? 0 : qPercent;
             }),
-            valueGetter: (params) => {
-                const qPercent = params.data?.coordinatedReactiveControl?.qPercent;
-                return isNaN(qPercent) ? 0 : qPercent;
-            },
+
             valueSetter: (params) => {
                 params.data.coordinatedReactiveControl = {
                     ...params.data.coordinatedReactiveControl,
@@ -256,7 +252,6 @@ export const GENERATOR_TAB_DEF = {
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorShortCircuit?.directTransX || 0),
-            valueGetter: (params) => params.data?.generatorShortCircuit?.directTransX,
             valueSetter: (params) => {
                 params.data.generatorShortCircuit = {
                     ...params.data.generatorShortCircuit,
@@ -275,7 +270,6 @@ export const GENERATOR_TAB_DEF = {
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorShortCircuit?.stepUpTransformerX || 0),
-            valueGetter: (params) => params.data?.generatorShortCircuit?.stepUpTransformerX,
             valueSetter: (params) => {
                 params.data.generatorShortCircuit = {
                     ...params.data.generatorShortCircuit,
@@ -294,7 +288,6 @@ export const GENERATOR_TAB_DEF = {
             getQuickFilterText: excludeFromGlobalFilter,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.plannedActivePowerSetPoint),
-            valueGetter: (params) => params.data?.generatorStartup?.plannedActivePowerSetPoint,
             valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
@@ -313,7 +306,6 @@ export const GENERATOR_TAB_DEF = {
             ...numericalCellEditorConfig((params) => params.data?.generatorStartup?.marginalCost),
             type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
-            valueGetter: (params) => params.data?.generatorStartup?.marginalCost,
             valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
@@ -337,7 +329,6 @@ export const GENERATOR_TAB_DEF = {
                 maxExpression: 1,
                 minExpression: 0,
             },
-            valueGetter: (params) => params.data?.generatorStartup?.plannedOutageRate,
             valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
@@ -358,7 +349,6 @@ export const GENERATOR_TAB_DEF = {
                 maxExpression: 1,
                 minExpression: 0,
             },
-            valueGetter: (params) => params.data?.generatorStartup?.forcedOutageRate,
             valueSetter: (params) => {
                 params.data.generatorStartup = {
                     ...params.data?.generatorStartup,
@@ -384,7 +374,6 @@ export const GENERATOR_TAB_DEF = {
             id: 'RegulatingTerminalGenerator',
             field: 'RegulatingTerminalGenerator',
             type: TEXT_TYPE,
-            valueGetter: RegulatingTerminalCellGetter,
             cellStyle: (params) => (isEditableRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
             editable: isEditableRegulatingTerminalCell,
             crossValidation: {

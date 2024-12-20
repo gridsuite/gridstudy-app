@@ -18,6 +18,8 @@ import {
     NUMERIC_1_FRACTION_DIGITS_TYPE,
     NUMERIC_5_FRACTION_DIGITS_TYPE,
     NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_SWITCHED_ON_Q_AT_NOMINAL_V_TYPE,
+    NUMERIC_SWITCHED_ON_SUSCEPTANCE_TYPE,
     NUMERIC_TYPE,
     SHUNT_COMPENSATOR_ENUM_TYPE,
     TEXT_TYPE,
@@ -111,9 +113,7 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'SwitchedOnMaxQAtNominalV',
             field: 'switchedOnQAtNominalV',
-            valueGetter: (params) =>
-                (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
+            type: NUMERIC_SWITCHED_ON_Q_AT_NOMINAL_V_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
@@ -127,9 +127,8 @@ export const SHUNT_COMPENSATOR_TAB_DEF = {
         {
             id: 'SwitchedOnMaxSusceptance',
             field: 'switchedOnSusceptance',
-            valueGetter: (params) =>
-                (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
-            type: NUMERIC_5_FRACTION_DIGITS_TYPE,
+
+            type: NUMERIC_SWITCHED_ON_SUSCEPTANCE_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {

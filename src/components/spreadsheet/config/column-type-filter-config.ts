@@ -22,6 +22,7 @@ import {
     SIDE,
 } from 'components/network/constants';
 import { unitToKiloUnit, unitToMicroUnit } from 'utils/unit-converter';
+import { RegulatingTerminalCellGetter } from './equipment/generator';
 
 const TEXT_FILTER_PARAMS = {
     caseSensitive: false,
@@ -99,7 +100,16 @@ const propertyType = createTextColumnType(PropertiesCellRenderer, propertiesGett
 
 const getNumericType = (fractionDigits?: number) =>
     createNumericColumnType((params) => {
-        const value = params.data[params?.colDef?.field!];
+        let value = params.data[params?.colDef?.field!];
+        if (params?.colDef?.field === 'coordinatedReactiveControl.qPercent') {
+            value = isNaN(value) ? 0 : value;
+        }
+        if (params?.colDef?.field === 'generatorShortCircuit.directTransX') {
+            value = value || 0;
+        }
+        if (params?.colDef?.field === 'RegulatingTerminalGenerator') {
+            return RegulatingTerminalCellGetter;
+        }
         return fractionDigits ? formatCellValue(value, fractionDigits) : value;
     });
 
@@ -118,6 +128,19 @@ const numericUnitToKiloUnitType = createNumericUnitConversionType(unitToKiloUnit
 const numericHighTapPositionType = createNumericColumnType((params) =>
     computeHighTapPosition(params.data[params?.colDef?.field!]?.steps)
 );
+const numericSwitchedOnSusceptanceType = createNumericColumnType((params) => {
+    return formatCellValue(
+        (params?.data?.maxSusceptance / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
+        5
+    );
+});
+
+const numericSwitchedOnQAtNominalVType = createNumericColumnType((params) => {
+    return formatCellValue(
+        (params?.data?.maxQAtNominalV / params?.data?.maximumSectionCount) * params?.data?.sectionCount,
+        5
+    );
+});
 
 const getNumericApplyFluxConventionType = (fractionDigits?: number) =>
     createNumericColumnType((params) => {
@@ -180,4 +203,6 @@ export const defaultColumnType = {
     ratioRegulationModesEnumType,
     sideEnumType,
     phaseRegulatingModeEnumType,
+    numericSwitchedOnSusceptanceType,
+    numericSwitchedOnQAtNominalVType,
 };
