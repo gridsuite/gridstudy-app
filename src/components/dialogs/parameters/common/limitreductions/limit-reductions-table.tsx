@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import { FunctionComponent } from 'react';
 import { IColumnsDef, LIMIT_REDUCTIONS_FORM } from './columns-definitions';
 import { useFieldArray } from 'react-hook-form';
