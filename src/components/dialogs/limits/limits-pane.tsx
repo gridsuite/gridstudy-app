@@ -144,27 +144,6 @@ export function LimitsPane({
         setAllLimitsGroupsStr(allLimitsGroups);
     }, [limitsGroups1, limitsGroups2]);
 
-    /*
-    const handleCopy = (direction: 'toRight' | 'toLeft') => {
-    if (selectedSet) {
-      const updatedSets = limitSets.map(set => {
-        if (set.id === selectedSet.id) {
-          const updatedSet = { ...set };
-          if (direction === 'toRight') {
-            updatedSet.side_2 = [...set.side_1];
-          } else {
-            updatedSet.side_1 = [...set.side_2];
-          }
-          return updatedSet;
-        }
-        return set;
-      });
-      setLimitSets(updatedSets);
-      setSelectedSet(updatedSets[tabValue]);
-    }
-  };
-     */
-
     const addNewLimitSet = () => {
         const newLimitsGroup: OperationalLimitsGroup = {
             [ID]: `DEFAULT ${allLimitsGroupsStr.length > 0 ? allLimitsGroupsStr.length - 1 : ''}`,
