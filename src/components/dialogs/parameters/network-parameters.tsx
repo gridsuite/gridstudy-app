@@ -15,6 +15,7 @@ import { LabelledButton, styles, useParameterState } from './parameters';
 import ParameterLineDropdown from './widget/parameter-line-dropdown';
 import ParameterLineSwitch from './widget/parameter-line-switch';
 import LineSeparator from '../commons/line-separator';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 export enum FluxConventions {
     IIDM = 'iidm',
@@ -22,16 +23,24 @@ export enum FluxConventions {
 }
 
 export const NetworkParameters = () => {
+    const { snackError } = useSnackMessage();
     const [, handleChangeFluxConvention] = useParameterState(PARAM_FLUX_CONVENTION);
     const [enableDeveloperMode, handleChangeEnableDeveloperMode] = useParameterState(PARAM_DEVELOPER_MODE);
     const resetNetworkParameters = () => {
-        fetchDefaultParametersValues().then((defaultValues) => {
-            const defaultFluxConvention = defaultValues.fluxConvention;
-            if (Object.values(FluxConventions).includes(defaultFluxConvention)) {
-                handleChangeFluxConvention(defaultFluxConvention);
-            }
-            handleChangeEnableDeveloperMode(defaultValues?.enableDeveloperMode ?? false);
-        });
+        fetchDefaultParametersValues()
+            .then((defaultValues) => {
+                const defaultFluxConvention = defaultValues.fluxConvention;
+                if (Object.values(FluxConventions).includes(defaultFluxConvention)) {
+                    handleChangeFluxConvention(defaultFluxConvention);
+                }
+                handleChangeEnableDeveloperMode(defaultValues?.enableDeveloperMode ?? false);
+            })
+            .catch((error) => {
+                snackError({
+                    messageTxt: error.message,
+                    headerId: 'paramsRetrievingError',
+                });
+            });
     };
 
     return (
