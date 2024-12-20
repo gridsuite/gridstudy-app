@@ -427,6 +427,10 @@ DndTable.prototype = {
     disabled: PropTypes.bool,
     withLeftButtons: PropTypes.bool,
     withAddRowsDialog: PropTypes.bool,
+    withBottomButtons: PropTypes.bool,
+    withCheckboxes: PropTypes.bool,
+    withTopRightAddButton: PropTypes.bool,
+    minRowsNumber: PropTypes.number,
 };
 
 export default DndTable;
