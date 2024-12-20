@@ -224,6 +224,7 @@ export function StudyContainer({ view, onChangeTab }) {
     const currentRootNetwork = useSelector((state) => state.currentRootNetwork);
 
     const currentNodeRef = useRef();
+    const currentRootNetworkRef = useRef();
 
     useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetwork);
 
@@ -620,7 +621,11 @@ export function StudyContainer({ view, onChangeTab }) {
     );
 
     useEffect(() => {
-        if (studyUuid && currentRootNetwork && !isStudyNetworkFound) {
+        if (
+            (studyUuid && currentRootNetwork && !isStudyNetworkFound) ||
+            (currentRootNetworkRef.current && currentRootNetworkRef.current != currentRootNetwork)
+        ) {
+            console.log('RELOADING CHECK NETWORK', currentRootNetwork);
             checkNetworkExistenceAndRecreateIfNotFound();
         }
     }, [isStudyNetworkFound, currentRootNetwork, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
@@ -658,6 +663,9 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
+
+        let previousCurrentRootNetwork = currentRootNetworkRef.current;
+        currentRootNetworkRef.current = currentRootNetwork;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
@@ -667,11 +675,15 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
-        if (isSameNode(previousCurrentNode, currentNode) && isNodeBuilt(previousCurrentNode)) {
+        if (
+            previousCurrentRootNetwork == currentRootNetwork &&
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode)
+        ) {
             return;
         }
         dispatch(resetEquipments());
-    }, [currentNode, wsConnected, dispatch]);
+    }, [currentNode, currentRootNetwork, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -723,10 +735,10 @@ export function StudyContainer({ view, onChangeTab }) {
     }, [studyUuid, studyUpdatedForce, fetchStudyPath, snackInfo]);
 
     useEffect(() => {
-        if (studyUuid && currentRootNetwork) {
+        if (studyUuid) {
             websocketExpectedCloseRef.current = false;
             //dispatch root network uuid
-            dispatch(openStudy(studyUuid, currentRootNetwork));
+            dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);
             const wsDirectory = connectDeletedStudyNotifications(studyUuid);
@@ -741,7 +753,7 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // Note: dispach, loadGeoData
         // connectNotifications don't change
-    }, [dispatch, studyUuid, currentRootNetwork, connectNotifications, connectDeletedStudyNotifications]);
+    }, [dispatch, studyUuid, connectNotifications, connectDeletedStudyNotifications]);
 
     useEffect(() => {
         if (studyUuid) {
