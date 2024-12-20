@@ -21,6 +21,7 @@ import {
 } from 'ag-grid-community';
 import { CurrentTreeNode } from '../../redux/reducer';
 import { suppressEventsToPreventEditMode } from '../dialogs/commons/utils';
+import { useLocalizedCountries } from 'components/utils/localized-countries-hook';
 
 const PINNED_ROW_HEIGHT = 42;
 const DEFAULT_ROW_HEIGHT = 28;
@@ -51,6 +52,9 @@ interface EquipmentTableProps {
     handleRowDataUpdated: () => void;
     fetched: boolean;
     shouldHidePinnedHeaderRightBorder: boolean;
+    columnTypes: { [key: string]: ColDef };
+    applyFluxConvention: (value: number) => number;
+    loadFlowStatus: string;
 }
 
 const loadingOverlayComponent = (props: { loadingMessage: string }) => <>{props.loadingMessage}</>;
@@ -69,9 +73,13 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
     handleRowDataUpdated,
     fetched,
     shouldHidePinnedHeaderRightBorder,
+    columnTypes,
+    applyFluxConvention,
+    loadFlowStatus,
 }) => {
     const theme = useTheme();
     const intl = useIntl();
+    const { translate } = useLocalizedCountries();
 
     const getRowStyle = useCallback(
         (params: RowClassParams): RowStyle | undefined => {
@@ -95,8 +103,12 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             dataToModify: topPinnedData ? JSON.parse(JSON.stringify(topPinnedData[0])) : {},
             currentNode: currentNode,
             studyUuid: studyUuid,
+            intl: intl,
+            translateCountryCode: translate,
+            applyFluxConvention: applyFluxConvention,
+            loadFlowStatus: loadFlowStatus,
         }),
-        [currentNode, studyUuid, theme, topPinnedData]
+        [applyFluxConvention, currentNode, intl, loadFlowStatus, studyUuid, theme, topPinnedData, translate]
     );
 
     const getRowHeight = useCallback(
@@ -150,6 +162,7 @@ export const EquipmentTable: FunctionComponent<EquipmentTableProps> = ({
             loadingOverlayComponent={loadingOverlayComponent}
             loadingOverlayComponentParams={loadingOverlayComponentParams}
             showOverlay={true}
+            columnTypes={columnTypes}
         />
     );
 };

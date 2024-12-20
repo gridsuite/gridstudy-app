@@ -8,22 +8,21 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
+import { editableColumnConfig, excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    editableColumnConfig,
-    excludeFromGlobalFilter,
-    getDefaultEnumConfig,
-    typeAndFetchers,
-} from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    LOAD_ENUM_TYPE,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    TEXT_TYPE,
+} from '../../utils/constants';
 import { LOAD_TYPES } from '../../../network/constants';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import { enumCellEditorConfig, numericalCellEditorConfig } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const LOAD_TAB_DEF = {
     index: 6,
@@ -34,20 +33,20 @@ export const LOAD_TAB_DEF = {
             id: 'ID',
             field: 'id',
             columnWidth: MEDIUM_COLUMN_WIDTH,
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             ...editableColumnConfig,
         },
         {
             id: 'loadType',
             field: 'type',
-            ...getDefaultEnumConfig([...LOAD_TYPES, { id: 'UNDEFINED', label: 'Undefined' }]),
+            type: LOAD_ENUM_TYPE,
             ...editableColumnConfig,
             ...enumCellEditorConfig(
                 (params) => params.data?.type,
@@ -57,45 +56,34 @@ export const LOAD_TAB_DEF = {
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: 'nominalVoltage',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'p0',
             field: 'p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.p0),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -103,9 +91,7 @@ export const LOAD_TAB_DEF = {
         {
             id: 'q0',
             field: 'q0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.q0),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -113,9 +99,7 @@ export const LOAD_TAB_DEF = {
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,

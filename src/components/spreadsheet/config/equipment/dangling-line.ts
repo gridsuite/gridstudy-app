@@ -8,18 +8,18 @@
 import type { ReadonlyDeep } from 'type-fest';
 import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import CountryCellRenderer from '../../utils/country-cell-render';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
-import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
-    excludeFromGlobalFilter,
-    typeAndFetchers,
-} from './common-config';
+import { excludeFromGlobalFilter, typeAndFetchers } from './common-config';
 import { NOMINAL_V } from '../../../utils/field-constants';
 import { genericColumnOfProperties } from '../common/column-properties';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    TEXT_TYPE,
+} from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const DANGLING_LINE_TAB_DEF = {
     index: 13,
@@ -29,78 +29,64 @@ export const DANGLING_LINE_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'NominalV',
             field: NOMINAL_V,
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'PairingKey',
             field: 'pairingKey',
             getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'activePower',
             field: 'p',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePower',
             field: 'q',
             numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'p0',
             field: 'p0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'q0',
             field: 'q0',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected',
             field: 'terminalConnected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfProperties,

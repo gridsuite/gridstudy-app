@@ -7,8 +7,10 @@
 
 import { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
-import { defaultTextFilterConfig, typeAndFetchers } from './common-config';
+import { typeAndFetchers } from './common-config';
 import type { ReadonlyDeep } from 'type-fest';
+import { TEXT_TYPE } from 'components/spreadsheet/utils/constants';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 export const BUSBAR_SECTION_TAB_DEF = {
     index: 16,
@@ -18,13 +20,13 @@ export const BUSBAR_SECTION_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'VoltageLevelId',
             field: 'voltageLevelId',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
     ],
 } as const satisfies ReadonlyDeep<SpreadsheetTabDefinition>;
