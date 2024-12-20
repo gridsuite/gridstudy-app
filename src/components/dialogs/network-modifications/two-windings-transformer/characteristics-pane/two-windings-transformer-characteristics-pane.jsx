@@ -8,9 +8,8 @@
 import { Grid } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import { MicroSusceptanceAdornment, MVAPowerAdornment, OhmAdornment, VoltageAdornment } from '../../../dialog-utils';
-import { FloatInput } from '@gridsuite/commons-ui';
+import { convertInputValues, FieldType, FloatInput } from '@gridsuite/commons-ui';
 import { B, CHARACTERISTICS, G, R, RATED_S, RATED_U1, RATED_U2, X } from 'components/utils/field-constants';
-import { unitToMicroUnit } from '../../../../../utils/unit-converter';
 import PropertiesForm from '../../common/properties/properties-form';
 import GridSection from '../../../commons/grid-section';
 import GridItem from '../../../commons/grid-item';
@@ -43,7 +42,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtTo
             name={`${id}.${G}`}
             label="G"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(twtToModify?.g)}
+            previousValue={convertInputValues(FieldType.G, twtToModify?.g)}
             clearable={isModification}
         />
     );
@@ -53,7 +52,7 @@ const TwoWindingsTransformerCharacteristicsPane = ({ id = CHARACTERISTICS, twtTo
             name={`${id}.${B}`}
             label="B"
             adornment={MicroSusceptanceAdornment}
-            previousValue={unitToMicroUnit(twtToModify?.b)}
+            previousValue={convertInputValues(FieldType.B, twtToModify?.b)}
             clearable={isModification}
         />
     );
