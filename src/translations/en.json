@@ -79,6 +79,8 @@
     "CBNone": "None",
     "Map": "Map",
     "NetworkVisualizations": "Network visualizations",
+    "getNetworkVisualizationsParametersError": "An error occurred while reading the network visualizations parameters",
+    "updateNetworkVisualizationsParametersError": "An error occurred while updating the network visualizations parameters",
     "lineFullPath": "Line full path",
     "lineParallelPath": "Spread overlapping lines",
     "LineFlowMode": "Line flow mode",
@@ -914,7 +916,13 @@
     "PermanentCurrentLimitText": "Permanent current limit",
     "permanentCurrentLimitMustBeGreaterThanZero": "The permanent current limit value must be greater than 0",
     "qMaxAtNominalVMustBeGreaterThanZero": "The Qmax available at nominal voltage value must be greater than 0",
-    "powerFactorNormalizedPercentage": "The power factor value must be less than 1",
+    "powerFactorMaxValueError": "The power factor value must be less than 1",
+    "powerFactorMinValueError": "The power factor value must be greater than -1",
+    "nominalVMustBeGreaterOrEqualToZero": "The DC nominal voltage value must be greater than 0",
+    "dcResistanceMustBeGreaterOrEqualToZero": "The DC resistance value must be greater than 0",
+    "maxPMustBeGreaterOrEqualToZero": "The maximum active power value must be greater than 0",
+    "activePowerSetpointMinValueError": "The active power value must be greater than 0",
+    "activePowerSetpointMaxValueError": "The active power value must be less than the maximum active power value",
     "PermanentCurrentLimitText1": "Permanent current limit 1",
     "PermanentCurrentLimitText2": "Permanent current limit 2",
 
@@ -1325,7 +1333,7 @@
     "ShortCircuitCharacteristics": "Features considered",
     "ShortCircuitVoltageProfileMode": "Initial voltage profile",
     "shortCircuitLoads": "Loads",
-    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitHvdc": "HVDC (VSC)",
     "shortCircuitShuntCompensators": "Shunt compensators",
     "shortCircuitNeutralPosition": "Tap position of ratio tap changers",
     "shortCircuitNominalVoltage": "Nominal voltage (kV)",
@@ -1433,5 +1441,6 @@
     "qualityCriterionResults": "Quality criterion",
     "qualityPerRegionResults": "Quality region",
     "StateEstimationStatus": "Status : ",
-    "StateEstimationQuality": "Quality : "
+    "StateEstimationQuality": "Quality : ",
+    "Or": "or"
 }

@@ -80,6 +80,8 @@
     "CBNone": "Aucun",
     "Map": "Carte",
     "NetworkVisualizations": "Images réseau",
+    "getNetworkVisualizationsParametersError": "Une erreur est survenue lors de la récupération des paramètres des images réseau",
+    "updateNetworkVisualizationsParametersError": "Une erreur est survenue lors de la mise a jour des paramètres des images réseau",
     "lineFullPath": "Afficher le chemin complet des lignes",
     "lineParallelPath": "Écarter les lignes superposées",
     "LineFlowMode": "Mode de représentation des flux sur les lignes",
@@ -911,7 +913,13 @@
     "PermanentCurrentLimitText": "IST",
     "permanentCurrentLimitMustBeGreaterThanZero": "La valeur IST doit être supérieure à 0",
     "qMaxAtNominalVMustBeGreaterThanZero": "La valeur Q installée à tension nominale doit être supérieure à 0",
-    "powerFactorNormalizedPercentage": "La valeur de Coefficient Q/P doit être inférieur à 1",
+    "powerFactorMaxValueError": "La valeur du coefficient Q/P doit être inférieure à 1",
+    "powerFactorMinValueError": "La valeur du coefficient Q/P doit être supérieure à -1",
+    "nominalVMustBeGreaterOrEqualToZero": "La valeur de la tension nominale DC doit être supérieure à 0",
+    "dcResistanceMustBeGreaterOrEqualToZero": "La valeur de la résistance DC doit être supérieure à 0",
+    "maxPMustBeGreaterOrEqualToZero": "La valeur de la puissance active max doit être supérieure à 0",
+    "activePowerSetpointMinValueError": "La valeur de la puissance active doit être supérieure à 0",
+    "activePowerSetpointMaxValueError": "La valeur de la puissance active doit être inférieure à la valeur de la puissance active max",
     "PermanentCurrentLimitText1": "IST 1",
     "PermanentCurrentLimitText2": "IST 2",
 
@@ -1323,7 +1331,7 @@
     "ShortCircuitCharacteristics": "Caractéristiques prises en compte",
     "ShortCircuitVoltageProfileMode": "Plan de tension initial",
     "shortCircuitLoads": "Charges",
-    "shortCircuitHvdc": "HVDC(VSC)",
+    "shortCircuitHvdc": "HVDC (VSC)",
     "shortCircuitShuntCompensators": "MCS",
     "shortCircuitNeutralPosition": "Prises courantes des régleurs en charge",
     "shortCircuitNominalVoltage": "Tension nominale (kV)",
@@ -1432,5 +1440,6 @@
     "qualityCriterionResults": "Critères qualité",
     "qualityPerRegionResults": "Qualité par région",
     "StateEstimationStatus": "Statut : ",
-    "StateEstimationQuality": "Qualité: "
+    "StateEstimationQuality": "Qualité: ",
+    "Or": "ou"
 }
