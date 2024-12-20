@@ -15,7 +15,7 @@ export interface CurrentLimitsData {
     permanentLimit?: number;
 }
 
-export interface TemporaryLimitData {
+export interface TemporaryLimitData extends Record<string, any> {
     name: string;
     acceptableDuration?: number;
     value?: number;

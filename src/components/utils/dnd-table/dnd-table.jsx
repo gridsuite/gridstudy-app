@@ -415,15 +415,17 @@ const DndTable = ({
     );
 };
 
-DndTable.prototype = {
+DndTable.propTypes = {
     arrayFormName: PropTypes.string.isRequired,
     useFieldArrayOutput: PropTypes.object.isRequired,
     columnsDefinition: PropTypes.object.isRequired,
     tableHeight: PropTypes.number.isRequired,
     allowedToAddRows: PropTypes.func,
     createRows: PropTypes.func.isRequired,
-    handleUploadButton: PropTypes.func.isRequired,
-    uploadButtonMessageId: PropTypes.string.isRequired,
+    handleUploadButton: PropTypes.func,
+    uploadButtonMessageId: PropTypes.string,
+    handleResetButton: PropTypes.func,
+    resetButtonMessageId: PropTypes.string,
     disabled: PropTypes.bool,
     withLeftButtons: PropTypes.bool,
     withAddRowsDialog: PropTypes.bool,

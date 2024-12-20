@@ -6,7 +6,6 @@
  */
 import { Box, Paper } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import DndTable from '../../utils/dnd-table/dnd-table.jsx';
 import { FloatInput } from '@gridsuite/commons-ui';
 import {
     CURRENT_LIMITS,
@@ -22,6 +21,8 @@ import { useCallback, useMemo } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 import { formatTemporaryLimits } from '../../utils/utils.js';
 import { isNodeBuilt } from '../../graph/util/model-functions';
+import { TemporaryLimitData } from './limits-type';
+import DndTable from '../../utils/dnd-table/dnd-table';
 
 const styles = {
     limitsBackground: {
@@ -33,21 +34,38 @@ const styles = {
     },
 };
 
-export const LimitsSidePane = ({
+export interface LimitsSidePaneProps {
+    indexLimitGroup: number;
+    limitsGroupFormName: string;
+    permanentCurrentLimitPreviousValue: any;
+    previousValues: any;
+    clearableFields: any;
+    currentNode: any;
+}
+
+export interface ILimitColumnDef {
+    label: string;
+    dataKey: string;
+    initialValue: boolean | string | string[] | number | null;
+    editable: boolean;
+    numeric: boolean;
+}
+
+export function LimitsSidePane({
     indexLimitGroup,
     limitsGroupFormName,
     permanentCurrentLimitPreviousValue,
     previousValues,
     clearableFields,
     currentNode,
-}) => {
+}: Readonly<LimitsSidePaneProps>) {
     const intl = useIntl();
     const { getValues } = useFormContext();
     const useFieldArrayOutputTemporaryLimits = useFieldArray({
         name: `${limitsGroupFormName}[${indexLimitGroup}].${CURRENT_LIMITS}.${TEMPORARY_LIMITS}`,
     });
 
-    const columnsDefinition = useMemo(() => {
+    const columnsDefinition: ILimitColumnDef[] = useMemo(() => {
         return [
             {
                 label: 'TemporaryLimitName',
@@ -76,18 +94,18 @@ export const LimitsSidePane = ({
         }));
     }, [intl]);
 
-    const newRowData = useMemo(() => {
-        const newRowData = {};
-        columnsDefinition.forEach((column) => (newRowData[column.dataKey] = column.initialValue));
+    const newRowData: TemporaryLimitData = useMemo(() => {
+        const newRowData: TemporaryLimitData = { name: '' };
+        columnsDefinition.forEach((column: ILimitColumnDef) => (newRowData[column.dataKey] = column.initialValue));
         return newRowData;
     }, [columnsDefinition]);
     const createRows = () => [newRowData];
 
     const temporaryLimitHasPreviousValue = useCallback(
-        (rowIndex, arrayFormName, temporaryLimits) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
             return (
                 formatTemporaryLimits(temporaryLimits)?.filter(
-                    (l) =>
+                    (l: TemporaryLimitData) =>
                         l.name === getValues(arrayFormName)[rowIndex]?.name &&
                         l.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
                 )?.length > 0
@@ -97,7 +115,7 @@ export const LimitsSidePane = ({
     );
 
     const shouldReturnPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
             return (
                 (temporaryLimitHasPreviousValue(rowIndex, arrayFormName, temporaryLimits) &&
                     column.dataKey === TEMPORARY_LIMIT_VALUE) ||
@@ -108,9 +126,9 @@ export const LimitsSidePane = ({
     );
 
     const findTemporaryLimit = useCallback(
-        (rowIndex, arrayFormName, temporaryLimits) => {
+        (rowIndex: number, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
             return temporaryLimits?.find(
-                (e) =>
+                (e: TemporaryLimitData) =>
                     e.name === getValues(arrayFormName)[rowIndex]?.name &&
                     e.acceptableDuration === getValues(arrayFormName)[rowIndex]?.acceptableDuration
             );
@@ -119,7 +137,7 @@ export const LimitsSidePane = ({
     );
 
     const getPreviousValue = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
             const formattedTemporaryLimits = formatTemporaryLimits(temporaryLimits);
             if (shouldReturnPreviousValue(rowIndex, column, arrayFormName, formattedTemporaryLimits)) {
                 const temporaryLimit = findTemporaryLimit(rowIndex, arrayFormName, formattedTemporaryLimits);
@@ -139,7 +157,7 @@ export const LimitsSidePane = ({
     );
 
     const disableTableCell = useCallback(
-        (rowIndex, column, arrayFormName, temporaryLimits) => {
+        (rowIndex: number, column: ILimitColumnDef, arrayFormName: string, temporaryLimits: TemporaryLimitData[]) => {
             // If the temporary limit is added, all fields are editable
             // otherwise, only the value field is editable
             return getValues(arrayFormName)[rowIndex]?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.ADDED
@@ -166,7 +184,7 @@ export const LimitsSidePane = ({
     );
 
     const isValueModified = useCallback(
-        (rowIndex, arrayFormName) => {
+        (rowIndex: number, arrayFormName: string) => {
             const temporaryLimit = getValues(arrayFormName)[rowIndex];
             if (
                 temporaryLimit?.modificationType === TEMPORARY_LIMIT_MODIFICATION_TYPE.MODIFIED &&
@@ -202,8 +220,9 @@ export const LimitsSidePane = ({
                     getPreviousValue={getPreviousValue}
                     isValueModified={isValueModified}
                     minRowsNumber={5}
+                    tableHeight={400}
                 />
             )}
         </Paper>
     );
-};
+}
