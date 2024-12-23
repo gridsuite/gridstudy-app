@@ -56,7 +56,7 @@ import { AppState, CurrentTreeNode, DiagramState } from 'redux/reducer';
 import { SLDMetadata, DiagramMetadata } from '@powsybl/network-viewer';
 
 // Returns a callback that returns a promise
-const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
+const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRootNetworkUuid: UUID) => {
     const { snackError } = useSnackMessage();
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
@@ -72,6 +72,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                 ? getVoltageLevelSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
+                      currentRootNetworkUuid,
                       voltageLevelId,
                       paramUseName,
                       centerName,
@@ -90,6 +91,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
                 ? getSubstationSingleLineDiagram(
                       studyUuid,
                       currentNode?.id,
+                      currentRootNetworkUuid,
                       voltageLevelId,
                       paramUseName,
                       centerName,
@@ -105,7 +107,7 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds: UUID[], depth: number) =>
             isNodeBuilt(currentNode)
-                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id, voltageLevelsIds, depth, initNadWithGeoData)
+                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id,currentRootNetworkUuid, voltageLevelsIds, depth, initNadWithGeoData)
                 : null,
         [studyUuid, currentNode, initNadWithGeoData]
     );
@@ -294,6 +296,7 @@ const styles = {
 interface DiagramPaneProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
     showInSpreadsheet: (equipment: { equipmentId: string | null; equipmentType: EquipmentType | null }) => void;
     visible: boolean;
 }
@@ -313,17 +316,18 @@ type DiagramView = {
     depth?: number;
     error?: string;
     nodeId?: UUID;
+    rootNetworkId?: UUID;
     additionalMetadata?: any;
     fetchSvg?: () => Promise<Partial<DiagramView>>;
 };
 
-export function DiagramPane({ studyUuid, currentNode, showInSpreadsheet, visible }: DiagramPaneProps) {
+export function DiagramPane({ studyUuid, currentNode, currentRootNetworkUuid, showInSpreadsheet, visible }: DiagramPaneProps) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const [views, setViews] = useState<DiagramView[]>([]);
     const fullScreenDiagram = useSelector((state: AppState) => state.fullScreenDiagram);
-    const createView = useDisplayView(studyUuid, currentNode);
+    const createView = useDisplayView(studyUuid, currentNode, currentRootNetworkUuid);
     const diagramStates = useSelector((state: AppState) => state.diagramStates);
     const networkAreaDiagramDepth = useSelector((state: AppState) => state.networkAreaDiagramDepth);
     const previousNetworkAreaDiagramDepth = useRef(networkAreaDiagramDepth);

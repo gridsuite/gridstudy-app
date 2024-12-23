@@ -30,6 +30,7 @@ const styles = {
 
 const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, equipmentType, loadFlowStatus }) => {
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
     const [equipmentInfo, setEquipmentInfo] = useState(null);
     const intl = useIntl();
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
@@ -39,6 +40,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeId,
+                currentRootNetworkUuid,
                 equipmentType,
                 EQUIPMENT_INFOS_TYPES.TOOLTIP.type,
                 equipmentId,

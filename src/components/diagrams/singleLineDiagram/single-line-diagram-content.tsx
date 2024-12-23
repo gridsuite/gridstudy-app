@@ -127,6 +127,8 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const diagramViewerRef = useRef<SingleLineDiagramViewer>();
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -488,6 +490,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 open={true}
                 studyUuid={studyUuid}
                 currentNode={currentNode}
+                currentRootNetworkUuid={currentRootNetworkUuid}
                 defaultIdValue={equipmentToModify?.equipmentId}
                 isUpdate={true}
                 onClose={() => closeModificationDialog()}
@@ -505,6 +508,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultIdValue={equipmentToDelete?.equipmentId}
                         isUpdate={true}
                         onClose={() => closeDeletionDialog()}

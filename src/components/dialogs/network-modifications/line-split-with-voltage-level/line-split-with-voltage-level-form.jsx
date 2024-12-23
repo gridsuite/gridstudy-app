@@ -24,6 +24,7 @@ import GridItem from '../../commons/grid-item';
 const LineSplitWithVoltageLevelForm = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onVoltageLevelCreationDo,
     voltageLevelToEdit,
     allVoltageLevelOptions,
@@ -43,7 +44,8 @@ const LineSplitWithVoltageLevelForm = ({
     };
 
     const lineToSplitForm = (
-        <LineToAttachOrSplitForm label={'LineToSplit'} studyUuid={studyUuid} currentNode={currentNode} />
+        <LineToAttachOrSplitForm label={'LineToSplit'} studyUuid={studyUuid} currentNode={currentNode}             currentRootNetworkUuid={currentRootNetworkUuid}
+        />
     );
 
     const newLine1IdField = <TextInput name={LINE1_ID} label={'Line1ID'} />;
@@ -71,6 +73,7 @@ const LineSplitWithVoltageLevelForm = ({
             newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 
@@ -110,6 +113,7 @@ const LineSplitWithVoltageLevelForm = ({
                     onClose={onVoltageLevelDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                 />

@@ -12,7 +12,6 @@ export function fetchSubstationPositions(studyUuid, currentNodeUuid, currentRoot
     console.info(
         `Fetching substation positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
-
     const paramsList =
         substationsIds && substationsIds.length > 0 ? '?' + getQueryParamsList(substationsIds, 'substationId') : '';
 

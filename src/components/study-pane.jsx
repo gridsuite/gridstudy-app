@@ -51,7 +51,7 @@ export const StudyView = {
     PARAMETERS: 'Parameters',
 };
 
-const StudyPane = ({ studyUuid, currentRootNetwork, currentNode, setErrorMessage, ...props }) => {
+const StudyPane = ({ studyUuid, currentRootNetworkUuid, currentNode, setErrorMessage, ...props }) => {
     const [tableEquipment, setTableEquipment] = useState({
         id: null,
         type: null,
@@ -82,7 +82,7 @@ const StudyPane = ({ studyUuid, currentRootNetwork, currentNode, setErrorMessage
                 <MapViewer
                     studyUuid={studyUuid}
                     currentNode={currentNode}
-                    currentRootNetwork={currentRootNetwork}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     view={props.view}
                     openDiagramView={openDiagramView}
                     tableEquipment={tableEquipment}
@@ -97,7 +97,7 @@ const StudyPane = ({ studyUuid, currentRootNetwork, currentNode, setErrorMessage
                     <TableWrapper
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        currentRootNetwork={currentRootNetwork}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         equipmentId={tableEquipment.id}
                         equipmentType={tableEquipment.type}
                         equipmentChanged={tableEquipment.changed}
@@ -116,7 +116,7 @@ const StudyPane = ({ studyUuid, currentRootNetwork, currentNode, setErrorMessage
                     <ResultViewTab
                         studyUuid={studyUuid}
                         currentNode={currentNode}
-                        currentRootNetwork={currentRootNetwork}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         openVoltageLevelDiagram={openVoltageLevelDiagram}
                         disabled={disabled}
                         view={props.view}

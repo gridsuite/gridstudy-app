@@ -28,6 +28,7 @@ interface PositionDiagramPaneProps {
     onClose: () => void;
     voltageLevelId?: { id: UUID };
     currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     studyUuid: UUID;
 }
 
@@ -36,6 +37,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     onClose,
     voltageLevelId,
     currentNodeUuid,
+    currentRootNetworkUuid,
     studyUuid,
 }) => {
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
@@ -55,6 +57,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
             getVoltageLevelSingleLineDiagram(
                 studyUuid,
                 currentNodeUuid,
+                currentRootNetworkUuid,
                 voltageLevelId?.id,
                 useName,
                 centerName,
@@ -63,7 +66,7 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
                 SLD_DISPLAY_MODE.FEEDER_POSITION,
                 language
             ),
-        [studyUuid, currentNodeUuid, voltageLevelId?.id, useName, centerName, diagonalName, componentLibrary, language]
+        [studyUuid, currentNodeUuid,currentRootNetworkUuid, voltageLevelId?.id, useName, centerName, diagonalName, componentLibrary, language]
     );
 
     useEffect(() => {

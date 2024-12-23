@@ -174,17 +174,18 @@ export const useFetchFiltersEnums = (): {
     });
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetwork = useSelector((state: AppState) => state.currentRootNetwork);
     const loadFlowStatus = useSelector((state: AppState) => state.computingStatus[ComputingType.LOAD_FLOW]);
 
     useEffect(() => {
-        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id) {
+        if (loadFlowStatus !== RunningStatus.SUCCEED || !studyUuid || !currentNode?.id || !currentRootNetwork) {
             return;
         }
 
         const filterTypes = ['computation-status', 'limit-types', 'branch-sides'];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, computingType.LOAD_FLOW, filterType)
+            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, currentRootNetwork, computingType.LOAD_FLOW, filterType)
         );
 
         setLoading(true);

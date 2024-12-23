@@ -20,21 +20,24 @@ import GridItem from '../../../commons/grid-item';
 export interface StaticVarCompensatorCreationFormProps {
     studyUuid: UUID;
     currentNode: { id: UUID };
+    currentRootNetworkUuid: UUID;
     tabIndex: number;
 }
 
 const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCreationFormProps> = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     tabIndex,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id,currentRootNetworkUuid);
     const connectivityForm = (
         <ConnectivityForm
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={null}
         />
     );
@@ -50,6 +53,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
                 <SetPointsLimitsForm
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     voltageLevelOptions={voltageLevelOptions}
                 />
             </Box>

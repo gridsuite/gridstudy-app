@@ -14,12 +14,13 @@ import { UUID } from 'crypto';
 interface UseSearchMatchingEquipmentsProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     inUpstreamBuiltParentNode?: boolean;
     equipmentType?: EquipmentType;
 }
 
 export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsProps) => {
-    const { studyUuid, nodeUuid, inUpstreamBuiltParentNode, equipmentType } = props;
+    const { studyUuid, nodeUuid,currentRootNetworkUuid, inUpstreamBuiltParentNode, equipmentType } = props;
 
     const { getUseNameParameterKey, getNameOrId } = useNameOrId();
 
@@ -28,6 +29,7 @@ export const useSearchMatchingEquipments = (props: UseSearchMatchingEquipmentsPr
             searchEquipmentsInfos(
                 studyUuid,
                 nodeUuid,
+                currentRootNetworkUuid,
                 newSearchTerm,
                 getUseNameParameterKey,
                 inUpstreamBuiltParentNode,

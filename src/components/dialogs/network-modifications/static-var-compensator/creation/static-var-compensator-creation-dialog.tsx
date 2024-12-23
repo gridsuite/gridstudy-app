@@ -162,6 +162,7 @@ const formSchema = yup
 const StaticVarCompensatorCreationDialog: FC<any> = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -463,13 +464,14 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 }}
                 {...dialogProps}
             >
-                <StaticVarCompensatorCreationForm studyUuid={studyUuid} currentNode={currentNode} tabIndex={tabIndex} />
+                <StaticVarCompensatorCreationForm studyUuid={studyUuid} currentNode={currentNode} currentRootNetworkUuid={currentRootNetworkUuid} tabIndex={tabIndex} />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     equipmentType={EquipmentType.STATIC_VAR_COMPENSATOR}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

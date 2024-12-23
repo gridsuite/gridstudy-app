@@ -13,6 +13,7 @@ import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, g
 export function getVoltageLevelSingleLineDiagram(
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     voltageLevelId,
     useName,
     centerLabel,
@@ -25,7 +26,7 @@ export function getVoltageLevelSingleLineDiagram(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     return (
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
@@ -44,7 +45,7 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
-export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
+export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid,currentRootNetworkUuid, voltageLevelId) {
     console.info(
         `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
@@ -52,7 +53,7 @@ export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, vol
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
     const fetchSubstationIdUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/substation-id' +
@@ -64,7 +65,7 @@ export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, vol
     return backendFetchText(fetchSubstationIdUrl);
 }
 
-export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, voltageLevelId) {
+export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, currentRootNetworkUuid,voltageLevelId) {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
@@ -72,7 +73,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNode
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
 
     const fetchBusbarSectionsUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
         encodeURIComponent(voltageLevelId) +
         '/buses-or-busbar-sections' +
@@ -87,6 +88,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNode
 export function getSubstationSingleLineDiagram(
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     substationId,
     useName,
     centerLabel,
@@ -99,7 +101,7 @@ export function getSubstationSingleLineDiagram(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
     return (
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +

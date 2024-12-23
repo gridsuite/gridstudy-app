@@ -44,6 +44,7 @@ const RegulatingTerminalForm = ({
     disabled = false,
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     voltageLevelOptions = [],
     equipmentSectionTypeDefaultValue,
     previousRegulatingTerminalValue,
@@ -58,7 +59,7 @@ const RegulatingTerminalForm = ({
 
     useEffect(() => {
         if (watchVoltageLevelId) {
-            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid, undefined, watchVoltageLevelId, true).then(
+            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid,currentRootNetworkUuid, undefined, watchVoltageLevelId, true).then(
                 (values) => {
                     setEquipmentsOptions(values);
                 }
@@ -66,7 +67,7 @@ const RegulatingTerminalForm = ({
         } else {
             setEquipmentsOptions([]);
         }
-    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid]);
+    }, [watchVoltageLevelId, id, studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const resetEquipment = useCallback(() => {
         setValue(`${id}.${EQUIPMENT}`, null);

@@ -137,7 +137,7 @@ export const Content = () => (
 const MapViewer = ({
     studyUuid,
     currentNode,
-    currentRootNetwork,
+    currentRootNetworkUuid,
     view,
     openDiagramView,
     tableEquipment,
@@ -322,7 +322,7 @@ const MapViewer = ({
                                     lineFlowAlertThreshold={lineFlowAlertThreshold}
                                     openVoltageLevel={openVoltageLevel}
                                     currentNode={currentNode}
-                                    currentRootNetwork={currentRootNetwork}
+                                    currentRootNetworkUuid={currentRootNetworkUuid}
                                     onChangeTab={onChangeTab}
                                     showInSpreadsheet={showInSpreadsheet}
                                     setErrorMessage={setErrorMessage}
@@ -350,6 +350,7 @@ const MapViewer = ({
                                 studyUuid={studyUuid}
                                 showInSpreadsheet={showInSpreadsheet}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 visible={
                                     !isInDrawingMode &&
                                     view === StudyView.MAP &&

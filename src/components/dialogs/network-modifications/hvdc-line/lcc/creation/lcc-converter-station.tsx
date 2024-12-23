@@ -211,6 +211,7 @@ interface LccConverterStationProps {
     id: string;
     stationLabel: string;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
     studyUuid: UUID;
 }
 
@@ -219,8 +220,9 @@ export default function LccConverterStation({
     stationLabel,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid
 }: Readonly<LccConverterStationProps>) {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id,currentRootNetworkUuid);
 
     const stationIdField = <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />;
 
@@ -233,6 +235,7 @@ export default function LccConverterStation({
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
         />
     );

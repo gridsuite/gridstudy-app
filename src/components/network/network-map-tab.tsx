@@ -84,7 +84,7 @@ type NetworkMapTabProps = {
     networkMapRef: React.RefObject<NetworkMapRef>;
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
-    currentRootNetwork: UUID;
+    currentRootNetworkUuid: UUID;
     visible: boolean;
     lineFullPath: boolean;
     lineParallelPath: boolean;
@@ -106,7 +106,7 @@ export const NetworkMapTab = ({
     /* redux can be use as redux*/
     studyUuid,
     currentNode,
-    currentRootNetwork,
+    currentRootNetworkUuid,
     /* visual*/
     visible,
     lineFullPath,
@@ -157,6 +157,7 @@ export const NetworkMapTab = ({
     const basicDataReady = mapEquipments && geoData;
 
     const lineFullPathRef = useRef<boolean>();
+    const rootNetworkRef = useRef<UUID>();
 
     /*
     This Set stores the geo data that are collected from the server AFTER the initialization.
@@ -426,7 +427,7 @@ export const NetworkMapTab = ({
             fetchEquipmentCB: (
                 studyUuid: UUID,
                 nodeId: UUID,
-                currentRootNetwork: UUID,
+                currentRootNetworkUuid: UUID,
                 equipmentIds: string[]
             ) => Promise<any[]>
         ) => {
@@ -434,9 +435,9 @@ export const NetworkMapTab = ({
                 return Promise.resolve([]);
             }
 
-            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, currentRootNetwork, notFoundEquipmentsIds);
+            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, currentRootNetworkUuid, notFoundEquipmentsIds);
         },
-        [studyUuid, currentRootNetwork]
+        [studyUuid, currentRootNetworkUuid]
     );
 
     const updateSubstationsTemporaryGeoData = useCallback(
@@ -588,7 +589,7 @@ export const NetworkMapTab = ({
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
 
-        const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetwork).then(
+        const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetworkUuid).then(
             (data) => {
                 console.info(`Received substations of study '${studyUuid}'...`);
                 const newGeoData = new GeoData(new Map(), geoDataRef.current?.linePositionsById || new Map());
@@ -600,7 +601,7 @@ export const NetworkMapTab = ({
 
         const linePositionsDone = !lineFullPath
             ? Promise.resolve()
-            : fetchLinePositions(studyUuid, rootNodeId, currentRootNetwork).then((data) => {
+            : fetchLinePositions(studyUuid, rootNodeId, currentRootNetworkUuid).then((data) => {
                   console.info(`Received lines of study '${studyUuid}'...`);
                   const newGeoData = new GeoData(geoDataRef.current?.substationPositionsById || new Map(), new Map());
                   newGeoData.setLinePositions(data);
@@ -623,7 +624,7 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [rootNodeId, currentRootNetwork, lineFullPath, studyUuid, dispatch, snackError]);
+    }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -661,7 +662,7 @@ export const NetworkMapTab = ({
         const gSMapEquipments = new GSMapEquipments(
             studyUuid,
             currentNode?.id,
-            currentRootNetwork,
+            currentRootNetworkUuid,
             snackError,
             dispatch,
             intlRef
@@ -669,7 +670,7 @@ export const NetworkMapTab = ({
         if (gSMapEquipments) {
             dispatch(resetMapReloaded());
         }
-    }, [currentNode, currentRootNetwork, dispatch, intlRef, snackError, studyUuid]);
+    }, [currentNode, currentRootNetworkUuid, dispatch, intlRef, snackError, studyUuid]);
 
     const reloadMapEquipments = useCallback(
         (currentNodeAtReloadCalling: CurrentTreeNode | null, substationsIds: UUID[] | undefined) => {
@@ -681,7 +682,7 @@ export const NetworkMapTab = ({
                 ? mapEquipments.reloadImpactedSubstationsEquipments(
                       studyUuid,
                       currentNode,
-                      currentRootNetwork,
+                      currentRootNetworkUuid,
                       substationsIds ?? null
                   )
                 : {
@@ -720,7 +721,7 @@ export const NetworkMapTab = ({
                 dispatch(setMapDataLoading(false));
             });
         },
-        [currentNode, currentRootNetwork, dispatch, mapEquipments, studyUuid]
+        [currentNode, currentRootNetworkUuid, dispatch, mapEquipments, studyUuid]
     );
 
     const updateMapEquipments = useCallback(
@@ -877,7 +878,25 @@ export const NetworkMapTab = ({
         if (isInitialized && lineFullPath && !prevLineFullPath) {
             loadGeoData();
         }
-    }, [isInitialized, lineFullPath, loadGeoData]);
+    }, [isInitialized, lineFullPath, loadGeoData, currentRootNetworkUuid]);
+
+
+    // Effect to handle changes in currentRootNetworkUuid
+useEffect(() => {
+    const prevRootNetworkPath = rootNetworkRef.current;
+    rootNetworkRef.current = currentRootNetworkUuid;
+
+    if (currentRootNetworkUuid && currentRootNetworkUuid !== prevRootNetworkPath) {
+        console.log("yyyyyyyyyyyyyy");
+        loadRootNodeGeoData();
+        // set initialized to false to trigger "missing geo-data fetching"
+        setInitialized(false);
+        // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
+        setIsRootNodeGeoDataLoaded(false);
+    }
+}, [currentRootNetworkUuid, loadRootNodeGeoData]);
+
+
 
     let choiceVoltageLevelsSubstation: EquipmentMap | null = null;
     if (choiceVoltageLevelsSubstationId) {

@@ -12,8 +12,8 @@ import { getStudyUrlWithNodeUuid } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 
-function getNetworkModificationUrl(studyUuid, nodeUuid) {
-    return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
+function getNetworkModificationUrl(studyUuid, nodeUuid, currentRootNetworkUuid) {
+    return getStudyUrlWithNodeUuid(studyUuid, nodeUuid,currentRootNetworkUuid) + '/network-modifications';
 }
 
 export function changeNetworkModificationOrder(studyUuid, nodeUuid, itemUuid, beforeUuid) {
@@ -1623,8 +1623,8 @@ export function deleteAttachingLine(
     });
 }
 
-export function deleteEquipment(studyUuid, nodeUuid, equipmentType, equipmentId, modificationUuid, equipmentInfos) {
-    let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+export function deleteEquipment(studyUuid, nodeUuid,currentRootNetworkUuid, equipmentType, equipmentId, modificationUuid, equipmentInfos) {
+    let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid,currentRootNetworkUuid);
 
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);

@@ -38,6 +38,7 @@ const RegulatingTerminalModificationDialog = ({
     data,
     previousData,
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     onModifyRegulatingTerminalGenerator,
     ...dialogProps
@@ -80,8 +81,8 @@ const RegulatingTerminalModificationDialog = ({
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNode.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id)
+        if (studyUuid && currentNode.id && currentRootNetworkUuid) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id,currentRootNetworkUuid)
                 .then((values) => {
                     setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
                 })
@@ -125,6 +126,7 @@ const RegulatingTerminalModificationDialog = ({
             voltageLevelOptions={voltageLevelOptions}
             equipmentSectionTypeDefaultValue={''}
             currentNodeUuid={currentNode.id}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             studyUuid={studyUuid}
             previousRegulatingTerminalValue={previousData?.regulatingTerminalVlId}
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(previousData)}

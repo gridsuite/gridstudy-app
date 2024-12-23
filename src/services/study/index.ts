@@ -134,6 +134,7 @@ export function fetchSvg(svgUrl: string) {
 export function searchEquipmentsInfos(
     studyUuid: UUID,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
@@ -150,7 +151,7 @@ export function searchEquipmentsInfos(
         urlSearchParams.append('equipmentType', equipmentType);
     }
     return backendFetchJson(
-        getStudyUrl(studyUuid) + '/nodes/' + encodeURIComponent(nodeUuid) + '/search?' + urlSearchParams.toString()
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/search?' + urlSearchParams.toString()
     );
 }
 

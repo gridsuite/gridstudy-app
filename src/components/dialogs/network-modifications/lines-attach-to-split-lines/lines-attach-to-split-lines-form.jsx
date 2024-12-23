@@ -23,17 +23,17 @@ import useVoltageLevelsListInfos from '../../../../hooks/use-voltage-levels-list
 import GridSection from '../../commons/grid-section';
 import GridItem from '../../commons/grid-item';
 
-const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
+const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid,currentRootNetworkUuid}) => {
     const currentNodeUuid = currentNode?.id;
     const [linesIds, setLinesIds] = useState([]);
 
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid,currentRootNetworkUuid);
 
     useEffect(() => {
-        fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'LINE', true).then((values) => {
+        fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'LINE', true).then((values) => {
             setLinesIds(values?.sort((a, b) => a.localeCompare(b)));
         });
-    }, [studyUuid, currentNodeUuid]);
+    }, [studyUuid, currentNodeUuid,currentRootNetworkUuid]);
 
     const lineToAttachTo1Field = (
         <AutocompleteInput
@@ -74,6 +74,7 @@ const LinesAttachToSplitLinesForm = ({ currentNode, studyUuid }) => {
             voltageLevelOptions={voltageLevelOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             withDirectionsInfos={false}
         />
     );

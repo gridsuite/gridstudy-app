@@ -37,9 +37,9 @@ import useVoltageLevelsListInfos from '../../../../../hooks/use-voltage-levels-l
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
+const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid,currentRootNetworkUuid);
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -65,6 +65,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 
@@ -132,6 +133,7 @@ const GeneratorCreationForm = ({ studyUuid, currentNode }) => {
             <SetPointsForm
                 studyUuid={studyUuid}
                 currentNodeUuid={currentNodeUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
                 voltageLevelOptions={voltageLevelOptions}
             />
 

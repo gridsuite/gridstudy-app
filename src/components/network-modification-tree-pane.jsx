@@ -132,7 +132,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
     const [activeNode, setActiveNode] = useState(null);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetwork = useSelector((state) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
 
@@ -399,7 +399,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const handleBuildNode = useCallback(
         (element) => {
-            buildNode(studyUuid, element.id, currentRootNetwork).catch((error) => {
+            buildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
                 if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
                     // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
                     let limit = error.message.split(/[: ]+/).pop();
@@ -415,7 +415,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                 }
             });
         },
-        [studyUuid, currentRootNetwork, snackError]
+        [studyUuid, currentRootNetworkUuid, snackError]
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);

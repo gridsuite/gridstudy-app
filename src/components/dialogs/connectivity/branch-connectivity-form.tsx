@@ -18,6 +18,7 @@ import GridItem from '../commons/grid-item';
 interface BranchConnectivityFormProps {
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
     isModification?: boolean;
     previousValues?: any;
 }
@@ -25,10 +26,11 @@ interface BranchConnectivityFormProps {
 const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = ({
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isModification = false,
     previousValues,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id,currentRootNetworkUuid);
     const id1 = `${CONNECTIVITY}.${CONNECTIVITY_1}`;
     const id2 = `${CONNECTIVITY}.${CONNECTIVITY_2}`;
 
@@ -37,6 +39,7 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             id={id1}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             isEquipmentModification={isModification}
@@ -52,6 +55,7 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
             id={id2}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             withPosition={true}
             isEquipmentModification={isModification}
