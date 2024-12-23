@@ -9,7 +9,7 @@ import type { ReadonlyDeep } from 'type-fest';
 import { DataType, FieldOptionType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
 import { EquipmentType, FieldType } from '@gridsuite/commons-ui';
-import { KILO_AMPERE, MICRO_SIEMENS } from '../../../../../utils/field-constants';
+import { KILO_AMPERE, MEGA_VAR, MICRO_SIEMENS, SIEMENS } from '../../../../../utils/field-constants';
 
 export const FIELD_OPTIONS = {
     PROPERTY: {
@@ -105,13 +105,13 @@ export const FIELD_OPTIONS = {
     MAX_SUSCEPTANCE: {
         id: FieldType.MAX_SUSCEPTANCE,
         label: 'maxSusceptance',
-        unit: MICRO_SIEMENS,
+        unit: SIEMENS,
         dataType: DataType.DOUBLE,
     },
     MAX_Q_AT_NOMINAL_V: {
         id: FieldType.MAX_Q_AT_NOMINAL_V,
         label: 'maxQAtNominalV',
-        unit: MICRO_SIEMENS,
+        unit: MEGA_VAR,
         dataType: DataType.DOUBLE,
     },
     NOMINAL_VOLTAGE: {
