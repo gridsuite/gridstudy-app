@@ -435,7 +435,12 @@ export const NetworkMapTab = ({
                 return Promise.resolve([]);
             }
 
-            return fetchEquipmentCB(studyUuid, currentNodeRef.current!.id, currentRootNetworkUuid, notFoundEquipmentsIds);
+            return fetchEquipmentCB(
+                studyUuid,
+                currentNodeRef.current!.id,
+                currentRootNetworkUuid,
+                notFoundEquipmentsIds
+            );
         },
         [studyUuid, currentRootNetworkUuid]
     );
@@ -588,6 +593,7 @@ export const NetworkMapTab = ({
     const loadRootNodeGeoData = useCallback(() => {
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
+        geoDataRef.current = null;
 
         const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetworkUuid).then(
             (data) => {
@@ -810,25 +816,32 @@ export const NetworkMapTab = ({
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
+            console.log('test 1');
             return;
         }
         if (disabled) {
+            console.log('test 2');
             return;
         }
         // as long as rootNodeId is not set, we don't fetch any geodata
         if (!rootNodeId) {
+            console.log('test 3');
             return;
         }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) {
+            console.log('test 4');
             return;
         }
         if (!isMapEquipmentsInitialized) {
+            console.log('test 5');
             // load default node map equipments
             loadMapEquipments();
         }
         if (!isRootNodeGeoDataLoaded) {
+            console.log('test 6');
+
             // load root node geodata
             loadRootNodeGeoData();
         }
@@ -880,23 +893,20 @@ export const NetworkMapTab = ({
         }
     }, [isInitialized, lineFullPath, loadGeoData, currentRootNetworkUuid]);
 
-
     // Effect to handle changes in currentRootNetworkUuid
-useEffect(() => {
-    const prevRootNetworkPath = rootNetworkRef.current;
-    rootNetworkRef.current = currentRootNetworkUuid;
+    useEffect(() => {
+        const prevRootNetworkPath = rootNetworkRef.current;
+        rootNetworkRef.current = currentRootNetworkUuid;
 
-    if (currentRootNetworkUuid && currentRootNetworkUuid !== prevRootNetworkPath) {
-        console.log("yyyyyyyyyyyyyy");
-        loadRootNodeGeoData();
-        // set initialized to false to trigger "missing geo-data fetching"
-        setInitialized(false);
-        // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
-        setIsRootNodeGeoDataLoaded(false);
-    }
-}, [currentRootNetworkUuid, loadRootNodeGeoData]);
-
-
+        if (currentRootNetworkUuid && currentRootNetworkUuid !== prevRootNetworkPath) {
+            console.log('yyyyyyyyyyyyyy');
+            loadRootNodeGeoData();
+            // set initialized to false to trigger "missing geo-data fetching"
+            setInitialized(false);
+            // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
+            setIsRootNodeGeoDataLoaded(false);
+        }
+    }, [currentRootNetworkUuid, loadRootNodeGeoData]);
 
     let choiceVoltageLevelsSubstation: EquipmentMap | null = null;
     if (choiceVoltageLevelsSubstationId) {
@@ -955,12 +965,20 @@ useEffect(() => {
         />
     );
 
+    console.log('EQUIPMENT TO DISPLAY', mapEquipments);
+    console.log('GEODATA TO DISPLAY', geoData);
+    console.log(
+        'COMPARE DISPLAY',
+        [...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])],
+        visible,
+        disabled
+    );
     const renderMap = () => (
         <NetworkMap
             ref={networkMapRef}
             mapEquipments={mapEquipments}
             geoData={geoData}
-            updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
+            updatedLines={[] /*[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]*/}
             displayOverlayLoader={!basicDataReady && mapDataLoading}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}

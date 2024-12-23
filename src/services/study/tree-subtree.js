@@ -137,9 +137,11 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
     return backendFetchJson(url);
 }
 
-export function fetchNetworkModificationTree(studyUuid) {
+export function fetchNetworkModificationTree(studyUuid, rootNetworkUuid) {
     console.info('Fetching network modification tree');
-    const url = getStudyUrl(studyUuid) + '/tree';
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('rootNetworkUuid', rootNetworkUuid);
+    const url = getStudyUrl(studyUuid) + '/tree?' + urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }

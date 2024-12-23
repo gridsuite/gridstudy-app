@@ -334,7 +334,7 @@ export function StudyContainer({ view, onChangeTab }) {
         },
         [snackInfo, snackWarning, snackError, userName]
     );
- 
+
     const connectNotifications = useCallback(
         (studyUuid) => {
             console.info(`Connecting to notifications '${studyUuid}'...`);
@@ -469,7 +469,7 @@ export function StudyContainer({ view, onChangeTab }) {
         (initIndexationStatus) => {
             console.info(`Loading network modification tree of study '${studyUuid}'...`);
 
-            const networkModificationTree = fetchNetworkModificationTree(studyUuid);
+            const networkModificationTree = fetchNetworkModificationTree(studyUuid, currentRootNetworkUuid);
 
             networkModificationTree
                 .then((tree) => {
