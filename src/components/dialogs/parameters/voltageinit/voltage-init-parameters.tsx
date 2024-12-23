@@ -34,6 +34,7 @@ import { getVoltageInitParameters } from 'services/voltage-init';
 import { mergeSx } from 'components/utils/functions';
 import { GeneralParameters } from './general-parameters';
 import {
+    DEFAULT_GENERAL_APPLY_MODIFICATIONS,
     GENERAL,
     initialVoltageInitParametersForm,
     TabValue,
@@ -71,10 +72,10 @@ export const VoltageInitParameters = ({
     }, []);
 
     const resetVoltageInitParameters = useCallback(() => {
-        updateVoltageInitParameters(
-            studyUuid,
-            fromVoltageInitParametersFormToParamValues(initialVoltageInitParametersForm)
-        ).catch((error) => {
+        updateVoltageInitParameters(studyUuid, {
+            applyModifications: DEFAULT_GENERAL_APPLY_MODIFICATIONS,
+            computationParameters: null,
+        }).catch((error) => {
             snackError({
                 messageTxt: error.message,
                 headerId: 'paramsChangingError',

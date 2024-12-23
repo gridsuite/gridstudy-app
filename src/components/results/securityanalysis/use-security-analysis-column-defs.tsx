@@ -20,7 +20,7 @@ import {
     securityAnalysisTableNmKContingenciesColumnsDefinition,
 } from './security-analysis-result-utils';
 import { SortPropsType } from 'hooks/use-aggrid-sort';
-import { FilterEnumsType, FilterPropsType } from '../../custom-aggrid/custom-aggrid-header.type';
+import { FilterEnumsType, FilterParams } from '../../custom-aggrid/custom-aggrid-header.type';
 import { useSelector } from 'react-redux';
 import { AppState } from 'redux/reducer';
 
@@ -37,7 +37,7 @@ export interface SecurityAnalysisFilterEnumsType {
 
 type UseSecurityAnalysisColumnsDefsProps = (
     sortProps: SortPropsType,
-    filterProps: FilterPropsType,
+    filterProps: FilterParams,
     filterEnums: SecurityAnalysisFilterEnumsType,
     resultType: RESULT_TYPE,
     openVoltageLevelDiagram: (id: string) => void
@@ -56,6 +56,15 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
 
     const nodeUuid = currentNode?.id;
+
+    const getEnumLabel = useCallback(
+        (value: string) =>
+            intl.formatMessage({
+                id: value,
+                defaultMessage: value,
+            }),
+        [intl]
+    );
 
     // for nmk views, click handler on subjectId cell
     const onClickNmKConstraint = useCallback(
@@ -138,7 +147,8 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterProps,
                     sortProps,
-                    filterEnums.nmk
+                    filterEnums.nmk,
+                    getEnumLabel
                 );
             case RESULT_TYPE.NMK_LIMIT_VIOLATIONS:
                 return securityAnalysisTableNmKConstraintsColumnsDefinition(
@@ -146,12 +156,19 @@ export const useSecurityAnalysisColumnsDefs: UseSecurityAnalysisColumnsDefsProps
                     SubjectIdRenderer,
                     filterProps,
                     sortProps,
-                    filterEnums.nmk
+                    filterEnums.nmk,
+                    getEnumLabel
                 );
             case RESULT_TYPE.N:
-                return securityAnalysisTableNColumnsDefinition(intl, sortProps, filterProps, filterEnums.n);
+                return securityAnalysisTableNColumnsDefinition(
+                    intl,
+                    sortProps,
+                    filterProps,
+                    filterEnums.n,
+                    getEnumLabel
+                );
         }
-    }, [resultType, intl, SubjectIdRenderer, filterProps, sortProps, filterEnums]);
+    }, [resultType, intl, SubjectIdRenderer, filterProps, sortProps, filterEnums.nmk, filterEnums.n, getEnumLabel]);
 
     return columnDefs;
 };
