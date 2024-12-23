@@ -130,9 +130,12 @@ export function updateTreeNode(studyUuid, node) {
     });
 }
 
-export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid) {
+export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid, rootNetworkUuid) {
     console.info('Fetching network modification tree node : ', nodeUuid);
-    const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid);
+    const urlSearchParams = new URLSearchParams();
+    urlSearchParams.set('rootNetworkUuid', rootNetworkUuid);
+    const url =
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeUuid) + '?' + urlSearchParams.toString();
     console.debug(url);
     return backendFetchJson(url);
 }

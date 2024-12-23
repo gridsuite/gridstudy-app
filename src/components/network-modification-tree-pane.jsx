@@ -150,13 +150,15 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
-            Promise.all(updatedNodesIds.map((nodeId) => fetchNetworkModificationTreeNode(studyUuid, nodeId))).then(
-                (values) => {
-                    dispatch(networkModificationTreeNodesUpdated(values));
-                }
-            );
+            Promise.all(
+                updatedNodesIds.map((nodeId) =>
+                    fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuid)
+                )
+            ).then((values) => {
+                dispatch(networkModificationTreeNodesUpdated(values));
+            });
         },
-        [studyUuid, dispatch]
+        [studyUuid, currentRootNetworkUuid, dispatch]
     );
 
     const isSubtreeImpacted = useCallback(
