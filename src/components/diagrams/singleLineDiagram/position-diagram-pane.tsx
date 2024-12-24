@@ -66,7 +66,17 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
                 SLD_DISPLAY_MODE.FEEDER_POSITION,
                 language
             ),
-        [studyUuid, currentNodeUuid,currentRootNetworkUuid, voltageLevelId?.id, useName, centerName, diagonalName, componentLibrary, language]
+        [
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            voltageLevelId?.id,
+            useName,
+            centerName,
+            diagonalName,
+            componentLibrary,
+            language,
+        ]
     );
 
     useEffect(() => {

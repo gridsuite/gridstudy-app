@@ -44,7 +44,7 @@ const LineCharacteristicsPane = ({
     isModification = false,
 }) => {
     const currentNodeUuid = currentNode.id;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const seriesResistanceField = (
         <FloatInput

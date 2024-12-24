@@ -36,7 +36,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
     const [localAnchorEl, setLocalAnchorEl] = useState(null);
     const [localAnchorPosition, setLocalAnchorPosition] = useState(null);
     const getNetworkElementInfos = useCallback(
-        (equipmentId, equipmentType, currentNodeId, studyUuid) => {
+        (equipmentId, equipmentType, currentNodeId, studyUuid, currentRootNetworkUuid) => {
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNodeId,
@@ -73,7 +73,7 @@ const EquipmentPopover = ({ studyUuid, anchorEl, anchorPosition, equipmentId, eq
         } else {
             setEquipmentInfo(null);
         }
-    }, [debouncedNetworkElementInfos, equipmentId, equipmentType, currentNode.id, studyUuid]);
+    }, [debouncedNetworkElementInfos, equipmentId, equipmentType, currentNode.id, studyUuid, currentRootNetworkUuid]);
 
     const handlePopoverClose = () => {
         setEquipmentInfo(null);

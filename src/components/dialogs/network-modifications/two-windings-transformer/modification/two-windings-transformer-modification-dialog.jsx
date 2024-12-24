@@ -162,6 +162,7 @@ export const TwoWindingsTransformerModificationDialogTab = {
  * @param studyUuid the study we are currently working on
  * @param defaultIdValue the default two windings transformer id
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The current root network uuid we are currently working on
  * @param isUpdate check if edition form
  * @param editData the data to edit
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -190,7 +191,7 @@ const TwoWindingsTransformerModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
     const { reset, getValues, setValue } = formMethods;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
         if (ratioTapChangerFormValues?.[REGULATING]?.value == null) {
@@ -526,7 +527,7 @@ const TwoWindingsTransformerModificationDialog = ({
             currentNode,
             studyUuid,
             currentNodeUuid,
-            currentRootNetworkUuid,
+            //        currentRootNetworkUuid,
             selectedId,
             fillRatioTapChangerRegulationAttributes,
             fillPhaseTapChangerRegulationAttributes,

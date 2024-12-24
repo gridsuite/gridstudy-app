@@ -464,7 +464,12 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
                 }}
                 {...dialogProps}
             >
-                <StaticVarCompensatorCreationForm studyUuid={studyUuid} currentNode={currentNode} currentRootNetworkUuid={currentRootNetworkUuid} tabIndex={tabIndex} />
+                <StaticVarCompensatorCreationForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    tabIndex={tabIndex}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}

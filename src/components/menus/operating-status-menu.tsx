@@ -116,7 +116,7 @@ const withOperatingStatusMenu =
                     }
                 });
             }
-        }, [studyUuid, currentNode?.id, equipmentType, equipment?.id]);
+        }, [studyUuid, currentNode?.id, currentRootNetworkUuid, equipmentType, equipment?.id]);
 
         const isNodeEditable = useMemo(
             function () {

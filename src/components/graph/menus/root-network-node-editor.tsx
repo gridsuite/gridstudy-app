@@ -125,7 +125,7 @@ export function isPartial(s1: number, s2: number) {
 const RootNetworkNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const rootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const { snackInfo, snackError } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);

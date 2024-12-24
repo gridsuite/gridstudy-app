@@ -128,7 +128,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
     const { snackError } = useSnackMessage();
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
-    
+
     const [modificationInProgress, setModificationInProgress] = useState(false);
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
     const [locallySwitchedBreaker, setLocallySwitchedBreaker] = useState<string>();
@@ -301,7 +301,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             dispatch(setComputingStatus(ComputingType.SHORT_CIRCUIT_ONE_BUS, RunningStatus.RUNNING));
             displayOneBusShortcircuitAnalysisLoader();
             dispatch(setComputationStarting(true));
-            startShortCircuitAnalysis(studyUuid, currentNode?.id, busId)
+            startShortCircuitAnalysis(studyUuid, currentNode?.id, currentRootNetworkUuid, busId)
                 .catch((error) => {
                     snackError({
                         messageTxt: error.message,
@@ -321,6 +321,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
             displayOneBusShortcircuitAnalysisLoader,
             studyUuid,
             currentNode?.id,
+            currentRootNetworkUuid,
             snackError,
             resetOneBusShortcircuitAnalysisLoader,
         ]

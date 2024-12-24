@@ -13,12 +13,12 @@ export default function useVoltageLevelsListInfos(studyUuid: UUID, nodeUuid: UUI
     const [voltageLevelsListInfos, setVoltageLevelsListInfos] = useState([]);
     useEffect(() => {
         if (studyUuid && nodeUuid && currentRootNetworkUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, nodeUuid,currentRootNetworkUuid).then((values) => {
+            fetchVoltageLevelsListInfos(studyUuid, nodeUuid, currentRootNetworkUuid).then((values) => {
                 setVoltageLevelsListInfos(
                     values.sort((a: { id: string }, b: { id: string }) => a.id.localeCompare(b.id))
                 );
             });
         }
-    }, [studyUuid, nodeUuid,currentRootNetworkUuid ]);
+    }, [studyUuid, nodeUuid, currentRootNetworkUuid]);
     return voltageLevelsListInfos;
 }

@@ -98,7 +98,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <LoadFlowResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Paper>
         );
@@ -110,7 +110,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <SecurityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     openVoltageLevelDiagram={openVoltageLevelDiagram}
                 />
             </Paper>
@@ -123,7 +123,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <VoltageInitResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Paper>
         );
@@ -135,20 +135,20 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <SensitivityAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id!}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Paper>
         );
     }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const renderNonEvacuatedEnergyResult = useMemo(() => {
-        console.log('ùùùùùù renderNonEvacuatedEnergyResult ',currentRootNetworkUuid);
+        console.log('ùùùùùù renderNonEvacuatedEnergyResult ', currentRootNetworkUuid);
         return (
             <Paper sx={styles.analysisResult}>
                 <NonEvacuatedEnergyResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id!}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Paper>
         );
@@ -160,7 +160,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <ShortCircuitAnalysisResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     view={view}
                 />
             </Paper>
@@ -173,7 +173,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <DynamicSimulationResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Paper>
         );
@@ -185,7 +185,7 @@ export const ResultViewTab: FunctionComponent<IResultViewTabProps> = ({
                 <StateEstimationResultTab
                     studyUuid={studyUuid}
                     nodeUuid={currentNode?.id}
-                    rootNetworkUuid={currentRootNetworkUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </Paper>
         );

@@ -185,7 +185,13 @@ export const useFetchFiltersEnums = (): {
         const filterTypes = ['computation-status', 'limit-types', 'branch-sides'];
 
         const promises = filterTypes.map((filterType) =>
-            fetchAvailableFilterEnumValues(studyUuid, currentNode.id, currentRootNetwork, computingType.LOAD_FLOW, filterType)
+            fetchAvailableFilterEnumValues(
+                studyUuid,
+                currentNode.id,
+                currentRootNetwork,
+                computingType.LOAD_FLOW,
+                filterType
+            )
         );
 
         setLoading(true);
@@ -203,7 +209,7 @@ export const useFetchFiltersEnums = (): {
             .finally(() => {
                 setLoading(false);
             });
-    }, [loadFlowStatus, studyUuid, currentNode?.id]);
+    }, [loadFlowStatus, studyUuid, currentNode?.id, currentRootNetwork]);
 
     return { loading, result, error };
 };

@@ -46,7 +46,7 @@ function getDisplayedColumns(params) {
     return params.api.columnModel.columnDefs.map((c) => c.headerComponentParams.displayName);
 }
 
-const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) => {
+const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
     const { snackError } = useSnackMessage();
     const intl = useIntl();
     const [nOrNkIndex, setNOrNkIndex] = useState(0);
@@ -111,7 +111,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) 
     const handleExportResultAsCsv = useCallback(() => {
         setIsCsvExportLoading(true);
         setIsCsvExportSuccessful(false);
-        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, {
+        exportSensitivityResultsAsCsv(studyUuid, nodeUuid, currentRootNetworkUuid, {
             csvHeaders: csvHeaders,
             resultTab: SensitivityResultTabs[nOrNkIndex].id,
             sensitivityFunctionType: FUNCTION_TYPES[sensiKind],
@@ -132,7 +132,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) 
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [snackError, studyUuid, nodeUuid, intl, nOrNkIndex, sensiKind, csvHeaders]);
+    }, [snackError, studyUuid, nodeUuid, currentRootNetworkUuid, intl, nOrNkIndex, sensiKind, csvHeaders]);
 
     return (
         <>
@@ -163,6 +163,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) 
                         sensiKind={sensiKind}
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         page={page}
                         setPage={setPage}
                         sortProps={{
@@ -194,6 +195,7 @@ const SensitivityAnalysisResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) 
 SensitivityAnalysisResultTab.propTypes = {
     studyUuid: PropTypes.string.isRequired,
     nodeUuid: PropTypes.string.isRequired,
+    currentRootNetworkUuid: PropTypes.string.isRequired,
 };
 
 export default SensitivityAnalysisResultTab;

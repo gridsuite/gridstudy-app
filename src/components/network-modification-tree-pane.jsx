@@ -76,7 +76,7 @@ const noSelectionForCopy = {
 
 const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
-export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) => {
+export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -132,7 +132,6 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
     const [activeNode, setActiveNode] = useState(null);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
-    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
     const currentNodeRef = useRef();
     currentNodeRef.current = currentNode;
 
@@ -389,14 +388,14 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const handleUnbuildNode = useCallback(
         (element) => {
-            unbuildNode(studyUuid, element.id).catch((error) => {
+            unbuildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'NodeUnbuildingError',
                 });
             });
         },
-        [studyUuid, snackError]
+        [studyUuid, currentRootNetworkUuid, snackError]
     );
 
     const handleBuildNode = useCallback(

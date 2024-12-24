@@ -50,7 +50,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         studyUuid: studyUuid,
         // @ts-expect-error TODO: manage null case
         nodeUuid: currentNode?.id,
-                // @ts-expect-error TODO: manage null case
+        // @ts-expect-error TODO: manage null case
 
         currentRootNetworkUuid,
         equipmentType: equipmentTypeFilter ?? undefined,
@@ -98,7 +98,15 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                     });
                 });
         },
-        [updateSearchTerm, closeDialog, showVoltageLevelDiagram, studyUuid, snackWarning, currentNode]
+        [
+            updateSearchTerm,
+            closeDialog,
+            showVoltageLevelDiagram,
+            studyUuid,
+            snackWarning,
+            currentNode,
+            currentRootNetworkUuid,
+        ]
     );
 
     const suffixRenderer = useCallback(

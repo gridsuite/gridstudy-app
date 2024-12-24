@@ -35,7 +35,7 @@ import GridItem from '../../../commons/grid-item';
 export interface SetPointsLimitsFormProps {
     studyUuid: UUID;
     currentNode: { id: UUID };
-    currentRootNetworkUuid:UUID;
+    currentRootNetworkUuid: UUID;
     voltageLevelOptions: any;
 }
 export const SetPointsLimitsForm: FunctionComponent<SetPointsLimitsFormProps> = ({

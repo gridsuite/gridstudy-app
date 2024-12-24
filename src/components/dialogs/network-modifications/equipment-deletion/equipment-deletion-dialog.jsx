@@ -111,7 +111,7 @@ const EquipmentDeletionDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, snackError, studyUuid]
+        [currentNodeUuid, editData, currentRootNetworkUuid, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {
@@ -137,7 +137,12 @@ const EquipmentDeletionDialog = ({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <DeleteEquipmentForm studyUuid={studyUuid} currentNode={currentNode} currentRootNetworkUuid={currentRootNetworkUuid} editData={editData} />
+                <DeleteEquipmentForm
+                    studyUuid={studyUuid}
+                    currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                    editData={editData}
+                />
             </ModificationDialog>
         </CustomFormProvider>
     );

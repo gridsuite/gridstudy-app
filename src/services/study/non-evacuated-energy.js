@@ -8,17 +8,27 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
-export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
-    console.info(`Running non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/non-evacuated-energy/run';
+export function startNonEvacuatedEnergy(studyUuid, currentRootNetworkUuid, currentNodeUuid) {
+    console.info(
+        `Running non evacuated energy analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/non-evacuated-energy/run';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid) {
-    console.info(`Stopping non evacuated energy analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/non-evacuated-energy/stop`;
+export function stopNonEvacuatedEnergy(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.info(
+        `Stopping non evacuated energy analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/non-evacuated-energy/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
@@ -37,9 +47,11 @@ export function fetchNonEvacuatedEnergyStatus(studyUuid, currentNodeUuid, curren
 }
 
 export function fetchNonEvacuatedEnergyResult(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
-    console.log(currentRootNetworkUuid,`*****Fetching non evacuated energy analysis result on ${studyUuid} and node ${currentNodeUuid}  ...`);
-
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid)}/non-evacuated-energy/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/non-evacuated-energy/result`;
     console.debug(url);
     return backendFetchJson(url);
 }

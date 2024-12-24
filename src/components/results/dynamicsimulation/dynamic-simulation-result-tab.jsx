@@ -25,7 +25,7 @@ const TAB_INDEX_TIMELINE = 'DynamicSimulationTabTimeline';
 const TAB_INDEX_STATUS = 'DynamicSimulationTabStatus';
 const TAB_INDEX_LOGS = 'ComputationResultsLogs';
 
-const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) => {
+const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, currentRootNetworkUuid }) => {
     const intl = useIntl();
 
     const [tabIndex, setTabIndex] = useState(TAB_INDEX_TIME_SERIES);
@@ -69,21 +69,21 @@ const DynamicSimulationResultTab = ({ studyUuid, nodeUuid, rootNetworkUuid }) =>
                     <DynamicSimulationResultTimeSeries
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
-                        rootNetworkUuid={rootNetworkUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_TIMELINE}>
                     <DynamicSimulationResultTimeline
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
-                        rootNetworkUuid={rootNetworkUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_STATUS}>
                     <DynamicSimulationResultSynthesis
                         studyUuid={studyUuid}
                         nodeUuid={nodeUuid}
-                        rootNetworkUuid={rootNetworkUuid}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                     />
                 </TabPanelLazy>
                 <TabPanelLazy selected={tabIndex === TAB_INDEX_LOGS}>

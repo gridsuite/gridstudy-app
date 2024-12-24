@@ -150,7 +150,13 @@ export default class GSMapEquipments extends MapEquipments {
             substationsIds,
             true
         );
-        const updatedLines = fetchLinesMapInfos(studyUuid, currentNode?.id, currentRootNetworkUuid, substationsIds, true);
+        const updatedLines = fetchLinesMapInfos(
+            studyUuid,
+            currentNode?.id,
+            currentRootNetworkUuid,
+            substationsIds,
+            true
+        );
         const updatedTieLines = fetchTieLinesMapInfos(
             studyUuid,
             currentNode?.id,

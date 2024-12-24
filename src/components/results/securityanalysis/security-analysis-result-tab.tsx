@@ -77,7 +77,7 @@ const styles = {
 export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabProps> = ({
     studyUuid,
     nodeUuid,
-    rootNetworkUuid,
+    currentRootNetworkUuid,
     openVoltageLevelDiagram,
 }) => {
     const intl = useIntl();
@@ -165,14 +165,25 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                 queryParams['filters'] = mapFieldsToColumnsFilter(updatedFilters, columnToFieldMapping);
             }
 
-            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, rootNetworkUuid, queryParams);
+            return fetchSecurityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, queryParams);
         },
-        [page, tabIndex, rowsPerPage, sortConfig, filterSelector, resultType, intl, enableDeveloperMode]
+        [
+            page,
+            tabIndex,
+            rowsPerPage,
+            sortConfig,
+            filterSelector,
+            currentRootNetworkUuid,
+            resultType,
+            intl,
+            enableDeveloperMode,
+        ]
     );
 
     const [securityAnalysisResult, isLoadingResult, setResult] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchSecurityAnalysisResultWithQueryParams,
         SECURITY_ANALYSIS_RESULT_INVALIDATIONS,
         null

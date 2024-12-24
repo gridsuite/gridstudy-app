@@ -81,7 +81,15 @@ function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, n
     return false;
 }
 
-export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, defaultValue, resultConversion) {
+export function useNodeData(
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+    fetcher,
+    invalidations,
+    defaultValue,
+    resultConversion
+) {
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
@@ -93,7 +101,7 @@ export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, default
         nodeUuidRef.current = nodeUuid;
         setIsPending(true);
         setErrorMessage(undefined);
-        fetcher(studyUuid, nodeUuid)
+        fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((res) => {
                 if (nodeUuidRef.current === nodeUuid) {
                     setResult(resultConversion ? resultConversion(res) : res);
@@ -104,7 +112,7 @@ export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, default
                 setResult(RunningStatus.FAILED);
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
+    }, [nodeUuid, fetcher, currentRootNetworkUuid, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
@@ -144,7 +152,6 @@ function useStudy(studyUuidRequest) {
                 fetchRootNetworks(studyUuidRequest)
                     .then((rootNetworks) => {
                         if (rootNetworks && rootNetworks.length > 0) {
-                            console.log('======== rootNetworks[0].rootnetworkUuid', rootNetworks[0].rootNetworkUuid);
                             // Validate that currentRootNetwork is set
 
                             dispatch(setCurrentRootNetwork(rootNetworks[0].rootNetworkUuid));
@@ -622,7 +629,7 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (
             (studyUuid && currentRootNetworkUuid && !isStudyNetworkFound) ||
-            (currentRootNetworkRef.current && currentRootNetworkRef.current != currentRootNetworkUuid)
+            (currentRootNetworkRef.current && currentRootNetworkRef.current !== currentRootNetworkUuid)
         ) {
             console.log('RELOADING CHECK NETWORK', currentRootNetworkUuid);
             checkNetworkExistenceAndRecreateIfNotFound();
@@ -675,7 +682,7 @@ export function StudyContainer({ view, onChangeTab }) {
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
         if (
-            previousCurrentRootNetwork == currentRootNetworkUuid &&
+            previousCurrentRootNetwork === currentRootNetworkUuid &&
             isSameNode(previousCurrentNode, currentNode) &&
             isNodeBuilt(previousCurrentNode)
         ) {

@@ -151,7 +151,6 @@ const MapViewer = ({
     const lineFullPath = useSelector((state) => state[PARAM_LINE_FULL_PATH]);
     const lineParallelPath = useSelector((state) => state[PARAM_LINE_PARALLEL_PATH]);
     const [shouldOpenSelectionCreationPanel, setShouldOpenSelectionCreationPanel] = useState(false);
-
     const lineFlowMode = useSelector((state) => state[PARAM_LINE_FLOW_MODE]);
 
     const lineFlowColorMode = useSelector((state) => state[PARAM_LINE_FLOW_COLOR_MODE]);
@@ -275,7 +274,11 @@ const MapViewer = ({
                     }}
                 >
                     <ReactFlowProvider>
-                        <NetworkModificationTreePane studyUuid={studyUuid} studyMapTreeDisplay={studyDisplayMode} />
+                        <NetworkModificationTreePane
+                            studyUuid={studyUuid}
+                            studyMapTreeDisplay={studyDisplayMode}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
+                        />
                     </ReactFlowProvider>
                 </Box>
                 {/* Map */}

@@ -151,7 +151,9 @@ export function searchEquipmentsInfos(
         urlSearchParams.append('equipmentType', equipmentType);
     }
     return backendFetchJson(
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/search?' + urlSearchParams.toString()
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/search?' +
+            urlSearchParams.toString()
     );
 }
 

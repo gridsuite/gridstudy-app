@@ -30,7 +30,7 @@ const BranchConnectivityForm: FunctionComponent<BranchConnectivityFormProps> = (
     isModification = false,
     previousValues,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const id1 = `${CONNECTIVITY}.${CONNECTIVITY_1}`;
     const id2 = `${CONNECTIVITY}.${CONNECTIVITY_2}`;
 

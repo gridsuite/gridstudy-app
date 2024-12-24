@@ -82,7 +82,7 @@ const RegulatingTerminalModificationDialog = ({
 
     useEffect(() => {
         if (studyUuid && currentNode.id && currentRootNetworkUuid) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id,currentRootNetworkUuid)
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid)
                 .then((values) => {
                     setVoltageLevelOptions(values.sort((a, b) => a.id.localeCompare(b.id)));
                 })
@@ -90,7 +90,7 @@ const RegulatingTerminalModificationDialog = ({
                     console.error('Error fetching voltage levels: ', error);
                 });
         }
-    }, [studyUuid, currentNode]);
+    }, [studyUuid, currentNode, currentRootNetworkUuid]);
 
     const onSubmit = useCallback(
         (voltageRegulationGenerator) => {
@@ -163,6 +163,7 @@ RegulatingTerminalModificationDialog.propTypes = {
     data: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     onModifyRegulatingTerminalGenerator: PropTypes.func,
 };
 

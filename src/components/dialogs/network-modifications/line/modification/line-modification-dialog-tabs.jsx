@@ -11,7 +11,7 @@ import LimitsPane from '../../../limits/limits-pane';
 import LineCharacteristicsPane from '../characteristics-pane/line-characteristics-pane';
 import BranchConnectivityForm from '../../../connectivity/branch-connectivity-form';
 
-const LineModificationDialogTabs = ({ studyUuid, currentNode,currentRootNetworkUuid, lineToModify, tabIndex }) => {
+const LineModificationDialogTabs = ({ studyUuid, currentNode, currentRootNetworkUuid, lineToModify, tabIndex }) => {
     return (
         <>
             <Box hidden={tabIndex !== LineModificationDialogTab.CONNECTIVITY_TAB} p={1}>

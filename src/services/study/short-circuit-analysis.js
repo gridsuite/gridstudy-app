@@ -18,24 +18,29 @@ function getShortCircuitUrl() {
     return `${PREFIX_SHORT_CIRCUIT_SERVER_QUERIES}/v1/`;
 }
 
-export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, busId) {
-    console.info(`Running short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function startShortCircuitAnalysis(studyUuid, currentNodeUuid, currentRootNetworkUuid, busId) {
+    console.info(
+        `Running short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     const urlSearchParams = new URLSearchParams();
     busId && urlSearchParams.append('busId', busId);
 
     const startShortCircuitAnalysisUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/shortcircuit/run?' +
         urlSearchParams.toString();
     console.debug(startShortCircuitAnalysisUrl);
     return backendFetch(startShortCircuitAnalysisUrl, { method: 'put' });
 }
 
-export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid) {
-    console.info(`Stopping short circuit analysis on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function stopShortCircuitAnalysis(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.info(
+        `Stopping short circuit analysis on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
     const stopShortCircuitAnalysisUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/shortcircuit/stop';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/shortcircuit/stop';
     console.debug(stopShortCircuitAnalysisUrl);
     return backendFetch(stopShortCircuitAnalysisUrl, { method: 'put' });
 }
@@ -69,11 +74,11 @@ export function fetchOneBusShortCircuitAnalysisStatus(studyUuid, currentNodeUuid
     );
 }
 
-export function fetchShortCircuitAnalysisResult({ studyUuid, currentNodeUuid, type }) {
+export function fetchShortCircuitAnalysisResult({ studyUuid, currentNodeUuid, currentRootNetworkUuid, type }) {
     const analysisType = getShortCircuitAnalysisTypeFromEnum(type);
 
     console.info(
-        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching ${analysisType} short circuit analysis result on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const urlSearchParams = new URLSearchParams();
     if (analysisType) {
@@ -81,7 +86,7 @@ export function fetchShortCircuitAnalysisResult({ studyUuid, currentNodeUuid, ty
     }
 
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/shortcircuit/result?' +
         urlSearchParams.toString();
     console.debug(url);

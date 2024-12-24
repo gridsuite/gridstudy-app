@@ -78,8 +78,8 @@ const useHvdcLccDeletion = () => {
     );
 
     const specificUpdate = useCallback(
-        (studyUuid, nodeId,rootNetworkUuid, equipmentId, editData) => {
-            fetchHvdcLineWithShuntCompensators(studyUuid, nodeId,rootNetworkUuid, equipmentId)
+        (studyUuid, nodeId, currentRootNetworkUuid, equipmentId, editData) => {
+            fetchHvdcLineWithShuntCompensators(studyUuid, nodeId, currentRootNetworkUuid, equipmentId)
                 .then((hvdcLineData) => {
                     updateMcsLists(hvdcLineData, editData);
                 })

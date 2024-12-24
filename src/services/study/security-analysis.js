@@ -8,7 +8,6 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
 
-
 export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetwork, contingencyListNames) {
     console.info(
         `Running security analysis on ${studyUuid} on root network ${currentRootNetwork} and node ${currentNodeUuid} ...`

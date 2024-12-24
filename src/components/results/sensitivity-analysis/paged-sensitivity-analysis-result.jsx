@@ -34,6 +34,7 @@ const PagedSensitivityAnalysisResult = ({
     sensiKind,
     studyUuid,
     nodeUuid,
+    currentRootNetworkUuid,
     page,
     setPage,
     sortProps,
@@ -110,7 +111,7 @@ const PagedSensitivityAnalysisResult = ({
             functionType: FUNCTION_TYPES[sensiKind],
         };
 
-        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisFilterOptions(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 setOptions(res);
             })
@@ -122,7 +123,7 @@ const PagedSensitivityAnalysisResult = ({
                     }),
                 });
             });
-    }, [nOrNkIndex, sensiKind, studyUuid, nodeUuid, snackError, intl]);
+    }, [nOrNkIndex, sensiKind, studyUuid, currentRootNetworkUuid, nodeUuid, snackError, intl]);
 
     const fetchResult = useCallback(() => {
         const sortSelector = sortConfig?.length
@@ -150,7 +151,7 @@ const PagedSensitivityAnalysisResult = ({
             ...sortSelector,
         };
         setIsLoading(true);
-        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, selector)
+        fetchSensitivityAnalysisResult(studyUuid, nodeUuid, currentRootNetworkUuid, selector)
             .then((res) => {
                 const { filteredSensitivitiesCount = 0 } = res || {};
 
@@ -168,7 +169,19 @@ const PagedSensitivityAnalysisResult = ({
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [nOrNkIndex, sensiKind, page, rowsPerPage, filterSelector, sortConfig, studyUuid, nodeUuid, snackError, intl]);
+    }, [
+        nOrNkIndex,
+        sensiKind,
+        page,
+        rowsPerPage,
+        filterSelector,
+        sortConfig,
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        snackError,
+        intl,
+    ]);
 
     useEffect(() => {
         if (sensiStatus === RunningStatus.RUNNING) {

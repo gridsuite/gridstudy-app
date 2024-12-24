@@ -49,14 +49,12 @@ export default function CreateCaseDialog({ onClose, open }: Readonly<CreateCaseD
         resolver: yupResolver<IFormData>(createCaseDialogFormValidationSchema),
     });
 
-const {
-    formState: { errors, isValid },
-    getValues, // This should be destructured directly from formMethods
-} = createCaseFormMethods;
+    const {
+        formState: { errors, isValid },
+        getValues, // This should be destructured directly from formMethods
+    } = createCaseFormMethods;
 
-     const isFormValid = isObjectEmpty(errors) && isValid && getValues(FieldConstants.CASE_FILE) !== null;
-
- 
+    const isFormValid = isObjectEmpty(errors) && isValid && getValues(FieldConstants.CASE_FILE) !== null;
 
     const userId = useSelector((state: AppState) => state.user?.profile.sub);
 

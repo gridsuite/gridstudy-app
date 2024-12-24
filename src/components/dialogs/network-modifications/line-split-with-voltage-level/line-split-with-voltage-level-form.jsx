@@ -44,7 +44,11 @@ const LineSplitWithVoltageLevelForm = ({
     };
 
     const lineToSplitForm = (
-        <LineToAttachOrSplitForm label={'LineToSplit'} studyUuid={studyUuid} currentNode={currentNode}             currentRootNetworkUuid={currentRootNetworkUuid}
+        <LineToAttachOrSplitForm
+            label={'LineToSplit'}
+            studyUuid={studyUuid}
+            currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 

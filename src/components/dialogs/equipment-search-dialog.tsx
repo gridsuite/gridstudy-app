@@ -45,7 +45,7 @@ const EquipmentSearchDialog: FC<EquipmentSearchDialogProps> = ({
     onSelectionChange,
     equipmentType,
     currentNodeUuid,
-    currentRootNetworkUuid
+    currentRootNetworkUuid,
 }) => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);

@@ -32,8 +32,7 @@ const TwoWindingsTransformerCreationCharacteristicsPane = ({
     currentRootNetworkUuid,
     tabIndex,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id,                    currentRootNetworkUuid 
-        );
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
     const connectivity1Field = (
         <ConnectivityForm
             id={`${id}.${CONNECTIVITY_1}`}

@@ -39,7 +39,7 @@ import GridSection from '../../../commons/grid-section';
 
 const GeneratorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const generatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />

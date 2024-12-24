@@ -45,7 +45,7 @@ export function getVoltageLevelSingleLineDiagram(
     );
 }
 
-export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid,currentRootNetworkUuid, voltageLevelId) {
+export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId) {
     console.info(
         `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
@@ -65,7 +65,12 @@ export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid,curr
     return backendFetchText(fetchSubstationIdUrl);
 }
 
-export function fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, currentRootNetworkUuid,voltageLevelId) {
+export function fetchBusesOrBusbarSectionsForVoltageLevel(
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    voltageLevelId
+) {
     console.info(
         `Fetching buses or busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );

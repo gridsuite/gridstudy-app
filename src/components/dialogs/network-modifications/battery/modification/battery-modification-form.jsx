@@ -27,7 +27,7 @@ import GridSection from '../../../commons/grid-section';
 const BatteryModificationForm = ({
     studyUuid,
     currentNode,
-    rootNetworkUuid,
+    currentRootNetworkUuid,
     batteryToModify,
     updatePreviousReactiveCapabilityCurveTable,
     equipmentId,
@@ -101,7 +101,7 @@ const BatteryModificationForm = ({
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
-            currentRootNetworkUuid={rootNetworkUuid}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             isEquipmentModification={true}
             previousValues={batteryToModify}
         />

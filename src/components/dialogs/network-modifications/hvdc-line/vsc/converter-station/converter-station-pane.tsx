@@ -40,7 +40,7 @@ interface VscConverterStationPaneProps {
     stationLabel: string;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
-    currentRootNetworkUuid:UUID;
+    currentRootNetworkUuid: UUID;
     isModification?: boolean;
     previousValues?: ConverterStationElementModificationInfos | null;
     updatePreviousReactiveCapabilityCurveTableConverterStation?: UpdateReactiveCapabilityCurveTable;
@@ -70,7 +70,7 @@ const ConverterStationPane: FunctionComponent<VscConverterStationPaneProps> = ({
         }
     });
 
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const generatorIdField = isModification ? (
         <TextField

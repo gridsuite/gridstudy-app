@@ -59,11 +59,16 @@ const RegulatingTerminalForm = ({
 
     useEffect(() => {
         if (watchVoltageLevelId) {
-            fetchVoltageLevelEquipments(studyUuid, currentNodeUuid,currentRootNetworkUuid, undefined, watchVoltageLevelId, true).then(
-                (values) => {
-                    setEquipmentsOptions(values);
-                }
-            );
+            fetchVoltageLevelEquipments(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                undefined,
+                watchVoltageLevelId,
+                true
+            ).then((values) => {
+                setEquipmentsOptions(values);
+            });
         } else {
             setEquipmentsOptions([]);
         }

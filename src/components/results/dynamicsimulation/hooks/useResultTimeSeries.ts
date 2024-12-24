@@ -14,10 +14,11 @@ import { TimeSeriesMetadata } from '../types/dynamic-simulation-result.type';
 import { dynamicSimulationResultInvalidations } from '../utils/dynamic-simulation-result-utils';
 import { fetchDynamicSimulationTimeSeriesMetadata } from '../../../../services/dynamic-simulation';
 
-const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID) => {
+const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID, currentRootNetworkUuid: UUID) => {
     const [result, isLoading] = useNodeData(
         studyUuid,
         nodeUuid,
+        currentRootNetworkUuid,
         fetchDynamicSimulationTimeSeriesMetadata,
         dynamicSimulationResultInvalidations,
         null,

@@ -30,7 +30,7 @@ const StaticVarCompensatorCreationForm: FunctionComponent<StaticVarCompensatorCr
     currentRootNetworkUuid,
     tabIndex,
 }) => {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid);
     const connectivityForm = (
         <ConnectivityForm
             voltageLevelOptions={voltageLevelOptions}

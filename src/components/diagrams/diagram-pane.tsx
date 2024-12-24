@@ -82,7 +82,16 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                       language
                   )
                 : null,
-        [currentNode, studyUuid, paramUseName, centerName, diagonalName, componentLibrary, language]
+        [
+            currentNode,
+            studyUuid,
+            currentRootNetworkUuid,
+            paramUseName,
+            centerName,
+            diagonalName,
+            componentLibrary,
+            language,
+        ]
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
@@ -101,15 +110,32 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                       language
                   )
                 : null,
-        [centerName, componentLibrary, diagonalName, studyUuid, substationLayout, paramUseName, currentNode, language]
+        [
+            centerName,
+            componentLibrary,
+            diagonalName,
+            studyUuid,
+            substationLayout,
+            paramUseName,
+            currentNode,
+            currentRootNetworkUuid,
+            language,
+        ]
     );
     const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds: UUID[], depth: number) =>
             isNodeBuilt(currentNode)
-                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id,currentRootNetworkUuid, voltageLevelsIds, depth, initNadWithGeoData)
+                ? getNetworkAreaDiagramUrl(
+                      studyUuid,
+                      currentNode?.id,
+                      currentRootNetworkUuid,
+                      voltageLevelsIds,
+                      depth,
+                      initNadWithGeoData
+                  )
                 : null,
-        [studyUuid, currentNode, initNadWithGeoData]
+        [studyUuid, currentNode, currentRootNetworkUuid, initNadWithGeoData]
     );
 
     // this callback returns a promise
@@ -321,7 +347,13 @@ type DiagramView = {
     fetchSvg?: () => Promise<Partial<DiagramView>>;
 };
 
-export function DiagramPane({ studyUuid, currentNode, currentRootNetworkUuid, showInSpreadsheet, visible }: DiagramPaneProps) {
+export function DiagramPane({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    showInSpreadsheet,
+    visible,
+}: DiagramPaneProps) {
     const dispatch = useDispatch();
     const intl = useIntl();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);

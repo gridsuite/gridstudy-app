@@ -115,7 +115,7 @@ export const useReportFetcher = (
             }
             return Promise.resolve(undefined);
         },
-        [currentNode, fetch, computingAndNetworkModificationType, studyUuid]
+        [currentNode, currentRootNetwork, fetch, computingAndNetworkModificationType, studyUuid]
     );
 
     const fetchReportLogs = useCallback(
@@ -126,16 +126,32 @@ export const useReportFetcher = (
             let fetchPromise: (severityList: string[], reportId: string) => Promise<ReportLog[]>;
             if (reportType === ReportType.GLOBAL) {
                 fetchPromise = (severityList: string[]) =>
-                    fetchNodeReportLogs(studyUuid, currentNode!.id,currentRootNetwork, null, severityList, messageFilter, true);
+                    fetchNodeReportLogs(
+                        studyUuid,
+                        currentNode!.id,
+                        currentRootNetwork,
+                        null,
+                        severityList,
+                        messageFilter,
+                        true
+                    );
             } else {
                 fetchPromise = (severityList: string[], reportId: string) =>
-                    fetchNodeReportLogs(studyUuid, currentNode!.id,currentRootNetwork, reportId, severityList, messageFilter, false);
+                    fetchNodeReportLogs(
+                        studyUuid,
+                        currentNode!.id,
+                        currentRootNetwork,
+                        reportId,
+                        severityList,
+                        messageFilter,
+                        false
+                    );
             }
             return fetchPromise(severityList, reportId).then((r) => {
                 return mapReportLogs(prettifyReportLogMessage(r, nodesNames));
             });
         },
-        [currentNode, studyUuid, nodesNames]
+        [currentNode, currentRootNetwork, studyUuid, nodesNames]
     );
 
     return [isLoading, fetchRawParentReport, fetchReportLogs];

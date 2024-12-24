@@ -1128,7 +1128,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     });
             }
         }
-    }, [lastModifiedEquipment, currentNode.id, studyUuid,currentRootNetworkUuid, studyUpdatedForce, formatFetchedEquipmentHandler, dispatch]);
+    }, [
+        lastModifiedEquipment,
+        currentNode.id,
+        studyUuid,
+        currentRootNetworkUuid,
+        studyUpdatedForce,
+        formatFetchedEquipmentHandler,
+        dispatch,
+    ]);
 
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(

@@ -220,9 +220,9 @@ export default function LccConverterStation({
     stationLabel,
     currentNode,
     studyUuid,
-    currentRootNetworkUuid
+    currentRootNetworkUuid,
 }: Readonly<LccConverterStationProps>) {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id,currentRootNetworkUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const stationIdField = <TextInput name={`${id}.${CONVERTER_STATION_ID}`} label={'converterStationId'} />;
 

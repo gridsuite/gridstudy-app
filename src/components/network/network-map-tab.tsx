@@ -261,6 +261,7 @@ export const NetworkMapTab = ({
                         open={true}
                         studyUuid={studyUuid}
                         currentNode={currentNode}
+                        currentRootNetworkUuid={currentRootNetworkUuid}
                         defaultIdValue={equipmentToModify?.id}
                         isUpdate={true}
                         onClose={() => closeModificationDialog()}
@@ -967,6 +968,8 @@ export const NetworkMapTab = ({
 
     console.log('EQUIPMENT TO DISPLAY', mapEquipments);
     console.log('GEODATA TO DISPLAY', geoData);
+    console.log('lineFullPath TO DISPLAY', lineFullPath);
+    console.log('lineFullPath TO DISPLAY', lineFullPath);
     console.log(
         'COMPARE DISPLAY',
         [...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])],
@@ -978,7 +981,7 @@ export const NetworkMapTab = ({
             ref={networkMapRef}
             mapEquipments={mapEquipments}
             geoData={geoData}
-            updatedLines={[] /*[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]*/}
+            updatedLines={[...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])]}
             displayOverlayLoader={!basicDataReady && mapDataLoading}
             filteredNominalVoltages={filteredNominalVoltages}
             labelsZoomThreshold={LABELS_ZOOM_THRESHOLD}

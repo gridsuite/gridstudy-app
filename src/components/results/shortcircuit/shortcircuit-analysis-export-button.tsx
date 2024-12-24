@@ -18,14 +18,14 @@ import { BranchSide } from 'components/utils/constants';
 interface ShortCircuitExportButtonProps {
     studyUuid: UUID;
     nodeUuid: UUID;
-    rootNetworkUuid: UUID;
+    currentRootNetworkUuid: UUID;
     csvHeaders?: string[];
     analysisType: number;
     disabled?: boolean;
 }
 
 export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButtonProps> = (props) => {
-    const { studyUuid, nodeUuid, rootNetworkUuid, csvHeaders, disabled = false, analysisType } = props;
+    const { studyUuid, nodeUuid, currentRootNetworkUuid, csvHeaders, disabled = false, analysisType } = props;
     const { snackError } = useSnackMessage();
 
     const [isCsvExportLoading, setIsCsvExportLoading] = useState(false);
@@ -66,7 +66,7 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
         downloadShortCircuitResultZippedCsv(
             studyUuid,
             nodeUuid,
-            rootNetworkUuid,
+            currentRootNetworkUuid,
             analysisType,
             csvHeaders,
             enumValueTranslations
@@ -92,7 +92,16 @@ export const ShortCircuitExportButton: FunctionComponent<ShortCircuitExportButto
                 setIsCsvExportSuccessful(false);
             })
             .finally(() => setIsCsvExportLoading(false));
-    }, [studyUuid, nodeUuid, intl, snackError, csvHeaders, analysisType, enumValueTranslations]);
+    }, [
+        studyUuid,
+        nodeUuid,
+        currentRootNetworkUuid,
+        intl,
+        snackError,
+        csvHeaders,
+        analysisType,
+        enumValueTranslations,
+    ]);
 
     return (
         <ExportButton

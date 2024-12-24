@@ -15,7 +15,13 @@ import { ConnectivityForm } from '../../../connectivity/connectivity-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const ShuntCompensatorModificationForm = ({ studyUuid, currentNode, currentRootNetworkUuid, shuntCompensatorInfos, equipmentId }) => {
+const ShuntCompensatorModificationForm = ({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+    shuntCompensatorInfos,
+    equipmentId,
+}) => {
     const shuntCompensatorIdField = (
         <TextField
             size="small"

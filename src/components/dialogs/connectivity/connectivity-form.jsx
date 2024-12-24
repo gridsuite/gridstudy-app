@@ -80,16 +80,28 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid,currentRootNetworkUuid, watchVoltageLevelId).then(
-                (busesOrbusbarSections) => {
-                    setBusOrBusbarSectionOptions(busesOrbusbarSections);
-                }
-            );
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                watchVoltageLevelId
+            ).then((busesOrbusbarSections) => {
+                setBusOrBusbarSectionOptions(busesOrbusbarSections);
+            });
         } else {
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
-    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, currentRootNetworkUuid,voltageLevelOptions, setValue, id, isEquipmentModification]);
+    }, [
+        watchVoltageLevelId,
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        voltageLevelOptions,
+        setValue,
+        id,
+        isEquipmentModification,
+    ]);
 
     useEffect(() => {
         if (isEquipmentModification) {
