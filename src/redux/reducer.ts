@@ -208,6 +208,8 @@ import {
     UseNameAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
+    ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+    AddEquipmentsByNodesForCustomColumnsAction
 } from './actions';
 import {
     getLocalStorageComputedLanguage,
@@ -499,6 +501,7 @@ export interface AppState extends CommonStoreState {
     reloadMap: boolean;
     isMapEquipmentsInitialized: boolean;
     spreadsheetNetwork: SpreadsheetNetworkState;
+    additionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState;
 
     [PARAM_THEME]: GsTheme;
     [PARAM_LANGUAGE]: GsLang;
@@ -590,6 +593,9 @@ const initialSpreadsheetNetworkState: SpreadsheetNetworkState = {
     [EQUIPMENT_TYPES.BUSBAR_SECTION]: null,
 };
 
+export type AdditionalEquipmentsByNodesForCustomColumnsState = Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
+const initialAdditionalEquipmentsByNodesForCustomColumns: AdditionalEquipmentsByNodesForCustomColumnsState = [] as AdditionalEquipmentsByNodesForCustomColumnsState;
+
 export type TypeOfArrayElement<T> = T extends (infer U)[] ? U : never;
 
 interface TablesState {
@@ -657,6 +663,7 @@ const initialState: AppState = {
     networkAreaDiagramDepth: 0,
     networkAreaDiagramNbVoltageLevels: 0,
     spreadsheetNetwork: { ...initialSpreadsheetNetworkState },
+    additionalEquipmentsByNodesForCustomColumns: initialAdditionalEquipmentsByNodesForCustomColumns,
     computingStatus: {
         [ComputingType.LOAD_FLOW]: RunningStatus.IDLE,
         [ComputingType.SECURITY_ANALYSIS]: RunningStatus.IDLE,
@@ -1551,6 +1558,10 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(LOAD_EQUIPMENTS, (state, action: LoadEquipmentsAction) => {
         state.spreadsheetNetwork[action.equipmentType] = action.equipments;
+    });
+
+    builder.addCase(ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS, (state, action: AddEquipmentsByNodesForCustomColumnsAction) => {
+        state.additionalEquipmentsByNodesForCustomColumns = action.equipments;
     });
 
     builder.addCase(UPDATE_EQUIPMENTS, (state, action: UpdateEquipmentsAction) => {

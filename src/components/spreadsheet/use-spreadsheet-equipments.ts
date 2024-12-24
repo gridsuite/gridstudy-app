@@ -12,6 +12,7 @@ import { useGetStudyImpacts } from 'hooks/use-get-study-impacts';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
+    addAdditionalEquipmentsByNodesForCustomColumns,
     deleteEquipments,
     EquipmentToDelete,
     loadEquipments,
@@ -22,6 +23,8 @@ import {
 import type { AppState } from 'redux/reducer';
 import type { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import { fetchAllEquipments } from 'services/study/network-map';
+import { TABLES_DEFINITIONS } from './config/config-tables';
+import { getFetchers } from './config/equipment/common-config';
 
 export type EquipmentProps = {
     type: SpreadsheetEquipmentType;
@@ -37,9 +40,13 @@ export const useSpreadsheetEquipments = (
     const dispatch = useDispatch();
     const allEquipments = useSelector((state: AppState) => state.spreadsheetNetwork);
     const equipments = allEquipments[equipment.type];
+    const customColumnsDefinitions = useSelector(
+        (state: AppState) => state.tables.allCustomColumnsDefinitions
+    );
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const treeModel = useSelector((state : AppState) => state.networkModificationTreeModel);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
 
@@ -126,6 +133,10 @@ export const useSpreadsheetEquipments = (
         resetImpactedElementTypes,
     ]);
 
+    function toEquipmentType(tableName: string): SpreadsheetEquipmentType {
+        return TABLES_DEFINITIONS.filter(value => value.name === tableName)[0].type;
+    }
+
     useEffect(() => {
         if (shouldFetchEquipments && studyUuid && currentNode?.id) {
             setErrorMessage(null);
@@ -137,14 +148,69 @@ export const useSpreadsheetEquipments = (
                         fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
                     }
                     dispatch(loadEquipments(equipment.type, fetchedEquipments));
-                    setIsFetching(false);
                 })
                 .catch((err) => {
                     setErrorMessage(err);
                     setIsFetching(false);
                 });
         }
-    }, [equipment, shouldFetchEquipments, studyUuid, currentNode?.id, dispatch, formatFetchedEquipments]);
+    }, [equipment, shouldFetchEquipments, studyUuid, currentNode?.id, dispatch, formatFetchedEquipments, customColumnsDefinitions]);
+
+    useEffect(() => {
+        if (equipments != null && Object.keys(customColumnsDefinitions).length > 0) {
+            let nodeIdByEquipmentTypeToFetch : Record<SpreadsheetEquipmentType, string[]> = [] as Record<SpreadsheetEquipmentType, string[]>;
+            Object.entries(customColumnsDefinitions).forEach(customColumnDefinition => {
+                let equipmentType = customColumnDefinition[0];
+                let equipmentTypeForFetch : SpreadsheetEquipmentType = toEquipmentType(equipmentType);
+                let customColumns = customColumnDefinition[1];
+                const nodeLabels = treeModel ? treeModel.treeNodes.map(node => node.data.label): [];
+                customColumns.columns.forEach(column => {
+                    const pattern : string = nodeLabels.map(nodeLabel => `\\b${nodeLabel}\\b\\.`).join("|"); // pattern to find the nodes in the expression
+                    const regex = new RegExp(pattern, "g");
+                    const nodesFoundInFormula = column.formula.match(regex); // contains all the nodes that were found in the expression
+                    nodesFoundInFormula?.forEach(node => {
+                        let nodeName = node.slice(0,-1);
+                        let treeNodeIndex = treeModel?.treeNodes.findIndex(treeNode => treeNode.data.label === nodeName);
+                        let nodeId = treeModel?.treeNodes[treeNodeIndex].id;
+                        if (nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] == undefined || !nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch].includes(nodeId)) {
+                            if (nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] == undefined) {
+                                nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch] = [nodeId];
+                            } else {
+                                nodeIdByEquipmentTypeToFetch[equipmentTypeForFetch].push(nodeId);
+                            }
+                        }
+                    })
+                });
+            });
+
+            let fetchers : Promise<any>[] = [];
+            let additionalEquipmentsByNodes : Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>> = {};
+            Object.keys(nodeIdByEquipmentTypeToFetch).forEach((equipmentType : SpreadsheetEquipmentType) => {
+                nodeIdByEquipmentTypeToFetch[equipmentType]?.forEach(nodeId => {
+
+                    //save the fetchers to be sure all fetch are complete before dispatching the data
+                    const fetcherPromises = getFetchers(equipmentType).map((fetcher) => fetcher(studyUuid, nodeId));
+                    fetchers.push(fetcherPromises[0]);
+
+                    fetcherPromises[0].then((res) => {
+                        let fetchedEquipments = res.flat();
+                        if (formatFetchedEquipments) {
+                            fetchedEquipments = formatFetchedEquipments(fetchedEquipments);
+                            let fetchedEquipmentByType : Record<SpreadsheetEquipmentType, Identifiable[]> = {} as Record<SpreadsheetEquipmentType, Identifiable[]>;
+                            fetchedEquipmentByType[equipmentType] = fetchedEquipments;
+                            let nodeName : string = treeModel?.treeNodes.find((node) => node.id === nodeId).data.label;
+                            //Todo remove this (why is the object not extensible ?)
+                            additionalEquipmentsByNodes = {...additionalEquipmentsByNodes};
+                            additionalEquipmentsByNodes[nodeName] = fetchedEquipmentByType;
+                        }
+                    })
+                });
+            });
+            Promise.all(fetchers).then(() => {
+                dispatch(addAdditionalEquipmentsByNodesForCustomColumns(additionalEquipmentsByNodes));
+            });
+        }
+    }, [equipments, customColumnsDefinitions]);
 
     return { equipments, errorMessage, isFetching };
 };

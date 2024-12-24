@@ -180,6 +180,20 @@ export function loadEquipments(
     };
 }
 
+export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS = 'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
+export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>> & {
+    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+};
+
+export function addAdditionalEquipmentsByNodesForCustomColumns(
+    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+): AddEquipmentsByNodesForCustomColumnsAction {
+    return {
+        type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
+        equipments: equipments,
+    };
+}
+
 export const UPDATE_EQUIPMENTS = 'UPDATE_EQUIPMENTS';
 export type UpdateEquipmentsAction = Readonly<Action<typeof UPDATE_EQUIPMENTS>> & {
     equipments: Record<EquipmentUpdateType, Identifiable[]>;

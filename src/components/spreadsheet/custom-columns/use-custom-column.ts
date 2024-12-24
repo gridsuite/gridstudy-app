@@ -76,6 +76,7 @@ export function useCustomColumn(tabIndex: number) {
 
                     return math.limitedEvaluate(colWithFormula.formula, scope);
                 } catch (e) {
+                    console.log(e);
                     return '';
                 }
             },

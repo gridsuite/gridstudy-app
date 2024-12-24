@@ -87,6 +87,7 @@ import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import { TABLES_DEFINITIONS } from './config/config-tables';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -177,6 +178,9 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const tablesNames = useSelector((state: AppState) => state.tables.names);
     const customColumnsDefinitions = useSelector(
         (state: AppState) => state.tables.allCustomColumnsDefinitions[tablesNames[tabIndex]].columns
+    );
+    const additionalEquipmentsByNodesForCustomColumns = useSelector(
+        (state: AppState) => state.additionalEquipmentsByNodesForCustomColumns
     );
     const tablesDefinitionIndexes = useSelector((state: AppState) => state.tables.definitionIndexes);
     const tablesDefinitionTypes = useSelector((state: AppState) => state.tables.definitionTypes);
@@ -484,8 +488,29 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         if (gridRef.current?.api) {
             gridRef.current.api.setGridOption('rowData', equipments);
         }
-        setRowData(equipments);
-    }, [tabIndex, disabled, equipments]);
+
+        const equipmentType = TABLES_DEFINITIONS.filter((eq) => eq.name === tablesNames[tabIndex])[0].type;
+
+        let equipmentsWithCustomColumnInfo = [...equipments];
+
+        Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(value => {
+            const nodeName = value[0];
+            const equipmentsToAdd = value[1][equipmentType];
+            if (equipmentsToAdd) {
+                equipmentsToAdd.forEach(equipmentToAdd => {
+                    let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(equipmentWithCustomColumnInfo => equipmentWithCustomColumnInfo.id === equipmentToAdd.id);
+                    let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
+                    if (matchingEquipment) {
+                        let equipmentWithAddedInfo = {...matchingEquipment};
+                        equipmentWithAddedInfo[nodeName] = equipmentToAdd;
+                        equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
+                    }
+                });
+            }
+        });
+
+        setRowData(equipmentsWithCustomColumnInfo);
+    }, [tabIndex, disabled, equipments, additionalEquipmentsByNodesForCustomColumns, tablesNames]);
 
     const handleSwitchTab = useCallback(
         (value: number) => {
