@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { ICellRendererParams } from 'ag-grid-community';
+import { ColDef, ICellRendererParams, ValueGetterFunc, ValueGetterParams } from 'ag-grid-community';
 import { FILTER_NUMBER_COMPARATORS, FILTER_TEXT_COMPARATORS } from 'components/custom-aggrid/custom-aggrid-header.type';
 import { BooleanCellRenderer, DefaultSpreadsheetCellRenderer, PropertiesCellRenderer } from '../utils/cell-renderers';
 import { EnumOption } from 'components/utils/utils-type';
@@ -23,6 +23,23 @@ import {
 } from 'components/network/constants';
 import { unitToKiloUnit, unitToMicroUnit } from 'utils/unit-converter';
 import { RegulatingTerminalCellGetter } from './equipment/generator';
+import {
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_2_FRACTION_DIGITS_TYPE,
+    NUMERIC_5_FRACTION_DIGITS_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_2_FRACTION_DIGITS_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_5_FRACTION_DIGITS_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_HIGH_TAP_POSITION_TYPE,
+    NUMERIC_SWITCHED_ON_Q_AT_NOMINAL_V_TYPE,
+    NUMERIC_SWITCHED_ON_SUSCEPTANCE_TYPE,
+    NUMERIC_TYPE,
+    NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
+    NUMERIC_UNIT_TO_MICRO_UNIT_TYPE,
+} from '../utils/constants';
 
 const TEXT_FILTER_PARAMS = {
     caseSensitive: false,
@@ -45,7 +62,7 @@ const formatCellValue = (value: any, decimalPlaces: number = 1) => {
     return null;
 };
 
-const propertiesGetter = (params: ICellRendererParams) => {
+const propertiesGetter: ValueGetterFunc = (params: ValueGetterParams) => {
     const properties = params?.data?.properties;
     if (properties && Object.keys(properties).length) {
         return Object.keys(properties)
@@ -56,7 +73,7 @@ const propertiesGetter = (params: ICellRendererParams) => {
     }
 };
 
-const createTextColumnType = (cellRenderer: any, valueGetter?: (params: ICellRendererParams) => any) => ({
+const createTextColumnType = (cellRenderer: any, valueGetter?: ValueGetterFunc) => ({
     filter: 'agTextColumnFilter',
     filterParams: TEXT_FILTER_PARAMS,
     cellRenderer,
@@ -65,7 +82,7 @@ const createTextColumnType = (cellRenderer: any, valueGetter?: (params: ICellRen
     resizable: true,
 });
 
-const createNumericColumnType = (valueGetter: (params: ICellRendererParams) => any) => ({
+const createNumericColumnType = (valueGetter: ValueGetterFunc) => ({
     filter: 'agNumberColumnFilter',
     filterParams: NUMERIC_FILTER_PARAMS,
     cellRenderer: DefaultSpreadsheetCellRenderer,
@@ -164,7 +181,7 @@ const numericCanBeInvalidatedType = {
 
 const booleanType = createTextColumnType(BooleanCellRenderer);
 
-const countryType = createTextColumnType(DefaultSpreadsheetCellRenderer, (params: ICellRendererParams) => {
+const countryType = createTextColumnType(DefaultSpreadsheetCellRenderer, (params: ValueGetterParams) => {
     if (params.context?.translateCountryCode && params?.colDef?.field) {
         return params.context.translateCountryCode(params.data[params.colDef.field]);
     }
@@ -178,7 +195,27 @@ const ratioRegulationModesEnumType = createEnumConfig(Object.values(RATIO_REGULA
 const sideEnumType = createEnumConfig(Object.values(SIDE));
 const phaseRegulatingModeEnumType = createEnumConfig(Object.values(PHASE_REGULATION_MODES));
 
-export const defaultColumnType = {
+const numericTypes = [
+    NUMERIC_TYPE,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_2_FRACTION_DIGITS_TYPE,
+    NUMERIC_5_FRACTION_DIGITS_TYPE,
+    NUMERIC_UNIT_TO_MICRO_UNIT_TYPE,
+    NUMERIC_UNIT_TO_KILO_UNIT_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_2_FRACTION_DIGITS_TYPE,
+    NUMERIC_APPLY_FLUX_CONVENTION_5_FRACTION_DIGITS_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_HIGH_TAP_POSITION_TYPE,
+    NUMERIC_SWITCHED_ON_SUSCEPTANCE_TYPE,
+    NUMERIC_SWITCHED_ON_Q_AT_NOMINAL_V_TYPE,
+];
+
+export const isNumericType = (type: string) => numericTypes.includes(type);
+
+export const defaultColumnType: { [key: string]: ColDef } = {
     textType,
     propertyType,
     numericType,
@@ -194,6 +231,8 @@ export const defaultColumnType = {
     numericApplyFluxConvention1FractionDigitsType,
     numericApplyFluxConvention2FractionDigitsType,
     numericApplyFluxConvention5FractionDigitsType,
+    numericSwitchedOnSusceptanceType,
+    numericSwitchedOnQAtNominalVType,
     booleanType,
     countryType,
     energySourceEnumType,
@@ -203,6 +242,4 @@ export const defaultColumnType = {
     ratioRegulationModesEnumType,
     sideEnumType,
     phaseRegulatingModeEnumType,
-    numericSwitchedOnSusceptanceType,
-    numericSwitchedOnQAtNominalVType,
 };

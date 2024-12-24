@@ -27,6 +27,7 @@ import {
 import { EQUIPMENT_TYPES } from 'components/utils/equipment-types';
 import { Identifiable } from '@gridsuite/commons-ui';
 import { CustomColDef } from '../../custom-aggrid/custom-aggrid-header.type';
+import { isNumericType } from '../config/column-type-filter-config';
 
 type DynamicValidation = Record<string, number | undefined>;
 
@@ -368,9 +369,10 @@ export const deepUpdateValue = (obj: any, path: any, value: any) => {
 };
 
 const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
-    if (fieldVal === undefined || fieldVal === null || fieldVal === '' || (isNaN(fieldVal) && colDef.numeric)) {
+    const isNumeric = isNumericType(colDef.type);
+    if (fieldVal === undefined || fieldVal === null || fieldVal === '' || (isNaN(fieldVal) && isNumeric)) {
         let originalValue = deepFindValue(gridContext.dataToModify, colDef.field);
-        originalValue = colDef.numeric && isNaN(originalValue) ? undefined : originalValue;
+        originalValue = isNumeric && isNaN(originalValue) ? undefined : originalValue;
 
         // if the original value is not undefined, we don't let the user empty the field unless we have
         // another condition that verifies that the field can be empty (requiredOn, optional, etc.)
@@ -383,7 +385,7 @@ const isValueValid = (fieldVal: any, colDef: any, gridContext: any) => {
             if (!isConditionFulfiled) {
                 return false;
             }
-        } else if (colDef.numeric) {
+        } else if (isNumeric) {
             return false;
         }
     }

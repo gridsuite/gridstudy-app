@@ -119,26 +119,6 @@ export const formatCell = (props: any) => {
     return { value: value, tooltip: tooltipValue };
 };
 
-export const formatNumericCell = (props: any) => {
-    let value = props?.valueFormatted || props.value;
-    let tooltipValue = undefined;
-    if (props.colDef.valueGetter) {
-        value = props?.context?.network
-            ? props.colDef.valueGetter(props, props.context.network)
-            : props.colDef.valueGetter(props);
-    }
-
-    if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
-        // only numeric rounded cells have a tooltip (their raw numeric value)
-        tooltipValue = value;
-        value = parseFloat(value).toFixed(props.colDef.fractionDigits);
-    }
-    if (props.colDef.numeric && isNaN(value)) {
-        value = null;
-    }
-    return { value: value, tooltip: tooltipValue };
-};
-
 export const convertDuration = (duration: number) => {
     if (!duration || isNaN(duration)) {
         return '';
@@ -285,20 +265,17 @@ export const MessageLogCellRenderer = ({
     );
 };
 
-export const PropertiesCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
+export const PropertiesCellRenderer = (params: any) => {
     // different properties are seperated with |
     // tooltip message contains properties in seperated lines
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
                 title={
-                    <div style={{ whiteSpace: 'pre-line' }}>
-                        {cellValue.value && cellValue.value.replaceAll(' | ', '\n')}
-                    </div>
+                    <div style={{ whiteSpace: 'pre-line' }}>{params.value && params.value.replaceAll(' | ', '\n')}</div>
                 }
             >
-                <Box sx={styles.overflow} children={cellValue.value} />
+                <Box sx={styles.overflow} children={params.value} />
             </Tooltip>
         </Box>
     );
