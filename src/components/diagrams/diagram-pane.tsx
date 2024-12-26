@@ -7,15 +7,7 @@
 
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
-    PARAM_DIAGONAL_LABEL,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
-    PARAM_LANGUAGE,
-    PARAM_SUBSTATION_LAYOUT,
-    PARAM_USE_NAME,
-} from '../../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../utils/config-params';
 import { Box, Chip, Stack, Theme } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -60,11 +52,8 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
     const { snackError } = useSnackMessage();
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
-    const centerName = useSelector((state: AppState) => state[PARAM_CENTER_LABEL]);
-    const diagonalName = useSelector((state: AppState) => state[PARAM_DIAGONAL_LABEL]);
-    const substationLayout = useSelector((state: AppState) => state[PARAM_SUBSTATION_LAYOUT]);
-    const componentLibrary = useSelector((state: AppState) => state[PARAM_COMPONENT_LIBRARY]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
@@ -75,9 +64,9 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                       currentRootNetworkUuid,
                       voltageLevelId,
                       paramUseName,
-                      centerName,
-                      diagonalName,
-                      componentLibrary,
+                      networkVisuParams.singleLineDiagramParameters.centerLabel,
+                      networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                      networkVisuParams.singleLineDiagramParameters.componentLibrary,
                       SLD_DISPLAY_MODE.STATE_VARIABLE,
                       language
                   )
@@ -87,9 +76,9 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             studyUuid,
             currentRootNetworkUuid,
             paramUseName,
-            centerName,
-            diagonalName,
-            componentLibrary,
+            networkVisuParams.singleLineDiagramParameters.centerLabel,
+            networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+            networkVisuParams.singleLineDiagramParameters.componentLibrary,
             language,
         ]
     );
@@ -103,26 +92,26 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                       currentRootNetworkUuid,
                       voltageLevelId,
                       paramUseName,
-                      centerName,
-                      diagonalName,
-                      substationLayout,
-                      componentLibrary,
+                      networkVisuParams.singleLineDiagramParameters.centerLabel,
+                      networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                      networkVisuParams.singleLineDiagramParameters.substationLayout,
+                      networkVisuParams.singleLineDiagramParameters.componentLibrary,
                       language
                   )
                 : null,
         [
-            centerName,
-            componentLibrary,
-            diagonalName,
+            networkVisuParams.singleLineDiagramParameters.centerLabel,
+            networkVisuParams.singleLineDiagramParameters.componentLibrary,
+            networkVisuParams.singleLineDiagramParameters.diagonalLabel,
             studyUuid,
-            substationLayout,
+            networkVisuParams.singleLineDiagramParameters.substationLayout,
             paramUseName,
             currentNode,
             currentRootNetworkUuid,
+
             language,
         ]
     );
-    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds: UUID[], depth: number) =>
             isNodeBuilt(currentNode)
@@ -132,10 +121,15 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
                       currentRootNetworkUuid,
                       voltageLevelsIds,
                       depth,
-                      initNadWithGeoData
+                      networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
                   )
                 : null,
-        [studyUuid, currentNode, currentRootNetworkUuid, initNadWithGeoData]
+        [
+            studyUuid,
+            currentNode,
+            currentRootNetworkUuid,
+            networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData,
+        ]
     );
 
     // this callback returns a promise

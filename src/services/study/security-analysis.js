@@ -150,6 +150,6 @@ export function setSecurityAnalysisParameters(studyUuid, newParams) {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newParams),
+        body: newParams ? JSON.stringify(newParams) : null,
     });
 }

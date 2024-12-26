@@ -39,6 +39,7 @@ import {
     TIMELINE,
 } from 'utils/store-sort-filter-fields';
 import { CustomAGGrid } from '@gridsuite/commons-ui';
+import { CustomAggridComparatorFilter } from '../../custom-aggrid/custom-aggrid-filters/custom-aggrid-comparator-filter';
 
 const styles = {
     loader: {
@@ -116,12 +117,18 @@ const DynamicSimulationResultTimeline = memo(
                     fractionDigits: 2,
                     id: 'agNumberColumnFilter',
                     filter: 'agNumberColumnFilter',
-                    filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.NUMBER,
-                        filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...sortAndFilterProps.filterProps,
+                            filterDataType: FILTER_DATA_TYPES.NUMBER,
+                            filterComparators: Object.values(FILTER_NUMBER_COMPARATORS),
+                        },
                     },
                     cellRenderer: NumberCellRenderer,
-                    ...sortAndFilterProps,
+                    sortProps: {
+                        ...sortAndFilterProps.sortProps,
+                    },
                 }),
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
@@ -130,11 +137,17 @@ const DynamicSimulationResultTimeline = memo(
                     id: COL_MODEL_NAME,
                     field: COL_MODEL_NAME,
                     width: MEDIUM_COLUMN_WIDTH,
-                    filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...sortAndFilterProps.filterProps,
+                            filterDataType: FILTER_DATA_TYPES.TEXT,
+                            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        },
                     },
-                    ...sortAndFilterProps,
+                    sortProps: {
+                        ...sortAndFilterProps.sortProps,
+                    },
                 }),
                 makeAgGridCustomHeaderColumn({
                     headerName: intl.formatMessage({
@@ -143,11 +156,17 @@ const DynamicSimulationResultTimeline = memo(
                     id: COL_MESSAGE,
                     field: COL_MESSAGE,
                     width: LARGE_COLUMN_WIDTH,
-                    filterParams: {
-                        filterDataType: FILTER_DATA_TYPES.TEXT,
-                        filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                    filterComponent: CustomAggridComparatorFilter,
+                    filterComponentParams: {
+                        filterParams: {
+                            ...sortAndFilterProps.filterProps,
+                            filterDataType: FILTER_DATA_TYPES.TEXT,
+                            filterComparators: [FILTER_TEXT_COMPARATORS.STARTS_WITH, FILTER_TEXT_COMPARATORS.CONTAINS],
+                        },
                     },
-                    ...sortAndFilterProps,
+                    sortProps: {
+                        ...sortAndFilterProps.sortProps,
+                    },
                 }),
             ],
             [intl, sortAndFilterProps]

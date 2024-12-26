@@ -6,7 +6,7 @@
  */
 
 import { FunctionComponent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Alert, Box, Grid } from '@mui/material';
@@ -83,10 +83,15 @@ import {
     ICellRendererParams,
 } from 'ag-grid-community';
 import { mergeSx } from '../utils/functions';
-import { CustomColDef, FILTER_NUMBER_COMPARATORS } from '../custom-aggrid/custom-aggrid-header.type';
+import {
+    CustomAggridFilterParams,
+    CustomColDef,
+    FILTER_NUMBER_COMPARATORS,
+} from '../custom-aggrid/custom-aggrid-header.type';
 import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
+import { CustomAggridAutocompleteFilterParams } from '../custom-aggrid/custom-aggrid-filters/custom-aggrid-autocomplete-filter';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -331,7 +336,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     const filterEnums = useMemo(() => generateEquipmentsFilterEnums(), [generateEquipmentsFilterEnums]);
 
     const enrichColumn = useCallback(
-        (column: CustomColDef) => {
+        (column: CustomColDef<any, any, CustomAggridAutocompleteFilterParams & CustomAggridFilterParams>) => {
             const columnExtended = { ...column };
             columnExtended.headerName = intl.formatMessage({ id: columnExtended.id });
 
@@ -402,29 +407,43 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
             //we reuse and mutate the column objects so we need to clear to undefined
             columnExtended.pinned = lockedColumnsNames.has(columnExtended.id) ? 'left' : undefined;
 
+            columnExtended.filterComponentParams = {
+                filterParams: {
+                    updateFilter,
+                    filterSelector,
+                    ...columnExtended?.filterComponentParams?.filterParams,
+                },
+            };
+
             //Set sorting comparator for enum columns so it sorts the translated values instead of the enum values
             if (columnExtended?.isEnum) {
-                columnExtended.comparator = (valueA: string, valueB: string) => {
-                    const getTranslatedOrOriginalValue = (value: string) => {
-                        if (value === undefined || value === null) {
-                            return '';
-                        }
-                        if (columnExtended.isCountry) {
-                            return translate(value);
-                        } else if (columnExtended.getEnumLabel) {
-                            const labelId = columnExtended.getEnumLabel(value);
-                            return intl.formatMessage({
-                                id: labelId || value,
-                                defaultMessage: value,
-                            });
-                        }
-                        return value;
-                    };
+                const getTranslatedOrOriginalValue = (value: string) => {
+                    if (value === undefined || value === null) {
+                        return '';
+                    }
+                    if (columnExtended.isCountry) {
+                        return translate(value);
+                    } else if (columnExtended.getEnumLabel) {
+                        const labelId = columnExtended.getEnumLabel(value);
+                        return intl.formatMessage({
+                            id: labelId || value,
+                            defaultMessage: value,
+                        });
+                    }
+                    return value;
+                };
 
+                columnExtended.comparator = (valueA: string, valueB: string) => {
                     const translatedValueA = getTranslatedOrOriginalValue(valueA);
                     const translatedValueB = getTranslatedOrOriginalValue(valueB);
 
                     return translatedValueA.localeCompare(translatedValueB);
+                };
+
+                columnExtended.filterComponentParams = {
+                    ...columnExtended.filterComponentParams,
+                    filterEnums: filterEnums,
+                    getEnumLabel: getTranslatedOrOriginalValue,
                 };
             }
 
@@ -435,31 +454,22 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     onSortChanged,
                     sortConfig,
                 },
-                filterProps: {
-                    updateFilter,
-                    filterSelector,
-                },
-                filterParams: {
-                    ...columnExtended?.customFilterParams,
-                    filterEnums,
-                },
                 ...columnExtended,
             });
         },
         [
             intl,
             lockedColumnsNames,
-            onSortChanged,
-            sortConfig,
             updateFilter,
             filterSelector,
-            loadFlowStatus,
-            applyFluxConvention,
             filterEnums,
             translate,
+            onSortChanged,
+            sortConfig,
+            loadFlowStatus,
+            applyFluxConvention,
         ]
     );
-
     useEffect(() => {
         if (errorMessage) {
             snackError({
@@ -1323,5 +1333,4 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
         </>
     );
 };
-
 export default TableWrapper;
