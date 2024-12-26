@@ -8,10 +8,11 @@
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { getUrlWithToken, getWsBase } from './utils';
 import { getUserToken } from '../redux/user-store';
+import { UUID } from 'crypto';
 
 const PREFIX_DIRECTORY_NOTIFICATION_WS = import.meta.env.VITE_WS_GATEWAY + '/directory-notification';
 
-export function connectDeletedStudyNotificationsWebsocket(studyUuid) {
+export function connectDeletedStudyNotificationsWebsocket(studyUuid: UUID) {
     // The websocket API doesn't allow relative urls
     const wsBase = getWsBase();
     // Add params to Url

@@ -7,9 +7,13 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { UUID } from 'crypto';
+import { VoltageInitParam } from '../../components/dialogs/parameters/voltageinit/voltage-init-utils';
 
-export function startVoltageInit(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
-    console.info(`Running voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function startVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Running voltage init on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     const startVoltageInitUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -18,8 +22,10 @@ export function startVoltageInit(studyUuid, currentNodeUuid, currentRootNetworkU
     return backendFetch(startVoltageInitUrl, { method: 'put' });
 }
 
-export function stopVoltageInit(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
-    console.info(`Stopping voltage init on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function stopVoltageInit(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Stopping voltage init on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
     const stopVoltageInitUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/voltage-init/stop';
@@ -27,18 +33,19 @@ export function stopVoltageInit(studyUuid, currentNodeUuid, currentRootNetworkUu
     return backendFetch(stopVoltageInitUrl, { method: 'put' });
 }
 
-export function fetchVoltageInitStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function fetchVoltageInitStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
-        `Fetching voltage init status on '${studyUuid}' root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+        `Fetching voltage init status on '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/voltage-init/status';
+
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchVoltageInitResult(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function fetchVoltageInitResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(`Fetching voltage init result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -47,7 +54,10 @@ export function fetchVoltageInitResult(studyUuid, currentNodeUuid, currentRootNe
     return backendFetchJson(url);
 }
 
-export function updateVoltageInitParameters(studyUuid, newParams) {
+export function updateVoltageInitParameters(
+    studyUuid: UUID | null,
+    newParams: VoltageInitParam | Record<string, boolean | null>
+) {
     console.info('set voltage init parameters');
     const url = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(url);
@@ -64,14 +74,14 @@ export function updateVoltageInitParameters(studyUuid, newParams) {
     });
 }
 
-export function getVoltageInitStudyParameters(studyUuid) {
+export function getVoltageInitStudyParameters(studyUuid: UUID) {
     console.info('get voltage init study parameters');
     const getVoltageInitParams = getStudyUrl(studyUuid) + '/voltage-init/parameters';
     console.debug(getVoltageInitParams);
     return backendFetchJson(getVoltageInitParams);
 }
 
-export function getVoltageInitModifications(studyUuid, currentNodeId, currentRootNetworkUuid) {
+export function getVoltageInitModifications(studyUuid: UUID, currentNodeId: UUID, currentRootNetworkUuid: UUID) {
     console.info('get voltage init modifications');
     const getVoltageInitModifications =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeId, currentRootNetworkUuid) +
@@ -80,7 +90,7 @@ export function getVoltageInitModifications(studyUuid, currentNodeId, currentRoo
     return backendFetchJson(getVoltageInitModifications);
 }
 
-export function cloneVoltageInitModifications(studyUuid, currentNodeId, currentRootNetworkUuid) {
+export function cloneVoltageInitModifications(studyUuid: UUID, currentNodeId: UUID, currentRootNetworkUuid: UUID) {
     console.info('cloning voltage init modifications');
     const cloneVoltageInitModificationsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeId, currentRootNetworkUuid) +

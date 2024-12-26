@@ -7,11 +7,18 @@
 
 import { backendFetchJson, getQueryParamsList } from '../utils';
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
+import { UUID } from 'crypto';
 
-export function fetchSubstationPositions(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchSubstationPositions(
+    studyUuid: UUID,
+    currentNodeUuid?: UUID,
+    currentRootNetworkUuid?: UUID,
+    substationsIds?: string[]
+) {
     console.info(
         `Fetching substation positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${substationsIds}'...`
     );
+
     const paramsList =
         substationsIds && substationsIds.length > 0 ? '?' + getQueryParamsList(substationsIds, 'substationId') : '';
 
@@ -23,7 +30,12 @@ export function fetchSubstationPositions(studyUuid, currentNodeUuid, currentRoot
     return backendFetchJson(fetchSubstationPositionsUrl);
 }
 
-export function fetchLinePositions(studyUuid, currentNodeUuid, currentRootNetworkUuid, linesIds) {
+export function fetchLinePositions(
+    studyUuid: UUID,
+    currentNodeUuid: UUID | undefined,
+    currentRootNetworkUuid: UUID | undefined,
+    linesIds?: string[]
+) {
     console.info(
         `Fetching line positions of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' with ids '${linesIds}'...`
     );

@@ -7,12 +7,18 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchFile, backendFetchJson, backendFetchText, getRequestParamFromList } from '../utils';
+import { UUID } from 'crypto';
+import { RESULT_TYPE } from '../../components/results/securityanalysis/security-analysis-result-utils';
 
-export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetwork, contingencyListNames) {
+export function startSecurityAnalysis(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    contingencyListNames: string[]
+) {
     console.info(
-        `Running security analysis on ${studyUuid} on root network ${currentRootNetwork} and node ${currentNodeUuid} ...`
+        `Running security analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );
-
     // Add params to Url
     const contingencyListsQueryParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListsQueryParams);
@@ -20,14 +26,14 @@ export function startSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNet
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
         currentNodeUuid,
-        currentRootNetwork
+        currentRootNetworkUuid
     )}/security-analysis/run?${urlSearchParams}`;
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function stopSecurityAnalysis(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info('Stopping security analysis on ' + studyUuid + ' and node ' + currentNodeUuid + ' ...');
     const stopSecurityAnalysisUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
@@ -36,7 +42,12 @@ export function stopSecurityAnalysis(studyUuid, currentNodeUuid, currentRootNetw
     return backendFetch(stopSecurityAnalysisUrl, { method: 'put' });
 }
 
-export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, currentRootNetworkUuid, queryParams) {
+export function fetchSecurityAnalysisResult(
+    studyUuid: string,
+    currentNodeUuid: string,
+    currentRootNetworkUuid: string,
+    queryParams: any
+) {
     console.info(`Fetching security analysis on ${studyUuid} and node ${currentNodeUuid} ...`);
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
@@ -48,15 +59,15 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, currentR
 
     const params = new URLSearchParams({ resultType });
 
-    sort?.map((value) => params.append('sort', `${value.colId},${value.sort}`));
+    sort?.map((value: any) => params.append('sort', `${value.colId},${value.sort}`));
 
     if (filters?.length) {
         params.append('filters', JSON.stringify(filters));
     }
 
     if (typeof page === 'number') {
-        params.append('page', page);
-        params.append('size', size);
+        params.append('page', page.toString());
+        params.append('size', size.toString());
     }
 
     const urlWithParams = `${url}?${params.toString()}`;
@@ -65,12 +76,12 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, currentR
 }
 
 export function downloadSecurityAnalysisResultZippedCsv(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    queryParams,
-    headers,
-    enumValueTranslations
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    queryParams: { resultType: RESULT_TYPE },
+    headers: string[] | undefined,
+    enumValueTranslations: Record<string, string>
 ) {
     console.info(
         `Fetching security analysis zipped csv on ${studyUuid} on root network  ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
@@ -100,11 +111,10 @@ export function downloadSecurityAnalysisResultZippedCsv(
     });
 }
 
-export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function fetchSecurityAnalysisStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Fetching security analysis status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
-
     const url =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/security-analysis/status';
@@ -112,7 +122,7 @@ export function fetchSecurityAnalysisStatus(studyUuid, currentNodeUuid, currentR
     return backendFetchText(url);
 }
 
-export function updateSecurityAnalysisProvider(studyUuid, newProvider) {
+export function updateSecurityAnalysisProvider(studyUuid: UUID, newProvider: string) {
     console.info('update security analysis provider');
     const url = getStudyUrl(studyUuid) + '/security-analysis/provider';
     console.debug(url);
@@ -133,14 +143,14 @@ export function fetchDefaultSecurityAnalysisProvider() {
     return backendFetchText(url);
 }
 
-export function getSecurityAnalysisParameters(studyUuid) {
+export function getSecurityAnalysisParameters(studyUuid: UUID) {
     console.info('get security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function setSecurityAnalysisParameters(studyUuid, newParams) {
+export function setSecurityAnalysisParameters(studyUuid: UUID, newParams: any) {
     console.info('set security analysis parameters');
     const url = getStudyUrl(studyUuid) + '/security-analysis/parameters';
     console.debug(url);

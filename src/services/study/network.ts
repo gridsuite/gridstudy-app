@@ -5,12 +5,41 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES, safeEncodeURIComponent } from './index';
+
 import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
+import { UUID } from 'crypto';
+import { EquipmentType, GsLang } from '@gridsuite/commons-ui';
+
+interface VoltageLevelSingleLineDiagram {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    voltageLevelId?: UUID;
+    useName: boolean;
+    centerLabel: boolean;
+    diagonalLabel: boolean;
+    componentLibrary: string;
+    sldDisplayMode: string;
+    language: GsLang;
+}
+
+interface SubstationSingleLineDiagram {
+    studyUuid: UUID;
+    currentNodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
+    substationId: UUID;
+    useName: boolean;
+    centerLabel: boolean;
+    diagonalLabel: boolean;
+    substationLayout: string;
+    componentLibrary: string;
+    language: GsLang;
+}
 
 /* voltage-levels */
-export function getVoltageLevelSingleLineDiagram(
+export function getVoltageLevelSingleLineDiagram({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
@@ -20,34 +49,40 @@ export function getVoltageLevelSingleLineDiagram(
     diagonalLabel,
     componentLibrary,
     sldDisplayMode,
-    language
-) {
+    language,
+}: VoltageLevelSingleLineDiagram) {
     console.info(
         `Getting url of voltage level diagram '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
+    const queryParams = new URLSearchParams({
+        useName: String(useName),
+        centerLabel: String(centerLabel),
+        diagonalLabel: String(diagonalLabel),
+        topologicalColoring: 'true',
+        sldDisplayMode: sldDisplayMode,
+        language: language,
+        inUpstreamBuiltParentNode: 'true',
+    });
+    if (componentLibrary !== null) {
+        queryParams.append('componentLibrary', String(componentLibrary));
+    }
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/voltage-levels/' +
-        encodeURIComponent(voltageLevelId) +
+        safeEncodeURIComponent(voltageLevelId) +
         '/svg-and-metadata?' +
-        new URLSearchParams({
-            useName: useName,
-            centerLabel: centerLabel,
-            diagonalLabel: diagonalLabel,
-            topologicalColoring: true,
-            ...(componentLibrary !== null && {
-                componentLibrary: componentLibrary,
-            }),
-            sldDisplayMode: sldDisplayMode,
-            language: language,
-            inUpstreamBuiltParentNode: true,
-        }).toString()
+        queryParams.toString()
     );
 }
 
-export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, currentRootNetworkUuid, voltageLevelId) {
+export function fetchSubstationIdForVoltageLevel(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: string
+) {
     console.info(
-        `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching substation ID for the voltage level '${voltageLevelId}' of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
@@ -66,13 +101,13 @@ export function fetchSubstationIdForVoltageLevel(studyUuid, currentNodeUuid, cur
 }
 
 export function fetchBusesOrBusbarSectionsForVoltageLevel(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    voltageLevelId
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    voltageLevelId: UUID
 ) {
     console.info(
-        `Fetching buses or busbar sections of study '${studyUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
+        `Fetching buses or busbar sections of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' + ' for voltage level '${voltageLevelId}'...`
     );
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.append('inUpstreamBuiltParentNode', 'true');
@@ -90,7 +125,7 @@ export function fetchBusesOrBusbarSectionsForVoltageLevel(
 }
 
 /* substations */
-export function getSubstationSingleLineDiagram(
+export function getSubstationSingleLineDiagram({
     studyUuid,
     currentNodeUuid,
     currentRootNetworkUuid,
@@ -100,40 +135,41 @@ export function getSubstationSingleLineDiagram(
     diagonalLabel,
     substationLayout,
     componentLibrary,
-    language
-) {
+    language,
+}: SubstationSingleLineDiagram) {
     console.info(
         `Getting url of substation diagram '${substationId}' of study '${studyUuid}' and node '${currentNodeUuid}'...`
     );
+    const queryParams = new URLSearchParams({
+        useName: String(useName),
+        centerLabel: String(centerLabel),
+        diagonalLabel: String(diagonalLabel),
+        topologicalColoring: 'true',
+        substationLayout: substationLayout,
+        language: language,
+    });
+    if (componentLibrary !== null) {
+        queryParams.append('componentLibrary', String(componentLibrary));
+    }
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/substations/' +
         encodeURIComponent(substationId) +
         '/svg-and-metadata?' +
-        new URLSearchParams({
-            useName: useName,
-            centerLabel: centerLabel,
-            diagonalLabel: diagonalLabel,
-            topologicalColoring: true,
-            substationLayout: substationLayout,
-            ...(componentLibrary !== null && {
-                componentLibrary: componentLibrary,
-            }),
-            language: language,
-        }).toString()
+        queryParams.toString()
     );
 }
 
 /* elements */
 export function fetchNetworkElementsInfos(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    substationsIds,
-    elementType,
-    infoType,
-    inUpstreamBuiltParentNode,
-    nominalVoltages
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds: string[] | undefined | null,
+    elementType: string,
+    infoType: string,
+    inUpstreamBuiltParentNode?: boolean,
+    nominalVoltages?: number[]
 ) {
     const substationsCount = substationsIds ? substationsIds.length : 0;
     const nominalVoltagesStr = nominalVoltages ? `[${nominalVoltages}]` : '[]';
@@ -148,7 +184,7 @@ export function fetchNetworkElementsInfos(
 
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode);
+        urlSearchParams.append('inUpstreamBuiltParentNode', String(inUpstreamBuiltParentNode));
     }
     urlSearchParams.append('infoType', infoType);
     urlSearchParams.append('elementType', elementType);
@@ -169,25 +205,24 @@ export function fetchNetworkElementsInfos(
 }
 
 export function fetchNetworkElementInfos(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    elementType,
-    infoType,
-    elementId,
-    inUpstreamBuiltParentNode
+    studyUuid: string | undefined | null,
+    currentNodeUuid: UUID | undefined,
+    currentRootNetworkUuid: UUID | undefined,
+    elementType: EquipmentType | EQUIPMENT_TYPES,
+    infoType: string,
+    elementId: string,
+    inUpstreamBuiltParentNode: boolean
 ) {
     console.info(
         `Fetching specific network element '${elementId}' of type '${elementType}' of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
     );
     const urlSearchParams = new URLSearchParams();
     if (inUpstreamBuiltParentNode !== undefined) {
-        urlSearchParams.append('inUpstreamBuiltParentNode', inUpstreamBuiltParentNode);
+        urlSearchParams.append('inUpstreamBuiltParentNode', String(inUpstreamBuiltParentNode));
     }
     urlSearchParams.append('elementType', elementType);
     urlSearchParams.append('infoType', infoType);
-    const optionalParams = new Map();
-    optionalParams.forEach((value, key) => urlSearchParams.append(`optionalParameters[${key}]`, value));
+
     const fetchElementsUrl =
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network/elements/' +
@@ -200,11 +235,11 @@ export function fetchNetworkElementInfos(
 }
 
 export function fetchSubstationsMapInfos(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    substationsIds,
-    inUpstreamBuiltParentNode
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds: string[] | null | undefined,
+    inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
         studyUuid,
@@ -218,11 +253,11 @@ export function fetchSubstationsMapInfos(
 }
 
 export function fetchLinesMapInfos(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    substationsIds,
-    inUpstreamBuiltParentNode
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds: string[] | undefined | null,
+    inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
         studyUuid,
@@ -236,11 +271,11 @@ export function fetchLinesMapInfos(
 }
 
 export function fetchTieLinesMapInfos(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    substationsIds,
-    inUpstreamBuiltParentNode
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds: string[] | undefined | null,
+    inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
         studyUuid,
@@ -254,11 +289,11 @@ export function fetchTieLinesMapInfos(
 }
 
 export function fetchHvdcLinesMapInfos(
-    studyUuid,
-    currentNodeUuid,
-    currentRootNetworkUuid,
-    substationsIds,
-    inUpstreamBuiltParentNode
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds: string[] | undefined | null,
+    inUpstreamBuiltParentNode: boolean
 ) {
     return fetchNetworkElementsInfos(
         studyUuid,
@@ -271,7 +306,12 @@ export function fetchHvdcLinesMapInfos(
     );
 }
 
-export function fetchSubstations(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchSubstations(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -283,7 +323,12 @@ export function fetchSubstations(studyUuid, currentNodeUuid, currentRootNetworkU
     );
 }
 
-export function fetchLines(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchLines(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -295,7 +340,12 @@ export function fetchLines(studyUuid, currentNodeUuid, currentRootNetworkUuid, s
     );
 }
 
-export function fetchVoltageLevels(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchVoltageLevels(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -307,7 +357,12 @@ export function fetchVoltageLevels(studyUuid, currentNodeUuid, currentRootNetwor
     );
 }
 
-export function fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchVoltageLevelsListInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -319,7 +374,12 @@ export function fetchVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentR
     );
 }
 
-export function fetchVoltageLevelsMapInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchVoltageLevelsMapInfos(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -331,7 +391,12 @@ export function fetchVoltageLevelsMapInfos(studyUuid, currentNodeUuid, currentRo
     );
 }
 
-export function fetchTwoWindingsTransformers(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchTwoWindingsTransformers(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -343,7 +408,12 @@ export function fetchTwoWindingsTransformers(studyUuid, currentNodeUuid, current
     );
 }
 
-export function fetchThreeWindingsTransformers(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchThreeWindingsTransformers(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -355,7 +425,12 @@ export function fetchThreeWindingsTransformers(studyUuid, currentNodeUuid, curre
     );
 }
 
-export function fetchGenerators(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchGenerators(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -366,7 +441,12 @@ export function fetchGenerators(studyUuid, currentNodeUuid, currentRootNetworkUu
     );
 }
 
-export function fetchLoads(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchLoads(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -378,7 +458,12 @@ export function fetchLoads(studyUuid, currentNodeUuid, currentRootNetworkUuid, s
     );
 }
 
-export function fetchDanglingLines(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchDanglingLines(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -389,7 +474,12 @@ export function fetchDanglingLines(studyUuid, currentNodeUuid, currentRootNetwor
     );
 }
 
-export function fetchBatteries(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchBatteries(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -400,7 +490,12 @@ export function fetchBatteries(studyUuid, currentNodeUuid, currentRootNetworkUui
     );
 }
 
-export function fetchHvdcLines(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchHvdcLines(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -412,7 +507,12 @@ export function fetchHvdcLines(studyUuid, currentNodeUuid, currentRootNetworkUui
     );
 }
 
-export function fetchLccConverterStations(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchLccConverterStations(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -423,7 +523,12 @@ export function fetchLccConverterStations(studyUuid, currentNodeUuid, currentRoo
     );
 }
 
-export function fetchVscConverterStations(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchVscConverterStations(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -434,7 +539,12 @@ export function fetchVscConverterStations(studyUuid, currentNodeUuid, currentRoo
     );
 }
 
-export function fetchShuntCompensators(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchShuntCompensators(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -445,7 +555,12 @@ export function fetchShuntCompensators(studyUuid, currentNodeUuid, currentRootNe
     );
 }
 
-export function fetchStaticVarCompensators(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchStaticVarCompensators(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -456,7 +571,12 @@ export function fetchStaticVarCompensators(studyUuid, currentNodeUuid, currentRo
     );
 }
 
-export function fetchBuses(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchBuses(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -467,7 +587,12 @@ export function fetchBuses(studyUuid, currentNodeUuid, currentRootNetworkUuid, s
     );
 }
 
-export function fetchBusbarSections(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
+export function fetchBusbarSections(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
     return fetchNetworkElementsInfos(
         studyUuid,
         currentNodeUuid,
@@ -477,14 +602,28 @@ export function fetchBusbarSections(studyUuid, currentNodeUuid, currentRootNetwo
         EQUIPMENT_INFOS_TYPES.TAB.type
     );
 }
-
-export const fetchNetworkExistence = (studyUuid, rootNetworkUuid) => {
+export function fetchTieLines(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    substationsIds?: string[]
+) {
+    return fetchNetworkElementsInfos(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        substationsIds,
+        EQUIPMENT_TYPES.TIE_LINE,
+        EQUIPMENT_INFOS_TYPES.TAB.type
+    );
+}
+export const fetchNetworkExistence = (studyUuid: UUID, rootNetworkUuid: UUID) => {
     const fetchNetworkExistenceUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/network`;
 
     return backendFetch(fetchNetworkExistenceUrl, { method: 'HEAD' });
 };
 
-export const fetchStudyIndexationStatus = (studyUuid, rootNetworkUuid) => {
+export const fetchStudyIndexationStatus = (studyUuid: UUID, rootNetworkUuid: UUID) => {
     console.info(`Fetching study indexation status of study '${studyUuid}' ...`);
     const fetchStudyIndexationUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${studyUuid}/root-networks/${rootNetworkUuid}/indexation/status`;
 
@@ -494,23 +633,16 @@ export const fetchStudyIndexationStatus = (studyUuid, rootNetworkUuid) => {
 };
 
 /* export-network */
-export function getExportUrl(studyUuid, nodeUuid, currentRootNetworkUuid, rootNetworkUuid, exportFormat) {
+
+export function getExportUrl(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID, exportFormat: string) {
+    // getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+    // '/root-networks/' +
+    // rootNetworkUuid +
+    // '/export-network/' +
+    // exportFormat;
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
-        '/root-networks/' +
-        rootNetworkUuid +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) +
         '/export-network/' +
         exportFormat;
     return getUrlWithToken(url);
-}
-
-export function fetchTieLines(studyUuid, currentNodeUuid, currentRootNetworkUuid, substationsIds) {
-    return fetchNetworkElementsInfos(
-        studyUuid,
-        currentNodeUuid,
-        currentRootNetworkUuid,
-        substationsIds,
-        EQUIPMENT_TYPES.TIE_LINE,
-        EQUIPMENT_INFOS_TYPES.TAB.type
-    );
 }

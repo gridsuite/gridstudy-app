@@ -7,8 +7,23 @@
 
 import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
+import { UUID } from 'crypto';
+import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
+import { NodeType } from '../../components/graph/tree-node.type';
+import { BUILD_STATUS } from '../../components/network/constants';
 
-export function copySubtree(sourceStudyUuid, targetStudyUuid, nodeToCopyUuid, referenceNodeUuid) {
+interface Node {
+    name: string;
+    type: NodeType;
+    localBuildStatus: BUILD_STATUS;
+    globalBuildStatus: BUILD_STATUS;
+}
+export function copySubtree(
+    sourceStudyUuid: UUID,
+    targetStudyUuid: UUID,
+    nodeToCopyUuid: UUID,
+    referenceNodeUuid: UUID
+) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyUuid) +
         '/tree/subtrees?subtreeToCopyParentNodeUuid=' +
@@ -27,7 +42,7 @@ export function copySubtree(sourceStudyUuid, targetStudyUuid, nodeToCopyUuid, re
     });
 }
 
-export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
+export function cutSubtree(targetStudyId: UUID, nodeToCopyUuid: UUID, referenceNodeUuid: UUID) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyId) +
         '/tree/subtrees?subtreeToCutParentNodeUuid=' +
@@ -44,7 +59,12 @@ export function cutSubtree(targetStudyId, nodeToCopyUuid, referenceNodeUuid) {
     });
 }
 
-export function cutTreeNode(studyUuid, nodeToCutUuid, referenceNodeUuid, insertMode) {
+export function cutTreeNode(
+    studyUuid: UUID,
+    nodeToCutUuid: UUID,
+    referenceNodeUuid: UUID,
+    insertMode: NodeInsertModes
+) {
     const nodeCutUrl =
         getStudyUrl(studyUuid) +
         '/tree/nodes?insertMode=' +
@@ -63,7 +83,13 @@ export function cutTreeNode(studyUuid, nodeToCutUuid, referenceNodeUuid, insertM
     });
 }
 
-export function copyTreeNode(sourceStudyUuid, targetStudyId, nodeToCopyUuid, referenceNodeUuid, insertMode) {
+export function copyTreeNode(
+    sourceStudyUuid: UUID,
+    targetStudyId: UUID,
+    nodeToCopyUuid: UUID,
+    referenceNodeUuid: UUID,
+    insertMode: NodeInsertModes
+) {
     const nodeCopyUrl =
         getStudyUrl(targetStudyId) +
         '/tree/nodes?insertMode=' +
@@ -84,7 +110,7 @@ export function copyTreeNode(sourceStudyUuid, targetStudyId, nodeToCopyUuid, ref
     });
 }
 
-export function createTreeNode(studyUuid, parentId, insertMode, node) {
+export function createTreeNode(studyUuid: UUID, parentId: UUID, insertMode: NodeInsertModes, node: Node) {
     const nodeCreationUrl =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentId) + '?mode=' + insertMode;
     console.debug('%s with body: %s', nodeCreationUrl, node);
@@ -98,7 +124,7 @@ export function createTreeNode(studyUuid, parentId, insertMode, node) {
     });
 }
 
-export function stashTreeNode(studyUuid, nodeId) {
+export function stashTreeNode(studyUuid: UUID, nodeId: UUID) {
     console.info('Stash tree node : ', nodeId);
     const url = getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(nodeId) + '/stash';
     console.debug(url);
@@ -107,7 +133,7 @@ export function stashTreeNode(studyUuid, nodeId) {
     });
 }
 
-export function stashSubtree(studyUuid, parentNodeId) {
+export function stashSubtree(studyUuid: UUID, parentNodeId: UUID) {
     console.info('stash node subtree : ', parentNodeId);
     const url =
         getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentNodeId) + '/stash?stashChildren=true';
@@ -117,7 +143,14 @@ export function stashSubtree(studyUuid, parentNodeId) {
     });
 }
 
-export function updateTreeNode(studyUuid, node) {
+export function updateTreeNode(
+    studyUuid: UUID | null,
+    node: {
+        id: UUID | undefined;
+        type: NodeType | undefined;
+        name: string;
+    }
+) {
     const nodeUpdateUrl = getStudyUrl(studyUuid) + '/tree/nodes';
     console.debug(nodeUpdateUrl);
     return backendFetch(nodeUpdateUrl, {
@@ -130,7 +163,7 @@ export function updateTreeNode(studyUuid, node) {
     });
 }
 
-export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid, rootNetworkUuid) {
+export function fetchNetworkModificationTreeNode(studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) {
     console.info('Fetching network modification tree node : ', nodeUuid);
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('rootNetworkUuid', rootNetworkUuid);
@@ -140,7 +173,7 @@ export function fetchNetworkModificationTreeNode(studyUuid, nodeUuid, rootNetwor
     return backendFetchJson(url);
 }
 
-export function fetchNetworkModificationTree(studyUuid, rootNetworkUuid) {
+export function fetchNetworkModificationTree(studyUuid: UUID, rootNetworkUuid: UUID) {
     console.info('Fetching network modification tree');
     const urlSearchParams = new URLSearchParams();
     urlSearchParams.set('rootNetworkUuid', rootNetworkUuid);
@@ -149,26 +182,23 @@ export function fetchNetworkModificationTree(studyUuid, rootNetworkUuid) {
     return backendFetchJson(url);
 }
 
-export function fetchNetworkModificationSubtree(studyUuid, parentId) {
+export function fetchNetworkModificationSubtree(studyUuid: UUID, parentId: UUID) {
     console.info('Fetching network modification tree node : ', parentId);
     const url = getStudyUrl(studyUuid) + '/subtree?parentNodeUuid=' + encodeURIComponent(parentId);
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchStashedNodes(studyUuid) {
+export function fetchStashedNodes(studyUuid: UUID) {
     console.info('Fetching stashed nodes for study : ', studyUuid);
     const url = getStudyUrl(studyUuid) + '/tree/nodes/stash';
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function restoreStashedNodes(studyUuid, nodeToRestoreIds, anchorNodeId) {
+export function restoreStashedNodes(studyUuid: UUID, nodeToRestoreIds: UUID[], anchorNodeId: UUID) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append(
-        'ids',
-        nodeToRestoreIds.map((id) => encodeURIComponent(id))
-    );
+    urlSearchParams.append('ids', nodeToRestoreIds.map((id) => encodeURIComponent(id)).join(','));
     urlSearchParams.append('anchorNodeId', encodeURIComponent(anchorNodeId));
 
     console.info('Restoring nodes %s under nodes %s of study : %s', nodeToRestoreIds, nodeToRestoreIds, studyUuid);
@@ -184,13 +214,10 @@ export function restoreStashedNodes(studyUuid, nodeToRestoreIds, anchorNodeId) {
     });
 }
 
-export function deleteStashedNodes(studyUuid, nodeToDeleteIds) {
+export function deleteStashedNodes(studyUuid: UUID, nodeToDeleteIds: UUID[]) {
     const urlSearchParams = new URLSearchParams();
-    urlSearchParams.append(
-        'ids',
-        nodeToDeleteIds.map((id) => encodeURIComponent(id))
-    );
-    urlSearchParams.append('deleteChildren', true);
+    urlSearchParams.append('ids', nodeToDeleteIds.map((id) => encodeURIComponent(id)).join(','));
+    urlSearchParams.append('deleteChildren', String(true));
 
     console.info('Delete nodes %s of study : %s', nodeToDeleteIds, studyUuid);
     const url = getStudyUrl(studyUuid) + '/tree/nodes?' + urlSearchParams.toString();

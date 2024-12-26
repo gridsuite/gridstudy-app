@@ -7,8 +7,9 @@
 
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { UUID } from 'crypto';
 
-export function startStateEstimation(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function startStateEstimation(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Running state estimation on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
@@ -20,7 +21,7 @@ export function startStateEstimation(studyUuid, currentNodeUuid, currentRootNetw
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopStateEstimation(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function stopStateEstimation(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Stopping state estimation on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
@@ -33,7 +34,7 @@ export function stopStateEstimation(studyUuid, currentNodeUuid, currentRootNetwo
     return backendFetch(url, { method: 'put' });
 }
 
-export function fetchStateEstimationStatus(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+export function fetchStateEstimationStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info(
         `Fetching state estimation status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
     );
@@ -46,8 +47,10 @@ export function fetchStateEstimationStatus(studyUuid, currentNodeUuid, currentRo
     return backendFetchText(url);
 }
 
-export function fetchStateEstimationResult(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
-    console.info(`Fetching state estimation result on ${studyUuid} and node ${currentNodeUuid}  ...`);
+export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching state estimation result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
+    );
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,

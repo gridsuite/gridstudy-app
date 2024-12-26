@@ -5,7 +5,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { UUID } from 'crypto';
 import {
     backendFetch,
     backendFetchJson,
@@ -13,22 +12,31 @@ import {
     getQueryParamsList,
     getRequestParamFromList,
 } from '../utils';
-import ComputingType from 'components/computing-status/computing-type';
-import { NetworkModificationCopyInfo } from 'components/graph/menus/network-modification-menu.type';
-import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from 'utils/report/report.constant';
+import { UUID } from 'crypto';
+import { COMPUTING_AND_NETWORK_MODIFICATION_TYPE } from '../../utils/report/report.constant';
 import { EquipmentType } from '@gridsuite/commons-ui';
+import { NetworkModificationCopyInfo } from '../../components/graph/menus/network-modification-menu.type';
+import { ComputingType } from '../../components/computing-status/computing-type';
 
+export function safeEncodeURIComponent(value: string | null | undefined): string {
+    return value != null ? encodeURIComponent(value) : '??';
+}
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
-export const getStudyUrl = (studyUuid: UUID) => `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}`;
+export const getStudyUrl = (studyUuid: UUID | null) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
 
-export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (studyUuid: UUID, nodeUuid: UUID, rootNetworkUuid: UUID) =>
-    `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/root-networks/${encodeURIComponent(
+export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
+    studyUuid: string | null | undefined,
+    nodeUuid: string | undefined,
+    rootNetworkUuid: string | undefined
+) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
         rootNetworkUuid
-    )}/nodes/${encodeURIComponent(nodeUuid)}`;
+    )}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
-export const getStudyUrlWithNodeUuid = (studyUuid: UUID, nodeUuid: UUID) =>
-    `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(studyUuid)}/nodes/${encodeURIComponent(nodeUuid)}`;
+export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
 export const fetchStudy = (studyUuid: UUID) => {
     console.info(`Fetching study '${studyUuid}' ...`);
@@ -68,7 +76,7 @@ export function getNetworkAreaDiagramUrl(
 }
 
 export function fetchParentNodesReport(
-    studyUuid: UUID,
+    studyUuid: UUID | null,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     nodeOnlyReport: boolean,
@@ -100,7 +108,7 @@ export function fetchParentNodesReport(
 }
 
 export function fetchNodeReportLogs(
-    studyUuid: UUID,
+    studyUuid: UUID | null,
     nodeUuid: UUID,
     currentRootNetworkUuid: UUID,
     reportId: string | null,
@@ -191,9 +199,9 @@ export function copyOrMoveModifications(
     const copyOrMoveModificationUrl =
         PREFIX_STUDY_QUERIES +
         '/v1/studies/' +
-        encodeURIComponent(studyUuid) +
+        safeEncodeURIComponent(studyUuid) +
         '/nodes/' +
-        encodeURIComponent(targetNodeId) +
+        safeEncodeURIComponent(targetNodeId) +
         '?' +
         new URLSearchParams({
             action: copyInfos.copyType,

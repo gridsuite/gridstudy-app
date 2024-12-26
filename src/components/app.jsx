@@ -46,7 +46,7 @@ import { StudyContainer } from './study-container';
 import { fetchValidateUser } from '../services/user-admin';
 import { fetchConfigParameter, fetchConfigParameters } from '../services/config';
 import { fetchDefaultParametersValues, fetchIdpSettings } from '../services/utils';
-import { getOptionalServices } from '../services/study';
+import { getOptionalServices } from '../services/study/index';
 import {
     changeDisplayedColumns,
     changeLockedColumns,

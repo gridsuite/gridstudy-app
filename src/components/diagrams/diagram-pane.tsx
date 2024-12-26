@@ -58,18 +58,18 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getVoltageLevelSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      currentRootNetworkUuid,
-                      voltageLevelId,
-                      paramUseName,
-                      networkVisuParams.singleLineDiagramParameters.centerLabel,
-                      networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                      networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                      SLD_DISPLAY_MODE.STATE_VARIABLE,
-                      language
-                  )
+                ? getVoltageLevelSingleLineDiagram({
+                      studyUuid: studyUuid,
+                      currentNodeUuid: currentNode?.id,
+                      currentRootNetworkUuid: currentRootNetworkUuid,
+                      voltageLevelId: voltageLevelId,
+                      useName: paramUseName,
+                      centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+                      diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                      componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                      sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language: language,
+                  })
                 : null,
         [
             currentNode,
@@ -86,18 +86,18 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getSubstationSingleLineDiagram(
-                      studyUuid,
-                      currentNode?.id,
-                      currentRootNetworkUuid,
-                      voltageLevelId,
-                      paramUseName,
-                      networkVisuParams.singleLineDiagramParameters.centerLabel,
-                      networkVisuParams.singleLineDiagramParameters.diagonalLabel,
-                      networkVisuParams.singleLineDiagramParameters.substationLayout,
-                      networkVisuParams.singleLineDiagramParameters.componentLibrary,
-                      language
-                  )
+                ? getSubstationSingleLineDiagram({
+                      studyUuid: studyUuid,
+                      currentNodeUuid: currentNode?.id,
+                      currentRootNetworkUuid: currentRootNetworkUuid,
+                      substationId: voltageLevelId,
+                      useName: paramUseName,
+                      centerLabel: networkVisuParams.singleLineDiagramParameters.centerLabel,
+                      diagonalLabel: networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                      substationLayout: networkVisuParams.singleLineDiagramParameters.substationLayout,
+                      componentLibrary: networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                      language: language,
+                  })
                 : null,
         [
             networkVisuParams.singleLineDiagramParameters.centerLabel,
@@ -108,7 +108,6 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode, currentRo
             paramUseName,
             currentNode,
             currentRootNetworkUuid,
-
             language,
         ]
     );
