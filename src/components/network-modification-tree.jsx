@@ -28,7 +28,7 @@ import {
     snapGrid,
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
-import { updateNodesColumnPositions } from '../services/study/tree-subtree.js';
+import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
 import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const NetworkModificationTree = ({

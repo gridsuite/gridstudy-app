@@ -112,16 +112,16 @@ const SubstationCreationDialog = ({
 
     const onSubmit = useCallback(
         (substation) => {
-            createSubstation(
-                studyUuid,
-                currentNodeUuid,
-                substation[EQUIPMENT_ID],
-                sanitizeString(substation[EQUIPMENT_NAME]),
-                substation[COUNTRY],
-                !!editData,
-                editData ? editData.uuid : undefined,
-                toModificationProperties(substation)
-            ).catch((error) => {
+            createSubstation({
+                studyUuid: studyUuid,
+                nodeUuid: currentNodeUuid,
+                substationId: substation[EQUIPMENT_ID],
+                substationName: sanitizeString(substation[EQUIPMENT_NAME]),
+                country: substation[COUNTRY],
+                isUpdate: !!editData,
+                modificationUuid: editData ? editData.uuid : undefined,
+                properties: toModificationProperties(substation),
+            }).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'SubstationCreationError',
