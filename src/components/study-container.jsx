@@ -51,12 +51,26 @@ import { StudyIndexationStatus } from 'redux/reducer';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { NodeType } from './graph/tree-node.type';
 
-function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, nodeUuid, invalidations) {
+function isWorthUpdate(
+    studyUpdatedForce,
+    fetcher,
+    lastUpdateRef,
+    nodeUuidRef,
+    rootNetworkUuidRef,
+    nodeUuid,
+    rootNetworkUuid,
+    invalidations
+) {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
+    console.log('TEST ====== ', studyUpdatedForce);
+
     if (nodeUuidRef.current !== nodeUuid) {
+        return true;
+    }
+    if (rootNetworkUuidRef.current !== rootNetworkUuid) {
         return true;
     }
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
@@ -94,16 +108,18 @@ export function useNodeData(
     const [isPending, setIsPending] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef();
+    const rootNetworkUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const lastUpdateRef = useRef();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
+        rootNetworkUuidRef.current = currentRootNetworkUuid;
         setIsPending(true);
         setErrorMessage(undefined);
         fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid) {
+                if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === currentRootNetworkUuid) {
                     setResult(resultConversion ? resultConversion(res) : res);
                 }
             })
@@ -116,7 +132,7 @@ export function useNodeData(
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid || !fetcher) {
+        if (!studyUuid || !nodeUuid || !currentRootNetworkUuid || !fetcher) {
             return;
         }
         const isUpdateForUs = isWorthUpdate(
@@ -124,14 +140,20 @@ export function useNodeData(
             fetcher,
             lastUpdateRef,
             nodeUuidRef,
+            rootNetworkUuidRef,
             nodeUuid,
+            currentRootNetworkUuid,
             invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
+        if (
+            nodeUuidRef.current !== nodeUuid ||
+            rootNetworkUuidRef.current !== currentRootNetworkUuid ||
+            isUpdateForUs
+        ) {
             update();
         }
-    }, [update, fetcher, nodeUuid, invalidations, studyUpdatedForce, studyUuid]);
+    }, [update, fetcher, nodeUuid, invalidations, currentRootNetworkUuid, studyUpdatedForce, studyUuid]);
 
     return [result, isPending, setResult, errorMessage, update];
 }
@@ -639,6 +661,8 @@ export function StudyContainer({ view, onChangeTab }) {
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
+        console.log('TEST ====== ', studyUpdatedForce);
+
         if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE) {
             const successCallback = () =>
                 snackInfo({
@@ -693,6 +717,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== ', studyUpdatedForce);
+
             if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
                 dispatch(resetEquipmentsPostLoadflow());
             }
@@ -731,6 +757,8 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== ', studyUpdatedForce);
+
             if (
                 studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'metadata_updated'

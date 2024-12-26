@@ -16,12 +16,20 @@ export function getDynamicMappings(studyUuid) {
     return backendFetchJson(url);
 }
 
-export function startDynamicSimulation(studyUuid, currentNodeUuid, dynamicSimulationConfiguration) {
-    console.info(`Running dynamic simulation on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function startDynamicSimulation(
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    dynamicSimulationConfiguration
+) {
+    console.info(
+        `Running dynamic simulation on '${studyUuid}' on root nerwork '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
 
     const startDynamicSimulationUrl = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
+        currentRootNetworkUuid
     )}/dynamic-simulation/run`;
 
     // add body
@@ -39,10 +47,13 @@ export function startDynamicSimulation(studyUuid, currentNodeUuid, dynamicSimula
     });
 }
 
-export function stopDynamicSimulation(studyUuid, currentNodeUuid) {
-    console.info(`Stopping dynamic simulation on '${studyUuid}' and node '${currentNodeUuid}' ...`);
+export function stopDynamicSimulation(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.info(
+        `Stopping dynamic simulation on '${studyUuid}' for root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}' ...`
+    );
     const stopDynamicSimulationUrl =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/dynamic-simulation/stop';
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/dynamic-simulation/stop';
     console.debug(stopDynamicSimulationUrl);
     return backendFetch(stopDynamicSimulationUrl, { method: 'put' });
 }
@@ -58,7 +69,12 @@ export function fetchDynamicSimulationStatus(studyUuid, currentNodeUuid, current
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationResultTimeSeries(studyUuid, currentNodeUuid, timeSeriesNames) {
+export function fetchDynamicSimulationResultTimeSeries(
+    studyUuid,
+    currentNodeUuid,
+    currentRootNetworkUuid,
+    timeSeriesNames
+) {
     console.info(`Fetching dynamic simulation time series result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
 
     // Add params to Url
@@ -67,17 +83,21 @@ export function fetchDynamicSimulationResultTimeSeries(studyUuid, currentNodeUui
 
     const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        currentNodeUuid
+        currentNodeUuid,
+        currentRootNetworkUuid
     )}/dynamic-simulation/result/timeseries?${urlSearchParams}`;
 
     console.debug(url);
     return backendFetchJson(url);
 }
 
-export function fetchDynamicSimulationModels(studyUuid, nodeUuid) {
-    console.info(`Fetching dynamic simulation models on '${studyUuid}' and node '${nodeUuid}' ...`);
+export function fetchDynamicSimulationModels(studyUuid, nodeUuid, rootNetworkUuid) {
+    console.info(
+        `Fetching dynamic simulation models on '${studyUuid}' on root network '${rootNetworkUuid}' and node '${nodeUuid}' ...`
+    );
 
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) + '/dynamic-simulation/models';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) + '/dynamic-simulation/models';
     console.debug(url);
     return backendFetchJson(url);
 }

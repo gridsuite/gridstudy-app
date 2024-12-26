@@ -40,6 +40,7 @@ export const useGetStudyImpacts = (): StudyImpactsWithReset => {
 
     useEffect(() => {
         if (studyUpdatedForce.type === NotificationType.STUDY) {
+            console.log('TEST ====== ', studyUpdatedForce);
             const {
                 impactedSubstationsIds: substationsIds,
                 deletedEquipments,

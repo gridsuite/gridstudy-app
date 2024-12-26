@@ -792,6 +792,7 @@ export const NetworkMapTab = ({
 
     useEffect(() => {
         if (isInitialized && studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== ', studyUpdatedForce);
             if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
                 reloadMapEquipments(currentNodeRef.current, undefined);
             }

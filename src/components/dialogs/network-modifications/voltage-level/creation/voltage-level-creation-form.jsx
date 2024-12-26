@@ -34,7 +34,7 @@ import { useWatch } from 'react-hook-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
+const VoltageLevelCreationForm = ({ currentNode, studyUuid, currentRootNetworkUuid }) => {
     const currentNodeUuid = currentNode?.id;
     const [substations, setSubstations] = useState([]);
 
@@ -42,12 +42,14 @@ const VoltageLevelCreationForm = ({ currentNode, studyUuid }) => {
     const watchSectionCount = useWatch({ name: SECTION_COUNT });
 
     useEffect(() => {
-        if (studyUuid && currentNodeUuid) {
-            fetchEquipmentsIds(studyUuid, currentNodeUuid, undefined, 'SUBSTATION', true).then((values) => {
-                setSubstations(values.sort((a, b) => a.localeCompare(b)));
-            });
+        if (studyUuid && currentNodeUuid && currentRootNetworkUuid) {
+            fetchEquipmentsIds(studyUuid, currentNodeUuid, currentRootNetworkUuid, undefined, 'SUBSTATION', true).then(
+                (values) => {
+                    setSubstations(values.sort((a, b) => a.localeCompare(b)));
+                }
+            );
         }
-    }, [studyUuid, currentNodeUuid]);
+    }, [studyUuid, currentNodeUuid, currentRootNetworkUuid]);
 
     const voltageLevelIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, margin: 'normal' }} />

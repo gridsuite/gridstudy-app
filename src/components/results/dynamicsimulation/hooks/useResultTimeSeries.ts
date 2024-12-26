@@ -51,7 +51,12 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID, currentRootNetwork
                     (indexValue) => result.timeseriesMetadatas[indexValue].name
                 );
 
-                return fetchDynamicSimulationResultTimeSeries(studyUuid, nodeUuid, timeSeriesNamesToLoad)
+                return fetchDynamicSimulationResultTimeSeries(
+                    studyUuid,
+                    nodeUuid,
+                    currentRootNetworkUuid,
+                    timeSeriesNamesToLoad
+                )
                     .then((newlyLoadedTimeSeries) => {
                         // insert one by one newly loaded timeserie into the cache
                         for (const newSeries of newlyLoadedTimeSeries) {
@@ -78,7 +83,7 @@ const useResultTimeSeries = (nodeUuid: UUID, studyUuid: UUID, currentRootNetwork
                     });
             }
         },
-        [studyUuid, nodeUuid, result, snackError]
+        [studyUuid, nodeUuid, currentRootNetworkUuid, result, snackError]
     );
 
     return [result, lazyLoadTimeSeriesCb, isLoading];

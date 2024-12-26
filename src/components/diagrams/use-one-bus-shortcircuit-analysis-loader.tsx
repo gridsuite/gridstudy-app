@@ -83,6 +83,7 @@ export function useOneBusShortcircuitAnalysisLoader(diagramId: string, nodeId: U
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== ', studyUpdatedForce);
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysisResult' ||
                 studyUpdatedForce.eventData.headers['updateType'] === 'oneBusShortCircuitAnalysis_failed'

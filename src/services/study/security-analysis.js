@@ -67,12 +67,19 @@ export function fetchSecurityAnalysisResult(studyUuid, currentNodeUuid, currentR
 export function downloadSecurityAnalysisResultZippedCsv(
     studyUuid,
     currentNodeUuid,
+    currentRootNetworkUuid,
     queryParams,
     headers,
     enumValueTranslations
 ) {
-    console.info(`Fetching security analysis zipped csv on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/security-analysis/result/csv`;
+    console.info(
+        `Fetching security analysis zipped csv on ${studyUuid} on root network  ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/security-analysis/result/csv`;
 
     const { resultType } = queryParams || {};
 

@@ -1100,6 +1100,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     // After the modification has been applied, we need to update the equipment data in the grid
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== ', studyUpdatedForce);
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED' &&
                 studyUpdatedForce.eventData.headers['parentNode'] === currentNode.id &&

@@ -34,6 +34,7 @@ const EventModificationScenarioEditor = () => {
     const { snackError } = useSnackMessage();
     const [events, setEvents] = useState<Event[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
@@ -92,11 +93,11 @@ const EventModificationScenarioEditor = () => {
 
     const doFetchEvents = useCallback(() => {
         // Do not fetch modifications on the root node
-        if (currentNode?.type !== 'NETWORK_MODIFICATION' || !studyUuid) {
+        if (currentNode?.type !== 'NETWORK_MODIFICATION' || !studyUuid || !currentRootNetworkUuid) {
             return;
         }
         setLaunchLoader(true);
-        fetchDynamicSimulationEvents(studyUuid, currentNode.id)
+        fetchDynamicSimulationEvents(studyUuid, currentNode.id, currentRootNetworkUuid)
             .then((res) => {
                 // Check if during asynchronous request currentNode has already changed
                 // otherwise accept fetch results
@@ -117,7 +118,15 @@ const EventModificationScenarioEditor = () => {
                 setLaunchLoader(false);
                 dispatch(setModificationsInProgress(false));
             });
-    }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
+    }, [
+        currentNode?.type,
+        currentRootNetworkUuid,
+        currentNode?.id,
+        studyUuid,
+        updateSelectedItems,
+        snackError,
+        dispatch,
+    ]);
 
     useEffect(() => {
         // first time with currentNode initialized then fetch events
@@ -133,6 +142,8 @@ const EventModificationScenarioEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== ', studyUpdatedForce);
+
             if (currentNodeIdRef.current !== studyUpdatedForce.eventData.headers['parentNode']) {
                 return;
             }
@@ -164,17 +175,19 @@ const EventModificationScenarioEditor = () => {
     const isAnyNodeBuilding = useIsAnyNodeBuilding();
 
     const doDeleteEvent = useCallback(() => {
-        if (!studyUuid || !currentNode?.id) {
+        if (!studyUuid || !currentNode?.id || !currentRootNetworkUuid) {
             return;
         }
         const selectedEvents = [...selectedItems];
-        deleteDynamicSimulationEvents(studyUuid, currentNode.id, selectedEvents).catch((errMsg) => {
-            snackError({
-                messageTxt: errMsg,
-                headerId: 'DynamicSimulationEventDeleteError',
-            });
-        });
-    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
+        deleteDynamicSimulationEvents(studyUuid, currentNode.id, currentRootNetworkUuid, selectedEvents).catch(
+            (errMsg) => {
+                snackError({
+                    messageTxt: errMsg,
+                    headerId: 'DynamicSimulationEventDeleteError',
+                });
+            }
+        );
+    }, [currentNode?.id, selectedItems, snackError, studyUuid, currentRootNetworkUuid]);
 
     const doEditEvent = (event: Event) => {
         setEditDialogOpen({

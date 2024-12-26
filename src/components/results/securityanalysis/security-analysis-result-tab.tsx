@@ -303,6 +303,7 @@ export const SecurityAnalysisResultTab: FunctionComponent<SecurityAnalysisTabPro
                         <SecurityAnalysisExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
+                            rootNetworkUuid={currentRootNetworkUuid}
                             csvHeaders={csvHeaders}
                             resultType={resultType}
                             disabled={isExportButtonDisabled}

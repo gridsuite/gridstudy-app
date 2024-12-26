@@ -494,9 +494,9 @@ export const fetchStudyIndexationStatus = (studyUuid, rootNetworkUuid) => {
 };
 
 /* export-network */
-export function getExportUrl(studyUuid, nodeUuid, rootNetworkUuid, exportFormat) {
+export function getExportUrl(studyUuid, nodeUuid, currentRootNetworkUuid, rootNetworkUuid, exportFormat) {
     const url =
-        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
         '/root-networks/' +
         rootNetworkUuid +
         '/export-network/' +

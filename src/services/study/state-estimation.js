@@ -8,17 +8,27 @@
 import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
-export function startStateEstimation(studyUuid, currentNodeUuid) {
-    console.info(`Running state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid) + '/state-estimation/run';
+export function startStateEstimation(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.info(
+        `Running state estimation on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/state-estimation/run';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopStateEstimation(studyUuid, currentNodeUuid) {
-    console.info(`Stopping state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid)}/state-estimation/stop`;
+export function stopStateEstimation(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
+    console.info(
+        `Stopping state estimation on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/state-estimation/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }

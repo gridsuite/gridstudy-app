@@ -8,7 +8,7 @@
 import { getStudyUrl, getStudyUrlWithNodeUuidAndRootNetworkUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 
-export function startNonEvacuatedEnergy(studyUuid, currentRootNetworkUuid, currentNodeUuid) {
+export function startNonEvacuatedEnergy(studyUuid, currentNodeUuid, currentRootNetworkUuid) {
     console.info(
         `Running non evacuated energy analysis on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid} ...`
     );

@@ -190,19 +190,23 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== NETWORKMODIFTREEPANE', studyUpdatedForce);
+
             if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_CREATED) {
-                fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['newNode']).then(
-                    (node) => {
-                        dispatch(
-                            networkModificationTreeNodeAdded(
-                                node,
-                                studyUpdatedForce.eventData.headers['parentNode'],
-                                studyUpdatedForce.eventData.headers['insertMode'],
-                                studyUpdatedForce.eventData.headers['referenceNodeUuid']
-                            )
-                        );
-                    }
-                );
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['newNode'],
+                    currentRootNetworkUuid
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeAdded(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode'],
+                            studyUpdatedForce.eventData.headers['referenceNodeUuid']
+                        )
+                    );
+                });
 
                 if (isSubtreeImpacted([studyUpdatedForce.eventData.headers['parentNode']])) {
                     resetNodeClipboard();
@@ -219,18 +223,20 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
-                fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
-                    (node) => {
-                        dispatch(
-                            networkModificationTreeNodeMoved(
-                                node,
-                                studyUpdatedForce.eventData.headers['parentNode'],
-                                studyUpdatedForce.eventData.headers['insertMode'],
-                                studyUpdatedForce.eventData.headers['referenceNodeUuid']
-                            )
-                        );
-                    }
-                );
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['movedNode'],
+                    currentRootNetworkUuid
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeMoved(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode'],
+                            studyUpdatedForce.eventData.headers['referenceNodeUuid']
+                        )
+                    );
+                });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeMoved') {
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
                     (nodes) => {
@@ -295,6 +301,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
         snackInfo,
         dispatch,
         broadcastChannel,
+        currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
     ]);
@@ -560,6 +567,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportStudy}
                     studyUuid={studyUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     nodeUuid={activeNode?.id}
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',

@@ -37,6 +37,7 @@ const CaseListSelector = (props) => {
     const favoriteContingencyListUuids = useSelector((state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
 
     const [contingencyList, setContingencyList] = useState([]);
 
@@ -79,6 +80,7 @@ const CaseListSelector = (props) => {
             fetchContingencyCount(
                 props.studyUuid,
                 currentNode.id,
+                currentRootNetworkUuid,
                 checkedContingencyList.map((c) => c.id)
             ).then((contingencyCount) => {
                 if (!discardResult) {
@@ -89,7 +91,7 @@ const CaseListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [props.open, props.studyUuid, currentNode, checkedContingencyList]);
+    }, [props.open, props.studyUuid, currentNode, currentRootNetworkUuid, checkedContingencyList]);
 
     useEffect(() => {
         if (favoriteContingencyListUuids && favoriteContingencyListUuids.length > 0 && props.open) {

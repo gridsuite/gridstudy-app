@@ -182,6 +182,9 @@ const RootNetworkNodeEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            
+            console.log('TEST ====== ', studyUpdatedForce);
+
             if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
                 dofetchRootNetworks();
             }

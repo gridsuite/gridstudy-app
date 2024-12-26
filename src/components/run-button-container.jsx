@@ -130,7 +130,13 @@ export function RunButtonContainer({ studyUuid, currentNode, currentRootNetworkU
                 // close the dialog
                 setShowDynamicSimulationParametersSelector(false);
             },
-            () => startDynamicSimulation(studyUuid, currentNode?.id, dynamicSimulationConfiguration),
+            () =>
+                startDynamicSimulation(
+                    studyUuid,
+                    currentNode?.id,
+                    currentRootNetworkUuid,
+                    dynamicSimulationConfiguration
+                ),
             () => {},
             null,
             'DynamicSimulationRunError'

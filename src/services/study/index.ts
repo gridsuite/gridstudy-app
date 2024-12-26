@@ -52,7 +52,9 @@ export function getNetworkAreaDiagramUrl(
     depth: number,
     withGeoData: boolean
 ) {
-    console.info(`Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`);
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+    );
     return (
         getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
