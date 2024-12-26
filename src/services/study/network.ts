@@ -10,7 +10,6 @@ import { EQUIPMENT_INFOS_TYPES, EQUIPMENT_TYPES } from '../../components/utils/e
 import { backendFetch, backendFetchJson, backendFetchText, getQueryParamsList, getUrlWithToken } from '../utils';
 import { UUID } from 'crypto';
 import { EquipmentType, GsLang } from '@gridsuite/commons-ui';
-import { SubstationLayout } from '../../components/diagrams/diagram-common';
 
 interface VoltageLevelSingleLineDiagram {
     studyUuid: UUID;
@@ -19,7 +18,7 @@ interface VoltageLevelSingleLineDiagram {
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
-    componentLibrary: unknown;
+    componentLibrary: string;
     sldDisplayMode: string;
     language: GsLang;
 }
@@ -31,8 +30,8 @@ interface SubstationSingleLineDiagram {
     useName: boolean;
     centerLabel: boolean;
     diagonalLabel: boolean;
-    substationLayout: SubstationLayout;
-    componentLibrary: unknown;
+    substationLayout: string;
+    componentLibrary: string;
     language: GsLang;
 }
 
