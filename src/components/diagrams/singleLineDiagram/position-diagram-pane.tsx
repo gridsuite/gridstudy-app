@@ -8,13 +8,7 @@
 import Dialog from '@mui/material/Dialog';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
-    PARAM_DIAGONAL_LABEL,
-    PARAM_LANGUAGE,
-    PARAM_USE_NAME,
-} from '../../../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../../utils/config-params';
 import PositionDiagram from './position-diagram';
 import { SLD_DISPLAY_MODE } from '../../network/constants';
 import { DiagramType } from '../diagram-common';
@@ -39,10 +33,8 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
     studyUuid,
 }) => {
     const useName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
-    const centerName = useSelector((state: AppState) => state[PARAM_CENTER_LABEL]);
-    const diagonalName = useSelector((state: AppState) => state[PARAM_DIAGONAL_LABEL]);
-    const componentLibrary = useSelector((state: AppState) => state[PARAM_COMPONENT_LIBRARY]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const [svgUrl, setSvgUrl] = useState<string | null>(null);
     const handleClose = () => {
@@ -52,18 +44,27 @@ const PositionDiagramPane: FC<PositionDiagramPaneProps> = ({
 
     const getVoltageLevelSingleLineDiagramUrl = useCallback(
         () =>
-            getVoltageLevelSingleLineDiagram({
-                studyUuid: studyUuid,
-                currentNodeUuid: currentNodeUuid,
-                voltageLevelId: voltageLevelId?.id,
-                useName: useName,
-                centerLabel: centerName,
-                diagonalLabel: diagonalName,
-                componentLibrary: componentLibrary,
-                sldDisplayMode: SLD_DISPLAY_MODE.FEEDER_POSITION,
-                language: language,
-            }),
-        [studyUuid, currentNodeUuid, voltageLevelId?.id, useName, centerName, diagonalName, componentLibrary, language]
+            getVoltageLevelSingleLineDiagram(
+                studyUuid,
+                currentNodeUuid,
+                voltageLevelId?.id,
+                useName,
+                networkVisuParams.singleLineDiagramParameters.centerLabel,
+                networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                SLD_DISPLAY_MODE.FEEDER_POSITION,
+                language
+            ),
+        [
+            studyUuid,
+            currentNodeUuid,
+            voltageLevelId?.id,
+            useName,
+            networkVisuParams.singleLineDiagramParameters.centerLabel,
+            networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+            networkVisuParams.singleLineDiagramParameters.componentLibrary,
+            language,
+        ]
     );
 
     useEffect(() => {

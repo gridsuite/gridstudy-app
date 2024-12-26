@@ -7,15 +7,7 @@
 
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-    PARAM_CENTER_LABEL,
-    PARAM_COMPONENT_LIBRARY,
-    PARAM_DIAGONAL_LABEL,
-    PARAM_INIT_NAD_WITH_GEO_DATA,
-    PARAM_LANGUAGE,
-    PARAM_SUBSTATION_LAYOUT,
-    PARAM_USE_NAME,
-} from '../../utils/config-params';
+import { PARAM_LANGUAGE, PARAM_USE_NAME } from '../../utils/config-params';
 import { Box, Chip, Stack, Theme } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import TimelineIcon from '@mui/icons-material/Timeline';
@@ -60,54 +52,73 @@ const useDisplayView = (studyUuid: UUID, currentNode: CurrentTreeNode) => {
     const { snackError } = useSnackMessage();
     const paramUseName = useSelector((state: AppState) => state[PARAM_USE_NAME]);
     const { getNameOrId } = useNameOrId();
-    const centerName = useSelector((state: AppState) => state[PARAM_CENTER_LABEL]);
-    const diagonalName = useSelector((state: AppState) => state[PARAM_DIAGONAL_LABEL]);
-    const substationLayout = useSelector((state: AppState) => state[PARAM_SUBSTATION_LAYOUT]);
-    const componentLibrary = useSelector((state: AppState) => state[PARAM_COMPONENT_LIBRARY]);
     const language = useSelector((state: AppState) => state[PARAM_LANGUAGE]);
+    const networkVisuParams = useSelector((state: AppState) => state.networkVisualizationsParameters);
 
     const checkAndGetVoltageLevelSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getVoltageLevelSingleLineDiagram({
-                      studyUuid: studyUuid,
-                      currentNodeUuid: currentNode?.id,
-                      voltageLevelId: voltageLevelId,
-                      useName: paramUseName,
-                      centerLabel: centerName,
-                      diagonalLabel: diagonalName,
-                      componentLibrary: componentLibrary,
-                      sldDisplayMode: SLD_DISPLAY_MODE.STATE_VARIABLE,
-                      language: language,
-                  })
+                ? getVoltageLevelSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      paramUseName,
+                      networkVisuParams.singleLineDiagramParameters.centerLabel,
+                      networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                      networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                      SLD_DISPLAY_MODE.STATE_VARIABLE,
+                      language
+                  )
                 : null,
-        [currentNode, studyUuid, paramUseName, centerName, diagonalName, componentLibrary, language]
+        [
+            currentNode,
+            studyUuid,
+            paramUseName,
+            networkVisuParams.singleLineDiagramParameters.centerLabel,
+            networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+            networkVisuParams.singleLineDiagramParameters.componentLibrary,
+            language,
+        ]
     );
 
     const checkAndGetSubstationSingleLineDiagramUrl = useCallback(
         (voltageLevelId: UUID) =>
             isNodeBuilt(currentNode)
-                ? getSubstationSingleLineDiagram({
-                      studyUuid: studyUuid,
-                      currentNodeUuid: currentNode?.id,
-                      substationId: voltageLevelId,
-                      useName: paramUseName,
-                      centerLabel: centerName,
-                      diagonalLabel: diagonalName,
-                      substationLayout: substationLayout,
-                      componentLibrary: componentLibrary,
-                      language: language,
-                  })
+                ? getSubstationSingleLineDiagram(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelId,
+                      paramUseName,
+                      networkVisuParams.singleLineDiagramParameters.centerLabel,
+                      networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+                      networkVisuParams.singleLineDiagramParameters.substationLayout,
+                      networkVisuParams.singleLineDiagramParameters.componentLibrary,
+                      language
+                  )
                 : null,
-        [centerName, componentLibrary, diagonalName, studyUuid, substationLayout, paramUseName, currentNode, language]
+        [
+            networkVisuParams.singleLineDiagramParameters.centerLabel,
+            networkVisuParams.singleLineDiagramParameters.componentLibrary,
+            networkVisuParams.singleLineDiagramParameters.diagonalLabel,
+            studyUuid,
+            networkVisuParams.singleLineDiagramParameters.substationLayout,
+            paramUseName,
+            currentNode,
+            language,
+        ]
     );
-    const initNadWithGeoData = useSelector((state: AppState) => state[PARAM_INIT_NAD_WITH_GEO_DATA]);
     const checkAndGetNetworkAreaDiagramUrl = useCallback(
         (voltageLevelsIds: UUID[], depth: number) =>
             isNodeBuilt(currentNode)
-                ? getNetworkAreaDiagramUrl(studyUuid, currentNode?.id, voltageLevelsIds, depth, initNadWithGeoData)
+                ? getNetworkAreaDiagramUrl(
+                      studyUuid,
+                      currentNode?.id,
+                      voltageLevelsIds,
+                      depth,
+                      networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData
+                  )
                 : null,
-        [studyUuid, currentNode, initNadWithGeoData]
+        [studyUuid, currentNode, networkVisuParams.networkAreaDiagramParameters.initNadWithGeoData]
     );
 
     // this callback returns a promise

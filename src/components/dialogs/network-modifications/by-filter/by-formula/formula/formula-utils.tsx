@@ -69,8 +69,8 @@ export const EQUIPMENTS_FIELDS: EquipmentFields = {
     [EQUIPMENT_TYPES.SHUNT_COMPENSATOR]: [
         { id: 'MAXIMUM_SECTION_COUNT', label: 'maximumSectionCount' },
         { id: 'SECTION_COUNT', label: 'sectionCount' },
-        { id: 'MAXIMUM_SUSCEPTANCE', label: 'maxSusceptance' },
-        { id: 'MAXIMUM_Q_AT_NOMINAL_VOLTAGE', label: 'maxQAtNominalV' },
+        { id: 'MAX_SUSCEPTANCE', label: 'maxSusceptance' },
+        { id: 'MAX_Q_AT_NOMINAL_V', label: 'maxQAtNominalV' },
     ],
     [EQUIPMENT_TYPES.VOLTAGE_LEVEL]: [
         { id: 'NOMINAL_VOLTAGE', label: 'NominalVoltage' },
