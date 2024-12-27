@@ -16,6 +16,8 @@ interface QuickSearchProps {
     onNavigate: (direction: 'next' | 'previous') => void;
     resultCount: number;
     resetSearch: () => void;
+    placeholder?: string;
+    style?: React.CSSProperties;
 }
 
 const styles = {
@@ -31,6 +33,8 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
     onNavigate,
     resultCount,
     resetSearch,
+    placeholder,
+    style = { minWidth: '30%' },
 }) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [resultsCountDisplay, setResultsCountDisplay] = useState(false);
@@ -91,8 +95,8 @@ export const QuickSearch: React.FC<QuickSearchProps> = ({
             value={searchTerm}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder={intl.formatMessage({ id: 'searchPlaceholderLog' })}
-            sx={{ minWidth: '30%' }}
+            placeholder={placeholder ? intl.formatMessage({ id: placeholder }) : ''}
+            sx={{ ...style }}
             size="small"
             InputProps={{
                 endAdornment: (

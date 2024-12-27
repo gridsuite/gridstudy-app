@@ -317,6 +317,7 @@ const LogTable = ({ report, selectedReportId, reportType, reportNature, onRowCli
                     onNavigate={handleNavigate}
                     resultCount={searchResults.length}
                     resetSearch={resetSearch}
+                    placeholder="searchPlaceholderLog"
                 />
             </Box>
             <Box sx={styles.chipContainer}>
