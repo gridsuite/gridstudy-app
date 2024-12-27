@@ -207,7 +207,7 @@ export function fetchNetworkElementsInfos(
 export function fetchNetworkElementInfos(
     studyUuid: string | undefined | null,
     currentNodeUuid: UUID | undefined,
-    currentRootNetworkUuid: UUID | undefined,
+    currentRootNetworkUuid: string | undefined | null,
     elementType: EquipmentType | EQUIPMENT_TYPES,
     infoType: string,
     elementId: string,

@@ -609,9 +609,8 @@ const NetworkModificationNodeEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
-
             if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeDeleted') {
+                console.log('TEST ====== OK', studyUpdatedForce.eventData.headers);
                 if (
                     copyInfosRef.current &&
                     studyUpdatedForce.eventData.headers['nodes']?.some(

@@ -19,7 +19,7 @@ import { NetworkModificationCopyInfo } from '../../components/graph/menus/networ
 import { ComputingType } from '../../components/computing-status/computing-type';
 
 export function safeEncodeURIComponent(value: string | null | undefined): string {
-    return value != null ? encodeURIComponent(value) : '??';
+    return value != null ? encodeURIComponent(value) : '';
 }
 export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 
@@ -29,7 +29,7 @@ export const getStudyUrl = (studyUuid: UUID | null) =>
 export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
     studyUuid: string | null | undefined,
     nodeUuid: string | undefined,
-    rootNetworkUuid: string | undefined
+    rootNetworkUuid: string | undefined | null
 ) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
         rootNetworkUuid

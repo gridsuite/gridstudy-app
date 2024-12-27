@@ -190,9 +190,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== NETWORKMODIFTREEPANE', studyUpdatedForce);
-
             if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_CREATED) {
+                console.log('TEST ====== >>>>>> ££££  ???? NODE_CREATED', studyUpdatedForce.eventData.headers);
+
                 fetchNetworkModificationTreeNode(
                     studyUuid,
                     studyUpdatedForce.eventData.headers['newNode'],
@@ -215,6 +215,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeCreated') {
+                console.log('TEST ====== >>>>>> ££££  ???? subtreeCreated', studyUpdatedForce.eventData.headers);
+
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['newNode']).then(
                     (nodes) => {
                         dispatch(
@@ -223,6 +225,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
+                console.log('TEST ====== >>>>>> ££££  ???? nodeMoved', studyUpdatedForce.eventData.headers);
+
                 fetchNetworkModificationTreeNode(
                     studyUuid,
                     studyUpdatedForce.eventData.headers['movedNode'],
@@ -238,6 +242,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     );
                 });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeMoved') {
+                console.log('TEST ====== >>>>>> ££££  ???? subtreeMoved', studyUpdatedForce.eventData.headers);
+
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
                     (nodes) => {
                         dispatch(
@@ -246,6 +252,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_DELETED) {
+                console.log('TEST ====== >>>>>> ££££  ???? NODE_DELETED', studyUpdatedForce.eventData.headers);
+
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
@@ -259,6 +267,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeUpdated') {
+                console.log('TEST ====== >>>>>> ££££  ???? nodeUpdated', studyUpdatedForce.eventData.headers);
+
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)
@@ -274,8 +284,15 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeRenamed') {
+                console.log('TEST ====== >>>>>> ££££  ???? nodeRenamed', studyUpdatedForce.eventData.headers);
+
                 updateNodes([studyUpdatedForce.eventData.headers['node']]);
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeBuildStatusUpdated') {
+                console.log(
+                    'TEST ====== >>>>>> ££££  ???? nodeBuildStatusUpdated',
+                    studyUpdatedForce.eventData.headers
+                );
+
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)

@@ -65,7 +65,6 @@ function isWorthUpdate(
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
-    console.log('TEST ====== ', studyUpdatedForce);
 
     if (nodeUuidRef.current !== nodeUuid) {
         return true;
@@ -661,9 +660,13 @@ export function StudyContainer({ view, onChangeTab }) {
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
-        console.log('TEST ====== ', studyUpdatedForce);
-
         if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE) {
+            console.log(
+                'TEST ======!!! Type ',
+                'UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE',
+                ' rootNetwork ',
+                studyUpdatedForce.eventData.headers?.['rootNetwork']
+            );
             const successCallback = () =>
                 snackInfo({
                     headerId: 'studyNetworkRecovered',
@@ -671,6 +674,13 @@ export function StudyContainer({ view, onChangeTab }) {
 
             checkNetworkExistenceAndRecreateIfNotFound(successCallback);
         } else if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_INDEXATION_STATUS) {
+            console.log(
+                'TEST ======!!! Type ',
+                'UPDATE_TYPE_INDEXATION_STATUS',
+                ' rootNetwork ',
+                studyUpdatedForce.eventData.headers?.['rootNetwork']
+            );
+
             dispatch(setStudyIndexationStatus(studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS]));
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.INDEXED) {
                 snackInfo({
@@ -679,6 +689,13 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             // notification that the study is not indexed anymore then ask to refresh
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.NOT_INDEXED) {
+                console.log(
+                    'TEST ======!!! Type ',' OK ',
+                    'HEADER_INDEXATION_STATUS',
+                    ' rootNetwork ',
+                    studyUpdatedForce.eventData.headers?.['rootNetwork']
+                );
+
                 snackWarning({
                     headerId: 'studyIndexationNotIndexed',
                 });
@@ -717,9 +734,13 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
-
             if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
+                console.log(
+                    'TEST ======!!! Type ',
+                    'loadflowResult ',
+                    ' rootNetwork ',
+                    studyUpdatedForce.eventData.headers?.['rootNetwork']
+                );
                 dispatch(resetEquipmentsPostLoadflow());
             }
         }
@@ -757,12 +778,16 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
-
             if (
                 studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'metadata_updated'
             ) {
+                console.log(
+                    'TEST ======!!! Type ',
+                    'metadata_updated',
+                    ' rootNetwork ',
+                    studyUpdatedForce.eventData.headers?.['rootNetwork']
+                );
                 fetchStudyPath();
             }
         }

@@ -316,6 +316,7 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
+    rootNetwork: UUID;
     timestamp: number;
     updateType?: string;
     node?: UUID;

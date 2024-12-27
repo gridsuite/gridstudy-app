@@ -45,7 +45,6 @@ function isWorthUpdate(
     currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
-    console.log('TEST ====== ', studyUpdatedForce);
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
