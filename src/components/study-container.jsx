@@ -690,7 +690,8 @@ export function StudyContainer({ view, onChangeTab }) {
             // notification that the study is not indexed anymore then ask to refresh
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.NOT_INDEXED) {
                 console.log(
-                    'TEST ======!!! Type ',' OK ',
+                    'TEST ======!!! Type ',
+                    ' OK ',
                     'HEADER_INDEXATION_STATUS',
                     ' rootNetwork ',
                     studyUpdatedForce.eventData.headers?.['rootNetwork']

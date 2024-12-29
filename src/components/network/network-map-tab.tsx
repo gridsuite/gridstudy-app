@@ -911,15 +911,14 @@ export const NetworkMapTab = ({
         const prevRootNetworkPath = rootNetworkRef.current;
         rootNetworkRef.current = currentRootNetworkUuid;
 
-        if (currentRootNetworkUuid && currentRootNetworkUuid !== prevRootNetworkPath) {
-            console.log('yyyyyyyyyyyyyy');
+        if (currentRootNetworkUuid && currentRootNetworkUuid !== prevRootNetworkPath && rootNodeId) {
             loadRootNodeGeoData();
             // set initialized to false to trigger "missing geo-data fetching"
             setInitialized(false);
             // set isRootNodeGeoDataLoaded to false so "missing geo-data fetching" waits for root node geo-data to be fully fetched before triggering
             setIsRootNodeGeoDataLoaded(false);
         }
-    }, [currentRootNetworkUuid, loadRootNodeGeoData]);
+    }, [currentRootNetworkUuid, loadRootNodeGeoData, rootNodeId]);
 
     let choiceVoltageLevelsSubstation: EquipmentMap | null = null;
     if (choiceVoltageLevelsSubstationId) {
