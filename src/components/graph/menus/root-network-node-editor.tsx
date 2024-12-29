@@ -18,8 +18,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
-import { FetchStatus } from '../../../services/utils';
-import ElementCreationDialog, { IElementCreationDialog1 } from '../../dialogs/element-creation-dialog';
 import {
     NetworkModificationCopyInfo,
     NetworkModificationData,
@@ -32,10 +30,10 @@ import {
     getCaseImportParameters,
 } from 'services/network-conversion';
 import { createRootNetwork, deleteRootNetworks, fetchRootNetworks } from 'services/root-network';
-import { SwitchNetworkModificationActive } from './switch-network-modification-active';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { setCurrentRootNetwork } from 'redux/actions';
+import RootNetworkCreationDialog, { FormData } from 'components/dialogs/root-network-creation-dialog';
 
 export const styles = {
     listContainer: (theme: Theme) => ({
@@ -125,7 +123,6 @@ export function isPartial(s1: number, s2: number) {
 const RootNetworkNodeEditor = () => {
     const notificationIdList = useSelector((state: AppState) => state.notificationIdList);
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
-    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const { snackInfo, snackError } = useSnackMessage();
     const [rootNetworks, setRootNetworks] = useState<RootNetworkMetadata[]>([]);
     const [saveInProgress, setSaveInProgress] = useState(false);
@@ -182,7 +179,6 @@ const RootNetworkNodeEditor = () => {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            
             console.log('TEST ====== ', studyUpdatedForce);
 
             if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
@@ -263,7 +259,6 @@ const RootNetworkNodeEditor = () => {
     //         }
     //     }
     // }, [dispatch, dofetchRootNetworks, studyUpdatedForce, cleanClipboard]);
-
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
@@ -416,12 +411,13 @@ const RootNetworkNodeEditor = () => {
 
     const renderRootNetworkCreationDialog = () => {
         return (
-            <ElementCreationDialog
+            <RootNetworkCreationDialog
                 open={rootNetworkCreationDialogOpen}
                 onClose={() => setRootNetworkCreationDialogOpen(false)}
                 onSave={doCreateRootNetwork}
                 type={ElementType.ROOT_NETWORK}
                 titleId={'CreateRootNetwork'}
+                dialogProps={undefined}
             />
         );
     };
@@ -446,17 +442,17 @@ const RootNetworkNodeEditor = () => {
         }, {} as Record<string, string>);
     }
 
-    const doCreateRootNetwork = ({ name, caseName, caseId }: IElementCreationDialog1) => {
+    const doCreateRootNetwork = ({ name, caseName, caseId }: FormData) => {
         setSaveInProgress(true);
 
-        getCaseImportParameters(caseId)
+        getCaseImportParameters(caseId as UUID)
             .then((params: GetCaseImportParametersReturn) => {
                 // Format the parameters
                 const formattedParams = formatCaseImportParameters(params.parameters);
                 const customizedCurrentParameters = customizeCurrentParameters(formattedParams as Parameter[]);
                 // Call createRootNetwork with formatted parameters
 
-                return createRootNetwork(caseId, params.formatName, studyUuid, customizedCurrentParameters);
+                return createRootNetwork(caseId as UUID, params.formatName, studyUuid, customizedCurrentParameters);
             })
             .then(() => {
                 // Success handler

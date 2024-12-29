@@ -29,17 +29,14 @@ const styles = {
 };
 
 const RootNetworkEditor = () => {
-    const dispatch = useDispatch();
-    const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
-    const closeModificationsDrawer = () => {
-        dispatch(setModificationsDrawerOpen(false));
-    };
+    const closeModificationsDrawer = () => {};
 
     return (
         <Box sx={styles.paper}>
-            <EditableTitle
-                name={currentTreeNode?.data?.label ?? ''}
+            <EditableTitle //TODO
+                name={currentRootNetworkUuid ?? ''}
                 onClose={closeModificationsDrawer}
                 isCloseIconVisible={false}
             />

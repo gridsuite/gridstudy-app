@@ -1,15 +1,6 @@
-/**
- * Copyright (c) 2024, RTE (http://www.rte-france.com)
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
-
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     CustomFormProvider,
-    DescriptionField,
-    DirectoryItemSelector,
     ElementType,
     fetchDirectoryElementPath,
     TreeViewFinderNodeProps,
@@ -17,31 +8,30 @@ import {
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useState } from 'react';
-import { Grid, Box, Button, CircularProgress, Typography } from '@mui/material';
+import { Grid, Button} from '@mui/material';
 import { UniqueNameInput } from './commons/unique-name-input';
-import { DESCRIPTION, FOLDER_ID, FOLDER_NAME, NAME } from '../utils/field-constants';
+import { CASE_NAME, CASE_ID, NAME } from '../utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import yup from '../utils/yup-config';
 import { useSelector } from 'react-redux';
-import ModificationDialog from './commons/modificationDialog';
-import { AppState } from '../../redux/reducer';
+import BasicModificationDialog from './commons/basicModificationDialog';
+import { AppState } from 'redux/reducer';
+import ImportCaseDialog from './import-case-dialog';
 
-interface FormData {
+export interface FormData {
     [NAME]: string;
-    [DESCRIPTION]: string;
-}
-export interface IElementCreationDialog extends FormData {
-    [FOLDER_NAME]: string;
-    [FOLDER_ID]: UUID;
+    [CASE_NAME]: string;
+    [CASE_ID]: string;
 }
 
-interface ElementCreationDialogProps {
+interface RootNetworkCreationDialogProps {
     open: boolean;
-    onSave: (data: IElementCreationDialog) => void;
+    onSave: (data: FormData) => void;
     onClose: () => void;
     type: ElementType;
     titleId: string;
+    dialogProps: any;
     prefixIdForGeneratedName?: string;
 }
 
@@ -49,21 +39,24 @@ const formSchema = yup
     .object()
     .shape({
         [NAME]: yup.string().trim().required(),
-        [DESCRIPTION]: yup.string().optional().max(500, 'descriptionLimitError'),
+        [CASE_NAME]: yup.string().required(),
+        [CASE_ID]: yup.string().required(),
     })
     .required();
 
 const emptyFormData: FormData = {
     [NAME]: '',
-    [DESCRIPTION]: '',
+    [CASE_NAME]: '',
+    [CASE_ID]: '',
 };
 
-const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
+const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     open,
     onSave,
     onClose,
     type,
     titleId,
+    dialogProps = undefined,
     prefixIdForGeneratedName,
 }) => {
     const intl = useIntl();
@@ -72,23 +65,32 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
 
     const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);
     const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
+    const [selectedCase, setSelectedCase] = useState<TreeViewFinderNodeProps | null>(null);
+    const [caseSelectorOpen, setCaseSelectorOpen] = useState(false);
 
     const formMethods = useForm({
         defaultValues: emptyFormData,
         resolver: yupResolver(formSchema),
     });
+
     const {
         reset,
+        setValue,
         formState: { errors },
     } = formMethods;
-    const disableSave = Object.keys(errors).length > 0;
+    const disableSave =
+        // Form validation must pass
+        !selectedCase || // A case must be selected
+        !formMethods.getValues(NAME); // NAME must not be empty
 
+    // Clear form and reset selected case
     const clear = useCallback(() => {
         reset(emptyFormData);
+        setSelectedCase(null); // Reset the selected case on clear
     }, [reset]);
 
+    // Fetch default directory based on study UUID
     const fetchDefaultDirectoryForStudy = useCallback(() => {
-        // @ts-expect-error TODO: manage null case
         fetchDirectoryElementPath(studyUuid).then((res) => {
             if (!res || res.length < 2) {
                 snackError({
@@ -106,6 +108,7 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
         });
     }, [studyUuid, snackError]);
 
+    // Auto-generate a name with prefix and current date
     useEffect(() => {
         if (prefixIdForGeneratedName) {
             const getCurrentDateTime = () => new Date().toISOString();
@@ -129,58 +132,63 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
         }
     }, [fetchDefaultDirectoryForStudy, studyUuid, open]);
 
-    const handleChangeFolder = () => {
-        setDirectorySelectorOpen(true);
+    // Open case selector
+    const handleCaseSelection = () => {
+        setCaseSelectorOpen(true);
     };
 
-    const setSelectedFolder = (folder: TreeViewFinderNodeProps[]) => {
-        if (folder?.length > 0 && folder[0].id !== destinationFolder?.id) {
-            const { id, name } = folder[0];
-            setDestinationFolder({ id, name });
-        }
-        setDirectorySelectorOpen(false);
+    // Set selected case when a case is selected
+    const onSelectCase = (selectedCase: TreeViewFinderNodeProps) => {
+        setSelectedCase(selectedCase);
+        setValue(NAME, selectedCase.name); // Set the name from the selected case
+        setValue(CASE_NAME, selectedCase.name);
+        setValue(CASE_ID, selectedCase.id as string);
+        setCaseSelectorOpen(false);
     };
 
     const handleSave = useCallback(
         (values: FormData) => {
-            if (destinationFolder) {
-                const creationData: IElementCreationDialog = {
+            if (selectedCase) {
+                // Save data, including CASE_NAME and CASE_ID
+                const creationData1: FormData = {
                     ...values,
-                    [FOLDER_NAME]: destinationFolder.name,
-                    [FOLDER_ID]: destinationFolder.id as UUID,
+                    [CASE_NAME]: selectedCase.name,
+                    [CASE_ID]: selectedCase.id as UUID,
                 };
-                onSave(creationData);
+                onSave(creationData1);
+            } else {
+                snackError({
+                    messageTxt: 'Please select a case before saving.',
+                    headerId: 'caseNotSelectedError',
+                });
             }
         },
-        [onSave, destinationFolder]
+        [onSave, selectedCase, snackError]
     );
 
-    const folderChooser = (
+    // Case selection component
+    const caseSelection = (
         <Grid container item>
             <Grid item>
-                <Button onClick={handleChangeFolder} variant="contained" size={'small'}>
-                    <FormattedMessage id={'showSelectDirectoryDialog'} />
+                <Button onClick={handleCaseSelection} variant="contained" size={'small'}>
+                    <FormattedMessage id={'selectCase'} />
                 </Button>
             </Grid>
-            <Typography m={1} component="span">
-                <Box fontWeight={'fontWeightBold'}>
-                    {destinationFolder ? destinationFolder.name : <CircularProgress />}
-                </Box>
-            </Typography>
         </Grid>
     );
 
     return (
         <CustomFormProvider validationSchema={formSchema} {...formMethods}>
-            <ModificationDialog
+            <BasicModificationDialog
                 fullWidth
+                maxWidth={'md'}
                 open={open}
                 onClose={onClose}
-                titleId={titleId}
                 onClear={clear}
                 onSave={handleSave}
-                aria-labelledby="dialog-element-creation"
-                maxWidth={'md'}
+                aria-labelledby="dialog-root-network-creation"
+                {...dialogProps}
+                titleId={titleId}
                 disabledSave={disableSave}
             >
                 <Grid container spacing={2} marginTop={'auto'} direction="column">
@@ -193,27 +201,17 @@ const ElementCreationDialog: React.FC<ElementCreationDialogProps> = ({
                             autoFocus
                         />
                     </Grid>
-                    <Grid item>
-                        <DescriptionField />
-                    </Grid>
-                    {folderChooser}
+                    {type === ElementType.ROOT_NETWORK && caseSelection}
                 </Grid>
-                <DirectoryItemSelector
-                    open={directorySelectorOpen}
-                    onClose={setSelectedFolder}
-                    types={[ElementType.DIRECTORY]}
-                    onlyLeaves={false}
-                    multiSelect={false}
-                    validationButtonText={intl.formatMessage({
-                        id: 'validate',
-                    })}
-                    title={intl.formatMessage({
-                        id: 'showSelectDirectoryDialog',
-                    })}
+
+                <ImportCaseDialog
+                    open={caseSelectorOpen}
+                    onClose={() => setCaseSelectorOpen(false)}
+                    onSelectCase={onSelectCase}
                 />
-            </ModificationDialog>
+            </BasicModificationDialog>
         </CustomFormProvider>
     );
 };
 
-export default ElementCreationDialog;
+export default RootNetworkCreationDialog;

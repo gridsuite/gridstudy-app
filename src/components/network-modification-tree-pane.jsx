@@ -43,7 +43,6 @@ import { buildNode, getUniqueNodeName, unbuildNode } from '../services/study/ind
 import RestoreNodesDialog from './dialogs/restore-node-dialog';
 import ScenarioEditor from './graph/menus/dynamic-simulation/scenario-editor';
 import { StudyDisplayMode, CopyType, UpdateType } from './network-modification.type';
-import { LeftDrawer } from './left-drawer';
 
 const styles = {
     container: {
@@ -539,7 +538,6 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, cu
     return (
         <>
             <Box sx={styles.container}>
-                <LeftDrawer open={true}></LeftDrawer>
                 <NetworkModificationTree
                     onNodeContextMenu={onNodeContextMenu}
                     studyUuid={studyUuid}
