@@ -35,6 +35,7 @@ const RatioTapChangerPane = ({
     id = RATIO_TAP_CHANGER,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     voltageLevelOptions = [],
     previousValues,
     editData,
@@ -208,6 +209,7 @@ const RatioTapChangerPane = ({
             equipmentSectionTypeDefaultValue={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
             studyUuid={studyUuid}
             currentNodeUuid={currentNode?.id}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             voltageLevelOptions={voltageLevelOptions}
             previousRegulatingTerminalValue={previousValues?.[RATIO_TAP_CHANGER]?.regulatingTerminalVlId}
             previousEquipmentSectionTypeValue={getTapChangerEquipmentSectionTypeValue(

@@ -33,8 +33,7 @@ function makeButton(onClick, message, disabled) {
     );
 }
 
-const CONTINGENCY_TYPES = [ElementType.CONTINGENCY_LIST];
-const ContingencyListSelector = (props) => {
+const CaseListSelector = (props) => {
     const favoriteContingencyListUuids = useSelector((state) => state[PARAM_FAVORITE_CONTINGENCY_LISTS]);
 
     const currentNode = useSelector((state) => state.currentTreeNode);
@@ -92,7 +91,7 @@ const ContingencyListSelector = (props) => {
         return () => {
             discardResult = true;
         };
-    }, [props.open, props.studyUuid, currentNode, checkedContingencyList, currentRootNetworkUuid]);
+    }, [props.open, props.studyUuid, currentNode, currentRootNetworkUuid, checkedContingencyList]);
 
     useEffect(() => {
         if (favoriteContingencyListUuids && favoriteContingencyListUuids.length > 0 && props.open) {
@@ -215,14 +214,15 @@ const ContingencyListSelector = (props) => {
             <DirectoryItemSelector
                 open={favoriteSelectorOpen}
                 onClose={addFavorites}
-                types={CONTINGENCY_TYPES}
+                types={ElementType.CASE}
+                multiSelect={false}
                 title={intl.formatMessage({ id: 'ContingencyListsSelection' })}
             />
         </>
     );
 };
 
-ContingencyListSelector.propTypes = {
+CaseListSelector.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     onStart: PropTypes.func.isRequired,
@@ -230,4 +230,4 @@ ContingencyListSelector.propTypes = {
     currentNodeUuid: PropTypes.string,
 };
 
-export default ContingencyListSelector;
+export default CaseListSelector;

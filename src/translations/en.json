@@ -53,6 +53,8 @@
     "SingleLineDiagram": "Single line diagram",
     "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
+    "RootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
+
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
     "networkLoadingFail": "Network of study with id \"{studyUuid}\" couldn't be loaded",
@@ -369,6 +371,9 @@
     "TwoSides.ONE": "Origin side",
     "TwoSides.TWO": "Extremity side",
 
+    "selectCase": "Select case",
+    "ChooseSituation": "Select a case",
+    
     "ContingencyListsSelection": "Contingency lists selection",
     "Execute": "Execute",
     "AddContingencyList": "Add",
@@ -564,6 +569,8 @@
     "HideMinimap": "Hide minimap",
     "DisplayTheWholeTree": "Display the whole tree",
 
+    "CreateRootNetwork": "Configure root network",
+
     "Logs": "Logs",
     "logsTitle": "Logs : {title}",
     "showReport": "Show logs",
@@ -600,6 +607,7 @@
     "NodeBuildingError": "An error occurred while building node",
     "NodeUnbuildingError": "An error occurred while unbuilding node",
     "NetworkModifications": "Network modifications",
+    "RootNetwork": "Root Network",
     "CreateLoad": "Create load",
     "ModifyLoad": "Modify load",
     "NameOptional": "Name (optional)",
@@ -1226,6 +1234,7 @@
     "SaveModificationTo": "Save to GridExplore",
     "ModificationsSelection": "Modification selection",
     "errCreateModificationsMsg": "Network modifications creation error",
+    "errCreateRootNetworksMsg": "Root Networks creation error",
     "infoCreateModificationsMsg": "Composite modification of {nbModifications} unitary network modifications created in {studyDirectory}",
     "idSelector.idNeeded": "Please select an ID",
     "SpreadsheetFetchError": "An error occurred while fetching equipments in the spreadsheet",

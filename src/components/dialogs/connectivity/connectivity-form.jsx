@@ -57,6 +57,7 @@ export const ConnectivityForm = ({
     newBusOrBusbarSectionOptions = [],
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onVoltageLevelChangeCallback = undefined,
     isEquipmentModification = false,
     previousValues,
@@ -79,16 +80,28 @@ export const ConnectivityForm = ({
             return;
         }
         if (watchVoltageLevelId) {
-            fetchBusesOrBusbarSectionsForVoltageLevel(studyUuid, currentNodeUuid, watchVoltageLevelId).then(
-                (busesOrbusbarSections) => {
-                    setBusOrBusbarSectionOptions(busesOrbusbarSections);
-                }
-            );
+            fetchBusesOrBusbarSectionsForVoltageLevel(
+                studyUuid,
+                currentNodeUuid,
+                currentRootNetworkUuid,
+                watchVoltageLevelId
+            ).then((busesOrbusbarSections) => {
+                setBusOrBusbarSectionOptions(busesOrbusbarSections);
+            });
         } else {
             setBusOrBusbarSectionOptions([]);
             setValue(`${id}.${BUS_OR_BUSBAR_SECTION}`, null);
         }
-    }, [watchVoltageLevelId, studyUuid, currentNodeUuid, voltageLevelOptions, setValue, id, isEquipmentModification]);
+    }, [
+        watchVoltageLevelId,
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid,
+        voltageLevelOptions,
+        setValue,
+        id,
+        isEquipmentModification,
+    ]);
 
     useEffect(() => {
         if (isEquipmentModification) {
@@ -295,6 +308,7 @@ export const ConnectivityForm = ({
                 onClose={handleCloseDiagramPane}
                 voltageLevelId={{ id: watchVoltageLevelId }}
                 currentNodeUuid={currentNodeUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
             />
         </>
     );

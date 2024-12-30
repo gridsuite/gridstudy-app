@@ -5,36 +5,58 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { getStudyUrlWithNodeUuid } from './index';
+import { getStudyUrlWithNodeUuidAndRootNetworkUuid } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
 import { UUID } from 'crypto';
 
-export function startStateEstimation(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Running state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/state-estimation/run';
+export function startStateEstimation(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Running state estimation on ${studyUuid}  on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/state-estimation/run';
 
     console.debug(url);
     return backendFetch(url, { method: 'post' });
 }
 
-export function stopStateEstimation(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Stopping state estimation on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/stop`;
+export function stopStateEstimation(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Stopping state estimation on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/state-estimation/stop`;
     console.debug(url);
     return backendFetch(url, { method: 'put' });
 }
 
-export function fetchStateEstimationStatus(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Fetching state estimation status on ${studyUuid} and node ${currentNodeUuid} ...`);
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/status`;
+export function fetchStateEstimationStatus(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching state estimation status on ${studyUuid} on root network '${currentRootNetworkUuid}' and node ${currentNodeUuid} ...`
+    );
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/state-estimation/status`;
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info(`Fetching state estimation result on ${studyUuid} and node ${currentNodeUuid}  ...`);
+export function fetchStateEstimationResult(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        `Fetching state estimation result on ${studyUuid} on root network ${currentRootNetworkUuid} and node ${currentNodeUuid}  ...`
+    );
 
-    const url = `${getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid)}/state-estimation/result`;
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
+        studyUuid,
+        currentNodeUuid,
+        currentRootNetworkUuid
+    )}/state-estimation/result`;
     console.debug(url);
     return backendFetchJson(url);
 }

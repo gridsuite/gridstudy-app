@@ -16,6 +16,7 @@ import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
 import { Theme } from '@mui/material/styles';
+import RootNetworkNodeEditor from './root-network-node-editor';
 
 const styles = {
     paper: (theme: Theme) => ({
@@ -23,51 +24,29 @@ const styles = {
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        background:
-            theme.palette.mode === 'light'
-                ? darken(theme.palette.background.paper, 0.1)
-                : lighten(theme.palette.background.paper, 0.2),
+        //   background: "red",
     }),
 };
 
-const NodeEditor = () => {
-    const dispatch = useDispatch();
-    const { snackError } = useSnackMessage();
-    const currentTreeNode = useSelector((state: AppState) => state.currentTreeNode);
-    const studyUuid = useSelector((state: AppState) => state.studyUuid);
+const RootNetworkEditor = () => {
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
 
-    const closeModificationsDrawer = () => {
-        dispatch(setModificationsDrawerOpen(false));
-    };
-
-    const changeNodeName = (newName: string) => {
-        updateTreeNode(studyUuid, {
-            id: currentTreeNode?.id,
-            type: currentTreeNode?.type,
-            name: newName,
-        }).catch((error) => {
-            snackError({
-                messageTxt: error.message,
-                headerId: 'NodeUpdateError',
-            });
-        });
-    };
+    const closeModificationsDrawer = () => {};
 
     return (
         <Box sx={styles.paper}>
-            <EditableTitle
-                name={currentTreeNode?.data?.label ?? ''}
+            <EditableTitle //TODO
+                name={currentRootNetworkUuid ?? ''}
                 onClose={closeModificationsDrawer}
-                onChange={changeNodeName}
-                isCloseIconVisible={true}
+                isCloseIconVisible={false}
             />
-            <NetworkModificationNodeEditor />
+            <RootNetworkNodeEditor />
         </Box>
     );
 };
 
-NodeEditor.propTypes = {
+RootNetworkEditor.propTypes = {
     className: PropTypes.string,
 };
 
-export default NodeEditor;
+export default RootNetworkEditor;

@@ -19,16 +19,16 @@ import PropertiesForm from '../../common/properties/properties-form';
 import GridItem from '../../../commons/grid-item';
 import GridSection from '../../../commons/grid-section';
 
-const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
+const ShuntCompensatorCreationForm = ({ studyUuid, currentNode, currentRootNetworkUuid }) => {
     const [voltageLevelOptions, setVoltageLevelOptions] = useState([]);
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchVoltageLevelsListInfos(studyUuid, currentNode.id).then((values) => {
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
+            fetchVoltageLevelsListInfos(studyUuid, currentNode.id, currentRootNetworkUuid).then((values) => {
                 setVoltageLevelOptions(values.sort((a, b) => a?.id?.localeCompare(b?.id)));
             });
         }
-    }, [studyUuid, currentNode?.id]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid]);
 
     const shuntCompensatorIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -42,6 +42,7 @@ const ShuntCompensatorCreationForm = ({ studyUuid, currentNode }) => {
             voltageLevelOptions={voltageLevelOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 

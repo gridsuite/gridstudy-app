@@ -26,6 +26,15 @@ export const PREFIX_STUDY_QUERIES = import.meta.env.VITE_API_GATEWAY + '/study';
 export const getStudyUrl = (studyUuid: UUID | null) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}`;
 
+export const getStudyUrlWithNodeUuidAndRootNetworkUuid = (
+    studyUuid: string | null | undefined,
+    nodeUuid: string | undefined,
+    rootNetworkUuid: string | undefined | null
+) =>
+    `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/root-networks/${safeEncodeURIComponent(
+        rootNetworkUuid
+    )}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
+
 export const getStudyUrlWithNodeUuid = (studyUuid: string | null | undefined, nodeUuid: string | undefined) =>
     `${PREFIX_STUDY_QUERIES}/v1/studies/${safeEncodeURIComponent(studyUuid)}/nodes/${safeEncodeURIComponent(nodeUuid)}`;
 
@@ -46,13 +55,16 @@ export const fetchStudyExists = (studyUuid: UUID) => {
 export function getNetworkAreaDiagramUrl(
     studyUuid: UUID,
     currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     voltageLevelsIds: UUID[],
     depth: number,
     withGeoData: boolean
 ) {
-    console.info(`Getting url of network area diagram of study '${studyUuid}' and node '${currentNodeUuid}'...`);
+    console.info(
+        `Getting url of network area diagram of study '${studyUuid}' on root network '${currentRootNetworkUuid}' and node '${currentNodeUuid}'...`
+    );
     return (
-        getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
         '/network-area-diagram?' +
         new URLSearchParams({
             depth: depth.toString(),
@@ -66,6 +78,7 @@ export function getNetworkAreaDiagramUrl(
 export function fetchParentNodesReport(
     studyUuid: UUID | null,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     nodeOnlyReport: boolean,
     severityFilterList: string[],
     reportType: keyof typeof COMPUTING_AND_NETWORK_MODIFICATION_TYPE
@@ -82,7 +95,7 @@ export function fetchParentNodesReport(
     );
 
     let url =
-        getStudyUrlWithNodeUuid(studyUuid, nodeUuid) +
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
         '/parent-nodes-report?nodeOnlyReport=' +
         (nodeOnlyReport ? 'true' : 'false') +
         '&reportType=' +
@@ -97,6 +110,7 @@ export function fetchParentNodesReport(
 export function fetchNodeReportLogs(
     studyUuid: UUID | null,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     reportId: string | null,
     severityFilterList: string[],
     messageFilter: string,
@@ -104,9 +118,13 @@ export function fetchNodeReportLogs(
 ) {
     let url;
     if (isGlobalLogs) {
-        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/logs?';
+        url = getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) + '/report/logs?';
     } else {
-        url = getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/report/' + reportId + '/logs?';
+        url =
+            getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/report/' +
+            reportId +
+            '/logs?';
     }
     if (severityFilterList?.length) {
         url += '&' + getRequestParamFromList(severityFilterList, 'severityLevels');
@@ -126,6 +144,7 @@ export function fetchSvg(svgUrl: string) {
 export function searchEquipmentsInfos(
     studyUuid: UUID,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     searchTerm: string,
     getUseNameParameterKey: () => 'name' | 'id',
     inUpstreamBuiltParentNode?: boolean,
@@ -142,11 +161,18 @@ export function searchEquipmentsInfos(
         urlSearchParams.append('equipmentType', equipmentType);
     }
     return backendFetchJson(
-        getStudyUrl(studyUuid) + '/nodes/' + encodeURIComponent(nodeUuid) + '/search?' + urlSearchParams.toString()
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, currentRootNetworkUuid) +
+            '/search?' +
+            urlSearchParams.toString()
     );
 }
 
-export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, contingencyListNames: string[]) {
+export function fetchContingencyCount(
+    studyUuid: UUID,
+    currentNodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
+    contingencyListNames: string[]
+) {
     console.info(
         `Fetching contingency count for ${contingencyListNames} on '${studyUuid}' and node '${currentNodeUuid}'...`
     );
@@ -154,7 +180,10 @@ export function fetchContingencyCount(studyUuid: UUID, currentNodeUuid: UUID, co
     const contingencyListNamesParams = getRequestParamFromList(contingencyListNames, 'contingencyListName');
     const urlSearchParams = new URLSearchParams(contingencyListNamesParams);
 
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/contingency-count?' + urlSearchParams;
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) +
+        '/contingency-count?' +
+        urlSearchParams;
 
     console.debug(url);
     return backendFetchJson(url);
@@ -203,23 +232,33 @@ export function getAvailableComponentLibraries(): Promise<string[]> {
     return backendFetchJson(getAvailableComponentLibrariesUrl);
 }
 
-export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID) {
+export function unbuildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
     console.info('Unbuild node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/unbuild';
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/unbuild';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
 
-export function buildNode(studyUuid: UUID, currentNodeUuid: UUID) {
-    console.info('Build node ' + currentNodeUuid + ' of study ' + studyUuid + ' ...');
-    const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/build';
+export function buildNode(studyUuid: UUID, currentNodeUuid: UUID, currentRootNetworkUuid: UUID) {
+    console.info(
+        'Build node ' +
+            currentNodeUuid +
+            ' on root network ' +
+            currentRootNetworkUuid +
+            ' of study ' +
+            studyUuid +
+            ' ...'
+    );
+    const url =
+        getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, currentNodeUuid, currentRootNetworkUuid) + '/build';
     console.debug(url);
     return backendFetchText(url, { method: 'post' });
 }
 
-export function fetchCaseName(studyUuid: UUID) {
+export function fetchCaseName(studyUuid: UUID, rootNetworkUuid: UUID) {
     console.info('Fetching case name');
-    const url = getStudyUrl(studyUuid) + '/case/name';
+    const url = getStudyUrl(studyUuid) + '/root-networks/' + encodeURIComponent(rootNetworkUuid) + '/case/name';
     console.debug(url);
 
     return backendFetchText(url);
@@ -260,13 +299,15 @@ export function getServersInfos() {
 export function fetchAvailableFilterEnumValues(
     studyUuid: UUID,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     computingType: ComputingType,
     filterEnum: string
 ) {
     console.info('fetch available filter values');
-    const url = `${getStudyUrlWithNodeUuid(
+    const url = `${getStudyUrlWithNodeUuidAndRootNetworkUuid(
         studyUuid,
-        nodeUuid
+        nodeUuid,
+        currentRootNetworkUuid
     )}/computation/result/enum-values?computingType=${encodeURIComponent(computingType)}&enumName=${encodeURIComponent(
         filterEnum
     )}`;

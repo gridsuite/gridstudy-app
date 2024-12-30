@@ -20,7 +20,8 @@ interface UseComputingStatusProps {
     (
         studyUuid: UUID,
         nodeUuid: UUID,
-        fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
+        currentRootNetworkUuid: UUID,
+        fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>,
         invalidations: string[],
         completions: string[],
         resultConversion: (x: string) => RunningStatus,
@@ -31,7 +32,7 @@ interface UseComputingStatusProps {
 
 interface LastUpdateProps {
     studyUpdatedForce: StudyUpdated;
-    fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>;
+    fetcher: (studyUuid: UUID, nodeUuid: UUID, currentRootNetworkUuid: UUID) => Promise<string>;
 }
 
 function isWorthUpdate(
@@ -39,7 +40,9 @@ function isWorthUpdate(
     fetcher: (studyUuid: UUID, nodeUuid: UUID) => Promise<string>,
     lastUpdateRef: RefObject<LastUpdateProps>,
     nodeUuidRef: RefObject<UUID>,
+    rootNetworkUuidRef: RefObject<UUID>,
     nodeUuid: UUID,
+    currentRootNetworkUuid: UUID,
     invalidations: string[]
 ): boolean {
     const headers = studyUpdatedForce?.eventData?.headers;
@@ -47,6 +50,9 @@ function isWorthUpdate(
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
     if (nodeUuidRef.current !== nodeUuid) {
+        return true;
+    }
+    if (rootNetworkUuidRef.current !== currentRootNetworkUuid) {
         return true;
     }
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
@@ -84,6 +90,7 @@ function isWorthUpdate(
 export const useComputingStatus: UseComputingStatusProps = (
     studyUuid,
     nodeUuid,
+    currentRootNetworkUuid,
     fetcher,
     invalidations,
     completions,
@@ -92,6 +99,8 @@ export const useComputingStatus: UseComputingStatusProps = (
     optionalServiceAvailabilityStatus = OptionalServicesStatus.Up
 ) => {
     const nodeUuidRef = useRef<UUID | null>(null);
+    const rootNetworkUuidRef = useRef<UUID | null>(null);
+
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
     const lastUpdateRef = useRef<LastUpdateProps | null>(null);
     const dispatch = useDispatch<AppDispatch>();
@@ -114,9 +123,14 @@ export const useComputingStatus: UseComputingStatusProps = (
         dispatch(setLastCompletedComputation());
 
         nodeUuidRef.current = nodeUuid;
-        fetcher(studyUuid, nodeUuid)
+        rootNetworkUuidRef.current = currentRootNetworkUuid;
+        fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((res: string) => {
-                if (!canceledRequest && nodeUuidRef.current === nodeUuid) {
+                if (
+                    !canceledRequest &&
+                    nodeUuidRef.current === nodeUuid &&
+                    rootNetworkUuidRef.current === currentRootNetworkUuid
+                ) {
                     const status = resultConversion(res);
                     dispatch(setComputingStatus(computingType, status));
                     if (isComputationCompleted(status)) {
@@ -133,25 +147,50 @@ export const useComputingStatus: UseComputingStatusProps = (
         return () => {
             canceledRequest = true;
         };
-    }, [nodeUuid, fetcher, studyUuid, resultConversion, dispatch, computingType, isComputationCompleted]);
+    }, [
+        nodeUuid,
+        currentRootNetworkUuid,
+        fetcher,
+        studyUuid,
+        resultConversion,
+        dispatch,
+        computingType,
+        isComputationCompleted,
+    ]);
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid || optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up) {
+        if (
+            !studyUuid ||
+            !nodeUuid ||
+            !currentRootNetworkUuid ||
+            optionalServiceAvailabilityStatus !== OptionalServicesStatus.Up
+        ) {
             return;
         }
-
+        console.log('!!!!!!!!!! fetcher ', fetcher);
         const isUpdateForUs = isWorthUpdate(
             studyUpdatedForce,
             fetcher,
             lastUpdateRef,
             nodeUuidRef,
+            rootNetworkUuidRef,
             nodeUuid,
+            currentRootNetworkUuid,
             invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
         if (isUpdateForUs) {
             update();
         }
-    }, [update, fetcher, nodeUuid, invalidations, studyUpdatedForce, studyUuid, optionalServiceAvailabilityStatus]);
+    }, [
+        update,
+        fetcher,
+        nodeUuid,
+        invalidations,
+        currentRootNetworkUuid,
+        studyUpdatedForce,
+        studyUuid,
+        optionalServiceAvailabilityStatus,
+    ]);
 };

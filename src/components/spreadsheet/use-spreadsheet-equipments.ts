@@ -25,7 +25,7 @@ import { fetchAllEquipments } from 'services/study/network-map';
 
 export type EquipmentProps = {
     type: SpreadsheetEquipmentType;
-    fetchers: Array<(studyUuid: UUID, currentNodeId: UUID) => Promise<Identifiable>>;
+    fetchers: Array<(studyUuid: UUID, currentNodeId: UUID, currentRootNetworkUuid: UUID) => Promise<Identifiable>>;
 };
 
 type FormatFetchedEquipments = (equipments: Identifiable[]) => Identifiable[];
@@ -39,6 +39,7 @@ export const useSpreadsheetEquipments = (
     const equipments = allEquipments[equipment.type];
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
     const [errorMessage, setErrorMessage] = useState<string | null>();
     const [isFetching, setIsFetching] = useState(false);
@@ -82,11 +83,13 @@ export const useSpreadsheetEquipments = (
             }
             resetImpactedElementTypes();
         }
-        if (impactedSubstationsIds.length > 0 && studyUuid && currentNode?.id) {
+        if (impactedSubstationsIds.length > 0 && studyUuid && currentRootNetworkUuid && currentNode?.id) {
             // The formatting of the fetched equipments is done in the reducer
-            fetchAllEquipments(studyUuid, currentNode.id, impactedSubstationsIds).then((values) => {
-                dispatch(updateEquipments(values));
-            });
+            fetchAllEquipments(studyUuid, currentRootNetworkUuid, currentNode.id, impactedSubstationsIds).then(
+                (values) => {
+                    dispatch(updateEquipments(values));
+                }
+            );
             resetImpactedSubstationsIds();
         }
         if (deletedEquipments.length > 0) {
@@ -118,6 +121,7 @@ export const useSpreadsheetEquipments = (
         deletedEquipments,
         impactedElementTypes,
         studyUuid,
+        currentRootNetworkUuid,
         currentNode?.id,
         dispatch,
         allEquipments,
@@ -127,10 +131,12 @@ export const useSpreadsheetEquipments = (
     ]);
 
     useEffect(() => {
-        if (shouldFetchEquipments && studyUuid && currentNode?.id) {
+        if (shouldFetchEquipments && studyUuid && currentRootNetworkUuid && currentNode?.id) {
             setErrorMessage(null);
             setIsFetching(true);
-            Promise.all(equipment.fetchers.map((fetcher) => fetcher(studyUuid, currentNode?.id)))
+            Promise.all(
+                equipment.fetchers.map((fetcher) => fetcher(studyUuid, currentNode?.id, currentRootNetworkUuid))
+            )
                 .then((results) => {
                     let fetchedEquipments = results.flat();
                     if (formatFetchedEquipments) {
@@ -144,7 +150,15 @@ export const useSpreadsheetEquipments = (
                     setIsFetching(false);
                 });
         }
-    }, [equipment, shouldFetchEquipments, studyUuid, currentNode?.id, dispatch, formatFetchedEquipments]);
+    }, [
+        equipment,
+        shouldFetchEquipments,
+        studyUuid,
+        currentRootNetworkUuid,
+        currentNode?.id,
+        dispatch,
+        formatFetchedEquipments,
+    ]);
 
     return { equipments, errorMessage, isFetching };
 };

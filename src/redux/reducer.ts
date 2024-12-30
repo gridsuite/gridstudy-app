@@ -184,6 +184,8 @@ import {
     UseNameAction,
     STATEESTIMATION_RESULT_FILTER,
     StateEstimationResultFilterAction,
+    CURRENT_ROOT_NETWORK,
+    CurrentRootNetworkAction,
     UPDATE_NETWORK_VISUALIZATION_PARAMETERS,
     UpdateNetworkVisualizationParametersAction,
 } from './actions';
@@ -314,6 +316,7 @@ export interface OneBusShortCircuitAnalysisDiagram {
 export interface StudyUpdatedEventDataHeader {
     studyUuid: UUID;
     parentNode: UUID;
+    rootNetwork: UUID;
     timestamp: number;
     updateType?: string;
     node?: UUID;
@@ -443,6 +446,7 @@ export interface AppState extends CommonStoreState {
     studyUpdated: StudyUpdated;
     studyUuid: UUID | null;
     currentTreeNode: CurrentTreeNode | null;
+    currentRootNetwork: UUID | null;
     computingStatus: ComputingStatus;
     lastCompletedComputation: ComputingType | null;
     computationStarting: boolean;
@@ -606,6 +610,7 @@ const initialTablesState: TablesState = {
 const initialState: AppState = {
     studyUuid: null,
     currentTreeNode: null,
+    currentRootNetwork: null,
     nodeSelectionForCopy: {
         sourceStudyUuid: null,
         nodeId: null,
@@ -1147,6 +1152,11 @@ export const reducer = createReducer(initialState, (builder) => {
 
     builder.addCase(CURRENT_TREE_NODE, (state, action: CurrentTreeNodeAction) => {
         state.currentTreeNode = action.currentTreeNode;
+        state.reloadMap = true;
+    });
+
+    builder.addCase(CURRENT_ROOT_NETWORK, (state, action: CurrentRootNetworkAction) => {
+        state.currentRootNetwork = action.currentRootNetwork;
         state.reloadMap = true;
     });
 

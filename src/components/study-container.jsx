@@ -21,7 +21,10 @@ import {
     resetEquipmentsPostLoadflow,
     setStudyIndexationStatus,
     limitReductionModified,
+    setCurrentRootNetwork,
 } from '../redux/actions';
+import { fetchRootNetworks } from 'services/root-network';
+
 import WaitingLoader from './utils/waiting-loader';
 import { useIntlRef, useSnackMessage } from '@gridsuite/commons-ui';
 import NetworkModificationTreeModel from './graph/network-modification-tree-model';
@@ -48,12 +51,25 @@ import { StudyIndexationStatus } from 'redux/reducer';
 import { fetchDirectoryElementPath } from '@gridsuite/commons-ui';
 import { NodeType } from './graph/tree-node.type';
 
-function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, nodeUuid, invalidations) {
+function isWorthUpdate(
+    studyUpdatedForce,
+    fetcher,
+    lastUpdateRef,
+    nodeUuidRef,
+    rootNetworkUuidRef,
+    nodeUuid,
+    rootNetworkUuid,
+    invalidations
+) {
     const headers = studyUpdatedForce?.eventData?.headers;
     const updateType = headers?.[UPDATE_TYPE_HEADER];
     const node = headers?.['node'];
     const nodes = headers?.['nodes'];
+
     if (nodeUuidRef.current !== nodeUuid) {
+        return true;
+    }
+    if (rootNetworkUuidRef.current !== rootNetworkUuid) {
         return true;
     }
     if (fetcher && lastUpdateRef.current?.fetcher !== fetcher) {
@@ -78,21 +94,31 @@ function isWorthUpdate(studyUpdatedForce, fetcher, lastUpdateRef, nodeUuidRef, n
     return false;
 }
 
-export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, defaultValue, resultConversion) {
+export function useNodeData(
+    studyUuid,
+    nodeUuid,
+    currentRootNetworkUuid,
+    fetcher,
+    invalidations,
+    defaultValue,
+    resultConversion
+) {
     const [result, setResult] = useState(defaultValue);
     const [isPending, setIsPending] = useState(false);
     const [errorMessage, setErrorMessage] = useState(undefined);
     const nodeUuidRef = useRef();
+    const rootNetworkUuidRef = useRef();
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
     const lastUpdateRef = useRef();
 
     const update = useCallback(() => {
         nodeUuidRef.current = nodeUuid;
+        rootNetworkUuidRef.current = currentRootNetworkUuid;
         setIsPending(true);
         setErrorMessage(undefined);
-        fetcher(studyUuid, nodeUuid)
+        fetcher(studyUuid, nodeUuid, currentRootNetworkUuid)
             .then((res) => {
-                if (nodeUuidRef.current === nodeUuid) {
+                if (nodeUuidRef.current === nodeUuid && rootNetworkUuidRef.current === currentRootNetworkUuid) {
                     setResult(resultConversion ? resultConversion(res) : res);
                 }
             })
@@ -101,11 +127,11 @@ export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, default
                 setResult(RunningStatus.FAILED);
             })
             .finally(() => setIsPending(false));
-    }, [nodeUuid, fetcher, studyUuid, resultConversion]);
+    }, [nodeUuid, fetcher, currentRootNetworkUuid, studyUuid, resultConversion]);
 
     /* initial fetch and update */
     useEffect(() => {
-        if (!studyUuid || !nodeUuid || !fetcher) {
+        if (!studyUuid || !nodeUuid || !currentRootNetworkUuid || !fetcher) {
             return;
         }
         const isUpdateForUs = isWorthUpdate(
@@ -113,19 +139,26 @@ export function useNodeData(studyUuid, nodeUuid, fetcher, invalidations, default
             fetcher,
             lastUpdateRef,
             nodeUuidRef,
+            rootNetworkUuidRef,
             nodeUuid,
+            currentRootNetworkUuid,
             invalidations
         );
         lastUpdateRef.current = { studyUpdatedForce, fetcher };
-        if (nodeUuidRef.current !== nodeUuid || isUpdateForUs) {
+        if (
+            nodeUuidRef.current !== nodeUuid ||
+            rootNetworkUuidRef.current !== currentRootNetworkUuid ||
+            isUpdateForUs
+        ) {
             update();
         }
-    }, [update, fetcher, nodeUuid, invalidations, studyUpdatedForce, studyUuid]);
+    }, [update, fetcher, nodeUuid, invalidations, currentRootNetworkUuid, studyUpdatedForce, studyUuid]);
 
     return [result, isPending, setResult, errorMessage, update];
 }
 
 function useStudy(studyUuidRequest) {
+    const dispatch = useDispatch();
     const [studyUuid, setStudyUuid] = useState(undefined);
     const [pending, setPending] = useState(true);
     const [errMessage, setErrMessage] = useState(undefined);
@@ -135,8 +168,33 @@ function useStudy(studyUuidRequest) {
         fetchStudyExists(studyUuidRequest)
             .then(() => {
                 setStudyUuid(studyUuidRequest);
+
+                // Fetch root networks and set the first one as the current root network
+                fetchRootNetworks(studyUuidRequest)
+                    .then((rootNetworks) => {
+                        if (rootNetworks && rootNetworks.length > 0) {
+                            // Validate that currentRootNetwork is set
+
+                            dispatch(setCurrentRootNetwork(rootNetworks[0].rootNetworkUuid));
+                        } else {
+                            // Handle case where no root networks are available
+                            setErrMessage(
+                                intlRef.current.formatMessage(
+                                    { id: 'noRootNetworksFound' },
+                                    { studyUuid: studyUuidRequest }
+                                )
+                            );
+                        }
+                    })
+                    .catch((error) => {
+                        // Handle errors when fetching root networks
+                        setErrMessage(
+                            intlRef.current.formatMessage({ id: 'fetchRootNetworksError' }, { error: error.message })
+                        );
+                    });
             })
             .catch((error) => {
+                // Handle errors when fetching study existence
                 if (error.status === HttpStatusCode.NOT_FOUND) {
                     setErrMessage(
                         intlRef.current.formatMessage({ id: 'studyNotFound' }, { studyUuid: studyUuidRequest })
@@ -146,7 +204,7 @@ function useStudy(studyUuidRequest) {
                 }
             })
             .finally(() => setPending(false));
-    }, [studyUuidRequest, intlRef]);
+    }, [studyUuidRequest, dispatch, intlRef]);
 
     return [studyUuid, pending, errMessage];
 }
@@ -191,10 +249,12 @@ export function StudyContainer({ view, onChangeTab }) {
     const dispatch = useDispatch();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state) => state.currentRootNetwork);
 
     const currentNodeRef = useRef();
+    const currentRootNetworkRef = useRef();
 
-    useAllComputingStatus(studyUuid, currentNode?.id);
+    useAllComputingStatus(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const studyUpdatedForce = useSelector((state) => state.studyUpdated);
 
@@ -437,14 +497,14 @@ export function StudyContainer({ view, onChangeTab }) {
         (initIndexationStatus) => {
             console.info(`Loading network modification tree of study '${studyUuid}'...`);
 
-            const networkModificationTree = fetchNetworkModificationTree(studyUuid);
+            const networkModificationTree = fetchNetworkModificationTree(studyUuid, currentRootNetworkUuid);
 
             networkModificationTree
                 .then((tree) => {
                     const networkModificationTreeModel = new NetworkModificationTreeModel();
                     networkModificationTreeModel.setTreeElements(tree);
 
-                    fetchCaseName(studyUuid)
+                    fetchCaseName(studyUuid, currentRootNetworkUuid)
                         .then((res) => {
                             if (res) {
                                 networkModificationTreeModel.setCaseName(res);
@@ -486,12 +546,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 .finally(() => console.debug('Network modification tree loading finished'));
             // Note: studyUuid and dispatch don't change
         },
-        [studyUuid, dispatch, snackError, snackWarning]
+        [studyUuid, currentRootNetworkUuid, dispatch, snackError, snackWarning]
     );
 
     const checkStudyIndexation = useCallback(() => {
         setIsStudyIndexationPending(true);
-        return fetchStudyIndexationStatus(studyUuid)
+        return fetchStudyIndexationStatus(studyUuid, currentRootNetworkUuid)
             .then((status) => {
                 switch (status) {
                     case StudyIndexationStatus.INDEXED: {
@@ -505,7 +565,7 @@ export function StudyContainer({ view, onChangeTab }) {
                     }
                     case StudyIndexationStatus.NOT_INDEXED: {
                         dispatch(setStudyIndexationStatus(status));
-                        reindexAllStudy(studyUuid)
+                        reindexAllStudy(studyUuid, currentRootNetworkUuid)
                             .catch((error) => {
                                 // unknown error when trying to reindex study
                                 snackError({
@@ -536,11 +596,11 @@ export function StudyContainer({ view, onChangeTab }) {
                     headerId: 'checkstudyIndexationError',
                 });
             });
-    }, [studyUuid, dispatch, snackError]);
+    }, [studyUuid, currentRootNetworkUuid, dispatch, snackError]);
 
     const checkNetworkExistenceAndRecreateIfNotFound = useCallback(
         (successCallback) => {
-            fetchNetworkExistence(studyUuid)
+            fetchNetworkExistence(studyUuid, currentRootNetworkUuid)
                 .then((response) => {
                     if (response.status === HttpStatusCode.OK) {
                         successCallback && successCallback();
@@ -550,7 +610,7 @@ export function StudyContainer({ view, onChangeTab }) {
                         // response.state === NO_CONTENT
                         // if network is not found, we try to recreate study network from existing case
                         setIsStudyNetworkFound(false);
-                        recreateStudyNetwork(studyUuid)
+                        recreateStudyNetwork(studyUuid, currentRootNetworkUuid)
                             .then(() => {
                                 snackWarning({
                                     headerId: 'recreatingNetworkStudy',
@@ -584,19 +644,29 @@ export function StudyContainer({ view, onChangeTab }) {
                     );
                 });
         },
-        [studyUuid, checkStudyIndexation, loadTree, snackWarning, intlRef]
+        [studyUuid, currentRootNetworkUuid, checkStudyIndexation, loadTree, snackWarning, intlRef]
     );
 
     useEffect(() => {
-        if (studyUuid && !isStudyNetworkFound) {
+        if (
+            (studyUuid && currentRootNetworkUuid && !isStudyNetworkFound) ||
+            (currentRootNetworkRef.current && currentRootNetworkRef.current !== currentRootNetworkUuid)
+        ) {
+            console.log('RELOADING CHECK NETWORK', currentRootNetworkUuid);
             checkNetworkExistenceAndRecreateIfNotFound();
         }
-    }, [isStudyNetworkFound, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
+    }, [isStudyNetworkFound, currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
 
     // study_network_recreation_done notification
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE) {
+            console.log(
+                'TEST ======!!! Type ',
+                'UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE',
+                ' rootNetwork ',
+                studyUpdatedForce.eventData.headers?.['rootNetwork']
+            );
             const successCallback = () =>
                 snackInfo({
                     headerId: 'studyNetworkRecovered',
@@ -604,6 +674,13 @@ export function StudyContainer({ view, onChangeTab }) {
 
             checkNetworkExistenceAndRecreateIfNotFound(successCallback);
         } else if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_INDEXATION_STATUS) {
+            console.log(
+                'TEST ======!!! Type ',
+                'UPDATE_TYPE_INDEXATION_STATUS',
+                ' rootNetwork ',
+                studyUpdatedForce.eventData.headers?.['rootNetwork']
+            );
+
             dispatch(setStudyIndexationStatus(studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS]));
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.INDEXED) {
                 snackInfo({
@@ -612,6 +689,14 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             // notification that the study is not indexed anymore then ask to refresh
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.NOT_INDEXED) {
+                console.log(
+                    'TEST ======!!! Type ',
+                    ' OK ',
+                    'HEADER_INDEXATION_STATUS',
+                    ' rootNetwork ',
+                    studyUpdatedForce.eventData.headers?.['rootNetwork']
+                );
+
                 snackWarning({
                     headerId: 'studyIndexationNotIndexed',
                 });
@@ -626,6 +711,9 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         let previousCurrentNode = currentNodeRef.current;
         currentNodeRef.current = currentNode;
+
+        let previousCurrentRootNetwork = currentRootNetworkRef.current;
+        currentRootNetworkRef.current = currentRootNetworkUuid;
         // if only node renaming, do not reload network
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
             return;
@@ -635,15 +723,25 @@ export function StudyContainer({ view, onChangeTab }) {
         }
         // A modification has been added to the currentNode and this one has been built incrementally.
         // No need to load the network because reloadImpactedSubstationsEquipments will be executed in the notification useEffect.
-        if (isSameNode(previousCurrentNode, currentNode) && isNodeBuilt(previousCurrentNode)) {
+        if (
+            previousCurrentRootNetwork === currentRootNetworkUuid &&
+            isSameNode(previousCurrentNode, currentNode) &&
+            isNodeBuilt(previousCurrentNode)
+        ) {
             return;
         }
         dispatch(resetEquipments());
-    }, [currentNode, wsConnected, dispatch]);
+    }, [currentNode, currentRootNetworkUuid, wsConnected, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
+                console.log(
+                    'TEST ======!!! Type ',
+                    'loadflowResult ',
+                    ' rootNetwork ',
+                    studyUpdatedForce.eventData.headers?.['rootNetwork']
+                );
                 dispatch(resetEquipmentsPostLoadflow());
             }
         }
@@ -685,6 +783,12 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'metadata_updated'
             ) {
+                console.log(
+                    'TEST ======!!! Type ',
+                    'metadata_updated',
+                    ' rootNetwork ',
+                    studyUpdatedForce.eventData.headers?.['rootNetwork']
+                );
                 fetchStudyPath();
             }
         }
@@ -693,6 +797,7 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
+            //dispatch root network uuid
             dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);
@@ -740,6 +845,7 @@ export function StudyContainer({ view, onChangeTab }) {
                 <StudyPane
                     studyUuid={studyUuid}
                     currentNode={currentNode}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     view={view}
                     onChangeTab={onChangeTab}
                     setErrorMessage={setErrorMessage}

@@ -50,6 +50,7 @@ const styles = {
         height: '100%',
         display: 'flex',
         flexDirection: 'row',
+        //   backgroundColor: 'yellow',
     },
 };
 
@@ -74,7 +75,7 @@ const noNodeSelectionForCopy = {
 
 const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 
-export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) => {
+export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay, currentRootNetworkUuid }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
     const { snackError, snackInfo } = useSnackMessage();
@@ -147,13 +148,15 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const updateNodes = useCallback(
         (updatedNodesIds) => {
-            Promise.all(updatedNodesIds.map((nodeId) => fetchNetworkModificationTreeNode(studyUuid, nodeId))).then(
-                (values) => {
-                    dispatch(networkModificationTreeNodesUpdated(values));
-                }
-            );
+            Promise.all(
+                updatedNodesIds.map((nodeId) =>
+                    fetchNetworkModificationTreeNode(studyUuid, nodeId, currentRootNetworkUuid)
+                )
+            ).then((values) => {
+                dispatch(networkModificationTreeNodesUpdated(values));
+            });
         },
-        [studyUuid, dispatch]
+        [studyUuid, currentRootNetworkUuid, dispatch]
     );
 
     const isSubtreeImpacted = useCallback(
@@ -187,18 +190,22 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_CREATED) {
-                fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['newNode']).then(
-                    (node) => {
-                        dispatch(
-                            networkModificationTreeNodeAdded(
-                                node,
-                                studyUpdatedForce.eventData.headers['parentNode'],
-                                studyUpdatedForce.eventData.headers['insertMode'],
-                                studyUpdatedForce.eventData.headers['referenceNodeUuid']
-                            )
-                        );
-                    }
-                );
+                console.log('TEST ====== >>>>>> ££££  ???? NODE_CREATED', studyUpdatedForce.eventData.headers);
+
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['newNode'],
+                    currentRootNetworkUuid
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeAdded(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode'],
+                            studyUpdatedForce.eventData.headers['referenceNodeUuid']
+                        )
+                    );
+                });
 
                 if (isSubtreeImpacted([studyUpdatedForce.eventData.headers['parentNode']])) {
                     resetNodeClipboard();
@@ -207,6 +214,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeCreated') {
+                console.log('TEST ====== >>>>>> ££££  ???? subtreeCreated', studyUpdatedForce.eventData.headers);
+
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['newNode']).then(
                     (nodes) => {
                         dispatch(
@@ -215,19 +224,25 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
-                fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
-                    (node) => {
-                        dispatch(
-                            networkModificationTreeNodeMoved(
-                                node,
-                                studyUpdatedForce.eventData.headers['parentNode'],
-                                studyUpdatedForce.eventData.headers['insertMode'],
-                                studyUpdatedForce.eventData.headers['referenceNodeUuid']
-                            )
-                        );
-                    }
-                );
+                console.log('TEST ====== >>>>>> ££££  ???? nodeMoved', studyUpdatedForce.eventData.headers);
+
+                fetchNetworkModificationTreeNode(
+                    studyUuid,
+                    studyUpdatedForce.eventData.headers['movedNode'],
+                    currentRootNetworkUuid
+                ).then((node) => {
+                    dispatch(
+                        networkModificationTreeNodeMoved(
+                            node,
+                            studyUpdatedForce.eventData.headers['parentNode'],
+                            studyUpdatedForce.eventData.headers['insertMode'],
+                            studyUpdatedForce.eventData.headers['referenceNodeUuid']
+                        )
+                    );
+                });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'subtreeMoved') {
+                console.log('TEST ====== >>>>>> ££££  ???? subtreeMoved', studyUpdatedForce.eventData.headers);
+
                 fetchNetworkModificationSubtree(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
                     (nodes) => {
                         dispatch(
@@ -236,6 +251,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_DELETED) {
+                console.log('TEST ====== >>>>>> ££££  ???? NODE_DELETED', studyUpdatedForce.eventData.headers);
+
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some(
                         (nodeId) => nodeId === nodeSelectionForCopyRef.current.nodeId
@@ -249,6 +266,8 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     setNodesToRestore(res);
                 });
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeUpdated') {
+                console.log('TEST ====== >>>>>> ££££  ???? nodeUpdated', studyUpdatedForce.eventData.headers);
+
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)
@@ -264,8 +283,15 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     resetNodeClipboard();
                 }
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeRenamed') {
+                console.log('TEST ====== >>>>>> ££££  ???? nodeRenamed', studyUpdatedForce.eventData.headers);
+
                 updateNodes([studyUpdatedForce.eventData.headers['node']]);
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeBuildStatusUpdated') {
+                console.log(
+                    'TEST ====== >>>>>> ££££  ???? nodeBuildStatusUpdated',
+                    studyUpdatedForce.eventData.headers
+                );
+
                 updateNodes(studyUpdatedForce.eventData.headers['nodes']);
                 if (
                     studyUpdatedForce.eventData.headers['nodes'].some((nodeId) => nodeId === currentNodeRef.current?.id)
@@ -291,6 +317,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
         snackInfo,
         dispatch,
         broadcastChannel,
+        currentRootNetworkUuid,
         isSubtreeImpacted,
         resetNodeClipboard,
     ]);
@@ -384,19 +411,19 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const handleUnbuildNode = useCallback(
         (element) => {
-            unbuildNode(studyUuid, element.id).catch((error) => {
+            unbuildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'NodeUnbuildingError',
                 });
             });
         },
-        [studyUuid, snackError]
+        [studyUuid, currentRootNetworkUuid, snackError]
     );
 
     const handleBuildNode = useCallback(
         (element) => {
-            buildNode(studyUuid, element.id).catch((error) => {
+            buildNode(studyUuid, element.id, currentRootNetworkUuid).catch((error) => {
                 if (error.status === 403 && error.message.includes(HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE)) {
                     // retrieve last word of the message (ex: "MAX_NODE_BUILDS_EXCEEDED max allowed built nodes : 2" -> 2)
                     let limit = error.message.split(/[: ]+/).pop();
@@ -412,7 +439,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                 }
             });
         },
-        [studyUuid, snackError]
+        [studyUuid, currentRootNetworkUuid, snackError]
     );
 
     const [openExportDialog, setOpenExportDialog] = useState(false);
@@ -555,6 +582,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     onClose={() => setOpenExportDialog(false)}
                     onClick={handleClickExportStudy}
                     studyUuid={studyUuid}
+                    rootNetworkUuid={currentRootNetworkUuid}
                     nodeUuid={activeNode?.id}
                     title={intlRef.current.formatMessage({
                         id: 'exportNetwork',

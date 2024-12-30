@@ -143,6 +143,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
     const { reset, handleSubmit, formState, getValues, setValue } = formMethods;
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const [sensitivityAnalysisParams, setSensitivityAnalysisParams] = useState(params);
 
     const resetSensitivityAnalysisParameters = useCallback(() => {
@@ -231,6 +232,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
             getSensitivityAnalysisFactorsCount(
                 studyUuid,
                 currentNode.id,
+                currentRootNetworkUuid,
                 arrayFormName === SENSI_INJECTIONS_SET,
                 formatFilteredParams(row)
             )
@@ -248,7 +250,7 @@ export const SensitivityAnalysisParameters: FunctionComponent<SensitivityAnalysi
                     });
                 });
         },
-        [snackError, studyUuid, formatFilteredParams, setValue, getResultCount, currentNode]
+        [snackError, studyUuid, currentRootNetworkUuid, formatFilteredParams, setValue, getResultCount, currentNode]
     );
 
     const fromSensitivityAnalysisParamsDataToFormValues = useCallback(

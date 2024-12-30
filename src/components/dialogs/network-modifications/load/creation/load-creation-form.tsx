@@ -22,10 +22,15 @@ import GridSection from '../../../commons/grid-section';
 export interface LoadCreationFormProps {
     studyUuid: UUID;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: UUID;
 }
 
-export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<LoadCreationFormProps>) {
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id);
+export default function LoadCreationForm({
+    studyUuid,
+    currentNode,
+    currentRootNetworkUuid,
+}: Readonly<LoadCreationFormProps>) {
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNode?.id, currentRootNetworkUuid);
 
     const loadIdField = (
         <TextInput name={EQUIPMENT_ID} label={'ID'} formProps={{ autoFocus: true, ...filledTextField }} />
@@ -54,6 +59,7 @@ export default function LoadCreationForm({ studyUuid, currentNode }: Readonly<Lo
             withPosition={true}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
             previousValues={undefined}
         />
     );

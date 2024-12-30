@@ -32,6 +32,7 @@ export interface StateEstimationResult {
 export interface StateEstimationTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
 }
 
 export interface StateEstimationResultTableProps {

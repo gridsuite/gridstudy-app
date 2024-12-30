@@ -27,6 +27,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
     const intl = useIntl();
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNodeUuid = useSelector((state: AppState) => state.currentTreeNode?.id);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const { snackInfo, snackError, snackWarning } = useSnackMessage();
     const [pendingState, setPendingState] = useState(false);
 
@@ -63,6 +64,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         // @ts-expect-error TODO: manage null case
                         studyUuid,
                         currentNodeUuid,
+                        currentRootNetworkUuid,
                         selectedEquipmentsIds,
                         nominalVoltages
                     );
@@ -79,6 +81,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
                         // @ts-expect-error TODO: manage null case
                         studyUuid,
                         currentNodeUuid,
+                        currentRootNetworkUuid,
                         equipments,
                         nominalVoltages
                     );
@@ -110,7 +113,7 @@ export const useSaveMap = (): UseSaveMapOutput => {
             }
             return true; // success
         },
-        [currentNodeUuid, intl, snackError, snackInfo, snackWarning, studyUuid]
+        [currentNodeUuid, currentRootNetworkUuid, intl, snackError, snackInfo, snackWarning, studyUuid]
     );
 
     return { pendingState, onSaveSelection };

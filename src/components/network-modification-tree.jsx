@@ -29,6 +29,7 @@ import {
     snapGrid,
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
+import RootNetworkPanel from './root-network-panel';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -322,6 +323,9 @@ const NetworkModificationTree = ({
                     </TreeControlButton>
                 </Controls>
                 {isMinimapOpen && <MiniMap nodeColor={nodeColor} pannable zoomable zoomStep={1} nodeStrokeWidth={0} />}
+
+                {/* root Network Panel */}
+                <RootNetworkPanel studyUuid={studyUuid}></RootNetworkPanel>
             </ReactFlow>
         </Box>
     );

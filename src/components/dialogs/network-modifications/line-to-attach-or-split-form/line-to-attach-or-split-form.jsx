@@ -17,7 +17,7 @@ import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { fetchEquipmentsIds } from '../../../../services/study/network-map';
 import GridItem from '../../commons/grid-item';
 
-export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
+export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode, currentRootNetworkUuid }) => {
     const [line1Substation, setLine1Substation] = useState('');
     const [line2Substation, setLine2Substation] = useState('');
     const [linesOptions, setLinesOptions] = useState([]);
@@ -27,8 +27,15 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
     });
 
     useEffect(() => {
-        if (studyUuid && currentNode?.id) {
-            fetchEquipmentsIds(studyUuid, currentNode?.id, undefined, EQUIPMENT_TYPES.LINE, true)
+        if (studyUuid && currentNode?.id && currentRootNetworkUuid) {
+            fetchEquipmentsIds(
+                studyUuid,
+                currentNode?.id,
+                currentRootNetworkUuid,
+                undefined,
+                EQUIPMENT_TYPES.LINE,
+                true
+            )
                 .then((values) => {
                     setLinesOptions(values.sort());
                 })
@@ -39,7 +46,7 @@ export const LineToAttachOrSplitForm = ({ label, studyUuid, currentNode }) => {
                     });
                 });
         }
-    }, [studyUuid, currentNode?.id, watchLineToAttachOrSplit, snackError]);
+    }, [studyUuid, currentNode?.id, currentRootNetworkUuid, watchLineToAttachOrSplit, snackError]);
 
     useEffect(() => {
         const lineToAttachOrSplit = linesOptions.find((l) => l?.id === watchLineToAttachOrSplit);

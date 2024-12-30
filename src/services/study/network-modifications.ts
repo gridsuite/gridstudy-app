@@ -8,7 +8,7 @@
 import { MODIFICATION_TYPES, EquipmentInfos, EquipmentType } from '@gridsuite/commons-ui';
 import { toModificationOperation, toModificationUnsetOperation } from '../../components/utils/utils';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
-import { getStudyUrlWithNodeUuid, safeEncodeURIComponent } from './index';
+import { getStudyUrlWithNodeUuid, getStudyUrlWithNodeUuidAndRootNetworkUuid, safeEncodeURIComponent } from './index';
 import { EQUIPMENT_TYPES } from '../../components/utils/equipment-types';
 import { BRANCH_SIDE, OPERATING_STATUS_ACTION } from '../../components/network/constants';
 import { UUID } from 'crypto';
@@ -45,6 +45,14 @@ import { Filter } from '../../components/dialogs/network-modifications/by-filter
 
 function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUuid: string | undefined) {
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
+}
+
+function getNetworkModificationUrl1(
+    studyUuid: string | null | undefined,
+    nodeUuid: string | undefined,
+    rootNetworkUuid: string | undefined
+) {
+    return getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) + '/network-modifications';
 }
 
 export function changeNetworkModificationOrder(
@@ -1717,12 +1725,13 @@ export function deleteAttachingLine({
 export function deleteEquipment(
     studyUuid: string,
     nodeUuid: UUID | undefined,
+    currentRootNetworkUuid: UUID | undefined,
     equipmentType: EquipmentType | string | null,
     equipmentId: string,
     modificationUuid: UUID | undefined,
     equipmentInfos: any = undefined
 ) {
-    let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
+    let deleteEquipmentUrl = getNetworkModificationUrl1(studyUuid, nodeUuid, currentRootNetworkUuid);
 
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);

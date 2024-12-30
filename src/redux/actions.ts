@@ -609,6 +609,17 @@ export function setCurrentTreeNode(currentTreeNode: CurrentTreeNode): CurrentTre
     };
 }
 
+export const CURRENT_ROOT_NETWORK = 'CURRENT_ROOT_NETWORK';
+export type CurrentRootNetworkAction = Readonly<Action<typeof CURRENT_ROOT_NETWORK>> & {
+    currentRootNetwork: UUID;
+};
+export function setCurrentRootNetwork(currentRootNetwork: UUID): CurrentRootNetworkAction {
+    return {
+        type: CURRENT_ROOT_NETWORK,
+        currentRootNetwork: currentRootNetwork,
+    };
+}
+
 export const NODE_SELECTION_FOR_COPY = 'NODE_SELECTION_FOR_COPY';
 export type NodeSelectionForCopyAction = Readonly<Action<typeof NODE_SELECTION_FOR_COPY>> & {
     nodeSelectionForCopy: NonNullable<NodeSelectionForCopy>;

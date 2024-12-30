@@ -150,6 +150,7 @@ const styles = {
 interface TableWrapperProps {
     studyUuid: string;
     currentNode: CurrentTreeNode;
+    currentRootNetworkUuid: string;
     equipmentId: string;
     equipmentType: SpreadsheetEquipmentType;
     equipmentChanged: boolean;
@@ -159,6 +160,7 @@ interface TableWrapperProps {
 const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     equipmentId,
     equipmentType,
     equipmentChanged,
@@ -1108,6 +1110,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
     // After the modification has been applied, we need to update the equipment data in the grid
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
+            console.log('TEST ====== >>>>>> ££££ ', studyUpdatedForce.eventData.headers);
             if (
                 studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED' &&
                 studyUpdatedForce.eventData.headers['parentNode'] === currentNode.id &&
@@ -1116,6 +1119,7 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
+                    currentRootNetworkUuid,
                     lastModifiedEquipment.metadata.equipmentType,
                     EQUIPMENT_INFOS_TYPES.TAB.type,
                     lastModifiedEquipment.id,
@@ -1135,7 +1139,15 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                     });
             }
         }
-    }, [lastModifiedEquipment, currentNode.id, studyUuid, studyUpdatedForce, formatFetchedEquipmentHandler, dispatch]);
+    }, [
+        lastModifiedEquipment,
+        currentNode.id,
+        studyUuid,
+        currentRootNetworkUuid,
+        studyUpdatedForce,
+        formatFetchedEquipmentHandler,
+        dispatch,
+    ]);
 
     //this listener is called for each cell modified
     const handleCellEditingStopped = useCallback(

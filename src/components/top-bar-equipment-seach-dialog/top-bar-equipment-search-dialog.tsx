@@ -42,6 +42,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
 
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
     const [equipmentTypeFilter, setEquipmentTypeFilter] = useState<EquipmentType | null>(null);
 
     const { searchTerm, updateSearchTerm, equipmentsFound, isLoading } = useTopBarSearchMatchingEquipment({
@@ -49,6 +50,9 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
         studyUuid: studyUuid,
         // @ts-expect-error TODO: manage null case
         nodeUuid: currentNode?.id,
+        // @ts-expect-error TODO: manage null case
+
+        currentRootNetworkUuid,
         equipmentType: equipmentTypeFilter ?? undefined,
     });
     const disabledSearchReason = useDisabledSearchReason();
@@ -72,6 +76,7 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
             fetchNetworkElementInfos(
                 studyUuid,
                 currentNode?.id,
+                currentRootNetworkUuid,
                 equipment.type,
                 EQUIPMENT_INFOS_TYPES.LIST.type,
                 equipment.id,
@@ -93,7 +98,15 @@ export const TopBarEquipmentSearchDialog: FunctionComponent<TopBarEquipmentSearc
                     });
                 });
         },
-        [updateSearchTerm, closeDialog, showVoltageLevelDiagram, studyUuid, snackWarning, currentNode]
+        [
+            updateSearchTerm,
+            closeDialog,
+            showVoltageLevelDiagram,
+            studyUuid,
+            snackWarning,
+            currentNode,
+            currentRootNetworkUuid,
+        ]
     );
 
     const suffixRenderer = useCallback(

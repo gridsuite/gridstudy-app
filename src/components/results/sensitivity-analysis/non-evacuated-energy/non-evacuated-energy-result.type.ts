@@ -11,6 +11,7 @@ import { RunningStatus } from '../../../utils/running-status';
 export interface NonEvacuatedEnergyTabProps {
     studyUuid: UUID;
     nodeUuid: UUID | undefined;
+    currentRootNetworkUuid: UUID;
 }
 export interface NonEvacuatedEnergyResultProps {
     result: object;

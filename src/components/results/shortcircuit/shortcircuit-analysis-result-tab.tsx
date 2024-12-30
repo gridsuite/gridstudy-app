@@ -31,6 +31,7 @@ import { GridReadyEvent } from 'ag-grid-community';
 interface ShortCircuitAnalysisResultTabProps {
     studyUuid: UUID;
     nodeUuid: UUID;
+    currentRootNetworkUuid: UUID;
     view: string;
 }
 
@@ -41,6 +42,7 @@ function getDisplayedColumns(params: any) {
 export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalysisResultTabProps> = ({
     studyUuid,
     nodeUuid,
+    currentRootNetworkUuid,
     view,
 }) => {
     const lastCompletedComputation = useSelector((state: AppState) => state.lastCompletedComputation);
@@ -144,6 +146,7 @@ export const ShortCircuitAnalysisResultTab: FunctionComponent<ShortCircuitAnalys
                         <ShortCircuitExportButton
                             studyUuid={studyUuid}
                             nodeUuid={nodeUuid}
+                            currentRootNetworkUuid={currentRootNetworkUuid}
                             csvHeaders={csvHeaders}
                             analysisType={tabIndex}
                             disabled={isCsvButtonDisabled}

@@ -162,6 +162,7 @@ export const TwoWindingsTransformerModificationDialogTab = {
  * @param studyUuid the study we are currently working on
  * @param defaultIdValue the default two windings transformer id
  * @param currentNode The node we are currently working on
+ * @param currentRootNetworkUuid The current root network uuid we are currently working on
  * @param isUpdate check if edition form
  * @param editData the data to edit
  * @param editDataFetchStatus indicates the status of fetching EditData
@@ -171,6 +172,7 @@ const TwoWindingsTransformerModificationDialog = ({
     studyUuid,
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
+    currentRootNetworkUuid,
     isUpdate,
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     editDataFetchStatus,
@@ -189,7 +191,7 @@ const TwoWindingsTransformerModificationDialog = ({
         resolver: yupResolver(formSchema),
     });
     const { reset, getValues, setValue } = formMethods;
-    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid);
+    const voltageLevelOptions = useVoltageLevelsListInfos(studyUuid, currentNodeUuid, currentRootNetworkUuid);
 
     const computeRatioTapChangerRegulationMode = (ratioTapChangerFormValues) => {
         if (ratioTapChangerFormValues?.[REGULATING]?.value == null) {
@@ -525,6 +527,7 @@ const TwoWindingsTransformerModificationDialog = ({
             currentNode,
             studyUuid,
             currentNodeUuid,
+            //        currentRootNetworkUuid,
             selectedId,
             fillRatioTapChangerRegulationAttributes,
             fillPhaseTapChangerRegulationAttributes,
@@ -691,6 +694,7 @@ const TwoWindingsTransformerModificationDialog = ({
                             <BranchConnectivityForm
                                 studyUuid={studyUuid}
                                 currentNode={currentNode}
+                                currentRootNetworkUuid={currentRootNetworkUuid}
                                 withPosition={true}
                                 isModification={true}
                                 previousValues={twtToModify}
@@ -741,6 +745,7 @@ const TwoWindingsTransformerModificationDialog = ({
 TwoWindingsTransformerModificationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
     isUpdate: PropTypes.bool,
     editData: PropTypes.object,
     editDataFetchStatus: PropTypes.string,

@@ -34,6 +34,7 @@ const styles = {
  * @param studyId : string study id
  * @param visible : boolean window visible
  * @param currentNode : object visualized node
+ * @param currentRootNetwork : current rootnetwork uuid
  * @param disabled : boolean disabled
  * @returns {*} node
  * @constructor

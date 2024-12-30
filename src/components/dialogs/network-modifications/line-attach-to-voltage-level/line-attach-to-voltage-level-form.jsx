@@ -36,6 +36,7 @@ import GridItem from '../../commons/grid-item';
 const LineAttachToVoltageLevelForm = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onLineCreationDo,
     lineToEdit,
     onVoltageLevelCreationDo,
@@ -102,6 +103,7 @@ const LineAttachToVoltageLevelForm = ({
             newBusOrBusbarSectionOptions={busbarSectionOptions}
             studyUuid={studyUuid}
             currentNode={currentNode}
+            currentRootNetworkUuid={currentRootNetworkUuid}
         />
     );
 
@@ -160,6 +162,7 @@ const LineAttachToVoltageLevelForm = ({
                     onClose={onVoltageLevelDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     onCreateVoltageLevel={onVoltageLevelCreationDo}
                     editData={isVoltageLevelEdit ? voltageLevelToEdit : null}
                 />
@@ -170,6 +173,7 @@ const LineAttachToVoltageLevelForm = ({
                     onClose={onLineDialogClose}
                     currentNode={currentNode}
                     studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                     displayConnectivity={false}
                     onCreateLine={onLineCreationDo}
                     editData={lineToEdit}
