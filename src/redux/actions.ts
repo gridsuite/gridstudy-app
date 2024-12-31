@@ -41,6 +41,7 @@ import {
     AppState,
     CurrentTreeNode,
     EquipmentUpdateType,
+    NodeAlias,
     OneBusShortCircuitAnalysisDiagram,
     SelectionForCopy,
     StudyIndexationStatus,
@@ -180,9 +181,12 @@ export function loadEquipments(
     };
 }
 
-export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS = 'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
-export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>> & {
-    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>
+export const ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS =
+    'ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS';
+export type AddEquipmentsByNodesForCustomColumnsAction = Readonly<
+    Action<typeof ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS>
+> & {
+    equipments: Record<string, Record<SpreadsheetEquipmentType, Identifiable[]>>;
 };
 
 export function addAdditionalEquipmentsByNodesForCustomColumns(
@@ -191,6 +195,18 @@ export function addAdditionalEquipmentsByNodesForCustomColumns(
     return {
         type: ADD_ADDITIONAL_EQUIPMENTS_BY_NODES_FOR_CUSTOM_COLUMNS,
         equipments: equipments,
+    };
+}
+
+export const UPDATE_CUSTOM_COLUMNS_NODES_ALIASES = 'UPDATE_CUSTOM_COLUMNS_NODES_ALIASES';
+export type UpdateCustomColumnsNodesAliasesAction = Readonly<Action<typeof UPDATE_CUSTOM_COLUMNS_NODES_ALIASES>> & {
+    nodesAliases: NodeAlias[];
+};
+
+export function updateCustomColumnsNodesAliases(nodesAliases: NodeAlias[]): UpdateCustomColumnsNodesAliasesAction {
+    return {
+        type: UPDATE_CUSTOM_COLUMNS_NODES_ALIASES,
+        nodesAliases: nodesAliases,
     };
 }
 

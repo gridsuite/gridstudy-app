@@ -88,6 +88,7 @@ import { FluxConventions } from '../dialogs/parameters/network-parameters';
 import { SpreadsheetEquipmentType } from './config/spreadsheet.type';
 import SpreadsheetSave from './spreadsheet-save';
 import { TABLES_DEFINITIONS } from './config/config-tables';
+import CustomColumnsNodesConfig from './custom-columns/custom-columns-nodes-config';
 
 const useEditBuffer = (): [Record<string, unknown>, (field: string, value: unknown) => void, () => void] => {
     //the data is fed and read during the edition validation process so we don't need to rerender after a call to one of available methods thus useRef is more suited
@@ -493,15 +494,17 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
 
         let equipmentsWithCustomColumnInfo = [...equipments];
 
-        Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach(value => {
+        Object.entries(additionalEquipmentsByNodesForCustomColumns).forEach((value) => {
             const nodeName = value[0];
             const equipmentsToAdd = value[1][equipmentType];
             if (equipmentsToAdd) {
-                equipmentsToAdd.forEach(equipmentToAdd => {
-                    let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(equipmentWithCustomColumnInfo => equipmentWithCustomColumnInfo.id === equipmentToAdd.id);
+                equipmentsToAdd.forEach((equipmentToAdd) => {
+                    let matchingEquipmentIndex = equipmentsWithCustomColumnInfo.findIndex(
+                        (equipmentWithCustomColumnInfo) => equipmentWithCustomColumnInfo.id === equipmentToAdd.id
+                    );
                     let matchingEquipment = equipmentsWithCustomColumnInfo[matchingEquipmentIndex];
                     if (matchingEquipment) {
-                        let equipmentWithAddedInfo = {...matchingEquipment};
+                        let equipmentWithAddedInfo = { ...matchingEquipment };
                         equipmentWithAddedInfo[nodeName] = equipmentToAdd;
                         equipmentsWithCustomColumnInfo[matchingEquipmentIndex] = equipmentWithAddedInfo;
                     }
@@ -1294,9 +1297,18 @@ const TableWrapper: FunctionComponent<TableWrapperProps> = ({
                         />
                     </Grid>
                     {developerMode && (
-                        <Grid item>
-                            <CustomColumnsConfig tabIndex={tabIndex} />
-                        </Grid>
+                        <>
+                            <Grid item>
+                                <CustomColumnsConfig tabIndex={tabIndex} />
+                            </Grid>
+                        </>
+                    )}
+                    {developerMode && (
+                        <>
+                            <Grid item>
+                                <CustomColumnsNodesConfig />
+                            </Grid>
+                        </>
                     )}
                     <Grid item style={{ flexGrow: 1 }}></Grid>
                     <Grid item sx={styles.save}>

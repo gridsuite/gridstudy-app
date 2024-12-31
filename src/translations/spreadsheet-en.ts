@@ -20,6 +20,9 @@ const spreadsheetEn = {
     'spreadsheet/custom_column/delete_custom_column_confirmation':
         'Are you sure you want to delete the column "{columnName}"?',
     'spreadsheet/custom_column/column_name_already_exist': 'Column name already exist',
+    'spreadsheet/custom_column/nodes': 'Nodes',
+    'spreadsheet/custom_column/parameter_nodes': 'Parameter nodes aliases',
+    'spreadsheet/custom_column/add_alias': 'Add an alias',
     'spreadsheet/save/button': 'Save',
     'spreadsheet/save/options/model': 'As a model',
     'spreadsheet/save/options/csv': 'Export CSV',
@@ -39,6 +42,8 @@ const spreadsheetEn = {
     'spreadsheet/create_new_spreadsheet/must_select_only_one_spreadsheet_model':
         'You must select only one spreadsheet model',
     'spreadsheet/create_new_spreadsheet/error_loading_model': 'Error while retrieving spreadsheet model',
+    'spreadsheet/parameter_aliases/node_name': 'Node name',
+    'spreadsheet/parameter_aliases/node_alias': 'Node alias',
 };
 
 export default spreadsheetEn;
