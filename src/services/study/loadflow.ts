@@ -7,6 +7,16 @@
 
 import { getStudyUrl, getStudyUrlWithNodeUuid, PREFIX_STUDY_QUERIES } from './index';
 import { backendFetch, backendFetchJson, backendFetchText } from '../utils';
+import { UUID } from 'crypto';
+import { FilterSelectorType } from 'components/custom-aggrid/custom-aggrid-header.type';
+import { SortConfigType } from 'hooks/use-aggrid-sort';
+import { GlobalFilter } from '../../components/results/loadflow/load-flow-result-tab';
+
+interface QueryParams {
+    sort?: SortConfigType[];
+    filters: FilterSelectorType[] | null;
+    globalFilters?: GlobalFilter;
+}
 
 export function getDefaultLoadFlowProvider() {
     console.info('get default load flow provier');
@@ -15,7 +25,7 @@ export function getDefaultLoadFlowProvider() {
     return backendFetchText(getDefaultLoadFlowProviderUrl);
 }
 
-export function setLoadFlowParameters(studyUuid, newParams) {
+export function setLoadFlowParameters(studyUuid: UUID, newParams: any) {
     console.info('set load flow parameters');
     const setLoadFlowParametersUrl = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(setLoadFlowParametersUrl);
@@ -29,14 +39,14 @@ export function setLoadFlowParameters(studyUuid, newParams) {
     });
 }
 
-export function getLoadFlowParameters(studyUuid) {
+export function getLoadFlowParameters(studyUuid: UUID) {
     console.info('get load flow parameters');
     const getLfParams = getStudyUrl(studyUuid) + '/loadflow/parameters';
     console.debug(getLfParams);
     return backendFetchJson(getLfParams);
 }
 
-export function setLoadFlowProvider(studyUuid, newProvider) {
+export function setLoadFlowProvider(studyUuid: UUID, newProvider: string) {
     console.info('set load flow provider');
     const setLoadFlowProviderUrl = getStudyUrl(studyUuid) + '/loadflow/provider';
     console.debug(setLoadFlowProviderUrl);
@@ -50,7 +60,7 @@ export function setLoadFlowProvider(studyUuid, newProvider) {
     });
 }
 
-export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
+export function startLoadFlow(studyUuid: UUID, currentNodeUuid: UUID, limitReduction: number) {
     console.info(
         'Running loadflow on ' + studyUuid + ' and node ' + currentNodeUuid + ' with limit reduction ' + limitReduction
     );
@@ -62,21 +72,21 @@ export function startLoadFlow(studyUuid, currentNodeUuid, limitReduction) {
     return backendFetch(startLoadFlowUrl, { method: 'put' });
 }
 
-export function stopLoadFlow(studyUuid, currentNodeUuid) {
+export function stopLoadFlow(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Stopping loadFlow on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const stopLoadFlowUrl = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/stop';
     console.debug(stopLoadFlowUrl);
     return backendFetch(stopLoadFlowUrl, { method: 'put' });
 }
 
-export function fetchLoadFlowStatus(studyUuid, currentNodeUuid) {
+export function fetchLoadFlowStatus(studyUuid: UUID, currentNodeUuid: UUID) {
     console.info(`Fetching loadFlow status on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const url = getStudyUrlWithNodeUuid(studyUuid, currentNodeUuid) + '/loadflow/status';
     console.debug(url);
     return backendFetchText(url);
 }
 
-export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
+export function fetchLoadFlowResult(studyUuid: UUID, currentNodeUuid: UUID, queryParams: QueryParams) {
     console.info(`Fetching loadflow result on '${studyUuid}' and node '${currentNodeUuid}' ...`);
     const { sort, filters } = queryParams || {};
     const params = new URLSearchParams({});
@@ -92,7 +102,7 @@ export function fetchLoadFlowResult(studyUuid, currentNodeUuid, queryParams) {
     return backendFetchJson(urlWithParams);
 }
 
-export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
+export function fetchLimitViolations(studyUuid: UUID, currentNodeUuid: UUID, queryParams: QueryParams) {
     console.info(`Fetching limit violations ...`);
     const { sort, filters, globalFilters } = queryParams || {};
     const params = new URLSearchParams({});
@@ -113,7 +123,7 @@ export function fetchLimitViolations(studyUuid, currentNodeUuid, queryParams) {
     return backendFetchJson(urlWithParams);
 }
 
-export function invalidateLoadFlowStatus(studyUuid) {
+export function invalidateLoadFlowStatus(studyUuid: UUID) {
     console.info('invalidate loadflow status');
     const invalidateLoadFlowStatusUrl = getStudyUrl(studyUuid) + '/loadflow/invalidate-status';
     console.debug(invalidateLoadFlowStatusUrl);
