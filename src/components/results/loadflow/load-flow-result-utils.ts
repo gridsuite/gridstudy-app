@@ -147,7 +147,7 @@ export const makeData = (
     return overloadedEquipments.map((overloadedEquipment) => {
         return {
             overload: overloadedEquipment.overload,
-            subjectId: overloadedEquipment.locationId ? overloadedEquipment.locationId : overloadedEquipment.subjectId,
+            subjectId: overloadedEquipment.locationId,
             value: overloadedEquipment.value,
             actualOverloadDuration:
                 overloadedEquipment.actualOverloadDuration === UNDEFINED_ACCEPTABLE_DURATION
