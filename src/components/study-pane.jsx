@@ -61,12 +61,18 @@ const StudyPane = ({ studyUuid, currentNode, setErrorMessage, ...props }) => {
     const { openDiagramView } = useDiagram();
 
     const disabled = !isNodeBuilt(currentNode);
-
+    function getVlId(vlId) {
+        if (vlId.includes('_')) {
+            const splitedValues = vlId.split('_');
+            return splitedValues[0];
+        }
+        return vlId;
+    }
     function openVoltageLevelDiagram(vlId) {
         // TODO code factorization for displaying a VL via a hook
         if (vlId) {
             props.onChangeTab(0); // switch to map view
-            openDiagramView(vlId, DiagramType.VOLTAGE_LEVEL);
+            openDiagramView(getVlId(vlId), DiagramType.VOLTAGE_LEVEL);
         }
     }
 
