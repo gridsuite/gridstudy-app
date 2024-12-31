@@ -10,7 +10,7 @@ import { ReactFlow, Controls, useStore, useReactFlow, MiniMap, useEdgesState, us
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { setModificationsDrawerOpen, setCurrentTreeNode, networkModificationTreeSwitchNodes } from '../redux/actions';
+import { setModificationsDrawerOpen, setCurrentTreeNode } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
 import { DRAWER_NODE_EDITOR_WIDTH } from '../utils/UIconstants';
@@ -20,7 +20,6 @@ import { nodeTypes } from './graph/util/model-constants';
 import { BUILD_STATUS } from './network/constants';
 import { StudyDisplayMode } from './network-modification.type';
 import {
-    findClosestSiblingInRange,
     getAbsolutePosition,
     getFirstAncestorWithSibling,
     getTreeNodesWithUpdatedPositions,
@@ -29,6 +28,8 @@ import {
     snapGrid,
 } from './graph/layout';
 import TreeControlButton from './graph/util/tree-control-button';
+import { updateNodesColumnPositions } from '../services/study/tree-subtree.ts';
+import { useSnackMessage } from '@gridsuite/commons-ui';
 
 const NetworkModificationTree = ({
     studyMapTreeDisplay,
@@ -38,6 +39,7 @@ const NetworkModificationTree = ({
     isStudyDrawerOpen,
 }) => {
     const dispatch = useDispatch();
+    const { snackError } = useSnackMessage();
 
     const currentNode = useSelector((state) => state.currentTreeNode);
 
@@ -219,28 +221,46 @@ const NetworkModificationTree = ({
     };
 
     /**
+     * Saves the new order of parentNode's children in the backend
+     */
+    const saveChildrenColumnPositions = (parentNodeId) => {
+        const children = treeModel.getChildren(parentNodeId).map((node, index) => ({
+            id: node.id,
+            type: node.type,
+            columnPosition: index,
+        }));
+        updateNodesColumnPositions(studyUuid, parentNodeId, children).catch((error) => {
+            snackError({
+                messageTxt: error.message,
+                headerId: 'NodeUpdateColumnPositions',
+            });
+        });
+    };
+
+    /**
      * When the user stops dragging a node and releases it to its new position, we check if we need
-     * to switch the order of the moved branch with a neighboring branch.
+     * to reorder the nodes
      */
     const handleEndNodeDragging = () => {
         let movedNode = nodesMap.get(draggedBranchIdRef.current);
         draggedBranchIdRef.current = null;
-        if (movedNode) {
+        if (movedNode?.parentId) {
             // In the treeModel.treeNodes variable we can find the positions of the nodes before the user started
             // dragging something, whereas in the movedNode variable (which comes from the nodes variable), we can
             // find the position of the node which has been updated by ReactFlow's onNodesChanges function as the
             // user kept on dragging the node.
-            const movedNodeXPositionBeforeDrag = treeModel.treeNodes.find((n) => n.id === movedNode.id).position.x;
-            const movedNodeXPositionAfterDrag = movedNode.position.x;
+            // We want the new positions post-drag, so we get the original positions, remove the moved node from them,
+            // and add the updated movedNode to the list.
+            const childrenWithOriginalPositions = treeModel.getChildren(movedNode.parentId);
 
-            const nodeToSwitchWith = findClosestSiblingInRange(
-                nodes,
-                movedNode,
-                movedNodeXPositionBeforeDrag,
-                movedNodeXPositionAfterDrag
-            );
-            if (nodeToSwitchWith) {
-                dispatch(networkModificationTreeSwitchNodes(movedNode.id, nodeToSwitchWith.id));
+            const childrenWithUpdatedPositions = childrenWithOriginalPositions.filter((n) => n.id !== movedNode.id);
+            childrenWithUpdatedPositions.push(movedNode);
+            // We want the ids in the correct order, so we sort by the nodes' X position.
+            childrenWithUpdatedPositions.sort((a, b) => a.position.x - b.position.x);
+            const orderedChildrenIds = childrenWithUpdatedPositions.map((node) => node.id);
+
+            if (treeModel.reorderChildrenNodes(movedNode.parentId, orderedChildrenIds)) {
+                saveChildrenColumnPositions(movedNode.parentId);
             }
         }
     };
