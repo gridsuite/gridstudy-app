@@ -3,7 +3,9 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDuration" : "Limit duration {sign} {value}min",
+    "LimitDurationInterval" : "Tempo interval : {highBound} and {lowBound}",
+    "LimitDurationAfterIST": "After IT{value}",
+    "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
     "filter": "Filter",

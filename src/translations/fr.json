@@ -1,9 +1,11 @@
 {
     "General": "General",
 
-    "LimitReductions" : "Abattements de limites",
+    "LimitReductions" : "Abattements",
     "IST" : "IST",
-    "LimitDuration" : "Surcharge {sign} {value}min",
+    "LimitDurationInterval" : "Intervalle de tempo : {highBound} et {lowBound}",
+    "LimitDurationAfterIST": "Au-delà de IT{value}",
+    "voltageRange": "Niveau de tension",
 
     "button.delete": "Supprimer",
     "filter": "Filtre",
@@ -416,6 +418,7 @@
     "CalculatedValue": "Valeur calculée (A ou kV)",
     "OverloadedEquipment": "Ouvrage",
     "PermanentLimitName": "IST",
+    "Permanent":"Permanent",
     "LimitAcceptableDuration": "Durée",
     "Overload": "Surcharge",
 
