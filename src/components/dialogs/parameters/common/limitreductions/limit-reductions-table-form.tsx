@@ -43,7 +43,6 @@ const LimitReductionsTableForm: FunctionComponent<{
                     highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
                 }
             );
-            // return getLabelColumn(limit);
         },
         [intl]
     );
