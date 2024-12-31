@@ -39,7 +39,7 @@ const LimitReductionsTableForm: FunctionComponent<{
             return intl.formatMessage(
                 { id: 'LimitDurationInterval' },
                 {
-                    lowBound: lowBound === 0 ? 'IST' : `IT${lowBound}`,
+                    lowBound: `IT${lowBound}`,
                     highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
                 }
             );
