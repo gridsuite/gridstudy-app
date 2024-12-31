@@ -9,7 +9,7 @@ import { getStudyUrl } from './index';
 import { backendFetch, backendFetchJson } from '../utils';
 import { UUID } from 'crypto';
 import { NodeInsertModes } from '../../components/graph/nodes/node-insert-modes';
-import { NodeType } from '../../components/graph/tree-node.type';
+import { AbstractNode, NodeType } from '../../components/graph/tree-node.type';
 import { BUILD_STATUS } from '../../components/network/constants';
 
 interface Node {
@@ -160,6 +160,20 @@ export function updateTreeNode(
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(node),
+    });
+}
+
+export function updateNodesColumnPositions(studyUuid: UUID, parentNodeId: UUID, nodes: AbstractNode[]) {
+    const nodeUpdateUrl =
+        getStudyUrl(studyUuid) + '/tree/nodes/' + encodeURIComponent(parentNodeId) + '/children-column-positions';
+    console.debug(nodeUpdateUrl);
+    return backendFetch(nodeUpdateUrl, {
+        method: 'put',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(nodes),
     });
 }
 
