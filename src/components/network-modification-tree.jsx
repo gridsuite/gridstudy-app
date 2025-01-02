@@ -9,7 +9,7 @@ import { Box } from '@mui/material';
 import { Controls, MiniMap, ReactFlow, useEdgesState, useNodesState, useReactFlow, useStore } from '@xyflow/react';
 import MapIcon from '@mui/icons-material/Map';
 import CenterFocusIcon from '@mui/icons-material/CenterFocusStrong';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { reorderNetworkModificationTreeNodes, setCurrentTreeNode, setModificationsDrawerOpen } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { isSameNode } from './graph/util/model-functions';
@@ -84,11 +84,10 @@ const NetworkModificationTree = ({
         if (treeModel && treeModel.treeNodes?.length > 0) {
             setNodes(getTreeNodesWithUpdatedPositions(treeModel.treeNodes));
             setEdges([...treeModel.treeEdges]);
-            window.requestAnimationFrame(() => fitView());
         }
-    }, [treeModel, fitView, setNodes, setEdges]);
+    }, [treeModel, setNodes, setEdges]);
 
-    useEffect(() => {
+    useLayoutEffect(() => {
         updateNodePositions();
     }, [updateNodePositions]);
 

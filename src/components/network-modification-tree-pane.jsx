@@ -191,7 +191,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const reorderSubtree = useCallback(
         (parentNodeId, orderedChildrenNodeIds) => {
-            // We check if the current position is already correct
+            // We received a list of ordered nodes from a notification and we test if the list seems correct.
+            // TODO : At the moment, we only check the lenghts, but should also test the contents to make sure
+            // there are no desynchronization between the notification's content and what we have locally.
             const children = treeModelRef.current.getChildren(parentNodeId);
             if (orderedChildrenNodeIds.length !== children.length) {
                 snackWarning({

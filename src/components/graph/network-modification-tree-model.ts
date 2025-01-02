@@ -58,7 +58,6 @@ export default class NetworkModificationTreeModel {
      */
     reorderChildrenNodes(parentNodeId: string, orderedNodeIds: string[]) {
         if (!this.needReorder(parentNodeId, orderedNodeIds)) {
-            console.info('NO NEED REORDER FROM NOTIF');
             return false;
         }
 
