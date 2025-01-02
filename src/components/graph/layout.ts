@@ -251,11 +251,13 @@ function compressTreePlacements(nodes: CurrentTreeNode[], placements: PlacementG
         // to the maximum column placement values (per row) of the nodes on the left.
         // The resulting space we find represents how much we can shift the current column to the left.
 
-        const { index: currentNodeIndex } = nodeMap.get(currentNodeId)!;
+        const currentNodeIndex = nodeMap.get(currentNodeId)!.index;
         const currentSubTreeSize = subTreeSizeMap.get(currentNodeId)!;
 
-        // Use array slice directly without Set conversion
         const currentBranchNodes = nodes.slice(currentNodeIndex, currentNodeIndex + currentSubTreeSize);
+
+        // We have to compare with all the left nodes, not only the current branch's left neighbor, because in some
+        // cases other branches could go under the left neighbor and make edges cross.
         const leftNodes = nodes.slice(0, currentNodeIndex);
 
         const currentBranchMinimumColumnByRow = getMinimumColumnByRows(currentBranchNodes, placements);
