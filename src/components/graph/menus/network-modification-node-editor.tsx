@@ -204,7 +204,8 @@ const NetworkModificationNodeEditor = () => {
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [modificationsToRestore, setModificationsToRestore] = useState<NetworkModificationMetadata[]>([]);
     const currentNode = useSelector((state: AppState) => state.currentTreeNode);
-
+    const currentRootNetworkUuid = useSelector((state: AppState) => state.currentRootNetwork);
+    
     const currentNodeIdRef = useRef<UUID>(); // initial empty to get first update
     const [pendingState, setPendingState] = useState(false);
 
@@ -263,6 +264,7 @@ const NetworkModificationNodeEditor = () => {
                 onValidated={handleValidatedDialog}
                 currentNode={currentNode}
                 studyUuid={studyUuid}
+                currentRootNetworkUuid={currentRootNetworkUuid}
                 editData={editData}
                 isUpdate={isUpdate}
                 editDataFetchStatus={editDataFetchStatus}

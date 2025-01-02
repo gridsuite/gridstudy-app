@@ -49,6 +49,7 @@ const SubstationCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -158,6 +159,7 @@ const SubstationCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.SUBSTATION}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
