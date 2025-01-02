@@ -147,7 +147,8 @@ export const makeData = (
     return overloadedEquipments.map((overloadedEquipment) => {
         return {
             overload: overloadedEquipment.overload,
-            subjectId: overloadedEquipment.locationId,
+            subjectId: overloadedEquipment.subjectId,
+            locationId: overloadedEquipment.locationId,
             value: overloadedEquipment.value,
             actualOverloadDuration:
                 overloadedEquipment.actualOverloadDuration === UNDEFINED_ACCEPTABLE_DURATION
@@ -345,8 +346,8 @@ export const loadFlowVoltageViolationsColumnsDefinition = (
     return [
         makeAgGridCustomHeaderColumn({
             headerName: intl.formatMessage({ id: 'OverloadedEquipment' }),
-            id: 'subjectId',
-            field: 'subjectId',
+            id: 'locationId',
+            field: 'locationId',
             sortProps,
             filterComponent: CustomAggridComparatorFilter,
             filterComponentParams: { filterParams: { ...filterProps, ...textFilterParams } },
