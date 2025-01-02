@@ -191,15 +191,16 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
 
     const reorderSubtree = useCallback(
         (parentNodeId, orderedChildrenNodeIds) => {
-            // We received a list of ordered nodes from a notification and we test if the list seems correct.
-            // TODO : At the moment, we only check the lenghts, but should also test the contents to make sure
-            // there are no desynchronization between the notification's content and what we have locally.
-            const children = treeModelRef.current.getChildren(parentNodeId);
-            if (orderedChildrenNodeIds.length !== children.length) {
+            // We check that the received node order from the notification is coherent with what we have locally.
+            const children = new Set(treeModelRef.current.getChildren(parentNodeId).map((c) => c.id));
+            let isListsEqual =
+                orderedChildrenNodeIds.length === children.size &&
+                orderedChildrenNodeIds.every((id) => children.has(id));
+            if (!isListsEqual) {
                 snackWarning({
                     messageId: 'ReorderSubtreeInvalidNotifInfo',
                 });
-                console.warn('Subtree order update cancelled : the size of the ordered children list is incompatible');
+                console.warn('Subtree order update cancelled : the ordered children list is incompatible');
                 return;
             }
 
