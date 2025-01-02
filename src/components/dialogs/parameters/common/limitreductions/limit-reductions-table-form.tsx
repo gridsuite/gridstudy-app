@@ -14,18 +14,33 @@ import {
 import { useIntl } from 'react-intl';
 import LimitReductionsTable from './limit-reductions-table';
 
+const getLabelColumn = (limit: ITemporaryLimitReduction) => {
+    const lowBound = `${Math.trunc(limit.limitDuration.lowBound / 60)} min`;
+    const highBoundValue = Math.trunc(limit.limitDuration.highBound / 60);
+    const highBound = highBoundValue === 0 ? '∞' : `${Math.trunc(limit.limitDuration.highBound / 60)} min`;
+    const lowerBoundClosed = limit.limitDuration.lowClosed ? '[' : ']';
+    const highBoundClosed = limit.limitDuration.highClosed || null ? ']' : '[';
+    return `${lowerBoundClosed}${lowBound}, ${highBound}${highBoundClosed}`;
+};
+
 const LimitReductionsTableForm: FunctionComponent<{
     limits: ILimitReductionsByVoltageLevel[];
 }> = ({ limits }) => {
     const intl = useIntl();
 
-    const getLabelColumn = useCallback(
+    const getToolTipColumn = useCallback(
         (limit: ITemporaryLimitReduction) => {
+            const lowBound = Math.trunc(limit.limitDuration.lowBound / 60);
+            const highBound = Math.trunc(limit.limitDuration.highBound / 60);
+            if (lowBound === 0) {
+                return intl.formatMessage({ id: 'LimitDurationAfterIST' }, { value: highBound });
+            }
+
             return intl.formatMessage(
-                { id: 'LimitDuration' },
+                { id: 'LimitDurationInterval' },
                 {
-                    sign: limit.limitDuration.lowClosed ? '>=' : '>',
-                    value: Math.trunc(limit.limitDuration.lowBound / 60),
+                    lowBound: `IT${lowBound}`,
+                    highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
                 }
             );
         },
@@ -36,6 +51,7 @@ const LimitReductionsTableForm: FunctionComponent<{
         let columnsDefinition = COLUMNS_DEFINITIONS_LIMIT_REDUCTIONS.map((column) => ({
             ...column,
             label: intl.formatMessage({ id: column.label }),
+            tooltip: intl.formatMessage({ id: column.tooltip }),
         }));
 
         if (limits !== null && limits.length > 0) {
@@ -43,12 +59,13 @@ const LimitReductionsTableForm: FunctionComponent<{
                 columnsDefinition.push({
                     label: getLabelColumn(tlimit),
                     dataKey: LIMIT_DURATION_FORM + index,
+                    tooltip: getToolTipColumn(tlimit),
                 });
             });
         }
 
         return columnsDefinition;
-    }, [intl, limits, getLabelColumn]);
+    }, [intl, limits, getToolTipColumn]);
 
     return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
 };

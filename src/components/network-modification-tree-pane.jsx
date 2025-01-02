@@ -15,6 +15,7 @@ import {
     networkModificationHandleSubtree,
     setNodeSelectionForCopy,
     resetLogsFilter,
+    reorderNetworkModificationTreeNodes,
 } from '../redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import PropTypes from 'prop-types';
@@ -213,6 +214,14 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                             networkModificationHandleSubtree(nodes, studyUpdatedForce.eventData.headers['parentNode'])
                         );
                     }
+                );
+            } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodesColumnPositionsChanged') {
+                const orderedChildrenNodeIds = JSON.parse(studyUpdatedForce.eventData.payload);
+                dispatch(
+                    reorderNetworkModificationTreeNodes(
+                        studyUpdatedForce.eventData.headers['parentNode'],
+                        orderedChildrenNodeIds
+                    )
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
                 fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(

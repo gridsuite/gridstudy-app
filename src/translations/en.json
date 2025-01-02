@@ -3,7 +3,9 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDuration" : "Limit duration {sign} {value}min",
+    "LimitDurationInterval" : "Tempo interval : {highBound} and {lowBound}",
+    "LimitDurationAfterIST": "After IT{value}",
+    "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
     "filter": "Filter",
@@ -597,6 +599,7 @@
     "NodeCreateError": "An error occurred while creating node",
     "NodeDeleteError": "An error occurred while deleting node",
     "NodeUpdateError": "An error occurred while updating node",
+    "NodeUpdateColumnPositions": "An error occured while updating the nodes' positions in the tree",
     "NodeBuildingError": "An error occurred while building node",
     "NodeUnbuildingError": "An error occurred while unbuilding node",
     "NetworkModifications": "Network modifications",
