@@ -42,6 +42,14 @@ export default class NetworkModificationTreeModel {
         return this.treeNodes.filter((n) => n.parentId === parentNodeId);
     }
 
+    needReorder(parentNodeId: string, orderedNodeIds: string[]): boolean {
+        return (
+            this.getChildren(parentNodeId)
+                .map((child) => child.id)
+                .join(',') !== orderedNodeIds.join(',')
+        );
+    }
+
     /**
      * Will reorganize treeNodes and put the children of parentNodeId in the order provided in nodeIds array.
      * @param parentNodeId parent ID of the to be reordered children nodes
@@ -49,16 +57,11 @@ export default class NetworkModificationTreeModel {
      * @returns true if the order was changed
      */
     reorderChildrenNodes(parentNodeId: string, orderedNodeIds: string[]) {
-        // We check if the current position is already correct
-        const children = this.getChildren(parentNodeId);
-        if (orderedNodeIds.length !== children.length) {
-            console.warn('reorderNodes : synchronization error, reorder cancelled');
+        if (!this.needReorder(parentNodeId, orderedNodeIds)) {
+            console.info('NO NEED REORDER FROM NOTIF');
             return false;
         }
-        if (children.map((child) => child.id).join(',') === orderedNodeIds.join(',')) {
-            // Already in the same order.
-            return false;
-        }
+
         // Let's reorder the children :
         // In orderedNodeIds order, we cut and paste the corresponding number of nodes in treeNodes.
         const justAfterParentIndex = 1 + this.treeNodes.findIndex((n) => n.id === parentNodeId); // we add 1 here to set the index just after the parent node
@@ -75,6 +78,7 @@ export default class NetworkModificationTreeModel {
             this.treeNodes.splice(justAfterParentIndex + insertedNodes, 0, ...nodesToMove);
             insertedNodes += subTreeSize;
         });
+
         return true;
     }
 

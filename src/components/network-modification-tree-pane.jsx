@@ -78,7 +78,7 @@ const HTTP_MAX_NODE_BUILDS_EXCEEDED_MESSAGE = 'MAX_NODE_BUILDS_EXCEEDED';
 export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) => {
     const dispatch = useDispatch();
     const intlRef = useIntlRef();
-    const { snackError, snackInfo } = useSnackMessage();
+    const { snackError, snackWarning, snackInfo } = useSnackMessage();
     const DownloadIframe = 'downloadIframe';
     const isInitiatingCopyTab = useRef(false);
     const [nodesToRestore, setNodesToRestore] = useState([]);
@@ -129,6 +129,10 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
     }, [broadcastChannel]);
 
     const [activeNode, setActiveNode] = useState(null);
+
+    const treeModel = useSelector((state) => state.networkModificationTreeModel);
+    const treeModelRef = useRef();
+    treeModelRef.current = treeModel;
 
     const currentNode = useSelector((state) => state.currentTreeNode);
     const currentNodeRef = useRef();
@@ -185,6 +189,24 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
         }
     }, [broadcastChannel, dispatch, snackInfo]);
 
+    const reorderSubtree = useCallback(
+        (parentNodeId, orderedChildrenNodeIds) => {
+            // We check if the current position is already correct
+            const children = treeModelRef.current.getChildren(parentNodeId);
+            if (orderedChildrenNodeIds.length !== children.length) {
+                snackWarning({
+                    messageId: 'ReorderSubtreeInvalidNotifInfo',
+                });
+                console.warn('Subtree order update cancelled : the size of the ordered children list is incompatible');
+                return;
+            }
+
+            // dispatch reorder
+            dispatch(reorderNetworkModificationTreeNodes(parentNodeId, orderedChildrenNodeIds));
+        },
+        [dispatch, snackWarning]
+    );
+
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
             if (studyUpdatedForce.eventData.headers['updateType'] === UpdateType.NODE_CREATED) {
@@ -216,12 +238,9 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
                     }
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodesColumnPositionsChanged') {
-                const orderedChildrenNodeIds = JSON.parse(studyUpdatedForce.eventData.payload);
-                dispatch(
-                    reorderNetworkModificationTreeNodes(
-                        studyUpdatedForce.eventData.headers['parentNode'],
-                        orderedChildrenNodeIds
-                    )
+                reorderSubtree(
+                    studyUpdatedForce.eventData.headers['parentNode'],
+                    JSON.parse(studyUpdatedForce.eventData.payload)
                 );
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeMoved') {
                 fetchNetworkModificationTreeNode(studyUuid, studyUpdatedForce.eventData.headers['movedNode']).then(
@@ -297,6 +316,7 @@ export const NetworkModificationTreePane = ({ studyUuid, studyMapTreeDisplay }) 
         studyUuid,
         studyUpdatedForce,
         updateNodes,
+        reorderSubtree,
         snackInfo,
         dispatch,
         broadcastChannel,
