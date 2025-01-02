@@ -114,6 +114,7 @@ export interface LccCreationDialogProps extends Partial<DialogProps> {
     editData: LccCreationInfos;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
 }
@@ -122,6 +123,7 @@ export function LccCreationDialog({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -274,6 +276,7 @@ export function LccCreationDialog({
                     onSelectionChange={searchCopy.handleSelectionChange}
                     equipmentType={EquipmentType.HVDC_LINE}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

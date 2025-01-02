@@ -75,6 +75,7 @@ export interface LoadCreationDialogProps extends Partial<DialogProps> {
     editData: LoadCreationInfos;
     currentNode: CurrentTreeNode;
     studyUuid: UUID;
+    currentRootNetworkUuid: UUID;
     isUpdate: boolean;
     editDataFetchStatus: FetchStatus;
     disabledSave: boolean;
@@ -84,6 +85,7 @@ export function LoadCreationDialog({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -209,14 +211,18 @@ export function LoadCreationDialog({
                 isDataFetching={isUpdate && editDataFetchStatus === FetchStatus.RUNNING}
                 {...dialogProps}
             >
-                <LoadCreationForm currentNode={currentNode} studyUuid={studyUuid} />
-
+                <LoadCreationForm
+                    currentNode={currentNode}
+                    studyUuid={studyUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
+                />
                 <EquipmentSearchDialog
                     open={searchCopy.isDialogSearchOpen}
                     onClose={searchCopy.handleCloseSearchDialog}
                     equipmentType={EquipmentType.LOAD}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

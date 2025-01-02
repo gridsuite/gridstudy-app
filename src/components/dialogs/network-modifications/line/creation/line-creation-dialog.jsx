@@ -104,6 +104,7 @@ const LineCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     onCreateLine = createLine,
     displayConnectivity = true,
     isUpdate,
@@ -420,6 +421,7 @@ const LineCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
                 <LineTypeSegmentDialog
                     open={isOpenLineTypesCatalogDialog}

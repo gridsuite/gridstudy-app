@@ -6,25 +6,18 @@
  */
 
 import PropTypes from 'prop-types';
-import { lighten, darken } from '@mui/material/styles';
-import NetworkModificationNodeEditor from './network-modification-node-editor';
-import { useSnackMessage } from '@gridsuite/commons-ui';
 import { EditableTitle } from './editable-title';
-import { useDispatch, useSelector } from 'react-redux';
-import { setModificationsDrawerOpen } from '../../../redux/actions';
-import { updateTreeNode } from '../../../services/study/tree-subtree';
 import { Box } from '@mui/material';
 import { AppState } from '../../../redux/reducer';
-import { Theme } from '@mui/material/styles';
 import RootNetworkNodeEditor from './root-network-node-editor';
+import { useSelector } from 'react-redux';
 
 const styles = {
-    paper: (theme: Theme) => ({
+    paper: () => ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
         elevation: 3,
-        //   background: "red",
     }),
 };
 
