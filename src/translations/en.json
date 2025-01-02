@@ -3,8 +3,8 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDurationInterval" : "Tempo interval : {highBound} and {lowBound}",
-    "LimitDurationAfterIST": "After IT{value}",
+    "LimitDurationInterval" : "Between {highBound} and {lowBound}",
+    "LimitDurationAfterIST": "Beyond IT{value}",
     "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
