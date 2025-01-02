@@ -67,7 +67,7 @@ const LimitReductionsTableForm: FunctionComponent<{
         return columnsDefinition;
     }, [intl, limits, getToolTipColumn]);
 
-    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
+    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={450} />;
 };
 
 export default LimitReductionsTableForm;
