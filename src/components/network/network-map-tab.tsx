@@ -630,6 +630,12 @@ export const NetworkMapTab = ({
         Promise.all([substationPositionsDone, linePositionsDone])
             .then(() => {
                 temporaryGeoDataIdsRef.current = new Set();
+                networkMapRef.current?.centerMapNetwork();
+                // when reloading root node map equipments (when switching of root network), nominal voltages are reloaded
+                // we check them all in NominalVoltageFilter by default
+                if (mapEquipments) {
+                    handleChange(mapEquipments.getNominalVoltages());
+                }
                 setIsRootNodeGeoDataLoaded(true);
             })
             .catch(function (error) {
@@ -642,7 +648,7 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError]);
+    }, [mapEquipments, rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
