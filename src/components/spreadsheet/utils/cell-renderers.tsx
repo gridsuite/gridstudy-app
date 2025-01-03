@@ -107,9 +107,7 @@ export const formatCell = (props: any) => {
             ? props.colDef.valueGetter(props, props.context.network)
             : props.colDef.valueGetter(props);
     }
-    if (props.applyFluxConvention) {
-        value = props.applyFluxConvention(value);
-    }
+
     if (value != null && props.colDef.numeric && props.colDef.fractionDigits) {
         // only numeric rounded cells have a tooltip (their raw numeric value)
         tooltipValue = value;
@@ -142,6 +140,7 @@ export const convertDuration = (duration: number) => {
 
 export const DefaultCellRenderer = (props: any) => {
     const cellValue = formatCell(props);
+
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
@@ -150,11 +149,25 @@ export const DefaultCellRenderer = (props: any) => {
                 title={cellValue.tooltip ? cellValue.tooltip : cellValue.value}
             >
                 <Box
-                    sx={mergeSx(
-                        styles.overflow,
-                        props?.colDef?.cellRendererParams?.isValueInvalid ? styles.valueInvalid : undefined
-                    )}
+                    sx={mergeSx(styles.overflow, props?.isValueInvalid ? styles.valueInvalid : undefined)}
                     children={cellValue.value}
+                />
+            </Tooltip>
+        </Box>
+    );
+};
+
+export const DefaultSpreadsheetCellRenderer = (params: any) => {
+    return (
+        <Box sx={mergeSx(styles.tableCell)}>
+            <Tooltip
+                disableFocusListener
+                disableTouchListener
+                title={params.data[params?.colDef?.field!] ?? params.value}
+            >
+                <Box
+                    sx={mergeSx(styles.overflow, params.isValueInvalid ? styles.valueInvalid : undefined)}
+                    children={params.value}
                 />
             </Tooltip>
         </Box>
@@ -252,20 +265,17 @@ export const MessageLogCellRenderer = ({
     );
 };
 
-export const PropertiesCellRenderer = (props: any) => {
-    const cellValue = formatCell(props);
+export const PropertiesCellRenderer = (params: any) => {
     // different properties are seperated with |
     // tooltip message contains properties in seperated lines
     return (
         <Box sx={mergeSx(styles.tableCell)}>
             <Tooltip
                 title={
-                    <div style={{ whiteSpace: 'pre-line' }}>
-                        {cellValue.value && cellValue.value.replaceAll(' | ', '\n')}
-                    </div>
+                    <div style={{ whiteSpace: 'pre-line' }}>{params.value && params.value.replaceAll(' | ', '\n')}</div>
                 }
             >
-                <Box sx={styles.overflow} children={cellValue.value} />
+                <Box sx={styles.overflow} children={params.value} />
             </Tooltip>
         </Box>
     );

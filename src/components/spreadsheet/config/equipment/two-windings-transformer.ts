@@ -10,26 +10,32 @@ import type { SpreadsheetTabDefinition } from '../spreadsheet.type';
 import type { CustomColDef } from '../../../custom-aggrid/custom-aggrid-header.type';
 import { EQUIPMENT_TYPES } from '../../../utils/equipment-types';
 import { type EquipmentTableDataEditorProps, TWTRegulatingTerminalEditor } from '../../utils/equipment-table-editors';
-import CountryCellRenderer from '../../utils/country-cell-render';
 import type { EditableCallback } from 'ag-grid-community';
-import { BooleanCellRenderer } from '../../utils/cell-renderers';
 import {
-    countryEnumFilterConfig,
-    defaultBooleanFilterConfig,
-    defaultNumericFilterConfig,
-    defaultTextFilterConfig,
     editableCellStyle,
     editableColumnConfig,
     excludeFromGlobalFilter,
     generateTapPositions,
-    getDefaultEnumConfig,
     isEditable,
     typeAndFetchers,
 } from './common-config';
-import { MEDIUM_COLUMN_WIDTH } from '../../utils/constants';
+import {
+    BOOLEAN_TYPE,
+    COUNTRY_TYPE,
+    MEDIUM_COLUMN_WIDTH,
+    NUMERIC_0_FRACTION_DIGITS_TYPE,
+    NUMERIC_1_FRACTION_DIGITS_TYPE,
+    NUMERIC_CAN_BE_INVALIDATED_TYPE,
+    NUMERIC_HIGH_TAP_POSITION_TYPE,
+    NUMERIC_TYPE,
+    NUMERIC_UNIT_TO_MICRO_UNIT_TYPE,
+    PHASE_REGULATING_MODE_ENUM_TYPE,
+    RATIO_REGULATION_MODES_ENUM_TYPE,
+    REGULATION_ENUM_TYPE,
+    SIDE_ENUM_TYPE,
+    TEXT_TYPE,
+} from '../../utils/constants';
 import { PHASE_REGULATION_MODES, RATIO_REGULATION_MODES, REGULATION_TYPES, SIDE } from '../../../network/constants';
-import { computeHighTapPosition, getTapChangerRegulationTerminalValue } from '../../../utils/utils';
-import { unitToMicroUnit } from '../../../../utils/unit-converter';
 import { getComputedRegulationMode } from '../../../dialogs/network-modifications/two-windings-transformer/tap-changer-pane/ratio-tap-changer-pane/ratio-tap-changer-pane-utils';
 import { genericColumnOfPropertiesEditPopup } from '../common/column-properties';
 import {
@@ -39,6 +45,7 @@ import {
     numericalCellEditorConfig,
     standardSelectCellEditorConfig,
 } from '../common/cell-editors';
+import { SortWay } from 'hooks/use-aggrid-sort';
 
 function getTwtRatioRegulationModeId(twt: any) {
     //regulationMode is set by the user (in edit mode)
@@ -108,50 +115,43 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ID',
             field: 'id',
-            isDefaultSort: true,
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
+            sort: SortWay.ASC,
         },
         {
             id: 'Name',
             field: 'name',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'VoltageLevelIdSide1',
             field: 'voltageLevelId1',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'VoltageLevelIdSide2',
             field: 'voltageLevelId2',
-            ...defaultTextFilterConfig,
+            type: TEXT_TYPE,
         },
         {
             id: 'Country',
             field: 'country',
-            ...countryEnumFilterConfig,
-            cellRenderer: CountryCellRenderer,
+            type: COUNTRY_TYPE,
         },
         {
             id: 'nominalVoltage1KV',
             field: 'nominalVoltage1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'nominalVoltage2KV',
             field: 'nominalVoltage2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
         },
         {
             id: 'ratedVoltage1KV',
             field: 'ratedU1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.ratedU1),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -159,9 +159,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ratedVoltage2KV',
             field: 'ratedU2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 0,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             ...editableColumnConfig,
             ...numericalCellEditorConfig((params) => params.data.ratedU2),
             getQuickFilterText: excludeFromGlobalFilter,
@@ -169,45 +167,31 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'ActivePowerSide1',
             field: 'p1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ActivePowerSide2',
             field: 'p2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide1',
             field: 'q1',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ReactivePowerSide2',
             field: 'q2',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            canBeInvalidated: true,
+            type: [NUMERIC_1_FRACTION_DIGITS_TYPE, NUMERIC_CAN_BE_INVALIDATED_TYPE],
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'HasLoadTapChangingCapabilities',
             field: 'ratioTapChanger.hasLoadTapChangingCapabilities',
-            valueGetter: (params) => params?.data?.ratioTapChanger?.hasLoadTapChangingCapabilities,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             editable: (params) => isEditable(params) && hasTwtRatioTapChanger(params),
             cellStyle: editableCellStyle,
             valueSetter: (params) => {
@@ -228,7 +212,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RatioRegulationMode',
             field: 'ratioTapChanger.regulationMode',
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationMode,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
@@ -250,13 +233,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
                     columnValue: true,
                 },
             },
-            ...getDefaultEnumConfig(Object.values(RATIO_REGULATION_MODES)),
+            type: RATIO_REGULATION_MODES_ENUM_TYPE,
         },
         {
             id: 'TargetVPoint',
             field: 'ratioTapChanger.targetV',
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
             ...numericalCellEditorConfig((params) => params.data?.ratioTapChanger?.targetV),
@@ -272,8 +254,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RatioDeadBand',
             field: 'ratioTapChanger.targetDeadband',
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
             ...numericalCellEditorConfig((params) => params.data.ratioTapChanger.targetDeadband),
@@ -289,7 +270,6 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RatioRegulationTypeText',
             field: 'ratioTapChanger.regulationType',
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationType,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
@@ -305,13 +285,12 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             editable: isTwtRatioOnloadAndEditable,
             cellStyle: editableCellStyle,
             getQuickFilterText: excludeFromGlobalFilter,
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
+            type: REGULATION_ENUM_TYPE,
         },
         {
             id: 'RatioRegulatedSide',
             field: 'ratioTapChanger.regulationSide',
-            ...getDefaultEnumConfig(Object.values(SIDE)),
-            valueGetter: (params) => params.data?.ratioTapChanger?.regulationSide,
+            type: SIDE_ENUM_TYPE,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...(params.data?.ratioTapChanger || {}),
@@ -333,8 +312,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RatioRegulatingTerminal',
             field: 'ratioTapChanger.ratioRegulatingTerminal',
-            ...defaultTextFilterConfig,
-            valueGetter: (params) => params.data?.ratioTapChanger?.ratioRegulatingTerminal,
+            type: NUMERIC_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
             cellStyle: (params) => (isEditableTwtRatioRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
@@ -351,9 +329,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'RatioLowTapPosition',
             field: 'ratioTapChanger.lowTapPosition',
             getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultNumericFilterConfig,
-            numeric: true,
-            fractionDigits: 0,
+            type: NUMERIC_TYPE,
             editable: (params) => isEditable(params) && params.data?.ratioTapChanger?.steps?.length > 0,
             cellStyle: editableCellStyle,
             ...standardSelectCellEditorConfig((params) => generateTapPositions(params.data?.ratioTapChanger)),
@@ -372,18 +348,14 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'RatioHighTapPosition',
-            field: 'ratioTapChanger.highTapPosition',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => computeHighTapPosition(params?.data?.ratioTapChanger?.steps),
+            field: 'ratioTapChanger',
+            type: NUMERIC_HIGH_TAP_POSITION_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'RatioTap',
             field: 'ratioTapChanger.tapPosition',
-            ...defaultNumericFilterConfig,
-            numeric: true,
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.ratioTapChanger?.tapPosition,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             valueSetter: (params) => {
                 params.data.ratioTapChanger = {
                     ...params.data.ratioTapChanger,
@@ -405,8 +377,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingMode',
             field: 'phaseTapChanger.regulationMode',
-            ...getDefaultEnumConfig(Object.values(PHASE_REGULATION_MODES)),
-            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationMode,
+            type: PHASE_REGULATING_MODE_ENUM_TYPE,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
@@ -426,10 +397,9 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'RegulatingValue',
             field: 'phaseTapChanger.regulationValue',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             fractionDigits: 1,
-            valueGetter: (params) => params?.data?.phaseTapChanger?.regulationValue,
             getQuickFilterText: excludeFromGlobalFilter,
             editable: (params) =>
                 hasTwtPhaseTapChangerAndEditable(params) &&
@@ -447,7 +417,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseDeadBand',
             field: 'phaseTapChanger.targetDeadband',
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             fractionDigits: 1,
             getQuickFilterText: excludeFromGlobalFilter,
             editable: (params) =>
@@ -466,8 +436,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseRegulationTypeText',
             field: 'phaseTapChanger.regulationType',
-            ...getDefaultEnumConfig(Object.values(REGULATION_TYPES)),
-            valueGetter: (params) => params.data?.phaseTapChanger?.regulationType,
+            type: REGULATION_ENUM_TYPE,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
@@ -487,8 +456,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseRegulatedSide',
             field: 'phaseTapChanger.regulationSide',
-            ...getDefaultEnumConfig(Object.values(SIDE)),
-            valueGetter: (params) => params.data?.phaseTapChanger?.regulationSide,
+            type: SIDE_ENUM_TYPE,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...(params.data?.phaseTapChanger || {}),
@@ -510,8 +478,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         {
             id: 'PhaseRegulatingTerminal',
             field: 'phaseTapChanger.phaseRegulatingTerminal',
-            ...defaultTextFilterConfig,
-            valueGetter: (params) => params.data?.phaseTapChanger?.phaseRegulatingTerminal,
+            type: TEXT_TYPE,
             columnWidth: MEDIUM_COLUMN_WIDTH,
             getQuickFilterText: excludeFromGlobalFilter,
             cellStyle: (params) => (isEditableTwtPhaseRegulatingTerminalCell(params) ? editableCellStyle(params) : {}),
@@ -528,7 +495,7 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'PhaseLowTapPosition',
             field: 'phaseTapChanger.lowTapPosition',
             getQuickFilterText: excludeFromGlobalFilter,
-            ...defaultNumericFilterConfig,
+            type: NUMERIC_TYPE,
             numeric: true,
             fractionDigits: 0,
             editable: (params) => isEditable(params) && params.data?.phaseTapChanger?.steps?.length > 0,
@@ -549,18 +516,14 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
         },
         {
             id: 'PhaseHighTapPosition',
-            field: 'phaseTapChanger.highTapPosition',
-            ...defaultNumericFilterConfig,
-            valueGetter: (params) => computeHighTapPosition(params?.data?.phaseTapChanger?.steps),
+            field: 'phaseTapChanger',
+            type: NUMERIC_HIGH_TAP_POSITION_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'PhaseTap',
             field: 'phaseTapChanger.tapPosition',
-            ...defaultNumericFilterConfig,
-            numeric: true,
-            fractionDigits: 0,
-            valueGetter: (params) => params?.data?.phaseTapChanger?.tapPosition,
+            type: NUMERIC_0_FRACTION_DIGITS_TYPE,
             valueSetter: (params) => {
                 params.data.phaseTapChanger = {
                     ...params.data.phaseTapChanger,
@@ -582,58 +545,43 @@ export const TWO_WINDINGS_TRANSFORMER_TAB_DEF = {
             id: 'r',
             field: 'r',
             numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'x',
             field: 'x',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'g',
             field: 'g',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.g),
+            type: NUMERIC_UNIT_TO_MICRO_UNIT_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'b',
             field: 'b',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
-            valueGetter: (params) => unitToMicroUnit(params.data.b),
+            type: NUMERIC_UNIT_TO_MICRO_UNIT_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'ratedNominalPower',
             field: 'ratedS',
-            numeric: true,
-            ...defaultNumericFilterConfig,
-            fractionDigits: 1,
+            type: NUMERIC_1_FRACTION_DIGITS_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected1',
             field: 'terminal1Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         {
             id: 'connected2',
             field: 'terminal2Connected',
-            boolean: true,
-            cellRenderer: BooleanCellRenderer,
-            ...defaultBooleanFilterConfig,
+            type: BOOLEAN_TYPE,
             getQuickFilterText: excludeFromGlobalFilter,
         },
         genericColumnOfPropertiesEditPopup,
