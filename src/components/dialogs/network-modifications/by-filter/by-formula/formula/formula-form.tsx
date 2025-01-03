@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useMemo } from 'react';
 import { AutocompleteInput, DirectoryItemsInput, ElementType } from '@gridsuite/commons-ui';
 import {
     EDITED_FIELD,
@@ -43,9 +43,18 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
 
     const intl = useIntl();
 
-    const equipmentFields: { id: string; label: string }[] =
+    const equipmentFields: { id: string; label: string; unit: string }[] =
         // @ts-expect-error TODO: missing type in context
         EQUIPMENTS_FIELDS?.[equipmentTypeWatch] ?? [];
+
+    const formatLabelWithUnit = useMemo(() => {
+        return (value: string | { label: string; unit?: string }) => {
+            if (typeof value === 'string') {
+                return value;
+            }
+            return `${value.label} ${value.unit ?? ''}`;
+        };
+    }, []);
 
     const filtersField = (
         <DirectoryItemsInput
@@ -66,7 +75,7 @@ const FormulaForm: FunctionComponent<FormulaProps> = ({ name, index }) => {
             size={'small'}
             inputTransform={(value: any) => equipmentFields.find((option) => option?.id === value) || value}
             outputTransform={(option: any) => getIdOrValue(option) ?? null}
-            getOptionLabel={(option: any) => intl.formatMessage({ id: getLabelOrValue(option) })}
+            getOptionLabel={(option: any) => intl.formatMessage({ id: formatLabelWithUnit(option) })}
         />
     );
 

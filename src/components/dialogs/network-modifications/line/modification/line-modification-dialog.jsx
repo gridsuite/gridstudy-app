@@ -6,7 +6,13 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { CustomFormProvider, useSnackMessage } from '@gridsuite/commons-ui';
+import {
+    convertInputValues,
+    convertOutputValues,
+    CustomFormProvider,
+    FieldType,
+    useSnackMessage,
+} from '@gridsuite/commons-ui';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
     ADDITIONAL_PROPERTIES,
@@ -39,7 +45,6 @@ import {
 } from 'components/utils/field-constants';
 import { useForm } from 'react-hook-form';
 import { sanitizeString } from 'components/dialogs/dialog-utils';
-import { microUnitToUnit, unitToMicroUnit } from 'utils/unit-converter';
 import yup from 'components/utils/yup-config';
 import ModificationDialog from '../../../commons/modificationDialog';
 
@@ -161,10 +166,10 @@ const LineModificationDialog = ({
                 ...getCharacteristicsWithOutConnectivityFormData({
                     r: line.r?.value ?? null,
                     x: line.x?.value ?? null,
-                    g1: unitToMicroUnit(line.g1?.value ?? null),
-                    b1: unitToMicroUnit(line.b1?.value ?? null),
-                    g2: unitToMicroUnit(line.g2?.value ?? null),
-                    b2: unitToMicroUnit(line.b2?.value ?? null),
+                    g1: convertInputValues(FieldType.G1, line.g1?.value ?? null),
+                    b1: convertInputValues(FieldType.B1, line.b1?.value ?? null),
+                    g2: convertInputValues(FieldType.G2, line.g2?.value ?? null),
+                    b2: convertInputValues(FieldType.B2, line.b2?.value ?? null),
                 }),
                 ...getLimitsFormData({
                     permanentLimit1: line.currentLimits1?.permanentLimit,
@@ -235,35 +240,35 @@ const LineModificationDialog = ({
                 };
             }
 
-            modifyLine({
-                studyUuid: studyUuid,
-                nodeUuid: currentNodeUuid,
-                lineId: selectedId,
-                lineName: sanitizeString(line[EQUIPMENT_NAME]),
-                r: characteristics[R],
-                x: characteristics[X],
-                g1: microUnitToUnit(characteristics[G1]),
-                b1: microUnitToUnit(characteristics[B1]),
-                g2: microUnitToUnit(characteristics[G2]),
-                b2: microUnitToUnit(characteristics[B2]),
-                currentLimit1: currentLimits1,
-                currentLimit2: currentLimits2,
-                voltageLevelId1: connectivity1[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId1: connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
-                voltageLevelId2: connectivity2[VOLTAGE_LEVEL]?.id,
-                busOrBusbarSectionId2: connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
-                connectionName1: sanitizeString(connectivity1[CONNECTION_NAME]),
-                connectionName2: sanitizeString(connectivity2[CONNECTION_NAME]),
-                connectionDirection1: connectivity1[CONNECTION_DIRECTION],
-                connectionDirection2: connectivity2[CONNECTION_DIRECTION],
-                connectionPosition1: connectivity1[CONNECTION_POSITION],
-                connectionPosition2: connectivity2[CONNECTION_POSITION],
-                connected1: connectivity1[CONNECTED],
-                connected2: connectivity2[CONNECTED],
-                isUpdate: !!editData,
-                modificationUuid: editData?.uuid,
-                properties: toModificationProperties(line),
-            }).catch((error) => {
+            modifyLine(
+                studyUuid,
+                currentNodeUuid,
+                selectedId,
+                sanitizeString(line[EQUIPMENT_NAME]),
+                characteristics[R],
+                characteristics[X],
+                convertOutputValues(FieldType.G1, characteristics[G1]),
+                convertOutputValues(FieldType.B1, characteristics[B1]),
+                convertOutputValues(FieldType.G2, characteristics[G2]),
+                convertOutputValues(FieldType.B2, characteristics[B2]),
+                currentLimits1,
+                currentLimits2,
+                connectivity1[VOLTAGE_LEVEL]?.id,
+                connectivity1[BUS_OR_BUSBAR_SECTION]?.id,
+                connectivity2[VOLTAGE_LEVEL]?.id,
+                connectivity2[BUS_OR_BUSBAR_SECTION]?.id,
+                sanitizeString(connectivity1[CONNECTION_NAME]),
+                sanitizeString(connectivity2[CONNECTION_NAME]),
+                connectivity1[CONNECTION_DIRECTION],
+                connectivity2[CONNECTION_DIRECTION],
+                connectivity1[CONNECTION_POSITION],
+                connectivity2[CONNECTION_POSITION],
+                connectivity1[CONNECTED],
+                connectivity2[CONNECTED],
+                !!editData,
+                editData?.uuid,
+                toModificationProperties(line)
+            ).catch((error) => {
                 snackError({
                     messageTxt: error.message,
                     headerId: 'LineModificationError',

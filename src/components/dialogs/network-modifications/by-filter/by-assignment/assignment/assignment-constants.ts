@@ -6,10 +6,10 @@
  */
 
 import type { ReadonlyDeep } from 'type-fest';
-import { DataType, FieldOptionType, FieldType } from './assignment.type';
+import { DataType, FieldOptionType } from './assignment.type';
 import { LOAD_TYPES } from '../../../../../network/constants';
-import { EquipmentType, kiloUnitToUnit, microUnitToUnit, unitToKiloUnit, unitToMicroUnit } from '@gridsuite/commons-ui';
-import { KILO_AMPERE, MICRO_SIEMENS } from '../../../../../utils/field-constants';
+import { EquipmentType, FieldType } from '@gridsuite/commons-ui';
+import { KILO_AMPERE, MEGA_VAR, MICRO_SIEMENS, SIEMENS } from '../../../../../utils/field-constants';
 
 export const FIELD_OPTIONS = {
     PROPERTY: {
@@ -105,18 +105,14 @@ export const FIELD_OPTIONS = {
     MAX_SUSCEPTANCE: {
         id: FieldType.MAX_SUSCEPTANCE,
         label: 'maxSusceptance',
-        unit: MICRO_SIEMENS,
+        unit: SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     MAX_Q_AT_NOMINAL_V: {
         id: FieldType.MAX_Q_AT_NOMINAL_V,
         label: 'maxQAtNominalV',
-        unit: MICRO_SIEMENS,
+        unit: MEGA_VAR,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     NOMINAL_VOLTAGE: {
         id: FieldType.NOMINAL_VOLTAGE,
@@ -138,16 +134,12 @@ export const FIELD_OPTIONS = {
         label: 'LowShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     HIGH_SHORT_CIRCUIT_CURRENT_LIMIT: {
         id: FieldType.HIGH_SHORT_CIRCUIT_CURRENT_LIMIT,
         label: 'HighShortCircuitCurrentLimit',
         unit: KILO_AMPERE,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => kiloUnitToUnit(value),
-        inputConverter: (value) => unitToKiloUnit(value),
     },
     ACTIVE_POWER: {
         id: FieldType.ACTIVE_POWER,
@@ -174,16 +166,12 @@ export const FIELD_OPTIONS = {
         label: 'G',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     B: {
         id: FieldType.B,
         label: 'B',
         unit: MICRO_SIEMENS,
         dataType: DataType.DOUBLE,
-        outputConverter: (value) => microUnitToUnit(value),
-        inputConverter: (value) => unitToMicroUnit(value),
     },
     RATED_U1: {
         id: FieldType.RATED_U1,

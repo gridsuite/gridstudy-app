@@ -26,18 +26,6 @@ export const getFieldOption = (fieldName?: string | null) => {
     return Object.values(FIELD_OPTIONS).find((fieldOption) => fieldOption.id === fieldName);
 };
 
-export const convertOutputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
-    const fieldOption = getFieldOption(fieldName);
-    // @ts-expect-error TODO TS2339: Property outputConverter does not exist on typeof FIELD_OPTIONS[*]
-    return fieldOption?.outputConverter ? fieldOption.outputConverter(Number(fieldValue)) : fieldValue;
-};
-
-export const convertInputValue = (fieldName?: string | null, fieldValue?: FieldValue) => {
-    const fieldOption = getFieldOption(fieldName);
-    // @ts-expect-error TODO TS2339: Property inputConverter does not exist on typeof FIELD_OPTIONS[*]
-    return fieldOption?.inputConverter ? fieldOption.inputConverter(Number(fieldValue)) : fieldValue;
-};
-
 // ("undefined" is accepted here in RHF, but it conflicts with MUI behaviour which does not like undefined values)
 export const getAssignmentInitialValue = () => ({
     [FILTERS]: [],

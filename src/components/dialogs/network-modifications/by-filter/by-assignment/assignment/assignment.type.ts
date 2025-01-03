@@ -81,7 +81,6 @@ export enum FieldType {
     PHASE_TARGET_DEADBAND = 'PHASE_TARGET_DEADBAND',
     LOAD_TYPE = 'LOAD_TYPE',
 }
-
 // --- types for the form model --- //
 
 export type Assignment = {
