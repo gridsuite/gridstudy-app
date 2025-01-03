@@ -88,6 +88,7 @@ const formSchema = yup
 const ShuntCompensatorCreationDialog = ({
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     editData,
     isUpdate,
     editDataFetchStatus,
@@ -243,6 +244,7 @@ const ShuntCompensatorCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.SHUNT_COMPENSATOR}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -258,6 +260,7 @@ ShuntCompensatorCreationDialog.propTypes = {
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
     isUpdate: PropTypes.bool,
+    currentRootNetworkUuid: PropTypes.string,
     editDataFetchStatus: PropTypes.string,
 };
 

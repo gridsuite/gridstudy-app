@@ -86,7 +86,15 @@ export const VSC_CREATION_TABS = {
     CONVERTER_STATION_2: 2,
 };
 
-const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDataFetchStatus, ...dialogProps }) => {
+const VscCreationDialog = ({
+    editData,
+    currentNode,
+    studyUuid,
+    currentRootNetworkUuid,
+    isUpdate,
+    editDataFetchStatus,
+    ...dialogProps
+}) => {
     const currentNodeUuid = currentNode.id;
     const { snackError } = useSnackMessage();
     const [tabIndex, setTabIndex] = useState(VSC_CREATION_TABS.HVDC_LINE_TAB);
@@ -260,6 +268,7 @@ const VscCreationDialog = ({ editData, currentNode, studyUuid, isUpdate, editDat
                     equipmentType={EQUIPMENT_TYPES.HVDC_LINE}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

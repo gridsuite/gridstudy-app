@@ -127,6 +127,7 @@ const GeneratorCreationDialog = ({
     editData,
     currentNode,
     studyUuid,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -336,6 +337,7 @@ const GeneratorCreationDialog = ({
                     equipmentType={'GENERATOR'}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>

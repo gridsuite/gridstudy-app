@@ -8,7 +8,7 @@ import {
 } from '@gridsuite/commons-ui';
 import { UUID } from 'crypto';
 import { useCallback, useEffect, useState } from 'react';
-import { Grid, Button} from '@mui/material';
+import { Grid, Button } from '@mui/material';
 import { UniqueNameInput } from './commons/unique-name-input';
 import { CASE_NAME, CASE_ID, NAME } from '../utils/field-constants';
 import { useForm } from 'react-hook-form';
@@ -63,7 +63,6 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
     const studyUuid = useSelector((state: AppState) => state.studyUuid);
     const { snackError } = useSnackMessage();
 
-    const [directorySelectorOpen, setDirectorySelectorOpen] = useState(false);
     const [destinationFolder, setDestinationFolder] = useState<TreeViewFinderNodeProps>();
     const [selectedCase, setSelectedCase] = useState<TreeViewFinderNodeProps | null>(null);
     const [caseSelectorOpen, setCaseSelectorOpen] = useState(false);
@@ -73,11 +72,7 @@ const RootNetworkCreationDialog: React.FC<RootNetworkCreationDialogProps> = ({
         resolver: yupResolver(formSchema),
     });
 
-    const {
-        reset,
-        setValue,
-        formState: { errors },
-    } = formMethods;
+    const { reset, setValue } = formMethods;
     const disableSave =
         // Form validation must pass
         !selectedCase || // A case must be selected

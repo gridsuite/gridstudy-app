@@ -152,6 +152,7 @@ const TwoWindingsTransformerCreationDialog = ({
     editData,
     studyUuid,
     currentNode,
+    currentRootNetworkUuid,
     isUpdate,
     editDataFetchStatus,
     ...dialogProps
@@ -673,6 +674,7 @@ const TwoWindingsTransformerCreationDialog = ({
                     equipmentType={EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER}
                     onSelectionChange={searchCopy.handleSelectionChange}
                     currentNodeUuid={currentNodeUuid}
+                    currentRootNetworkUuid={currentRootNetworkUuid}
                 />
             </ModificationDialog>
         </CustomFormProvider>
@@ -683,6 +685,8 @@ TwoWindingsTransformerCreationDialog.propTypes = {
     editData: PropTypes.object,
     studyUuid: PropTypes.string,
     currentNode: PropTypes.object,
+    currentRootNetworkUuid: PropTypes.string,
+
     isUpdate: PropTypes.bool,
     editDataFetchStatus: PropTypes.string,
 };

@@ -48,16 +48,16 @@ export const createRootNetwork = (
 };
 
 export function deleteRootNetworks(studyUuid: UUID, rootNetworkUuids: UUID[]) {
-    // Assuming we want to delete each root network individually:
-    const rootNetworkUuid = rootNetworkUuids[0]; // Modify as needed if deleting multiple root networks
-
+        const urlSearchParams = new URLSearchParams();
+    urlSearchParams.append('rootNetworkUuids', String(rootNetworkUuids));
     const rootNetworkDeleteUrl = `${PREFIX_STUDY_QUERIES}/v1/studies/${encodeURIComponent(
         studyUuid
-    )}/root-networks/${encodeURIComponent(rootNetworkUuid)}`;
+    )}/root-networks`;
 
-    console.debug(rootNetworkDeleteUrl); // Debugging the URL
+    const modificationDeleteUrl = rootNetworkDeleteUrl + '?' + urlSearchParams.toString();
 
-    return backendFetch(rootNetworkDeleteUrl, {
+    console.debug(modificationDeleteUrl);
+    return backendFetch(modificationDeleteUrl, {
         method: 'DELETE',
     });
 }

@@ -1451,5 +1451,11 @@
     "qualityPerRegionResults": "Quality region",
     "StateEstimationStatus": "Status : ",
     "StateEstimationQuality": "Quality : ",
-    "Or": "or"
+    "Or": "or",
+    "rootNetworksCount":"{hide, select, false {{count, plural, =0 {aucun réseau racine} =1 {# réseau racine} other {# réseaux racine}}} other {...}}",
+    "updateRootNetworksList": "Updating modification list ...",
+    "deletingRootNetwork": "Deleting root network ...",
+    "creatingRootNetwork": "Creating root network ..."
+
+ 
 }

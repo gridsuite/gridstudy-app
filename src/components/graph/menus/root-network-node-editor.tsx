@@ -12,17 +12,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Box, Checkbox, CircularProgress, Theme, Toolbar, Tooltip, Typography } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { UUID } from 'crypto';
 import { AppState } from 'redux/reducer';
-import {
-    NetworkModificationCopyInfo,
-    NetworkModificationData,
-    RootNetworkMetadata,
-} from './network-modification-menu.type';
+import { RootNetworkMetadata } from './network-modification-menu.type';
 
 import {
     CaseImportParameters,
@@ -45,15 +41,15 @@ export const styles = {
     }),
     listItem: { paddingLeft: 0, paddingTop: 0, paddingBottom: 0 },
     checkBoxLabel: { flexGrow: '1' },
-    disabledModification: { opacity: 0.4 },
+    disabledRootNetwork: { opacity: 0.4 },
     checkBoxIcon: { minWidth: 0, padding: 0 },
     checkboxButton: {
-        padding: 0,
+        padding: 0.5,
         margin: 0,
         display: 'flex',
         alignItems: 'center',
     },
-    modificationsTitle: (theme: Theme) => ({
+    rootNetworksTitle: (theme: Theme) => ({
         display: 'flex',
         alignItems: 'center',
         margin: theme.spacing(0),
@@ -133,13 +129,7 @@ const RootNetworkNodeEditor = () => {
     const [pendingState, setPendingState] = useState(false);
 
     const [selectedItems, setSelectedItems] = useState<RootNetworkMetadata[]>([]);
-    const [copiedModifications, setCopiedModifications] = useState<UUID[]>([]);
-    const [copyInfos, setCopyInfos] = useState<NetworkModificationCopyInfo | null>(null);
-    const copyInfosRef = useRef<NetworkModificationCopyInfo | null>();
-    copyInfosRef.current = copyInfos;
 
-    const [editDialogOpen, setEditDialogOpen] = useState<string | undefined>(undefined);
-    const [editData, setEditData] = useState<NetworkModificationData | undefined>(undefined);
     const [rootNetworkCreationDialogOpen, setRootNetworkCreationDialogOpen] = useState(false);
     const dispatch = useDispatch();
     const studyUpdatedForce = useSelector((state: AppState) => state.studyUpdated);
@@ -156,13 +146,8 @@ const RootNetworkNodeEditor = () => {
         if (studyUuid) {
             fetchRootNetworks(studyUuid)
                 .then((res: RootNetworkMetadata[]) => {
-                    // Check if during asynchronous request currentNode has already changed
-                    // otherwise accept fetch results
-                    // if (currentNode.id === currentNodeIdRef.current) {
-
                     updateSelectedItems(res);
                     setRootNetworks(res);
-                    // }
                 })
                 .catch((error) => {
                     snackError({
@@ -172,93 +157,25 @@ const RootNetworkNodeEditor = () => {
                 .finally(() => {
                     setPendingState(false);
                     setLaunchLoader(false);
-                    //  dispatch(setModificationsInProgress(false));
                 });
         }
     }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
-
             if (studyUpdatedForce.eventData.headers['updateType'] === 'rootNetworksUpdated') {
+                setMessageId('updateRootNetworksList'); // creatingRootNetwork to do distinct creation:deletion action on notification
                 dofetchRootNetworks();
             }
         }
     }, [studyUpdatedForce, dofetchRootNetworks]);
 
     useEffect(() => {
-        setEditDialogOpen(editData?.type);
-    }, [editData]);
-
-    useEffect(() => {
-        // first time with currentNode initialized then fetch modifications
-        // (because if currentNode is not initialized, dofetchNetworkModifications silently does nothing)
-        // OR next time if currentNodeId changed then fetch modifications
-        // if (currentNode && currentRootNetwork) {
-
         if (!currentRootNetwork) {
-            //    currentNodeIdRef.current = currentNode.id;
-            // Current node has changed then clear the modifications list
             setRootNetworks([]);
-
-            // reset the network modification and computing logs filter when the user changes the current node
-            //  dispatch(resetLogsFilter());
         }
         dofetchRootNetworks();
     }, [currentRootNetwork, dofetchRootNetworks]);
-
-    // TODO MANAGE NOTIFICATION
-    // useEffect(() => {
-    //     if (studyUpdatedForce.eventData.headers) {
-    //         if (studyUpdatedForce.eventData.headers['updateType'] === 'nodeDeleted') {
-    //             if (
-    //                 copyInfosRef.current &&
-    //                 studyUpdatedForce.eventData.headers['nodes']?.some(
-    //                     (nodeId) => nodeId === copyInfosRef.current?.originNodeUuid
-    //                 )
-    //             ) {
-    //                 // Must clean modifications clipboard if the origin Node is removed
-    //                 cleanClipboard();
-    //             }
-    //         }
-    //         if (currentNodeIdRef.current !== studyUpdatedForce.eventData.headers['parentNode']) {
-    //             return;
-    //         }
-
-    //         if (
-    //             studyUpdatedForce.eventData.headers['updateType'] &&
-    //             // @ts-expect-error TS2345: Argument of type string is not assignable to parameter of type UPDATE_TYPE (a restrained array of strings)
-    //             UPDATE_TYPE.includes(studyUpdatedForce.eventData.headers['updateType'])
-    //         ) {
-    //             if (studyUpdatedForce.eventData.headers['updateType'] === 'deletingInProgress') {
-    //                 // deleting means removing from trashcan (stashed elements) so there is no network modification
-    //                 setDeleteInProgress(true);
-    //             } else {
-    //                 dispatch(setModificationsInProgress(true));
-    //                 setPendingState(true);
-    //             }
-    //         }
-    //         // notify  finished action (success or error => we remove the loader)
-    //         // error handling in dialog for each equipment (snackbar with specific error showed only for current user)
-    //         if (studyUpdatedForce.eventData.headers['updateType'] === 'UPDATE_FINISHED') {
-    //             // fetch modifications because it must have changed
-    //             // Do not clear the modifications list, because currentNode is the concerned one
-    //             // this allows to append new modifications to the existing list.
-    //             dofetchRootNetworks();
-    //             dispatch(
-    //                 removeNotificationByNode([
-    //                     studyUpdatedForce.eventData.headers['parentNode'],
-    //                     ...(studyUpdatedForce.eventData.headers.nodes ?? []),
-    //                 ])
-    //             );
-    //         }
-    //         if (studyUpdatedForce.eventData.headers['updateType'] === 'DELETE_FINISHED') {
-    //             setDeleteInProgress(false);
-    //             dofetchRootNetworks();
-    //         }
-    //     }
-    // }, [dispatch, dofetchRootNetworks, studyUpdatedForce, cleanClipboard]);
 
     const openRootNetworkCreationDialog = useCallback(() => {
         setRootNetworkCreationDialogOpen(true);
@@ -269,32 +186,17 @@ const RootNetworkNodeEditor = () => {
         if (studyUuid) {
             deleteRootNetworks(studyUuid, selectedRootNetworksUuid)
                 .then(() => {
-                    //if one of the deleted element was in the clipboard we invalidate the clipboard
+                    setDeleteInProgress(true);
                 })
                 .catch((errmsg) => {
                     snackError({
                         messageTxt: errmsg,
                         headerId: 'errDeleteModificationMsg',
                     });
-                });
+                })
+                .finally(() => setDeleteInProgress(false));
         }
-    }, [currentNode?.id, selectedItems, snackError, studyUuid, copiedModifications]);
-
-    const removeNullFields = useCallback((data: NetworkModificationData) => {
-        let dataTemp = data;
-        if (dataTemp) {
-            Object.keys(dataTemp).forEach((key) => {
-                if (dataTemp[key] && dataTemp[key] !== null && typeof dataTemp[key] === 'object') {
-                    dataTemp[key] = removeNullFields(dataTemp[key]);
-                }
-
-                if (dataTemp[key] === null) {
-                    delete dataTemp[key];
-                }
-            });
-        }
-        return dataTemp;
-    }, []);
+    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));
@@ -318,7 +220,7 @@ const RootNetworkNodeEditor = () => {
                 sx={{
                     items: (rootNetwork) => ({
                         label: {
-                            ...(rootNetwork.isCreating && { ...styles.disabledModification }),
+                            ...(rootNetwork.isCreating && { ...styles.disabledRootNetwork }),
                             ...styles.checkBoxLabel,
                         },
                         checkBoxIcon: styles.checkBoxIcon,
@@ -326,19 +228,14 @@ const RootNetworkNodeEditor = () => {
                     }),
                     // dragAndDropContainer: styles.listContainer,
                 }}
-                onItemClick={(modification) => {
-                    console.log(modification.rootNetworkUuid, 'on click');
+                onItemClick={(rootNetwork) => {
+                    console.log(rootNetwork.rootNetworkUuid, 'on click');
                 }}
                 selectedItems={selectedItems}
                 onSelectionChange={setSelectedItems}
                 items={rootNetworks}
                 getItemId={(val) => val.rootNetworkUuid}
                 getItemLabel={getRootNetworkLabel}
-                //  isDndDragAndDropActive
-                //   isDragDisable={isLoading() || isAnyNodeBuilding || mapDataLoading || deleteInProgress}
-                //     secondaryAction={handleSecondaryAction}
-                //    onDragEnd={commit}
-                //     onDragStart={() => setIsDragging(true)}
                 divider
                 secondaryAction={(rootNetwork) => {
                     const isCurrentRootNetwork = rootNetwork.rootNetworkUuid === currentRootNetwork;
@@ -366,7 +263,7 @@ const RootNetworkNodeEditor = () => {
 
     const renderRootNetworksListTitleLoading = () => {
         return (
-            <Box sx={styles.modificationsTitle}>
+            <Box sx={styles.rootNetworksTitle}>
                 <Box sx={styles.icon}>
                     <CircularProgress size={'1em'} sx={styles.circularProgress} />
                 </Box>
@@ -379,12 +276,12 @@ const RootNetworkNodeEditor = () => {
 
     const renderRootNetworksListTitleUpdating = () => {
         return (
-            <Box sx={styles.modificationsTitle}>
+            <Box sx={styles.rootNetworksTitle}>
                 <Box sx={styles.icon}>
                     <CircularProgress size={'1em'} sx={styles.circularProgress} />
                 </Box>
                 <Typography noWrap>
-                    <FormattedMessage id={'network_modifications.modifications'} />
+                    <FormattedMessage id={'updateRootNetworksList'} />
                 </Typography>
             </Box>
         );
@@ -392,13 +289,13 @@ const RootNetworkNodeEditor = () => {
 
     const renderRootNetworksListTitle = () => {
         return (
-            <Box sx={styles.modificationsTitle}>
+            <Box sx={styles.rootNetworksTitle}>
                 <Box sx={styles.icon}>
                     {pendingState && <CircularProgress size={'1em'} sx={styles.circularProgress} />}
                 </Box>
                 <Typography noWrap>
                     <FormattedMessage
-                        id={'network_modifications.modificationsCount'}
+                        id={'rootNetworksCount'}
                         values={{
                             count: rootNetworks ? rootNetworks?.length : '',
                             hide: pendingState,
@@ -520,7 +417,7 @@ const RootNetworkNodeEditor = () => {
                     <DeleteIcon />
                 </IconButton>
                 {deleteInProgress ?? (
-                    <Tooltip title={<FormattedMessage id={'network_modifications.deletingModification'} />}>
+                    <Tooltip title={<FormattedMessage id={'deletingRootNetwork'} />}>
                         <span>
                             <CircularProgress size={'1em'} sx={styles.toolbarCircularProgress} />
                         </span>
