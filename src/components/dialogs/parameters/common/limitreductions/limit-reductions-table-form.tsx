@@ -40,7 +40,7 @@ const LimitReductionsTableForm: FunctionComponent<{
                 { id: 'LimitDurationInterval' },
                 {
                     lowBound: `IT${lowBound}`,
-                    highBound: highBound === 0 ? 'Permanent' : `IT${highBound}`,
+                    highBound: highBound === 0 ? 'IST' : `IT${highBound}`,
                 }
             );
         },
@@ -67,7 +67,7 @@ const LimitReductionsTableForm: FunctionComponent<{
         return columnsDefinition;
     }, [intl, limits, getToolTipColumn]);
 
-    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={600} />;
+    return <LimitReductionsTable columnsDefinition={columnsDefinition} tableHeight={450} />;
 };
 
 export default LimitReductionsTableForm;

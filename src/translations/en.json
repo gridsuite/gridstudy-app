@@ -3,8 +3,8 @@
 
     "LimitReductions" : "Limit reductions",
     "IST" : "IST",
-    "LimitDurationInterval" : "Tempo interval : {highBound} and {lowBound}",
-    "LimitDurationAfterIST": "After IT{value}",
+    "LimitDurationInterval" : "Between {highBound} and {lowBound}",
+    "LimitDurationAfterIST": "Beyond IT{value}",
     "voltageRange": "Voltage range",
 
     "button.delete": "Delete",
@@ -1067,6 +1067,7 @@
     "restoreNodes": "Restore nodes",
     "restoreNodesText": "Please select nodes to restore:",
     "deleteNodesText": "{numberToDelete, plural, =0 {Please select a node to delete} =1 {One node or subtree will be permanently deleted.} other {# nodes or subtrees will be permanently deleted.}}",
+    "ReorderSubtreeInvalidNotifInfo": "Subtree order update cancelled (invalid notification infos) !",
 
     "LoadStudyAndParentsInfoError": "An error occurred while loading current study's name and path",
     "InvalidNode": "Node not built",
