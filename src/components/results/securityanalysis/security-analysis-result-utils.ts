@@ -64,10 +64,10 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
             violationCount: subjectLimitViolations.length,
         });
         subjectLimitViolations?.forEach((constraint: Constraint) => {
-            const { limitViolation = {} as LimitViolation, subjectId } = constraint || {};
+            const { limitViolation = {} as LimitViolation, subjectId, locationId } = constraint || {};
 
             rows.push({
-                subjectId,
+                subjectId: locationId ?? subjectId,
                 limitType: limitViolation.limitType
                     ? intl.formatMessage({
                           id: limitViolation.limitType,
@@ -92,9 +92,9 @@ export const flattenNmKResultsContingencies = (intl: IntlShape, result: Constrai
 export const flattenNmKResultsConstraints = (intl: IntlShape, result: ContingenciesFromConstraintItem[] = []) => {
     const rows: SecurityAnalysisNmkTableRow[] = [];
 
-    result?.forEach(({ contingencies = [], subjectId }) => {
+    result?.forEach(({ contingencies = [], subjectId, locationId }) => {
         if (!rows.find((row) => row.subjectId === subjectId)) {
-            rows.push({ subjectId });
+            rows.push({ subjectId: locationId ?? subjectId });
 
             contingencies.forEach(({ contingency = {}, limitViolation = {} }) => {
                 rows.push({
@@ -118,7 +118,7 @@ export const flattenNmKResultsConstraints = (intl: IntlShape, result: Contingenc
                     limit: limitViolation.limit,
                     value: limitViolation.value,
                     loading: limitViolation.loading,
-                    linkedElementId: subjectId,
+                    linkedElementId: locationId ?? subjectId,
                 });
             });
         }
