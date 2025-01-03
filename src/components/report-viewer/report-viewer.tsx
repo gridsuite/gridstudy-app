@@ -82,7 +82,7 @@ export default function ReportViewer({ report, reportType }: ReportViewerProps) 
                         'px)',
                 }}
             >
-                <Grid item sm={3}>
+                <Grid item sm={3} sx={{ borderRight: (theme) => `1px solid ${theme.palette.divider}` }}>
                     {reportTree && (
                         <VirtualizedTreeview
                             expandedTreeReports={expandedTreeReports}

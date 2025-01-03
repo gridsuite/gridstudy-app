@@ -1423,6 +1423,7 @@
     "NoFilter": "No filter",
     "searchPlaceholder": "Search",
     "searchPlaceholderLog": "Search in Logs",
+    "searchPlaceholderLogsContainers": "Search in Logs containers",
     "GeneratedModification": "Generated-modification",
     "guidancePopUp.title": "Selection on the map",
     "guidancePopUp.firstVariant":"{symbol} Click on the map to start drawing a polygon.",
