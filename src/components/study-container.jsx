@@ -174,13 +174,12 @@ function useStudy(studyUuidRequest) {
                     .then((rootNetworks) => {
                         if (rootNetworks && rootNetworks.length > 0) {
                             // Validate that currentRootNetwork is set
-
                             dispatch(setCurrentRootNetwork(rootNetworks[0].rootNetworkUuid));
                         } else {
                             // Handle case where no root networks are available
                             setErrMessage(
                                 intlRef.current.formatMessage(
-                                    { id: 'noRootNetworksFound' },
+                                    { id: 'rootNetworkNotFound' },
                                     { studyUuid: studyUuidRequest }
                                 )
                             );
@@ -189,7 +188,7 @@ function useStudy(studyUuidRequest) {
                     .catch((error) => {
                         // Handle errors when fetching root networks
                         setErrMessage(
-                            intlRef.current.formatMessage({ id: 'fetchRootNetworksError' }, { error: error.message })
+                            intlRef.current.formatMessage({ id: 'rootNetworkNotFound' }, { error: error.message })
                         );
                     });
             })
@@ -270,10 +269,16 @@ export function StudyContainer({ view, onChangeTab }) {
         (eventData) => {
             const updateTypeHeader = eventData.headers[UPDATE_TYPE_HEADER];
             const errorMessage = eventData.headers[ERROR_HEADER];
+            const currentRootNetwork = eventData.headers['rootNetwork'];
+
             const userId = eventData.headers[USER_HEADER];
             if (userId != null && userId !== userName) {
                 return;
             }
+            if (currentRootNetwork !== currentRootNetworkRef.current) {
+                return;
+            }
+
             if (updateTypeHeader === 'loadflow_failed') {
                 snackError({
                     headerId: 'LoadFlowError',
@@ -343,6 +348,10 @@ export function StudyContainer({ view, onChangeTab }) {
     const sendAlert = useCallback(
         (eventData) => {
             const userId = eventData.headers[USER_HEADER];
+            const currentRootNetwork = eventData.headers['rootNetwork'];
+            if (currentRootNetworkRef.current !== currentRootNetwork && currentRootNetwork) {
+                return;
+            }
             if (userId !== userName) {
                 return;
             }
@@ -652,7 +661,6 @@ export function StudyContainer({ view, onChangeTab }) {
             (studyUuid && currentRootNetworkUuid && !isStudyNetworkFound) ||
             (currentRootNetworkRef.current && currentRootNetworkRef.current !== currentRootNetworkUuid)
         ) {
-            console.log('RELOADING CHECK NETWORK', currentRootNetworkUuid);
             checkNetworkExistenceAndRecreateIfNotFound();
         }
     }, [isStudyNetworkFound, currentRootNetworkUuid, checkNetworkExistenceAndRecreateIfNotFound, studyUuid]);
@@ -661,12 +669,6 @@ export function StudyContainer({ view, onChangeTab }) {
     // checking another time if we can find network, if we do, we display a snackbar info
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE) {
-            console.log(
-                'TEST ======!!! Type ',
-                'UPDATE_TYPE_STUDY_NETWORK_RECREATION_DONE',
-                ' rootNetwork ',
-                studyUpdatedForce.eventData.headers?.['rootNetwork']
-            );
             const successCallback = () =>
                 snackInfo({
                     headerId: 'studyNetworkRecovered',
@@ -674,13 +676,6 @@ export function StudyContainer({ view, onChangeTab }) {
 
             checkNetworkExistenceAndRecreateIfNotFound(successCallback);
         } else if (studyUpdatedForce.eventData.headers?.[UPDATE_TYPE_HEADER] === UPDATE_TYPE_INDEXATION_STATUS) {
-            console.log(
-                'TEST ======!!! Type ',
-                'UPDATE_TYPE_INDEXATION_STATUS',
-                ' rootNetwork ',
-                studyUpdatedForce.eventData.headers?.['rootNetwork']
-            );
-
             dispatch(setStudyIndexationStatus(studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS]));
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.INDEXED) {
                 snackInfo({
@@ -689,14 +684,6 @@ export function StudyContainer({ view, onChangeTab }) {
             }
             // notification that the study is not indexed anymore then ask to refresh
             if (studyUpdatedForce.eventData.headers?.[HEADER_INDEXATION_STATUS] === StudyIndexationStatus.NOT_INDEXED) {
-                console.log(
-                    'TEST ======!!! Type ',
-                    ' OK ',
-                    'HEADER_INDEXATION_STATUS',
-                    ' rootNetwork ',
-                    studyUpdatedForce.eventData.headers?.['rootNetwork']
-                );
-
                 snackWarning({
                     headerId: 'studyIndexationNotIndexed',
                 });
@@ -735,13 +722,11 @@ export function StudyContainer({ view, onChangeTab }) {
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            if (studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult') {
-                console.log(
-                    'TEST ======!!! Type ',
-                    'loadflowResult ',
-                    ' rootNetwork ',
-                    studyUpdatedForce.eventData.headers?.['rootNetwork']
-                );
+            const currentRootNetwork = studyUpdatedForce.eventData.headers['rootNetwork'];
+            if (
+                studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'loadflowResult' &&
+                currentRootNetwork === currentRootNetworkRef.current
+            ) {
                 dispatch(resetEquipmentsPostLoadflow());
             }
         }
@@ -783,12 +768,6 @@ export function StudyContainer({ view, onChangeTab }) {
                 studyUpdatedForce.eventData.headers.studyUuid === studyUuid &&
                 studyUpdatedForce.eventData.headers[UPDATE_TYPE_HEADER] === 'metadata_updated'
             ) {
-                console.log(
-                    'TEST ======!!! Type ',
-                    'metadata_updated',
-                    ' rootNetwork ',
-                    studyUpdatedForce.eventData.headers?.['rootNetwork']
-                );
                 fetchStudyPath();
             }
         }
@@ -797,7 +776,6 @@ export function StudyContainer({ view, onChangeTab }) {
     useEffect(() => {
         if (studyUuid) {
             websocketExpectedCloseRef.current = false;
-            //dispatch root network uuid
             dispatch(openStudy(studyUuid));
 
             const ws = connectNotifications(studyUuid);

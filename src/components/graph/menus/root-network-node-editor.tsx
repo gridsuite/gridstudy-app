@@ -159,7 +159,7 @@ const RootNetworkNodeEditor = () => {
                     setLaunchLoader(false);
                 });
         }
-    }, [currentNode?.type, currentNode?.id, studyUuid, updateSelectedItems, snackError, dispatch]);
+    }, [studyUuid, updateSelectedItems, snackError]);
 
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
@@ -196,7 +196,7 @@ const RootNetworkNodeEditor = () => {
                 })
                 .finally(() => setDeleteInProgress(false));
         }
-    }, [currentNode?.id, selectedItems, snackError, studyUuid]);
+    }, [selectedItems, snackError, studyUuid]);
 
     const toggleSelectAllRootNetworks = useCallback(() => {
         setSelectedItems((oldVal) => (oldVal.length === 0 ? rootNetworks : []));

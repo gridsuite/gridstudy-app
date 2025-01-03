@@ -371,7 +371,8 @@ export function DiagramPane({
     const { openDiagramView, closeDiagramView, closeDiagramViews } = useDiagram();
     const currentNodeRef = useRef<CurrentTreeNode>();
     currentNodeRef.current = currentNode;
-
+    const currentRootNetworkRef = useRef<UUID>();
+    currentRootNetworkRef.current = currentRootNetworkUuid;
     const viewsRef = useRef<DiagramView[]>([]);
     viewsRef.current = views;
     /**
@@ -795,10 +796,10 @@ export function DiagramPane({
     }, [currentNode, updateDiagramsByIds]);
 
     // This effect will trigger the diagrams' forced update
+    // This effect will trigger the diagrams' forced update
     useEffect(() => {
         if (studyUpdatedForce.eventData.headers) {
-            console.log('TEST ====== ', studyUpdatedForce);
-
+            console.log('???????? ', studyUpdatedForce.eventData.headers['updateType']);
             if (studyUpdatedForce.eventData.headers['updateType'] === 'loadflowResult') {
                 //TODO reload data more intelligently
                 updateDiagramsByCurrentNode();
@@ -806,9 +807,9 @@ export function DiagramPane({
                 // FM if we want to reload data more precisely, we need more information from notifications
                 updateDiagramsByCurrentNode();
             } else if (studyUpdatedForce.eventData.headers['updateType'] === 'buildCompleted') {
-                console.log('TEST ======  buildCompleted ', studyUpdatedForce);
-
                 if (studyUpdatedForce.eventData.headers['node'] === currentNodeRef.current?.id) {
+                    console.log('   ???????? buildCompleted ', studyUpdatedForce.eventData.headers['rootNetwork']);
+
                     updateDiagramsByCurrentNode();
                 }
             }

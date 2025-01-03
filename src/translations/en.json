@@ -53,7 +53,7 @@
     "SingleLineDiagram": "Single line diagram",
     "NetworkAreaDiagram": "Network area diagram",
     "studyNotFound": "Study with id \"{studyUuid}\" has not been found",
-    "RootNetworkNotFound": "No root network was found for the study with ID \"{studyUuid}\"",
+    "rootNetworkNotFound": "No root network was not found for the study with ID \"{studyUuid}\"",
 
     "svgNotFound": "Diagram has not been found: {error}; {svgUrl}",
     "svgLoadingFail": "The diagram couldn't be loaded",
