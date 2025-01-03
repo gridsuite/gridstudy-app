@@ -76,6 +76,7 @@ const VoltageLevelModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -119,6 +120,7 @@ const VoltageLevelModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.VOLTAGE_LEVEL,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -156,7 +158,7 @@ const VoltageLevelModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, editData]
+        [studyUuid, currentNodeUuid, currentRootNetworkUuid, reset, getValues, editData]
     );
 
     useEffect(() => {

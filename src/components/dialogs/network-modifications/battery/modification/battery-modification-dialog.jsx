@@ -110,6 +110,7 @@ const BatteryModificationDialog = ({
     editData,
     defaultIdValue,
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -199,6 +200,7 @@ const BatteryModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.BATTERY,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -245,7 +247,7 @@ const BatteryModificationDialog = ({
                 setBatteryToModify(null);
             }
         },
-        [studyUuid, currentNode, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
+        [studyUuid, currentNode, currentRootNetworkUuid, getValues, setValue, setValuesAndEmptyOthers, reset, editData]
     );
 
     useEffect(() => {

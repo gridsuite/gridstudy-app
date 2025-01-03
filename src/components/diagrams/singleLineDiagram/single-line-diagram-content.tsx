@@ -352,6 +352,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.HVDC_LINE,
                     EQUIPMENT_INFOS_TYPES.MAP.type,
                     equipmentId,
@@ -373,7 +374,7 @@ function SingleLineDiagramContent(props: SingleLineDiagramContentProps) {
                     });
             }
         },
-        [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, removeEquipment]
+        [studyUuid, currentNode?.id, currentRootNetworkUuid, snackError, handleOpenDeletionDialog, removeEquipment]
     );
 
     const handleOpenDynamicSimulationEventDialog = useCallback(

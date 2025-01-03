@@ -99,7 +99,6 @@ const EquipmentDeletionDialog = ({
             deleteEquipment(
                 studyUuid,
                 currentNodeUuid,
-                currentRootNetworkUuid,
                 formData[TYPE],
                 formData[EQUIPMENT_ID],
                 editData?.uuid,
@@ -111,7 +110,7 @@ const EquipmentDeletionDialog = ({
                 });
             });
         },
-        [currentNodeUuid, editData, currentRootNetworkUuid, snackError, studyUuid]
+        [currentNodeUuid, editData, snackError, studyUuid]
     );
 
     const clear = useCallback(() => {

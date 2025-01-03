@@ -78,6 +78,7 @@ const ShuntCompensatorModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the network map
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -164,6 +165,7 @@ const ShuntCompensatorModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNode?.id,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.SHUNT_COMPENSATOR,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -207,7 +209,7 @@ const ShuntCompensatorModificationDialog = ({
                 setShuntCompensatorInfos(null);
             }
         },
-        [currentNode.id, snackError, studyUuid, reset, getValues, setValue, editData]
+        [currentNode.id, currentRootNetworkUuid, snackError, studyUuid, reset, getValues, setValue, editData]
     );
 
     useEffect(() => {

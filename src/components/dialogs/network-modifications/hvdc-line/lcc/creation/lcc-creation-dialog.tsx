@@ -161,6 +161,7 @@ export function LccCreationDialog({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: fromSearchCopyToFormValues,
         setFormValues: (data: LccCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });

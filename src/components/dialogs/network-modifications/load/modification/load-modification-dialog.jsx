@@ -84,6 +84,7 @@ const LoadModificationDialog = ({
     editData, // contains data when we try to edit an existing hypothesis from the current node's list
     defaultIdValue, // Used to pre-select an equipmentId when calling this dialog from the SLD
     currentNode,
+    currentRootNetworkUuid,
     studyUuid,
     isUpdate,
     editDataFetchStatus,
@@ -143,6 +144,7 @@ const LoadModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.LOAD,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -169,7 +171,7 @@ const LoadModificationDialog = ({
                     });
             }
         },
-        [studyUuid, currentNodeUuid, reset, getValues, setValue, editData]
+        [studyUuid, currentRootNetworkUuid, currentNodeUuid, reset, getValues, setValue, editData]
     );
 
     useEffect(() => {

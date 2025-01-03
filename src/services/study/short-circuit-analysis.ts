@@ -59,7 +59,7 @@ function getShortCircuitUrl() {
 export function startShortCircuitAnalysis(
     studyUuid: string,
     currentNodeUuid: UUID | undefined,
-    currentRootNetworkUuid: UUID | undefined,
+    currentRootNetworkUuid: UUID | null,
     busId: string
 ) {
     console.info(

@@ -47,14 +47,6 @@ function getNetworkModificationUrl(studyUuid: string | null | undefined, nodeUui
     return getStudyUrlWithNodeUuid(studyUuid, nodeUuid) + '/network-modifications';
 }
 
-function getNetworkModificationUrl1(
-    studyUuid: string | null | undefined,
-    nodeUuid: string | undefined,
-    rootNetworkUuid: string | undefined
-) {
-    return getStudyUrlWithNodeUuidAndRootNetworkUuid(studyUuid, nodeUuid, rootNetworkUuid) + '/network-modifications';
-}
-
 export function changeNetworkModificationOrder(
     studyUuid: UUID | null,
     nodeUuid: UUID | undefined,
@@ -1725,13 +1717,12 @@ export function deleteAttachingLine({
 export function deleteEquipment(
     studyUuid: string,
     nodeUuid: UUID | undefined,
-    currentRootNetworkUuid: UUID | undefined,
     equipmentType: EquipmentType | string | null,
     equipmentId: string,
     modificationUuid: UUID | undefined,
     equipmentInfos: any = undefined
 ) {
-    let deleteEquipmentUrl = getNetworkModificationUrl1(studyUuid, nodeUuid, currentRootNetworkUuid);
+    let deleteEquipmentUrl = getNetworkModificationUrl(studyUuid, nodeUuid);
 
     if (modificationUuid) {
         deleteEquipmentUrl += '/' + encodeURIComponent(modificationUuid);

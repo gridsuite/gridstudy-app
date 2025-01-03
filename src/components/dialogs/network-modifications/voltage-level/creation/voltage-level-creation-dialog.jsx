@@ -194,6 +194,7 @@ const VoltageLevelCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromExternalDataToFormValues,
         elementType: EQUIPMENT_TYPES.VOLTAGE_LEVEL,

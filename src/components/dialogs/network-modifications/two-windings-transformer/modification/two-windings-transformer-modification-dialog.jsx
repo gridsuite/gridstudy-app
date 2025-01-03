@@ -527,7 +527,6 @@ const TwoWindingsTransformerModificationDialog = ({
             currentNode,
             studyUuid,
             currentNodeUuid,
-            //        currentRootNetworkUuid,
             selectedId,
             fillRatioTapChangerRegulationAttributes,
             fillPhaseTapChangerRegulationAttributes,
@@ -584,6 +583,7 @@ const TwoWindingsTransformerModificationDialog = ({
                 fetchNetworkElementInfos(
                     studyUuid,
                     currentNodeUuid,
+                    currentRootNetworkUuid,
                     EQUIPMENT_TYPES.TWO_WINDINGS_TRANSFORMER,
                     EQUIPMENT_INFOS_TYPES.FORM.type,
                     equipmentId,
@@ -636,7 +636,16 @@ const TwoWindingsTransformerModificationDialog = ({
                 reset(emptyFormData, { keepDefaultValues: true });
             }
         },
-        [studyUuid, currentNodeUuid, selectedId, editData, reset, getValues, setConnectivityValue]
+        [
+            studyUuid,
+            currentNodeUuid,
+            currentRootNetworkUuid,
+            selectedId,
+            editData,
+            reset,
+            getValues,
+            setConnectivityValue,
+        ]
     );
 
     useEffect(() => {

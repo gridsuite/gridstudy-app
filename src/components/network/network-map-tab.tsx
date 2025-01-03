@@ -350,14 +350,7 @@ export const NetworkMapTab = ({
                 // only hvdc line with LCC requires a Dialog (to select MCS)
                 handleOpenDeletionDialog(equipmentId, EquipmentType.HVDC_LINE);
             } else {
-                deleteEquipment(
-                    studyUuid,
-                    currentNode?.id,
-                    currentRootNetworkUuid,
-                    equipmentType,
-                    equipmentId,
-                    undefined
-                ).catch((error) => {
+                deleteEquipment(studyUuid, currentNode?.id, equipmentType, equipmentId, undefined).catch((error) => {
                     snackError({
                         messageTxt: error.message,
                         headerId: 'UnableToDeleteEquipment',
@@ -366,14 +359,7 @@ export const NetworkMapTab = ({
                 closeEquipmentMenu();
             }
         },
-        [
-            studyUuid,
-            currentNode?.id,
-            currentRootNetworkUuid,
-            snackError,
-            handleOpenDeletionDialog,
-            mapEquipments?.hvdcLinesById,
-        ]
+        [studyUuid, currentNode?.id, snackError, handleOpenDeletionDialog, mapEquipments?.hvdcLinesById]
     );
 
     function closeChoiceVoltageLevelMenu() {
@@ -606,7 +592,6 @@ export const NetworkMapTab = ({
         console.info(`Loading geo data of study '${studyUuid}'...`);
         dispatch(setMapDataLoading(true));
         geoDataRef.current = null;
-        console.log('**==  :::::::::::::::: rootNodeId ', rootNodeId);
         const substationPositionsDone = fetchSubstationPositions(studyUuid, rootNodeId, currentRootNetworkUuid).then(
             (data) => {
                 console.info(`Received substations of study '${studyUuid}'...`);
@@ -648,7 +633,16 @@ export const NetworkMapTab = ({
             .finally(() => {
                 dispatch(setMapDataLoading(false));
             });
-    }, [mapEquipments, rootNodeId, currentRootNetworkUuid, lineFullPath, studyUuid, dispatch, snackError]);
+    }, [
+        mapEquipments,
+        rootNodeId,
+        currentRootNetworkUuid,
+        lineFullPath,
+        studyUuid,
+        dispatch,
+        snackError,
+        networkMapRef,
+    ]);
 
     const loadGeoData = useCallback(() => {
         if (studyUuid && currentNodeRef.current) {
@@ -835,32 +829,25 @@ export const NetworkMapTab = ({
         isCurrentNodeBuiltRef.current = isNodeBuilt(currentNode);
         // if only renaming, do not reload geo data
         if (isNodeRenamed(previousCurrentNode, currentNode)) {
-            console.log('**== test 1');
             return;
         }
         if (disabled) {
-            console.log('**== test 2 ', rootNodeId);
             return;
         }
         // as long as rootNodeId is not set, we don't fetch any geodata
         if (!rootNodeId) {
-            console.log('**== test 3');
             return;
         }
         // Hack to avoid reload Geo Data when switching display mode to TREE then back to MAP or HYBRID
         // TODO REMOVE LATER
         if (!reloadMapNeeded) {
-            console.log('**==  test 4');
             return;
         }
         if (!isMapEquipmentsInitialized) {
-            console.log('**== test 5');
             // load default node map equipments
             loadMapEquipments();
         }
         if (!isRootNodeGeoDataLoaded) {
-            console.log('**== test 6');
-
             // load root node geodata
             loadRootNodeGeoData();
         }
@@ -983,16 +970,6 @@ export const NetworkMapTab = ({
         />
     );
 
-    console.log('EQUIPMENT TO DISPLAY', mapEquipments);
-    console.log('GEODATA TO DISPLAY', geoData);
-    console.log('lineFullPath TO DISPLAY', lineFullPath);
-    console.log('lineFullPath TO DISPLAY', lineFullPath);
-    console.log(
-        'COMPARE DISPLAY',
-        [...(updatedLines ?? []), ...(updatedTieLines ?? []), ...(updatedHvdcLines ?? [])],
-        visible,
-        disabled
-    );
     const renderMap = () => (
         <NetworkMap
             ref={networkMapRef}

@@ -247,6 +247,7 @@ const LineCreationDialog = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: (data) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.LINE,

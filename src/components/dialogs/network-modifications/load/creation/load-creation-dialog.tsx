@@ -146,6 +146,7 @@ export function LoadCreationDialog({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
         toFormValues: fromSearchCopyToFormValues,
         setFormValues: (data: LoadCreationSchemaForm) => {
             reset(data, { keepDefaultValues: true });

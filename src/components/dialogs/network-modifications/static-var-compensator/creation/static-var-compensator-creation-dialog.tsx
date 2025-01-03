@@ -287,6 +287,8 @@ const StaticVarCompensatorCreationDialog: FC<any> = ({
     const searchCopy = useFormSearchCopy({
         studyUuid,
         currentNodeUuid,
+        currentRootNetworkUuid,
+
         toFormValues: (data: StaticVarCompensatorCreationSchemaForm) => data,
         setFormValues: fromSearchCopyToFormValues,
         elementType: EQUIPMENT_TYPES.STATIC_VAR_COMPENSATOR,
